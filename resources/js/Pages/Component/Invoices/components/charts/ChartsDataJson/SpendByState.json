@@ -1,0 +1,182 @@
+[
+    {
+        "month": "2023-01",
+        "amount": 7120433,
+        "state": "VIC"
+    },
+    {
+        "month": "2023-01",
+        "amount": 7117913,
+        "state": "QLD"
+    },
+    {
+        "month": "2023-01",
+        "amount": 18954732,
+        "state": "NSW"
+    },
+    {
+        "month": "2023-01",
+        "amount": 5519074,
+        "state": "SA"
+    },
+    {
+        "month": "2023-01",
+        "amount": 91746,
+        "state": "ACT"
+    },
+    {
+        "month": "2023-02",
+        "amount": 73844607,
+        "state": "NSW"
+    },
+    {
+        "month": "2023-02",
+        "amount": 24670245,
+        "state": "VIC"
+    },
+    {
+        "month": "2023-02",
+        "amount": 20545567,
+        "state": "QLD"
+    },
+    {
+        "month": "2023-02",
+        "amount": 9579084,
+        "state": "SA"
+    },
+    {
+        "month": "2023-02",
+        "amount": 223493,
+        "state": "ACT"
+    },
+    {
+        "month": "2023-03",
+        "amount": 101213423,
+        "state": "NSW"
+    },
+    {
+        "month": "2023-03",
+        "amount": 31010045,
+        "state": "VIC"
+    },
+    {
+        "month": "2023-03",
+        "amount": 11786620,
+        "state": "SA"
+    },
+    {
+        "month": "2023-03",
+        "amount": 295626,
+        "state": "ACT"
+    },
+    {
+        "month": "2023-03",
+        "amount": 18156044,
+        "state": "QLD"
+    },
+    {
+        "month": "2023-04",
+        "amount": 39183982,
+        "state": "NSW"
+    },
+    {
+        "month": "2023-04",
+        "amount": 15621363,
+        "state": "QLD"
+    },
+    {
+        "month": "2023-04",
+        "amount": 16498848,
+        "state": "VIC"
+    },
+    {
+        "month": "2023-04",
+        "amount": 8588957,
+        "state": "SA"
+    },
+    {
+        "month": "2023-04",
+        "amount": 152910,
+        "state": "ACT"
+    },
+    {
+        "month": "2023-04",
+        "amount": 663940,
+        "state": "WA"
+    },
+    {
+        "month": "2023-05",
+        "amount": 23195580,
+        "state": "VIC"
+    },
+    {
+        "month": "2023-05",
+        "amount": 51745893,
+        "state": "NSW"
+    },
+    {
+        "month": "2023-05",
+        "amount": 18148269,
+        "state": "QLD"
+    },
+    {
+        "month": "2023-05",
+        "amount": 10321889,
+        "state": "SA"
+    },
+    {
+        "month": "2023-05",
+        "amount": 326208,
+        "state": "ACT"
+    },
+    {
+        "month": "2023-06",
+        "amount": 24656092,
+        "state": "VIC"
+    },
+    {
+        "month": "2023-06",
+        "amount": 17970929,
+        "state": "QLD"
+    },
+    {
+        "month": "2023-06",
+        "amount": 9496559,
+        "state": "SA"
+    },
+    {
+        "month": "2023-06",
+        "amount": 47820052,
+        "state": "NSW"
+    },
+    {
+        "month": "2023-06",
+        "amount": 275238,
+        "state": "ACT"
+    },
+    {
+        "month": "2023-07",
+        "amount": 31312662,
+        "state": "NSW"
+    },
+    {
+        "month": "2023-07",
+        "amount": 13982151,
+        "state": "VIC"
+    },
+    {
+        "month": "2023-07",
+        "amount": 10401513,
+        "state": "QLD"
+    },
+    {
+        "month": "2023-07",
+        "amount": 4994752,
+        "state": "SA"
+    },
+    {
+        "month": "2023-07",
+        "amount": 142716,
+        "state": "ACT"
+    }
+]

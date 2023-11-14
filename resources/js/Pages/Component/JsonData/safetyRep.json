@@ -1,0 +1,32 @@
+[
+    {
+        "consignmentNb": "2500950993",
+        "ReportId": 12,
+        "SafetyType": "test3",
+        "DebtorId": 12,
+        "State": "test3",
+        "Description": "test3",
+        "OccuredAt": "2023-06-01 04:49:16.367",
+        "AddedBy": "test3"
+    },
+    {
+        "consignmentNb": "2500950562",
+        "ReportId": 13,
+        "SafetyType": "test2",
+        "DebtorId": 11,
+        "State": "NSW",
+        "Description": "Description",
+        "OccuredAt": "2023-06-01 04:49:16.367",
+        "AddedBy": "Test 2"
+    },
+    {
+        "consignmentNb": "2500950589",
+        "ReportId": 14,
+        "SafetyType": "test2",
+        "DebtorId": 11,
+        "State": "NSW",
+        "Description": "Description",
+        "OccuredAt": "2023-06-01 04:49:16.367",
+        "AddedBy": "Test 2"
+    }
+]

@@ -1,0 +1,103 @@
+.InovuaReactDataGrid__row-hover-target:hover {
+    background-color: rgb(212, 212, 212)!important;
+    
+    /* Add any other styles you want to apply to the first row here */
+  }
+
+  .InovuaReactDataGrid__row--active{
+    background-color: rgb(0, 209, 80);
+    font-weight: bold;
+  }
+
+  .InovuaReactDataGrid__row--selected{
+    color: rgb(0, 0, 0);
+    border: none!important;
+    background-color: rgb(231, 231, 231) !important;
+    font-weight: bold;
+  }
+
+  .InovuaReactDataGrid--cell-borders-vertical{
+    border-color: #DDDDDD!important;
+  }
+
+  .InovuaReactDataGrid--cell-borders-horizontal{
+    border-color: #e6e6e6!important;
+  }
+
+  .InovuaReactDataGrid__column-header__filter-wrapper{
+    background-color:#fafafa !important ;
+ border-top: none !important;
+  border-right: 1px solid #e6e6e6 !important;
+  }
+ 
+  
+
+  .inovua-react-toolkit-checkbox.inovua-react-toolkit-checkbox--theme-default-light.inovua-react-toolkit-checkbox--indeterminate .inovua-react-toolkit-checkbox__icon-wrapper {
+    fill: #dddddd !important;
+}
+
+  .inovua-react-toolkit-checkbox.inovua-react-toolkit-checkbox--theme-default-light.inovua-react-toolkit-checkbox--checked .inovua-react-toolkit-checkbox__icon-wrapper {
+  fill: #4FD670 !important ;
+  stroke: #ebebeb !important;
+}
+.inovua-react-toolkit-checkbox.inovua-react-toolkit-checkbox--theme-default-light.inovua-react-toolkit-checkbox--checked .inovua-react-toolkit-checkbox__icon-wrapper svg{
+ 
+  border-radius: 5px !important;
+}
+
+.inovua-react-toolkit-checkbox.inovua-react-toolkit-checkbox--theme-default-light.inovua-react-toolkit-checkbox--indeterminate .inovua-react-toolkit-checkbox__icon-wrapper svg {
+  border-radius: 5px;
+  background: #4FD670 !important;
+}
+
+.InovuaReactDataGrid--theme-default-light .InovuaReactDataGrid__cell--show-border-bottom, .InovuaReactDataGrid--theme-default-light .InovuaReactDataGrid__footer-row-cell--show-border-bottom, .InovuaReactDataGrid--theme-default-light .InovuaReactDataGrid__locked-row-cell--show-border-bottom {
+  border-top: 1px solid #e6e6e6 !important;
+  border-right: 1px solid #e6e6e6 !important;
+}
+
+.InovuaReactDataGrid--theme-default-light .InovuaReactDataGrid__column-header, .InovuaReactDataGrid--theme-default-light .InovuaReactDataGrid__header-group, .InovuaReactDataGrid--theme-default-light .InovuaReactDataGrid__header-wrapper {
+  line-height: 1.6;
+  border-right: 1px solid #e6e6e6 !important;
+}
+
+
+
+.InovuaReactDataGrid--theme-default-light.InovuaReactDataGrid--focused .InovuaReactDataGrid__row--active.InovuaReactDataGrid__row--no-locked-end:before{
+  border-right: 1px solid #e6e6e6 !important;
+  z-index: 1;
+  
+}
+
+.InovuaReactDataGrid--theme-default-light.InovuaReactDataGrid--focused .InovuaReactDataGrid__row--active.InovuaReactDataGrid__row--no-locked-start:before{
+  border-right: 1px solid #e6e6e6 !important;
+  z-index: 1;
+}
+
+.inovua-react-scroll-container__scroller{
+  align-items: center !important;
+}
+
+.InovuaReactDataGrid--theme-default-light .InovuaReactDataGrid__row--odd {
+  background: #f1f1f1 !important;
+}
+
+
+.InovuaReactDataGrid--theme-default-light .InovuaReactDataGrid__header {
+  background: #fafafa ;
+}
+
+.inovua-react-toolkit-text-input.inovua-react-toolkit-text-input--theme-default-light  {
+  border-radius: 5px !important;
+}
+
+.inovua-react-toolkit-date-input--theme-default-light {
+  border-radius: 5px !important;
+}
+.inovua-react-scroll-container__scrollbar{
+  right: 0px !important;
+  bottom: 0px !important;
+}
+
+.InovuaReactDataGrid--theme-default-light .InovuaReactDataGrid__column-header__filter-wrapper .InovuaReactDataGrid__column-header__filter {
+  border-radius: 5px !important;
+}

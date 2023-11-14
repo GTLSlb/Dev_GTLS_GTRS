@@ -1,0 +1,266 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 8,
+    "passes": 6,
+    "pending": 0,
+    "failures": 2,
+    "start": "2023-11-07T10:34:42.209Z",
+    "end": "2023-11-07T10:34:56.471Z",
+    "duration": 14262,
+    "testsRegistered": 8,
+    "passPercent": 75,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "153960fa-c97e-4b24-b195-a47d94dd2439",
+      "title": "",
+      "fullFile": "C:\\xampp\\htdocs\\MainPortal_Development\\tests\\iphoneTest.js",
+      "file": "\\tests\\iphoneTest.js",
+      "beforeHooks": [
+        {
+          "title": "\"before all\" hook in \"{root}\"",
+          "fullTitle": "\"before all\" hook in \"{root}\"",
+          "timedOut": false,
+          "duration": 3884,
+          "state": null,
+          "speed": null,
+          "pass": false,
+          "fail": false,
+          "pending": false,
+          "context": null,
+          "code": "let options = new chrome.Options();\noptions.addArguments(\"start-maximized\");\noptions.addArguments(\"disable-infobars\");\noptions.addArguments(\"--disable-extensions\");\n// options.addArguments(\"headless\");\noptions.excludeSwitches(\"enable-logging\");\ndriver = await new Builder()\n    .forBrowser(\"chrome\")\n    .setChromeOptions(options)\n    .build();\nawait driver.manage().window().setRect({ width: 390, height: 844 });\nawait driver.get(\"http://127.0.0.1:8000/Main\");\nawait driver.manage().addCookie({\n    name: \"gtls_session\",\n    value: \"eyJpdiI6IlNHOXhPcmpScG52SC9iaE40Nm5KZ1E9PSIsInZhbHVlIjoiOUZKOTV3VzA5TlV5K3Vpcm15a25LOWxqdndsZzgyR2dySmJQWDF6Nm5uTklMR1JBa2VoblhKQVJwclNZY1ozbnQ2K2RsWUJoNXc5U3FVWXhZWVpWbDcyN25ITEdFWVZTNXM3RTdWcEZaTUk1cVNERFkxQVNIVUJwbXptTTJtSWIiLCJtYWMiOiIxZGZkMzQ4YjVhYWI1NjFkYjYwYTQwMGQ3Y2MwMDBjMzc3YmUyNWEyZDc4YzA0MWFmZTU1MWQ3NTg4NDBlMzM4IiwidGFnIjoiIn0%3D\",\n});\nawait driver.get(\"http://127.0.0.1:8000/Main\");",
+          "err": {},
+          "uuid": "8185a352-bfbb-44cb-bbcf-09020f5989af",
+          "parentUUID": "153960fa-c97e-4b24-b195-a47d94dd2439",
+          "isHook": true,
+          "skipped": false
+        }
+      ],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "8e4b4872-b2e3-4982-9a9d-c7dfe999a2b4",
+          "title": "Testing GTAM/Apps",
+          "fullFile": "C:\\xampp\\htdocs\\MainPortal_Development\\tests\\iphoneTest.js",
+          "file": "\\tests\\iphoneTest.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "checks Apps/GTAM default title text and style in Chrome browser iphone view",
+              "fullTitle": "Testing GTAM/Apps checks Apps/GTAM default title text and style in Chrome browser iphone view",
+              "timedOut": false,
+              "duration": 1147,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "try {\n    let navBtn = await driver.wait(\n        until.elementLocated(\n            By.xpath('//*[@id=\"app\"]/div/div/header/div/button')\n        )\n    );\n    await driver.wait(until.elementIsEnabled(navBtn));\n    navBtn.click();\n    \n    let childElement = await driver.wait(\n        until.elementLocated(\n          By.id('GTAM')\n        )\n      );\n    \n    let gtamBtn = childElement.findElement(By.xpath('..'));\n    await driver.wait(until.elementIsEnabled(gtamBtn));\n    await gtamBtn.click();\n    let appsBtn = await driver.wait(\n        until.elementLocated(By.id(\"Apps\"))\n    );\n    await driver.executeScript(\n        \"arguments[0].scrollIntoView();\",\n        appsBtn\n    );\n    await driver.wait(until.elementIsEnabled(appsBtn));\n    await appsBtn.click();\n    let appsGtamBtn = await driver.wait(\n        until.elementLocated(By.id(\"Gold Tiger Account Manager\"))\n    );\n    await appsGtamBtn.click();\n    let gtamTitle = await driver\n        .wait(\n            until.elementLocated(\n                By.xpath(\n                    '//*[@id=\"app\"]/div/div/div[2]/div[1]/div/div[2]/div/div/div/div/div[4]/div/div[2]/div[1]/h1'\n                )\n            )\n        )\n        .getText();\n    let gtamSubTitle = await driver\n        .wait(\n            until.elementLocated(\n                By.xpath(\n                    '//*[@id=\"app\"]/div/div/div[2]/div[1]/div/div[2]/div/div/div/div/div[4]/div/div[2]/div[1]/p'\n                )\n            )\n        )\n        .getText();\n    if (\n        gtamTitle == \"GTAM\" &&\n        gtamSubTitle == \"Gold Tiger Account Manager\"\n    ) {\n        assert.ok(true);\n    } else {\n        assert.ok(false, \"Apps/GTAM title and subtitle are incorrect\");\n    }\n} catch (err) {\n    assert.ok(false, err);\n}",
+              "err": {},
+              "uuid": "11157bf3-592b-4a2b-bbaf-fcbdb72c6877",
+              "parentUUID": "8e4b4872-b2e3-4982-9a9d-c7dfe999a2b4",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "checks Apps/GTAM default Pages style in Chrome browser iphone view",
+              "fullTitle": "Testing GTAM/Apps checks Apps/GTAM default Pages style in Chrome browser iphone view",
+              "timedOut": false,
+              "duration": 1044,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await driver.sleep(1000);\nlet pagesBtn = await driver.wait(until.elementLocated(By.id(\"Pages\")));\nlet pagesClass = await pagesBtn.getAttribute(\"class\");\nconst hasDesiredClasses =\n    pagesClass.includes(\"text-dark\") &&\n    pagesClass.includes(\"border-b-4\") &&\n    pagesClass.includes(\"border-goldd\") &&\n    pagesClass.includes(\"font-bold\");\nif (hasDesiredClasses) {\n    let title = await driver\n        .findElement(\n            By.xpath(\n                '//*[@id=\"app\"]/div/div/div[2]/div[1]/div/div[2]/div/div/div/div/div[5]/div/div/div[4]/div/div[1]/div/div[1]/h1'\n            )\n        )\n        .getText();\n    if (title === \"GTAM\") {\n        assert.ok(true);\n    } else {\n        assert.ok(false, \"Apps/GTAM title in pages is incorrect\");\n    }\n} else {\n    assert.ok(false, \"Apps/GTAM pages style is incorrect\");\n}",
+              "err": {},
+              "uuid": "06f08f94-b6e7-40bc-81e8-9c8f80f6ab5f",
+              "parentUUID": "8e4b4872-b2e3-4982-9a9d-c7dfe999a2b4",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "checks Apps/GTIS default title text and style in Chrome browser iphone view",
+              "fullTitle": "Testing GTAM/Apps checks Apps/GTIS default title text and style in Chrome browser iphone view",
+              "timedOut": false,
+              "duration": 1711,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await driver.sleep(1000);\ntry {\n    let navBtn = await driver.wait(\n        until.elementLocated(\n            By.xpath('//*[@id=\"app\"]/div/div/header/div/button')\n        )\n    );\n    await driver.wait(until.elementIsEnabled(navBtn));\n    navBtn.click();\n    \n    let childElement = await driver.wait(\n        until.elementLocated(\n          By.id('GTAM')\n        )\n      );\n    \n    let gtamBtn = childElement.findElement(By.xpath('..'));\n    await driver.wait(until.elementIsEnabled(gtamBtn));\n    await gtamBtn.click();\n    let appsBtn = await driver.wait(\n        until.elementLocated(By.id(\"Apps\"))\n    );\n    await driver.executeScript(\n        \"arguments[0].scrollIntoView();\",\n        appsBtn\n    );\n    await driver.wait(until.elementIsEnabled(appsBtn));\n    await appsBtn.click();\nlet appsInvoices = await driver.wait(\n    until.elementLocated(\n        By.xpath(\n            \"/html/body/div[1]/div/div/div[2]/div[1]/div/div[2]/div/div/div/div/div[2]/div/div[5]\"\n        )\n    )\n);\nawait appsInvoices.click();\nlet invoicesTitle = await driver\n    .wait(\n        until.elementLocated(\n            By.xpath(\n                '/html/body/div[1]/div/div/div[2]/div[1]/div/div[2]/div/div/div/div/div[4]/div/div[2]/div[1]/h1'\n            )\n        )\n    )\n    .getText();\nlet invoicesSubTitle = await driver\n    .wait(\n        until.elementLocated(\n            By.xpath(\n                '/html/body/div[1]/div/div/div[2]/div[1]/div/div[2]/div/div/div/div/div[4]/div/div[2]/div[1]/p'\n            )\n        )\n    )\n    .getText();\nif (invoicesTitle == \"GTIS\" && invoicesSubTitle == \"Invoices\") {\n    assert.ok(true);\n} else {\n    assert.ok(false, \"Apps/GTIS title and subtitle are incorrect\");\n}\n    }catch(err){\nassert.ok(false, err)\n    }",
+              "err": {},
+              "uuid": "638a9235-a1c0-42b5-9c64-96da54d617fe",
+              "parentUUID": "8e4b4872-b2e3-4982-9a9d-c7dfe999a2b4",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "checks Apps/GTIS app default page style in Chrome browser iphone view",
+              "fullTitle": "Testing GTAM/Apps checks Apps/GTIS app default page style in Chrome browser iphone view",
+              "timedOut": false,
+              "duration": 1057,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await driver.sleep(1000);\nlet pagesBtn = await driver.wait(until.elementLocated(By.id(\"Pages\")));\nlet pagesClass = await pagesBtn.getAttribute(\"class\");\nconst hasDesiredClasses =\n    pagesClass.includes(\"text-dark\") &&\n    pagesClass.includes(\"border-b-4\") &&\n    pagesClass.includes(\"border-goldd\") &&\n    pagesClass.includes(\"font-bold\");\nif (hasDesiredClasses) {\n    let title = await driver\n        .findElement(\n            By.xpath(\n                '/html/body/div[1]/div/div/div[2]/div[1]/div/div[2]/div/div/div/div/div[5]/div/div/div[4]/div/div[1]/div/div[1]/h1'\n            )\n        )\n        .getText();\n    if (title == 'GTIS') {\n        assert.ok(true);\n    } else {\n        assert.ok(false, \"Apps/GTIS title in pages is incorrect\");\n    }\n} else {\n    assert.ok(false, \"Apps/GTIS pages style is incorrect\");\n}",
+              "err": {},
+              "uuid": "1a8ffffa-6fad-48fa-8c3d-ebfc45f04451",
+              "parentUUID": "8e4b4872-b2e3-4982-9a9d-c7dfe999a2b4",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "checks Apps/GTMS default title text and style in Chrome browser iphone view",
+              "fullTitle": "Testing GTAM/Apps checks Apps/GTMS default title text and style in Chrome browser iphone view",
+              "timedOut": false,
+              "duration": 1336,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "await driver.sleep(1000);\ntry {\n    let navBtn = await driver.wait(\n        until.elementLocated(\n            By.xpath('//*[@id=\"app\"]/div/div/header/div/button')\n        )\n    );\n    await driver.wait(until.elementIsEnabled(navBtn));\n    navBtn.click();\n    \n    let childElement = await driver.wait(\n        until.elementLocated(\n          By.id('GTAM')\n        )\n      );\n    \n    let gtamBtn = childElement.findElement(By.xpath('..'));\n    await driver.wait(until.elementIsEnabled(gtamBtn));\n    await gtamBtn.click();\n    let appsBtn = await driver.wait(\n        until.elementLocated(By.id(\"Apps\"))\n    );\n    await driver.executeScript(\n        \"arguments[0].scrollIntoView();\",\n        appsBtn\n    );\n    await driver.wait(until.elementIsEnabled(appsBtn));\n    await appsBtn.click();\nlet appsGTMS = await driver.wait(\n    until.elementLocated(By.id(\"Gold Tiger Management System\"))\n);\nawait driver.wait(until.elementIsEnabled(appsGTMS));\nawait appsGTMS.click();\nlet gtmsTitle = await driver\n    .wait(\n        until.elementLocated(\n            By.xpath(\n                '//*[@id=\"app\"]/div/div/div[2]/div[1]/div/div[2]/div/div/div/div/div[4]/div/div[2]/div[1]/h1'\n            )\n        )\n    )\n    .getText();\nlet gtmsSubTitle = await driver\n    .wait(\n        until.elementLocated(\n            By.xpath(\n                '//*[@id=\"app\"]/div/div/div[2]/div[1]/div/div[2]/div/div/div/div/div[4]/div/div[2]/div[1]/p'\n            )\n        )\n    )\n    .getText();\nif (\n    gtmsTitle == \"GTMS\" &&\n    gtmsSubTitle == \"Gold Tiger Management System\"\n) {\n    assert.ok(true);\n} else {\n    assert.ok(false, \"Apps/GTMS title and subtitle are incorrect\");\n}\n    }catch(err){\nassert.ok(false, err)\n    }",
+              "err": {
+                "message": "ElementNotInteractableError: element not interactable\n  (Session info: chrome=118.0.5993.120)",
+                "estack": "ElementNotInteractableError: element not interactable\n  (Session info: chrome=118.0.5993.120)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:524:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:601:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:529:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:745:17)\n    at async Context.<anonymous> (tests\\iphoneTest.js:250:13)",
+                "diff": null
+              },
+              "uuid": "827a918a-5c94-44a4-8deb-9ea459df14f2",
+              "parentUUID": "8e4b4872-b2e3-4982-9a9d-c7dfe999a2b4",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "checks Apps/GTMS app default page style in Chrome browser iphone view",
+              "fullTitle": "Testing GTAM/Apps checks Apps/GTMS app default page style in Chrome browser iphone view",
+              "timedOut": false,
+              "duration": 1034,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "await driver.sleep(1000);\nlet pagesBtn = await driver.wait(until.elementLocated(By.id(\"Pages\")));\nlet pagesClass = await pagesBtn.getAttribute(\"class\");\nconst hasDesiredClasses =\n    pagesClass.includes(\"text-dark\") &&\n    pagesClass.includes(\"border-b-4\") &&\n    pagesClass.includes(\"border-goldd\") &&\n    pagesClass.includes(\"font-bold\");\nif (hasDesiredClasses) {\n    let title = await driver\n        .findElement(\n            By.xpath(\n                '/html/body/div[1]/div/div/div[2]/div[1]/div/div[2]/div/div/div/div/div[5]/div/div/div[4]/div/div[1]/div/div[1]/h1'\n            )\n        )\n        .getText();\n    if (title == 'GTMS') {\n        assert.ok(true);\n    } else {\n        assert.ok(false, \"Apps/GTMS title in pages is incorrect\");\n    }\n} else {\n    assert.ok(false, \"Apps/GTMS pages style is incorrect\");\n}",
+              "err": {
+                "message": "AssertionError: Apps/GTMS title in pages is incorrect",
+                "estack": "AssertionError [ERR_ASSERTION]: Apps/GTMS title in pages is incorrect\n    at Context.<anonymous> (tests\\iphoneTest.js:308:24)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)",
+                "diff": "- false\n+ true\n"
+              },
+              "uuid": "58eed9ba-ba1a-4c7e-a203-d5d9476483f9",
+              "parentUUID": "8e4b4872-b2e3-4982-9a9d-c7dfe999a2b4",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "checks Apps/d default title text and style in Chrome browser iphone view",
+              "fullTitle": "Testing GTAM/Apps checks Apps/d default title text and style in Chrome browser iphone view",
+              "timedOut": false,
+              "duration": 1991,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await driver.sleep(500);\ntry {\n    let navBtn = await driver.wait(\n        until.elementLocated(\n            By.xpath('//*[@id=\"app\"]/div/div/header/div/button')\n        )\n    );\n    await driver.wait(until.elementIsEnabled(navBtn));\n    navBtn.click();\n    \n    let childElement = await driver.wait(\n        until.elementLocated(\n          By.id('GTAM')\n        )\n      );\n    \n    let gtamBtn = childElement.findElement(By.xpath('..'));\n    await driver.wait(until.elementIsEnabled(gtamBtn));\n    await gtamBtn.click();\n    let appsBtn = await driver.wait(\n        until.elementLocated(By.id(\"Apps\"))\n    );\n    await driver.executeScript(\n        \"arguments[0].scrollIntoView();\",\n        appsBtn\n    );\n    await driver.wait(until.elementIsEnabled(appsBtn));\n    await appsBtn.click();\nlet appsD = await driver.wait(until.elementLocated(By.id(\"d\")));\nawait appsD.click();\nlet dTitle = await driver\n    .wait(\n        until.elementLocated(\n            By.xpath(\n                '//*[@id=\"app\"]/div/div/div[2]/div[1]/div/div[2]/div/div/div/div/div[4]/div/div[2]/div[1]/h1'\n            )\n        )\n    )\n    .getText();\nlet dSubTitle = await driver\n    .wait(\n        until.elementLocated(\n            By.xpath(\n                '//*[@id=\"app\"]/div/div/div[2]/div[1]/div/div[2]/div/div/div/div/div[4]/div/div[2]/div[1]/p'\n            )\n        )\n    )\n    .getText();\nif (dTitle == \"d\" && dSubTitle == \"d\") {\n    assert.ok(true);\n} else {\n    assert.ok(false, \"Apps/d title and subtitle are incorrect\");\n}\n    }catch(err){\nassert.ok(false, err)\n    }",
+              "err": {},
+              "uuid": "87556b6d-10c4-425c-9324-826ec6e75396",
+              "parentUUID": "8e4b4872-b2e3-4982-9a9d-c7dfe999a2b4",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "checks Apps/d app default page style in Chrome browser iphone view",
+              "fullTitle": "Testing GTAM/Apps checks Apps/d app default page style in Chrome browser iphone view",
+              "timedOut": false,
+              "duration": 1047,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await driver.sleep(1000);\nlet pagesBtn = await driver.wait(until.elementLocated(By.id(\"Pages\")));\nlet pagesClass = await pagesBtn.getAttribute(\"class\");\nconst hasDesiredClasses =\n    pagesClass.includes(\"text-dark\") &&\n    pagesClass.includes(\"border-b-4\") &&\n    pagesClass.includes(\"border-goldd\") &&\n    pagesClass.includes(\"font-bold\");\nif (hasDesiredClasses) {\n    let title = await driver\n        .findElement(\n            By.xpath(\n                '/html/body/div[1]/div/div/div[2]/div[1]/div/div[2]/div/div/div/div/div[5]/div/div/div[4]/div/div[1]/div/div[1]/h1'\n            )\n        )\n        .getText();\n    if (title == \"d\") {\n        assert.ok(true);\n    } else {\n        assert.ok(false, \"Apps/d title in pages is incorrect\");\n    }\n} else {\n    assert.ok(false, \"Apps/d pages style is incorrect\");\n}",
+              "err": {},
+              "uuid": "c6673a93-3ccf-4f4f-85c1-611e3add693d",
+              "parentUUID": "8e4b4872-b2e3-4982-9a9d-c7dfe999a2b4",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "11157bf3-592b-4a2b-bbaf-fcbdb72c6877",
+            "06f08f94-b6e7-40bc-81e8-9c8f80f6ab5f",
+            "638a9235-a1c0-42b5-9c64-96da54d617fe",
+            "1a8ffffa-6fad-48fa-8c3d-ebfc45f04451",
+            "87556b6d-10c4-425c-9324-826ec6e75396",
+            "c6673a93-3ccf-4f4f-85c1-611e3add693d"
+          ],
+          "failures": [
+            "827a918a-5c94-44a4-8deb-9ea459df14f2",
+            "58eed9ba-ba1a-4c7e-a203-d5d9476483f9"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 10367,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 0
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 0
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "10.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "testResults",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "C:/xampp/htdocs/MainPortal_Development/test-reports",
+        "reportFilename": "testResults",
+        "timestamp": true,
+        "autoOpen": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}

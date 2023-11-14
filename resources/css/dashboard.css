@@ -1,0 +1,17 @@
+.react-grid-item.react-grid-placeholder {
+    background-color: #f7b101 !important; /* Change the color to your desired value */
+  }
+  .react-grid-item {
+    padding-left: 0;
+    padding-right: 0; /* Change the color to your desired value */
+  }
+
+  .custom-grid.layout {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .react-grid-layout{
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
