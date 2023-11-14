@@ -29,13 +29,8 @@ use Illuminate\Http\Request;
 */
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+    return Inertia::render('Layout');
+})->middleware(['auth', 'verified'])->name('layout');
 
 Route::get('/LandingPage', function () {
     return Inertia::render('LandingPage');

@@ -2,15 +2,8 @@ import { useState } from "react";
 import { useEffect } from "react";
 import MainSidebar from "../Components/Main-sidebar";
 import MainNavbar from "../Components/Main-navbar";
-import Gtam from "@/Pages/GTAM";
-import Gtms from "@/Pages/GTMS";
-import Gtw from "@/Pages/GTW";
 import Gtrs from "@/Pages/GTRS";
 import axios from "axios";
-import Invoices from "./Invoices";
-import * as signalR from "@microsoft/signalr";
-import * as signalRCore from "@microsoft/signalr";
-
 import hubConnection from "./SignalR";
 // import AllRoutes from "./RoutesPage";
 
@@ -49,9 +42,6 @@ export default function Sidebar(Boolean) {
     }
 
     const components = [
-        <Gtms currentUser={currentUser}/>,
-        <Gtam currentUser={currentUser} activeIndexGtam={activeIndexGtam} setActiveIndexGtam={handleGTAMIndexChange} />,
-        <Gtw />,
         <Gtrs
             sessionData={sessionData}
             setactivePage={setactivePage}
@@ -66,28 +56,10 @@ export default function Sidebar(Boolean) {
             currentUser={currentUser}
             setCurrentUser={setcurrentUser}
         />,
-        <Invoices
-            url={Invoicesurl}
-            PODetails={PODetails}
-            setPODetails={setPODetails}
-            invoiceDetails={invoiceDetails}
-            setInvoiceDetails={setInvoiceDetails}
-            hubConnection={hubConnection}
-            currentUser={currentUser}
-            activeIndexInv={activeIndexInv}
-            setActiveIndexInv={setActiveIndexInv}
-        />,
     ];
 
     useEffect(() => {
         const components = [
-          <Gtms />,
-          <Gtam
-            currentUser={currentUser}
-            activeIndexGtam={activeIndexGtam}
-            setActiveIndexGtam={handleGTAMIndexChange}
-          />,
-          <Gtw />,
           <Gtrs
             sessionData={sessionData}
             setactivePage={setactivePage}
@@ -101,17 +73,6 @@ export default function Sidebar(Boolean) {
             setLoadingGtrs={setLoadingGtrs}
             currentUser={currentUser}
             setCurrentUser={setcurrentUser}
-          />,
-          <Invoices
-            url={Invoicesurl}
-            PODetails={PODetails}
-            setPODetails={setPODetails}
-            invoiceDetails={invoiceDetails}
-            setInvoiceDetails={setInvoiceDetails}
-            hubConnection={hubConnection}
-            currentUser={currentUser}
-            activeIndexInv={activeIndexInv}
-            setActiveIndexInv={setActiveIndexInv}
           />,
         ];
     
