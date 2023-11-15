@@ -10,9 +10,7 @@ import { DocumentIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { useEffect } from "react";
 import { Switch, Listbox, Transition } from "@headlessui/react";
-import GtamButton from "../Buttons/GtamButton";
-import Roles from "../../Pages/Roles";
-import AppRoles from "../Apps/AppRoles";
+
 import { Fragment } from "react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 

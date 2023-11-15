@@ -4,9 +4,6 @@ import pallet from "../assets/pictures/pallet.webp";
 import { useState, useEffect } from "react";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 
-import Footer from "./Component/landingPage/Footer";
-import ContactForm from "./Component/landingPage/ContactForm";
-import Chatbot from "./Component/chatBot";
 import Navbars from "./Component/navbars";
 const navigation = [
     { name: "Services", href: "/#services", ref: "services" },
