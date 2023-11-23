@@ -23,6 +23,8 @@ export default function RDDreason({
     rddData,
     url,
     setrddData,
+    filterValue,
+    setFilterValue,
     setLastIndex,
     currentUser,
     rddReasons,
@@ -540,6 +542,7 @@ export default function RDDreason({
             header: "New Rdd",
             headerAlign: "center",
             textAlign: "center",
+            headerAlign: "center",
             defaultWidth: 170,
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
@@ -662,127 +665,7 @@ export default function RDDreason({
             setNewColumns(newArray);
         }
     }, []);
-    const filterValue = [
-        {
-            name: "ConsignmentNo",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "DebtorName",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "AccountNumber",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        { name: "SenderName", operator: "contains", type: "string", value: "" },
-        {
-            name: "SenderAddress",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "SenderReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "SenderSuburb",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "SenderState",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "ReceiverName",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "ReceiverReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "ReceiverAddress",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "ReceiverSuburb",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "ReceiverState",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "DespatchDate",
-            operator: "inrange",
-            type: "date",
-            value: {
-                start: minDespatchDate,
-                end: maxDespatchDate,
-            },
-        },
-        {
-            name: "OldRdd",
-            operator: "inrange",
-            type: "date",
-            value: "",
-        },
-        {
-            name: "NewRdd",
-            operator: "inrange",
-            type: "date",
-            value: "",
-        },
-        {
-            name: "Reason",
-            operator: "eq",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ReasonDesc",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "ChangeAt",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            value: "",
-        },
-        {
-            name: "ChangedBy",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-    ];
+    
     return (
         <div className=" w-full bg-smooth ">
             {!newColumns ? (
@@ -1033,6 +916,7 @@ export default function RDDreason({
                         selected={selected}
                         tableDataElements={filteredData}
                         filterValueElements={filterValue}
+                        setFilterValueElements={setFilterValue}
                         columnsElements={newColumns}
                     />
                 </div>

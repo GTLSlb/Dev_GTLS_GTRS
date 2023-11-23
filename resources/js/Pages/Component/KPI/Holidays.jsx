@@ -22,7 +22,14 @@ const temp = [
     },
 ];
 window.moment = moment;
-export default function Holidays({ holidays, setHolidays, url, currentUser }) {
+export default function Holidays({
+    holidays,
+    setHolidays,
+    url,
+    filterValue,
+    setFilterValue,
+    currentUser,
+}) {
     const [isFetching, setIsFetching] = useState();
     const [showAdd, setShowAdd] = useState(false);
     const [holiday, setHoliday] = useState();
@@ -133,43 +140,7 @@ export default function Holidays({ holidays, setHolidays, url, currentUser }) {
         return `${day}-${month}-${year}`;
     }
     // Usage example remains the same
-    const minDate = getMinMaxValue(holidays, "HolidayDate", 1);
-    const maxDate = getMinMaxValue(holidays, "HolidayDate", 2);
-    const filterValue = [
-        {
-            name: "HolidayId",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "HolidayName",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "HolidayDate",
-            operator: "inrange",
-            type: "date",
-            value: {
-                start: minDate,
-                end: maxDate,
-            },
-        },
-        {
-            name: "HolidayState",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "HolidayDesc",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-    ];
+
     const filterIcon = (className) => {
         return (
             <svg
@@ -190,7 +161,7 @@ export default function Holidays({ holidays, setHolidays, url, currentUser }) {
     const columns = [
         {
             name: "HolidayName",
-            minWidth:170,
+            minWidth: 170,
             defaultFlex: 1,
             header: "Holiday Name",
             type: "string",
@@ -205,7 +176,7 @@ export default function Holidays({ holidays, setHolidays, url, currentUser }) {
         {
             name: "HolidayDate",
             defaultFlex: 1,
-            minWidth:230,
+            minWidth: 230,
             header: "Holiday Date",
             headerAlign: "center",
             textAlign: "center",
@@ -221,7 +192,7 @@ export default function Holidays({ holidays, setHolidays, url, currentUser }) {
         {
             name: "HolidayState",
             defaultFlex: 1,
-            minWidth:170,
+            minWidth: 170,
             header: "Holiday State",
             type: "string",
             headerAlign: "center",
@@ -236,7 +207,7 @@ export default function Holidays({ holidays, setHolidays, url, currentUser }) {
         {
             name: "HolidayDesc",
             header: "Description",
-            minWidth:170,
+            minWidth: 170,
             defaultFlex: 1,
             headerAlign: "center",
             textAlign: "start",
@@ -244,7 +215,7 @@ export default function Holidays({ holidays, setHolidays, url, currentUser }) {
         },
         {
             name: "HolidayStatus",
-            minWidth:170,
+            minWidth: 170,
             header: "Status",
             defaultFlex: 1,
             headerAlign: "center",
@@ -344,6 +315,7 @@ export default function Holidays({ holidays, setHolidays, url, currentUser }) {
                         selected={selected}
                         tableDataElements={holidays}
                         filterValueElements={filterValue}
+                        setFilterValueElements={setFilterValue}
                         columnsElements={columns}
                     />
                 </div>

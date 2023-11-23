@@ -8,6 +8,8 @@ export default function RDDMain({
     setactiveCon,
     debtorsData,
     rddData,
+    filterValue,
+    setFilterValue,
     setrddData,
     setLastIndex,
     accData,
@@ -106,6 +108,8 @@ export default function RDDMain({
             url={url}
             accData={accData}
             rddData={rddData}
+            filterValue={filterValue}
+            setFilterValue={setFilterValue}
             setrddData={setrddData}
             debtorsData={debtorsData}
             currentUser={currentUser}

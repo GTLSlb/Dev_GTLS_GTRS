@@ -12,6 +12,8 @@ export default function SafetyRep({
     currentUser,
     url,
     safetyDataState,
+    filterValue,
+    setFilterValue,
     setsafetyDataState,
     setSafetyTypes,
     safetyTypes,
@@ -233,6 +235,8 @@ export default function SafetyRep({
         <SafetyRepTable
             url={url}
             safetyCauses={safetyCauses}
+            filterValue={filterValue}
+            setFilterValue={setFilterValue}
             safetyTypes={safetyTypes}
             safetyData={safetyDataState}
             currentPageRep={currentPage}

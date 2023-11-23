@@ -13,6 +13,8 @@ import TableStructure from "@/Components/TableStructure";
 export default function MissingPOD({
     PerfData,
     setActiveIndexGTRS,
+    filterValue,
+    setFilterValue,
     setLastIndex,
     setactiveCon,
     accData,
@@ -175,103 +177,7 @@ export default function MissingPOD({
         });
     }
     const [selected, setSelected] = useState([]);
-    const filterValue = [
-        {
-            name: "CONSIGNMENTNUMBER",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "SENDERNAME",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "SENDERREFERENCE",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "SenderState",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "RECEIVERNAME",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "RECEIVER REFERENCE",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "RECEIVERSTATE",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "SERVICE",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "DESPATCHDATE",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            value: {
-                start: minDateDespatch,
-                end: maxDateDespatch,
-            },
-        },
-        {
-            name: "DELIVERYREQUIREDDATETIME",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            // value: {
-            //     start: minDaterdd,
-            //     end: maxDaterdd,
-            // },
-        },
-
-        {
-            name: "ARRIVEDDATETIME",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            // value: {
-            //     start: minDateArrive,
-            //     end: maxDateArrive,
-            // },
-        },
-        {
-            name: "DELIVEREDDATETIME",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            // value: {
-            //     start: minDateDel,
-            //     end: maxDateDel,
-            // },
-        },
-        {
-            name: "POD",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-    ];
+    
     const groups = [
         {
             name: "senderInfo",
@@ -725,6 +631,7 @@ export default function MissingPOD({
                             groupsElements={groups}
                             tableDataElements={filteredData}
                             filterValueElements={filterValue}
+                            setFilterValueElements={setFilterValue}
                             columnsElements={columns}
                         />
                     </div>{" "}

@@ -24,6 +24,8 @@ export default function TransitDays({
     currentUser,
     setTransitDays,
     url,
+    filterValue,
+    setFilterValue,
     setActiveIndexGTRS,
     setTransitDay,
 }) {
@@ -123,80 +125,7 @@ export default function TransitDays({
         { id: "Food Solutions - QLD" , label: "Food Solutions - QLD" },
         { id: "METCASH" , label: "METCASH" },
     ];
-    const filterValue = [
-        {
-            name: "CustomerName",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "CustomerType",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "SenderState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "SenderCity",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "SenderSuburb",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "SenderPostCode",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-        {
-            name: "ReceiverName",
-            operator: "contains",
-            type: "string",
-            value: null,
-        },
-        {
-            name: "ReceiverState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ReceiverCity",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ReceiverSuburb",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ReceiverPostCode",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-        {
-            name: "TransitTime",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-    ];
+    
     const filterIcon = (className) => {
         return (
             <svg
@@ -436,6 +365,7 @@ export default function TransitDays({
                             groupsElements={groups}
                             tableDataElements={transitDays}
                             filterValueElements={filterValue}
+                            setFilterValueElements={setFilterValue}
                             columnsElements={columns}
                         />
                     </div>

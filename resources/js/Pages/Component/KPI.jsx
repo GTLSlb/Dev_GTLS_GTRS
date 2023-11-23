@@ -27,6 +27,8 @@ export default function KPI({
     setActiveIndexGTRS,
     setLastIndex,
     setactiveCon,
+    filterValue,
+    setFilterValue,
     KPIData,
     setKPIData,
     accData,
@@ -302,108 +304,7 @@ export default function KPI({
             headerAlign: "center",
         },
     ];
-    const filterValue = [
-        {
-            name: "ConsignmentNo",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "SenderName",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "SenderReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "SenderState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "ReceiverName",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "ReceiverReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "ReceiverState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "DispatchDate",
-            operator: "inrange",
-            type: "date",
-            value: {
-                start: minDispatchDate,
-                end: maxDispatchDate,
-            },
-        },
-        {
-            name: "ReceiverPostCode",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "RDD",
-            operator: "inrange",
-            type: "date",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "DeliveryDate",
-            operator: "inrange",
-            type: "date",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "TransitDays",
-            operator: "eq",
-            type: "number",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "CalculatedDelDate",
-            operator: "inrange",
-            type: "date",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "ReasonId",
-            operator: "eq",
-            type: "select",
-            value: null,
-            emptyValue: null,
-        },
-    ];
+    
     const Roles = ["1", "3", "4", "5"];
     const handleEditClick = (reason) => {
         setReason(reason);
@@ -922,6 +823,7 @@ export default function KPI({
                         groupsElements={groups}
                         tableDataElements={filteredData}
                         filterValueElements={filterValue}
+                        setFilterValueElements={setFilterValue}
                         columnsElements={newColumns}
                     />
                 </div>

@@ -29,6 +29,8 @@ export default function SafetyRepTable({
     currentPageRep,
     safetyData,
     url,
+    filterValue,
+    setFilterValue,
     currentUser,
     setFilteredData,
     setDataEdited,
@@ -313,66 +315,7 @@ export default function SafetyRepTable({
         return newData;
     };
     const stateOptions = createNewLabelObjects(safetyData, "State");
-    const filterValue = [
-        {
-            name: "SafetyType",
-            operator: "eq",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ConsNo",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "CAUSE",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "State",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "Explanation",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "Resolution",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "Reference",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "OccuredAt",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            value: {
-                start: minDate,
-                end: maxDate,
-            },
-        },
-        {
-            name: "AddedBy",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-    ];
+    
     const safetyTypeOptions = safetyTypes.map((reason) => ({
         id: reason.SafetyTypeId,
         label: reason.SafetyTypeName,
@@ -728,6 +671,7 @@ export default function SafetyRepTable({
                             id={"ReportId"}
                             setSelected={setSelected}
                             selected={selected}
+                            setFilterValueElements={setFilterValue}
                             tableDataElements={safetyData}
                             filterValueElements={filterValue}
                             columnsElements={newColumns}

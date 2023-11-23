@@ -9,6 +9,8 @@ export default function FailedConsMain({
     setActiveIndexGTRS,
     setLastIndex,
     setactiveCon,
+    filterValue,
+    setFilterValue,
     IDfilter,
     currentUser,
     accData,
@@ -77,6 +79,8 @@ export default function FailedConsMain({
             setactiveCon={setactiveCon}
             setLastIndex={setLastIndex}
             IDfilter={IDfilter}
+            filterValue={filterValue}
+            setFilterValue={setFilterValue}
             EDate={EDate}
             setEDate={setEDate}
             SDate={SDate}

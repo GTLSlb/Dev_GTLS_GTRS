@@ -26,6 +26,8 @@ function classNames(...classes) {
 export default function DriverLogin({
     DriverData,
     setDriverData,
+    filterValue,
+    setFilterValue,
     url,
     currentUser,
 }) {
@@ -168,68 +170,7 @@ export default function DriverLogin({
         });
     }
     const [selected, setSelected] = useState([]);
-    const filterValue = [
-        {
-            name: "Name",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "DeviceCode",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "SmartSCANSoftwareVersion",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "Description",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "LastActiveUTC",
-            operator: "eq",
-            type: "date",
-            value: "",
-        },
-        {
-            name: "Name",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "SoftwareVersion",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "MobilityDeviceSimTypes_Description",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "MobilityDeviceModels_Description",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "MobilityDeviceMakes_Description",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-    ];
+   
     const filterIcon = (className) => {
         return (
             <svg
@@ -685,6 +626,7 @@ export default function DriverLogin({
                         selected={selected}
                         tableDataElements={DriverData}
                         filterValueElements={filterValue}
+                        setFilterValueElements={setFilterValue}
                         columnsElements={columns}
                     />
                 </div>
