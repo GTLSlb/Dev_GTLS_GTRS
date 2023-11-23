@@ -53,26 +53,62 @@ class RegisteredUserController extends Controller
 
         return redirect(RouteServiceProvider::HOME);
     }
-    public function getCurrentUserName()
+    public function getCurrentUserName(Request $request)
     {
-        if (Auth::check()) {
-            $user = Auth::user();
-            $name = $user->name;
-            $id = $user->id;
-            $user_id = $user->user_id;
-            $user_role = $user->role_id;
-            $user_state = $user->state;
-            $user_email = $user->email;
-            $user_icon = $user->icon;
-            return response()->json([
-                'name' => $name,
-                'id' => $id,
-                'state' => $user_state,
-                'user_id' => $user_id,
-                'role_id' => $user_role,
-                'email' => $user_email,
-                'icon' => $user_icon,
-            ]);
+        if ($request->session()->get('user')!=null) {
+            
+            $user = $request->session()->get('user');
+            $UserId = $user->UserId;
+            $UniqueId = $user->UniqueId;
+            $TypeId = $user->TypeId;
+            $TypeName =$user->TypeName;
+            $OwnerId = $user->OwnerId;
+            $GroupId = $user->GroupId;
+            $Username = $user->Username;
+            $FirstName = $user->FirstName;
+            $LastName = $user->LastName;
+            $Email = $user->Email;
+            $PhoneNo = $user->PhoneNo;
+            $Dob = $user->Dob;
+            $Address = $user->Address;
+            $Picture = $user->Picture;
+            $NationalityId = $user->NationalityId;
+            $NationalityName = $user->NationalityName;
+            $BranchId = $user->BranchId;
+            $RoleId = $user->RoleId;
+            $RoleName = $user->RoleName;
+            $ReportToId = $user->ReportToId;
+            $ReportToName = $user->ReportToName;
+            $HiringDate = $user->HiringDate;
+            $Applications = $user->Applications;
+            
+            $user = array (
+                'UserId' => $UserId,
+                'UniqueId' => $UniqueId,
+                'TypeId' => $TypeId,
+                'TypeName' => $TypeName,
+                'OwnerId' => $OwnerId,
+                'GroupId' => $GroupId,
+                'Username' => $Username,
+                'FirstName' => $FirstName,
+                'LastName' => $LastName,
+                'Email' => $Email,
+                'PhoneNo' => $PhoneNo,
+                'Dob' => $Dob,
+                'Address' => $Address,
+                'Picture' => $Picture,
+                'NationalityId' => $NationalityId,
+                'NationalityName' => $NationalityName,
+                'BranchId' => $BranchId,
+                'RoleId' => $RoleId,
+                'RoleName' => $RoleName,
+                'ReportToId' => $ReportToId,
+                'ReportToName' => $ReportToName,
+                'HiringDate' => $HiringDate,
+                'Applications' => $Applications,
+            );
+
+            return response()->json($user);
         } else {
             return response();
         }
@@ -82,12 +118,14 @@ class RegisteredUserController extends Controller
         $user = User::find($id);
 
         if ($user) {
-            $name = $user->name;
-            $id = $user->id;
+            $FirstName = $user->FirstName;
+            $LastName = $user->LastName;
+            $UserId = $user->UserId;
 
             return response()->json([
-                'name' => $name,
-                'id' => $id
+                'FirstName' => $FirstName,
+                'LastName' => $LastName,
+                'UserId' => $UserId,
             ]);
         } else {
             return response()->json([
@@ -95,6 +133,7 @@ class RegisteredUserController extends Controller
             ]);
         }
     }
+
     public function getChildrens($id)
     {
         $user = User::find($id);
