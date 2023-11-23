@@ -1,5 +1,4 @@
-import GtamUsers from "./GTAM/gtam-users";
-import GtamProfile from "./GTAM/gtam-Profile";
+
 import MainCharts from "./Dashboard_Comp/MainCharts";
 import React, { useState } from "react";
 import ChartsSidebar from "./Dashboard_Comp/ChartsSidebar";
