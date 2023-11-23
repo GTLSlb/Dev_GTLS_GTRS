@@ -4,6 +4,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import notFound from "../../assets/pictures/NotFound.png";
 import AddFailedModal from "@/Pages/Component/modals/AddFailedModal";
+import { canAddFailedReasons, canEditFailedReasons } from "@/permissions";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -53,13 +54,15 @@ export default function AddFailedReason({
         <div className=" w-full bg-smooth ">
             <div className="sm:flex sm:items-center relative">
                 <div className="inline-block sm:absolute left-auto right-0 -top10">
-                    <button
-                        type="button"
-                        onClick={() => handleEditClick(reason)}
-                        className="whitespace-nowrap inline-flex items-center w-[5.5rem] h-7 rounded-md border border-transparent bg-gray-800 px-3 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                        Add Reason
-                    </button>
+                    {canAddFailedReasons(currentUser) ? (
+                        <button
+                            type="button"
+                            onClick={() => handleEditClick(reason)}
+                            className="whitespace-nowrap inline-flex items-center w-[5.5rem] h-7 rounded-md border border-transparent bg-gray-800 px-3 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        >
+                            Add Reason
+                        </button>
+                    ) : null}
                 </div>
             </div>
 
@@ -137,6 +140,7 @@ export default function AddFailedReason({
                                                     )}
                                                 </td>
                                                 <td className="relative whitespace-nowrap py-4 pl-3 sm:pr-4 pr-6 text-left text-sm font-medium">
+                                                    {canEditFailedReasons(currentUser)?
                                                     <a
                                                         href="#"
                                                         onClick={() =>
@@ -153,7 +157,7 @@ export default function AddFailedReason({
                                                         <span className="sr-only">
                                                             , {reason.name}
                                                         </span>
-                                                    </a>
+                                                    </a>:null}
                                                 </td>
                                                 {/* </div> */}
                                             </tr>

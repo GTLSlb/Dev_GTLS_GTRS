@@ -136,7 +136,9 @@ class RegisteredUserController extends Controller
 
     public function getChildrens($id)
     {
+        $UserId=$id;
         $user = User::find($id);
+        dd($user);
         if ($user) {
             if ($user->parent_id == null) {
                 $children = User::where('parent_id', $user->id)->pluck('user_id')->all();

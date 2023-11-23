@@ -29,6 +29,7 @@ import TableStructure from "@/Components/TableStructure";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
+import { canEditFailedConsignments } from "@/permissions";
 
 const people = [
     {
@@ -524,7 +525,7 @@ export default function FailedCons({
             render: ({ value, data }) => {
                 return (
                     <div>
-                        {Roles.includes(currentUser.role_id) ? (
+                        {canEditFailedConsignments(currentUser) ? (
                             <button
                                 className={
                                     "rounded text-blue-500 justify-center items-center  "

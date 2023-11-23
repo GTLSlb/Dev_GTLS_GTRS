@@ -7,6 +7,7 @@ import SafetyRepChart from "./safetyComp/safetyRepChart";
 import Select from "react-select";
 import AddSafetyType from "./safetyComp/AddSafety/safetyTypes/AddSafetyType";
 import AddSafetyCauses from "./safetyComp/AddSafety/safetyCauses/AddSafetyCauses";
+import { canViewSafetyType } from "@/permissions";
 export default function SafetyRep({
     accData,
     currentUser,
@@ -288,7 +289,7 @@ export default function SafetyRep({
                             </h1>
                         </div>
                     </div>
-                    {currentUser.role_id == 2 ? (
+                    {canViewSafetyType(currentUser) ? (
                         <ul className="flex space-x-0 mt-5">
                             <li
                                 className={`cursor-pointer ${

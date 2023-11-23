@@ -15,6 +15,7 @@ import KPIModalAddReason from "./KPI/KPImodal";
 import LottieComponent from "@/Components/lottie/LottieComponent";
 import Truck from "../../Components/lottie/Data/Truck.json"
 import Success from "../../Components/lottie/Data/Success.json"
+import { canCalculateKPI, canEditKPI } from "@/permissions";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -552,7 +553,7 @@ export default function KPI({
             render: ({ value, data }) => {
                 return (
                     <div>
-                        {Roles.includes(currentUser.role_id) ? (
+                        {canEditKPI(currentUser) ? (
                             <button
                                 className={
                                     "rounded text-blue-500 justify-center items-center  "
@@ -656,7 +657,7 @@ export default function KPI({
                             <div className="object-right flex gap-x-2 md:ml-auto">
                             {statusMessage && <LottieComponent animationData={Success} loop={false} autoplay={true} height={35} width={35} />}
                             {loading && <LottieComponent animationData={Truck} autoplay={true} height={35} width={35} />}
-                                {Roles.includes(currentUser.role_id) ? (
+                                {canCalculateKPI(currentUser) ? (
                                     <button
                                         className={`inline-flex items-center w-[9.1rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
                                         disabled={

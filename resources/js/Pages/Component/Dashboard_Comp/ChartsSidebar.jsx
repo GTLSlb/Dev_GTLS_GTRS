@@ -31,7 +31,7 @@ const navigation = [
         href: "#",
         icon: ChartPieIcon,
         current: true,
-        role: ["1", "2", "3", "4", "5"],
+        feature:['Dashboard'],
     },
     {
         id: 1,
@@ -39,7 +39,7 @@ const navigation = [
         href: "#",
         icon: TruckIcon,
         current: false,
-        role: ["1", "2", "3", "4", "5"],
+        feature:['ConsignmetsReport'],
     },
     {
         id: 2,
@@ -54,6 +54,7 @@ const navigation = [
                 href: "#",
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
+                feature:['KPIReport'],
             },
             {
                 id: 12,
@@ -61,6 +62,7 @@ const navigation = [
                 href: "#",
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
+                feature:['TransitDays'],
             },
             {
                 id: 13,
@@ -68,6 +70,7 @@ const navigation = [
                 href: "#",
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
+                feature:['Holidays'],
             },
             {
                 id: 14,
@@ -75,9 +78,10 @@ const navigation = [
                 href: "#",
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
+                feature:['KPIReasons'],
             },
         ],
-        role: ["1", "2", "3", "4", "5"],
+        feature:['KPI'],
     },
     {
         id: 4,
@@ -85,7 +89,7 @@ const navigation = [
         href: "#",
         icon: PresentationChartLineIcon,
         current: false,
-        role: ["1", "2", "3", "4", "5"],
+        feature:['Performance'],
     },
     {
         id: 5,
@@ -93,7 +97,7 @@ const navigation = [
         href: "#",
         icon: ExclamationTriangleIcon,
         current: false,
-        role: ["1", "2", "3", "4", "5"],
+        feature:['FailedConsignments'],
     },
 
     {
@@ -102,7 +106,7 @@ const navigation = [
         href: "#",
         icon: ClockIcon,
         current: false,
-        role: ["1", "2", "3", "4", "5"],
+        feature:['RDD'],
     },
     {
         id: 11,
@@ -110,7 +114,7 @@ const navigation = [
         href: "#",
         icon: CameraIcon,
         current: false,
-        role: ["1", "2", "3", "4", "5"],
+        feature:['MissingPOD'],
     },
     {
         id: 10,
@@ -118,7 +122,7 @@ const navigation = [
         href: "#",
         icon: ShieldCheckIcon,
         current: false,
-        role: ["1", "2", "3", "4", "5"],
+        feature:['Safety'],
     },
     {
         id: 6,
@@ -126,7 +130,7 @@ const navigation = [
         href: "#",
         icon: NoSymbolIcon,
         current: false,
-        role: ["1", "3", "4", "5"],
+        feature:['NoDeliveryInfo'],
     },
     {
         id: 7,
@@ -134,7 +138,7 @@ const navigation = [
         href: "#",
         icon: CurrencyDollarIcon,
         current: false,
-        role: ["1", "3", "4", "5"],
+        feature:['AdditionalCharges'],
     },
     {
         id: 8,
@@ -142,7 +146,7 @@ const navigation = [
         href: "#",
         icon: UserIcon,
         current: false,
-        role: ["1", "3", "4", "5"],
+        feature:['DriverLogin'],
     },
 ];
 
@@ -342,12 +346,15 @@ export default function ChartsSidebar({
                         <nav className="mt-5 flex-1 hidden xl:flex-col space-y-1 px-2 w-full md:flex-row md:flex md:mt-0 ">
                             {sidebarElements
                                 .filter((item) =>
-                                    item.role.includes(current_user_role)
+                                {return (
+                                    item.feature.some(feature => current_user_features.includes(feature)) ||
+                                    (item.options &&
+                                        item.options.some(option => option.feature.some(feature => current_user_features.includes(feature))))
+                                );}
                                 )
                                 .map((item) => (
                                     <div key={item.id}>
-                                        {item.options &&
-                                        admins.includes(current_user_role) ? (
+                                        {item.options ? (
                                             <Accordion
                                                 key={item.id}
                                                 transition={{

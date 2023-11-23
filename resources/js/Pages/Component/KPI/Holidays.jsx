@@ -11,6 +11,7 @@ import moment from "moment";
 import AddHoliday from "./Components/AddHoliday";
 import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import { PencilIcon } from "@heroicons/react/20/solid";
+import { canAddHolidays, canEditHolidays } from "@/permissions";
 
 const temp = [
     {
@@ -240,19 +241,23 @@ export default function Holidays({
             defaultWidth: 100,
             render: ({ value, data }) => {
                 return (
-                    <button
-                        className={
-                            "rounded text-blue-500 justify-center items-center  "
-                        }
-                        onClick={() => {
-                            handleEditClick(data);
-                        }}
-                    >
-                        <span className="flex gap-x-1">
-                            <PencilIcon className="h-4" />
-                            Edit
-                        </span>
-                    </button>
+                    <div>
+                        {canEditHolidays(currentUser) ? (
+                            <button
+                                className={
+                                    "rounded text-blue-500 justify-center items-center  "
+                                }
+                                onClick={() => {
+                                    handleEditClick(data);
+                                }}
+                            >
+                                <span className="flex gap-x-1">
+                                    <PencilIcon className="h-4" />
+                                    Edit
+                                </span>
+                            </button>
+                        ) : null}
+                    </div>
                 );
             },
         },
@@ -284,17 +289,21 @@ export default function Holidays({
                             <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
                                 Holidays
                             </h1>
-                            {showAdd ? (
-                                <GtamButton
-                                    name={"Cancel"}
-                                    onClick={ToggleShow}
-                                />
-                            ) : (
-                                <GtamButton
-                                    name={"Add holiday"}
-                                    onClick={ToggleShow}
-                                />
-                            )}
+                            {canAddHolidays(currentUser) ? (
+                                <div>
+                                    {showAdd ? (
+                                        <GtamButton
+                                            name={"Cancel"}
+                                            onClick={ToggleShow}
+                                        />
+                                    ) : (
+                                        <GtamButton
+                                            name={"Add holiday"}
+                                            onClick={ToggleShow}
+                                        />
+                                    )}
+                                </div>
+                            ) : null}
                         </div>
                     </div>
                     {showAdd ? (

@@ -3,13 +3,19 @@ import { PencilIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect } from "react";
 import AddFailedModal from "@/Pages/Component/modals/AddFailedModal";
-import notFound from "../../assets/pictures/NotFound.png"
+import notFound from "../../assets/pictures/NotFound.png";
 import AddRDDReasonModal from "./modals/AddRDDReasonModal";
+import { canAddRDDReasons, canEditRDDReasons } from "@/permissions";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
-export default function AddRDDReason({ rddReasons, setrddReasons , currentUser,url }) {
+export default function AddRDDReason({
+    rddReasons,
+    setrddReasons,
+    currentUser,
+    url,
+}) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [Data, setData] = useState(rddReasons);
     const [reason, setReason] = useState();
@@ -47,9 +53,11 @@ export default function AddRDDReason({ rddReasons, setrddReasons , currentUser,u
     const tableRef = useRef(null);
     function fetchData() {
         axios
-            .get(`${url}api/RddChangeReason`,{headers: {
-                RoleId: currentUser.role_id,
-            }})
+            .get(`${url}api/RddChangeReason`, {
+                headers: {
+                    RoleId: currentUser.role_id,
+                },
+            })
             .then((res) => {
                 const x = JSON.stringify(res.data);
                 const parsedDataPromise = new Promise((resolve, reject) => {
@@ -57,7 +65,7 @@ export default function AddRDDReason({ rddReasons, setrddReasons , currentUser,u
                     resolve(parsedData);
                 });
                 parsedDataPromise.then((parsedData) => {
-                    setData(parsedData)
+                    setData(parsedData);
                     setrddReasons(parsedData);
                 });
             })
@@ -73,15 +81,16 @@ export default function AddRDDReason({ rddReasons, setrddReasons , currentUser,u
     return (
         <div className=" w-full bg-smooth relative">
             <div className="sm:flex sm:items-center">
-                
                 <div className="inline-block sm:absolute left-auto right-0 ">
-                    <button
-                        type="button"
-                        onClick={() => handleEditClick(reason)}
-                        className="whitespace-nowrap inline-flex items-center w-[5.5rem] h-7 rounded-md border border-transparent bg-gray-800 px-3 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                        Add Reason
-                    </button>
+                    {canAddRDDReasons(currentUser) ? (
+                        <button
+                            type="button"
+                            onClick={() => handleEditClick(reason)}
+                            className="whitespace-nowrap inline-flex items-center w-[5.5rem] h-7 rounded-md border border-transparent bg-gray-800 px-3 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        >
+                            Add Reason
+                        </button>
+                    ) : null}
                 </div>
             </div>
 
@@ -162,23 +171,30 @@ export default function AddRDDReason({ rddReasons, setrddReasons , currentUser,u
                                                         )}
                                                     </td>
                                                     <td className="relative whitespace-nowrap py-4 pl-3 sm:pr-4 pr-6 text-left text-sm font-medium">
-                                                        <a
-                                                            href="#"
-                                                            onClick={() =>
-                                                                handleEditClick(
-                                                                    reason
-                                                                )
-                                                            }
-                                                            className=" text-blue-500 hover:text-blue-900 flex"
-                                                        >
-                                                            <PencilIcon className="w-5 h-5" />
-                                                            <span className="ml-2">
-                                                                Edit
-                                                            </span>
-                                                            <span className="sr-only">
-                                                                , {reason.ReasonName}
-                                                            </span>
-                                                        </a>
+                                                        {canEditRDDReasons(
+                                                            currentUser
+                                                        ) ? (
+                                                            <a
+                                                                href="#"
+                                                                onClick={() =>
+                                                                    handleEditClick(
+                                                                        reason
+                                                                    )
+                                                                }
+                                                                className=" text-blue-500 hover:text-blue-900 flex"
+                                                            >
+                                                                <PencilIcon className="w-5 h-5" />
+                                                                <span className="ml-2">
+                                                                    Edit
+                                                                </span>
+                                                                <span className="sr-only">
+                                                                    ,{" "}
+                                                                    {
+                                                                        reason.ReasonName
+                                                                    }
+                                                                </span>
+                                                            </a>
+                                                        ) : null}
                                                     </td>
                                                     {/* </div> */}
                                                 </tr>
@@ -187,12 +203,12 @@ export default function AddRDDReason({ rddReasons, setrddReasons , currentUser,u
                                             <tr>
                                                 <td colSpan="7">
                                                     <div class=" h-64 flex items-center justify-center mt-10">
-                                                    <div class="text-center flex justify-center flex-col">
-                                                           <img
-                                                           src={notFound}
-                                                           alt=""
-                                                           className="w-52 h-auto "
-                                                           />
+                                                        <div class="text-center flex justify-center flex-col">
+                                                            <img
+                                                                src={notFound}
+                                                                alt=""
+                                                                className="w-52 h-auto "
+                                                            />
                                                             <h1 class="text-3xl font-bold text-gray-900">
                                                                 No Data Found
                                                             </h1>
@@ -206,23 +222,23 @@ export default function AddRDDReason({ rddReasons, setrddReasons , currentUser,u
                             </div>
                         ) : (
                             <div class=" h-64 flex items-center justify-center mt-10">
-                           <div class="text-center flex justify-center flex-col">
-                                                           <img
-                                                           src={notFound}
-                                                           alt=""
-                                                           className="w-52 h-auto "
-                                                           />
-                                                            <h1 class="text-3xl font-bold text-gray-900">
-                                                                No Data Found
-                                                            </h1>
-                                                        </div>
-                        </div>
+                                <div class="text-center flex justify-center flex-col">
+                                    <img
+                                        src={notFound}
+                                        alt=""
+                                        className="w-52 h-auto "
+                                    />
+                                    <h1 class="text-3xl font-bold text-gray-900">
+                                        No Data Found
+                                    </h1>
+                                </div>
+                            </div>
                         )}
                     </div>
                 </div>
             </div>
             <AddRDDReasonModal
-            url={url}
+                url={url}
                 isOpen={isModalOpen}
                 reason={reason}
                 setReason={setReason}

@@ -16,6 +16,7 @@ import Button from "@inovua/reactdatagrid-community/packages/Button";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import { PencilIcon } from "@heroicons/react/24/outline";
+import { canEditRDD } from "@/permissions";
 
 export default function RDDreason({
     setActiveIndexGTRS,
@@ -106,7 +107,7 @@ export default function RDDreason({
         // Extract the data for the selected columns
         const data = filteredData.map((person) =>
             selectedColumns.reduce((acc, column) => {
-                console.log(person)
+                console.log(person);
 
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
@@ -221,13 +222,13 @@ export default function RDDreason({
     const [isMessageVisible, setMessageVisible] = useState(false);
     const handleMouseEnter = () => {
         if (filteredData.length === 0) {
-          setHoverMessage("No Data Found");
-          setMessageVisible(true);
-          setTimeout(() => {
-            setMessageVisible(false);
-          }, 1000);
+            setHoverMessage("No Data Found");
+            setMessageVisible(true);
+            setTimeout(() => {
+                setMessageVisible(false);
+            }, 1000);
         }
-      };
+    };
     const [selected, setSelected] = useState([]);
     const groups = [
         {
@@ -638,19 +639,23 @@ export default function RDDreason({
             defaultWidth: 100,
             render: ({ value, data }) => {
                 return (
-                    <button
-                        className={
-                            "rounded text-blue-500 justify-center items-center  "
-                        }
-                        onClick={() => {
-                            handleEditClick(data);
-                        }}
-                    >
-                        <span className="flex gap-x-1">
-                            <PencilIcon className="h-4" />
-                            Edit
-                        </span>
-                    </button>
+                    <div>
+                        {canEditRDD(currentUser) ? (
+                            <button
+                                className={
+                                    "rounded text-blue-500 justify-center items-center  "
+                                }
+                                onClick={() => {
+                                    handleEditClick(data);
+                                }}
+                            >
+                                <span className="flex gap-x-1">
+                                    <PencilIcon className="h-4" />
+                                    Edit
+                                </span>
+                            </button>
+                        ) : null}
+                    </div>
                 );
             },
         },
@@ -665,7 +670,7 @@ export default function RDDreason({
             setNewColumns(newArray);
         }
     }, []);
-    
+
     return (
         <div className=" w-full bg-smooth ">
             {!newColumns ? (
@@ -698,9 +703,7 @@ export default function RDDreason({
                                                     ? "bg-gray-300 cursor-not-allowed"
                                                     : "bg-gray-800"
                                             } px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
-                                            disabled={
-                                                filteredData.length === 0
-                                            }
+                                            disabled={filteredData.length === 0}
                                         >
                                             Export
                                             <ChevronDownIcon

@@ -9,6 +9,7 @@ import { Fragment } from "react";
 import { Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { useEffect } from "react";
+import { canEditKpiReasons } from "@/permissions";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -68,7 +69,7 @@ export default function SmallTableKPI({
             const updatedObjects = [...data];
             updatedObjects[editIndex + currentPage * PER_PAGE] = editedObject;
             setData(updatedObjects);
-            console.log(editedObject)
+            console.log(editedObject);
             axios
                 .post(addurl, editedObject, {
                     headers: {
@@ -644,27 +645,31 @@ export default function SmallTableKPI({
                                                                                         </a>
                                                                                     ) : (
                                                                                         <div>
-                                                                                            <a
-                                                                                                id={`edit${index}`}
-                                                                                                href="#"
-                                                                                                onClick={() => {
-                                                                                                    setShowAddRow(
-                                                                                                        false
-                                                                                                    );
-                                                                                                    setEditIndex(
-                                                                                                        index
-                                                                                                    );
-                                                                                                    setEditObject(
-                                                                                                        object
-                                                                                                    );
-                                                                                                }}
-                                                                                                className="text-blue-500 hover:text-blue-900 flex gap-x-1"
-                                                                                            >
-                                                                                                <PencilIcon className="text-blue-400 w-5 h-5"/>
-                                                                                                <span>
-                                                                                                    Edit
-                                                                                                </span>
-                                                                                            </a>
+                                                                                            {canEditKpiReasons(
+                                                                                                currentUser
+                                                                                            ) ? (
+                                                                                                <a
+                                                                                                    id={`edit${index}`}
+                                                                                                    href="#"
+                                                                                                    onClick={() => {
+                                                                                                        setShowAddRow(
+                                                                                                            false
+                                                                                                        );
+                                                                                                        setEditIndex(
+                                                                                                            index
+                                                                                                        );
+                                                                                                        setEditObject(
+                                                                                                            object
+                                                                                                        );
+                                                                                                    }}
+                                                                                                    className="text-blue-500 hover:text-blue-900 flex gap-x-1"
+                                                                                                >
+                                                                                                    <PencilIcon className="text-blue-400 w-5 h-5" />
+                                                                                                    <span>
+                                                                                                        Edit
+                                                                                                    </span>
+                                                                                                </a>
+                                                                                            ) : null}
                                                                                         </div>
                                                                                     )}
                                                                                 </div>
