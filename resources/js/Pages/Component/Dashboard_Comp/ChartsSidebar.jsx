@@ -31,7 +31,7 @@ const navigation = [
         href: "#",
         icon: ChartPieIcon,
         current: true,
-        feature:['Dashboard'],
+        feature: ["Dashboard"],
     },
     {
         id: 1,
@@ -39,7 +39,7 @@ const navigation = [
         href: "#",
         icon: TruckIcon,
         current: false,
-        feature:['ConsignmetsReport'],
+        feature: ["ConsignmetsReport"],
     },
     {
         id: 2,
@@ -54,7 +54,7 @@ const navigation = [
                 href: "#",
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
-                feature:['KPIReport'],
+                feature: ["KPIReport"],
             },
             {
                 id: 12,
@@ -62,7 +62,7 @@ const navigation = [
                 href: "#",
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
-                feature:['TransitDays'],
+                feature: ["TransitDays"],
             },
             {
                 id: 13,
@@ -70,7 +70,7 @@ const navigation = [
                 href: "#",
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
-                feature:['Holidays'],
+                feature: ["Holidays"],
             },
             {
                 id: 14,
@@ -78,10 +78,10 @@ const navigation = [
                 href: "#",
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
-                feature:['KPIReasons'],
+                feature: ["KPIReasons"],
             },
         ],
-        feature:['KPI'],
+        feature: ["KPI"],
     },
     {
         id: 4,
@@ -89,7 +89,7 @@ const navigation = [
         href: "#",
         icon: PresentationChartLineIcon,
         current: false,
-        feature:['Performance'],
+        feature: ["Performance"],
     },
     {
         id: 5,
@@ -97,7 +97,7 @@ const navigation = [
         href: "#",
         icon: ExclamationTriangleIcon,
         current: false,
-        feature:['FailedConsignments'],
+        feature: ["FailedConsignments"],
     },
 
     {
@@ -106,7 +106,7 @@ const navigation = [
         href: "#",
         icon: ClockIcon,
         current: false,
-        feature:['RDD'],
+        feature: ["RDD"],
     },
     {
         id: 11,
@@ -114,7 +114,7 @@ const navigation = [
         href: "#",
         icon: CameraIcon,
         current: false,
-        feature:['MissingPOD'],
+        feature: ["MissingPOD"],
     },
     {
         id: 10,
@@ -122,7 +122,7 @@ const navigation = [
         href: "#",
         icon: ShieldCheckIcon,
         current: false,
-        feature:['Safety'],
+        feature: ["Safety"],
     },
     {
         id: 6,
@@ -130,7 +130,7 @@ const navigation = [
         href: "#",
         icon: NoSymbolIcon,
         current: false,
-        feature:['NoDeliveryInfo'],
+        feature: ["NoDeliveryInfo"],
     },
     {
         id: 7,
@@ -138,7 +138,7 @@ const navigation = [
         href: "#",
         icon: CurrencyDollarIcon,
         current: false,
-        feature:['AdditionalCharges'],
+        feature: ["AdditionalCharges"],
     },
     {
         id: 8,
@@ -146,7 +146,7 @@ const navigation = [
         href: "#",
         icon: UserIcon,
         current: false,
-        feature:['DriverLogin'],
+        feature: ["DriverLogin"],
     },
 ];
 
@@ -213,7 +213,6 @@ export default function ChartsSidebar({
     const current_user_role = currentUser.role_id;
     const [sidebarElements, setSidebarElements] = useState(navigation);
     const handleClick = (index) => {
-       
         setActiveIndexGTRS(index);
         const updatedElements = sidebarElements.map((element) => {
             if (element.id === index || index == 12 || index == 13) {
@@ -230,18 +229,32 @@ export default function ChartsSidebar({
                         }),
                     };
                 } else {
-                    if(element.id === index){
-                    return { ...element, current: true };}
-                    else{
-                        return { ...element, current: false,...(element.options? element.options.map((option) => {
-                            return { ...option, current: false };
-                        }) :{})};
+                    if (element.id === index) {
+                        return { ...element, current: true };
+                    } else {
+                        return {
+                            ...element,
+                            current: false,
+                            ...(element.options
+                                ? element.options.map((option) => {
+                                      return { ...option, current: false };
+                                  })
+                                : {}),
+                        };
                     }
                 }
             } else {
-                return { ...element, current: false,...(element.options? {options:element.options.map((option) => {
-                    return { ...option, current: false };
-                })} :{})};
+                return {
+                    ...element,
+                    current: false,
+                    ...(element.options
+                        ? {
+                              options: element.options.map((option) => {
+                                  return { ...option, current: false };
+                              }),
+                          }
+                        : {}),
+                };
             }
         });
         setSidebarElements(updatedElements);
@@ -345,13 +358,39 @@ export default function ChartsSidebar({
                     <div className=" pt-2 pb-4 w-full">
                         <nav className="mt-5 flex-1 hidden xl:flex-col space-y-1 px-2 w-full md:flex-row md:flex md:mt-0 ">
                             {sidebarElements
-                                .filter((item) =>
-                                {return (
-                                    item.feature.some(feature => current_user_features.includes(feature)) ||
-                                    (item.options &&
-                                        item.options.some(option => option.feature.some(feature => current_user_features.includes(feature))))
-                                );}
-                                )
+                                .filter((item) => {
+                                    // Check if the item's features are present in the user's features
+                                    const itemFeaturesMatch =
+                                        item.Pages &&
+                                        item.Pages.some((page) => {
+                                            const pageFeatures =
+                                                page.Features || [];
+                                            return pageFeatures.some(
+                                                (feature) =>
+                                                    current_user_features.includes(
+                                                        feature.FeatureName
+                                                    )
+                                            );
+                                        });
+
+                                    // Check if any of the options' features are present in the user's features
+                                    const optionFeaturesMatch =
+                                        item.options &&
+                                        item.options.some((option) => {
+                                            const optionFeatures =
+                                                option.Features || [];
+                                            return optionFeatures.some(
+                                                (feature) =>
+                                                    current_user_features.includes(
+                                                        feature.FeatureName
+                                                    )
+                                            );
+                                        });
+
+                                    return (
+                                        itemFeaturesMatch || optionFeaturesMatch
+                                    );
+                                })
                                 .map((item) => (
                                     <div key={item.id}>
                                         {item.options ? (
@@ -424,7 +463,9 @@ export default function ChartsSidebar({
                                                                             option
                                                                         ) => (
                                                                             <button
-                                                                                id={option.name}
+                                                                                id={
+                                                                                    option.name
+                                                                                }
                                                                                 key={
                                                                                     option.id
                                                                                 }
@@ -434,8 +475,11 @@ export default function ChartsSidebar({
                                                                                     )
                                                                                 }
                                                                                 className={classNames(
-                                                                                    option.current?"bg-gray-300":"",
-                                                                                "p-2 font-semibold hover:bg-gray-300 rounded text-left text-dark text-xs")}
+                                                                                    option.current
+                                                                                        ? "bg-gray-300"
+                                                                                        : "",
+                                                                                    "p-2 font-semibold hover:bg-gray-300 rounded text-left text-dark text-xs"
+                                                                                )}
                                                                             >
                                                                                 {
                                                                                     option.name
