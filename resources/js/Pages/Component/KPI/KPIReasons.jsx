@@ -1,3 +1,4 @@
+import { canAddKpiReasons } from "@/permissions";
 import React from "react";
 import { useEffect, useState } from "react";
 import GtamButton from "../GTAM/components/Buttons/GtamButton";
@@ -96,6 +97,7 @@ export default function KPIReasons({
                             />
                         </div>
                     </div>
+                    {canAddKpiReasons(currentUser)?
                     <div className="flex flex-col sm:flex-row gap-x-5 gap-y-3">
                         {editIndex != null ? (
                             <div className="col-span-2">
@@ -118,7 +120,7 @@ export default function KPIReasons({
                                 />
                             </div>
                         ) : null}
-                    </div>
+                    </div>:null}
                 </div>
                 <SmallTableKPI
                     fromModel={fromModel}

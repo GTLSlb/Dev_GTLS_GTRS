@@ -20,6 +20,7 @@ import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import TableStructure from "@/Components/TableStructure";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
+import { canAddSafetyReport, canEditSafetyReport } from "@/permissions";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -29,6 +30,8 @@ export default function SafetyRepTable({
     currentPageRep,
     safetyData,
     url,
+    filterValue,
+    setFilterValue,
     currentUser,
     setFilteredData,
     setDataEdited,
@@ -313,66 +316,7 @@ export default function SafetyRepTable({
         return newData;
     };
     const stateOptions = createNewLabelObjects(safetyData, "State");
-    const filterValue = [
-        {
-            name: "SafetyType",
-            operator: "eq",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ConsNo",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "CAUSE",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "State",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "Explanation",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "Resolution",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "Reference",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "OccuredAt",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            value: {
-                start: minDate,
-                end: maxDate,
-            },
-        },
-        {
-            name: "AddedBy",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-    ];
+
     const safetyTypeOptions = safetyTypes.map((reason) => ({
         id: reason.SafetyTypeId,
         label: reason.SafetyTypeName,
@@ -515,30 +459,34 @@ export default function SafetyRepTable({
             defaultWidth: 100,
             render: ({ value, data }) => {
                 return (
-                    <button
-                        className={
-                            "rounded text-blue-500 justify-center items-center  "
-                        }
-                        onClick={() => {
-                            handleEditClick(
-                                data.ReportId,
-                                data.SafetyType,
-                                data.CAUSE,
-                                data.State,
-                                data.Explanation,
-                                data.Resolution,
-                                data.Reference,
-                                data.OccuredAt,
-                                data.ConsNo,
-                                data.AddedBy
-                            );
-                        }}
-                    >
-                        <span className="flex gap-x-1">
-                            <PencilIcon className="h-4" />
-                            Edit
-                        </span>
-                    </button>
+                    <div>
+                        {canEditSafetyReport(currentUser) ? (
+                            <button
+                                className={
+                                    "rounded text-blue-500 justify-center items-center  "
+                                }
+                                onClick={() => {
+                                    handleEditClick(
+                                        data.ReportId,
+                                        data.SafetyType,
+                                        data.CAUSE,
+                                        data.State,
+                                        data.Explanation,
+                                        data.Resolution,
+                                        data.Reference,
+                                        data.OccuredAt,
+                                        data.ConsNo,
+                                        data.AddedBy
+                                    );
+                                }}
+                            >
+                                <span className="flex gap-x-1">
+                                    <PencilIcon className="h-4" />
+                                    Edit
+                                </span>
+                            </button>
+                        ) : null}
+                    </div>
                 );
             },
         },
@@ -577,7 +525,7 @@ export default function SafetyRepTable({
                         <div className="mt-3 ">
                             <div className=" object-right flex md:justify-end gap-x-5 flex-item ">
                                 <div className="h-full">
-                                    {Roles.includes(currentUser.role_id) ? (
+                                    {canAddSafetyReport(currentUser) ? (
                                         <button
                                             type="button"
                                             onClick={handleAddClick}
@@ -728,6 +676,7 @@ export default function SafetyRepTable({
                             id={"ReportId"}
                             setSelected={setSelected}
                             selected={selected}
+                            setFilterValueElements={setFilterValue}
                             tableDataElements={safetyData}
                             filterValueElements={filterValue}
                             columnsElements={newColumns}

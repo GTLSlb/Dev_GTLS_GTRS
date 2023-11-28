@@ -16,6 +16,7 @@ import Button from "@inovua/reactdatagrid-community/packages/Button";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import { PencilIcon } from "@heroicons/react/24/outline";
+import { canEditRDD } from "@/permissions";
 
 export default function RDDreason({
     setActiveIndexGTRS,
@@ -23,6 +24,8 @@ export default function RDDreason({
     rddData,
     url,
     setrddData,
+    filterValue,
+    setFilterValue,
     setLastIndex,
     currentUser,
     rddReasons,
@@ -104,7 +107,7 @@ export default function RDDreason({
         // Extract the data for the selected columns
         const data = filteredData.map((person) =>
             selectedColumns.reduce((acc, column) => {
-                console.log(person)
+                console.log(person);
 
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
@@ -219,13 +222,13 @@ export default function RDDreason({
     const [isMessageVisible, setMessageVisible] = useState(false);
     const handleMouseEnter = () => {
         if (filteredData.length === 0) {
-          setHoverMessage("No Data Found");
-          setMessageVisible(true);
-          setTimeout(() => {
-            setMessageVisible(false);
-          }, 1000);
+            setHoverMessage("No Data Found");
+            setMessageVisible(true);
+            setTimeout(() => {
+                setMessageVisible(false);
+            }, 1000);
         }
-      };
+    };
     const [selected, setSelected] = useState([]);
     const groups = [
         {
@@ -540,6 +543,7 @@ export default function RDDreason({
             header: "New Rdd",
             headerAlign: "center",
             textAlign: "center",
+            headerAlign: "center",
             defaultWidth: 170,
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
@@ -635,19 +639,23 @@ export default function RDDreason({
             defaultWidth: 100,
             render: ({ value, data }) => {
                 return (
-                    <button
-                        className={
-                            "rounded text-blue-500 justify-center items-center  "
-                        }
-                        onClick={() => {
-                            handleEditClick(data);
-                        }}
-                    >
-                        <span className="flex gap-x-1">
-                            <PencilIcon className="h-4" />
-                            Edit
-                        </span>
-                    </button>
+                    <div>
+                        {canEditRDD(currentUser) ? (
+                            <button
+                                className={
+                                    "rounded text-blue-500 justify-center items-center  "
+                                }
+                                onClick={() => {
+                                    handleEditClick(data);
+                                }}
+                            >
+                                <span className="flex gap-x-1">
+                                    <PencilIcon className="h-4" />
+                                    Edit
+                                </span>
+                            </button>
+                        ) : null}
+                    </div>
                 );
             },
         },
@@ -662,127 +670,7 @@ export default function RDDreason({
             setNewColumns(newArray);
         }
     }, []);
-    const filterValue = [
-        {
-            name: "ConsignmentNo",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "DebtorName",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "AccountNumber",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        { name: "SenderName", operator: "contains", type: "string", value: "" },
-        {
-            name: "SenderAddress",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "SenderReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "SenderSuburb",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "SenderState",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "ReceiverName",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "ReceiverReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "ReceiverAddress",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "ReceiverSuburb",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "ReceiverState",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "DespatchDate",
-            operator: "inrange",
-            type: "date",
-            value: {
-                start: minDespatchDate,
-                end: maxDespatchDate,
-            },
-        },
-        {
-            name: "OldRdd",
-            operator: "inrange",
-            type: "date",
-            value: "",
-        },
-        {
-            name: "NewRdd",
-            operator: "inrange",
-            type: "date",
-            value: "",
-        },
-        {
-            name: "Reason",
-            operator: "eq",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ReasonDesc",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "ChangeAt",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            value: "",
-        },
-        {
-            name: "ChangedBy",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-    ];
+
     return (
         <div className=" w-full bg-smooth ">
             {!newColumns ? (
@@ -815,9 +703,7 @@ export default function RDDreason({
                                                     ? "bg-gray-300 cursor-not-allowed"
                                                     : "bg-gray-800"
                                             } px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
-                                            disabled={
-                                                filteredData.length === 0
-                                            }
+                                            disabled={filteredData.length === 0}
                                         >
                                             Export
                                             <ChevronDownIcon
@@ -1033,6 +919,7 @@ export default function RDDreason({
                         selected={selected}
                         tableDataElements={filteredData}
                         filterValueElements={filterValue}
+                        setFilterValueElements={setFilterValue}
                         columnsElements={newColumns}
                     />
                 </div>

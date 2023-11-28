@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import FailedCons from "./FailedCons";
 import AddFailedReason from "./AddFailedReason";
+import { canViewFailedReasons } from "@/permissions";
 
 export default function FailedConsMain({
     url,
@@ -9,6 +10,8 @@ export default function FailedConsMain({
     setActiveIndexGTRS,
     setLastIndex,
     setactiveCon,
+    filterValue,
+    setFilterValue,
     IDfilter,
     currentUser,
     accData,
@@ -77,6 +80,8 @@ export default function FailedConsMain({
             setactiveCon={setactiveCon}
             setLastIndex={setLastIndex}
             IDfilter={IDfilter}
+            filterValue={filterValue}
+            setFilterValue={setFilterValue}
             EDate={EDate}
             setEDate={setEDate}
             SDate={SDate}
@@ -127,7 +132,7 @@ export default function FailedConsMain({
                             </h1>
                         </div>
                     </div>
-                    {Roles.includes(currentUser.role_id) ? (
+                    {canViewFailedReasons(currentUser) ? (
                         <ul className="flex space-x-0 mt-5">
                             {components.map((component, index) => (
                                 <li

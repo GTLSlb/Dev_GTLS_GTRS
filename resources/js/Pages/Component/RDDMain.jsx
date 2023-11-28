@@ -2,12 +2,15 @@ import React, { useState, useEffect } from "react";
 import AddRDDReason from "./AddRDDReason";
 import RDDreason from "./RDD";
 import "../../../css/radio.css";
+import { canViewRDDReasons } from "@/permissions";
 
 export default function RDDMain({
     setActiveIndexGTRS,
     setactiveCon,
     debtorsData,
     rddData,
+    filterValue,
+    setFilterValue,
     setrddData,
     setLastIndex,
     accData,
@@ -106,6 +109,8 @@ export default function RDDMain({
             url={url}
             accData={accData}
             rddData={rddData}
+            filterValue={filterValue}
+            setFilterValue={setFilterValue}
             setrddData={setrddData}
             debtorsData={debtorsData}
             currentUser={currentUser}
@@ -162,7 +167,7 @@ export default function RDDMain({
                     </h1>
                 </div>
             </div>
-                    {Roles.includes(currentUser.role_id) ? (
+                    {canViewRDDReasons(currentUser) ? (
                         <ul className="flex space-x-0 mt-5">
                             {components.map((component, index) => (
                                 <li

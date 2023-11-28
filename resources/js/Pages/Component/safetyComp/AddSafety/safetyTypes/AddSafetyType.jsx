@@ -3,8 +3,9 @@ import { PencilIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect } from "react";
 import AddFailedModal from "../../../modals/AddFailedModal";
-import notFound from "../../../../../assets/pictures/NotFound.png"
+import notFound from "../../../../../assets/pictures/NotFound.png";
 import AddSafetyTypeModal from "./AddSafetyTypeModel";
+import { canAddSafetyType, canEditSafetyType } from "@/permissions";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -58,13 +59,15 @@ export default function AddSafetyType({
                     </h1>
                 </div>
                 <div className="inline-block  left-auto ">
-                    <button
-                        type="button"
-                        onClick={() => handleEditClick(type)}
-                        className="whitespace-nowrap w-[5.5rem] h-[36px] rounded-md border border-transparent bg-gray-800 px-3 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                        Add Type
-                    </button>
+                    {canAddSafetyType(currentUser) ? (
+                        <button
+                            type="button"
+                            onClick={() => handleEditClick(type)}
+                            className="whitespace-nowrap w-[5.5rem] h-[36px] rounded-md border border-transparent bg-gray-800 px-3 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        >
+                            Add Type
+                        </button>
+                    ) : null}
                 </div>
             </div>
             <div className="mt-8 flow-root  bg-white ">
@@ -130,26 +133,30 @@ export default function AddSafetyType({
                                                         )}
                                                     </td>
                                                     <td className="relative whitespace-nowrap py-4 pl-3 sm:pr-4 pr-6 text-left text-sm font-medium">
-                                                        <a
-                                                            href="#"
-                                                            onClick={() =>
-                                                                handleEditClick(
-                                                                    type
-                                                                )
-                                                            }
-                                                            className=" text-blue-500 hover:text-blue-900 flex"
-                                                        >
-                                                            <PencilIcon className="w-5 h-5" />
-                                                            <span className="ml-2">
-                                                                Edit
-                                                            </span>
-                                                            <span className="sr-only">
-                                                                ,{" "}
-                                                                {
-                                                                    type.SafetyTypeName
+                                                        {canEditSafetyType(
+                                                            currentUser
+                                                        ) ? (
+                                                            <a
+                                                                href="#"
+                                                                onClick={() =>
+                                                                    handleEditClick(
+                                                                        type
+                                                                    )
                                                                 }
-                                                            </span>
-                                                        </a>
+                                                                className=" text-blue-500 hover:text-blue-900 flex"
+                                                            >
+                                                                <PencilIcon className="w-5 h-5" />
+                                                                <span className="ml-2">
+                                                                    Edit
+                                                                </span>
+                                                                <span className="sr-only">
+                                                                    ,{" "}
+                                                                    {
+                                                                        type.SafetyTypeName
+                                                                    }
+                                                                </span>
+                                                            </a>
+                                                        ) : null}
                                                     </td>
                                                     {/* </div> */}
                                                 </tr>
@@ -158,12 +165,12 @@ export default function AddSafetyType({
                                             <tr>
                                                 <td colSpan="7">
                                                     <div class=" h-64 flex items-center justify-center mt-10">
-                                                    <div class="text-center flex justify-center flex-col">
-                                                           <img
-                                                           src={notFound}
-                                                           alt=""
-                                                           className="w-52 h-auto "
-                                                           />
+                                                        <div class="text-center flex justify-center flex-col">
+                                                            <img
+                                                                src={notFound}
+                                                                alt=""
+                                                                className="w-52 h-auto "
+                                                            />
                                                             <h1 class="text-3xl font-bold text-gray-900">
                                                                 No Data Found
                                                             </h1>
@@ -177,24 +184,24 @@ export default function AddSafetyType({
                             </div>
                         ) : (
                             <div class=" h-64 flex items-center justify-center mt-10">
-                                                        <div class="text-center flex justify-center flex-col">
-                                                           <img
-                                                           src={notFound}
-                                                           alt=""
-                                                           className="w-52 h-auto "
-                                                           />
-                                                            <h1 class="text-3xl font-bold text-gray-900">
-                                                                No Data Found
-                                                            </h1>
-                                                        </div>
-                                                    </div>
+                                <div class="text-center flex justify-center flex-col">
+                                    <img
+                                        src={notFound}
+                                        alt=""
+                                        className="w-52 h-auto "
+                                    />
+                                    <h1 class="text-3xl font-bold text-gray-900">
+                                        No Data Found
+                                    </h1>
+                                </div>
+                            </div>
                         )}
                     </div>
                 </div>
             </div>
             <AddSafetyTypeModal
-            url={url}
-            currentUser={currentUser}
+                url={url}
+                currentUser={currentUser}
                 ariaHideApp={false}
                 isOpen={isModalOpen}
                 type={type}

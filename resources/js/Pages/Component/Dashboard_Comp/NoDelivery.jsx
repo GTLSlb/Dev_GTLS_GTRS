@@ -45,6 +45,8 @@ export default function NoDelivery({
     NoDelData,
     setNoDelData,
     setActiveIndexGTRS,
+    filterValue,
+    setFilterValue,
     setLastIndex,
     setactiveCon,
     currentUser,
@@ -281,94 +283,7 @@ export default function NoDelivery({
     const minDaterdd = getMinMaxValue(NoDelData, "DeliveryRequiredDateTime", 1);
     const maxDaterdd = getMinMaxValue(NoDelData, "DeliveryRequiredDateTime", 2);
 
-    const filterValue = [
-        {
-            name: "ConsignmentNo",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "DespatchDateTime",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            value: {
-                start: minDate,
-                end: maxDate,
-            },
-        },
-        {
-            name: "SenderName",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "SenderReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-
-        {
-            name: "Send_Suburb",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-
-        {
-            name: "Send_State",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "AdminStatusCodes_Description",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "ReceiverName",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "ReceiverReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "Del_Suburb",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-
-        {
-            name: "Del_State",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "DeliveryRequiredDateTime",
-            operator: "eq",
-            type: "date",
-            emptyValue: "",
-            value: "",
-        },
-        {
-            name: "Description",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-    ];
+    
     const groups = [
         {
             name: "senderInfo",
@@ -820,6 +735,7 @@ export default function NoDelivery({
                     <TableStructure
                         id={"ConsignmentID"}
                         groupsElements={groups}
+                        setFilterValueElements={setFilterValue}
                         setSelected={setSelected}
                         selected={selected}
                         tableDataElements={NoDelData}

@@ -20,9 +20,14 @@ export default function GtrsCons({
     setActiveIndexGTRS,
     setactiveCon,
     consData,
+    minDate,
+    maxDate,
+    filterValue,
+    setFilterValue,
     setLastIndex,
     accData,
 }) {
+    
     window.moment = moment;
     const [filteredData, setFilteredData] = useState(consData);
     const handleClick = (coindex) => {
@@ -160,149 +165,120 @@ export default function GtrsCons({
     const receiverZoneOptions = createNewLabelObjects(consData, "ReceiverZone");
     const serviceOptions = createNewLabelObjects(consData, "Service");
     const statusOptions = createNewLabelObjects(consData, "Status");
-    function getMinMaxValue(data, fieldName, identifier) {
-        // Check for null safety
-        if (!data || !Array.isArray(data) || data.length === 0) {
-            return null;
-        }
-
-        // Sort the data based on the fieldName
-        const sortedData = [...data].sort((a, b) => {
-            if (a[fieldName] < b[fieldName]) return -1;
-            if (a[fieldName] > b[fieldName]) return 1;
-            return 0;
-        });
-
-        // Return the minimum or maximum value based on the identifier
-        let resultDate;
-        if (identifier === 1) {
-            resultDate = new Date(sortedData[0][fieldName]);
-        } else if (identifier === 2) {
-            resultDate = new Date(sortedData[sortedData.length - 1][fieldName]);
-        } else {
-            return null;
-        }
-
-        // Convert the resultDate to the desired format "01-10-2023"
-        const day = String(resultDate.getDate()).padStart(2, "0");
-        const month = String(resultDate.getMonth() + 1).padStart(2, "0"); // +1 because months are 0-indexed
-        const year = resultDate.getFullYear();
-
-        return `${day}-${month}-${year}`;
-    }
+    
     // Usage example remains the same
-    const minDate = getMinMaxValue(consData, "DespatchDate", 1);
-    const maxDate = getMinMaxValue(consData, "DespatchDate", 2);
+    
 
-    const filterValue = [
-        {
-            name: "ConsignmentNo",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "AccountName",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "Service",
-            operator: "inlist",
-            type: "select",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "DespatchDate",
-            operator: "inrange",
-            type: "date",
-            value: {
-                start: minDate,
-                end: maxDate,
-            },
-        },
-        {
-            name: "Status",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "SenderName",
-            operator: "contains",
-            type: "string",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "SenderSuburb",
-            operator: "contains",
-            type: "string",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "SenderState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "SenderReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "SenderZone",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "ReceiverName",
-            operator: "contains",
-            type: "string",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "ReceiverReference",
-            operator: "contains",
-            type: "string",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "ReceiverState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "ReceiverSuburb",
-            operator: "contains",
-            type: "string",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "ReceiverZone",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-    ];
+    // const filterValue =
+    //  [
+    //     {
+    //         name: "ConsignmentNo",
+    //         operator: "contains",
+    //         type: "string",
+    //         value: "",
+    //         emptyValue: "",
+    //     },
+    //     {
+    //         name: "AccountName",
+    //         operator: "contains",
+    //         type: "string",
+    //         value: "",
+    //         emptyValue: "",
+    //     },
+    //     {
+    //         name: "Service",
+    //         operator: "inlist",
+    //         type: "select",
+    //         value: "",
+    //         emptyValue: "",
+    //     },
+    //     {
+    //         name: "DespatchDate",
+    //         operator: "inrange",
+    //         type: "date",
+    //         value: {
+    //             start: minDate,
+    //             end: maxDate,
+    //         },
+    //     },
+    //     {
+    //         name: "Status",
+    //         operator: "inlist",
+    //         type: "select",
+    //         value: null,
+    //         emptyValue: "",
+    //     },
+    //     {
+    //         name: "SenderName",
+    //         operator: "contains",
+    //         type: "string",
+    //         value: null,
+    //         emptyValue: "",
+    //     },
+    //     {
+    //         name: "SenderSuburb",
+    //         operator: "contains",
+    //         type: "string",
+    //         value: null,
+    //         emptyValue: "",
+    //     },
+    //     {
+    //         name: "SenderState",
+    //         operator: "inlist",
+    //         type: "select",
+    //         value: null,
+    //         emptyValue: "",
+    //     },
+    //     {
+    //         name: "SenderReference",
+    //         operator: "contains",
+    //         type: "string",
+    //         value: "",
+    //         emptyValue: "",
+    //     },
+    //     {
+    //         name: "SenderZone",
+    //         operator: "inlist",
+    //         type: "select",
+    //         value: null,
+    //         emptyValue: "",
+    //     },
+    //     {
+    //         name: "ReceiverName",
+    //         operator: "contains",
+    //         type: "string",
+    //         value: null,
+    //         emptyValue: "",
+    //     },
+    //     {
+    //         name: "ReceiverReference",
+    //         operator: "contains",
+    //         type: "string",
+    //         value: null,
+    //         emptyValue: "",
+    //     },
+    //     {
+    //         name: "ReceiverState",
+    //         operator: "inlist",
+    //         type: "select",
+    //         value: null,
+    //         emptyValue: "",
+    //     },
+    //     {
+    //         name: "ReceiverSuburb",
+    //         operator: "contains",
+    //         type: "string",
+    //         value: null,
+    //         emptyValue: "",
+    //     },
+    //     {
+    //         name: "ReceiverZone",
+    //         operator: "inlist",
+    //         type: "select",
+    //         value: null,
+    //         emptyValue: "",
+    //     },
+    // ];
     const groups = [
         {
             name: "senderDetails",
@@ -737,6 +713,7 @@ export default function GtrsCons({
                 selected={selected}
                 tableDataElements={filteredData}
                 filterValueElements={filterValue}
+                setFilterValueElements={setFilterValue}
                 groupsElements={groups}
                 columnsElements={columns}
             />

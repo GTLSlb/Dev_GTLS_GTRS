@@ -42,6 +42,8 @@ export default function AdditionalCharges({
     setAdditionalData,
     setActiveIndexGTRS,
     setLastIndex,
+    filterValue,
+    setFilterValue,
     setactiveCon,
     currentUser,
     url,
@@ -208,86 +210,7 @@ export default function AdditionalCharges({
     // Usage example remains the same
     const minDate = getMinMaxValue(AdditionalData, "DespatchDateTime", 1);
     const maxDate = getMinMaxValue(AdditionalData, "DespatchDateTime", 2);
-    const filterValue = [
-        {
-            name: "ConsignmentNo",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "SenderReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "ReceiverReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "Quantity",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-        {
-            name: "TotalCharge",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-        {
-            name: "CodeRef",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-
-        {
-            name: "DescriptionRef",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "FuelLevyAmountRef",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-        {
-            name: "DespatchDateTime",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            value: {
-                start: minDate,
-                end: maxDate,
-            },
-        },
-        {
-            name: "Name",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "Description",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-
-        {
-            name: "Code",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-    ];
+    
     const createNewLabelObjects = (data, fieldName) => {
         let id = 1; // Initialize the ID
         const uniqueLabels = new Set(); // To keep track of unique labels
@@ -646,6 +569,7 @@ export default function AdditionalCharges({
                         selected={selected}
                         tableDataElements={AdditionalData}
                         filterValueElements={filterValue}
+                        setFilterValueElements={setFilterValue}
                         columnsElements={columns}
                     />
                 </div>

@@ -14,6 +14,7 @@ import { InertiaApp } from "@inertiajs/inertia-react";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import "../../../css/scroll.css";
 import axios from "axios";
+import CryptoJS from 'crypto-js';
 const msalConfig = {
     auth: {
         clientId: "05f70999-6ca7-4ee8-ac70-f2d136c50288",
@@ -30,8 +31,10 @@ const pca = new PublicClientApplication(msalConfig);
 export default function Login({ status, canResetPassword }) {
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [recaptchaValue, setRecaptchaValue] = useState(false);
     const [passwordType, setPasswordType] = useState("password");
+    const [errorMessage, setErrorMessage] = useState("");
     const togglePassword = () => {
         if (passwordType === "password") {
             setPasswordType("text");
@@ -83,10 +86,57 @@ export default function Login({ status, canResetPassword }) {
         );
     };
 
+    const handleOnChangePassword = (event) => {
+        
+        setData(
+            event.target.name,
+            event.target.type === "checkbox"
+                ? event.target.checked
+                : event.target.value
+        );
+    setPassword(event.target.value);
+    }
+
     const submit = (e) => {
         e.preventDefault();
-
-        post(route("login"));
+        setErrorMessage("")
+        const hashedPassword = CryptoJS.SHA256(password).toString();
+        axios
+            .get(`https://gtlslebs06-vm.gtls.com.au:5432/api/Login`, {
+                headers: {
+                    Email: email,
+                    Password: hashedPassword,
+                },
+            })
+            .then((res) => {
+                const x = JSON.stringify(res.data);
+                const parsedDataPromise = new Promise((resolve, reject) => {
+                    const parsedData = JSON.parse(x);
+                    resolve(parsedData);
+                });
+                
+                const credentials = {
+                    Email: email,
+                    Password: hashedPassword,
+                };
+                axios
+                .post("/loginapi", credentials)
+                .then((response)=>{
+                    if(response.status == 200) {
+                       window.location.href = '/main';
+                    }else{
+                        //window.location.href = '/login';
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            })
+            .catch((err) => {
+                console.log(err);
+                setErrorMessage(err.response.data.Message)
+            });
+            
     };
     const handleKeyPress = (event) => {
         if (event.key === "Enter") {
@@ -169,7 +219,7 @@ export default function Login({ status, canResetPassword }) {
                                             placeholder="Password"
                                             value={data.password}
                                             autoComplete="current-password"
-                                            onChange={handleOnChange}
+                                            onChange={handleOnChangePassword}
                                             className={`appearance-none w-full border mb-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline transition-all duration-500`}
                                         />
                                         <div

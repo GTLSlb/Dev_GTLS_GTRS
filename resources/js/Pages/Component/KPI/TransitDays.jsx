@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import TableStructure from "@/Components/TableStructure";
 import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import { PencilIcon } from "@heroicons/react/20/solid";
+import { canAddTransitDays, canEditTransitDays } from "@/permissions";
 
 const temp = [
     {
@@ -24,6 +25,8 @@ export default function TransitDays({
     currentUser,
     setTransitDays,
     url,
+    filterValue,
+    setFilterValue,
     setActiveIndexGTRS,
     setTransitDay,
 }) {
@@ -118,85 +121,12 @@ export default function TransitDays({
         { id: "FREIGHT PEOPLE", label: "FREIGHT PEOPLE" },
     ];
     const types = [
-        { id: "FOOD" , label: "FOOD" },
+        { id: "FOOD", label: "FOOD" },
         { id: "HPC", label: "HPC" },
-        { id: "Food Solutions - QLD" , label: "Food Solutions - QLD" },
-        { id: "METCASH" , label: "METCASH" },
+        { id: "Food Solutions - QLD", label: "Food Solutions - QLD" },
+        { id: "METCASH", label: "METCASH" },
     ];
-    const filterValue = [
-        {
-            name: "CustomerName",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "CustomerType",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "SenderState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "SenderCity",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "SenderSuburb",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "SenderPostCode",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-        {
-            name: "ReceiverName",
-            operator: "contains",
-            type: "string",
-            value: null,
-        },
-        {
-            name: "ReceiverState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ReceiverCity",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ReceiverSuburb",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ReceiverPostCode",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-        {
-            name: "TransitTime",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-    ];
+
     const filterIcon = (className) => {
         return (
             <svg
@@ -368,19 +298,23 @@ export default function TransitDays({
             defaultWidth: 100,
             render: ({ value, data }) => {
                 return (
-                    <button
-                        className={
-                            "rounded text-blue-500 justify-center items-center  "
-                        }
-                        onClick={() => {
-                            handleEditClick(data);
-                        }}
-                    >
-                        <span className="flex gap-x-1">
-                            <PencilIcon className="h-4" />
-                            Edit
-                        </span>
-                    </button>
+                    <div>
+                        {canEditTransitDays(currentUser) ? (
+                            <button
+                                className={
+                                    "rounded text-blue-500 justify-center items-center  "
+                                }
+                                onClick={() => {
+                                    handleEditClick(data);
+                                }}
+                            >
+                                <span className="flex gap-x-1">
+                                    <PencilIcon className="h-4" />
+                                    Edit
+                                </span>
+                            </button>
+                        ) : null}
+                    </div>
                 );
             },
         },
@@ -423,10 +357,12 @@ export default function TransitDays({
                                 <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
                                     Transit Days
                                 </h1>
-                                <GtamButton
-                                    name={"Add +"}
-                                    onClick={AddTransit}
-                                />
+                                {canAddTransitDays(currentUser) ? (
+                                    <GtamButton
+                                        name={"Add +"}
+                                        onClick={AddTransit}
+                                    />
+                                ) : null}
                             </div>
                         </div>
                         <TableStructure
@@ -436,6 +372,7 @@ export default function TransitDays({
                             groupsElements={groups}
                             tableDataElements={transitDays}
                             filterValueElements={filterValue}
+                            setFilterValueElements={setFilterValue}
                             columnsElements={columns}
                         />
                     </div>

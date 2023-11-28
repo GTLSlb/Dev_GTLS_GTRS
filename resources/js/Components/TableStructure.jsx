@@ -9,9 +9,11 @@ import { useState } from "react";
 export default function TableStructure({
     tableDataElements,
     filterValueElements,
+    setFilterValueElements,
     groupsElements,
     columnsElements,
     filterTypesElements,
+    setFilterTypesElements,
     setSelected,
     selected,
     id,
@@ -26,6 +28,9 @@ export default function TableStructure({
     useEffect(() => {
         setTableData(tableDataElements);
     }, [tableDataElements]);
+    useEffect(() => {
+        setFilters(filterValueElements);
+    }, [filterValueElements]);
     useEffect(() => {
         setColumns(columnsElements);
     }, [columnsElements]);
@@ -53,7 +58,7 @@ export default function TableStructure({
     const gridStyle = { minHeight: 600 };
     const onFilterValueChange = useCallback((filterValue) => {
         console.log(filterValue)
-        setFilters(filterValue);
+        setFilterValueElements(filterValue);
     }, []);
     // const onSelectionChange = useCallback(
     //     ({ selected }) => {
@@ -73,6 +78,7 @@ export default function TableStructure({
     //     },
     //     [filters]
     // );
+    console.log(filters)
     return (
         <div className="">
             {/* <Sidebar /> */}

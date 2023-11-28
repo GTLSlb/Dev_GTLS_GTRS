@@ -29,6 +29,7 @@ import TableStructure from "@/Components/TableStructure";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
+import { canEditFailedConsignments } from "@/permissions";
 
 const people = [
     {
@@ -55,6 +56,8 @@ export default function FailedCons({
     PerfData,
     failedReasons,
     url,
+    filterValue,
+    setFilterValue,
     setActiveIndexGTRS,
     setLastIndex,
     setactiveCon,
@@ -128,134 +131,6 @@ export default function FailedCons({
         {
             id: 2,
             label: "External",
-        },
-    ];
-    const filterValue = [
-        {
-            name: "CONSIGNMENTNUMBER",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        { name: "SENDERNAME", operator: "contains", type: "string", value: "" },
-        {
-            name: "SENDERREFERENCE",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "SenderState",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "RECEIVERNAME",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "RECEIVER REFERENCE",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "RECEIVERSTATE",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "SERVICE",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "KPI DATETIME",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            value: "",
-        },
-        {
-            name: "DELIVERYREQUIREDDATETIME",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            value: "",
-        },
-        {
-            name: "ARRIVEDDATETIME",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            value: "",
-        },
-        {
-            name: "DELIVEREDDATETIME",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            value: "",
-        },
-        {
-            name: "POD",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "FailedReason",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "FailedReasonDesc",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "State",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "Reference",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "Department",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "Resolution",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "OccuredAt",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            value: "",
-        },
-        {
-            name: "Explanation",
-            operator: "contains",
-            type: "string",
-            value: "",
         },
     ];
     const groups = [
@@ -650,7 +525,7 @@ export default function FailedCons({
             render: ({ value, data }) => {
                 return (
                     <div>
-                        {Roles.includes(currentUser.role_id) ? (
+                        {canEditFailedConsignments(currentUser) ? (
                             <button
                                 className={
                                     "rounded text-blue-500 justify-center items-center  "
@@ -1160,6 +1035,7 @@ export default function FailedCons({
                         setSelected={setSelected}
                         selected={selected}
                         groupsElements={groups}
+                        setFilterValueElements={setFilterValue}
                         tableDataElements={filteredData}
                         filterValueElements={filterValue}
                         columnsElements={newColumns}
