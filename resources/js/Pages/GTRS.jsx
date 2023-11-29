@@ -50,71 +50,17 @@ export default function Gtrs({
     // const url = "https://gtlsnsws10-vm.gtls.com.au:5478/";
     //test URL
     const url = "https://gtlslebs06-vm.gtls.com.au:8084/";
-    const userdata = {
-        UserId: 2,
-        TypeId: 1,
-        TypeName: "Customer",
-        OwnerId: 1,
-        GroupId: 9,
-        GroupName: "Admins",
-        Username: "Unilever@gmail.com",
-        Email: "Unilever@ual.com.au",
-        Accounts: [
-            {
-                AccountId: 2,
-                DebtorId: 244,
-                CustomerName: "Unilever",
-                AccountNo: "UNILEVER - NRS",
-            },
-            {
-                AccountId: 3,
-                DebtorId: 245,
-                CustomerName: "Unilever",
-                AccountNo: "UNILEVER - RPMP",
-            },
-            {
-                AccountId: 4,
-                DebtorId: 246,
-                CustomerName: "Unilever",
-                AccountNo: "UAL - TRANSFERS TO 3PMS",
-            },
-            {
-                AccountId: 5,
-                DebtorId: 247,
-                CustomerName: "Unilever",
-                AccountNo: "UNILEVER-ADHOC",
-            },
-            {
-                AccountId: 6,
-                DebtorId: 364,
-                CustomerName: "Unilever",
-                AccountNo: "UAPL - WH",
-            },
-            {
-                AccountId: 7,
-                DebtorId: 449,
-                CustomerName: "Unilever",
-                AccountNo: "UAPL - HPC",
-            },
-            {
-                AccountId: 8,
-                DebtorId: 1507,
-                CustomerName: "Unilever",
-                AccountNo: "UATLF - FDS",
-            },
-        ],
-    };
-
+    const userdata = currentUser;
     const debtorIdsArray = userdata.Accounts.map((account) => {
         return { UserId: account.DebtorId };
     });
 
     // Usage
-    
+
     const debtorIds = debtorIdsArray;
 
     useEffect(() => {
-        setUserBody(debtorIds)
+        setUserBody(debtorIds);
         setLoadingGtrs(false);
         console.log(debtorIds);
 
@@ -130,7 +76,7 @@ export default function Gtrs({
             )
             .then((res) => {
                 setUser(res.data);
-                console.log(res.data)
+                console.log(res.data);
             })
             .catch((err) => {
                 console.log(err);
