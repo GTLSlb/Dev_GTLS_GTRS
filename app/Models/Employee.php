@@ -9,8 +9,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Notifications\PasswordResetNotification;
+use App\Models\User;
 
-class User extends Authenticatable implements CanResetPassword
+class Employee extends User
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -20,14 +21,34 @@ class User extends Authenticatable implements CanResetPassword
      * @var array<int, string>
      */
     protected $fillable = [
+        'name',
         'password',
         'remember_token',
+        'password',
         'UserId',
+        'UniqueId',
         'TypeId',
         'TypeName',
+        'OwnerId',
+        'GroupId',
+        'GroupName',
         'Username',
+        'FirstName',
+        'LastName',
         'Email',
-
+        'PhoneNo',
+        'Dob',
+        'Address',
+        'Picture',
+        'NationalityId',
+        'NationalityName',
+        'BranchId',
+        'RoleId',
+        'RoleName',
+        'ReportToId',
+        'ReportToName',
+        'HiringDate',
+        'Applications',
     ];
 
     /**
@@ -38,11 +59,30 @@ class User extends Authenticatable implements CanResetPassword
     protected $hidden = [
         'password',
         'remember_token',
+        'password',
         'UserId',
+        'UniqueId',
         'TypeId',
         'TypeName',
+        'OwnerId',
+        'GroupId',
+        'GroupName',
         'Username',
+        'FirstName',
+        'LastName',
         'Email',
+        'PhoneNo',
+        'Dob',
+        'Address',
+        'Picture',
+        'NationalityId',
+        'NationalityName',
+        'BranchId',
+        'RoleId',
+        'RoleName',
+        'ReportToId',
+        'ReportToName',
+        'HiringDate',
     ];
     public function parent()
     {

@@ -55,58 +55,108 @@ class RegisteredUserController extends Controller
     }
     public function getCurrentUserName(Request $request)
     {
+
         if ($request->session()->get('user')!=null) {
             
             $user = $request->session()->get('user');
-            $UserId = $user->UserId;
-            $UniqueId = $user->UniqueId;
-            $TypeId = $user->TypeId;
-            $TypeName =$user->TypeName;
-            $OwnerId = $user->OwnerId;
-            $GroupId = $user->GroupId;
-            $Username = $user->Username;
-            $FirstName = $user->FirstName;
-            $LastName = $user->LastName;
-            $Email = $user->Email;
-            $PhoneNo = $user->PhoneNo;
-            $Dob = $user->Dob;
-            $Address = $user->Address;
-            $Picture = $user->Picture;
-            $NationalityId = $user->NationalityId;
-            $NationalityName = $user->NationalityName;
-            $BranchId = $user->BranchId;
-            $RoleId = $user->RoleId;
-            $RoleName = $user->RoleName;
-            $ReportToId = $user->ReportToId;
-            $ReportToName = $user->ReportToName;
-            $HiringDate = $user->HiringDate;
-            $Applications = $user->Applications;
+            if($user->TypeId == 1) // the user is a customer
+            {
+                $UserId = $user->UserId;
+                $TypeId = $user->TypeId;
+                $TypeName =$user->TypeName;
+                $OwnerId = $user->OwnerId;
+                $GroupId = $user->GroupId;
+                $GroupName = $user->GroupName;
+                $Username = $user->Username;
+                $Email = $user->Email;
+                $Accounts = $user->Accounts;
+                $user = array (
+                    'UserId' => $UserId,
+                    'TypeId' => $TypeId,
+                    'TypeName' => $TypeName,
+                    'OwnerId' => $OwnerId,
+                    'GroupId' => $GroupId,
+                    'GroupName' => $GroupName,
+                    'Username' => $Username,
+                    'Email' => $Email,
+                    'Accounts' => $Accounts,
+                );
+            }else if($user->TypeId == 2) // the user is an employee
+            {
+                $UserId = $user->UserId;
+                $UniqueId = $user->UniqueId;
+                $TypeId = $user->TypeId;
+                $TypeName =$user->TypeName;
+                $OwnerId = $user->OwnerId;
+                $GroupId = $user->GroupId;
+                $Username = $user->Username;
+                $FirstName = $user->FirstName;
+                $LastName = $user->LastName;
+                $Email = $user->Email;
+                $PhoneNo = $user->PhoneNo;
+                $Dob = $user->Dob;
+                $Address = $user->Address;
+                $Picture = $user->Picture;
+                $NationalityId = $user->NationalityId;
+                $NationalityName = $user->NationalityName;
+                $BranchId = $user->BranchId;
+                $RoleId = $user->RoleId;
+                $RoleName = $user->RoleName;
+                $ReportToId = $user->ReportToId;
+                $ReportToName = $user->ReportToName;
+                $HiringDate = $user->HiringDate;
+                $Applications = $user->Applications;
+                $user = array (
+                    'UserId' => $UserId,
+                    'UniqueId' => $UniqueId,
+                    'TypeId' => $TypeId,
+                    'TypeName' => $TypeName,
+                    'OwnerId' => $OwnerId,
+                    'GroupId' => $GroupId,
+                    'Username' => $Username,
+                    'FirstName' => $FirstName,
+                    'LastName' => $LastName,
+                    'Email' => $Email,
+                    'PhoneNo' => $PhoneNo,
+                    'Dob' => $Dob,
+                    'Address' => $Address,
+                    'Picture' => $Picture,
+                    'NationalityId' => $NationalityId,
+                    'NationalityName' => $NationalityName,
+                    'BranchId' => $BranchId,
+                    'RoleId' => $RoleId,
+                    'RoleName' => $RoleName,
+                    'ReportToId' => $ReportToId,
+                    'ReportToName' => $ReportToName,
+                    'HiringDate' => $HiringDate,
+                    'Applications' => $Applications,
+                );
+            }
+            else{ // the user is a driver
+                $UserId = $user->UserId;
+                $TypeId = $user->TypeId;
+                $TypeName =$user->TypeName;
+                $Username = $user->Username;
+                $Email = $user->Email;
+                $truckNbr = $user->truckNbr;
+                $location = $user->location;
+                $driverNbr = $user->driverNbr;
+                $phoneNbr = $user->phoneNbr;
+                $user = array (
+                    'UserId' => $UserId,
+                    'TypeId' => $TypeId,
+                    'TypeName' => $TypeName,
+                    'truckNbr' => $truckNbr,
+                    'location' => $location,
+                    'driverNbr' => $driverNbr,
+                    'Username' => $Username,
+                    'Email' => $Email,
+                    'phoneNbr' => $phoneNbr,
+                );
+            }
+           
             
-            $user = array (
-                'UserId' => $UserId,
-                'UniqueId' => $UniqueId,
-                'TypeId' => $TypeId,
-                'TypeName' => $TypeName,
-                'OwnerId' => $OwnerId,
-                'GroupId' => $GroupId,
-                'Username' => $Username,
-                'FirstName' => $FirstName,
-                'LastName' => $LastName,
-                'Email' => $Email,
-                'PhoneNo' => $PhoneNo,
-                'Dob' => $Dob,
-                'Address' => $Address,
-                'Picture' => $Picture,
-                'NationalityId' => $NationalityId,
-                'NationalityName' => $NationalityName,
-                'BranchId' => $BranchId,
-                'RoleId' => $RoleId,
-                'RoleName' => $RoleName,
-                'ReportToId' => $ReportToId,
-                'ReportToName' => $ReportToName,
-                'HiringDate' => $HiringDate,
-                'Applications' => $Applications,
-            );
+
 
             return response()->json($user);
         } else {
@@ -137,8 +187,8 @@ class RegisteredUserController extends Controller
     public function getChildrens($id)
     {
         $UserId=$id;
-        $user = User::find($id);
-        dd($user);
+        $user = User::find($UserId);
+        //dd($user);
         if ($user) {
             if ($user->parent_id == null) {
                 $children = User::where('parent_id', $user->id)->pluck('user_id')->all();
