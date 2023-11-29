@@ -168,7 +168,7 @@ export function canEditKPI(currentUser) {
 export function canAddTransitDays(currentUser) {
     // Define the specific permission to check for adding transit days
     const targetPermissionName = "TransitDays_add";
-    const pageName = "YourPageName"; // Adjust the page name as needed
+    const pageName = "Transit Days"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
@@ -187,7 +187,7 @@ export function canAddTransitDays(currentUser) {
 export function canEditTransitDays(currentUser) {
     // Define the specific permission to check for editing transit days
     const targetPermissionName = "TransitDays_edit";
-    const pageName = "YourPageName"; // Adjust the page name as needed
+    const pageName = "TransitDays"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
@@ -206,7 +206,25 @@ export function canEditTransitDays(currentUser) {
 export function canAddHolidays(currentUser) {
     // Define the specific permission to check for adding holidays
     const targetPermissionName = "Holidays_add";
-    const pageName = "YourPageName"; // Adjust the page name as needed
+    const pageName = "Holidays"; // Adjust the page name as needed
+
+    // Find the specified page in the user's Pages array
+    const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
+
+    // Check if the page is found and if the specified permission is present in its Features array
+    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+}
+
+/**
+ * Checks if the user can add holidays based on their permissions for a specific page.
+ *
+ * @param {Object} currentUser - The current user object with role, permissions, and pages.
+ * @return {boolean} True if the user can add holidays on the specific page, false otherwise.
+ */
+export function canEditHolidays(currentUser) {
+    // Define the specific permission to check for editing holidays
+    const targetPermissionName = "Holidays_edit";
+    const pageName = "Holidays"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
@@ -224,7 +242,7 @@ export function canAddHolidays(currentUser) {
 export function canAddKpiReasons(currentUser) {
     // Define the specific permission to check for adding KPI Reasons
     const targetPermissionName = "KpiReasons_add";
-    const pageName = "YourPageName"; // Adjust the page name as needed
+    const pageName = "KPI Reasons"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
@@ -243,7 +261,7 @@ export function canAddKpiReasons(currentUser) {
 export function canEditKpiReasons(currentUser) {
     // Define the specific permission to check for editing KPI Reasons
     const targetPermissionName = "KpiReasons_edit";
-    const pageName = "YourPageName"; // Adjust the page name as needed
+    const pageName = "KPI Reasons"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
@@ -262,7 +280,7 @@ export function canEditKpiReasons(currentUser) {
 export function canEditFailedConsignments(currentUser) {
     // Define the specific permission to check for editing failed consignments
     const targetPermissionName = "FailedConsignments_edit";
-    const pageName = "YourPageName"; // Adjust the page name as needed
+    const pageName = "Failed Consignments"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
@@ -281,7 +299,7 @@ export function canEditFailedConsignments(currentUser) {
 export function canViewFailedReasons(currentUser) {
     // Define the specific permission to check for viewing failed consignments reasons
     const targetPermissionName = "FailedReasons_view";
-    const pageName = "YourPageName"; // Adjust the page name as needed
+    const pageName = "Failed Consignments"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
@@ -300,7 +318,7 @@ export function canViewFailedReasons(currentUser) {
 export function canAddFailedReasons(currentUser) {
     // Define the specific permission to check for adding failed consignments reasons
     const targetPermissionName = "FailedReasons_add";
-    const pageName = "YourPageName"; // Adjust the page name as needed
+    const pageName = "Failed Consignments"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
@@ -319,7 +337,7 @@ export function canAddFailedReasons(currentUser) {
 export function canEditFailedReasons(currentUser) {
     // Define the specific permission to check for editing failed consignments reasons
     const targetPermissionName = "FailedReasons_edit";
-    const pageName = "YourPageName"; // Adjust the page name as needed
+    const pageName = "Failed Consignments"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
@@ -338,7 +356,7 @@ export function canEditFailedReasons(currentUser) {
 export function canEditRDD(currentUser) {
     // Define the specific permission to check for editing RDD report
     const targetPermissionName = "RDD_edit";
-    const pageName = "YourPageName"; // Adjust the page name as needed
+    const pageName = "RDD"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
@@ -357,7 +375,7 @@ export function canEditRDD(currentUser) {
 export function canViewRDDReasons(currentUser) {
     // Define the specific permission to check for viewing RDD reasons
     const targetPermissionName = "RDDReasons_view";
-    const pageName = "YourPageName"; // Adjust the page name as needed
+    const pageName = "RDD"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
@@ -376,7 +394,7 @@ export function canViewRDDReasons(currentUser) {
 export function canAddRDDReasons(currentUser) {
     // Define the specific permission to check for adding RDD reasons
     const targetPermissionName = "RDDReasons_add";
-    const pageName = "YourPageName"; // Adjust the page name as needed
+    const pageName = "RDD"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
@@ -395,7 +413,7 @@ export function canAddRDDReasons(currentUser) {
 export function canEditRDDReasons(currentUser) {
     // Define the specific permission to check for editing RDD reasons
     const targetPermissionName = "RDDReasons_edit";
-    const pageName = "YourPageName"; // Adjust the page name as needed
+    const pageName = "RDDReasons"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
@@ -414,7 +432,7 @@ export function canEditRDDReasons(currentUser) {
 export function canAddSafetyReport(currentUser) {
     // Define the specific permission to check for adding Safety report
     const targetPermissionName = "SafetyReport_add";
-    const pageName = "YourPageName"; // Adjust the page name as needed
+    const pageName = "Safety"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
@@ -433,7 +451,7 @@ export function canAddSafetyReport(currentUser) {
 export function canViewSafetyType(currentUser) {
     // Define the specific permission to check for viewing Safety Type
     const targetPermissionName = "SafetyType_view";
-    const pageName = "YourPageName"; // Adjust the page name as needed
+    const pageName = "Safety"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
@@ -452,7 +470,7 @@ export function canViewSafetyType(currentUser) {
 export function canEditSafetyReport(currentUser) {
     // Define the specific permission to check for editing Safety report
     const targetPermissionName = "SafetyReport_edit";
-    const pageName = "YourPageName"; // Adjust the page name as needed
+    const pageName = "Safety"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
@@ -471,7 +489,7 @@ export function canEditSafetyReport(currentUser) {
 export function canAddSafetyType(currentUser) {
     // Define the specific permission to check for adding Safety Type
     const targetPermissionName = "SafetyType_add";
-    const pageName = "YourPageName"; // Adjust the page name as needed
+    const pageName = "Safety"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
@@ -490,7 +508,7 @@ export function canAddSafetyType(currentUser) {
 export function canEditSafetyType(currentUser) {
     // Define the specific permission to check for editing Safety Type
     const targetPermissionName = "SafetyType_edit";
-    const pageName = "YourPageName"; // Adjust the page name as needed
+    const pageName = "Safety"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);

@@ -259,6 +259,50 @@ export default function ChartsSidebar({
         });
         setSidebarElements(updatedElements);
     };
+
+    function filterNavigation(userObject, navigation) {
+        return navigation.filter((item) => {
+            // Check if the item's features are present in the user's features
+    
+            // Check if the item has pages
+            const itemFeaturesMatch =
+                (item.Pages &&
+                    // Check if any page's features match the user's features
+                    item.Pages.some((page) => {
+                        const pageFeatures = page.Features || [];
+                        return pageFeatures.some(
+                            (feature) =>
+                                // Check if the user's features include the feature name
+                                userObject.page.features.includes(feature.FeatureName) &&
+                                // Check if the page name matches the name in the navigation object
+                                page.PageName === item.name
+                        );
+                    })) ||
+                (item.options &&
+                    // Check if any option's pages' features match the user's features
+                    item.options.some((option) => {
+                        const optionPages = option.Pages || [];
+                        return optionPages.some((page) =>
+                            page.Features.some(
+                                (feature) =>
+                                    // Check if the user's features include the feature name
+                                    userObject.page.features.includes(feature.FeatureName) &&
+                                    // Check if the page name matches the name in the navigation object
+                                    page.PageName === item.name
+                            )
+                        );
+                    }));
+    
+            // Return the result of the filtering operation
+            setSidebarElements(itemFeaturesMatch) ;
+        });
+    }
+    
+    // Usage example
+    const filteredNavigation = filterNavigation(userObject, navigation);
+    console.log(filteredNavigation);
+
+
     return (
         <div className="h-full xl:fixed xl:w-64 md:h-full xl:fixed bg-gray-200 w-full ">
             {/* Static sidebar for desktop */}
@@ -358,39 +402,6 @@ export default function ChartsSidebar({
                     <div className=" pt-2 pb-4 w-full">
                         <nav className="mt-5 flex-1 hidden xl:flex-col space-y-1 px-2 w-full md:flex-row md:flex md:mt-0 ">
                             {sidebarElements
-                                .filter((item) => {
-                                    // Check if the item's features are present in the user's features
-                                    const itemFeaturesMatch =
-                                        item.Pages &&
-                                        item.Pages.some((page) => {
-                                            const pageFeatures =
-                                                page.Features || [];
-                                            return pageFeatures.some(
-                                                (feature) =>
-                                                    current_user_features.includes(
-                                                        feature.FeatureName
-                                                    )
-                                            );
-                                        });
-
-                                    // Check if any of the options' features are present in the user's features
-                                    const optionFeaturesMatch =
-                                        item.options &&
-                                        item.options.some((option) => {
-                                            const optionFeatures =
-                                                option.Features || [];
-                                            return optionFeatures.some(
-                                                (feature) =>
-                                                    current_user_features.includes(
-                                                        feature.FeatureName
-                                                    )
-                                            );
-                                        });
-
-                                    return (
-                                        itemFeaturesMatch || optionFeaturesMatch
-                                    );
-                                })
                                 .map((item) => (
                                     <div key={item.id}>
                                         {item.options ? (
