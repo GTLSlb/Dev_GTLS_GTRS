@@ -8,9 +8,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\User;
 use App\Notifications\PasswordResetNotification;
 
-class User extends Authenticatable implements CanResetPassword
+class Customer extends User
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -20,14 +21,18 @@ class User extends Authenticatable implements CanResetPassword
      * @var array<int, string>
      */
     protected $fillable = [
-        'password',
+        'OwnerId',
+        'GroupId',
+        'GroupName',
+        'Accounts',
         'remember_token',
+        'password',
         'UserId',
         'TypeId',
         'TypeName',
         'Username',
         'Email',
-
+        
     ];
 
     /**
@@ -36,12 +41,9 @@ class User extends Authenticatable implements CanResetPassword
      * @var array<int, string>
      */
     protected $hidden = [
+        'Accounts',
         'password',
         'remember_token',
-        'UserId',
-        'TypeId',
-        'TypeName',
-        'Username',
         'Email',
     ];
     public function parent()

@@ -9,8 +9,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Notifications\PasswordResetNotification;
+use App\Models\User;
 
-class User extends Authenticatable implements CanResetPassword
+class Driver extends User
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -27,7 +28,10 @@ class User extends Authenticatable implements CanResetPassword
         'TypeName',
         'Username',
         'Email',
-
+        'truckNbr',
+        'location',
+        'driverNbr',
+        'phoneNbr',
     ];
 
     /**
@@ -36,13 +40,12 @@ class User extends Authenticatable implements CanResetPassword
      * @var array<int, string>
      */
     protected $hidden = [
+        'truckNbr',
+        'location',
+        'phoneNbr',
         'password',
         'remember_token',
         'UserId',
-        'TypeId',
-        'TypeName',
-        'Username',
-        'Email',
     ];
     public function parent()
     {

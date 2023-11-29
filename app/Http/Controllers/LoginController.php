@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Middleware\ApiAuth;
 use Illuminate\Http\Request;
-use App\Models\User;
+use App\Models\Customer;
+use App\Models\Driver;
+use App\Models\Employee;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -36,8 +38,8 @@ class LoginController extends Controller
         if ($response->successful()) {
             $responseData = $response->json();
             if (!empty($responseData)) {
-                $user = new User($responseData[0]);
-                $authProvider = new CustomAuth(Auth::guard()->getProvider(), $request->session());
+                //dd($responseData[0]);
+                $authProvider = new CustomAuth();
                 $credentials = [
                     'EmailInput' => $request->input('Email'),
                     'EmailDb' => $responseData[0]['Username'],
@@ -46,7 +48,21 @@ class LoginController extends Controller
                 ];
                 $authenticatedUser = $authProvider->attempt($credentials, true);
                 if ($authenticatedUser) {
-                    // Redirect to the intended page with the obtained user 
+                    // Redirect to the intended page with the obtained user after checking the type of user and filling the correct model 
+                    $user = null;
+                    if($responseData[0]['TypeId'] == 1) // the user is a customer
+                    {
+                        $user = new Customer($responseData[0]);
+                    }else if($responseData[0]['TypeId'] == 2) // the user is an employee
+                    {
+                        $user = new Employee($responseData[0]);
+                    }
+                    else{ // the user is a driver
+                        $user = new Driver($responseData[0]);
+                    }
+                    //dd($user);
+                    //dd($user instanceof Employee);
+                    
                     $request->session()->regenerate();
                     $request->session()->put('user', $user);
                     $request->session()->put('newRoute', route('loginapi'));
