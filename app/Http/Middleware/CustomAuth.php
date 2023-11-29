@@ -20,12 +20,12 @@ class CustomAuth extends Middleware
      * @return bool
      */
 
-    //  protected $guard;
+     protected $guard;
 
-    public function __construct()
-    {
-        //$this->guard = $guard;
-    }
+     public function __construct($guard = null)
+     {
+         $this->guard = $guard;
+     }
 
     public function attempt(array $credentials = [], $remember = false)
     {

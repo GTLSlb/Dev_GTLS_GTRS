@@ -19,6 +19,7 @@ export default function Sidebar(Boolean) {
         axios
             .get("/users")
             .then((res) => {
+                //console.log(res.data.hasOwnProperty('Username'));
                 setcurrentUser(res.data);
             })
             .catch((error) => console.log(error));
