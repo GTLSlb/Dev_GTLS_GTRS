@@ -63,8 +63,8 @@ export default function AddHoliday({
         axios
             .post(`${url}api/GTRS/Add/Holiday`, inputValues, {
                 headers: {
-                    UserId: currentUser.user_id,
-                    RoleId: currentUser.role_id,
+                    UserId: currentUser.UserId,
+                    RoleId: currentUser.RoleId,
                 },
             })
             .then((res) => {

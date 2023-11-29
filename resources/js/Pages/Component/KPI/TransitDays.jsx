@@ -42,7 +42,7 @@ export default function TransitDays({
             axios
                 .get(`${url}api/GTRS/Transits`, {
                     headers: {
-                        RoleId: currentUser.role_id,
+                        RoleId: currentUser.UserId,
                     },
                 })
                 .then((res) => {

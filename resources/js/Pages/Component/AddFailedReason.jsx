@@ -27,7 +27,7 @@ export default function AddFailedReason({
         axios
             .get(`${url}api/FailureReasons`, {
                 headers: {
-                    RoleId: currentUser.role_id,
+                    RoleId: currentUser.UserId,
                 },
             })
             .then((res) => {

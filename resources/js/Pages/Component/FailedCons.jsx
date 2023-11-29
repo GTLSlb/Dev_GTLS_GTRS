@@ -518,7 +518,7 @@ export default function FailedCons({
             textAlign: "start",
         },
         {
-            header: "",
+            header: "Edit",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 100,
@@ -551,7 +551,7 @@ export default function FailedCons({
     const [newColumns, setNewColumns] = useState();
 
     useEffect(() => {
-        if (Roles.includes(currentUser.role_id)) {
+        if (canEditFailedConsignments(currentUser)) {
             setNewColumns(columns);
         } else {
             setNewColumns(newArray);

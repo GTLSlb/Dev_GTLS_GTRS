@@ -24,7 +24,7 @@ export default function AddSafetyCauses({ safetyCauses, setSafetyCauses , curren
         axios
             .get(`${url}api/SafetyCauses`,{
                 headers: {
-                    RoleId: currentUser.role_id,
+                    RoleId: currentUser.UserId,
                 },
             })
             .then((res) => {

@@ -29,7 +29,7 @@ export default function AddSafetyType({
         axios
             .get(`${url}api/SafetyTypes`, {
                 headers: {
-                    RoleId: currentUser.role_id,
+                    RoleId: currentUser.UserId,
                 },
             })
             .then((res) => {

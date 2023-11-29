@@ -69,7 +69,7 @@ export default function AddSafetyCausesModal({
                 data,
                 {
                     headers: {
-                        RoleId: currentUser.role_id,
+                        RoleId: currentUser.UserId,
                     },
                 }
             );

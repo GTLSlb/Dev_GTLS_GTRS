@@ -82,7 +82,7 @@ export default function AddTransit({
             axios
                 .get(`${url}api/GTRS/Transits`, {
                     headers: {
-                        RoleId: currentUser.role_id,
+                        RoleId: currentUser.UserId,
                     },
                 })
                 .then((res) => {
@@ -137,8 +137,8 @@ export default function AddTransit({
         axios
             .post(`${url}api/GTRS/Add/Transit`, inputValues, {
                 headers: {
-                    UserId: currentUser.user_id,
-                    RoleId: currentUser.role_id,
+                    UserId: currentUser.UserId,
+                    RoleId: currentUser.UserId,
                 },
             })
             .then((res) => {

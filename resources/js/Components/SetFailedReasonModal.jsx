@@ -141,7 +141,7 @@ export default function SetFailedReasonModal({
                 data,
                 {
                     headers: {
-                        RoleId: currentUser.role_id,
+                        RoleId: currentUser.UserId,
                     },
                 }
             );

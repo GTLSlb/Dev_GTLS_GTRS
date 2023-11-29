@@ -55,7 +55,7 @@ export default function AddRDDReason({
         axios
             .get(`${url}api/RddChangeReason`, {
                 headers: {
-                    RoleId: currentUser.role_id,
+                    RoleId: currentUser.UserId,
                 },
             })
             .then((res) => {

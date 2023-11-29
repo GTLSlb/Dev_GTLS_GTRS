@@ -33,7 +33,7 @@ export default function KPIReasons({
         axios
             .get(`${url}api/GTRS/KpiReasons`, {
                 headers: {
-                    RoleId: currentUser.role_id,
+                    RoleId: currentUser.UserId,
                 },
             })
             .then((res) => {
@@ -108,7 +108,7 @@ export default function KPIReasons({
                                 />
                             </div>
                         ) : null}
-                        {handleShowHideAddButton() ? (
+                        {canAddKpiReasons(currentUser) ? (
                             <div className="col-span-2">
                                 <GtamButton
                                     name={showAddRow ? "Cancel" : "Add Reason"}

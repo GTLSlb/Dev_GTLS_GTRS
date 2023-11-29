@@ -106,7 +106,7 @@ export default function SafetyModal({
                 formValues,
                 {
                     headers: {
-                        RoleId: currentUser.role_id,
+                        RoleId: currentUser.UserId,
                     },
                 }
             );

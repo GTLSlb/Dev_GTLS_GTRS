@@ -103,7 +103,7 @@ export default function SafetyRep({
         return axios
             .get(`${url}api/SafetyReport`, {
                 headers: {
-                    RoleId: currentUser.role_id,
+                    RoleId: currentUser.UserId,
                 },
             })
             .then((res) => {
@@ -121,7 +121,7 @@ export default function SafetyRep({
         axios
             .get(`${url}api/SafetyTypes`, {
                 headers: {
-                    RoleId: currentUser.role_id,
+                    RoleId: currentUser.UserId,
                 },
             })
             .then((res) => {
@@ -143,7 +143,7 @@ export default function SafetyRep({
         axios
             .get(`${url}api/SafetyCauses`, {
                 headers: {
-                    RoleId: currentUser.role_id,
+                    RoleId: currentUser.UserId,
                 },
             })
             .then((res) => {
@@ -289,7 +289,7 @@ export default function SafetyRep({
                             </h1>
                         </div>
                     </div>
-                    {canViewSafetyType(currentUser) ? (
+                    {!canViewSafetyType(currentUser) ? (
                         <ul className="flex space-x-0 mt-5">
                             <li
                                 className={`cursor-pointer ${

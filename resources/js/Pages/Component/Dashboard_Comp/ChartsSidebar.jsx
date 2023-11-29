@@ -31,7 +31,7 @@ const navigation = [
         href: "#",
         icon: ChartPieIcon,
         current: true,
-        feature: ["Dashboard"],
+        feature: "Dashboard_view",
     },
     {
         id: 1,
@@ -39,22 +39,22 @@ const navigation = [
         href: "#",
         icon: TruckIcon,
         current: false,
-        feature: ["ConsignmetsReport"],
+        feature: "ConsignmetsReport_view",
     },
     {
         id: 2,
-        name: "KPI Report ",
+        name: "KPI Report",
         href: "#",
         icon: ClipboardDocumentCheckIcon,
         current: false,
         options: [
             {
                 id: 2,
-                name: "KPI Report ",
+                name: "KPI",
                 href: "#",
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
-                feature: ["KPIReport"],
+                feature: "KPI_view",
             },
             {
                 id: 12,
@@ -62,7 +62,7 @@ const navigation = [
                 href: "#",
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
-                feature: ["TransitDays"],
+                feature: "View_TransitDays",
             },
             {
                 id: 13,
@@ -70,18 +70,18 @@ const navigation = [
                 href: "#",
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
-                feature: ["Holidays"],
+                feature: "View_Holidays",
             },
             {
                 id: 14,
-                name: "Reasons",
+                name: "KPI Reasons",
                 href: "#",
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
-                feature: ["KPIReasons"],
+                feature: "View_kpiReasons",
             },
         ],
-        feature: ["KPI"],
+        feature: "KPI",
     },
     {
         id: 4,
@@ -89,7 +89,7 @@ const navigation = [
         href: "#",
         icon: PresentationChartLineIcon,
         current: false,
-        feature: ["Performance"],
+        feature: "Performance_view",
     },
     {
         id: 5,
@@ -97,7 +97,7 @@ const navigation = [
         href: "#",
         icon: ExclamationTriangleIcon,
         current: false,
-        feature: ["FailedConsignments"],
+        feature: "View_failedConsignment",
     },
 
     {
@@ -106,7 +106,7 @@ const navigation = [
         href: "#",
         icon: ClockIcon,
         current: false,
-        feature: ["RDD"],
+        feature: "View_RDD",
     },
     {
         id: 11,
@@ -114,7 +114,7 @@ const navigation = [
         href: "#",
         icon: CameraIcon,
         current: false,
-        feature: ["MissingPOD"],
+        feature: "MissingPOD_view",
     },
     {
         id: 10,
@@ -122,7 +122,7 @@ const navigation = [
         href: "#",
         icon: ShieldCheckIcon,
         current: false,
-        feature: ["Safety"],
+        feature: "View_safety",
     },
     {
         id: 6,
@@ -130,7 +130,7 @@ const navigation = [
         href: "#",
         icon: NoSymbolIcon,
         current: false,
-        feature: ["NoDeliveryInfo"],
+        feature: "NoDeliveryInfo_view",
     },
     {
         id: 7,
@@ -138,7 +138,7 @@ const navigation = [
         href: "#",
         icon: CurrencyDollarIcon,
         current: false,
-        feature: ["AdditionalCharges"],
+        feature: "AdditionalCharges_view",
     },
     {
         id: 8,
@@ -146,7 +146,7 @@ const navigation = [
         href: "#",
         icon: UserIcon,
         current: false,
-        feature: ["DriverLogin"],
+        feature: "DriverLogin_view",
     },
 ];
 
@@ -158,6 +158,7 @@ function classNames(...classes) {
 export default function ChartsSidebar({
     sessionData,
     activeIndexGTRS,
+    customerAccounts,
     setActiveIndexGTRS,
     currentUser,
     onData,
@@ -174,7 +175,7 @@ export default function ChartsSidebar({
 
     const handleCheckboxClick = (option1, event) => {
         const value = customerOptions.map((option) =>
-            option.value === option1.value
+            option.DebtorId === option1.DebtorId
                 ? { ...option, checked: !option.checked }
                 : option
         );
@@ -198,14 +199,8 @@ export default function ChartsSidebar({
         return sortedObjects;
     }
     useEffect(() => {
-        handleClick(activeIndexGTRS);
-        axios.get(`/childrenlist/${currentUser.id}`).then((res) => {
-            const dataWithCheckedField = res.data.data.map((item) => ({
-                ...item,
-                checked: false,
-            }));
-            setCustomerOptions(sortObjectsByParentId(dataWithCheckedField));
-        });
+        
+            setCustomerOptions(customerAccounts.Accounts);
     }, []);
     useEffect(() => {
         onData(optionSelected);
@@ -260,47 +255,79 @@ export default function ChartsSidebar({
         setSidebarElements(updatedElements);
     };
 
-    function filterNavigation(userObject, navigation) {
-        return navigation.filter((item) => {
-            // Check if the item's features are present in the user's features
+    // function filterNavigation(userObject, navigation) {
+    //     return navigation.filter((item) => {
+    //         // Check if the item's features are present in the user's features
     
-            // Check if the item has pages
-            const itemFeaturesMatch =
-                (item.Pages &&
-                    // Check if any page's features match the user's features
-                    item.Pages.some((page) => {
-                        const pageFeatures = page.Features || [];
-                        return pageFeatures.some(
-                            (feature) =>
-                                // Check if the user's features include the feature name
-                                userObject.page.features.includes(feature.FeatureName) &&
-                                // Check if the page name matches the name in the navigation object
-                                page.PageName === item.name
-                        );
-                    })) ||
-                (item.options &&
-                    // Check if any option's pages' features match the user's features
-                    item.options.some((option) => {
-                        const optionPages = option.Pages || [];
-                        return optionPages.some((page) =>
-                            page.Features.some(
-                                (feature) =>
-                                    // Check if the user's features include the feature name
-                                    userObject.page.features.includes(feature.FeatureName) &&
-                                    // Check if the page name matches the name in the navigation object
-                                    page.PageName === item.name
-                            )
-                        );
-                    }));
+    //         // Check if the item has pages
+    //         const itemFeaturesMatch =
+    //             (item.Pages &&
+    //                 // Check if any page's features match the user's features
+    //                 item.Pages.some((page) => {
+    //                     const pageFeatures = page.Features || [];
+    //                     return pageFeatures.some(
+    //                         (feature) =>
+    //                             // Check if the user's features include the feature name
+    //                             userObject.page.features.includes(feature.FeatureName) &&
+    //                             // Check if the page name matches the name in the navigation object
+    //                             page.PageName === item.name
+    //                     );
+    //                 })) ||
+    //             (item.options &&
+    //                 // Check if any option's pages' features match the user's features
+    //                 item.options.some((option) => {
+    //                     const optionPages = option.Pages || [];
+    //                     return optionPages.some((page) =>
+    //                         page.Features.some(
+    //                             (feature) =>
+    //                                 // Check if the user's features include the feature name
+    //                                 userObject.page.features.includes(feature.FeatureName) &&
+    //                                 // Check if the page name matches the name in the navigation object
+    //                                 page.PageName === item.name
+    //                         )
+    //                     );
+    //                 }));
     
-            // Return the result of the filtering operation
-            setSidebarElements(itemFeaturesMatch) ;
+    //         // Return the result of the filtering operation
+    //         console.log(itemFeaturesMatch)
+    //         return itemFeaturesMatch ;
+    //     });
+    // }
+    
+    // // Usage example
+    // useEffect(()=>{setSidebarElements(filterNavigation(currentUser, navigation)) ;},[])
+
+    const filterNavigation = (navigation, user) => {
+        return navigation.filter(navItem => {
+          // Check if the navigation item has sub-options
+          if (navItem.options) {
+            // Filter options based on user permissions
+            navItem.options = navItem.options.filter(option => 
+              user.Pages.some(userPage => 
+                userPage.PageName === option.name && 
+                userPage.Features.some(feature => feature.FunctionName === option.feature)
+              )
+            );
+            // Include the navigation item only if it has any permitted options
+            return navItem.options.length > 0;
+          } else {
+            // For navigation items without options, check the feature directly
+            return user.Pages.some(userPage => 
+              userPage.PageName === navItem.name && 
+              userPage.Features?.some(feature => feature.FunctionName === navItem.feature)
+            );
+          }
         });
-    }
-    
-    // Usage example
-    const filteredNavigation = filterNavigation(userObject, navigation);
-    console.log(filteredNavigation);
+      };
+      
+      // Example usage
+      const filteredNavigation = filterNavigation(navigation, currentUser);
+      useEffect(()=>{
+        setSidebarElements(filterNavigation(navigation, currentUser))
+      },[])
+      console.log(filteredNavigation)
+    console.log(sidebarElements);
+    console.log(currentUser)
 
 
     return (
@@ -314,7 +341,7 @@ export default function ChartsSidebar({
                             <div className="group block w-full flex-shrink-0">
                                 <div className="flex items-center">
                                     <div>
-                                        {currentUser.icon ? (
+                                        {customerAccounts.icon ? (
                                             <img
                                                 className="inline-block h-14 w-14"
                                                 src={`/app/icons/blank-profile.jpg`}
@@ -323,17 +350,17 @@ export default function ChartsSidebar({
                                         ) : (
                                             <img
                                                 className="inline-block h-14 w-14 object-contain"
-                                                src={`/app/icons/${currentUser.icon}`}
+                                                src={`/app/icons/${customerAccounts.icon}`}
                                                 alt=""
                                             />
                                         )}
                                     </div>
                                     <div className="ml-3">
                                         <p className="text-sm font-medium text-gray-800">
-                                            {currentUser.name}
+                                            {customerAccounts.name}
                                         </p>
                                         <p className=" text-[0.7rem] text-gray-500 ">
-                                            {currentUser.email}
+                                            {customerAccounts.Email}
                                         </p>
                                     </div>
                                 </div>
@@ -361,15 +388,15 @@ export default function ChartsSidebar({
                                                     (option) => (
                                                         <div
                                                             className="flex items-center"
-                                                            key={option.value}
+                                                            key={option.DebtorId}
                                                         >
                                                             <input
                                                                 type="checkbox"
                                                                 id={
-                                                                    option.value
+                                                                    option.DebtorId
                                                                 }
                                                                 value={
-                                                                    option.value
+                                                                    option.DebtorId
                                                                 }
                                                                 checked={
                                                                     option.checked
@@ -383,11 +410,11 @@ export default function ChartsSidebar({
                                                             />
                                                             <label
                                                                 htmlFor={
-                                                                    option.value
+                                                                    option.DebtorId
                                                                 }
                                                                 className="ml-2"
                                                             >
-                                                                {option.label}
+                                                                {option.AccountNo}
                                                             </label>
                                                         </div>
                                                     )
@@ -401,8 +428,7 @@ export default function ChartsSidebar({
                     </div>
                     <div className=" pt-2 pb-4 w-full">
                         <nav className="mt-5 flex-1 hidden xl:flex-col space-y-1 px-2 w-full md:flex-row md:flex md:mt-0 ">
-                            {sidebarElements
-                                .map((item) => (
+                            {sidebarElements?.map((item) => (
                                     <div key={item.id}>
                                         {item.options ? (
                                             <Accordion

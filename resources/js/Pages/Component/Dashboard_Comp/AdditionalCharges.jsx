@@ -67,7 +67,7 @@ export default function AdditionalCharges({
         axios
             .get(`${url}api/GTRS/AddCharges`, {
                 headers: {
-                    RoleId: currentUser.role_id,
+                    RoleId: currentUser.UserId,
                 },
             })
             .then((res) => {
