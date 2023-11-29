@@ -664,7 +664,7 @@ export default function RDDreason({
     const [newColumns, setNewColumns] = useState();
 
     useEffect(() => {
-        if (Roles.includes(currentUser.role_id)) {
+        if (canEditRDD(currentUser)) {
             setNewColumns(columns);
         } else {
             setNewColumns(newArray);

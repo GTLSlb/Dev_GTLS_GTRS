@@ -79,9 +79,9 @@ export default function ModalRDD({
             const response = await axios
                 .post(`${url}api/Add/RDD`, data, {
                     headers: {
-                        UserId: currentUser.user_id,
-                        RoleId: currentUser.role_id,
-                        Name: currentUser.name,
+                        UserId: currentUser.UserId,
+                        RoleId: currentUser.RoleId,
+                        Name: currentUser.Name,
                     },
                 })
                 .then((res) => {

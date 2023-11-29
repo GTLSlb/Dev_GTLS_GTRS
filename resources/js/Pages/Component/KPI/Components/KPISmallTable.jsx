@@ -73,7 +73,7 @@ export default function SmallTableKPI({
             axios
                 .post(addurl, editedObject, {
                     headers: {
-                        RoleId: currentUser.role_id,
+                        RoleId: currentUser.UserId,
                     },
                 })
                 .then((res) => {
@@ -117,7 +117,7 @@ export default function SmallTableKPI({
             axios
                 .post(addurl, dataToSend, {
                     headers: {
-                        RoleId: currentUser.role_id,
+                        RoleId: currentUser.UserId,
                     },
                 })
                 .then((res) => {
@@ -274,7 +274,7 @@ export default function SmallTableKPI({
                                                                 </th>
                                                             )
                                                         )}
-                                                        {ShowEditBasedOnRoleAndModel() ? (
+                                                        {canEditKpiReasons(currentUser) ? (
                                                             <th
                                                                 scope="col"
                                                                 className="px-3 w-20 text-left text-sm font-semibold text-gray-400 border"
@@ -608,7 +608,7 @@ export default function SmallTableKPI({
                                                                                 </td>
                                                                             )
                                                                         )}
-                                                                        {ShowEditBasedOnRoleAndModel() ? (
+                                                                        {canEditKpiReasons(currentUser) ? (
                                                                             <td
                                                                                 className={`relative bg-white whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-0  ${
                                                                                     editError

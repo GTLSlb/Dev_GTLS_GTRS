@@ -43,7 +43,7 @@ export default function RDDMain({
             axios
                 .post(`${url}api/RDD`, userBody, {
                     headers: {
-                        RoleId: currentUser.role_id,
+                        RoleId: currentUser.UserId,
                     },
                 })
                 .then((res) => {
@@ -69,7 +69,7 @@ export default function RDDMain({
             axios
                 .get(`${url}api/RddChangeReason`, {
                     headers: {
-                        RoleId: currentUser.role_id,
+                        RoleId: currentUser.UserId,
                     },
                 })
                 .then((res) => {

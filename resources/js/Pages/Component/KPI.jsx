@@ -35,6 +35,7 @@ export default function KPI({
     accData,
     kpireasonsData,
 }) {
+    console.log(currentUser)
     window.moment = moment;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -50,7 +51,7 @@ export default function KPI({
             axios
                 .post(`${url}api/GTRS/KPI`, userBody, {
                     headers: {
-                        RoleId: currentUser.role_id,
+                        RoleId: currentUser.UserId,
                     },
                 })
                 .then((res) => {
@@ -579,7 +580,7 @@ export default function KPI({
     const [newColumns, setNewColumns] = useState([]);
 
     useEffect(() => {
-        if (Roles.includes(currentUser.role_id)) {
+        if (canEditKPI(currentUser)) {
             setNewColumns(columns);
         } else {
             setNewColumns(newArray);

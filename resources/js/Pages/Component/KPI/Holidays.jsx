@@ -60,7 +60,7 @@ export default function Holidays({
             axios
                 .get(`${url}api/GTRS/Holidays`, {
                     headers: {
-                        RoleId: currentUser.role_id,
+                        RoleId: currentUser.UserId,
                     },
                 })
                 .then((res) => {

@@ -45,19 +45,19 @@
 //         Features: [
 //           {
 //             FeatureId: 1,
-//             FeatureName: "test1123456",
+//             FunctionName: "test1123456",
 //           },
 //           {
 //             FeatureId: 6,
-//             FeatureName: "test123",
+//             FunctionName: "test123",
 //           },
 //           {
 //             FeatureId: 8,
-//             FeatureName: "Edit",
+//             FunctionName: "Edit",
 //           },
 //           {
 //             FeatureId: 8,
-//             FeatureName: "Edit",
+//             FunctionName: "Edit",
 //           },
 //         ],
 //       },
@@ -67,7 +67,7 @@
 //         Features: [
 //           {
 //             FeatureId: 2,
-//             FeatureName: "test11",
+//             FunctionName: "test11",
 //           },
 //         ],
 //       },
@@ -77,11 +77,11 @@
 //         Features: [
 //           {
 //             FeatureId: 5,
-//             FeatureName: "test1lkjn",
+//             FunctionName: "test1lkjn",
 //           },
 //           {
 //             FeatureId: 5,
-//             FeatureName: "test1lkjn",
+//             FunctionName: "test1lkjn",
 //           },
 //         ],
 //       },
@@ -93,7 +93,7 @@
 //           {
 //             FeatureId: 3,
    
-//             FeatureName: "test12363",
+//             FunctionName: "test12363",
 //           },
 //         ],
 //       },
@@ -103,7 +103,7 @@
 //         Features: [
 //           {
 //             FeatureId: 4,
-//             FeatureName: "test1",
+//             FunctionName: "test1",
 //           },
 //         ],
 //       },
@@ -135,9 +135,9 @@ export function canCalculateKPI(currentUser) {
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
-
+    console.log(targetPage)
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 /**
@@ -155,7 +155,7 @@ export function canEditKPI(currentUser) {
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 
@@ -174,7 +174,7 @@ export function canAddTransitDays(currentUser) {
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 
@@ -187,13 +187,13 @@ export function canAddTransitDays(currentUser) {
 export function canEditTransitDays(currentUser) {
     // Define the specific permission to check for editing transit days
     const targetPermissionName = "TransitDays_edit";
-    const pageName = "TransitDays"; // Adjust the page name as needed
+    const pageName = "Transit Days"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 
@@ -212,7 +212,7 @@ export function canAddHolidays(currentUser) {
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 /**
@@ -230,7 +230,7 @@ export function canEditHolidays(currentUser) {
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 /**
@@ -248,7 +248,7 @@ export function canAddKpiReasons(currentUser) {
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 
@@ -267,7 +267,7 @@ export function canEditKpiReasons(currentUser) {
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 
@@ -286,7 +286,7 @@ export function canEditFailedConsignments(currentUser) {
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 
@@ -305,7 +305,7 @@ export function canViewFailedReasons(currentUser) {
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 
@@ -324,7 +324,7 @@ export function canAddFailedReasons(currentUser) {
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 
@@ -343,7 +343,7 @@ export function canEditFailedReasons(currentUser) {
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 
@@ -362,7 +362,7 @@ export function canEditRDD(currentUser) {
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 
@@ -381,7 +381,7 @@ export function canViewRDDReasons(currentUser) {
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 
@@ -400,7 +400,7 @@ export function canAddRDDReasons(currentUser) {
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 
@@ -413,13 +413,13 @@ export function canAddRDDReasons(currentUser) {
 export function canEditRDDReasons(currentUser) {
     // Define the specific permission to check for editing RDD reasons
     const targetPermissionName = "RDDReasons_edit";
-    const pageName = "RDDReasons"; // Adjust the page name as needed
+    const pageName = "RDD"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 
@@ -438,7 +438,7 @@ export function canAddSafetyReport(currentUser) {
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 
@@ -457,7 +457,7 @@ export function canViewSafetyType(currentUser) {
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 
@@ -476,7 +476,7 @@ export function canEditSafetyReport(currentUser) {
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 
@@ -495,7 +495,7 @@ export function canAddSafetyType(currentUser) {
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 
@@ -514,7 +514,7 @@ export function canEditSafetyType(currentUser) {
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FeatureName === targetPermissionName);
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 

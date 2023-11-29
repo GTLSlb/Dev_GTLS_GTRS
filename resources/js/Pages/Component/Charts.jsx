@@ -28,6 +28,7 @@ export default function charts({
     sessionData,
     safetyData,
     debtorsData,
+    customerAccounts,
     dashData,
     setActiveIndexGTRS,
     setactiveCon,
@@ -45,6 +46,7 @@ export default function charts({
     setkpireasonsData,
 }) {
     window.moment = moment;
+    console.log(currentUser)
     const current = new Date();
     const month = current.getMonth() + 1;
     const formattedMonth = month < 10 ? `0${month}` : month;
@@ -1415,6 +1417,7 @@ export default function charts({
                             >
                                 <div className=" inset-0 rounded-lg border-dashed border-gray-200">
                                     <ChartsSidebar
+                                    customerAccounts={customerAccounts}
                                         activeIndexGTRS={activeIndexGTRS}
                                         sessionData={sessionData}
                                         onData={handleDataFromChild}

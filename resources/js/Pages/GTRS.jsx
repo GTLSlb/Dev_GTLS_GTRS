@@ -43,151 +43,216 @@ export default function Gtrs({
 
     const [AdditionalData, setAdditionalData] = useState([]);
     const [DriverData, setDriverData] = useState([]);
-    const [user, setUser] = useState(currentUser);
+    const [user, setUser] = useState();
     const [userBody, setUserBody] = useState();
     const [dataFromChild, setDataFromChild] = useState(null);
     //production URL
     // const url = "https://gtlsnsws10-vm.gtls.com.au:5478/";
     //test URL
     const url = "https://gtlslebs06-vm.gtls.com.au:8084/";
+    const userdata = {
+        UserId: 2,
+        TypeId: 1,
+        TypeName: "Customer",
+        OwnerId: 1,
+        GroupId: 9,
+        GroupName: "Admins",
+        Username: "Unilever@gmail.com",
+        Email: "Unilever@ual.com.au",
+        Accounts: [
+            {
+                AccountId: 2,
+                DebtorId: 244,
+                CustomerName: "Unilever",
+                AccountNo: "UNILEVER - NRS",
+            },
+            {
+                AccountId: 3,
+                DebtorId: 245,
+                CustomerName: "Unilever",
+                AccountNo: "UNILEVER - RPMP",
+            },
+            {
+                AccountId: 4,
+                DebtorId: 246,
+                CustomerName: "Unilever",
+                AccountNo: "UAL - TRANSFERS TO 3PMS",
+            },
+            {
+                AccountId: 5,
+                DebtorId: 247,
+                CustomerName: "Unilever",
+                AccountNo: "UNILEVER-ADHOC",
+            },
+            {
+                AccountId: 6,
+                DebtorId: 364,
+                CustomerName: "Unilever",
+                AccountNo: "UAPL - WH",
+            },
+            {
+                AccountId: 7,
+                DebtorId: 449,
+                CustomerName: "Unilever",
+                AccountNo: "UAPL - HPC",
+            },
+            {
+                AccountId: 8,
+                DebtorId: 1507,
+                CustomerName: "Unilever",
+                AccountNo: "UATLF - FDS",
+            },
+        ],
+    };
+
+    const debtorIdsArray = userdata.Accounts.map((account) => {
+        return { UserId: account.DebtorId };
+    });
+
+    // Usage
+    
+    const debtorIds = debtorIdsArray;
+
     useEffect(() => {
+        setUserBody(debtorIds)
         setLoadingGtrs(false);
-        setUser(currentUser);
-        console.log(currentUser)
+        console.log(debtorIds);
+
         axios
-            .get(`/childrens/1550`)
+            .get(
+                `https://gtlslebs06-vm.gtls.com.au:5432/api/GTAM/User/AppPermissions`,
+                {
+                    headers: {
+                        UserId: userdata.UserId,
+                        AppId: 3,
+                    },
+                }
+            )
             .then((res) => {
-                setUserBody(res.data.data);
-                console.log(res.data.data)
-                axios
-                    .post(`${url}api/GTRS/Dashboard`, res.data.data, {
-                        headers: {
-                            RoleId: currentUser.UserId,
-                        },
-                    })
-                    .then((res) => {
-                        const x = JSON.stringify(res.data);
-                        const parsedDataPromise = new Promise(
-                            (resolve, reject) => {
-                                const parsedData = JSON.parse(x);
-                                resolve(parsedData);
-                            }
-                        );
-                        parsedDataPromise.then((parsedData) => {
-                            setchartsData(parsedData);
-                            setchartsApi(true);
-                        });
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
-                axios
-                    .get(`${url}api/SafetyReport`, {
-                        headers: {
-                            RoleId: currentUser.UserId,
-                        },
-                    })
-                    .then((res) => {
-                        const x = JSON.stringify(res.data);
-                        const parsedDataPromise = new Promise(
-                            (resolve, reject) => {
-                                const parsedData = JSON.parse(x);
-                                resolve(parsedData);
-                            }
-                        );
-
-                        parsedDataPromise.then((parsedData) => {
-                            setSafetyData(parsedData || []);
-                        });
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
-                axios
-                    .get(`${url}api/Debtors`, {
-                        headers: {
-                            RoleId: currentUser.UserId,
-                        },
-                    })
-                    .then((res) => {
-                        const x = JSON.stringify(res.data);
-                        const parsedDataPromise = new Promise(
-                            (resolve, reject) => {
-                                const parsedData = JSON.parse(x);
-                                resolve(parsedData);
-                            }
-                        );
-                        parsedDataPromise.then((parsedData) => {
-                            setdebtorsData(parsedData || []);
-                            setDebtorsApi(true);
-                        });
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
-                axios
-                    .post(`${url}api/GTRS/Consignments`, res.data.data, {
-                        headers: {
-                            RoleId: currentUser.UserId,
-                        },
-                    })
-                    .then((res) => {
-                        const x = JSON.stringify(res.data);
-                        const parsedDataPromise = new Promise(
-                            (resolve, reject) => {
-                                const parsedData = JSON.parse(x);
-                                resolve(parsedData);
-                            }
-                        );
-
-                        parsedDataPromise.then((parsedData) => {
-                            setconsData(parsedData || []);
-                            setConsApi(true);
-                        });
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
-                axios
-                    .post(`${url}api/GTRS/PerformanceReport`, res.data.data, {
-                        headers: {
-                            RoleId: currentUser.UserId,
-                        },
-                    })
-                    .then((res) => {
-                        const x = JSON.stringify(res.data);
-                        const parsedData = JSON.parse(x);
-                        setPerfData(parsedData || []);
-                        setReportApi(true);
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
-                axios
-                    .get(`${url}api/GTRS/KpiReasons`, {
-                        headers: {
-                            RoleId: currentUser.UserId,
-                        },
-                    })
-                    .then((res) => {
-                        const x = JSON.stringify(res.data);
-                        const parsedDataPromise = new Promise(
-                            (resolve, reject) => {
-                                const parsedData = JSON.parse(x);
-                                resolve(parsedData);
-                            }
-                        );
-                        parsedDataPromise.then((parsedData) => {
-                            setkpireasonsData(parsedData || []);
-                            setKPIReasonsApi(true);
-                        });
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
+                setUser(res.data);
+                console.log(res.data)
             })
-            .catch((error) => console.log(error));
-    }, [user]);
+            .catch((err) => {
+                console.log(err);
+            });
+
+        axios
+            .post(`${url}api/GTRS/Dashboard`, debtorIds, {
+                headers: {
+                    RoleId: 2,
+                },
+            })
+            .then((res) => {
+                const x = JSON.stringify(res.data);
+                const parsedDataPromise = new Promise((resolve, reject) => {
+                    const parsedData = JSON.parse(x);
+                    resolve(parsedData);
+                });
+                parsedDataPromise.then((parsedData) => {
+                    setchartsData(parsedData);
+                    setchartsApi(true);
+                });
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        axios
+            .get(`${url}api/SafetyReport`, {
+                headers: {
+                    RoleId: userdata.UserId,
+                },
+            })
+            .then((res) => {
+                const x = JSON.stringify(res.data);
+                const parsedDataPromise = new Promise((resolve, reject) => {
+                    const parsedData = JSON.parse(x);
+                    resolve(parsedData);
+                });
+
+                parsedDataPromise.then((parsedData) => {
+                    setSafetyData(parsedData || []);
+                });
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        axios
+            .get(`${url}api/Debtors`, {
+                headers: {
+                    RoleId: userdata.UserId,
+                },
+            })
+            .then((res) => {
+                const x = JSON.stringify(res.data);
+                const parsedDataPromise = new Promise((resolve, reject) => {
+                    const parsedData = JSON.parse(x);
+                    resolve(parsedData);
+                });
+                parsedDataPromise.then((parsedData) => {
+                    setdebtorsData(parsedData || []);
+                    setDebtorsApi(true);
+                });
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        axios
+            .post(`${url}api/GTRS/Consignments`, debtorIds, {
+                headers: {
+                    RoleId: userdata.UserId,
+                },
+            })
+            .then((res) => {
+                const x = JSON.stringify(res.data);
+                const parsedDataPromise = new Promise((resolve, reject) => {
+                    const parsedData = JSON.parse(x);
+                    resolve(parsedData);
+                });
+
+                parsedDataPromise.then((parsedData) => {
+                    setconsData(parsedData || []);
+                    setConsApi(true);
+                });
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        axios
+            .post(`${url}api/GTRS/PerformanceReport`, debtorIds, {
+                headers: {
+                    RoleId: userdata.UserId,
+                },
+            })
+            .then((res) => {
+                const x = JSON.stringify(res.data);
+                const parsedData = JSON.parse(x);
+                setPerfData(parsedData || []);
+                setReportApi(true);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        axios
+            .get(`${url}api/GTRS/KpiReasons`, {
+                headers: {
+                    RoleId: userdata.UserId,
+                },
+            })
+            .then((res) => {
+                const x = JSON.stringify(res.data);
+                const parsedDataPromise = new Promise((resolve, reject) => {
+                    const parsedData = JSON.parse(x);
+                    resolve(parsedData);
+                });
+                parsedDataPromise.then((parsedData) => {
+                    setkpireasonsData(parsedData || []);
+                    setKPIReasonsApi(true);
+                });
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
 
     if (consApi && reportApi && chartsApi && DebtorsApi && KPIReasonsApi) {
         setLoadingGtrs(true);
@@ -212,11 +277,12 @@ export default function Gtrs({
                         setFailedReasons={setFailedReasons}
                         safetyData={safetyData}
                         debtorsData={debtorsData}
+                        customerAccounts={userdata}
                         rddData={rddData}
                         setrddData={setrddData}
                         IDfilter={dataFromChild}
                         sessionData={sessionData}
-                        currentUser={currentUser}
+                        currentUser={{ ...user[0], UserId: userdata.UserId }}
                         dashData={PerfData}
                         setActiveIndexGTRS={setActiveIndexGTRS}
                         activeIndexGTRS={activeIndexGTRS}

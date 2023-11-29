@@ -494,7 +494,7 @@ export default function SafetyRepTable({
     const newArray = columns?.slice(0, -1);
     const [newColumns, setNewColumns] = useState();
     useEffect(() => {
-        if (Roles.includes(currentUser.role_id)) {
+        if (canEditSafetyReport(currentUser)) {
             setNewColumns(columns);
         } else {
             setNewColumns(newArray);
