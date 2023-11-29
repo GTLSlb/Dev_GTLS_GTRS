@@ -40,7 +40,7 @@ class LoginController extends Controller
                 $authProvider = new CustomAuth(Auth::guard()->getProvider(), $request->session());
                 $credentials = [
                     'EmailInput' => $request->input('Email'),
-                    'EmailDb' => $responseData[0]['Email'],
+                    'EmailDb' => $responseData[0]['Username'],
                     'PasswordDb' => $responseData[0]['UserId'],
                     'PasswordInput' => $request->input('Password'),
                 ];
@@ -59,7 +59,7 @@ class LoginController extends Controller
                 } else {
                     $errorMessage = 'An error occurred.';
                     $statusCode = 500;
-                    return response(['error' => $response], $statusCode);
+                    return response(['not auth' => $response], $statusCode);
                 }
             }
         } else {
