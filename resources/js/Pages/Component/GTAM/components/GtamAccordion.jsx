@@ -143,7 +143,6 @@ export default function GtamAccordion({
         let name = document.getElementById("EditPage").value;
 
         if (pageElements?.find((item) => item.PageName === name)) {
-            console.log("no");
             AlertToast("Can't use same name", 3);
         } else {
             const inputValues = {
@@ -152,7 +151,6 @@ export default function GtamAccordion({
                 PageName: name,
                 StatusId: status,
             };
-            console.log(inputValues);
             axios
                 .post(`${url}api/GTAM/Add/AppPage`, inputValues, {
                     headers: {
@@ -160,7 +158,6 @@ export default function GtamAccordion({
                     },
                 })
                 .then((res) => {
-                    console.log("done");
                     AlertToast("Saved successfully", 1);
                     getFeatures();
                     getRoles();
@@ -172,7 +169,6 @@ export default function GtamAccordion({
                     setIsLoading(false);
                     AlertToast("Something went wrong", 2);
                     // AlertToast("Error please try again.", 2);
-                    console.log(err);
                 });
         }
     }
@@ -187,7 +183,6 @@ export default function GtamAccordion({
             PageName: name,
             StatusId: status,
         };
-        console.log(inputValues);
         axios
             .post(`${url}api/GTAM/Add/AppPage`, inputValues, {
                 headers: {
@@ -195,7 +190,6 @@ export default function GtamAccordion({
                 },
             })
             .then((res) => {
-                console.log("done");
                 setIsLoading(false);
                 AlertToast("Saved successfully", 1);
                 getFeatures();
@@ -205,7 +199,6 @@ export default function GtamAccordion({
             .catch((err) => {
                 setIsLoading(false);
                 AlertToast("Something went wrong", 2);
-                console.log(err);
             });
     }
 
@@ -223,7 +216,6 @@ export default function GtamAccordion({
                 PageName: name,
                 StatusId: 1,
             };
-            console.log(inputValues);
             axios
                 .post(`${url}api/GTAM/Add/AppPage`, inputValues, {
                     headers: {
@@ -232,7 +224,6 @@ export default function GtamAccordion({
                 })
                 .then((res) => {
                     setIsLoading(false);
-                    console.log("done");
                     AlertToast("Saved successfully", 1);
                     getFeatures();
                     getRoles();
@@ -241,7 +232,6 @@ export default function GtamAccordion({
                 .catch((err) => {
                     setIsLoading(false);
                     AlertToast("Something went wrong", 2);
-                    console.log(err);
                 });
         }
     }
@@ -255,7 +245,6 @@ export default function GtamAccordion({
             StatusId: 1,
             FeatureId: null,
         };
-        console.log(inputValues);
         axios
             .post(`${url}api/GTAM/Add/AppFeatures`, inputValues, {
                 headers: {
@@ -264,7 +253,6 @@ export default function GtamAccordion({
             })
             .then((res) => {
                 setIsLoading(false);
-                console.log("done");
                 AlertToast("Saved successfully", 1);
                 getFeatures();
                 getRoles();
@@ -287,7 +275,6 @@ export default function GtamAccordion({
             StatusId: status,
             FeatureId: FeatureId,
         };
-        console.log(inputValues);
         axios
             .post(`${url}api/GTAM/Add/AppFeatures`, inputValues, {
                 headers: {
@@ -296,7 +283,6 @@ export default function GtamAccordion({
             })
             .then((res) => {
                 setIsLoading(false);
-                console.log("done");
                 AlertToast("Saved successfully", 1);
                 getFeatures();
                 getRoles();
@@ -306,7 +292,6 @@ export default function GtamAccordion({
                 setIsLoading(false);
                 handleCancelEdit();
                 AlertToast("Something went wrong", 2);
-                console.log(err);
             });
     }
 
@@ -325,7 +310,6 @@ export default function GtamAccordion({
                 StatusId: 1,
                 FeatureId: null,
             };
-            console.log(inputValues);
             axios
                 .post(`${url}api/GTAM/Add/AppFeatures`, inputValues, {
                     headers: {
@@ -333,7 +317,6 @@ export default function GtamAccordion({
                     },
                 })
                 .then((res) => {
-                    console.log("done");
                     AlertToast("Saved successfully", 1);
                     CancelAdd();
                     getFeatures();

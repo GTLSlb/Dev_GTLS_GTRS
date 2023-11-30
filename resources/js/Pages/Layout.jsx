@@ -10,10 +10,11 @@ import hubConnection from "./SignalR";
 export default function Sidebar(Boolean) {
     const [currentUser, setcurrentUser] = useState(null);
     const [sessionData, setSessionData] = useState(null);
-    const [notification, setNotification] = useState();
+    const [allowedApplications, setAllowedApplications] = useState([]);
 
     // const Invoicesurl = "https://gtlslebs06-vm.gtls.com.au:147/";
     const Invoicesurl = "https://gtlslebs06-vm.gtls.com.au:5678/";
+    const Gtamurl = "https://gtlslebs06-vm.gtls.com.au:5432";
 
     useEffect(() => {
         axios
@@ -24,7 +25,34 @@ export default function Sidebar(Boolean) {
             })
             .catch((error) => console.log(error));
     }, []);
-    useEffect(() => {}, [currentUser]);
+
+    useEffect(() => {
+        if (currentUser) {
+            axios
+                .get(`${Gtamurl}/api/GTAM/User/Permissions`, {
+                    headers: {
+                        UserId: currentUser.UserId,
+                    },
+                })
+                .then((res) => {
+                    const x = JSON.stringify(res.data);
+                    const parsedDataPromise = new Promise((resolve, reject) => {
+                        try {
+                            const parsedData = JSON.parse(x);
+                            resolve(parsedData || []); // Use an empty array if parsedData is null
+                        } catch (error) {
+                            reject(error);
+                        }
+                    });
+                    parsedDataPromise.then((parsedData) => {
+                        setAllowedApplications(parsedData);
+                    });
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+    }, [currentUser]);
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [activePage, setactivePage] = useState(null);
@@ -38,9 +66,9 @@ export default function Sidebar(Boolean) {
     const [invoiceDetails, setInvoiceDetails] = useState();
     const [PODetails, setPODetails] = useState();
 
-    const handleGTAMIndexChange = (e) =>{
+    const handleGTAMIndexChange = (e) => {
         setActiveIndexGtam(e);
-    }
+    };
 
     const components = [
         <Gtrs
@@ -61,24 +89,24 @@ export default function Sidebar(Boolean) {
 
     useEffect(() => {
         const components = [
-          <Gtrs
-            sessionData={sessionData}
-            setactivePage={setactivePage}
-            setactiveCon={setactiveCon}
-            setMobileMenuOpen={setMobileMenuOpen}
-            mobileMenuOpen={mobileMenuOpen}
-            activeHeader={activeHeader}
-            activeIndexGTRS={activeIndexGTRS}
-            setActiveIndexGTRS={setActiveIndexGTRS}
-            loadingGtrs={loadingGtrs}
-            setLoadingGtrs={setLoadingGtrs}
-            currentUser={currentUser}
-            setCurrentUser={setcurrentUser}
-          />,
+            <Gtrs
+                sessionData={sessionData}
+                setactivePage={setactivePage}
+                setactiveCon={setactiveCon}
+                setMobileMenuOpen={setMobileMenuOpen}
+                mobileMenuOpen={mobileMenuOpen}
+                activeHeader={activeHeader}
+                activeIndexGTRS={activeIndexGTRS}
+                setActiveIndexGTRS={setActiveIndexGTRS}
+                loadingGtrs={loadingGtrs}
+                setLoadingGtrs={setLoadingGtrs}
+                currentUser={currentUser}
+                setCurrentUser={setcurrentUser}
+            />,
         ];
-    
+
         setcurrentComponent(components[activePage]);
-      }, [activePage, currentUser]);
+    }, [activePage, currentUser]);
 
     if (!currentUser) {
         return null; // Render nothing
@@ -88,6 +116,7 @@ export default function Sidebar(Boolean) {
                 <div className="bg-smooth h-full ">
                     {/* <NmainSidebar/> */}
                     <MainSidebar
+                        allowedApplications={allowedApplications}
                         setMobileMenuOpen={setMobileMenuOpen}
                         setActiveIndexGtam={handleGTAMIndexChange}
                         mobileMenuOpen={mobileMenuOpen}

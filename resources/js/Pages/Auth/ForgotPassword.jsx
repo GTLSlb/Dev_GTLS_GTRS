@@ -40,7 +40,6 @@ export default function ForgotPassword({ status }) {
                 },
             })
             .then((res) => {
-                console.log(res.data);
                 setEmailLoading(false);
                 setCheckEmail(true);
                 setUserId(res.data[0].UserID);
@@ -68,7 +67,6 @@ export default function ForgotPassword({ status }) {
             )
             .then((res) => {
                 setOTPLoading(false);
-                console.log(res.data);
                 setCheckEmail(false);
                 setCheckOTP(true);
                 setOTP(res.data[0].OtpId);
@@ -92,7 +90,6 @@ export default function ForgotPassword({ status }) {
             })
             .then((res) => {
                 setResetLoading(false);
-                console.log(res.data);
             })
             .catch((err) => {
                 setResetLoading(false);

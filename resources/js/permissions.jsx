@@ -135,7 +135,6 @@ export function canCalculateKPI(currentUser) {
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
-    console.log(targetPage)
     // Check if the page is found and if the specified permission is present in its Features array
     return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }

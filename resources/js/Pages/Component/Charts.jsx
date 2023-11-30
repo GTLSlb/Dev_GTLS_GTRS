@@ -46,7 +46,6 @@ export default function charts({
     setkpireasonsData,
 }) {
     window.moment = moment;
-    console.log(currentUser)
     const current = new Date();
     const month = current.getMonth() + 1;
     const formattedMonth = month < 10 ? `0${month}` : month;
