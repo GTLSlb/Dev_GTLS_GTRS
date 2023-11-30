@@ -51,14 +51,14 @@ export default function Gtrs({
     //test URL
     const url = "https://gtlslebs06-vm.gtls.com.au:8084/";
     const userdata = currentUser;
-    const debtorIdsArray = userdata.Accounts.map((account) => {
+    const debtorIdsArray = userdata?.Accounts?.map((account) => {
         return { UserId: account.DebtorId };
     });
 
     // Usage
 
-    const debtorIds = debtorIdsArray;
-
+    const debtorIds = userdata.TypeId === 1 ? debtorIdsArray : userdata.UserId;
+    userdata.RoleId = 1;
     useEffect(() => {
         setUserBody(debtorIds);
         setLoadingGtrs(false);
@@ -85,7 +85,7 @@ export default function Gtrs({
         axios
             .post(`${url}api/GTRS/Dashboard`, debtorIds, {
                 headers: {
-                    RoleId: 2,
+                    RoleId: userdata.RoleId,
                 },
             })
             .then((res) => {
@@ -105,7 +105,7 @@ export default function Gtrs({
         axios
             .get(`${url}api/SafetyReport`, {
                 headers: {
-                    RoleId: userdata.UserId,
+                    RoleId: userdata.RoleId,
                 },
             })
             .then((res) => {
@@ -125,7 +125,7 @@ export default function Gtrs({
         axios
             .get(`${url}api/Debtors`, {
                 headers: {
-                    RoleId: userdata.UserId,
+                    RoleId: userdata.RoleId,
                 },
             })
             .then((res) => {
@@ -145,7 +145,7 @@ export default function Gtrs({
         axios
             .post(`${url}api/GTRS/Consignments`, debtorIds, {
                 headers: {
-                    RoleId: userdata.UserId,
+                    RoleId: userdata.RoleId,
                 },
             })
             .then((res) => {
@@ -166,7 +166,7 @@ export default function Gtrs({
         axios
             .post(`${url}api/GTRS/PerformanceReport`, debtorIds, {
                 headers: {
-                    RoleId: userdata.UserId,
+                    RoleId: userdata.RoleId,
                 },
             })
             .then((res) => {
@@ -181,7 +181,7 @@ export default function Gtrs({
         axios
             .get(`${url}api/GTRS/KpiReasons`, {
                 headers: {
-                    RoleId: userdata.UserId,
+                    RoleId: userdata.RoleId,
                 },
             })
             .then((res) => {

@@ -166,7 +166,7 @@ export default function ChartsSidebar({
     const [customerOptions, setCustomerOptions] = useState([]);
     const [showList, setShowList] = useState(false);
     // const showSelect = true;
-    const showSelect = customerOptions.length > 0;
+    const showSelect = customerOptions?.length > 0;
 
     const handleDivClick = () => {
         setShowList(!showList);
