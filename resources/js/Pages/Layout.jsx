@@ -5,18 +5,19 @@ import MainNavbar from "../Components/Main-navbar";
 import Gtrs from "@/Pages/GTRS";
 import axios from "axios";
 import hubConnection from "./SignalR";
+import NoAccess from "@/Components/NoAccess";
 // import AllRoutes from "./RoutesPage";
 
 export default function Sidebar(Boolean) {
     const [currentUser, setcurrentUser] = useState(null);
     const [sessionData, setSessionData] = useState(null);
-    const [user, setUser] = useState();
+    const [user, setUser] = useState({});
     const [allowedApplications, setAllowedApplications] = useState([]);
 
     // const Invoicesurl = "https://gtlslebs06-vm.gtls.com.au:147/";
     const Invoicesurl = "https://gtlslebs06-vm.gtls.com.au:5678/";
     const Gtamurl = "https://gtlslebs06-vm.gtls.com.au:5432";
-
+    
     useEffect(() => {
         axios
             .get("/users")

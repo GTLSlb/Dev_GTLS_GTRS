@@ -7,6 +7,7 @@ import Charts from "./Component/Charts";
 import debtors from "./Component/JsonData/debtors.json";
 import rddData from "./Component/JsonData/RddData.json";
 import { useStepContext } from "@mui/material";
+import NoAccess from "@/Components/NoAccess";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -52,6 +53,7 @@ export default function Gtrs({
     //test URL
     const url = "https://gtlslebs06-vm.gtls.com.au:8084/";
     const userdata = currentUser;
+    const [canAccess, setCanAccess] = useState(null);
     const debtorIdsArray = userdata?.Accounts?.map((account) => {
         return { UserId: account.DebtorId };
     });
@@ -75,7 +77,6 @@ export default function Gtrs({
     useEffect(() => {
         setUserBody(debtorIds);
         setLoadingGtrs(false);
-        
 
         axios
             .post(`${url}api/GTRS/Dashboard`, debtorIds, {
@@ -194,11 +195,25 @@ export default function Gtrs({
                 console.log(err);
             });
     }, []);
+console.log(user);
+    useEffect(() => {
+        if (loadingGtrs) {
+            if (user == {}) {
+                setCanAccess(false);
+            } else if (!user?.hasOwnProperty("Features")) {
+                setCanAccess(false);
+            } else {
+                setCanAccess(true);
+            }
+        }
+    }, [user, loadingGtrs]);
 
     if (consApi && reportApi && chartsApi && DebtorsApi && KPIReasonsApi) {
         setLoadingGtrs(true);
     }
+
     if (loadingGtrs) {
+        if(canAccess){
         return (
             <div className="bg-smooth">
                 <div className="md:pl-20 pt-16 ">
@@ -241,7 +256,12 @@ export default function Gtrs({
                     />
                 </div>
             </div>
-        );
+        );}
+        else{
+            return (
+                <NoAccess/>
+            )
+        }
     } else {
         return (
             <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
