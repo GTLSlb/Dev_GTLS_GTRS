@@ -166,7 +166,7 @@ export default function ChartsSidebar({
     const [customerOptions, setCustomerOptions] = useState([]);
     const [showList, setShowList] = useState(false);
     // const showSelect = true;
-    const showSelect = customerOptions.length > 0;
+    const showSelect = customerOptions?.length > 0;
 
     const handleDivClick = () => {
         setShowList(!showList);
@@ -319,16 +319,14 @@ export default function ChartsSidebar({
           }
         });
       };
-      
       // Example usage
       const filteredNavigation = filterNavigation(navigation, currentUser);
+    
       useEffect(()=>{
-        setSidebarElements(filterNavigation(navigation, currentUser))
-      },[])
-      console.log(filteredNavigation)
-    console.log(sidebarElements);
-    console.log(currentUser)
 
+        setSidebarElements(filteredNavigation)
+        setActiveIndexGTRS(filteredNavigation[0].id)
+      },[])
 
     return (
         <div className="h-full xl:fixed xl:w-64 md:h-full xl:fixed bg-gray-200 w-full ">

@@ -36,6 +36,7 @@ import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import SupportModal from "@/Pages/Component/modals/SupportModal";
 
 export default function MainSidebar({
+    allowedApplications,
     setMobileMenuOpen,
     mobileMenuOpen,
     setActiveIndexGtam,
@@ -51,7 +52,7 @@ export default function MainSidebar({
         handleSetActivePage(0);
     }, []);
 
-    const current_user_role = currentUser.role_id;
+    const current_user_role = currentUser?.role_id;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const sidebarNavigation = [
         {
@@ -453,7 +454,20 @@ export default function MainSidebar({
                 console.log(error);
             });
     };
-
+    const currentAppId = window.Laravel.appId;
+    function moveToHead(array, id) {
+        // Find the index of the object with the matching AppId
+        const index = array.findIndex(item => item.AppId == id);
+        // If the item is found and it's not already the first item
+        if (index > 0) {
+            // Remove the item from the array
+            const [item] = array.splice(index, 1);
+            // Add the item to the beginning of the array
+            array.unshift(item);
+        }
+        return array;
+    }
+    moveToHead(allowedApplications,3)
     return (
         <div>
             <div className="hidden md:flex md:flex-shrink-0 h-full fixed top-0 left-0 z-50 w-auto h-screen">
@@ -469,66 +483,57 @@ export default function MainSidebar({
                                 aria-label="Sidebar"
                                 className="flex flex-col items-center space-y-3 pt-6"
                             >
-                                {sidebarElements
-                                    .filter((item) =>
-                                        item.role.includes(current_user_role)
-                                    )
-                                    .map((item) => (
-                                        //{sidebarElements.map((item) => (
+                                  {allowedApplications?.map((item) => (
+                                    //{sidebarElements.map((item) => (
 
-                                        <a
-                                            href={item.href}
-                                            key={item.id}
-                                            target={
-                                                item.id === 0
-                                                    ? undefined
-                                                    : "_blank"
-                                            }
+                                    <a
+                                        href={item.AppUrl}
+                                        key={item.AppId}
+                                        target={
+                                            item.id === 0 ? undefined : "_blank"
+                                        }
+                                    >
+                                        {" "}
+                                        <button
+                                            key={item.AppAbv}
+                                            className={classNames(
+                                                item.AppId == currentAppId
+                                                    ? "bg-gray-700 text-white"
+                                                    : "text-gray-400 hover:bg-gray-900 hover:text-white",
+                                                "group w-auto p-3 rounded-md flex flex-col items-center text-xs font-medium"
+                                            )}
+                                            // aria-current={item.current ? 'page' : undefined}
                                         >
-                                            {" "}
-                                            <button
-                                                key={item.name}
-                                                // href={item.href}
-                                                // onClick={() =>
-                                                //     handleClick(item.id)
-                                                // }
-                                                className={classNames(
-                                                    item.current
-                                                        ? "bg-gray-700 text-white"
-                                                        : "text-gray-400 hover:bg-gray-900 hover:text-white",
-                                                    "group w-auto p-3 rounded-md flex flex-col items-center text-xs font-medium"
-                                                )}
-                                                // aria-current={item.current ? 'page' : undefined}
-                                            >
-                                                {item.icon ? (
-                                                    <item.icon
-                                                        className={classNames(
-                                                            item.current
-                                                                ? "text-yellow-400"
-                                                                : "text-gray-400 group-hover:text-white",
-                                                            "h-6 w-6"
-                                                        )}
-                                                        aria-hidden="true"
-                                                    />
-                                                ) : (
-                                                    <img
-                                                        src={item.img}
-                                                        className={classNames(
-                                                            item.current
-                                                                ? "text-yellow-400"
-                                                                : "text-gray-400 group-hover:text-white",
-                                                            "h-6 w-8"
-                                                        )}
-                                                        aria-hidden="true"
-                                                    />
-                                                )}
-                                                <span className="mt-2">
-                                                    {item.name}
-                                                </span>
-                                            </button>
-                                        </a>
-                                        // </Link>
-                                    ))}
+                                            {item.icon ? (
+                                                <item.icon
+                                                    className={classNames(
+                                                        item.current
+                                                            ? "text-yellow-400"
+                                                            : "text-gray-400 group-hover:text-white",
+                                                        "h-6 w-6"
+                                                    )}
+                                                    aria-hidden="true"
+                                                />
+                                            ) : (
+                                                <img
+                                                    src={`AppLogo/${item.AppIcon}`}
+                                                    className={classNames(
+                                                        item.AppId ==
+                                                            currentAppId
+                                                            ? "text-yellow-400"
+                                                            : "text-gray-400 group-hover:text-white",
+                                                        "h-6 w-8"
+                                                    )}
+                                                    aria-hidden="true"
+                                                />
+                                            )}
+                                            <span>
+                                                {item.AppAbv}
+                                            </span>
+                                        </button>
+                                    </a>
+                                    // </Link>
+                                ))}
                             </nav>
                         </div>
                         <div className="flex flex-col flex-shrink-0 pb-5">

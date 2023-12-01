@@ -10,13 +10,11 @@ const OTPForm = ({inputs,setInputs,submitOTP,OTPLoading}) => {
 
   useEffect(() => {
     if (currentInput === 6) {
-      console.log("done");
       handleSubmit();
     }
   }, [currentInput]);
 
   const handleSubmit = () => {
-    console.log("submit",inputs);
     submitOTP()
 
   };
@@ -30,7 +28,6 @@ const OTPForm = ({inputs,setInputs,submitOTP,OTPLoading}) => {
 
     // Move focus to the next input
     if (index <= 5 && digit !== '') {
-      console.log("focus on next input");
       setCurrentInput(index + 1);
 
       // Use the ref to focus on the next input

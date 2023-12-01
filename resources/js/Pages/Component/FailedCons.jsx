@@ -577,7 +577,6 @@ export default function FailedCons({
                     } else if (person[columnKey] === false) {
                         acc[columnKey] = "false";
                     } else if (column.toUpperCase() === "KPI DATETIME") {
-                        console.log(person);
                         acc[columnKey] =
                             moment(
                                 person["KPI DATETIME"].replace("T", " "),

@@ -57,7 +57,6 @@ export default function TableStructure({
     };
     const gridStyle = { minHeight: 600 };
     const onFilterValueChange = useCallback((filterValue) => {
-        console.log(filterValue)
         setFilterValueElements(filterValue);
     }, []);
     // const onSelectionChange = useCallback(
@@ -78,7 +77,6 @@ export default function TableStructure({
     //     },
     //     [filters]
     // );
-    console.log(filters)
     return (
         <div className="">
             {/* <Sidebar /> */}

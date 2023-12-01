@@ -51,7 +51,6 @@ export default function FeaturesList({ features, allData, activePage,getRoles,
 
     function ToggleStatus(item){
         setIsLoading(true)
-        console.log(item)
         let status=0
         if(item.StatusId==1){
             const updatedArray = featuresElements.map(feature => {
@@ -81,7 +80,6 @@ export default function FeaturesList({ features, allData, activePage,getRoles,
             FeatureId:  item.FeatureId,
             StatusId: status,
         };
-        console.log(inputValues);
         axios
             .post(`${url}api/GTAM/Add/AppRolePermission`, inputValues, {
                 headers: {
@@ -90,7 +88,6 @@ export default function FeaturesList({ features, allData, activePage,getRoles,
             })
             .then((res) => {
 
-                console.log("done");
                 AlertToast("Saved successfully",1)
                 getRoles();
 
@@ -117,7 +114,6 @@ export default function FeaturesList({ features, allData, activePage,getRoles,
             FeatureId:  selected?.FeatureId,
             StatusId: 1,
         };
-        console.log(inputValues);
         axios
             .post(`${url}api/GTAM/Add/AppRolePermission`, inputValues, {
                 headers: {
@@ -125,7 +121,6 @@ export default function FeaturesList({ features, allData, activePage,getRoles,
                 },
             })
             .then((res) => {
-                console.log("done");
                 AlertToast("Saved successfully",1)
                 getRoles();
 

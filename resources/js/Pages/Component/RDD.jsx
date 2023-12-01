@@ -107,8 +107,6 @@ export default function RDDreason({
         // Extract the data for the selected columns
         const data = filteredData.map((person) =>
             selectedColumns.reduce((acc, column) => {
-                console.log(person);
-
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
                     if (columnKey === "Reason") {
