@@ -10,6 +10,7 @@ import hubConnection from "./SignalR";
 export default function Sidebar(Boolean) {
     const [currentUser, setcurrentUser] = useState(null);
     const [sessionData, setSessionData] = useState(null);
+    const [user, setUser] = useState();
     const [allowedApplications, setAllowedApplications] = useState([]);
 
     // const Invoicesurl = "https://gtlslebs06-vm.gtls.com.au:147/";
@@ -22,6 +23,22 @@ export default function Sidebar(Boolean) {
             .then((res) => {
                 //console.log(res.data.hasOwnProperty('Username'));
                 setcurrentUser(res.data);
+                axios
+                    .get(
+                        `https://gtlslebs06-vm.gtls.com.au:5432/api/GTAM/User/AppPermissions`,
+                        {
+                            headers: {
+                                UserId: res.data.UserId,
+                                AppId: 3,
+                            },
+                        }
+                    )
+                    .then((res) => {
+                        setUser(res.data);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
             })
             .catch((error) => console.log(error));
     }, []);
@@ -73,6 +90,8 @@ export default function Sidebar(Boolean) {
     const components = [
         <Gtrs
             sessionData={sessionData}
+            user={user}
+            setUser={setUser}
             setactivePage={setactivePage}
             setactiveCon={setactiveCon}
             setMobileMenuOpen={setMobileMenuOpen}
@@ -91,6 +110,8 @@ export default function Sidebar(Boolean) {
         const components = [
             <Gtrs
                 sessionData={sessionData}
+                user={user}
+                setUser={setUser}
                 setactivePage={setactivePage}
                 setactiveCon={setactiveCon}
                 setMobileMenuOpen={setMobileMenuOpen}

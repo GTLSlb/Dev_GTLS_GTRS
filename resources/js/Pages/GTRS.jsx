@@ -15,6 +15,8 @@ function classNames(...classes) {
 export default function Gtrs({
     sessionData,
     activeIndexGTRS,
+    user,
+    setUser,
     setActiveIndexGTRS,
     setLoadingGtrs,
     currentUser,
@@ -43,7 +45,6 @@ export default function Gtrs({
 
     const [AdditionalData, setAdditionalData] = useState([]);
     const [DriverData, setDriverData] = useState([]);
-    const [user, setUser] = useState();
     const [userBody, setUserBody] = useState();
     const [dataFromChild, setDataFromChild] = useState(null);
     //production URL
@@ -57,37 +58,29 @@ export default function Gtrs({
 
     // Usage
 
-    let debtorIds ;
-    if(userdata.TypeId == 1){
+    let debtorIds;
+    if (userdata.TypeId == 1) {
         debtorIds = debtorIdsArray;
-    }else{
+    } else {
         debtorIds = userdata.UserId;
+    }
+
+    let param;
+    if (userdata.TypeId == 1) {
+        param = userdata.UserId;
+    } else {
+        param = userdata.RoleId;
     }
 
     useEffect(() => {
         setUserBody(debtorIds);
         setLoadingGtrs(false);
-        axios
-            .get(
-                `https://gtlslebs06-vm.gtls.com.au:5432/api/GTAM/User/AppPermissions`,
-                {
-                    headers: {
-                        UserId: userdata.UserId,
-                        AppId: 3,
-                    },
-                }
-            )
-            .then((res) => {
-                setUser(res.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        
 
         axios
             .post(`${url}api/GTRS/Dashboard`, debtorIds, {
                 headers: {
-                    RoleId: userdata.RoleId,
+                    RoleId: param,
                 },
             })
             .then((res) => {
@@ -107,7 +100,7 @@ export default function Gtrs({
         axios
             .get(`${url}api/SafetyReport`, {
                 headers: {
-                    RoleId: userdata.RoleId,
+                    RoleId: param,
                 },
             })
             .then((res) => {
@@ -127,7 +120,7 @@ export default function Gtrs({
         axios
             .get(`${url}api/Debtors`, {
                 headers: {
-                    RoleId: userdata.RoleId,
+                    RoleId: param,
                 },
             })
             .then((res) => {
@@ -147,7 +140,7 @@ export default function Gtrs({
         axios
             .post(`${url}api/GTRS/Consignments`, debtorIds, {
                 headers: {
-                    RoleId: userdata.RoleId,
+                    RoleId: param,
                 },
             })
             .then((res) => {
@@ -168,7 +161,7 @@ export default function Gtrs({
         axios
             .post(`${url}api/GTRS/PerformanceReport`, debtorIds, {
                 headers: {
-                    RoleId: userdata.RoleId,
+                    RoleId: param,
                 },
             })
             .then((res) => {
@@ -183,7 +176,7 @@ export default function Gtrs({
         axios
             .get(`${url}api/GTRS/KpiReasons`, {
                 headers: {
-                    RoleId: userdata.RoleId,
+                    RoleId: param,
                 },
             })
             .then((res) => {
