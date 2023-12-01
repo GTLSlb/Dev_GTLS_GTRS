@@ -18,12 +18,12 @@ before(async function () {
         .build();
 
     await driver.manage().window().setRect({ width: 390, height: 844 });
-    await driver.get("http://127.0.0.1:8000/Main");
+    await driver.get("http://127.0.0.1:8000/main");
     await driver.manage().addCookie({
         name: "gtls_session",
         value: "",
     });
-    await driver.get("http://127.0.0.1:8000/Main");
+    await driver.get("http://127.0.0.1:8000/main");
 });
 
 describe("Testing GTAM/Apps", function () {

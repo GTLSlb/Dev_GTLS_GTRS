@@ -325,9 +325,9 @@ export default function ChartsSidebar({
       useEffect(()=>{
         setSidebarElements(filterNavigation(navigation, currentUser))
       },[])
-      console.log(filteredNavigation)
-    console.log(sidebarElements);
-    console.log(currentUser)
+    //   console.log(filteredNavigation)
+    // console.log(sidebarElements);
+    // console.log(currentUser)
 
 
     return (
@@ -476,7 +476,7 @@ export default function ChartsSidebar({
                                                                             aria-hidden="true"
                                                                         />
                                                                     )}
-                                                                    <span>
+                                                                    <span id={item.name}>
                                                                         {
                                                                             item.name
                                                                         }
@@ -552,7 +552,7 @@ export default function ChartsSidebar({
                                                     )}
                                                     aria-hidden="true"
                                                 />
-                                                {item.name}
+                                                <span id={item.name}>{item.name}</span>
                                             </a>
                                         )}
                                     </div>

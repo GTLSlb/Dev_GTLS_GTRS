@@ -522,7 +522,7 @@ export default function MainSidebar({
                                                         aria-hidden="true"
                                                     />
                                                 )}
-                                                <span className="mt-2">
+                                                <span className="mt-2" id={item.name}>
                                                     {item.name}
                                                 </span>
                                             </button>
@@ -645,6 +645,7 @@ export default function MainSidebar({
                                                     // {sidebarElements.map((item) => (
                                                     <Accordion
                                                         name={item.name}
+                                                        id={item.name}
                                                         key={item.id}
                                                         transition={{
                                                             duration: "300ms",
