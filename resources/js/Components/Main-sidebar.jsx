@@ -52,7 +52,7 @@ export default function MainSidebar({
         handleSetActivePage(0);
     }, []);
 
-    const current_user_role = currentUser.role_id;
+    const current_user_role = currentUser?.role_id;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const sidebarNavigation = [
         {
