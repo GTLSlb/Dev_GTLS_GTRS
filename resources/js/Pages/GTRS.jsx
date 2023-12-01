@@ -53,7 +53,7 @@ export default function Gtrs({
     //test URL
     const url = "https://gtlslebs06-vm.gtls.com.au:8084/";
     const userdata = currentUser;
-    const [canAccess, setCanAccess] = useState(null);
+    const [canAccess, setCanAccess] = useState(true);
     const debtorIdsArray = userdata?.Accounts?.map((account) => {
         return { UserId: account.DebtorId };
     });
@@ -195,15 +195,21 @@ export default function Gtrs({
                 console.log(err);
             });
     }, []);
-console.log(user);
+    console.log(user);
     useEffect(() => {
         if (loadingGtrs) {
             if (user == {}) {
                 setCanAccess(false);
-            } else if (!user?.hasOwnProperty("Features")) {
-                setCanAccess(false);
-            } else {
-                setCanAccess(true);
+            } else if (user) {
+                user.Pages?.map((page) => {
+                    if (page?.hasOwnProperty("Features")) {
+                        if (page.Features?.length == 0 || page.Features == null) {
+                            setCanAccess(false);
+                        }
+                    }else{
+                        setCanAccess(false);
+                    }
+                });
             }
         }
     }, [user, loadingGtrs]);
@@ -213,54 +219,55 @@ console.log(user);
     }
 
     if (loadingGtrs) {
-        if(canAccess){
-        return (
-            <div className="bg-smooth">
-                <div className="md:pl-20 pt-16 ">
-                    <Charts
-                        kpireasonsData={kpireasonsData}
-                        setkpireasonsData={setkpireasonsData}
-                        userBody={userBody}
-                        url={url}
-                        chartsData={chartsData}
-                        safetyTypes={safetyTypes}
-                        setSafetyTypes={setSafetyTypes}
-                        safetyCauses={safetyCauses}
-                        setSafetyCauses={setSafetyCauses}
-                        failedReasons={failedReasons}
-                        rddReasons={rddReasons}
-                        setrddReasons={setrddReasons}
-                        setFailedReasons={setFailedReasons}
-                        safetyData={safetyData}
-                        debtorsData={debtorsData}
-                        customerAccounts={userdata}
-                        rddData={rddData}
-                        setrddData={setrddData}
-                        IDfilter={dataFromChild}
-                        sessionData={sessionData}
-                        currentUser={{ ...user[0], UserId: userdata.UserId }}
-                        dashData={PerfData}
-                        setActiveIndexGTRS={setActiveIndexGTRS}
-                        activeIndexGTRS={activeIndexGTRS}
-                        setactiveCon={setactiveCon}
-                        consData={consData}
-                        setLastIndex={setLastIndex}
-                        KPIData={KPIData}
-                        DriverData={DriverData}
-                        AdditionalData={AdditionalData}
-                        NoDelData={NoDelData}
-                        activeCon={activeCon}
-                        lastIndex={lastIndex}
-                        PerfData={PerfData}
-                        setPerfData={setPerfData}
-                    />
-                </div>
-            </div>
-        );}
-        else{
+        if (canAccess) {
             return (
-                <NoAccess/>
-            )
+                <div className="bg-smooth">
+                    <div className="md:pl-20 pt-16 ">
+                        <Charts
+                            kpireasonsData={kpireasonsData}
+                            setkpireasonsData={setkpireasonsData}
+                            userBody={userBody}
+                            url={url}
+                            chartsData={chartsData}
+                            safetyTypes={safetyTypes}
+                            setSafetyTypes={setSafetyTypes}
+                            safetyCauses={safetyCauses}
+                            setSafetyCauses={setSafetyCauses}
+                            failedReasons={failedReasons}
+                            rddReasons={rddReasons}
+                            setrddReasons={setrddReasons}
+                            setFailedReasons={setFailedReasons}
+                            safetyData={safetyData}
+                            debtorsData={debtorsData}
+                            customerAccounts={userdata}
+                            rddData={rddData}
+                            setrddData={setrddData}
+                            IDfilter={dataFromChild}
+                            sessionData={sessionData}
+                            currentUser={{
+                                ...user[0],
+                                UserId: userdata.UserId,
+                            }}
+                            dashData={PerfData}
+                            setActiveIndexGTRS={setActiveIndexGTRS}
+                            activeIndexGTRS={activeIndexGTRS}
+                            setactiveCon={setactiveCon}
+                            consData={consData}
+                            setLastIndex={setLastIndex}
+                            KPIData={KPIData}
+                            DriverData={DriverData}
+                            AdditionalData={AdditionalData}
+                            NoDelData={NoDelData}
+                            activeCon={activeCon}
+                            lastIndex={lastIndex}
+                            PerfData={PerfData}
+                            setPerfData={setPerfData}
+                        />
+                    </div>
+                </div>
+            );
+        } else {
+            return <NoAccess />;
         }
     } else {
         return (
