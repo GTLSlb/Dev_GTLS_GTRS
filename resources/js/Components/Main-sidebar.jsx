@@ -871,16 +871,15 @@ export default function MainSidebar({
                                         </div>
                                     </nav>
                                 </div>
-                                <a href="#" className="flex">
-                                    {" "}
-                                    <button
-                                        onClick={() => handleEditClick()}
-                                        className={classNames(
-                                            "text-gray-400 hover:bg-gray-900 hover:text-white",
-                                            "group w-auto p-3 rounded-md flex flex-col items-center text-xs font-medium"
-                                        )}
-                                        // aria-current={item.current ? 'page' : undefined}
-                                    >
+                                <a href="https://support.gtls.com.au/help/2703577665" target="_blank" className="flex justify-center">
+                                        {" "}
+                                        <button
+                                            className={classNames(
+                                                "text-gray-400 hover:bg-gray-700 hover:text-white",
+                                                "group w-auto p-3 rounded-md flex flex-col items-center text-xs font-medium"
+                                            )}
+                                            // aria-current={item.current ? 'page' : undefined}
+                                        >
                                         <QuestionMarkCircleIcon
                                             className={classNames(
                                                 "text-gray-400 group-hover:text-white",
