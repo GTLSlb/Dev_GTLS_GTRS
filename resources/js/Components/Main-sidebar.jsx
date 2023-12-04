@@ -457,7 +457,7 @@ export default function MainSidebar({
     const currentAppId = window.Laravel.appId;
     function moveToHead(array, id) {
         // Find the index of the object with the matching AppId
-        const index = array.findIndex(item => item.AppId == id);
+        const index = array.findIndex((item) => item.AppId == id);
         // If the item is found and it's not already the first item
         if (index > 0) {
             // Remove the item from the array
@@ -467,7 +467,40 @@ export default function MainSidebar({
         }
         return array;
     }
-    moveToHead(allowedApplications,3)
+
+    function mergeJsonsByAppId(json1, json2, appIdField = "AppId") {
+        const mergedJson = {};
+
+        // Process the first JSON array
+        json1.forEach((item) => {
+            const appId = item[appIdField];
+            if (appId) {
+                mergedJson[appId] = { ...item };
+            }
+        });
+
+        // Process the second JSON array and merge with the first
+        json2.forEach((item) => {
+            const appId = item[appIdField];
+            if (appId) {
+                mergedJson[appId] = { ...mergedJson[appId], ...item };
+            }
+        });
+
+        return Object.values(mergedJson);
+    }
+
+    // Example usage
+    const json1 = [
+        { AppId: 1, AppUrl: "https://gtam.gtls.au/" },
+        { AppId: 2, AppUrl: "https://gtis.gtls.au/" },
+        { AppId: 3, AppUrl: "https://gtrs.gtls.au/" },
+
+    ];
+    const mergedJson = mergeJsonsByAppId(allowedApplications, json1);
+
+    moveToHead(mergedJson, 3);
+
     return (
         <div>
             <div className="hidden md:flex md:flex-shrink-0 h-full fixed top-0 left-0 z-50 w-auto h-screen">
@@ -483,7 +516,7 @@ export default function MainSidebar({
                                 aria-label="Sidebar"
                                 className="flex flex-col items-center space-y-3 pt-6"
                             >
-                                  {allowedApplications?.map((item) => (
+                                {mergedJson?.map((item) => (
                                     //{sidebarElements.map((item) => (
 
                                     <a
@@ -527,9 +560,7 @@ export default function MainSidebar({
                                                     aria-hidden="true"
                                                 />
                                             )}
-                                            <span>
-                                                {item.AppAbv}
-                                            </span>
+                                            <span>{item.AppAbv}</span>
                                         </button>
                                     </a>
                                     // </Link>

@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LayoutController;
 use App\Http\Controllers\ContactFormController;
@@ -17,7 +16,7 @@ use Inertia\Inertia;
 use Laravel\Socialite\Facades\Socialite;
 use SocialiteProviders\Azure\AzureProvider;
 use Illuminate\Http\Request;
-
+use App\Http\Controllers\LoginController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -32,15 +31,17 @@ use Illuminate\Http\Request;
 Route::get('/', function () {
     return Inertia::render('Auth/Login');
 });
-
 Route::post('/loginapi', [LoginController::class, 'login'])->name('loginapi');
 
 Route::post('/logoutAPI', [LoginController::class, 'logout'])->middleware(['custom.auth'])->name('logoutAPI');
 
+Route::get('/main', function () {
+    return Inertia::render('Layout');
+})->middleware(['custom.auth'])->name('layout');
 
 Route::get('/LandingPage', function () {
     return Inertia::render('LandingPage');
-});
+})->middleware(['custom.auth'])->name('landing.page');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -61,10 +62,6 @@ Route::get('/gtrs', function () {
 Route::get('/gtw', function () {
     return Inertia::render('GTW');
 })->middleware(['custom.auth'])->name('gtw');
-
-Route::get('/main', function () {
-    return Inertia::render('Layout');
-})->middleware(['custom.auth'])->name('layout');
 
 Route::get('/opportunities', function () {
     return Inertia::render('Opportunities');

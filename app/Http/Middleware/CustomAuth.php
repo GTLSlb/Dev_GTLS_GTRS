@@ -20,12 +20,12 @@ class CustomAuth extends Middleware
      * @return bool
      */
 
-     protected $guard;
+    //  protected $guard;
 
-     public function __construct($guard = null)
-     {
-         $this->guard = $guard;
-     }
+    public function __construct()
+    {
+        //$this->guard = $guard;
+    }
 
     public function attempt(array $credentials = [], $remember = false)
     {
@@ -33,26 +33,27 @@ class CustomAuth extends Middleware
         $passwordDb = $credentials['PasswordDb'];
         $emailInput = $credentials['EmailInput'];
         $passwordInput = $credentials['PasswordInput'];
-        // Compare the provided credentials with the user's credentials that are passed from the controller
+        // Compare the provided credentials with the user's credentials
 
         if ($emailDb == $emailInput) {
             return true; // Validation successful
         }
 
-        return false; // Validation failed
+        return false;
     }
-    	public function handle($request, Closure $next, ...$guards)
+
+    public function handle($request, Closure $next, ...$guards)
     {
         $hasSession = $request->hasSession();
         if ($hasSession) {
-            $sessionToken = $request->session()->token();
+            //$session = $request->session();
             $path = $request->path();
 
             // Allow access to the login route
             if ($path == 'login' || $path == 'loginapi') {
                 return $next($request);
             }
-            if ($path !== '/' && $path !== 'login' && $path !== 'loginapi' && !$request->session()->has('user') && !$this->verifyCsrfToken($sessionToken)) {
+            if ($path !== '/' && $path !== 'login' && $path !== 'loginapi' && !$request->session()->has('user')) {
                 return redirect()->route('login');
             }
         } else {
@@ -60,14 +61,9 @@ class CustomAuth extends Middleware
                 return $next($request);
             }
 
+
         }
         return $next($request);
-    }
-
-    protected function verifyCsrfToken($token)
-    {
-        // Implementation using Laravel's built-in CSRF token verification:
-        return hash_equals($token, csrf_token());
     }
 }
 ?>
