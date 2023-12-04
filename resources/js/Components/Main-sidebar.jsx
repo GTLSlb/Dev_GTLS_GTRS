@@ -447,7 +447,7 @@ export default function MainSidebar({
             .post("/logoutAPI", isLoggingOut)
             .then((response) => {
                 if (response.status == 200) {
-                    window.location.href = "/login";
+                    window.location.href = "/";
                 }
             })
             .catch((error) => {

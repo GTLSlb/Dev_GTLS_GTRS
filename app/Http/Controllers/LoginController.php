@@ -60,11 +60,12 @@ class LoginController extends Controller
                     else{ // the user is a driver
                         $user = new Driver($responseData[0]);
                     }
-                    //dd($user);
+                    //dd($user['UserId']);
                     //dd($user instanceof Employee);
-                    
+                    $userId = $user['UserId'];
                     $request->session()->regenerate();
                     $request->session()->put('user', $user);
+                    $request->session()->put('user_id', $userId);
                     $request->session()->put('newRoute', route('loginapi'));
                     $request->session()->put('isLoggingOut', false);
 
