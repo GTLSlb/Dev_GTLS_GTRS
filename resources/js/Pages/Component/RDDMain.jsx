@@ -38,6 +38,7 @@ export default function RDDMain({
             fetchReasonData();
         }
     }, []); // Empty dependency array ensures the effect runs only once
+    console.log('user',currentUser)
     const fetchData = async () => {
         try {
             axios
@@ -58,7 +59,7 @@ export default function RDDMain({
                     });
                 })
                 .catch((err) => {
-                    console.log(err);
+                    console.log('no data',err.response.data.Message);
                 });
         } catch (error) {
             console.error("Error fetching data:", error);

@@ -71,10 +71,10 @@ export default function Gtrs({
     }
 
     let param;
-    if (userdata.TypeId == 1) {
-        param = userdata.UserId;
+    if (userdata.TypeId !=1) { //employee or driver
+         param = userdata.UserId;
     } else {
-        param = userdata.RoleId;
+        param = userdata.RoleId; //customer
     }
 
     useEffect(() => {
@@ -198,7 +198,7 @@ export default function Gtrs({
                 console.log(err);
             });
     }, []);
-    console.log(user);
+
     useEffect(() => {
         if (loadingGtrs) {
             if (user == {}) {
