@@ -522,7 +522,7 @@ export default function SafetyRepTable({
                     </div>
                 ) : (
                     <div>
-                        <div className="mt-3 ">
+                        <div className="-mt-5">
                             <div className=" object-right flex md:justify-end gap-x-5 flex-item ">
                                 <div className="h-full">
                                     {canAddSafetyReport(currentUser) ? (

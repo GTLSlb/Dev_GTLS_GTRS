@@ -77,6 +77,7 @@ export default function TableStructure({
     //     },
     //     [filters]
     // );
+    
     return (
         <div className="">
             {/* <Sidebar /> */}
@@ -105,7 +106,14 @@ export default function TableStructure({
                         groups={groups}
                         dataSource={tableData}
                     />
-                ) : null}
+                ) :                 <div className="h-64 flex items-center justify-center mt-10">
+                <div class="text-center flex justify-center flex-col">
+                    {/* <img src={notFound} alt="" className="w-52 h-auto " /> */}
+                    <h1 class="text-3xl font-bold text-gray-900">
+                        Congrats! <br/> Nothing To Show
+                    </h1>
+                </div>
+            </div>}
             </div>
         </div>
     );

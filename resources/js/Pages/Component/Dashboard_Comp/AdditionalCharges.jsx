@@ -67,7 +67,7 @@ export default function AdditionalCharges({
         axios
             .get(`${url}api/GTRS/AddCharges`, {
                 headers: {
-                    RoleId: currentUser.UserId,
+                    RoleId: currentUser?.UserId,
                 },
             })
             .then((res) => {
@@ -83,6 +83,8 @@ export default function AdditionalCharges({
             })
             .catch((err) => {
                 console.log(err);
+                setAdditionalData([]);
+                setIsFetching(false);
             });
     };
     const [filteredData, setFilteredData] = useState(AdditionalData);
@@ -153,7 +155,7 @@ export default function AdditionalCharges({
         headerRow.alignment = { horizontal: "center" };
 
         // Add the data to the worksheet
-        data.forEach((rowData) => {
+        data?.forEach((rowData) => {
             worksheet.addRow(Object.values(rowData));
         });
 
@@ -179,7 +181,7 @@ export default function AdditionalCharges({
 
     function getMinMaxValue(data, fieldName, identifier) {
         // Check for null safety
-        if (!data || !Array.isArray(data) || data.length === 0) {
+        if (!data || !Array.isArray(data) || data?.length === 0) {
             return null;
         }
 
@@ -215,8 +217,9 @@ export default function AdditionalCharges({
         let id = 1; // Initialize the ID
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
-
+console.log('asfcvd',data)
         // Map through the data and create new objects
+        if(data?.length>0){
         data?.forEach((item) => {
             const fieldValue = item[fieldName];
             // Check if the label is not already included
@@ -228,7 +231,7 @@ export default function AdditionalCharges({
                 };
                 newData.push(newObject);
             }
-        });
+        });}
         return newData;
     };
     const reference = createNewLabelObjects(AdditionalData, "CodeRef");

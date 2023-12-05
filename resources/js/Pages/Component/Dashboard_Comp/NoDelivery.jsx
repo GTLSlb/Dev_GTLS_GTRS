@@ -61,11 +61,12 @@ export default function NoDelivery({
             fetchData();
         }
     }, []);
+
     const fetchData = async () => {
         axios
             .get(`${url}api/GTRS/NoDelInfo`, {
                 headers: {
-                    RoleId: currentUser.role_id,
+                    RoleId: currentUser?.UserId,
                 },
             })
             .then((res) => {
