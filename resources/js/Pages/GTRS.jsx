@@ -23,6 +23,9 @@ export default function Gtrs({
     currentUser,
     loadingGtrs,
 }) {
+    console.log("user",user)
+    console.log("currentUser",currentUser)
+
     const [rddData, setrddData] = useState([]);
     const [chartsData, setchartsData] = useState([]);
     const [debtorsData, setdebtorsData] = useState([]);
