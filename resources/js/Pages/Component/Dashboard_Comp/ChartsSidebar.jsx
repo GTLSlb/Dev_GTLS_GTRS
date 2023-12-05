@@ -303,7 +303,7 @@ export default function ChartsSidebar({
           if (navItem.options) {
             // Filter options based on user permissions
             navItem.options = navItem.options.filter(option => 
-              user.Pages.some(userPage => 
+              user?.Pages?.some(userPage => 
                 userPage.PageName === option.name && 
                 userPage.Features.some(feature => feature.FunctionName === option.feature)
               )
@@ -312,7 +312,7 @@ export default function ChartsSidebar({
             return navItem.options.length > 0;
           } else {
             // For navigation items without options, check the feature directly
-            return user.Pages.some(userPage => 
+            return user?.Pages?.some(userPage => 
               userPage.PageName === navItem.name && 
               userPage.Features?.some(feature => feature.FunctionName === navItem.feature)
             );
@@ -325,7 +325,7 @@ export default function ChartsSidebar({
       useEffect(()=>{
 
         setSidebarElements(filteredNavigation)
-        setActiveIndexGTRS(filteredNavigation[0].id)
+        setActiveIndexGTRS(filteredNavigation[0]?.id)
       },[])
 
     return (
