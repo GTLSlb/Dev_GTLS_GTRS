@@ -23,6 +23,9 @@ export default function Gtrs({
     currentUser,
     loadingGtrs,
 }) {
+    console.log("user",user)
+    console.log("currentUser",currentUser)
+
     const [rddData, setrddData] = useState([]);
     const [chartsData, setchartsData] = useState([]);
     const [debtorsData, setdebtorsData] = useState([]);
@@ -68,10 +71,10 @@ export default function Gtrs({
     }
 
     let param;
-    if (userdata.TypeId == 1) {
-        param = userdata.UserId;
+    if (userdata.TypeId !=1) { //employee or driver
+         param = userdata.UserId;
     } else {
-        param = userdata.RoleId;
+        param = userdata.RoleId; //customer
     }
 
     useEffect(() => {
