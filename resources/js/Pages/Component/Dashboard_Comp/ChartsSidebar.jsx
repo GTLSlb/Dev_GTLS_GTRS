@@ -296,25 +296,24 @@ export default function ChartsSidebar({
     
     // // Usage example
     // useEffect(()=>{setSidebarElements(filterNavigation(currentUser, navigation)) ;},[])
-
     const filterNavigation = (navigation, user) => {
         return navigation.filter(navItem => {
           // Check if the navigation item has sub-options
           if (navItem.options) {
             // Filter options based on user permissions
             navItem.options = navItem.options.filter(option => 
-              user.Pages.some(userPage => 
-                userPage.PageName === option.name && 
-                userPage.Features.some(feature => feature.FunctionName === option.feature)
+              user?.Pages?.some(userPage => 
+                userPage?.PageName === option.name && 
+                userPage?.Features?.some(feature => feature.FunctionName === option.feature)
               )
             );
             // Include the navigation item only if it has any permitted options
             return navItem.options.length > 0;
           } else {
             // For navigation items without options, check the feature directly
-            return user.Pages.some(userPage => 
-              userPage.PageName === navItem.name && 
-              userPage.Features?.some(feature => feature.FunctionName === navItem.feature)
+            return user?.Pages.some(userPage => 
+              userPage?.PageName === navItem.name && 
+              userPage?.Features?.some(feature => feature?.FunctionName === navItem?.feature)
             );
           }
         });
@@ -325,7 +324,7 @@ export default function ChartsSidebar({
       useEffect(()=>{
 
         setSidebarElements(filteredNavigation)
-        setActiveIndexGTRS(filteredNavigation[0].id)
+        setActiveIndexGTRS(filteredNavigation[0]?.id)
       },[])
 
     return (

@@ -195,29 +195,106 @@ export default function Gtrs({
                 console.log(err);
             });
     }, []);
-    console.log(user);
+    const test = {
+        AppId: 3,
+        AppName: "Gold Tiger Report System",
+        AppRoleId: 10,
+        AppRoleName: "Customer",
+        Pages: [
+            {
+                PageId: 11,
+                PageName: "Dashboard",
+                Features: [
+                    {
+                        FeatureId: 13,
+                        FeatureName: "can view dashboard",
+                        FunctionName: "Dashboard_view",
+                    },
+                ],
+            },
+            {
+                PageId: 12,
+                PageName: "Consignments",
+            },
+            {
+                PageId: 20,
+                PageName: "KPI",
+            },
+            {
+                PageId: 21,
+                PageName: "Performance Report",
+            },
+            {
+                PageId: 22,
+                PageName: "Failed Consignments",
+            },
+            {
+                PageId: 23,
+                PageName: "RDD",
+            },
+            {
+                PageId: 24,
+                PageName: "Missing POD",
+            },
+            {
+                PageId: 25,
+                PageName: "Safety",
+            },
+            {
+                PageId: 26,
+                PageName: "No Delivery info.",
+            },
+            {
+                PageId: 27,
+                PageName: "Additional Charges",
+            },
+            {
+                PageId: 28,
+                PageName: "Driver Login",
+            },
+            {
+                PageId: 29,
+                PageName: "Transit Days",
+            },
+            {
+                PageId: 30,
+                PageName: "Holidays",
+            },
+            {
+                PageId: 31,
+                PageName: "KPI Reasons",
+            },
+        ],
+    };
+    function checkFeaturesInPages(jsonData) {
+        // Iterate over the Pages array in the JSON data
+        for (let i = 0; i < jsonData.Pages.length; i++) {
+            // Check if the page has a 'Features' key and it's not empty
+            if (
+                jsonData.Pages[i].Features &&
+                jsonData.Pages[i].Features.length > 0
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
     useEffect(() => {
         if (loadingGtrs) {
             if (user == {}) {
                 setCanAccess(false);
             } else if (user) {
-                user.Pages?.map((page) => {
-                    if (page?.hasOwnProperty("Features")) {
-                        if (page.Features?.length == 0 || page.Features == null) {
-                            setCanAccess(false);
-                        }
-                    }else{
-                        setCanAccess(false);
-                    }
-                });
+                if (checkFeaturesInPages(user[0])) {
+                    setCanAccess(true);
+                } else {
+                    setCanAccess(false);
+                }
             }
         }
     }, [user, loadingGtrs]);
-
     if (consApi && reportApi && chartsApi && DebtorsApi && KPIReasonsApi) {
         setLoadingGtrs(true);
     }
-
     if (loadingGtrs) {
         if (canAccess) {
             return (
