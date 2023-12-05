@@ -28,9 +28,14 @@ use App\Http\Controllers\LoginController;
 |
 */
 
-Route::get('/', function () {
+Route::get('/login', function () {
     return Inertia::render('Auth/Login');
-});
+})->name('login');
+
+Route::get('/', function () {
+    return Inertia::render('Layout');
+})->middleware(['custom.auth'])->name('Main');
+
 Route::post('/loginapi', [LoginController::class, 'login'])->name('loginapi');
 
 Route::post('/logoutAPI', [LoginController::class, 'logout'])->middleware(['custom.auth'])->name('logoutAPI');
