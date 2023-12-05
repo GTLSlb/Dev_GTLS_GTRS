@@ -467,38 +467,8 @@ export default function MainSidebar({
         }
         return array;
     }
-
-    function mergeJsonsByAppId(json1, json2, appIdField = "AppId") {
-        const mergedJson = {};
-
-        // Process the first JSON array
-        json1.forEach((item) => {
-            const appId = item[appIdField];
-            if (appId) {
-                mergedJson[appId] = { ...item };
-            }
-        });
-
-        // Process the second JSON array and merge with the first
-        json2.forEach((item) => {
-            const appId = item[appIdField];
-            if (appId) {
-                mergedJson[appId] = { ...mergedJson[appId], ...item };
-            }
-        });
-
-        return Object.values(mergedJson);
-    }
-
-    // Example usage
-    const json1 = [
-        { AppId: 1, AppUrl: "https://gtam.gtls.au/" },
-        { AppId: 2, AppUrl: "https://gtis.gtls.au/" },
-        { AppId: 3, AppUrl: "https://gtrs.gtls.au/" },
-    ];
-    const mergedJson = mergeJsonsByAppId(allowedApplications, json1);
-
-    moveToHead(mergedJson, 3);
+    
+    moveToHead(allowedApplications, 3);
 
     return (
         <div>
@@ -515,11 +485,11 @@ export default function MainSidebar({
                                 aria-label="Sidebar"
                                 className="flex flex-col items-center space-y-3 pt-6"
                             >
-                                {mergedJson?.map((item) => (
+                                {allowedApplications?.map((item) => (
                                     //{sidebarElements.map((item) => (
 
                                     <a
-                                        href={item.AppUrl}
+                                        href={item.AppURL}
                                         key={item.AppId}
                                         target={
                                             item.id === 0 ? undefined : "_blank"
