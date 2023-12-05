@@ -495,7 +495,6 @@ export default function MainSidebar({
         { AppId: 1, AppUrl: "https://gtam.gtls.au/" },
         { AppId: 2, AppUrl: "https://gtis.gtls.au/" },
         { AppId: 3, AppUrl: "https://gtrs.gtls.au/" },
-
     ];
     const mergedJson = mergeJsonsByAppId(allowedApplications, json1);
 
@@ -568,15 +567,17 @@ export default function MainSidebar({
                             </nav>
                         </div>
                         <div className="flex flex-col flex-shrink-0 pb-5">
-                            <a href="#" className="flex justify-center">
+                            <a
+                                href="https://support.gtls.com.au/help/2703577665"
+                                target="_blank"
+                                className="flex justify-center"
+                            >
                                 {" "}
                                 <button
-                                    onClick={() => handleEditClick()}
                                     className={classNames(
-                                        "text-gray-400 hover:bg-gray-900 hover:text-white",
+                                        "text-gray-400 hover:bg-gray-700 hover:text-white",
                                         "group w-auto p-3 rounded-md flex flex-col items-center text-xs font-medium"
                                     )}
-                                    // aria-current={item.current ? 'page' : undefined}
                                 >
                                     <QuestionMarkCircleIcon
                                         className={classNames(
@@ -871,15 +872,19 @@ export default function MainSidebar({
                                         </div>
                                     </nav>
                                 </div>
-                                <a href="https://support.gtls.com.au/help/2703577665" target="_blank" className="flex justify-center">
-                                        {" "}
-                                        <button
-                                            className={classNames(
-                                                "text-gray-400 hover:bg-gray-700 hover:text-white",
-                                                "group w-auto p-3 rounded-md flex flex-col items-center text-xs font-medium"
-                                            )}
-                                            // aria-current={item.current ? 'page' : undefined}
-                                        >
+                                <a
+                                    href="https://support.gtls.com.au/help/2703577665"
+                                    target="_blank"
+                                    className="flex justify-center"
+                                >
+                                    {" "}
+                                    <button
+                                        className={classNames(
+                                            "text-gray-400 hover:bg-gray-700 hover:text-white",
+                                            "group w-auto p-3 rounded-md flex flex-col items-center text-xs font-medium"
+                                        )}
+                                        // aria-current={item.current ? 'page' : undefined}
+                                    >
                                         <QuestionMarkCircleIcon
                                             className={classNames(
                                                 "text-gray-400 group-hover:text-white",
