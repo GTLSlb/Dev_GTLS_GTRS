@@ -90,10 +90,11 @@ export default function ForgotPassword({ status }) {
             })
             .then((res) => {
                 setResetLoading(false);
+                setBack(true);
             })
             .catch((err) => {
                 setResetLoading(false);
-                setBack(true);
+                //setBack(true);
                 console.log(err);
             });
     };
