@@ -23,6 +23,9 @@ export default function Gtrs({
     currentUser,
     loadingGtrs,
 }) {
+    console.log("user",user)
+    console.log("currentUser",currentUser)
+
     const [rddData, setrddData] = useState([]);
     const [chartsData, setchartsData] = useState([]);
     const [debtorsData, setdebtorsData] = useState([]);
@@ -195,29 +198,35 @@ export default function Gtrs({
                 console.log(err);
             });
     }, []);
-
+    function checkFeaturesInPages(jsonData) {
+        // Iterate over the Pages array in the JSON data
+        for (let i = 0; i < jsonData.Pages.length; i++) {
+            // Check if the page has a 'Features' key and it's not empty
+            if (
+                jsonData.Pages[i].Features &&
+                jsonData.Pages[i].Features.length > 0
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
     useEffect(() => {
         if (loadingGtrs) {
             if (user == {}) {
                 setCanAccess(false);
             } else if (user) {
-                user.Pages?.map((page) => {
-                    if (page?.hasOwnProperty("Features")) {
-                        if (page.Features?.length == 0 || page.Features == null) {
-                            setCanAccess(false);
-                        }
-                    }else{
-                        setCanAccess(false);
-                    }
-                });
+                if (checkFeaturesInPages(user[0])) {
+                    setCanAccess(true);
+                } else {
+                    setCanAccess(false);
+                }
             }
         }
     }, [user, loadingGtrs]);
-
     if (consApi && reportApi && chartsApi && DebtorsApi && KPIReasonsApi) {
         setLoadingGtrs(true);
     }
-
     if (loadingGtrs) {
         if (canAccess) {
             return (
