@@ -305,7 +305,7 @@ export default function ChartsSidebar({
             navItem.options = navItem.options.filter(option => 
               user?.Pages?.some(userPage => 
                 userPage.PageName === option.name && 
-                userPage.Features.some(feature => feature.FunctionName === option.feature)
+                userPage?.Features?.some(feature => feature.FunctionName === option.feature)
               )
             );
             // Include the navigation item only if it has any permitted options
