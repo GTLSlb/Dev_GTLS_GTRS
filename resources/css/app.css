@@ -7,7 +7,21 @@
   background-color: red !important;
 }
 
+.hideNumberInputArrows {
+  /* For Chrome, Safari, Edge, Opera */
+  -webkit-appearance: none;
+  margin: 0;
 
+  /* For Firefox */
+  -moz-appearance: textfield;
+}
+
+/* For Chrome, Safari, Edge, Opera */
+.hideNumberInputArrows::-webkit-inner-spin-button,
+.hideNumberInputArrows::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 
 .slide-enter {
   opacity: 0;
