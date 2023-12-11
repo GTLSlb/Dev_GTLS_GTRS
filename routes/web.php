@@ -127,7 +127,7 @@ Route::get('/downloadGTLS-Pallets', function () {
 
 Route::post('/sendemail', [SendDailyEmail::class, 'SendEmail']);
 
-Route::post('/saveImg', [NewUserController::class, 'storePic']);
+// Route::post('/saveImg', [NewUserController::class, 'storePic']);
 
 Route::post('/upload', function (Request $request) {
     if($request->hasFile('file')){

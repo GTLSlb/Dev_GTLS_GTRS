@@ -16,6 +16,7 @@ use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
 use Psy\Readline\Hoa\Console;
+use Illuminate\Support\Facades\DB; 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 
@@ -58,7 +59,18 @@ class RegisteredUserController extends Controller
 
         if ($request->session()->get('user')!=null) {
             
-            $user = $request->session()->get('user');
+            //$user = $request->session()->get('user');
+            
+            $sessionId = $request->session()->getId();
+
+            // Query the database to get the user based on the session ID
+            $user = DB::table('custom_sessions')
+                ->where('id', $sessionId)
+                ->value('user');
+            
+            // Assuming the 'user' column contains JSON-encoded user data
+            $user = json_decode($user);
+
             if($user->TypeId == 1) // the user is a customer
             {
                 $UserId = $user->UserId;
@@ -105,7 +117,7 @@ class RegisteredUserController extends Controller
                 $ReportToId = $user->ReportToId;
                 $ReportToName = $user->ReportToName;
                 $HiringDate = $user->HiringDate;
-                $Applications = $user->Applications;
+               // $Applications = $user->Applications;
                 $user = array (
                     'UserId' => $UserId,
                     'UniqueId' => $UniqueId,
@@ -129,7 +141,7 @@ class RegisteredUserController extends Controller
                     'ReportToId' => $ReportToId,
                     'ReportToName' => $ReportToName,
                     'HiringDate' => $HiringDate,
-                    'Applications' => $Applications,
+                    //'Applications' => $Applications,
                 );
             }
             else{ // the user is a driver

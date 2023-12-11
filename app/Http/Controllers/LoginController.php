@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Middleware\CustomAuth;
+use Illuminate\Support\Facades\DB; 
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider;
 
 class LoginController extends Controller
@@ -67,7 +68,26 @@ class LoginController extends Controller
                     $request->session()->put('user', $user);
                     $request->session()->put('user_id', $userId);
                     $request->session()->put('newRoute', route('loginapi'));
-                    $request->session()->put('isLoggingOut', false);
+
+                    $sessionId = $request->session()->getId();
+                    $payload = $request->session()->get('_token');
+                    $userSession = $request->session()->get('user');
+                    $user = json_encode($userSession->getAttributes());
+
+                    //dd($user->getAttributes());
+                    $lastActivity = time();
+                    DB::table('custom_sessions')->insert([
+                        'id' => $sessionId,
+                        'user_id' => $userId,
+                        'payload' => $payload,
+                        'user' => $user,
+                        'last_activity' => $lastActivity,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                    //dd($request->session()->get('user')->UserId);
+                    $request->session()->save();
+                    //$request->session()->put('isLoggingOut', false);
 
                     if ($request->session()->get('newRoute') && $request->session()->get('user')) {
                         return response($request, 200);
