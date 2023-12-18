@@ -17,5 +17,5 @@ jobs:
         script: |
           cd ~/gtrs-stage.gtls.store
           git pull origin main
-          # composer config http-basic.nova.laravel.com Jamalt@gtls.com.au m9CWNGKUiBwleCt6dQ1aVLkGE0w0eDxO2FsdVNa0h3EDHQDbhi
-          # composer install
+          composer config http-basic.nova.laravel.com Jamalt@gtls.com.au m9CWNGKUiBwleCt6dQ1aVLkGE0w0eDxO2FsdVNa0h3EDHQDbhi
+          composer install
