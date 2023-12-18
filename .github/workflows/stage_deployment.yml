@@ -1,0 +1,21 @@
+name: gtis-stage.gtls.store remote ssh command 
+on:
+  workflow_dispatch:
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: |
+          cd ~/web-stage.gtls.store
+          git pull origin main
+          composer config http-basic.nova.laravel.com Jamalt@gtls.com.au m9CWNGKUiBwleCt6dQ1aVLkGE0w0eDxO2FsdVNa0h3EDHQDbhi
+          composer install
