@@ -1,4 +1,4 @@
-name: gtis-stage.gtls.store remote ssh command 
+name: gtrs-stage.gtls.store remote ssh command 
 on:
   workflow_dispatch:
 jobs:
