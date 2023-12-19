@@ -14,7 +14,7 @@ import { InertiaApp } from "@inertiajs/inertia-react";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import "../../../css/scroll.css";
 import axios from "axios";
-import CryptoJS from 'crypto-js';
+import CryptoJS from "crypto-js";
 const msalConfig = {
     auth: {
         clientId: "05f70999-6ca7-4ee8-ac70-f2d136c50288",
@@ -87,19 +87,18 @@ export default function Login({ status, canResetPassword }) {
     };
 
     const handleOnChangePassword = (event) => {
-        
         setData(
             event.target.name,
             event.target.type === "checkbox"
                 ? event.target.checked
                 : event.target.value
         );
-    setPassword(event.target.value);
-    }
+        setPassword(event.target.value);
+    };
 
     const submit = (e) => {
         e.preventDefault();
-        setErrorMessage("")
+        setErrorMessage("");
         const hashedPassword = CryptoJS.SHA256(password).toString();
         axios
             .get(`https://gtlslebs06-vm.gtls.com.au:5432/api/Login`, {
@@ -114,29 +113,28 @@ export default function Login({ status, canResetPassword }) {
                     const parsedData = JSON.parse(x);
                     resolve(parsedData);
                 });
-                
+
                 const credentials = {
                     Email: email,
                     Password: hashedPassword,
                 };
                 axios
-                .post("/loginapi", credentials)
-                .then((response)=>{
-                    if(response.status == 200) {
-                       window.location.href = '/main';
-                    }else{
-                        //window.location.href = '/login';
-                    }
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+                    .post("/loginapi", credentials)
+                    .then((response) => {
+                        if (response.status == 200) {
+                            window.location.href = "/main";
+                        } else {
+                            //window.location.href = '/login';
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
             })
             .catch((err) => {
                 console.log(err);
-                setErrorMessage(err.response.data.Message)
+                setErrorMessage(err.response.data.Message);
             });
-            
     };
     const handleKeyPress = (event) => {
         if (event.key === "Enter") {
@@ -240,13 +238,17 @@ export default function Login({ status, canResetPassword }) {
                                     <div className="flex items-center justify-end mt-0">
                                         {canResetPassword && (
                                             <Link
-                                                onClick={()=>window.location.href = '/forgot-password'}
+                                                onClick={() =>
+                                                    (window.location.href =
+                                                        "/forgot-password")
+                                                }
                                                 className="underline text-sm text-goldd dark:text-smooth hover:text-gray-900 dark:hover:text-goldd rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
                                             >
                                                 Forgot your password?
                                             </Link>
                                         )}
                                     </div>
+                                    <div className="text-red-500">{errorMessage}</div>
                                     <InputError
                                         message={errors.email}
                                         className="mt-2"
@@ -286,7 +288,6 @@ export default function Login({ status, canResetPassword }) {
                         />
                     </div>
                 </div>
-               
             </GuestLayout>
         </div>
     );

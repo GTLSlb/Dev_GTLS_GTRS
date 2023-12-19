@@ -38,9 +38,9 @@ export default function FailedConsMain({
     const fetchReasonData = async () => {
         try {
             axios
-                .get(`${url}api/FailureReasons`, {
+                .get(`${url}/FailureReasons`, {
                     headers: {
-                        RoleId: currentUser.UserId,
+                        UserId: currentUser.UserId,
                     },
                 })
                 .then((res) => {

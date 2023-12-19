@@ -199,8 +199,7 @@ export default function ChartsSidebar({
         return sortedObjects;
     }
     useEffect(() => {
-        
-            setCustomerOptions(customerAccounts.Accounts);
+        setCustomerOptions(customerAccounts.Accounts);
     }, []);
     useEffect(() => {
         onData(optionSelected);
@@ -255,78 +254,43 @@ export default function ChartsSidebar({
         setSidebarElements(updatedElements);
     };
 
-    // function filterNavigation(userObject, navigation) {
-    //     return navigation.filter((item) => {
-    //         // Check if the item's features are present in the user's features
-    
-    //         // Check if the item has pages
-    //         const itemFeaturesMatch =
-    //             (item.Pages &&
-    //                 // Check if any page's features match the user's features
-    //                 item.Pages.some((page) => {
-    //                     const pageFeatures = page.Features || [];
-    //                     return pageFeatures.some(
-    //                         (feature) =>
-    //                             // Check if the user's features include the feature name
-    //                             userObject.page.features.includes(feature.FeatureName) &&
-    //                             // Check if the page name matches the name in the navigation object
-    //                             page.PageName === item.name
-    //                     );
-    //                 })) ||
-    //             (item.options &&
-    //                 // Check if any option's pages' features match the user's features
-    //                 item.options.some((option) => {
-    //                     const optionPages = option.Pages || [];
-    //                     return optionPages.some((page) =>
-    //                         page.Features.some(
-    //                             (feature) =>
-    //                                 // Check if the user's features include the feature name
-    //                                 userObject.page.features.includes(feature.FeatureName) &&
-    //                                 // Check if the page name matches the name in the navigation object
-    //                                 page.PageName === item.name
-    //                         )
-    //                     );
-    //                 }));
-    
-    //         // Return the result of the filtering operation
-    //         console.log(itemFeaturesMatch)
-    //         return itemFeaturesMatch ;
-    //     });
-    // }
-    
-    // // Usage example
-    // useEffect(()=>{setSidebarElements(filterNavigation(currentUser, navigation)) ;},[])
     const filterNavigation = (navigation, user) => {
-        return navigation.filter(navItem => {
-          // Check if the navigation item has sub-options
-          if (navItem.options) {
-            // Filter options based on user permissions
-            navItem.options = navItem.options.filter(option => 
-              user?.Pages?.some(userPage => 
-                userPage?.PageName === option.name && 
-                userPage?.Features?.some(feature => feature.FunctionName === option.feature)
-              )
-            );
-            // Include the navigation item only if it has any permitted options
-            return navItem.options.length > 0;
-          } else {
-            // For navigation items without options, check the feature directly
-            return user?.Pages.some(userPage => 
-              userPage?.PageName === navItem.name && 
-              userPage?.Features?.some(feature => feature?.FunctionName === navItem?.feature)
-            );
-          }
+        return navigation.filter((navItem) => {
+            // Check if the navigation item has sub-options
+            if (navItem.options) {
+                // Filter options based on user permissions
+                navItem.options = navItem.options.filter((option) =>
+                    user?.Pages?.some(
+                        (userPage) =>
+                            userPage?.PageName === option.name &&
+                            userPage?.Features?.some(
+                                (feature) =>
+                                    feature.FunctionName === option.feature
+                            )
+                    )
+                );
+                // Include the navigation item only if it has any permitted options
+                return navItem.options.length > 0;
+            } else {
+                // For navigation items without options, check the feature directly
+                return user?.Pages?.some(
+                    (userPage) =>
+                        userPage?.PageName === navItem.name &&
+                        userPage?.Features?.some(
+                            (feature) =>
+                                feature?.FunctionName === navItem?.feature
+                        )
+                );
+            }
         });
-      };
-      // Example usage
-      const filteredNavigation = filterNavigation(navigation, currentUser);
-    
-      useEffect(()=>{
+    };
+    // Example usage
+    const filteredNavigation = filterNavigation(navigation, currentUser);
 
-        setSidebarElements(filteredNavigation)
-        setActiveIndexGTRS(filteredNavigation[0]?.id)
-      },[])
-
+    useEffect(() => {
+        setSidebarElements(filteredNavigation);
+        setActiveIndexGTRS(filteredNavigation[0]?.id);
+    }, []);
     return (
         <div className="h-full xl:fixed xl:w-64 md:h-full xl:fixed bg-gray-200 w-full ">
             {/* Static sidebar for desktop */}
@@ -381,11 +345,13 @@ export default function ChartsSidebar({
                                     <div className="text-left w-full">
                                         {showList && (
                                             <div className="text-left max-h-64 overflow-y-scroll mt-3 pt-1 pl-1 containerscroll">
-                                                {customerOptions.map(
+                                                {customerAccounts?.Accounts?.map(
                                                     (option) => (
                                                         <div
                                                             className="flex items-center"
-                                                            key={option.DebtorId}
+                                                            key={
+                                                                option.DebtorId
+                                                            }
                                                         >
                                                             <input
                                                                 type="checkbox"
@@ -411,7 +377,9 @@ export default function ChartsSidebar({
                                                                 }
                                                                 className="ml-2"
                                                             >
-                                                                {option.AccountNo}
+                                                                {
+                                                                    option.AccountNo
+                                                                }
                                                             </label>
                                                         </div>
                                                     )
@@ -426,134 +394,130 @@ export default function ChartsSidebar({
                     <div className=" pt-2 pb-4 w-full">
                         <nav className="mt-5 flex-1 hidden xl:flex-col space-y-1 px-2 w-full md:flex-row md:flex md:mt-0 ">
                             {sidebarElements?.map((item) => (
-                                    <div key={item.id}>
-                                        {item.options ? (
-                                            <Accordion
-                                                key={item.id}
-                                                transition={{
-                                                    duration: "300ms",
-                                                    timingFunction:
-                                                        "cubic-bezier(0, 0, 0.2, 1)",
-                                                }}
-                                            >
-                                                <AccordionItem>
-                                                    {({ open }) => (
-                                                        <>
-                                                            <AccordionHeader
-                                                                // className=" "
-                                                                className={classNames(
-                                                                    item.current
-                                                                        ? "bg-gray-300 text-gray-900"
-                                                                        : "text-gray-700 hover:bg-gray-500 hover:text-white",
-                                                                    "group flex flex-row justify-between items-center px-2 py-2 text-sm font-medium rounded-md lg:w-1/2 xl:w-full"
+                                <div key={item.id}>
+                                    {item.options ? (
+                                        <Accordion
+                                            key={item.id}
+                                            transition={{
+                                                duration: "300ms",
+                                                timingFunction:
+                                                    "cubic-bezier(0, 0, 0.2, 1)",
+                                            }}
+                                        >
+                                            <AccordionItem>
+                                                {({ open }) => (
+                                                    <>
+                                                        <AccordionHeader
+                                                            // className=" "
+                                                            className={classNames(
+                                                                item.current
+                                                                    ? "bg-gray-300 text-gray-900"
+                                                                    : "text-gray-700 hover:bg-gray-500 hover:text-white",
+                                                                "group flex flex-row justify-between items-center px-2 py-2 text-sm font-medium rounded-md lg:w-1/2 xl:w-full"
+                                                            )}
+                                                        >
+                                                            <div className="flex items-center">
+                                                                {item.icon ? (
+                                                                    <item.icon
+                                                                        className={classNames(
+                                                                            item.current
+                                                                                ? "text-gray-800"
+                                                                                : "text-gray-700 group-hover:text-gray-300",
+                                                                            "mr-3 flex-shrink-0 h-6 w-6"
+                                                                        )}
+                                                                        aria-hidden="true"
+                                                                    />
+                                                                ) : (
+                                                                    <img
+                                                                        src={
+                                                                            item.img
+                                                                        }
+                                                                        className={classNames(
+                                                                            item.current
+                                                                                ? "text-yellow-400"
+                                                                                : "text-gray-400 group-hover:text-white",
+                                                                            "h-6 w-6"
+                                                                        )}
+                                                                        aria-hidden="true"
+                                                                    />
                                                                 )}
-                                                            >
-                                                                <div className="flex items-center">
-                                                                    {item.icon ? (
-                                                                        <item.icon
-                                                                            className={classNames(
-                                                                                item.current
-                                                                                    ? "text-gray-800"
-                                                                                    : "text-gray-700 group-hover:text-gray-300",
-                                                                                "mr-3 flex-shrink-0 h-6 w-6"
-                                                                            )}
-                                                                            aria-hidden="true"
-                                                                        />
-                                                                    ) : (
-                                                                        <img
-                                                                            src={
-                                                                                item.img
+                                                                <span>
+                                                                    {item.name}
+                                                                </span>
+                                                            </div>
+                                                            <ChevronDownIcon className="h-3" />
+                                                        </AccordionHeader>
+
+                                                        <AccordionBody className="pl-10 flex gap-y-1 mt-1 flex-col">
+                                                            {item.options
+                                                                // .filter(
+                                                                //     (
+                                                                //         item
+                                                                //     ) =>
+                                                                //         item.role.includes(
+                                                                //             current_user_role
+                                                                //         )
+                                                                // )
+                                                                .map(
+                                                                    (
+                                                                        option
+                                                                    ) => (
+                                                                        <button
+                                                                            id={
+                                                                                option.name
+                                                                            }
+                                                                            key={
+                                                                                option.id
+                                                                            }
+                                                                            onClick={() =>
+                                                                                handleClick(
+                                                                                    option.id
+                                                                                )
                                                                             }
                                                                             className={classNames(
-                                                                                item.current
-                                                                                    ? "text-yellow-400"
-                                                                                    : "text-gray-400 group-hover:text-white",
-                                                                                "h-6 w-6"
+                                                                                option.current
+                                                                                    ? "bg-gray-300"
+                                                                                    : "",
+                                                                                "p-2 font-semibold hover:bg-gray-300 rounded text-left text-dark text-xs"
                                                                             )}
-                                                                            aria-hidden="true"
-                                                                        />
-                                                                    )}
-                                                                    <span>
-                                                                        {
-                                                                            item.name
-                                                                        }
-                                                                    </span>
-                                                                </div>
-                                                                <ChevronDownIcon className="h-3" />
-                                                            </AccordionHeader>
-
-                                                            <AccordionBody className="pl-10 flex gap-y-1 mt-1 flex-col">
-                                                                {item.options
-                                                                    // .filter(
-                                                                    //     (
-                                                                    //         item
-                                                                    //     ) =>
-                                                                    //         item.role.includes(
-                                                                    //             current_user_role
-                                                                    //         )
-                                                                    // )
-                                                                    .map(
-                                                                        (
-                                                                            option
-                                                                        ) => (
-                                                                            <button
-                                                                                id={
-                                                                                    option.name
-                                                                                }
-                                                                                key={
-                                                                                    option.id
-                                                                                }
-                                                                                onClick={() =>
-                                                                                    handleClick(
-                                                                                        option.id
-                                                                                    )
-                                                                                }
-                                                                                className={classNames(
-                                                                                    option.current
-                                                                                        ? "bg-gray-300"
-                                                                                        : "",
-                                                                                    "p-2 font-semibold hover:bg-gray-300 rounded text-left text-dark text-xs"
-                                                                                )}
-                                                                            >
-                                                                                {
-                                                                                    option.name
-                                                                                }
-                                                                            </button>
-                                                                        )
-                                                                    )}
-                                                            </AccordionBody>
-                                                        </>
-                                                    )}
-                                                </AccordionItem>
-                                            </Accordion>
-                                        ) : (
-                                            <a
-                                                onClick={() =>
-                                                    handleClick(item.id)
-                                                }
-                                                key={item.name}
-                                                href={item.href}
+                                                                        >
+                                                                            {
+                                                                                option.name
+                                                                            }
+                                                                        </button>
+                                                                    )
+                                                                )}
+                                                        </AccordionBody>
+                                                    </>
+                                                )}
+                                            </AccordionItem>
+                                        </Accordion>
+                                    ) : (
+                                        <a
+                                            onClick={() => handleClick(item.id)}
+                                            key={item.name}
+                                            href={item.href}
+                                            className={classNames(
+                                                item.current
+                                                    ? "bg-gray-300 text-gray-900"
+                                                    : "text-gray-700 hover:bg-gray-500 hover:text-white",
+                                                "group flex flex-row items-center px-2 py-2 text-sm font-medium rounded-md lg:w-1/2 xl:w-full"
+                                            )}
+                                        >
+                                            <item.icon
                                                 className={classNames(
                                                     item.current
-                                                        ? "bg-gray-300 text-gray-900"
-                                                        : "text-gray-700 hover:bg-gray-500 hover:text-white",
-                                                    "group flex flex-row items-center px-2 py-2 text-sm font-medium rounded-md lg:w-1/2 xl:w-full"
+                                                        ? "text-gray-800"
+                                                        : "text-gray-700 group-hover:text-gray-300",
+                                                    "mr-3 flex-shrink-0 h-6 w-6"
                                                 )}
-                                            >
-                                                <item.icon
-                                                    className={classNames(
-                                                        item.current
-                                                            ? "text-gray-800"
-                                                            : "text-gray-700 group-hover:text-gray-300",
-                                                        "mr-3 flex-shrink-0 h-6 w-6"
-                                                    )}
-                                                    aria-hidden="true"
-                                                />
-                                                {item.name}
-                                            </a>
-                                        )}
-                                    </div>
-                                ))}
+                                                aria-hidden="true"
+                                            />
+                                            {item.name}
+                                        </a>
+                                    )}
+                                </div>
+                            ))}
                         </nav>
                     </div>
                 </div>

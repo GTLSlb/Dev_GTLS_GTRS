@@ -77,11 +77,9 @@ export default function ModalRDD({
             // Make the API request using Axios or any other library
             SetIsLoading(true)
             const response = await axios
-                .post(`${url}api/Add/RDD`, data, {
+                .post(`${url}/Add/RDD`, data, {
                     headers: {
                         UserId: currentUser.UserId,
-                        RoleId: currentUser.RoleId,
-                        Name: currentUser.Name,
                     },
                 })
                 .then((res) => {

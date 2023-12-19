@@ -61,10 +61,9 @@ export default function AddHoliday({
             HolidayStatus: isChecked ? 1 : 2,
         };
         axios
-            .post(`${url}api/GTRS/Add/Holiday`, inputValues, {
+            .post(`${url}/Add/Holiday`, inputValues, {
                 headers: {
                     UserId: currentUser.UserId,
-                    RoleId: currentUser.RoleId,
                 },
             })
             .then((res) => {

@@ -35,7 +35,7 @@ class CustomAuth extends Middleware
         $passwordInput = $credentials['PasswordInput'];
         // Compare the provided credentials with the user's credentials
 
-        if ($emailDb == $emailInput) {
+        if (strtolower($emailDb) == strtolower($emailInput)) {
             return true; // Validation successful
         }
 

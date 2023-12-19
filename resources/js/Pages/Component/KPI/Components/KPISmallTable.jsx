@@ -117,7 +117,7 @@ export default function SmallTableKPI({
             axios
                 .post(addurl, dataToSend, {
                     headers: {
-                        RoleId: currentUser.UserId,
+                        UserId: currentUser.UserId,
                     },
                 })
                 .then((res) => {

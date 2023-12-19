@@ -65,9 +65,9 @@ export default function AdditionalCharges({
 
     const fetchData = async () => {
         axios
-            .get(`${url}api/GTRS/AddCharges`, {
+            .get(`${url}/AddCharges`, {
                 headers: {
-                    RoleId: currentUser?.UserId,
+                    UserId: currentUser?.UserId,
                 },
             })
             .then((res) => {

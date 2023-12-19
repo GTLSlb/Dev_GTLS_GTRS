@@ -13,7 +13,7 @@ export default function KPIReasons({
     function fromModel() {
         return 3;
     }
-    const addurl = `${url}api/GTRS/Add/KpiReason`;
+    const addurl = `${url}/Add/KpiReason`;
     const [editIndex, setEditIndex] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
     const [filteredData, setFilteredData] = useState(kpireasonsData);
@@ -31,9 +31,9 @@ export default function KPIReasons({
     }
     function getKPIReasons() {
         axios
-            .get(`${url}api/GTRS/KpiReasons`, {
+            .get(`${url}/KpiReasons`, {
                 headers: {
-                    RoleId: currentUser.UserId,
+                    UserId: currentUser.UserId,
                 },
             })
             .then((res) => {

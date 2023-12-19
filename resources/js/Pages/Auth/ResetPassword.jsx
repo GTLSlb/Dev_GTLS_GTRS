@@ -1,22 +1,22 @@
-import { useEffect } from 'react';
-import GuestLayout from '@/Layouts/GuestLayout';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import { Head, useForm } from '@inertiajs/react';
+import { useEffect } from "react";
+import GuestLayout from "@/Layouts/GuestLayout";
+import InputError from "@/Components/InputError";
+import InputLabel from "@/Components/InputLabel";
+import PrimaryButton from "@/Components/PrimaryButton";
+import TextInput from "@/Components/TextInput";
+import { Head, useForm } from "@inertiajs/react";
 
 export default function ResetPassword({ token, email }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         token: token,
         email: email,
-        password: '',
-        password_confirmation: '',
+        password: "",
+        password_confirmation: "",
     });
 
     useEffect(() => {
         return () => {
-            reset('password', 'password_confirmation');
+            reset("password", "password_confirmation");
         };
     }, []);
 
@@ -27,7 +27,7 @@ export default function ResetPassword({ token, email }) {
     const submit = (e) => {
         e.preventDefault();
 
-        post(route('password.store'));
+        post(route("password.store"));
     };
 
     return (
@@ -36,7 +36,11 @@ export default function ResetPassword({ token, email }) {
 
             <form onSubmit={submit}>
                 <div>
-                    <InputLabel htmlFor="email" value="Email"  className=' text-smooth'/>
+                    <InputLabel
+                        htmlFor="email"
+                        value="Email"
+                        className=" text-smooth"
+                    />
 
                     <TextInput
                         id="email"
@@ -52,7 +56,11 @@ export default function ResetPassword({ token, email }) {
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" className=' text-smooth'/>
+                    <InputLabel
+                        htmlFor="password"
+                        value="Password"
+                        className=" text-smooth"
+                    />
 
                     <TextInput
                         id="password"
@@ -69,7 +77,11 @@ export default function ResetPassword({ token, email }) {
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="password_confirmation" value="Confirm Password" className=' text-smooth'/>
+                    <InputLabel
+                        htmlFor="password_confirmation"
+                        value="Confirm Password"
+                        className=" text-smooth"
+                    />
 
                     <TextInput
                         type="password"
@@ -80,7 +92,10 @@ export default function ResetPassword({ token, email }) {
                         onChange={onHandleChange}
                     />
 
-                    <InputError message={errors.password_confirmation} className="mt-2" />
+                    <InputError
+                        message={errors.password_confirmation}
+                        className="mt-2"
+                    />
                 </div>
 
                 <div className="flex items-center justify-end mt-4">
@@ -88,12 +103,12 @@ export default function ResetPassword({ token, email }) {
                         Reset Password
                     </PrimaryButton> */}
                     <button
-                                    className={`flex w-full justify-center font-bold rounded-md border border-transparent bg-goldd py-2 px-4 text-sm font-medium text-dark shadow-sm hover:bg-goldt focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
-                                    disabled={processing}
-                                    type="submit"
-                                >
-                                    Reset Password
-                                </button>
+                        className={`flex w-full justify-center font-bold rounded-md border border-transparent bg-goldd py-2 px-4 text-sm font-medium text-dark shadow-sm hover:bg-goldt focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+                        disabled={processing}
+                        type="submit"
+                    >
+                        Reset Password
+                    </button>
                 </div>
             </form>
         </GuestLayout>

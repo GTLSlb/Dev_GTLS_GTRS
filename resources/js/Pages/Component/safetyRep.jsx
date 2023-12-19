@@ -101,9 +101,9 @@ export default function SafetyRep({
     function fetchData() {
         setIsFetching(true);
         return axios
-            .get(`${url}api/SafetyReport`, {
+            .get(`${url}/SafetyReport`, {
                 headers: {
-                    RoleId: currentUser.UserId,
+                    UserId: currentUser.UserId,
                 },
             })
             .then((res) => {
@@ -119,9 +119,9 @@ export default function SafetyRep({
     }
     function fetchDataTypes() {
         axios
-            .get(`${url}api/SafetyTypes`, {
+            .get(`${url}/SafetyTypes`, {
                 headers: {
-                    RoleId: currentUser.UserId,
+                    UserId: currentUser.UserId,
                 },
             })
             .then((res) => {
@@ -141,9 +141,9 @@ export default function SafetyRep({
     }
     function fetchDataCauses() {
         axios
-            .get(`${url}api/SafetyCauses`, {
+            .get(`${url}/SafetyCauses`, {
                 headers: {
-                    RoleId: currentUser.UserId,
+                    UserId: currentUser.UserId,
                 },
             })
             .then((res) => {

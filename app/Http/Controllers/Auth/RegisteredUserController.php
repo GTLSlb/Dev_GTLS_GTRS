@@ -76,22 +76,20 @@ class RegisteredUserController extends Controller
                 $UserId = $user->UserId;
                 $TypeId = $user->TypeId;
                 $TypeName =$user->TypeName;
-                $OwnerId = $user->OwnerId;
+                // $OwnerId = $user->OwnerId;
                 $GroupId = $user->GroupId;
                 $GroupName = $user->GroupName;
                 $Username = $user->Username;
                 $Email = $user->Email;
-                $Accounts = $user->Accounts;
                 $user = array (
                     'UserId' => $UserId,
                     'TypeId' => $TypeId,
                     'TypeName' => $TypeName,
-                    'OwnerId' => $OwnerId,
+                    // 'OwnerId' => $OwnerId,
                     'GroupId' => $GroupId,
                     'GroupName' => $GroupName,
                     'Username' => $Username,
                     'Email' => $Email,
-                    'Accounts' => $Accounts,
                 );
             }else if($user->TypeId == 2) // the user is an employee
             {
@@ -141,7 +139,6 @@ class RegisteredUserController extends Controller
                     'ReportToId' => $ReportToId,
                     'ReportToName' => $ReportToName,
                     'HiringDate' => $HiringDate,
-                    //'Applications' => $Applications,
                 );
             }
             else{ // the user is a driver

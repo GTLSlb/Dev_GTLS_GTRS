@@ -68,11 +68,11 @@ export default function AddSafetyTypeModal({
             SetIsLoading(true)
             // Make the API request using Axios or any other library
             const response = await axios.post(
-                `${url}api/Add/SafetyType`,
+                `${url}/Add/SafetyType`,
                 data,
                 {
                     headers: {
-                        RoleId: currentUser.UserId,
+                        UserId: currentUser.UserId,
                     },
                 }
             );

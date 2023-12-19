@@ -22,9 +22,9 @@ export default function AddSafetyCauses({ safetyCauses, setSafetyCauses , curren
     const [currentPage, setCurrentPage] = useState(0);
     function fetchData() {
         axios
-            .get(`${url}api/SafetyCauses`,{
+            .get(`${url}/SafetyCauses`,{
                 headers: {
-                    RoleId: currentUser.UserId,
+                    UserId: currentUser.UserId,
                 },
             })
             .then((res) => {

@@ -119,11 +119,11 @@ export default function ConsignmentD({
     function fetchData() {
         return axios
             .get(
-                `${url}api/GTRS/ConsignmentById`,
+                `${url}/ConsignmentById`,
                 {
                     headers: {
                         "Content-Type": "application/json",
-                        User_id: currentUser.user_id,
+                        UserId: currentUser.UserId,
                         Consignment_id: activeCon,
                     },
                 }

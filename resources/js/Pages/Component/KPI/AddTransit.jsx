@@ -80,9 +80,9 @@ export default function AddTransit({
     const fetchData = async () => {
         try {
             axios
-                .get(`${url}api/GTRS/Transits`, {
+                .get(`${url}/Transits`, {
                     headers: {
-                        RoleId: currentUser.UserId,
+                        UserId: currentUser.UserId,
                     },
                 })
                 .then((res) => {
@@ -135,10 +135,9 @@ export default function AddTransit({
             TransitTime: document.getElementById("TransitTime").value,
         };
         axios
-            .post(`${url}api/GTRS/Add/Transit`, inputValues, {
+            .post(`${url}/Add/Transit`, inputValues, {
                 headers: {
                     UserId: currentUser.UserId,
-                    RoleId: currentUser.UserId,
                 },
             })
             .then((res) => {

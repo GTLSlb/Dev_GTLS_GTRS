@@ -125,8 +125,7 @@ export default function SetFailedReasonModal({
             Department: selectedDepartment?.name,
             Resolution: resolution,
             Reference: selectedReference?.id,
-            OccuredAt: occurredAt,
-            AddedBy: currentUser.name,
+            OccuredAt: occurredAt
         },
     ];
     const handleSubmit = async (event) => {
@@ -137,11 +136,11 @@ export default function SetFailedReasonModal({
             SetIsLoading(true);
             // Make the API request using Axios or any other library
             const response = await axios.post(
-                `${url}api/Add/ConsFailedReason`,
+                `${url}/add/ConsFailedReason`,
                 data,
                 {
                     headers: {
-                        RoleId: currentUser.UserId,
+                        UserId: currentUser.UserId,
                     },
                 }
             );

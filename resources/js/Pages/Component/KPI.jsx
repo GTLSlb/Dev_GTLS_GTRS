@@ -48,9 +48,9 @@ export default function KPI({
     const fetchData = async () => {
         try {
             axios
-                .post(`${url}api/GTRS/KPI`, userBody, {
+                .get(`${url}/KPI`, {
                     headers: {
-                        RoleId: currentUser.UserId,
+                        UserId: currentUser.UserId,
                     },
                 })
                 .then((res) => {
@@ -221,7 +221,6 @@ export default function KPI({
         let id = 1; // Initialize the ID
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
-
         // Map through the data and create new objects
         data?.forEach((item) => {
             const fieldValue = item[fieldName];
@@ -607,7 +606,7 @@ export default function KPI({
     function CalculateKPI() {
         setLoading(true);
         axios
-            .get(`${url}api/GTRS/KpiCalculation`, {
+            .get(`${url}/KpiCalculation`, {
                 headers: {
                     UserId: currentUser.user_id,
                 },

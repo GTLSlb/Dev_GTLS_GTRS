@@ -42,9 +42,9 @@ export default function DriverLogin({
     }, []);
     const fetchData = async () => {
         axios
-            .get(`${url}api/GTRS/DriverLogin`, {
+            .get(`${url}/DriverLogin`, {
                 headers: {
-                    RoleId: currentUser.UserId,
+                    UserId: currentUser.UserId,
                 },
             })
             .then((res) => {

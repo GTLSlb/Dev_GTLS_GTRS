@@ -50,7 +50,7 @@ export default function charts({
     const month = current.getMonth() + 1;
     const formattedMonth = month < 10 ? `0${month}` : month;
     const todate = `${current.getFullYear()}-${formattedMonth}-${current.getDate()}`;
-    const [KPIData, setKPIData] = useState();
+    const [KPIData, setKPIData] = useState([]);
     const [transitDays, setTransitDays] = useState();
     const [holidays, setHolidays] = useState();
     const [failedReasons, setFailedReasons] = useState();
@@ -1071,7 +1071,7 @@ export default function charts({
         ]
     )
 
-    
+    console.log(customerAccounts)
 
 
     function getOldestDespatchDate(data) {

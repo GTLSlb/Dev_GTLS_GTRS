@@ -40,9 +40,9 @@ export default function TransitDays({
     const fetchData = async () => {
         try {
             axios
-                .get(`${url}api/GTRS/Transits`, {
+                .get(`${url}/Transits`, {
                     headers: {
-                        RoleId: currentUser.UserId,
+                        UserId: currentUser.UserId,
                     },
                 })
                 .then((res) => {

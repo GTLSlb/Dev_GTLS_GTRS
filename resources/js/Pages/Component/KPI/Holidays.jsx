@@ -58,9 +58,9 @@ export default function Holidays({
     const fetchData = async () => {
         try {
             axios
-                .get(`${url}api/GTRS/Holidays`, {
+                .get(`${url}/Holidays`, {
                     headers: {
-                        RoleId: currentUser.UserId,
+                        UserId: currentUser.UserId,
                     },
                 })
                 .then((res) => {

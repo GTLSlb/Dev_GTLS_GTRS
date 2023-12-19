@@ -38,13 +38,12 @@ export default function RDDMain({
             fetchReasonData();
         }
     }, []); // Empty dependency array ensures the effect runs only once
-    console.log('user',currentUser)
     const fetchData = async () => {
         try {
             axios
-                .post(`${url}api/RDD`, userBody, {
+                .get(`${url}/RDD`, {
                     headers: {
-                        RoleId: currentUser.UserId,
+                        UserId: currentUser.UserId,
                     },
                 })
                 .then((res) => {
@@ -68,7 +67,7 @@ export default function RDDMain({
     const fetchReasonData = async () => {
         try {
             axios
-                .get(`${url}api/RddChangeReason`, {
+                .get(`${url}/RddChangeReason`, {
                     headers: {
                         RoleId: currentUser.UserId,
                     },

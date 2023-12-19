@@ -74,8 +74,8 @@ export default function AddRDDReasonModal({
             SetIsLoading(true)
             // Make the API request using Axios or any other library
             const response = await axios.post(
-                `${url}api/Add/RddChangeReason`,data,{headers: {
-                    RoleId: currentUser.UserId,
+                `${url}/Add/RddChangeReason`,data,{headers: {
+                    UserId: currentUser.UserId,
                 }},
                 
             );

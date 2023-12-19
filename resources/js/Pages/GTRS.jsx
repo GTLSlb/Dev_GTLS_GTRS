@@ -23,9 +23,6 @@ export default function Gtrs({
     currentUser,
     loadingGtrs,
 }) {
-    console.log("user",user)
-    console.log("currentUser",currentUser)
-
     const [rddData, setrddData] = useState([]);
     const [chartsData, setchartsData] = useState([]);
     const [debtorsData, setdebtorsData] = useState([]);
@@ -46,15 +43,13 @@ export default function Gtrs({
     const [KPIData, setKPIData] = useState([]);
     const [PerfData, setPerfData] = useState([]);
     const [NoDelData, setNoDelData] = useState([]);
-
     const [AdditionalData, setAdditionalData] = useState([]);
     const [DriverData, setDriverData] = useState([]);
     const [userBody, setUserBody] = useState();
     const [dataFromChild, setDataFromChild] = useState(null);
-    //production URL
-    // const url = "https://gtlsnsws10-vm.gtls.com.au:5478/";
-    //test URL
-    const url = "https://gtlslebs06-vm.gtls.com.au:8084/";
+    const gtrsUrl = window.Laravel.gtrsUrl;
+    const gtamUrl = window.Laravel.gtamUrl;
+    const [customerAccounts, setCusomterAccounts] = useState();
     const userdata = currentUser;
     const [canAccess, setCanAccess] = useState(true);
     const debtorIdsArray = userdata?.Accounts?.map((account) => {
@@ -67,24 +62,16 @@ export default function Gtrs({
     if (userdata.TypeId == 1) {
         debtorIds = debtorIdsArray;
     } else {
-        debtorIds = userdata.UserId;
+        debtorIds = currentUser.UserId;
     }
-
-    let param;
-    if (userdata.TypeId !=1) { //employee or driver
-         param = userdata.UserId;
-    } else {
-        param = userdata.RoleId; //customer
-    }
-
     useEffect(() => {
         setUserBody(debtorIds);
         setLoadingGtrs(false);
 
         axios
-            .post(`${url}api/GTRS/Dashboard`, debtorIds, {
+            .get(`${gtrsUrl}/Dashboard`, {
                 headers: {
-                    RoleId: param,
+                    UserId: currentUser.UserId,
                 },
             })
             .then((res) => {
@@ -94,7 +81,7 @@ export default function Gtrs({
                     resolve(parsedData);
                 });
                 parsedDataPromise.then((parsedData) => {
-                    setchartsData(parsedData);
+                    setchartsData(parsedData || []);
                     setchartsApi(true);
                 });
             })
@@ -102,9 +89,29 @@ export default function Gtrs({
                 console.log(err);
             });
         axios
-            .get(`${url}api/SafetyReport`, {
+            .get(`${gtamUrl}/Customer/Accounts`, {
                 headers: {
-                    RoleId: param,
+                    UserId: currentUser.UserId,
+                },
+            })
+            .then((res) => {
+                const x = JSON.stringify(res.data);
+                const parsedDataPromise = new Promise((resolve, reject) => {
+                    const parsedData = JSON.parse(x);
+                    resolve(parsedData);
+                });
+                parsedDataPromise.then((parsedData) => {
+                    console.log(parsedData)
+                    setCusomterAccounts(parsedData || []);
+                });
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        axios
+            .get(`${gtrsUrl}/SafetyReport`, {
+                headers: {
+                    UserId: currentUser.UserId,
                 },
             })
             .then((res) => {
@@ -122,9 +129,9 @@ export default function Gtrs({
                 console.log(err);
             });
         axios
-            .get(`${url}api/Debtors`, {
+            .get(`${gtrsUrl}/Debtors`, {
                 headers: {
-                    RoleId: param,
+                    UserId: currentUser.UserId,
                 },
             })
             .then((res) => {
@@ -142,9 +149,9 @@ export default function Gtrs({
                 console.log(err);
             });
         axios
-            .post(`${url}api/GTRS/Consignments`, debtorIds, {
+            .get(`${gtrsUrl}/Consignments`, {
                 headers: {
-                    RoleId: param,
+                    UserId: currentUser.UserId,
                 },
             })
             .then((res) => {
@@ -162,10 +169,11 @@ export default function Gtrs({
             .catch((err) => {
                 console.log(err);
             });
+
         axios
-            .post(`${url}api/GTRS/PerformanceReport`, debtorIds, {
+            .get(`${gtrsUrl}/PerformanceReport`, {
                 headers: {
-                    RoleId: param,
+                    UserId: currentUser.UserId,
                 },
             })
             .then((res) => {
@@ -178,9 +186,9 @@ export default function Gtrs({
                 console.log(err);
             });
         axios
-            .get(`${url}api/GTRS/KpiReasons`, {
+            .get(`${gtrsUrl}/KpiReasons`, {
                 headers: {
-                    RoleId: param,
+                    UserId: currentUser.UserId,
                 },
             })
             .then((res) => {
@@ -200,7 +208,7 @@ export default function Gtrs({
     }, []);
     function checkFeaturesInPages(jsonData) {
         // Iterate over the Pages array in the JSON data
-        for (let i = 0; i < jsonData.Pages.length; i++) {
+        for (let i = 0; i < jsonData?.Pages?.length; i++) {
             // Check if the page has a 'Features' key and it's not empty
             if (
                 jsonData.Pages[i].Features &&
@@ -236,7 +244,7 @@ export default function Gtrs({
                             kpireasonsData={kpireasonsData}
                             setkpireasonsData={setkpireasonsData}
                             userBody={userBody}
-                            url={url}
+                            url={gtrsUrl}
                             chartsData={chartsData}
                             safetyTypes={safetyTypes}
                             setSafetyTypes={setSafetyTypes}
@@ -248,14 +256,14 @@ export default function Gtrs({
                             setFailedReasons={setFailedReasons}
                             safetyData={safetyData}
                             debtorsData={debtorsData}
-                            customerAccounts={userdata}
+                            customerAccounts={customerAccounts}
                             rddData={rddData}
                             setrddData={setrddData}
                             IDfilter={dataFromChild}
                             sessionData={sessionData}
                             currentUser={{
                                 ...user[0],
-                                UserId: userdata.UserId,
+                                UserId: currentUser.UserId,
                             }}
                             dashData={PerfData}
                             setActiveIndexGTRS={setActiveIndexGTRS}

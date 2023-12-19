@@ -45,7 +45,6 @@ export default function SafetyModal({
         Resolution: modalResol,
         Reference: modalRefer,
         OccuredAt: formattedDate,
-        AddedBy: currentUser.name,
     });
     useEffect(() => {
         setFormValues({
@@ -58,7 +57,6 @@ export default function SafetyModal({
             Resolution: modalResol,
             Reference: modalRefer,
             OccuredAt: formattedDate,
-            AddedBy: currentUser.name,
         });
     }, [
         id,
@@ -86,7 +84,6 @@ export default function SafetyModal({
             Resolution: modalResol,
             Reference: modalRefer,
             OccuredAt: formattedDate,
-            AddedBy: currentUser.name,
         });
         handleClose(); // Clear the input value
     };
@@ -102,11 +99,11 @@ export default function SafetyModal({
             SetIsLoading(true);
             // Make the API request using Axios or any other library
             const response = await axios.post(
-                `${url}api/Add/SafetyReport`,
+                `${url}/Add/SafetyReport`,
                 formValues,
                 {
                     headers: {
-                        RoleId: currentUser.UserId,
+                        UserId: currentUser.UserId,
                     },
                 }
             );

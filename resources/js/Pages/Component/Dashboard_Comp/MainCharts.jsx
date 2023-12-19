@@ -20,11 +20,15 @@ import { useEffect } from "react";
 import MultiChartLine from "./Dashboard_Charts/MultiLineChart";
 import DoubleBarChart from "./Dashboard_Charts/DoublBarChart";
 export default function MainCharts({ accData, safetyData, chartsData }) {
+
+    console.log("chartsData", chartsData)
+    console.log("accData", accData)
+
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
     const [EDate, setEDate] = useState(getLatestDespatchDate(chartsData));
     function getOldestDespatchDate(data) {
         // Filter out elements with invalid 'CreatedDate' values
-        const validData = data.filter((item) => isValidDate(item.DespatchDate));
+        const validData = data?.filter((item) => isValidDate(item?.DespatchDate));
         // Sort the validData array based on the 'CreatedDate' property
         const sortedData = validData.sort(
             (a, b) => new Date(a.DespatchDate) - new Date(b.DespatchDate)

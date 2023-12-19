@@ -74,11 +74,11 @@ export default function AddFailedModal({
             SetIsLoading(true)
             // Make the API request using Axios or any other library
             const response = await axios.post(
-                `${url}api/Add/FailedReasons`,
+                `${url}/add/FailedReasons`,
                 data,
                 {
                     headers: {
-                        RoleId: currentUser.UserId,
+                        UserId: currentUser.UserId,
                     },
                 }
             );

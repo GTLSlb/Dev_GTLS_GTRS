@@ -27,9 +27,9 @@ export default function AddSafetyType({
     const [currentPage, setCurrentPage] = useState(0);
     function fetchData() {
         axios
-            .get(`${url}api/SafetyTypes`, {
+            .get(`${url}/SafetyTypes`, {
                 headers: {
-                    RoleId: currentUser.UserId,
+                    UserId: currentUser.UserId,
                 },
             })
             .then((res) => {

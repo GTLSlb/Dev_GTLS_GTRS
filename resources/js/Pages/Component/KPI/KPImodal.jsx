@@ -70,11 +70,9 @@ export default function KPIModalAddReason({
             // Make the API request using Axios or any other library
             SetIsLoading(true);
             const response = await axios
-                .post(`${url}api/GTRS/Add/KpiFailedReason`, data, {
+                .post(`${url}/Add/KpiFailedReason`, data, {
                     headers: {
                         UserId: currentUser.UserId,
-                        RoleId: currentUser.RoleId,
-                        Name: currentUser.name,
                     },
                 })
                 .then((res) => {})
