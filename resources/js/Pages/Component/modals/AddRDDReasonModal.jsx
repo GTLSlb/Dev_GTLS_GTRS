@@ -14,6 +14,7 @@ export default function AddRDDReasonModal({
     url,
     reason,
     setReason,
+    AToken,
     updateLocalData,
     rddReasons,
     currentUser
@@ -74,8 +75,9 @@ export default function AddRDDReasonModal({
             SetIsLoading(true)
             // Make the API request using Axios or any other library
             const response = await axios.post(
-                `${url}/Add/RddChangeReason`,data,{headers: {
+                `${url}Add/RddChangeReason`,data,{headers: {
                     UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
                 }},
                 
             );
@@ -94,6 +96,30 @@ export default function AddRDDReasonModal({
         } catch (error) {
             // Handle error
             SetIsLoading(false)
+                if (error.response && error.response.status === 401) {
+                  // Handle 401 error using SweetAlert
+                  swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                  }).then(function() {
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                          if (response.status == 200) {
+                            window.location.href = "/";
+                          }
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                  });
+                } else {
+                  // Handle other errors
+                  console.log(err);
+                }
             setError("Error occurred while saving the data. Please try again."); // Set the error message
         }
     };

@@ -32,7 +32,6 @@ export default function Sidebar(Boolean) {
                             headers: {
                                 UserId: res.data?.UserId,
                                 AppId: window.Laravel.appId,
-                                Authorization: `Bearer ${Token}`,
                             },
                         }
                     )
@@ -112,6 +111,7 @@ export default function Sidebar(Boolean) {
             loadingGtrs={loadingGtrs}
             setLoadingGtrs={setLoadingGtrs}
             currentUser={currentUser}
+            AToken={Token}
             setCurrentUser={setcurrentUser}
         />,
     ];
@@ -132,6 +132,7 @@ export default function Sidebar(Boolean) {
                 loadingGtrs={loadingGtrs}
                 setLoadingGtrs={setLoadingGtrs}
                 currentUser={currentUser}
+                AToken={Token}
                 setCurrentUser={setcurrentUser}
             />,
         ];
@@ -160,6 +161,7 @@ export default function Sidebar(Boolean) {
                     />
                     <MainNavbar
                         url={Invoicesurl}
+                        AToken={Token}
                         currentUser={currentUser}
                         PODetails={PODetails}
                         setPODetails={setPODetails}

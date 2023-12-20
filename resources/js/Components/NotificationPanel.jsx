@@ -21,6 +21,7 @@ const NotificationPanel = ({
     invoiceDetails,
     PODetails,
     setPODetails,
+    AToken,
     currentUser,
     url
 }) => {
@@ -88,10 +89,11 @@ const NotificationPanel = ({
     }
     function getInvoicesbyId(InvoiceId, index) {
         axios
-            .get(`${url}/api/GTIS/Invoices`, {
+            .get(`${url}Invoices`, {
                 headers: {
                     UserId: currentUser.user_id,
                     InvoiceId: InvoiceId,
+                    Authorization: `Bearer ${AToken}`,
                 },
             })
             .then((res) => {
@@ -107,7 +109,23 @@ const NotificationPanel = ({
                 });
             })
             .catch((err) => {
-                console.log(err);
+                if (err.response && err.response.status === 401) {
+                    // Handle 401 error
+                    alert('Session Expired, Please Login Again');
+                    // axios
+                    // .post("/logoutAPI")
+                    // .then((response) => {
+                    //     if (response.status == 200) {
+                    //         window.location.href = "/";
+                    //     }
+                    // })
+                    // .catch((error) => {
+                    //     console.log(error);
+                    // });
+                } else {
+                    // Handle other errors
+                    console.log(err);
+                }
             });
     }
     function getPObyId(POId, index) {

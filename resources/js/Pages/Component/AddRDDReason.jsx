@@ -6,7 +6,7 @@ import AddFailedModal from "@/Pages/Component/modals/AddFailedModal";
 import notFound from "../../assets/pictures/NotFound.png";
 import AddRDDReasonModal from "./modals/AddRDDReasonModal";
 import { canAddRDDReasons, canEditRDDReasons } from "@/permissions";
-
+import swal from 'sweetalert';
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -14,6 +14,7 @@ export default function AddRDDReason({
     rddReasons,
     setrddReasons,
     currentUser,
+    AToken,
     url,
 }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -53,9 +54,10 @@ export default function AddRDDReason({
     const tableRef = useRef(null);
     function fetchData() {
         axios
-            .get(`${url}api/RddChangeReason`, {
+            .get(`${url}RddChangeReason`, {
                 headers: {
                     RoleId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
                 },
             })
             .then((res) => {
@@ -70,8 +72,31 @@ export default function AddRDDReason({
                 });
             })
             .catch((err) => {
-                console.log(err);
-            });
+                if (err.response && err.response.status === 401) {
+                  // Handle 401 error using SweetAlert
+                  swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                  }).then(function() {
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                          if (response.status == 200) {
+                            window.location.href = "/";
+                          }
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                  });
+                } else {
+                  // Handle other errors
+                  console.log(err);
+                }
+              });
     }
 
     const updateLocalData = () => {
@@ -241,6 +266,7 @@ export default function AddRDDReason({
                 url={url}
                 isOpen={isModalOpen}
                 reason={reason}
+                AToken={AToken}
                 setReason={setReason}
                 handleClose={handleEditClick}
                 updateLocalData={updateLocalData}

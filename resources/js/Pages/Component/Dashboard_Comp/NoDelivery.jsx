@@ -15,6 +15,7 @@ import BoolFilter from "@inovua/reactdatagrid-community/BoolFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import Button from "@inovua/reactdatagrid-community/packages/Button";
+import swal from 'sweetalert';
 import TableStructure from "@/Components/TableStructure";
 import {
     ChevronDownIcon,
@@ -50,6 +51,7 @@ export default function NoDelivery({
     setLastIndex,
     setactiveCon,
     currentUser,
+    AToken,
     url,
 }) {
     window.moment = moment;
@@ -64,9 +66,10 @@ export default function NoDelivery({
 
     const fetchData = async () => {
         axios
-            .get(`${url}/NoDelInfo`, {
+            .get(`${url}NoDelInfo`, {
                 headers: {
                     UserId: currentUser?.UserId,
+                    Authorization: `Bearer ${AToken}`,
                 },
             })
             .then((res) => {
@@ -81,8 +84,31 @@ export default function NoDelivery({
                 });
             })
             .catch((err) => {
-                console.log(err);
-            });
+                if (err.response && err.response.status === 401) {
+                  // Handle 401 error using SweetAlert
+                  swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                  }).then(function() {
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                          if (response.status == 200) {
+                            window.location.href = "/";
+                          }
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                  });
+                } else {
+                  // Handle other errors
+                  console.log(err);
+                }
+              });
     };
     const handleClick = (coindex) => {
         setActiveIndexGTRS(3);

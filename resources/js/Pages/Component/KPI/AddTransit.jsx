@@ -8,13 +8,14 @@ import {
 } from "@heroicons/react/20/solid";
 import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import { useEffect } from "react";
-
+import swal from 'sweetalert';
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
 export default function AddTransit({
     url,
+    AToken,
     currentUser,
     setTransitDay,
     setTransitDays,
@@ -80,9 +81,10 @@ export default function AddTransit({
     const fetchData = async () => {
         try {
             axios
-                .get(`${url}/Transits`, {
+                .get(`${url}Transits`, {
                     headers: {
                         UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
                     },
                 })
                 .then((res) => {
@@ -96,7 +98,30 @@ export default function AddTransit({
                     });
                 });
         } catch (error) {
-            console.error("Error fetching data:", error);
+                if (error.response && error.response.status === 401) {
+                  // Handle 401 error using SweetAlert
+                  swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                  }).then(function() {
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                          if (response.status == 200) {
+                            window.location.href = "/";
+                          }
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                  });
+                } else {
+                  // Handle other errors
+                  console.log(err);
+                }
         }
     };
 
@@ -135,9 +160,10 @@ export default function AddTransit({
             TransitTime: document.getElementById("TransitTime").value,
         };
         axios
-            .post(`${url}/Add/Transit`, inputValues, {
+            .post(`${url}Add/Transit`, inputValues, {
                 headers: {
                     UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
                 },
             })
             .then((res) => {
@@ -148,10 +174,32 @@ export default function AddTransit({
                 // AlertToast("Saved successfully", 1);
             })
             .catch((err) => {
-                // AlertToast("Something went wrong", 2);
-                setIsLoading(false);
-                console.log(err);
-            });
+                if (err.response && err.response.status === 401) {
+                  // Handle 401 error using SweetAlert
+                  swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                  }).then(function() {
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                          if (response.status == 200) {
+                            window.location.href = "/";
+                          }
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                  });
+                } else {
+                  // Handle other errors
+                  console.log(err);
+                  setIsLoading(false);
+                }
+              });
     }
 
     function CancelHandle() {

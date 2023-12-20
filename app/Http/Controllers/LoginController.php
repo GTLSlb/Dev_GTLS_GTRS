@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Customer;
 use App\Models\Driver;
 use App\Models\Employee;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -64,10 +65,10 @@ class LoginController extends Controller
                         'Username' => $email,
                         'Password' => $password,
                     ];
-                    $tokenurl = "https://gtlslebs06-vm.gtls.com.au:8084/";
+                    $tokenURL = $_ENV['GTRS_API_URL'];
                     $tokenRes = Http::withHeaders($TokenHeaders)
                     ->asForm()
-                    ->post("$tokenurl" . "Token", $TokenBody);
+                    ->post("$tokenURL" . "Token", $TokenBody);
 
                     
                     if($responseData[0]['TypeId'] == 1) // the user is a customer
@@ -85,14 +86,38 @@ class LoginController extends Controller
                         $token = $tokenRes->json();
                         $cookieName = 'gtrs_access_token';
                         $cookieValue = $token['access_token'];
-                        $expiry = $token['expires_in'];
-                        setcookie($cookieName, $cookieValue, time() + $expiry, '/', '', true);
-                        //setcookie('gtrs_refresh_token', $token['refresh_token'], time() + $expiry, '/', '', true);
+                        // $expiry = $token['expires_in'];
+                        $expiry = 60 * 60 * 24 * 2; //48h
+                        //$expiry = 60;
+                        $expirationTime = time() + $expiry;
+                        setcookie($cookieName, $cookieValue, $expirationTime, '/', '', true);
+                        //dd($expirationTime);
+                        setcookie('gtrs_refresh_token', $token['refresh_token'], $expirationTime, '/', '', true);
                         
-                        $request->session()->regenerate();
-                        $request->session()->put('user', $user);
-                        $request->session()->put('newRoute', route('loginapi'));
-                        $request->session()->put('isLoggingOut', false);
+                        $userId = $user['UserId'];
+                    $request->session()->regenerate();
+                    $request->session()->put('user', $user);
+                    $request->session()->put('user_id', $userId);
+                    $request->session()->put('newRoute', route('loginapi'));
+
+                    $sessionId = $request->session()->getId();
+                    $payload = $request->session()->get('_token');
+                    $userSession = $request->session()->get('user');
+                    $user = json_encode($userSession->getAttributes());
+
+                    //dd($user->getAttributes());
+                    $lastActivity = time();
+                    DB::table('custom_sessions')->insert([
+                        'id' => $sessionId,
+                        'user_id' => $userId,
+                        'payload' => $payload,
+                        'user' => $user,
+                        'last_activity' => $lastActivity,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                    //dd($request->session()->get('user')->UserId);
+                    $request->session()->save();
                         if ($request->session()->get('newRoute') && $request->session()->get('user')) {
                             return response($request, 200);
                         }

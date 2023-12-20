@@ -3,11 +3,12 @@ import axios from "axios";
 import { useEffect } from "react";
 import "../../css/scroll.css";
 import moment from "moment";
-
+import swal from 'sweetalert';
 export default function ConsignmentD({
     setActiveIndexGTRS,
     activeCon,
     lastIndex,
+    AToken,
     url,
     currentUser,
 }) {
@@ -119,18 +120,44 @@ export default function ConsignmentD({
     function fetchData() {
         return axios
             .get(
-                `${url}/ConsignmentById`,
+                `${url}ConsignmentById`,
                 {
                     headers: {
                         "Content-Type": "application/json",
                         UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
                         Consignment_id: activeCon,
                     },
                 }
                 // ?User_id=${currentUser.user_id}&Consignment_id=${activeCon}
             )
             .then((response) => setConsignment(response.data))
-            .catch((error) => console.log(error));
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                  // Handle 401 error using SweetAlert
+                  swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                  }).then(function() {
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                          if (response.status == 200) {
+                            window.location.href = "/";
+                          }
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                  });
+                } else {
+                  // Handle other errors
+                  console.log(err);
+                }
+              });
     }
     useEffect(() => {
         fetchData();
