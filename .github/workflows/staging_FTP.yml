@@ -16,7 +16,9 @@ jobs:
             echo "Workflow can only be run from the 'staging' branch."
             exit 1
           fi
-          - uses: actions/setup-node@master
+
+      - name: Setup Node
+        uses: actions/setup-node@master
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
       - name: Authenticate Nova
