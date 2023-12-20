@@ -8,10 +8,12 @@ import Select from "react-select";
 import AddSafetyType from "./safetyComp/AddSafety/safetyTypes/AddSafetyType";
 import AddSafetyCauses from "./safetyComp/AddSafety/safetyCauses/AddSafetyCauses";
 import { canViewSafetyType } from "@/permissions";
+import swal from 'sweetalert';
 export default function SafetyRep({
     accData,
     currentUser,
     url,
+    AToken,
     safetyDataState,
     filterValue,
     setFilterValue,
@@ -101,9 +103,10 @@ export default function SafetyRep({
     function fetchData() {
         setIsFetching(true);
         return axios
-            .get(`${url}/SafetyReport`, {
+            .get(`${url}SafetyReport`, {
                 headers: {
                     UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
                 },
             })
             .then((res) => {
@@ -114,14 +117,38 @@ export default function SafetyRep({
                 setIsFetching(false);
             })
             .catch((err) => {
-                console.log(err);
-            });
+                if (err.response && err.response.status === 401) {
+                  // Handle 401 error using SweetAlert
+                  swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                  }).then(function() {
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                          if (response.status == 200) {
+                            window.location.href = "/";
+                          }
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                  });
+                } else {
+                  // Handle other errors
+                  console.log(err);
+                }
+              });
     }
     function fetchDataTypes() {
         axios
-            .get(`${url}/SafetyTypes`, {
+            .get(`${url}SafetyTypes`, {
                 headers: {
                     UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
                 },
             })
             .then((res) => {
@@ -136,14 +163,38 @@ export default function SafetyRep({
                 });
             })
             .catch((err) => {
-                console.log(err);
-            });
+                if (err.response && err.response.status === 401) {
+                  // Handle 401 error using SweetAlert
+                  swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                  }).then(function() {
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                          if (response.status == 200) {
+                            window.location.href = "/";
+                          }
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                  });
+                } else {
+                  // Handle other errors
+                  console.log(err);
+                }
+              });
     }
     function fetchDataCauses() {
         axios
-            .get(`${url}/SafetyCauses`, {
+            .get(`${url}SafetyCauses`, {
                 headers: {
                     UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
                 },
             })
             .then((res) => {
@@ -158,8 +209,31 @@ export default function SafetyRep({
                 });
             })
             .catch((err) => {
-                console.log(err);
-            });
+                if (err.response && err.response.status === 401) {
+                  // Handle 401 error using SweetAlert
+                  swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                  }).then(function() {
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                          if (response.status == 200) {
+                            window.location.href = "/";
+                          }
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                  });
+                } else {
+                  // Handle other errors
+                  console.log(err);
+                }
+              });
     }
     useEffect(() => {
         filterData(SDate, EDate);
@@ -235,6 +309,7 @@ export default function SafetyRep({
     let components = [
         <SafetyRepTable
             url={url}
+            AToken={AToken}
             safetyCauses={safetyCauses}
             filterValue={filterValue}
             setFilterValue={setFilterValue}
@@ -246,12 +321,14 @@ export default function SafetyRep({
             setDataEdited={setDataEdited}
         />,
         <SafetyRepChart
+            AToken={AToken}
             filteredData={filteredData}
             safetyCauses={safetyCauses}
             safetyTypes={safetyTypes}
         />,
         <AddSafetyType
             url={url}
+            AToken={AToken}
             currentUser={currentUser}
             safetyTypes={safetyTypes}
             setSafetyTypes={setSafetyTypes}

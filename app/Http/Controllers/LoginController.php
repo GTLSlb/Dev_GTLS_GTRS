@@ -4,18 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Http\Middleware\ApiAuth;
 use Illuminate\Http\Request;
+use App\Models\User;
 use App\Models\Customer;
 use App\Models\Driver;
 use App\Models\Employee;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Middleware\CustomAuth;
-use Illuminate\Support\Facades\DB; 
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider;
-
+use Dotenv\Dotenv;
 class LoginController extends Controller
 {
     /**
@@ -34,23 +35,41 @@ class LoginController extends Controller
             'Password' => $password,
         ];
 
-        $url = 'https://gtlslebs06-vm.gtls.com.au:5432/api/Login';
-        $response = Http::withHeaders($headers)->get($url);
+        $url = $_ENV['GTAM_API_URL'];
+        $appID = $_ENV['REACT_APP_ID'];
+
+        $response = Http::withHeaders($headers)->get("$url" . "Login");
+        
         if ($response->successful()) {
             $responseData = $response->json();
             if (!empty($responseData)) {
-                //dd($responseData[0]);
                 $authProvider = new CustomAuth();
+                
                 $credentials = [
                     'EmailInput' => $request->input('Email'),
-                    'EmailDb' => $responseData[0]['Username'],
+                    'EmailDb' => $responseData[0]['Email'],
                     'PasswordDb' => $responseData[0]['UserId'],
                     'PasswordInput' => $request->input('Password'),
                 ];
                 $authenticatedUser = $authProvider->attempt($credentials, true);
                 if ($authenticatedUser) {
-                    // Redirect to the intended page with the obtained user after checking the type of user and filling the correct model 
+                    // Redirect to the intended page with the obtained user 
                     $user = null;
+                    $TokenHeaders = [
+                        'UserId'=> $responseData[0]['UserId'],
+                        'OwnerId'=> $responseData[0]['OwnerId'],
+                        // 'AppId'=> $appID,
+                        'Content-Type'=> "application/x-www-form-urlencoded",
+                    ];
+                    $TokenBody = [
+                        'grant_type' => "password",
+                    ];
+                    $tokenURL = $_ENV['GTRS_API_URL'];
+                    $tokenRes = Http::withHeaders($TokenHeaders)
+                    ->asForm()
+                    ->post("$tokenURL" . "Token", $TokenBody);
+
+                    
                     if($responseData[0]['TypeId'] == 1) // the user is a customer
                     {
                         $user = new Customer($responseData[0]);
@@ -61,9 +80,20 @@ class LoginController extends Controller
                     else{ // the user is a driver
                         $user = new Driver($responseData[0]);
                     }
-                    //dd($user['UserId']);
-                    //dd($user instanceof Employee);
-                    $userId = $user['UserId'];
+                    if ($tokenRes->successful()) {
+                        
+                        $token = $tokenRes->json();
+                        $cookieName = 'gtrs_access_token';
+                        $cookieValue = $token['access_token'];
+                        // $expiry = $token['expires_in'];
+                        $expiry = 60 * 60 * 24 * 2; //48h
+                        //$expiry = 60;
+                        $expirationTime = time() + $expiry;
+                        setcookie($cookieName, $cookieValue, $expirationTime, '/', '', true);
+                        //dd($expirationTime);
+                        setcookie('gtrs_refresh_token', $token['refresh_token'], $expirationTime, '/', '', true);
+                        
+                        $userId = $user['UserId'];
                     $request->session()->regenerate();
                     $request->session()->put('user', $user);
                     $request->session()->put('user_id', $userId);
@@ -87,25 +117,29 @@ class LoginController extends Controller
                     ]);
                     //dd($request->session()->get('user')->UserId);
                     $request->session()->save();
-                    //$request->session()->put('isLoggingOut', false);
-
-                    if ($request->session()->get('newRoute') && $request->session()->get('user')) {
-                        return response($request, 200);
+                        if ($request->session()->get('newRoute') && $request->session()->get('user')) {
+                            return response($request, 200);
+                        }
+                    }else{
+                        $errorMessage = 'Something went wrong, try again later';
+                        $statusCode = 500;
+                        return response(['error' => $response, 'Message' => $errorMessage], $statusCode);
                     }
+                    
 
                 } else {
-                    $errorMessage = 'An error occurred.';
+                    $errorMessage = 'Invalid Credentials';
                     $statusCode = 500;
-                    return response(['not auth' => $response], $statusCode);
+                    return response(['error' => $response, 'Message' => $errorMessage], $statusCode);
                 }
             }
         } else {
-            // Create a static error response
-            $errorMessage = 'An error occurred.';
+            $errorMessage = 'Invalid Credentials';
             $statusCode = 500;
-            return response(['error' => $response], $statusCode);
+            return response(['error' => $response, 'Message' => $errorMessage], $statusCode);
         }
     }
+
 
     public function logout(Request $request)
     {

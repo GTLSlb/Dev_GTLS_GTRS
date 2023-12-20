@@ -48,7 +48,8 @@ class Employee extends User
         'ReportToId',
         'ReportToName',
         'HiringDate',
-        'Applications',
+        'StateId',
+        'StateName'
     ];
 
     /**

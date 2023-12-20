@@ -136,7 +136,7 @@ export default function SetFailedReasonModal({
             SetIsLoading(true);
             // Make the API request using Axios or any other library
             const response = await axios.post(
-                `${url}/add/ConsFailedReason`,
+                `${url}add/ConsFailedReason`,
                 data,
                 {
                     headers: {

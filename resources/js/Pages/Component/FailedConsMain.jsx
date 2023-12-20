@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import FailedCons from "./FailedCons";
 import AddFailedReason from "./AddFailedReason";
 import { canViewFailedReasons } from "@/permissions";
-
+import swal from 'sweetalert';
 export default function FailedConsMain({
     url,
     PerfData,
@@ -17,6 +17,7 @@ export default function FailedConsMain({
     accData,
     EDate,
     setEDate,
+    AToken,
     SDate,
     setSDate,
     failedReasons,
@@ -38,9 +39,10 @@ export default function FailedConsMain({
     const fetchReasonData = async () => {
         try {
             axios
-                .get(`${url}/FailureReasons`, {
+                .get(`${url}FailureReasons`, {
                     headers: {
                         UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
                     },
                 })
                 .then((res) => {
@@ -55,8 +57,31 @@ export default function FailedConsMain({
                     });
                 })
                 .catch((err) => {
-                    console.log(err);
-                });
+                    if (err.response && err.response.status === 401) {
+                      // Handle 401 error using SweetAlert
+                      swal({
+                        title: 'Session Expired!',
+                        text: "Please login again",
+                        type: 'success',
+                        icon: "info",
+                        confirmButtonText: 'OK'
+                      }).then(function() {
+                        axios
+                            .post("/logoutAPI")
+                            .then((response) => {
+                              if (response.status == 200) {
+                                window.location.href = "/";
+                              }
+                            })
+                            .catch((error) => {
+                              console.log(error);
+                            });
+                      });
+                    } else {
+                      // Handle other errors
+                      console.log(err);
+                    }
+                  });
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -83,6 +108,7 @@ export default function FailedConsMain({
             filterValue={filterValue}
             setFilterValue={setFilterValue}
             EDate={EDate}
+            AToken={AToken}
             setEDate={setEDate}
             SDate={SDate}
             setSDate={setSDate}
@@ -95,6 +121,7 @@ export default function FailedConsMain({
             failedReasons={failedReasons}
             setFailedReasons={setFailedReasons}
             currentUser={currentUser}
+            AToken={AToken}
         />,
     ];
 

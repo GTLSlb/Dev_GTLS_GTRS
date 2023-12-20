@@ -41,6 +41,8 @@ export default function charts({
     rddReasons,
     setrddReasons,
     url,
+    user,
+    AToken,
     chartsData,
     kpireasonsData,
     setkpireasonsData,
@@ -1071,9 +1073,6 @@ export default function charts({
         ]
     )
 
-    console.log(customerAccounts)
-
-
     function getOldestDespatchDate(data) {
         // Filter out elements with invalid 'CreatedDate' values
         const validData = data.filter((item) => isValidDate(item.DespatchDate));
@@ -1157,6 +1156,7 @@ export default function charts({
             safetyData={safetyData}
             accData={dataFromChild}
             dashData={dashData}
+            AToken={AToken}
             currentUser={currentUser}
             IDfilter={IDfilter}
             EDate={EDate}
@@ -1171,6 +1171,7 @@ export default function charts({
             setActiveIndexGTRS={setActiveIndexGTRS}
             setactiveCon={setactiveCon}
             consData={consData}
+            AToken={AToken}
             filterValue={filtersCons}
             setFilterValue={setFiltersCons}
             minDate={minDate}
@@ -1195,6 +1196,7 @@ export default function charts({
             accData={dataFromChild}
             setActiveIndexGTRS={setActiveIndexGTRS}
             url={url}
+            AToken={AToken}
             setactiveCon={setactiveCon}
             setLastIndex={setLastIndex}
             IDfilter={IDfilter}
@@ -1208,6 +1210,7 @@ export default function charts({
             accData={dataFromChild}
             setActiveIndexGTRS={setActiveIndexGTRS}
             activeCon={activeCon}
+            AToken={AToken}
             lastIndex={lastIndex}
             currentUser={currentUser}
         />,
@@ -1221,6 +1224,7 @@ export default function charts({
             setLastIndex={setLastIndex}
             IDfilter={IDfilter}
             EDate={EDate}
+            AToken={AToken}
             setEDate={setEDate}
             SDate={SDate}
             setSDate={setSDate}
@@ -1240,6 +1244,7 @@ export default function charts({
             setLastIndex={setLastIndex}
             IDfilter={IDfilter}
             EDate={EDate}
+            AToken={AToken}
             setEDate={setEDate}
             SDate={SDate}
             setSDate={setSDate}
@@ -1261,6 +1266,7 @@ export default function charts({
             EDate={EDate}
             setEDate={setEDate}
             SDate={SDate}
+            AToken={AToken}
             setSDate={setSDate}
             accData={dataFromChild}
         />,
@@ -1277,6 +1283,7 @@ export default function charts({
             setactiveCon={setactiveCon}
             setLastIndex={setLastIndex}
             EDate={EDate}
+            AToken={AToken}
             setEDate={setEDate}
             SDate={SDate}
             setSDate={setSDate}
@@ -1292,6 +1299,7 @@ export default function charts({
             filterValue={filtersDriver}
             setFilterValue={setFiltersDriver}
             EDate={EDate}
+            AToken={AToken}
             setEDate={setEDate}
             SDate={SDate}
             setSDate={setSDate}
@@ -1315,6 +1323,7 @@ export default function charts({
             EDate={EDate}
             setEDate={setEDate}
             SDate={SDate}
+            AToken={AToken}
             setSDate={setSDate}
             rddReasons={rddReasons}
             setrddReasons={setrddReasons}
@@ -1323,6 +1332,7 @@ export default function charts({
             oldestDate={oldestDate}
             latestDate={latestDate}
             url={url}
+            AToken={AToken}
             filterValue={filtersSafety}
             setFilterValue={setFiltersSafety}
             setSafetyTypes={setSafetyTypes}
@@ -1349,6 +1359,7 @@ export default function charts({
             oldestDate={oldestDate}
             latestDate={latestDate}
             url={url}
+            AToken={AToken}
             filterValue={filtersMissingPOD}
             setFilterValue={setFiltersMissingPOD}
             failedReasons={failedReasons}
@@ -1372,6 +1383,7 @@ export default function charts({
             filterValue={filtersTransit}
             setFilterValue={setFiltersTransit}
             currentUser={currentUser}
+            AToken={AToken}
             setActiveIndexGTRS={setActiveIndexGTRS}
             setTransitDays={setTransitDays}
             url={url}
@@ -1383,6 +1395,7 @@ export default function charts({
             currentUser={currentUser}
             setHolidays={setHolidays}
             url={url}
+            AToken={AToken}
         />,
         <KPIReasons
             url={url}
@@ -1390,6 +1403,7 @@ export default function charts({
             filterValue={filtersReasons}
             setFilterValue={setFiltersReasons}
             kpireasonsData={kpireasonsData}
+            AToken={AToken}
             setkpireasonsData={setkpireasonsData}
         />,
         <AddTransit
@@ -1397,6 +1411,7 @@ export default function charts({
             currentUser={currentUser}
             setTransitDay={setTransitDay}
             setTransitDays={setTransitDays}
+            AToken={AToken}
             setActiveIndexGTRS={setActiveIndexGTRS}
             transitDay={transitDay}
         />,
@@ -1419,6 +1434,7 @@ export default function charts({
                                     customerAccounts={customerAccounts}
                                         activeIndexGTRS={activeIndexGTRS}
                                         sessionData={sessionData}
+                                        user={user}
                                         onData={handleDataFromChild}
                                         setActiveIndexGTRS={setActiveIndexGTRS}
                                         currentUser={currentUser}

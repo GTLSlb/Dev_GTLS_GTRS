@@ -16,7 +16,7 @@ import LottieComponent from "@/Components/lottie/LottieComponent";
 import Truck from "../../Components/lottie/Data/Truck.json"
 import Success from "../../Components/lottie/Data/Success.json"
 import { canCalculateKPI, canEditKPI } from "@/permissions";
-
+import swal from 'sweetalert';
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -29,6 +29,7 @@ export default function KPI({
     setLastIndex,
     setactiveCon,
     filterValue,
+    AToken,
     setFilterValue,
     KPIData,
     setKPIData,
@@ -48,9 +49,10 @@ export default function KPI({
     const fetchData = async () => {
         try {
             axios
-                .get(`${url}/KPI`, {
+                .get(`${url}KPI`, {
                     headers: {
                         UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
                     },
                 })
                 .then((res) => {
@@ -65,7 +67,30 @@ export default function KPI({
                     });
                 });
         } catch (error) {
-            console.error("Error fetching data:", error);
+                if (error.response && error.response.status === 401) {
+                  // Handle 401 error using SweetAlert
+                  swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                  }).then(function() {
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                          if (response.status == 200) {
+                            window.location.href = "/";
+                          }
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                  });
+                } else {
+                  // Handle other errors
+                  console.log(err);
+                }
         }
     };
     const handleClick = (coindex) => {
@@ -606,9 +631,10 @@ export default function KPI({
     function CalculateKPI() {
         setLoading(true);
         axios
-            .get(`${url}/KpiCalculation`, {
+            .get(`${url}KpiCalculation`, {
                 headers: {
                     UserId: currentUser.user_id,
+                    Authorization: `Bearer ${AToken}`,
                 },
             })
             .then((res) => {
@@ -618,10 +644,33 @@ export default function KPI({
                 fetchData();
             })
             .catch((err) => {
-                setLoading(false);
-                setTimeout(clearStatusMessage, messageDisplayTime);
-                console.log(err);
-            });
+                if (err.response && err.response.status === 401) {
+                  // Handle 401 error using SweetAlert
+                  swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                  }).then(function() {
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                          if (response.status == 200) {
+                            window.location.href = "/";
+                          }
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                  });
+                } else {
+                  // Handle other errors
+                  setLoading(false);
+                    setTimeout(clearStatusMessage, messageDisplayTime);
+                    console.log(err);
+                }
+              });
     }
 
 
@@ -829,6 +878,7 @@ export default function KPI({
                 </div>
             )}
             <KPIModalAddReason
+                AToken={AToken}
                 url={url}
                 isOpen={isModalOpen}
                 kpi={reason}

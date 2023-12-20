@@ -12,7 +12,7 @@ import AddHoliday from "./Components/AddHoliday";
 import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import { canAddHolidays, canEditHolidays } from "@/permissions";
-
+import swal from 'sweetalert';
 const temp = [
     {
         HolidayId: 1,
@@ -27,6 +27,7 @@ export default function Holidays({
     holidays,
     setHolidays,
     url,
+    AToken,
     filterValue,
     setFilterValue,
     currentUser,
@@ -58,9 +59,10 @@ export default function Holidays({
     const fetchData = async () => {
         try {
             axios
-                .get(`${url}/Holidays`, {
+                .get(`${url}Holidays`, {
                     headers: {
                         UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
                     },
                 })
                 .then((res) => {
@@ -75,7 +77,30 @@ export default function Holidays({
                     });
                 });
         } catch (error) {
-            console.error("Error fetching data:", error);
+                if (error.response && error.response.status === 401) {
+                  // Handle 401 error using SweetAlert
+                  swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                  }).then(function() {
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                          if (response.status == 200) {
+                            window.location.href = "/";
+                          }
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                  });
+                } else {
+                  // Handle other errors
+                  console.log(err);
+                }
         }
     };
 

@@ -3,7 +3,7 @@ import AddRDDReason from "./AddRDDReason";
 import RDDreason from "./RDD";
 import "../../../css/radio.css";
 import { canViewRDDReasons } from "@/permissions";
-
+import swal from 'sweetalert';
 export default function RDDMain({
     setActiveIndexGTRS,
     setactiveCon,
@@ -18,6 +18,7 @@ export default function RDDMain({
     setEDate,
     SDate,
     url,
+    AToken,
     setSDate,
     currentUser,
     rddReasons,
@@ -41,9 +42,10 @@ export default function RDDMain({
     const fetchData = async () => {
         try {
             axios
-                .get(`${url}/RDD`, {
+                .get(`${url}RDD`, {
                     headers: {
                         UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
                     },
                 })
                 .then((res) => {
@@ -58,8 +60,31 @@ export default function RDDMain({
                     });
                 })
                 .catch((err) => {
-                    console.log('no data',err.response.data.Message);
-                });
+                    if (err.response && err.response.status === 401) {
+                      // Handle 401 error using SweetAlert
+                      swal({
+                        title: 'Session Expired!',
+                        text: "Please login again",
+                        type: 'success',
+                        icon: "info",
+                        confirmButtonText: 'OK'
+                      }).then(function() {
+                        axios
+                            .post("/logoutAPI")
+                            .then((response) => {
+                              if (response.status == 200) {
+                                window.location.href = "/";
+                              }
+                            })
+                            .catch((error) => {
+                              console.log(error);
+                            });
+                      });
+                    } else {
+                      // Handle other errors
+                      console.log(err);
+                    }
+                  });
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -67,9 +92,10 @@ export default function RDDMain({
     const fetchReasonData = async () => {
         try {
             axios
-                .get(`${url}/RddChangeReason`, {
+                .get(`${url}RddChangeReason`, {
                     headers: {
-                        RoleId: currentUser.UserId,
+                        UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
                     },
                 })
                 .then((res) => {
@@ -84,8 +110,31 @@ export default function RDDMain({
                     });
                 })
                 .catch((err) => {
-                    console.log(err);
-                });
+                    if (err.response && err.response.status === 401) {
+                      // Handle 401 error using SweetAlert
+                      swal({
+                        title: 'Session Expired!',
+                        text: "Please login again",
+                        type: 'success',
+                        icon: "info",
+                        confirmButtonText: 'OK'
+                      }).then(function() {
+                        axios
+                            .post("/logoutAPI")
+                            .then((response) => {
+                              if (response.status == 200) {
+                                window.location.href = "/";
+                              }
+                            })
+                            .catch((error) => {
+                              console.log(error);
+                            });
+                      });
+                    } else {
+                      // Handle other errors
+                      console.log(err);
+                    }
+                  });
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -120,6 +169,7 @@ export default function RDDMain({
             EDate={EDate}
             setEDate={setEDate}
             SDate={SDate}
+            AToken={AToken}
             setSDate={setSDate}
             rddReasons={rddReasons}
             oldestDate={oldestDate}
@@ -130,6 +180,7 @@ export default function RDDMain({
             setrddReasons={setrddReasons}
             currentUser={currentUser}
             url={url}
+            AToken={AToken}
         />,
     ];
 
