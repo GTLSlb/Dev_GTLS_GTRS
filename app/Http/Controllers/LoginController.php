@@ -57,13 +57,12 @@ class LoginController extends Controller
                     $user = null;
                     $TokenHeaders = [
                         'UserId'=> $responseData[0]['UserId'],
-                        'AppId'=> $appID,
+                        'OwnerId'=> $responseData[0]['OwnerId'],
+                        // 'AppId'=> $appID,
                         'Content-Type'=> "application/x-www-form-urlencoded",
                     ];
                     $TokenBody = [
                         'grant_type' => "password",
-                        'Username' => $email,
-                        'Password' => $password,
                     ];
                     $tokenURL = $_ENV['GTRS_API_URL'];
                     $tokenRes = Http::withHeaders($TokenHeaders)
