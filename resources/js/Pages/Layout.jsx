@@ -6,6 +6,7 @@ import Gtrs from "@/Pages/GTRS";
 import axios from "axios";
 import hubConnection from "./SignalR";
 import NoAccess from "@/Components/NoAccess";
+import Cookies from 'js-cookie';
 // import AllRoutes from "./RoutesPage";
 
 export default function Sidebar(Boolean) {
@@ -13,23 +14,25 @@ export default function Sidebar(Boolean) {
     const [sessionData, setSessionData] = useState(null);
     const [user, setUser] = useState({});
     const [allowedApplications, setAllowedApplications] = useState([]);
+    const [Token, setToken] = useState(Cookies.get('gtrs_access_token'));
+    const [RToken, setRToken] = useState(Cookies.get('gtrs_refresh_token'));
 
-    // const Invoicesurl = "https://gtlslebs06-vm.gtls.com.au:147/";
-    const Invoicesurl = "https://gtlslebs06-vm.gtls.com.au:5678/";
-    const Gtamurl = "https://gtlslebs06-vm.gtls.com.au:5432";
+    const Invoicesurl = window.Laravel.invoiceUrl;
+    const Gtamurl = window.Laravel.gtamUrl;
     
-    useEffect(() => {
+    const getAppPermisions = () => {
         axios
             .get("/users")
             .then((res) => {
                 setcurrentUser(res.data);
                 axios
                     .get(
-                        `https://gtlslebs06-vm.gtls.com.au:5432/api/GTAM/User/AppPermissions`,
+                        `${Gtamurl}User/AppPermissions`,
                         {
                             headers: {
-                                UserId: res.data.UserId,
-                                AppId: 3,
+                                UserId: res.data?.UserId,
+                                AppId: window.Laravel.appId,
+                                Authorization: `Bearer ${Token}`,
                             },
                         }
                     )
@@ -41,14 +44,17 @@ export default function Sidebar(Boolean) {
                     });
             })
             .catch((error) => console.log(error));
-    }, []);
+    }
 
     useEffect(() => {
-        if (currentUser) {
-            axios
-                .get(`${Gtamurl}/api/GTAM/User/Permissions`, {
+        getAppPermisions();
+    },[])
+
+    const getUserPermissions = () => {
+        axios
+                .get(`${Gtamurl}User/Permissions`, {
                     headers: {
-                        UserId: currentUser.UserId,
+                        UserId: currentUser?.UserId,
                     },
                 })
                 .then((res) => {
@@ -68,6 +74,10 @@ export default function Sidebar(Boolean) {
                 .catch((err) => {
                     console.log(err);
                 });
+    }
+    useEffect(() => {
+        if (currentUser) {
+            getUserPermissions();
         }
     }, [currentUser]);
 
