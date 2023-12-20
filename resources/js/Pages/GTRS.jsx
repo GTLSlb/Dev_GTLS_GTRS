@@ -18,6 +18,7 @@ export default function Gtrs({
     activeIndexGTRS,
     user,
     setUser,
+    setToken,
     AToken,
     setActiveIndexGTRS,
     setLoadingGtrs,
@@ -127,7 +128,6 @@ export default function Gtrs({
                     resolve(parsedData);
                 });
                 parsedDataPromise.then((parsedData) => {
-                    console.log(parsedData)
                     setCusomterAccounts(parsedData || []);
                 });
             })
@@ -388,6 +388,43 @@ export default function Gtrs({
         }
         return false;
     }
+
+    useEffect(() => {
+      if (currentUser && !AToken) {
+          const headers = {
+              UserId: currentUser.UserId,
+              // currentUser.UserId,
+              OwnerId: currentUser.OwnerId,
+              "Content-Type": "application/x-www-form-urlencoded",
+          };
+          const data = {
+              grant_type: "password",
+             
+          };
+          axios
+              .post(`${gtrsUrl}/Token`, data, {
+                  headers: headers,
+              })
+              .then((res) => {
+                  const x = JSON.stringify(res.data);
+                  const parsedDataPromise = new Promise((resolve, reject) => {
+                      try {
+                          const parsedData = JSON.parse(x);
+                          resolve(parsedData || []); // Use an empty array if parsedData is null
+                      } catch (error) {
+                          reject(error);
+                      }
+                  });
+                  parsedDataPromise.then((parsedData) => {
+                      setToken(parsedData.access_token);
+                      Cookies.set('gtis_access_token', parsedData.access_token);
+                  });
+              })
+              .catch((err) => {
+                  console.log(err);
+              });
+      }
+  }, [currentUser]);
     useEffect(() => {
         if (loadingGtrs) {
             if (user == {}) {
@@ -404,7 +441,7 @@ export default function Gtrs({
     if (consApi && reportApi && chartsApi && DebtorsApi && KPIReasonsApi) {
         setLoadingGtrs(true);
     }
-    if (loadingGtrs) {
+    if (loadingGtrs && AToken) {
         if (canAccess) {
             return (
                 <div className="bg-smooth">
@@ -434,6 +471,7 @@ export default function Gtrs({
                                 ...user[0],
                                 UserId: currentUser.UserId,
                             }}
+                            user={currentUser}
                             dashData={PerfData}
                             setActiveIndexGTRS={setActiveIndexGTRS}
                             activeIndexGTRS={activeIndexGTRS}

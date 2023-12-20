@@ -41,6 +41,7 @@ export default function charts({
     rddReasons,
     setrddReasons,
     url,
+    user,
     AToken,
     chartsData,
     kpireasonsData,
@@ -1072,9 +1073,6 @@ export default function charts({
         ]
     )
 
-    console.log(customerAccounts)
-
-
     function getOldestDespatchDate(data) {
         // Filter out elements with invalid 'CreatedDate' values
         const validData = data.filter((item) => isValidDate(item.DespatchDate));
@@ -1436,6 +1434,7 @@ export default function charts({
                                     customerAccounts={customerAccounts}
                                         activeIndexGTRS={activeIndexGTRS}
                                         sessionData={sessionData}
+                                        user={user}
                                         onData={handleDataFromChild}
                                         setActiveIndexGTRS={setActiveIndexGTRS}
                                         currentUser={currentUser}

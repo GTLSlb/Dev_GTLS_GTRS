@@ -49,7 +49,6 @@ export default function KPIReasons({
                     }
                 });
                 parsedDataPromise.then((parsedData) => {
-                    console.log(parsedData);
                     setkpireasonsData(parsedData);
                     // setAppsApi(true);
                 });

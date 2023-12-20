@@ -48,7 +48,7 @@ export default function Sidebar(Boolean) {
     useEffect(() => {
         getAppPermisions();
     },[])
-
+    
     const getUserPermissions = () => {
         axios
                 .get(`${Gtamurl}User/Permissions`, {
@@ -98,6 +98,7 @@ export default function Sidebar(Boolean) {
 
     const components = [
         <Gtrs
+            setToken={setToken}
             sessionData={sessionData}
             user={user}
             setUser={setUser}
@@ -119,6 +120,7 @@ export default function Sidebar(Boolean) {
     useEffect(() => {
         const components = [
             <Gtrs
+                setToken={setToken}
                 sessionData={sessionData}
                 user={user}
                 setUser={setUser}
