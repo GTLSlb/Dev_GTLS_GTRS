@@ -18,6 +18,7 @@ export default function MainNavbar({
     hubConnection,
     currentUser,
     PODetails,
+    AToken,
     setPODetails,
     url,
 }) {
@@ -50,6 +51,7 @@ export default function MainNavbar({
                     </div>
                     <div className={activePage == 4 ? "" : "hidden"}>
                         <NotificationPanel
+                            AToken={AToken}
                             url={url}
                             currentUser={currentUser}
                             hubConnection={hubConnection}

@@ -29,6 +29,7 @@ function classNames(...classes) {
 export default function SafetyRepTable({
     currentPageRep,
     safetyData,
+    AToken,
     url,
     filterValue,
     setFilterValue,
@@ -693,6 +694,7 @@ export default function SafetyRepTable({
             />
             <SafetyModal
                 url={url}
+                AToken={AToken}
                 safetyTypes={safetyTypes}
                 safetyCauses={safetyCauses}
                 isOpen={isModalOpen}

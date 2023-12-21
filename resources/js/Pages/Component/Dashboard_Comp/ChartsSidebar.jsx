@@ -161,8 +161,10 @@ export default function ChartsSidebar({
     customerAccounts,
     setActiveIndexGTRS,
     currentUser,
+    user,
     onData,
 }) {
+
     const [customerOptions, setCustomerOptions] = useState([]);
     const [showList, setShowList] = useState(false);
     // const showSelect = true;
@@ -199,7 +201,7 @@ export default function ChartsSidebar({
         return sortedObjects;
     }
     useEffect(() => {
-        setCustomerOptions(customerAccounts.Accounts);
+        setCustomerOptions(customerAccounts);
     }, []);
     useEffect(() => {
         onData(optionSelected);
@@ -291,6 +293,7 @@ export default function ChartsSidebar({
         setSidebarElements(filteredNavigation);
         setActiveIndexGTRS(filteredNavigation[0]?.id);
     }, []);
+
     return (
         <div className="h-full xl:fixed xl:w-64 md:h-full xl:fixed bg-gray-200 w-full ">
             {/* Static sidebar for desktop */}
@@ -302,7 +305,7 @@ export default function ChartsSidebar({
                             <div className="group block w-full flex-shrink-0">
                                 <div className="flex items-center">
                                     <div>
-                                        {customerAccounts.icon ? (
+                                        {user.Picture ? (
                                             <img
                                                 className="inline-block h-14 w-14"
                                                 src={`/app/icons/blank-profile.jpg`}
@@ -311,17 +314,17 @@ export default function ChartsSidebar({
                                         ) : (
                                             <img
                                                 className="inline-block h-14 w-14 object-contain"
-                                                src={`/app/icons/${customerAccounts.icon}`}
+                                                src={`/app/icons/${user.Picture}`}
                                                 alt=""
                                             />
                                         )}
                                     </div>
                                     <div className="ml-3">
                                         <p className="text-sm font-medium text-gray-800">
-                                            {customerAccounts.name}
+                                            {user?.name ? user?.name : `${user?.FirstName} ${user?.LastName}`}
                                         </p>
                                         <p className=" text-[0.7rem] text-gray-500 ">
-                                            {customerAccounts.Email}
+                                            {user.Email}
                                         </p>
                                     </div>
                                 </div>
@@ -345,7 +348,7 @@ export default function ChartsSidebar({
                                     <div className="text-left w-full">
                                         {showList && (
                                             <div className="text-left max-h-64 overflow-y-scroll mt-3 pt-1 pl-1 containerscroll">
-                                                {customerAccounts?.Accounts?.map(
+                                                {customerAccounts?.map(
                                                     (option) => (
                                                         <div
                                                             className="flex items-center"

@@ -21,9 +21,6 @@ import MultiChartLine from "./Dashboard_Charts/MultiLineChart";
 import DoubleBarChart from "./Dashboard_Charts/DoublBarChart";
 export default function MainCharts({ accData, safetyData, chartsData }) {
 
-    console.log("chartsData", chartsData)
-    console.log("accData", accData)
-
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
     const [EDate, setEDate] = useState(getLatestDespatchDate(chartsData));
     function getOldestDespatchDate(data) {

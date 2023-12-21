@@ -18,7 +18,7 @@ import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import Button from "@inovua/reactdatagrid-community/packages/Button";
 import TableStructure from "@/Components/TableStructure";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
-
+import swal from 'sweetalert';
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -29,6 +29,7 @@ export default function DriverLogin({
     filterValue,
     setFilterValue,
     url,
+    AToken,
     currentUser,
 }) {
     window.moment = moment;
@@ -42,9 +43,10 @@ export default function DriverLogin({
     }, []);
     const fetchData = async () => {
         axios
-            .get(`${url}/DriverLogin`, {
+            .get(`${url}DriverLogin`, {
                 headers: {
                     UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
                 },
             })
             .then((res) => {
@@ -60,8 +62,31 @@ export default function DriverLogin({
                 });
             })
             .catch((err) => {
-                console.log(err);
-            });
+                if (err.response && err.response.status === 401) {
+                  // Handle 401 error using SweetAlert
+                  swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                  }).then(function() {
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                          if (response.status == 200) {
+                            window.location.href = "/";
+                          }
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                  });
+                } else {
+                  // Handle other errors
+                  console.log(err);
+                }
+              });
     };
     const tableRef = useRef(null);
     const headers = [

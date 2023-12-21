@@ -3,12 +3,13 @@ import { Fragment, useState, useEffect } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import ReactModal from "react-modal";
-
+import swal from 'sweetalert';
 export default function KPIModalAddReason({
     isOpen,
     handleClose,
     url,
     kpi,
+    AToken,
     currentUser,
     updateLocalData,
     kpiReasons,
@@ -70,15 +71,39 @@ export default function KPIModalAddReason({
             // Make the API request using Axios or any other library
             SetIsLoading(true);
             const response = await axios
-                .post(`${url}/Add/KpiFailedReason`, data, {
+                .post(`${url}Add/KpiFailedReason`, data, {
                     headers: {
                         UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
                     },
                 })
                 .then((res) => {})
                 .catch((err) => {
-                    console.log(err.response);
-                });
+                    if (err.response && err.response.status === 401) {
+                      // Handle 401 error using SweetAlert
+                      swal({
+                        title: 'Session Expired!',
+                        text: "Please login again",
+                        type: 'success',
+                        icon: "info",
+                        confirmButtonText: 'OK'
+                      }).then(function() {
+                        axios
+                            .post("/logoutAPI")
+                            .then((response) => {
+                              if (response.status == 200) {
+                                window.location.href = "/";
+                              }
+                            })
+                            .catch((error) => {
+                              console.log(error);
+                            });
+                      });
+                    } else {
+                      // Handle other errors
+                      console.log(err);
+                    }
+                  });
             updateLocalData(kpi.ConsignmentId, selected?.ReasonId);
             setInputValue("");
             setSuccess(true);

@@ -95,13 +95,13 @@ export default function Login({ status, canResetPassword }) {
         );
         setPassword(event.target.value);
     };
-
+    const gtamURl = window.Laravel.gtamUrl;
     const submit = (e) => {
         e.preventDefault();
         setErrorMessage("");
         const hashedPassword = CryptoJS.SHA256(password).toString();
         axios
-            .get(`https://gtlslebs06-vm.gtls.com.au:5432/api/Login`, {
+            .get(`${gtamURl}Login`, {
                 headers: {
                     Email: email,
                     Password: hashedPassword,
@@ -123,12 +123,11 @@ export default function Login({ status, canResetPassword }) {
                     .then((response) => {
                         if (response.status == 200) {
                             window.location.href = "/main";
-                        } else {
-                            //window.location.href = '/login';
                         }
                     })
                     .catch((error) => {
                         console.log(error);
+                        setErrorMessage(error.response.data.Message)
                     });
             })
             .catch((err) => {
@@ -248,7 +247,9 @@ export default function Login({ status, canResetPassword }) {
                                             </Link>
                                         )}
                                     </div>
-                                    <div className="text-red-500">{errorMessage}</div>
+                                    {errorMessage && (
+                                        <div className="py-2 text-red-600">{errorMessage}</div>
+                                    )}
                                     <InputError
                                         message={errors.email}
                                         className="mt-2"

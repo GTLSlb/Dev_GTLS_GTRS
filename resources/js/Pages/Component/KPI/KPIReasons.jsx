@@ -3,17 +3,18 @@ import React from "react";
 import { useEffect, useState } from "react";
 import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import SmallTableKPI from "./Components/KPISmallTable";
-
+import swal from 'sweetalert';
 export default function KPIReasons({
     url,
     currentUser,
+    AToken,
     kpireasonsData,
     setkpireasonsData
 }) {
     function fromModel() {
         return 3;
     }
-    const addurl = `${url}/Add/KpiReason`;
+    const addurl = `${url}Add/KpiReason`;
     const [editIndex, setEditIndex] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
     const [filteredData, setFilteredData] = useState(kpireasonsData);
@@ -31,9 +32,10 @@ export default function KPIReasons({
     }
     function getKPIReasons() {
         axios
-            .get(`${url}/KpiReasons`, {
+            .get(`${url}KpiReasons`, {
                 headers: {
                     UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
                 },
             })
             .then((res) => {
@@ -47,14 +49,36 @@ export default function KPIReasons({
                     }
                 });
                 parsedDataPromise.then((parsedData) => {
-                    console.log(parsedData);
                     setkpireasonsData(parsedData);
                     // setAppsApi(true);
                 });
             })
             .catch((err) => {
-                console.log(err);
-            });
+                if (err.response && err.response.status === 401) {
+                  // Handle 401 error using SweetAlert
+                  swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                  }).then(function() {
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                          if (response.status == 200) {
+                            window.location.href = "/";
+                          }
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                  });
+                } else {
+                  // Handle other errors
+                  console.log(err);
+                }
+              });
     }
     const dynamicHeaders = [
         { label: "Reason", key: "ReasonName" },

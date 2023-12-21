@@ -5,13 +5,14 @@ import { useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
 import "../../../../css/scroll.css";
-
+import swal from 'sweetalert';
 const placeholder = "test";
 
 export default function AddFailedModal({
     isOpen,
     handleClose,
     url,
+    AToken,
     reason,
     currentUser,
     setReason,
@@ -74,11 +75,12 @@ export default function AddFailedModal({
             SetIsLoading(true)
             // Make the API request using Axios or any other library
             const response = await axios.post(
-                `${url}/add/FailedReasons`,
+                `${url}add/FailedReasons`,
                 data,
                 {
                     headers: {
                         UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
                     },
                 }
             );
@@ -99,6 +101,30 @@ export default function AddFailedModal({
             SetIsLoading(false)
             // Handle error
             setError("Error occurred while saving the data. Please try again."); // Set the error message
+                if (error.response && error.response.status === 401) {
+                  // Handle 401 error using SweetAlert
+                  swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                  }).then(function() {
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                          if (response.status == 200) {
+                            window.location.href = "/";
+                          }
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                  });
+                } else {
+                  // Handle other errors
+                  console.log(err);
+                }
         }
     };
 

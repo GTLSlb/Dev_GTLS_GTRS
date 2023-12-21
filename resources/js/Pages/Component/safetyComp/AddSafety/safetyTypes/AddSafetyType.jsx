@@ -6,6 +6,7 @@ import AddFailedModal from "../../../modals/AddFailedModal";
 import notFound from "../../../../../assets/pictures/NotFound.png";
 import AddSafetyTypeModal from "./AddSafetyTypeModel";
 import { canAddSafetyType, canEditSafetyType } from "@/permissions";
+import swal from 'sweetalert';
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -13,6 +14,7 @@ export default function AddSafetyType({
     safetyTypes,
     setSafetyTypes,
     url,
+    AToken,
     currentUser,
 }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,9 +29,10 @@ export default function AddSafetyType({
     const [currentPage, setCurrentPage] = useState(0);
     function fetchData() {
         axios
-            .get(`${url}/SafetyTypes`, {
+            .get(`${url}SafetyTypes`, {
                 headers: {
                     UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
                 },
             })
             .then((res) => {
@@ -44,8 +47,31 @@ export default function AddSafetyType({
                 });
             })
             .catch((err) => {
-                console.log(err);
-            });
+                if (err.response && err.response.status === 401) {
+                  // Handle 401 error using SweetAlert
+                  swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                  }).then(function() {
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                          if (response.status == 200) {
+                            window.location.href = "/";
+                          }
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                  });
+                } else {
+                  // Handle other errors
+                  console.log(err);
+                }
+              });
     }
     const updateLocalData = () => {
         fetchData();
@@ -205,6 +231,7 @@ export default function AddSafetyType({
                 ariaHideApp={false}
                 isOpen={isModalOpen}
                 type={type}
+                ATken={AToken}
                 setType={setType}
                 safetyTypes={safetyTypes}
                 handleClose={handleEditClick}

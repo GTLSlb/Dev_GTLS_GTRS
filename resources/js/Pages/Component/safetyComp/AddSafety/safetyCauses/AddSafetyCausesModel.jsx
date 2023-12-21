@@ -11,6 +11,7 @@ export default function AddSafetyCausesModal({
     isOpen,
     handleClose,
     url,
+    AToken,
     cause,
     updateLocalData,
     safetyCauses,
@@ -65,11 +66,12 @@ export default function AddSafetyCausesModal({
             SetIsLoading(true)
             // Make the API request using Axios or any other library
             const response = await axios.post(
-                `${url}/Add/SafetyCause`,
+                `${url}Add/SafetyCause`,
                 data,
                 {
                     headers: {
                         UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
                     },
                 }
             );
@@ -89,6 +91,30 @@ export default function AddSafetyCausesModal({
             SetIsLoading(false)
             // Handle error
             setError("Error occurred while saving the data. Please try again."); // Set the error message
+                if (error.response && error.response.status === 401) {
+                  // Handle 401 error using SweetAlert
+                  swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                  }).then(function() {
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                          if (response.status == 200) {
+                            window.location.href = "/";
+                          }
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                  });
+                } else {
+                  // Handle other errors
+                  console.log(err);
+                }
         }
     };
 

@@ -18,7 +18,7 @@ import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import Button from "@inovua/reactdatagrid-community/packages/Button";
 import TableStructure from "@/Components/TableStructure";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
-
+import swal from 'sweetalert';
 const report = [
     {
         ConsignmentId: 275576,
@@ -45,6 +45,7 @@ export default function AdditionalCharges({
     filterValue,
     setFilterValue,
     setactiveCon,
+    AToken,
     currentUser,
     url,
 }) {
@@ -65,9 +66,10 @@ export default function AdditionalCharges({
 
     const fetchData = async () => {
         axios
-            .get(`${url}/AddCharges`, {
+            .get(`${url}AddCharges`, {
                 headers: {
                     UserId: currentUser?.UserId,
+                    Authorization: `Bearer ${AToken}`,
                 },
             })
             .then((res) => {
@@ -82,10 +84,35 @@ export default function AdditionalCharges({
                 });
             })
             .catch((err) => {
-                console.log(err);
-                setAdditionalData([]);
-                setIsFetching(false);
-            });
+                if (err.response && err.response.status === 401) {
+                  // Handle 401 error using SweetAlert
+                  swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                  }).then(function() {
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                          if (response.status == 200) {
+                            window.location.href = "/";
+                          }
+                        })
+                        .catch((error) => {
+                            console.log(err);
+                            setAdditionalData([]);
+                            setIsFetching(false);
+                        });
+                  });
+                } else {
+                  // Handle other errors
+                  console.log(err);
+                  setAdditionalData([]);
+                  setIsFetching(false);
+                }
+              });
     };
     const [filteredData, setFilteredData] = useState(AdditionalData);
     const tableRef = useRef(null);

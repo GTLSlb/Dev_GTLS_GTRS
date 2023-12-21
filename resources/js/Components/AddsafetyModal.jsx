@@ -5,6 +5,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
 import "../../css/scroll.css";
+import swal from 'sweetalert';
 
 const placeholder = "test";
 
@@ -16,6 +17,7 @@ export default function SafetyModal({
     modalSafetyType,
     modalMainCause,
     modalState,
+    AToken,
     modalConsNo,
     modalDebtorId,
     modalExpl,
@@ -68,6 +70,7 @@ export default function SafetyModal({
         modalResol,
         modalRefer,
         formattedDate,
+        AToken,
         currentUser.name,
     ]);
     const handlePopUpClose = () => {
@@ -99,11 +102,12 @@ export default function SafetyModal({
             SetIsLoading(true);
             // Make the API request using Axios or any other library
             const response = await axios.post(
-                `${url}/Add/SafetyReport`,
+                `${url}Add/SafetyReport`,
                 formValues,
                 {
                     headers: {
                         UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
                     },
                 }
             );
@@ -114,9 +118,34 @@ export default function SafetyModal({
                 SetIsLoading(false);
                 setSuccess(false);
             }, 1000);
-        } catch (error) {
+        } 
+        catch (error) {
             SetIsLoading(false);
             // Handle error
+            if(error.response && error.response.status === 401) {
+                  // Handle 401 error using SweetAlert
+                  swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                  }).then(function() {
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                          if (response.status == 200) {
+                            window.location.href = "/";
+                          }
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                  });
+                } else {
+                  // Handle other errors
+                  console.log(err);
+                }
             console.log(error);
             setError("Error occurred while saving the data. Please try again."); // Set the error message
         }
