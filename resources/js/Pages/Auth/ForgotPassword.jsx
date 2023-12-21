@@ -58,7 +58,7 @@ export default function ForgotPassword({ status }) {
         let concatenatedNumber = parseInt(inputs.join(""), 10);
         axios
             .get(
-                `https://gtlslebs06-vm.gtls.com.au:5432/api/OTP/Verification`,
+                `${gtamUrl}OTP/Verification`,
                 {
                     headers: {
                         UserId: userId,
@@ -82,7 +82,7 @@ export default function ForgotPassword({ status }) {
         setResetLoading(true);
         const hashedPassword = CryptoJS.SHA256(password).toString();
         axios
-            .get(`https://gtlslebs06-vm.gtls.com.au:5432/api/New/Password`, {
+            .get(`${gtamUrl}New/Password`, {
                 headers: {
                     UserId: userId,
                     OTP_Id: OTP,
