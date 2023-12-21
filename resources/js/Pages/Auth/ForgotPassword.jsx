@@ -30,11 +30,12 @@ export default function ForgotPassword({ status }) {
     const [checkOTP, setCheckOTP] = useState(false);
     const [back, setBack] = useState(false);
     const [inputs, setInputs] = useState(Array(6).fill(""));
+    const gtamUrl = window.Laravel.gtamUrl;
     const submit = (e) => {
         e.preventDefault();
         setEmailLoading(true);
         axios
-            .get(`https://gtlslebs06-vm.gtls.com.au:5432/api/ResetPwd`, {
+            .get(`${gtamUrl}ResetPwd`, {
                 headers: {
                     Email: resetEmail,
                 },

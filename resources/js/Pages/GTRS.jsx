@@ -85,6 +85,7 @@ export default function Gtrs({
                 });
                 parsedDataPromise.then((parsedData) => {
                     setchartsData(parsedData || []);
+                    console.log('parsedData',parsedData);
                     setchartsApi(true);
                 });
             })
@@ -441,6 +442,7 @@ export default function Gtrs({
     if (consApi && reportApi && chartsApi && DebtorsApi && KPIReasonsApi) {
         setLoadingGtrs(true);
     }
+
     if (loadingGtrs && AToken) {
         if (canAccess) {
             return (
