@@ -231,7 +231,7 @@ export default function AddSafetyType({
                 ariaHideApp={false}
                 isOpen={isModalOpen}
                 type={type}
-                ATken={AToken}
+                AToken={AToken}
                 setType={setType}
                 safetyTypes={safetyTypes}
                 handleClose={handleEditClick}
