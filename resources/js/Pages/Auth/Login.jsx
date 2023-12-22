@@ -108,6 +108,7 @@ export default function Login({ status, canResetPassword }) {
                 },
             })
             .then((res) => {
+                console.log("result login",res)
                 const x = JSON.stringify(res.data);
                 const parsedDataPromise = new Promise((resolve, reject) => {
                     const parsedData = JSON.parse(x);
@@ -131,7 +132,7 @@ export default function Login({ status, canResetPassword }) {
                     });
             })
             .catch((err) => {
-                console.log(err);
+                console.log("AXIOS",err);
                 setErrorMessage(err.response.data.Message);
             });
     };

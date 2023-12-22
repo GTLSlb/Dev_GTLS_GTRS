@@ -32,7 +32,7 @@ class Customer extends User
         'TypeName',
         'Username',
         'Email',
-        
+        'CustomerName',
     ];
 
     /**

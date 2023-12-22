@@ -84,7 +84,6 @@ export default function Gtrs({
                 });
                 parsedDataPromise.then((parsedData) => {
                     setchartsData(parsedData || []);
-                    console.log('parsedData',parsedData);
                     setchartsApi(true);
                 });
             })

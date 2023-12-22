@@ -219,7 +219,7 @@ export default function SafetyRepTable({
     const [modalDepar, setmodalDepar] = useState();
     const [modalExpl, setmodalExpl] = useState();
     const [modalResol, setmodalResol] = useState();
-    const [modalRefer, setmodalRefer] = useState();
+    const [modalRefer, setmodalRefer] = useState(2);
     const [modalOccuredAt, setmodalOccuredAt] = useState();
     const [modaladdedBy, setmodaladdedBy] = useState();
     const [modalConsNo, setmodalConsNo] = useState();

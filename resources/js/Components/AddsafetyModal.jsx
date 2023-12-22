@@ -337,7 +337,7 @@ export default function SafetyModal({
                                 id="Reference"
                                 name="Reference"
                                 className="w-full border border-gray-300 rounded px-3 py-2"
-                                defaultValue={"2"}
+                                defaultValue={modalRefer}
                                 value={formValues.Reference}
                                 onChange={handleChange}
                                 required
