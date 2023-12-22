@@ -47,7 +47,7 @@ export default function MainNavbar({
                 <div className="flex justify-between items-center lg:gap-x-16 px-4 sm:px-6 w-11/12">
                     <div className=" text-sm font-bold leading-7 text-gray-700 sm:truncate sm:text-lg sm:tracking-tight mr-2">
                         <span className="text-goldd">GOLD </span>TIGER{" "}
-                        {names[activePage]}
+                        Report System
                     </div>
                     <div className={activePage == 4 ? "" : "hidden"}>
                         <NotificationPanel

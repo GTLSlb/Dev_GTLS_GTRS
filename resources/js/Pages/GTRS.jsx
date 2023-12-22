@@ -388,44 +388,7 @@ export default function Gtrs({
         return false;
     }
 
-    useEffect(() => {
-        if (currentUser && !AToken) {
-            const headers = {
-                UserId: currentUser.UserId,
-                // currentUser.UserId,
-                OwnerId: currentUser.OwnerId,
-                "Content-Type": "application/x-www-form-urlencoded",
-            };
-            const data = {
-                grant_type: "password",
-            };
-            axios
-                .post(`${gtrsUrl}/Token`, data, {
-                    headers: headers,
-                })
-                .then((res) => {
-                    const x = JSON.stringify(res.data);
-                    const parsedDataPromise = new Promise((resolve, reject) => {
-                        try {
-                            const parsedData = JSON.parse(x);
-                            resolve(parsedData || []); // Use an empty array if parsedData is null
-                        } catch (error) {
-                            reject(error);
-                        }
-                    });
-                    parsedDataPromise.then((parsedData) => {
-                        setToken(parsedData.access_token);
-                        Cookies.set(
-                            "gtis_access_token",
-                            parsedData.access_token
-                        );
-                    });
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-        }
-    }, [currentUser]);
+    
     useEffect(() => {
         if (loadingGtrs) {
             if (user == {}) {
