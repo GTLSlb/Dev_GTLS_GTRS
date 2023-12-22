@@ -81,7 +81,6 @@ class RegisteredUserController extends Controller
                 $GroupName = $user->GroupName;
                 $Username = $user->Username;
                 $Email = $user->Email;
-                $Accounts = $user->Accounts;
                 $user = array (
                     'UserId' => $UserId,
                     'TypeId' => $TypeId,
@@ -91,7 +90,6 @@ class RegisteredUserController extends Controller
                     'GroupName' => $GroupName,
                     'Username' => $Username,
                     'Email' => $Email,
-                    'Accounts' => $Accounts,
                 );
             }else if($user->TypeId == 2) // the user is an employee
             {

@@ -37,21 +37,28 @@ class LoginController extends Controller
 
         $url = $_ENV['GTAM_API_URL'];
         $appID = $_ENV['REACT_APP_ID'];
-
         $response = Http::withHeaders($headers)->get("$url" . "Login");
+        
+        // dd($response);
         
         if ($response->successful()) {
             $responseData = $response->json();
             if (!empty($responseData)) {
                 $authProvider = new CustomAuth();
                 
+                // dd($responseData);
                 $credentials = [
                     'EmailInput' => $request->input('Email'),
                     'EmailDb' => $responseData[0]['Email'],
                     'PasswordDb' => $responseData[0]['UserId'],
                     'PasswordInput' => $request->input('Password'),
                 ];
+                
+
+                dd($credentials);
+                
                 $authenticatedUser = $authProvider->attempt($credentials, true);
+
                 if ($authenticatedUser) {
                     // Redirect to the intended page with the obtained user 
                     $user = null;
@@ -64,12 +71,13 @@ class LoginController extends Controller
                     $TokenBody = [
                         'grant_type' => "password",
                     ];
+                   
                     $tokenURL = $_ENV['GTRS_API_URL'];
                     $tokenRes = Http::withHeaders($TokenHeaders)
                     ->asForm()
                     ->post("$tokenURL" . "Token", $TokenBody);
-
-                    
+             
+             
                     if($responseData[0]['TypeId'] == 1) // the user is a customer
                     {
                         $user = new Customer($responseData[0]);
@@ -85,13 +93,9 @@ class LoginController extends Controller
                         $token = $tokenRes->json();
                         $cookieName = 'gtrs_access_token';
                         $cookieValue = $token['access_token'];
-                        // $expiry = $token['expires_in'];
-                        $expiry = 60 * 60 * 24 * 2; //48h
-                        //$expiry = 60;
-                        $expirationTime = time() + $expiry;
-                        setcookie($cookieName, $cookieValue, $expirationTime, '/', '', true);
-                        //dd($expirationTime);
-                        setcookie('gtrs_refresh_token', $token['refresh_token'], $expirationTime, '/', '', true);
+                        $expiry = $token['expires_in'];
+                        setcookie($cookieName, $cookieValue, time() + $expiry, '/', '', true);
+                        setcookie('gtrs_refresh_token', $token['refresh_token'], time() + $expiry, '/', '', true);
                         
                         $userId = $user['UserId'];
                     $request->session()->regenerate();
@@ -128,13 +132,14 @@ class LoginController extends Controller
                     
 
                 } else {
-                    $errorMessage = 'Invalid Credentials';
+                    $errorMessage = 'Invalid';
                     $statusCode = 500;
                     return response(['error' => $response, 'Message' => $errorMessage], $statusCode);
                 }
             }
         } else {
-            $errorMessage = 'Invalid Credentials';
+         
+            $errorMessage = 'Invalid';
             $statusCode = 500;
             return response(['error' => $response, 'Message' => $errorMessage], $statusCode);
         }

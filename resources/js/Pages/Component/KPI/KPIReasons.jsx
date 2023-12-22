@@ -3,13 +3,13 @@ import React from "react";
 import { useEffect, useState } from "react";
 import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import SmallTableKPI from "./Components/KPISmallTable";
-import swal from 'sweetalert';
+import swal from "sweetalert";
 export default function KPIReasons({
     url,
     currentUser,
     AToken,
     kpireasonsData,
-    setkpireasonsData
+    setkpireasonsData,
 }) {
     function fromModel() {
         return 3;
@@ -55,30 +55,30 @@ export default function KPIReasons({
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
+                    // Handle 401 error using SweetAlert
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then(function () {
+                        axios
+                            .post("/logoutAPI")
+                            .then((response) => {
+                                if (response.status == 200) {
+                                    window.location.href = "/";
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+                    });
                 } else {
-                  // Handle other errors
-                  console.log(err);
+                    // Handle other errors
+                    console.log(err);
                 }
-              });
+            });
     }
     const dynamicHeaders = [
         { label: "Reason", key: "ReasonName" },
@@ -92,7 +92,9 @@ export default function KPIReasons({
             <div className="p-8">
                 <div className="flex gap-x-1">
                     <h1 className="font-bold text-dark text-xl">Reasons</h1>{" "}
-                    <p className="mt-auto text-gray-400">({kpireasonsData?.length})</p>
+                    <p className="mt-auto text-gray-400">
+                        ({kpireasonsData?.length})
+                    </p>
                 </div>
                 <div className="flex justify-between flex-col sm:flex-row gap-y-3 my-5">
                     <div className="">
@@ -121,30 +123,33 @@ export default function KPIReasons({
                             />
                         </div>
                     </div>
-                    {canAddKpiReasons(currentUser)?
-                    <div className="flex flex-col sm:flex-row gap-x-5 gap-y-3">
-                        {editIndex != null ? (
-                            <div className="col-span-2">
-                                <GtamButton
-                                    name={"Cancel"}
-                                    onClick={() => setEditIndex(null)}
-                                    className="w-full "
-                                />
-                            </div>
-                        ) : null}
-                        {canAddKpiReasons(currentUser) ? (
-                            <div className="col-span-2">
-                                <GtamButton
-                                    name={showAddRow ? "Cancel" : "Add Reason"}
-                                    onClick={() => {
-                                        setEditIndex(null);
-                                        setShowAddRow(!showAddRow);
-                                    }}
-                                    className="w-full "
-                                />
-                            </div>
-                        ) : null}
-                    </div>:null}
+                    {canAddKpiReasons(currentUser) ? (
+                        <div className="flex flex-col sm:flex-row gap-x-5 gap-y-3">
+                            {editIndex != null ? (
+                                <div className="col-span-2">
+                                    <GtamButton
+                                        name={"Cancel"}
+                                        onClick={() => setEditIndex(null)}
+                                        className="w-full "
+                                    />
+                                </div>
+                            ) : null}
+                            {canAddKpiReasons(currentUser) ? (
+                                <div className="col-span-2">
+                                    <GtamButton
+                                        name={
+                                            showAddRow ? "Cancel" : "Add Reason"
+                                        }
+                                        onClick={() => {
+                                            setEditIndex(null);
+                                            setShowAddRow(!showAddRow);
+                                        }}
+                                        className="w-full "
+                                    />
+                                </div>
+                            ) : null}
+                        </div>
+                    ) : null}
                 </div>
                 <SmallTableKPI
                     fromModel={fromModel}

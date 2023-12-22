@@ -3,7 +3,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
 import Charts from "./Component/Charts";
-import swal from 'sweetalert';
+import swal from "sweetalert";
 import debtors from "./Component/JsonData/debtors.json";
 import rddData from "./Component/JsonData/RddData.json";
 import { useStepContext } from "@mui/material";
@@ -69,7 +69,6 @@ export default function Gtrs({
     useEffect(() => {
         setUserBody(debtorIds);
         setLoadingGtrs(false);
-
         axios
             .get(`${gtrsUrl}/Dashboard`, {
                 headers: {
@@ -90,30 +89,30 @@ export default function Gtrs({
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
+                    // Handle 401 error using SweetAlert
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then(function () {
+                        axios
+                            .post("/logoutAPI")
+                            .then((response) => {
+                                if (response.status == 200) {
+                                    window.location.href = "/";
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+                    });
                 } else {
-                  // Handle other errors
-                  console.log(err);
+                    // Handle other errors
+                    console.log(err);
                 }
-              });
+            });
         axios
             .get(`${gtamUrl}/Customer/Accounts`, {
                 headers: {
@@ -133,30 +132,30 @@ export default function Gtrs({
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
+                    // Handle 401 error using SweetAlert
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then(function () {
+                        axios
+                            .post("/logoutAPI")
+                            .then((response) => {
+                                if (response.status == 200) {
+                                    window.location.href = "/";
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+                    });
                 } else {
-                  // Handle other errors
-                  console.log(err);
+                    // Handle other errors
+                    console.log(err);
                 }
-              });
+            });
         axios
             .get(`${gtrsUrl}/SafetyReport`, {
                 headers: {
@@ -177,30 +176,30 @@ export default function Gtrs({
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
+                    // Handle 401 error using SweetAlert
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then(function () {
+                        axios
+                            .post("/logoutAPI")
+                            .then((response) => {
+                                if (response.status == 200) {
+                                    window.location.href = "/";
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+                    });
                 } else {
-                  // Handle other errors
-                  console.log(err);
+                    // Handle other errors
+                    console.log(err);
                 }
-              });
+            });
         axios
             .get(`${gtrsUrl}/Debtors`, {
                 headers: {
@@ -221,30 +220,30 @@ export default function Gtrs({
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
+                    // Handle 401 error using SweetAlert
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then(function () {
+                        axios
+                            .post("/logoutAPI")
+                            .then((response) => {
+                                if (response.status == 200) {
+                                    window.location.href = "/";
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+                    });
                 } else {
-                  // Handle other errors
-                  console.log(err);
+                    // Handle other errors
+                    console.log(err);
                 }
-              });
+            });
         axios
             .get(`${gtrsUrl}/Consignments`, {
                 headers: {
@@ -266,30 +265,30 @@ export default function Gtrs({
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
+                    // Handle 401 error using SweetAlert
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then(function () {
+                        axios
+                            .post("/logoutAPI")
+                            .then((response) => {
+                                if (response.status == 200) {
+                                    window.location.href = "/";
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+                    });
                 } else {
-                  // Handle other errors
-                  console.log(err);
+                    // Handle other errors
+                    console.log(err);
                 }
-              });
+            });
 
         axios
             .get(`${gtrsUrl}/PerformanceReport`, {
@@ -306,30 +305,30 @@ export default function Gtrs({
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
+                    // Handle 401 error using SweetAlert
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then(function () {
+                        axios
+                            .post("/logoutAPI")
+                            .then((response) => {
+                                if (response.status == 200) {
+                                    window.location.href = "/";
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+                    });
                 } else {
-                  // Handle other errors
-                  console.log(err);
+                    // Handle other errors
+                    console.log(err);
                 }
-              });
+            });
         axios
             .get(`${gtrsUrl}/KpiReasons`, {
                 headers: {
@@ -350,30 +349,30 @@ export default function Gtrs({
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
+                    // Handle 401 error using SweetAlert
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then(function () {
+                        axios
+                            .post("/logoutAPI")
+                            .then((response) => {
+                                if (response.status == 200) {
+                                    window.location.href = "/";
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+                    });
                 } else {
-                  // Handle other errors
-                  console.log(err);
+                    // Handle other errors
+                    console.log(err);
                 }
-              });
+            });
     }, []);
     function checkFeaturesInPages(jsonData) {
         // Iterate over the Pages array in the JSON data
@@ -390,41 +389,43 @@ export default function Gtrs({
     }
 
     useEffect(() => {
-      if (currentUser && !AToken) {
-          const headers = {
-              UserId: currentUser.UserId,
-              // currentUser.UserId,
-              OwnerId: currentUser.OwnerId,
-              "Content-Type": "application/x-www-form-urlencoded",
-          };
-          const data = {
-              grant_type: "password",
-             
-          };
-          axios
-              .post(`${gtrsUrl}/Token`, data, {
-                  headers: headers,
-              })
-              .then((res) => {
-                  const x = JSON.stringify(res.data);
-                  const parsedDataPromise = new Promise((resolve, reject) => {
-                      try {
-                          const parsedData = JSON.parse(x);
-                          resolve(parsedData || []); // Use an empty array if parsedData is null
-                      } catch (error) {
-                          reject(error);
-                      }
-                  });
-                  parsedDataPromise.then((parsedData) => {
-                      setToken(parsedData.access_token);
-                      Cookies.set('gtis_access_token', parsedData.access_token);
-                  });
-              })
-              .catch((err) => {
-                  console.log(err);
-              });
-      }
-  }, [currentUser]);
+        if (currentUser && !AToken) {
+            const headers = {
+                UserId: currentUser.UserId,
+                // currentUser.UserId,
+                OwnerId: currentUser.OwnerId,
+                "Content-Type": "application/x-www-form-urlencoded",
+            };
+            const data = {
+                grant_type: "password",
+            };
+            axios
+                .post(`${gtrsUrl}/Token`, data, {
+                    headers: headers,
+                })
+                .then((res) => {
+                    const x = JSON.stringify(res.data);
+                    const parsedDataPromise = new Promise((resolve, reject) => {
+                        try {
+                            const parsedData = JSON.parse(x);
+                            resolve(parsedData || []); // Use an empty array if parsedData is null
+                        } catch (error) {
+                            reject(error);
+                        }
+                    });
+                    parsedDataPromise.then((parsedData) => {
+                        setToken(parsedData.access_token);
+                        Cookies.set(
+                            "gtis_access_token",
+                            parsedData.access_token
+                        );
+                    });
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+    }, [currentUser]);
     useEffect(() => {
         if (loadingGtrs) {
             if (user == {}) {
