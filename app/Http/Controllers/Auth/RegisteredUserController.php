@@ -70,7 +70,6 @@ class RegisteredUserController extends Controller
 
             // Assuming the 'user' column contains JSON-encoded user data
             $user = json_decode($user);
-
             if($user->TypeId == 1) // the user is a customer
             {
                 $UserId = $user->UserId;
@@ -81,7 +80,7 @@ class RegisteredUserController extends Controller
                 $GroupName = $user->GroupName;
                 $Username = $user->Username;
                 $Email = $user->Email;
-                $Accounts = $user->Accounts;
+                $CustomerName = $user->CustomerName;
                 $user = array (
                     'UserId' => $UserId,
                     'TypeId' => $TypeId,
@@ -91,7 +90,7 @@ class RegisteredUserController extends Controller
                     'GroupName' => $GroupName,
                     'Username' => $Username,
                     'Email' => $Email,
-                    'Accounts' => $Accounts,
+                    'CustomerName' => $CustomerName,
                 );
             }else if($user->TypeId == 2) // the user is an employee
             {

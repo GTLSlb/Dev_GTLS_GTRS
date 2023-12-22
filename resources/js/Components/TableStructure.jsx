@@ -59,25 +59,7 @@ export default function TableStructure({
     const onFilterValueChange = useCallback((filterValue) => {
         setFilterValueElements(filterValue);
     }, []);
-    // const onSelectionChange = useCallback(
-    //     ({ selected }) => {
-    //         if (selected === true) {
-    //             if (filters) {
-    //                 setSelected(filter(tableData, filters));
-    //                 setSelectedRows(selected);
-    //             } else {
-    //                 console.log("No filters")
-    //                 setSelected(tableData);
-    //                 setSelectedRows(selected);
-    //             }
-    //         } else {
-    //             setSelected(selected);
-    //             setSelectedRows(selected);
-    //         }
-    //     },
-    //     [filters]
-    // );
-    
+
     return (
         <div className="">
             {/* <Sidebar /> */}
@@ -106,14 +88,16 @@ export default function TableStructure({
                         groups={groups}
                         dataSource={tableData}
                     />
-                ) :                 <div className="h-64 flex items-center justify-center mt-10">
-                <div class="text-center flex justify-center flex-col">
-                    {/* <img src={notFound} alt="" className="w-52 h-auto " /> */}
-                    <h1 class="text-3xl font-bold text-gray-900">
-                        Congrats! <br/> Nothing To Show
-                    </h1>
-                </div>
-            </div>}
+                ) : (
+                    <div className="h-64 flex items-center justify-center mt-10">
+                        <div class="text-center flex justify-center flex-col">
+                            {/* <img src={notFound} alt="" className="w-52 h-auto " /> */}
+                            <h1 class="text-3xl font-bold text-gray-900">
+                                Congrats! <br /> Nothing To Show
+                            </h1>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

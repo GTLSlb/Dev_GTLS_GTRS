@@ -538,7 +538,6 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
             })
         );
     }, [cols]);
-    console.log(chartsData)
     if (chartsData.length > 0) {
         return (
             <div className=" px-4 sm:px-6 lg:px-8 pb-6 bg-smooth">

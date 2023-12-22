@@ -293,7 +293,7 @@ export default function ChartsSidebar({
         setSidebarElements(filteredNavigation);
         setActiveIndexGTRS(filteredNavigation[0]?.id);
     }, []);
-
+    console.log(user)
     return (
         <div className="h-full xl:fixed xl:w-64 md:h-full xl:fixed bg-gray-200 w-full ">
             {/* Static sidebar for desktop */}
@@ -321,7 +321,7 @@ export default function ChartsSidebar({
                                     </div>
                                     <div className="ml-3">
                                         <p className="text-sm font-medium text-gray-800">
-                                            {user?.name ? user?.name : `${user?.FirstName} ${user?.LastName}`}
+                                            {user.TypeId == 1 ? <p>{user.CustomerName}</p> :<p>{user.FirstName}{" "}{user.LastName}</p>}
                                         </p>
                                         <p className=" text-[0.7rem] text-gray-500 ">
                                             {user.Email}

@@ -13,10 +13,10 @@ import TableStructure from "@/Components/TableStructure";
 import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
 import KPIModalAddReason from "./KPI/KPImodal";
 import LottieComponent from "@/Components/lottie/LottieComponent";
-import Truck from "../../Components/lottie/Data/Truck.json"
-import Success from "../../Components/lottie/Data/Success.json"
+import Truck from "../../Components/lottie/Data/Truck.json";
+import Success from "../../Components/lottie/Data/Success.json";
 import { canCalculateKPI, canEditKPI } from "@/permissions";
-import swal from 'sweetalert';
+import swal from "sweetalert";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -41,7 +41,7 @@ export default function KPI({
     const [loading, setLoading] = useState(false);
     const [reason, setReason] = useState();
     useEffect(() => {
-        if (!KPIData) {
+        if (KPIData.length == 0) {
             setIsFetching(true);
             fetchData();
         }
@@ -49,7 +49,7 @@ export default function KPI({
     const fetchData = async () => {
         try {
             axios
-                .get(`${url}KPI`, {
+                .get(`${url}/KPI`, {
                     headers: {
                         UserId: currentUser.UserId,
                         Authorization: `Bearer ${AToken}`,
@@ -67,30 +67,30 @@ export default function KPI({
                     });
                 });
         } catch (error) {
-                if (error.response && error.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
+            if (error.response && error.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
                     text: "Please login again",
-                    type: 'success',
+                    type: "success",
                     icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(function() {
+                    confirmButtonText: "OK",
+                }).then(function () {
                     axios
                         .post("/logoutAPI")
                         .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
+                            if (response.status == 200) {
+                                window.location.href = "/";
+                            }
                         })
                         .catch((error) => {
-                          console.log(error);
+                            console.log(error);
                         });
-                  });
-                } else {
-                  // Handle other errors
-                  console.log(err);
-                }
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+            }
         }
     };
     const handleClick = (coindex) => {
@@ -329,7 +329,7 @@ export default function KPI({
             headerAlign: "center",
         },
     ];
-    
+
     const Roles = ["1", "3", "4", "5"];
     const handleEditClick = (reason) => {
         setReason(reason);
@@ -621,11 +621,11 @@ export default function KPI({
         }
     };
 
-    const [statusMessage, setStatusMessage] = useState('');
+    const [statusMessage, setStatusMessage] = useState("");
     const messageDisplayTime = 3000; // Time in milliseconds (3000ms = 3 seconds)
-  
+
     const clearStatusMessage = () => {
-      setStatusMessage('');
+        setStatusMessage("");
     };
 
     function CalculateKPI() {
@@ -638,43 +638,41 @@ export default function KPI({
                 },
             })
             .then((res) => {
-                setStatusMessage('Success!');
-      setTimeout(clearStatusMessage, messageDisplayTime);
+                setStatusMessage("Success!");
+                setTimeout(clearStatusMessage, messageDisplayTime);
                 setLoading(false);
                 fetchData();
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
+                    // Handle 401 error using SweetAlert
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then(function () {
+                        axios
+                            .post("/logoutAPI")
+                            .then((response) => {
+                                if (response.status == 200) {
+                                    window.location.href = "/";
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+                    });
                 } else {
-                  // Handle other errors
-                  setLoading(false);
+                    // Handle other errors
+                    setLoading(false);
                     setTimeout(clearStatusMessage, messageDisplayTime);
                     console.log(err);
                 }
-              });
+            });
     }
 
-
-    
     return (
         <div>
             {/* <Sidebar /> */}
@@ -703,8 +701,23 @@ export default function KPI({
                                 KPI Report
                             </h1>
                             <div className="object-right flex gap-x-2 md:ml-auto">
-                            {statusMessage && <LottieComponent animationData={Success} loop={false} autoplay={true} height={35} width={35} />}
-                            {loading && <LottieComponent animationData={Truck} autoplay={true} height={35} width={35} />}
+                                {statusMessage && (
+                                    <LottieComponent
+                                        animationData={Success}
+                                        loop={false}
+                                        autoplay={true}
+                                        height={35}
+                                        width={35}
+                                    />
+                                )}
+                                {loading && (
+                                    <LottieComponent
+                                        animationData={Truck}
+                                        autoplay={true}
+                                        height={35}
+                                        width={35}
+                                    />
+                                )}
                                 {canCalculateKPI(currentUser) ? (
                                     <button
                                         className={`inline-flex items-center w-[9.1rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
@@ -714,8 +727,7 @@ export default function KPI({
                                         }
                                         onClick={() => CalculateKPI()}
                                     >
-                                            Calculate KPI Report
-                                        
+                                        Calculate KPI Report
                                     </button>
                                 ) : null}
                                 <Popover className="relative ">

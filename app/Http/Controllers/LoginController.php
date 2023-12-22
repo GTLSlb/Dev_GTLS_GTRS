@@ -35,7 +35,7 @@ class LoginController extends Controller
             'Password' => $password,
         ];
 
-        $url = $_ENV['GTAM_API_URL'];
+        $url = $_ENV['GTAM_API_URL']; //LOGIN API
         $appID = $_ENV['REACT_APP_ID'];
 
         $response = Http::withHeaders($headers)->get("$url" . "Login");
@@ -68,8 +68,7 @@ class LoginController extends Controller
                     $tokenRes = Http::withHeaders($TokenHeaders)
                     ->asForm()
                     ->post("$tokenURL" . "Token", $TokenBody);
-                    
-                    
+            
                     if($responseData[0]['TypeId'] == 1) // the user is a customer
                     {
                         $user = new Customer($responseData[0]);
