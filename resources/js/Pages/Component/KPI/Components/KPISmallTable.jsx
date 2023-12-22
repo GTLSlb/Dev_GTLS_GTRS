@@ -18,6 +18,7 @@ export default function SmallTableKPI({
     showAddRow,
     setShowAddRow,
     objects,
+    AToken,
     editIndex,
     setEditIndex,
     dynamicHeaders,
@@ -73,7 +74,8 @@ export default function SmallTableKPI({
             axios
                 .post(addurl, editedObject, {
                     headers: {
-                        RoleId: currentUser.UserId,
+                        UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
                     },
                 })
                 .then((res) => {
@@ -84,8 +86,32 @@ export default function SmallTableKPI({
                 })
                 .catch((err) => {
                     // AlertToast("Error please try again.", 2);
+                    
+                    if (err.response && err.response.status === 401) {
+                        // Handle 401 error using SweetAlert
+                        swal({
+                          title: 'Session Expired!',
+                          text: "Please login again",
+                          type: 'success',
+                          icon: "info",
+                          confirmButtonText: 'OK'
+                        }).then(function() {
+                          axios
+                              .post("/logoutAPI")
+                              .then((response) => {
+                                if (response.status == 200) {
+                                  window.location.href = "/";
+                                }
+                              })
+                              .catch((error) => {
+                                console.log(error);
+                              });
+                        });
+                      } else {
+                        // Handle other errors
                     setEditObject({});
                     console.log(err);
+                      }
                 });
         }
     }
@@ -114,10 +140,12 @@ export default function SmallTableKPI({
         if (newObject.ReasonName == null) {
             console.log("Please enter a name", 3);
         } else {
+            console.log(currentUser);
             axios
                 .post(addurl, dataToSend, {
                     headers: {
                         UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
                     },
                 })
                 .then((res) => {
@@ -136,8 +164,32 @@ export default function SmallTableKPI({
                 })
                 .catch((err) => {
                     // AlertToast("Error please try again.", 2);
+                    if (err.response && err.response.status === 401) {
+                        // Handle 401 error using SweetAlert
+                        swal({
+                          title: 'Session Expired!',
+                          text: "Please login again",
+                          type: 'success',
+                          icon: "info",
+                          confirmButtonText: 'OK'
+                        }).then(function() {
+                          axios
+                              .post("/logoutAPI")
+                              .then((response) => {
+                                if (response.status == 200) {
+                                  window.location.href = "/";
+                                }
+                              })
+                              .catch((error) => {
+                                console.log(error);
+                              });
+                        });
+                      } else {
+                        // Handle other errors
                     setNewObject({});
                     console.log(err);
+                      }
+                    
                 });
         }
     }

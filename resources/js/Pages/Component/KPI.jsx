@@ -569,8 +569,8 @@ export default function KPI({
             },
         },
         {
-            name: "edit",
-            header: "edit",
+            name: "Edit",
+            header: "Edit",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 100,

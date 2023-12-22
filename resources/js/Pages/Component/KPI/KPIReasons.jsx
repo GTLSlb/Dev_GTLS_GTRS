@@ -153,6 +153,7 @@ export default function KPIReasons({
                 </div>
                 <SmallTableKPI
                     fromModel={fromModel}
+                    AToken={AToken}
                     showAddRow={showAddRow}
                     setShowAddRow={setShowAddRow}
                     objects={filteredData}

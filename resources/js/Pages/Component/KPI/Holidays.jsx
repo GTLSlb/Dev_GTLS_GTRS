@@ -336,6 +336,7 @@ export default function Holidays({
                             states={stateOptions}
                             holiday={holiday}
                             url={url}
+                            AToken={AToken}
                             currentUser={currentUser}
                             setHoliday={setHoliday}
                             setShowAdd={setShowAdd}
