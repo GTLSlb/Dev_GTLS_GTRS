@@ -68,7 +68,7 @@ class LoginController extends Controller
                     $tokenRes = Http::withHeaders($TokenHeaders)
                     ->asForm()
                     ->post("$tokenURL" . "Token", $TokenBody);
-
+                    
                     
                     if($responseData[0]['TypeId'] == 1) // the user is a customer
                     {

@@ -30,11 +30,12 @@ export default function ForgotPassword({ status }) {
     const [checkOTP, setCheckOTP] = useState(false);
     const [back, setBack] = useState(false);
     const [inputs, setInputs] = useState(Array(6).fill(""));
+    const gtamUrl = window.Laravel.gtamUrl;
     const submit = (e) => {
         e.preventDefault();
         setEmailLoading(true);
         axios
-            .get(`https://gtlslebs06-vm.gtls.com.au:5432/api/ResetPwd`, {
+            .get(`${gtamUrl}ResetPwd`, {
                 headers: {
                     Email: resetEmail,
                 },
@@ -57,7 +58,7 @@ export default function ForgotPassword({ status }) {
         let concatenatedNumber = parseInt(inputs.join(""), 10);
         axios
             .get(
-                `https://gtlslebs06-vm.gtls.com.au:5432/api/OTP/Verification`,
+                `${gtamUrl}OTP/Verification`,
                 {
                     headers: {
                         UserId: userId,
@@ -81,7 +82,7 @@ export default function ForgotPassword({ status }) {
         setResetLoading(true);
         const hashedPassword = CryptoJS.SHA256(password).toString();
         axios
-            .get(`https://gtlslebs06-vm.gtls.com.au:5432/api/New/Password`, {
+            .get(`${gtamUrl}New/Password`, {
                 headers: {
                     UserId: userId,
                     OTP_Id: OTP,
