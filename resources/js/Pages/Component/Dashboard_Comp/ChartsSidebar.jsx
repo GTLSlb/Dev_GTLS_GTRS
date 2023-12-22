@@ -293,7 +293,6 @@ export default function ChartsSidebar({
         setSidebarElements(filteredNavigation);
         setActiveIndexGTRS(filteredNavigation[0]?.id);
     }, []);
-    console.log(user)
     return (
         <div className="h-full xl:fixed xl:w-64 md:h-full xl:fixed bg-gray-200 w-full ">
             {/* Static sidebar for desktop */}

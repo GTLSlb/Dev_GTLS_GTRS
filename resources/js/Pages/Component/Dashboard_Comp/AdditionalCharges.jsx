@@ -244,7 +244,6 @@ export default function AdditionalCharges({
         let id = 1; // Initialize the ID
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
-console.log('asfcvd',data)
         // Map through the data and create new objects
         if(data?.length>0){
         data?.forEach((item) => {
