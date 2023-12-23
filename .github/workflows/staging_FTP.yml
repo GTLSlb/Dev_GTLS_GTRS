@@ -10,12 +10,12 @@ jobs:
       - name: Get the latest code
         uses: actions/checkout@v2.3.2
       
-      - name: Check branch
-        run: |
-          if [ "${{ github.ref }}" != "refs/heads/staging" ]; then
-            echo "Workflow can only be run from the 'staging' branch."
-            exit 1
-          fi
+    #  - name: Check branch
+      #  run: |
+      #    if [ "${{ github.ref }}" != "refs/heads/staging" ]; then
+       #     echo "Workflow can only be run from the 'staging' branch."
+        #    exit 1
+        #  fi
 
       - name: Setup Node
         uses: actions/setup-node@master
