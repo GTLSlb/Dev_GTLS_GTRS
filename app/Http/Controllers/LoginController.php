@@ -67,8 +67,7 @@ class LoginController extends Controller
                     $tokenURL = $_ENV['GTRS_API_URL'];
                     $tokenRes = Http::withHeaders($TokenHeaders)
                     ->asForm()
-                    ->post("$tokenURL" . "Token", $TokenBody);
-            
+                    ->post("$tokenURL" . "/Token", $TokenBody);
                     if($responseData[0]['TypeId'] == 1) // the user is a customer
                     {
                         $user = new Customer($responseData[0]);

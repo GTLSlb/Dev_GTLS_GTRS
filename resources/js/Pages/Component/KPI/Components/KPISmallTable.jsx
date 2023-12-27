@@ -70,7 +70,6 @@ export default function SmallTableKPI({
             const updatedObjects = [...data];
             updatedObjects[editIndex + currentPage * PER_PAGE] = editedObject;
             setData(updatedObjects);
-            console.log(editedObject);
             axios
                 .post(addurl, editedObject, {
                     headers: {
@@ -136,11 +135,9 @@ export default function SmallTableKPI({
     function addObject() {
         let dataToSend = newObject;
         dataToSend = { ...dataToSend, ReasonStatus: 1, ReasonId: null };
-        console.log(dataToSend);
         if (newObject.ReasonName == null) {
             console.log("Please enter a name", 3);
         } else {
-            console.log(currentUser);
             axios
                 .post(addurl, dataToSend, {
                     headers: {

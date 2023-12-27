@@ -61,7 +61,6 @@ import {
 //     },
 // ];
 export default function AppsPage({ activeIndex, setActiveIndex,setApplication,apps,setActiveIndexGtam }) {
-    // console.log(apps[0].colors)
     function GoAppDetails(object) {
         setApplication(object)
         setActiveIndex(9);

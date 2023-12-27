@@ -61,7 +61,6 @@ export default function CreateDepartment({
                 },
             })
             .then((res) => {
-                console.log("done");
                 setDepartment(null);
                 getDepartments();
                 setActiveIndex(5);

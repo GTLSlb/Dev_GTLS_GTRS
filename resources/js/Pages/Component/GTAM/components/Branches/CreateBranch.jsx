@@ -56,7 +56,6 @@ export default function CreateBranch({ currentUser,setBranch,branch,getBranches 
             WhOpsEmail: document.getElementById("WarehouseOPSEmail").value,
             StatusId: isChecked?1:2,
           };
-        console.log(inputValues);
         axios
             .post(`${url}api/GTAM/Add/Branch`, inputValues, {
                 headers: {
@@ -64,7 +63,6 @@ export default function CreateBranch({ currentUser,setBranch,branch,getBranches 
                 },
             })
             .then((res) => {
-                console.log("done");
                 setBranch(null)
                 getBranches()
                 setActiveIndex(5)
