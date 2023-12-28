@@ -1422,7 +1422,7 @@ export default function charts({
             <div className=" h-full flex ">
                 {/* Left sidebar & main wrapper */}
                 <div className="min-w-0 flex-1 bg-gray-100 xl:flex">
-                    <div className=" xl:w-64 flex-shrink-0 w-full h-auto  md:block mb-4">
+                    <div className=" xl:w-64 flex-shrink-0 w-full h-auto md:block mb-4">
                         <div className="h-full  ">
                             {/* Start left column area */}
                             <div
@@ -1445,7 +1445,7 @@ export default function charts({
                         </div>
                     </div>
 
-                    <div className="bg-smooth lg:min-w-0 lg:flex-1">
+                    <div className="bg-smooth w-full lg:min-w-0 lg:flex-1">
                         <div className="h-full">
                             {/* Start main area*/}
                             <div

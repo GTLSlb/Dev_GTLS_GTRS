@@ -78,7 +78,7 @@ export default function Sidebar(Boolean) {
     }, [currentUser]);
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [activePage, setactivePage] = useState(null);
+    const [activePage, setactivePage] = useState(0);
     const [activeIndexGtam, setActiveIndexGtam] = useState(1);
     const [activeCon, setactiveCon] = useState(0);
     const [loadingGtrs, setLoadingGtrs] = useState(false);

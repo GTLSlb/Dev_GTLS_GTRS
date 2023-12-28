@@ -294,9 +294,9 @@ export default function ChartsSidebar({
         setActiveIndexGTRS(filteredNavigation[0]?.id);
     }, []);
     return (
-        <div className="h-full xl:fixed xl:w-64 md:h-full xl:fixed bg-gray-200 w-full ">
+        <div className="h-full xl:fixed xl:w-64 lg:h-full bg-gray-200 w-full ">
             {/* Static sidebar for desktop */}
-            <div className=" h-[90%] md:inset-y-0 flex md:w-full md:flex-row ">
+            <div className=" h-[90%] md:inset-y-0 flex w-full md:flex-row ">
                 {/* Sidebar component, swap this element with another sidebar if you like */}
                 <div className=" h-full w-full overflow-y-scroll containerscroll">
                     <div className="flex flex-col">
@@ -393,7 +393,7 @@ export default function ChartsSidebar({
                             )}
                         </div>
                     </div>
-                    <div className=" pt-2 pb-4 w-full">
+                    <div className="pt-5 w-full">
                         <nav className="mt-5 flex-1 hidden xl:flex-col space-y-1 px-2 w-full md:flex-row md:flex md:mt-0 ">
                             {sidebarElements?.map((item) => (
                                 <div key={item.id}>
@@ -415,7 +415,7 @@ export default function ChartsSidebar({
                                                                 item.current
                                                                     ? "bg-gray-300 text-gray-900"
                                                                     : "text-gray-700 hover:bg-gray-500 hover:text-white",
-                                                                "group flex flex-row justify-between items-center px-2 py-2 text-sm font-medium rounded-md lg:w-1/2 xl:w-full"
+                                                                "group flex flex-row justify-between items-center px-2 py-2 text-sm font-medium rounded-md w-full"
                                                             )}
                                                         >
                                                             <div className="flex items-center">
@@ -503,7 +503,7 @@ export default function ChartsSidebar({
                                                 item.current
                                                     ? "bg-gray-300 text-gray-900"
                                                     : "text-gray-700 hover:bg-gray-500 hover:text-white",
-                                                "group flex flex-row items-center px-2 py-2 text-sm font-medium rounded-md lg:w-1/2 xl:w-full"
+                                                "group flex flex-row items-center px-2 py-2 text-sm font-medium rounded-md w-full"
                                             )}
                                         >
                                             <item.icon
