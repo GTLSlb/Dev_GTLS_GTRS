@@ -19,6 +19,8 @@ import Button from "@inovua/reactdatagrid-community/packages/Button";
 import TableStructure from "@/Components/TableStructure";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import swal from 'sweetalert';
+import axios from "axios";
+
 const report = [
     {
         ConsignmentId: 275576,

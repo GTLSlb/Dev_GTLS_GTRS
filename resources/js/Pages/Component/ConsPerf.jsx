@@ -117,7 +117,7 @@ export default function ConsPerf({
                                 max={EDate}
                                 onChange={handleStartDateChange}
                                 id="from-date"
-                                className="flex-item block w-full max-w-lg h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                                className="flex-item block w-full h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 md:max-w-xs sm:text-sm sm:leading-6"
                             />
                         </div>
 
@@ -138,10 +138,10 @@ export default function ConsPerf({
                                 max={latestDate}
                                 onChange={handleEndDateChange}
                                 id="to-date"
-                                className="block w-full max-w-lg h-[36px]  rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                                className="block w-full h-[36px]  rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 md:max-w-xs sm:text-sm sm:leading-6"
                             />
                         </div>
-                        <div className="w-72 flex-item w-full sm:max-w-xs max-w-lg">
+                        <div className="flex-item w-full md:max-w-xs mt-4 md:mt-0">
                             <div className="relative border rounded">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"

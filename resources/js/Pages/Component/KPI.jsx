@@ -16,6 +16,7 @@ import LottieComponent from "@/Components/lottie/LottieComponent";
 import Truck from "../../Components/lottie/Data/Truck.json";
 import Success from "../../Components/lottie/Data/Success.json";
 import { canCalculateKPI, canEditKPI } from "@/permissions";
+import axios from "axios";
 import swal from "sweetalert";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -696,7 +697,7 @@ export default function KPI({
             ) : (
                 <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
                     <div className="sm:flex sm:items-center">
-                        <div className="sm:flex w-full items-center justify-between mt-6">
+                        <div className="sm:flex w-full items-center justify-between mt-2 lg:mt-6">
                             <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
                                 KPI Report
                             </h1>

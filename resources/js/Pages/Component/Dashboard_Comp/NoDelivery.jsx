@@ -16,6 +16,7 @@ import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import Button from "@inovua/reactdatagrid-community/packages/Button";
 import swal from 'sweetalert';
+import axios from "axios";
 import TableStructure from "@/Components/TableStructure";
 import {
     ChevronDownIcon,

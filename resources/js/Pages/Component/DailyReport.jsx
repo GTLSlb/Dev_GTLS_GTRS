@@ -494,7 +494,7 @@ const temp = [
     function SendDailyEmail(){
         axios.post("/sendemail", 1)
             .then((response) => {
-                console.log(response);  
+                // console.log(response);  
             })
             .catch((error) => {
                 console.log(error.response);

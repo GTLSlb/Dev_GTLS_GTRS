@@ -31,7 +31,7 @@ export default function MainNavbar({
     ];
 
     return (
-        <header className="w-full flex flex-1 flex-col  md:ml-20 fixed top-0 z-50 shadow shadow-md">
+        <header className="w-full flex flex-1 flex-col  md:ml-20 fixed top-0 z-50 shadow-md">
             <div className="relative z-10 flex h-16 flex-shrink-0 w-full border-b border-gray-200 bg-white shadow-sm ">
                 <button
                     type="button"

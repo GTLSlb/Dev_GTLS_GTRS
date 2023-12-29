@@ -5,13 +5,14 @@ import axios from "axios";
 import { Fragment, useState, useEffect } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-
+import swal from 'sweetalert';
 const placeholder = "test";
 
 export default function ModalRDD({
     isOpen,
     handleClose,
     url,
+    AToken,
     consignment,
     currentUser,
     updateLocalData,
@@ -80,12 +81,36 @@ export default function ModalRDD({
                 .post(`${url}Add/RDD`, data, {
                     headers: {
                         UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
                     },
                 })
                 .then((res) => {
                 })
                 .catch((err) => {
-                    console.log(err.response);
+                    if (err.response && err.response.status === 401) {
+                        // Handle 401 error using SweetAlert
+                        swal({
+                          title: 'Session Expired!',
+                          text: "Please login again",
+                          type: 'success',
+                          icon: "info",
+                          confirmButtonText: 'OK'
+                        }).then(function() {
+                          axios
+                              .post("/logoutAPI")
+                              .then((response) => {
+                                if (response.status == 200) {
+                                  window.location.href = "/";
+                                }
+                              })
+                              .catch((error) => {
+                                console.log(error);
+                              });
+                        });
+                      } else {
+                        // Handle other errors
+                        console.log(err);
+                      }
                 });
             // Handle the response as needed
             updateLocalData(

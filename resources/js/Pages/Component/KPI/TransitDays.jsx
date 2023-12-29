@@ -10,6 +10,8 @@ import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import { canAddTransitDays, canEditTransitDays } from "@/permissions";
 import swal from 'sweetalert';
+import axios from "axios";
+
 const temp = [
     {
         HolidayId: 1,
@@ -378,7 +380,7 @@ export default function TransitDays({
                 <div>
                     <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
                         <div className="sm:flex sm:items-center">
-                            <div className="sm:flex w-full items-center justify-between mt-6">
+                            <div className="sm:flex w-full items-center justify-between mt-2 lg:mt-6">
                                 <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
                                     Transit Days
                                 </h1>

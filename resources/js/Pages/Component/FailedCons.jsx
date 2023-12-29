@@ -56,6 +56,7 @@ export default function FailedCons({
     PerfData,
     failedReasons,
     url,
+    AToken,
     filterValue,
     setFilterValue,
     setActiveIndexGTRS,
@@ -1044,6 +1045,7 @@ export default function FailedCons({
 
             <SetFailedReasonModal
                 url={url}
+                AToken={AToken}
                 isOpen={isModalOpen}
                 reason={reason}
                 setReason={setReason}
