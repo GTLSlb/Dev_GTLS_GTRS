@@ -23,6 +23,7 @@ export default function RDDreason({
     setactiveCon,
     rddData,
     url,
+    AToken,
     setrddData,
     filterValue,
     setFilterValue,
@@ -924,6 +925,7 @@ export default function RDDreason({
             )}
             <ModalRDD
                 url={url}
+                AToken={AToken}
                 isOpen={isModalOpen}
                 updateLocalData={updateLocalData}
                 handleClose={handleEditClick}

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import SmallTableKPI from "./Components/KPISmallTable";
 import swal from "sweetalert";
+import axios from "axios";
 export default function KPIReasons({
     url,
     currentUser,

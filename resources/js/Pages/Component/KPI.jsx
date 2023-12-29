@@ -16,6 +16,7 @@ import LottieComponent from "@/Components/lottie/LottieComponent";
 import Truck from "../../Components/lottie/Data/Truck.json";
 import Success from "../../Components/lottie/Data/Success.json";
 import { canCalculateKPI, canEditKPI } from "@/permissions";
+import axios from "axios";
 import swal from "sweetalert";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");

@@ -4,6 +4,7 @@ import RDDreason from "./RDD";
 import "../../../css/radio.css";
 import { canViewRDDReasons } from "@/permissions";
 import swal from 'sweetalert';
+import axios from "axios";
 export default function RDDMain({
     setActiveIndexGTRS,
     setactiveCon,

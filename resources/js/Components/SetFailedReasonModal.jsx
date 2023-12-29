@@ -7,12 +7,14 @@ import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { People } from "@mui/icons-material";
 const placeholder = "test";
+import swal from 'sweetalert';
 
 export default function SetFailedReasonModal({
     isOpen,
     handleClose,
     reason,
     url,
+    AToken,
     setReason,
     failedReasons,
     currentUser,
@@ -141,6 +143,7 @@ export default function SetFailedReasonModal({
                 {
                     headers: {
                         UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
                     },
                 }
             );
@@ -166,8 +169,32 @@ export default function SetFailedReasonModal({
             }, 1000);
         } catch (error) {
             SetIsLoading(false);
-            // Handle error
-            setError("Error occurred while saving the data. Please try again."); // Set the error message
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                  title: 'Session Expired!',
+                  text: "Please login again",
+                  type: 'success',
+                  icon: "info",
+                  confirmButtonText: 'OK'
+                }).then(function() {
+                  axios
+                      .post("/logoutAPI")
+                      .then((response) => {
+                        if (response.status == 200) {
+                          window.location.href = "/";
+                        }
+                      })
+                      .catch((error) => {
+                        console.log(error);
+                      });
+                });
+              } else {
+                // Handle other errors
+                setError("Error occurred while saving the data. Please try again."); // Set the error message
+                console.log(err);
+              }
+            
         }
     };
     const handlePopUpClose = () => {

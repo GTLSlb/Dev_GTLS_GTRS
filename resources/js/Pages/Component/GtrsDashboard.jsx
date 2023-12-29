@@ -1,7 +1,6 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 import { format, parse } from "date-fns";
-import axios from "axios";
 import { useEffect } from "react";
 import { Bartest } from "@/Components/charts/bartest";
 

@@ -9,6 +9,7 @@ import AddSafetyType from "./safetyComp/AddSafety/safetyTypes/AddSafetyType";
 import AddSafetyCauses from "./safetyComp/AddSafety/safetyCauses/AddSafetyCauses";
 import { canViewSafetyType } from "@/permissions";
 import swal from 'sweetalert';
+import axios from "axios";
 export default function SafetyRep({
     accData,
     currentUser,
