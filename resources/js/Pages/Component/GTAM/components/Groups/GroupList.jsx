@@ -79,11 +79,11 @@ export default function GroupList({
             (item) =>
                 item.GroupName === groupName
         )
-        console.log(groupsElements?.find(
-            (item) =>
-                item.GroupName === groupName
-        ))
-        console.log(id)
+        // console.log(groupsElements?.find(
+        //     (item) =>
+        //         item.GroupName === groupName
+        // ))
+        // console.log(id)
                 if(group && group.GroupId != id ){ 
                     AlertToast("Can't use same name",3)
                     setIsLoading(false)
@@ -97,7 +97,7 @@ export default function GroupList({
             GroupName: groupName,
             StatusId: status,
         };
-        console.log(inputValues);
+        
         axios
             .post(`${url}api/GTAM/Add/Group`, inputValues, {
                 headers: {
@@ -106,7 +106,6 @@ export default function GroupList({
             })
             .then((res) => {
                 setIsLoading(false);
-                console.log("done");
                 AlertToast("Saved successfully", 1);
                 setAdding(false);
                 setEditIndex(null);

@@ -236,7 +236,7 @@ export default function GroupDetails({
                 },
             })
             .then((res) => {
-                console.log("done");
+
                 AlertToast("Saved successfully",1)
                 setEditIndex(null);
                 getGroups();
