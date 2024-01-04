@@ -350,7 +350,7 @@ export default function ChartsSidebar({
                                                 {customerAccounts?.map(
                                                     (option) => (
                                                         <div
-                                                            className="flex"
+                                                            className="flex items-start"
                                                             key={
                                                                 option.DebtorId
                                                             }
