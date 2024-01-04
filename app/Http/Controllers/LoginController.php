@@ -37,9 +37,18 @@ class LoginController extends Controller
 
         $url = $_ENV['GTAM_API_URL']; //LOGIN API
         $appID = $_ENV['REACT_APP_ID'];
+        $expiration = time() - (60 * 60 * 24);
 
-        $response = Http::withHeaders($headers)->get("$url" . "Login");
+        // Get an array of all the cookies
+        $cookies = $_COOKIE;
+
+        // Loop through each cookie and set it to expire
+        foreach ($cookies as $name => $value) {
+            setcookie($name, '', $expiration);
+        }
         
+        $response = Http::withHeaders($headers)->get("$url" . "Login");
+
         if ($response->successful()) {
             $responseData = $response->json();
             if (!empty($responseData)) {
@@ -51,6 +60,7 @@ class LoginController extends Controller
                     'PasswordDb' => $responseData[0]['UserId'],
                     'PasswordInput' => $request->input('Password'),
                 ];
+                
                 $authenticatedUser = $authProvider->attempt($credentials, true);
                 if ($authenticatedUser) {
                     // Redirect to the intended page with the obtained user 
@@ -84,14 +94,14 @@ class LoginController extends Controller
                         $cookieName = 'gtrs_access_token';
                         $cookieValue = $token['access_token'];
                         // $expiry = $token['expires_in'];
-                        $expiry = 60 * 60 * 24 * 2; //48h
+                        $expiry = 60 * 60 * 24; //24h
                         //$expiry = 60;
                         $expirationTime = time() + $expiry;
                         setcookie($cookieName, $cookieValue, $expirationTime, '/', '', true);
                         //dd($expirationTime);
                         setcookie('gtrs_refresh_token', $token['refresh_token'], $expirationTime, '/', '', true);
                         
-                        $userId = $user['UserId'];
+                    $userId = $user['UserId'];
                     $request->session()->regenerate();
                     $request->session()->put('user', $user);
                     $request->session()->put('user_id', $userId);
@@ -102,7 +112,6 @@ class LoginController extends Controller
                     $userSession = $request->session()->get('user');
                     $user = json_encode($userSession->getAttributes());
 
-                    //dd($user->getAttributes());
                     $lastActivity = time();
                     DB::table('custom_sessions')->insert([
                         'id' => $sessionId,
@@ -143,6 +152,14 @@ class LoginController extends Controller
     {
         $request->session()->invalidate();
         $request->session()->flush();
+        $expiration = time() - (60 * 60 * 24); // expiration time set to 24h before current time 
+        // Get an array of all the cookies
+        $cookies = $_COOKIE;
+
+        // Loop through each cookie and set it to expire
+        foreach ($cookies as $name => $value) {
+            setcookie($name, '', $expiration);
+        }
         $request->session()->regenerateToken();
         return redirect('/');
     }
