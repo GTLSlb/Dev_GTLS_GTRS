@@ -15,6 +15,7 @@ export default function TableStructure({
     filterTypesElements,
     setFilterTypesElements,
     setSelected,
+    gridRef,
     selected,
     id,
 }) {
@@ -35,7 +36,7 @@ export default function TableStructure({
         setColumns(columnsElements);
     }, [columnsElements]);
     // const [selected, setSelected] = useState({});
-    const gridRef = useRef(null);
+
     const scrollProps = Object.assign(
         {},
         ReactDataGrid.defaultProps.scrollProps,

@@ -105,18 +105,259 @@ export default function DriverLogin({
         "Device Model",
         "Device Makes",
     ];
-    function handleDownloadExcel() {
+    const gridRef = useRef(null);
+    function handleFilterTable() {
         // Get the selected columns or use all columns if none are selected
         let selectedColumns = Array.from(
             document.querySelectorAll('input[name="column"]:checked')
         ).map((checkbox) => checkbox.value);
+        
+        let allHeaderColumns = gridRef.current.visibleColumns.map((column) => ({
+            name: column.name,
+            value: column.computedFilterValue?.value,
+            type: column.computedFilterValue?.type,
+            operator: column.computedFilterValue?.operator,
+        }));
+        let selectedColVal = allHeaderColumns.filter(col => col.name !== "edit");
 
+        const filterValue = [];
+        filteredData?.map((val) =>
+        selectedColVal.map((col) => {
+                const { name, value, type, operator } = col;
+                const cellValue = value;
+
+                if (type === "string") {
+                    if (operator === "contains") {
+                        if(cellValue?.length > 0 && val[col.name]
+                            ?.toString()
+                            .toLowerCase()
+                            .includes(cellValue?.toString().toLowerCase())){
+                                filterValue.push(val)
+                            };
+                    } else if (operator === "notContains") {
+                        if(cellValue?.length > 0 && !val[col.name]
+                            ?.toString()
+                            .toLowerCase()
+                            .includes(cellValue?.toString().toLowerCase())){
+                                filterValue.push(val)
+                            };
+                    } else if (operator === "eq") {
+                        if(
+                            cellValue?.length > 0 && cellValue?.toString().toLowerCase() ===
+                            val[col.name]?.toString().toLowerCase()
+                        ){
+                            filterValue.push(val)
+                        };
+                    } else if (operator === "neq") {
+                        if(
+                            cellValue?.length > 0 && cellValue?.toString().toLowerCase() !==
+                            val[col.name]?.toString().toLowerCase()
+                        ){
+                            filterValue.push(val)
+                        };
+                    } else if (operator === "empty") {
+                        if(cellValue?.length > 0 && val[col.name] === ""){
+                            filterValue.push(val)
+                        };
+                    } else if (operator === "notEmpty") {
+                        if(cellValue?.length > 0 && val[col.name] !== ""){
+                            filterValue.push(val)
+                        };
+                    } else if (operator === "startsWith") {
+                        if(cellValue?.length > 0 && val[col.name]
+                            ?.toString()
+                            .toLowerCase()
+                            .startsWith(cellValue?.toString().toLowerCase())){
+                                filterValue.push(val)
+                            };
+                    } else if (operator === "endsWith") {
+                        if(cellValue?.length > 0 && val[col.name].endsWith(
+                            cellValue?.toString().toLowerCase()
+                        )){
+                            filterValue.push(val)
+                        };
+                    }
+                } else if (type === "number") {
+                    const numericCellValue = parseFloat(cellValue);
+                    const numericValue = parseFloat(val[col.name]);
+
+                    if (operator === "equals") {
+                        if(cellValue?.length > 0 && numericCellValue === numericValue){
+                            filterValue.push(val)
+                        };
+                    } else if (operator === "notEquals") {
+                        if(cellValue?.length > 0 && numericCellValue !== numericValue){
+                            filterValue.push(val)
+                        };
+                    } else if (operator === "greaterThan") {
+                        if(cellValue?.length > 0 && numericCellValue > numericValue){
+                            filterValue.push(val)
+                        };
+                    } else if (operator === "greaterThanOrEqual") {
+                        if(cellValue?.length > 0 && numericCellValue >= numericValue){
+                            filterValue.push(val)
+                        };
+                    } else if (operator === "lessThan") {
+                        if(cellValue?.length > 0 && numericCellValue < numericValue){
+                            filterValue.push(val)
+                        };
+                    } else if (operator === "lessThanOrEqual") {
+                        if(cellValue?.length > 0 && numericCellValue <= numericValue){
+                            filterValue.push(val)
+                        };
+                    } else if (operator === "between") {
+                        const rangeValues = value.split(",");
+                        const minRangeValue = parseFloat(rangeValues[0]);
+                        const maxRangeValue = parseFloat(rangeValues[1]);
+                        if(
+                            cellValue?.length > 0 && (numericCellValue >= minRangeValue &&
+                            numericCellValue <= maxRangeValue)
+                        ){
+                            filterValue.push(val)
+                        }
+                    } else if (operator === "notBetween") {
+                        const rangeValues = value.split(",");
+                        const minRangeValue = parseFloat(rangeValues[0]);
+                        const maxRangeValue = parseFloat(rangeValues[1]);
+                        if(
+                            cellValue?.length > 0 && (numericCellValue < minRangeValue ||
+                            numericCellValue > maxRangeValue)
+                        ){
+                            filterValue.push(val)
+                        }
+                    }
+                } else if (type === "boolean") {
+                    const booleanCellValue = cellValue;
+                    const booleanValue = val[col.name];
+
+                    if (operator === "eq") {
+                        if(cellValue?.length > 0 && booleanCellValue === booleanValue){
+                            filterValue.push(val)
+                        }
+                    } else if (operator === "neq") {
+                        if(cellValue?.length > 0 && booleanCellValue !== booleanValue){
+                            filterValue.push(val)
+                        }
+                    }
+                } else if (type === "select") {
+                    if (operator === "eq") {
+                        if(
+                            cellValue?.length > 0 && (cellValue?.toString().toLowerCase() ===
+                            val[col.name]?.toString().toLowerCase())
+                        ){
+                            filterValue.push(val)
+                        }
+                    } else if (operator === "neq") {
+                        if(
+                            cellValue?.length > 0 && (cellValue?.toString().toLowerCase() !==
+                            val[col.name]?.toString().toLowerCase())
+                        ){
+                            filterValue.push(val)
+                        }
+                    } else if (operator === "inlist") {
+                        const listValues = Array.isArray(value)
+                            ? value
+                            : [value];
+                        if(cellValue?.length > 0 && (listValues
+                            .map((listValue) =>
+                                listValue?.toString().toLowerCase()
+                            )
+                            .includes(val[col.name]?.toString().toLowerCase()))){
+                                filterValue.push(val)
+                            }
+                    } else if (operator === "notinlist") {
+                        const listValues = Array.isArray(value)
+                            ? value
+                            : [value];
+                        if(cellValue?.length > 0 && (listValues
+                            .map(
+                                (listValue) =>
+                                    !listValue?.toString().toLowerCase()
+                            )
+                            .includes(val[col.name]?.toString().toLowerCase()))){
+                                filterValue.push(val)
+                            }
+                    } else if (operator === "neq") {
+                        if(cellValue?.length > 0 && cellValue !== value?.toString().toLowerCase()){
+                            filterValue.push(val)
+                        }
+                    }
+                } else if (type === "date") {
+                    const dateValue = moment(val[col.name], "YYYY-MM-DD");
+                    const dateCellValueStart = moment(cellValue?.start, "YYYY-MM-DD");
+                    const dateCellValueEnd = moment(cellValue?.end, "YYYY-MM-DD");
+
+                    if (operator === "after") {
+                        if(cellValue?.length > 0 && dateCellValueStart.isAfter(dateValue)){
+                            filterValue.push(val)
+                        }
+                    } else if (operator === "afterOrOn") {
+                        if(cellValue?.length > 0 && dateCellValueStart.isSameOrAfter(dateValue)){
+                            filterValue.push(val)
+                        }
+                    } else if (operator === "before") {
+                        if(cellValue?.length > 0 && dateCellValueStart.isBefore(dateValue)){
+                            filterValue.push(val)
+                        }
+                    } else if (operator === "beforeOrOn") {
+                        if(cellValue?.length > 0 && dateCellValueStart.isSameOrBefore(dateValue)){
+                            filterValue.push(val)
+                        }
+                    } else if (operator === "eq") {
+                        if(cellValue?.length > 0 && dateCellValueStart.isSame(dateValue)){
+                            filterValue.push(val)
+                        }
+                    } else if (operator === "neq") {
+                        if(cellValue?.length > 0 && !dateCellValueStart.isSame(dateValue)){
+                            filterValue.push(val)
+                        }
+                    } else if (operator === "inrange") {
+                        // console.log(dateCellValueStart);
+                        // console.log(dateCellValueEnd);
+                        //console.log(dateValue);
+                        if(
+                            cellValue?.length > 0 && (dateValue.isSameOrAfter(dateCellValueStart) &&
+                            dateValue.isSameOrBefore(dateCellValueEnd))
+                        ){
+                            filterValue.push(val)
+                        }
+                    } else if (operator === "notinrange") {
+                        if(
+                            cellValue?.length > 0 && (dateValue.isBefore(dateCellValueStart) ||
+                            dateValue.isAfter(dateCellValueEnd))
+                        ){
+                            filterValue.push(val)
+                        }
+                    }
+                }
+            })
+        );
+        selectedColVal = [];
         if (selectedColumns.length === 0) {
-            selectedColumns = headers; // Use all columns
+            selectedColVal = allHeaderColumns.filter(col => col.name !== "edit"); // Use all columns
+        } else {
+            allHeaderColumns.map((header) => {
+                selectedColumns.map((column) => {
+                    const formattedColumn = column
+                        .replace(/\s/g, "")
+                        .toLowerCase();
+                    if (header.name.toLowerCase() === formattedColumn) {
+                        selectedColVal.push(header);
+                    }
+                });
+            });
         }
-
-        // Extract the data for the selected columns
-        const data = DriverData.map((person) =>
+        return { selectedColumns: selectedColVal, filterValue: filterValue };
+    }
+    function handleDownloadExcel() {
+        const jsonData = handleFilterTable();
+        
+        const selectedColumns = jsonData?.selectedColumns.map(
+            (column) => column.name
+        );
+        //DriverData
+        const filterValue = jsonData?.filterValue;
+        const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
 
@@ -649,6 +890,7 @@ export default function DriverLogin({
                     </div>
                     <TableStructure
                         id={"MobilityDeviceID"}
+                        gridRef={gridRef}
                         setSelected={setSelected}
                         selected={selected}
                         tableDataElements={DriverData}
