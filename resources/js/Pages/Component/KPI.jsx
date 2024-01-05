@@ -108,7 +108,7 @@ export default function KPI({
         // Filter the data based on the start and end date filters, selected receiver names, and chargeTo values
         const filtered = KPIData?.filter((item) => {
             const chargeToMatch =
-                intArray?.length === 0 || intArray?.includes(item.ChargeToID);
+                intArray?.length === 0 || intArray?.includes(item.ChargeToId);
 
             return chargeToMatch;
         });

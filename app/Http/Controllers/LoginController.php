@@ -52,6 +52,7 @@ class LoginController extends Controller
                     'PasswordInput' => $request->input('Password'),
                 ];
                 $authenticatedUser = $authProvider->attempt($credentials, true);
+                
                 if ($authenticatedUser) {
                     // Redirect to the intended page with the obtained user 
                     $user = null;
@@ -78,6 +79,7 @@ class LoginController extends Controller
                     else{ // the user is a driver
                         $user = new Driver($responseData[0]);
                     }
+                   
                     if ($tokenRes->successful()) {
                         
                         $token = $tokenRes->json();

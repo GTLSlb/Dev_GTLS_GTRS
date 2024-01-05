@@ -335,7 +335,6 @@ export default function RDDreason({
         const convertedDate = formatter.format(utcDate);
         return convertedDate;
     }
-    const Roles = ["1", "3", "4", "5"];
     const columns = [
         {
             name: "ConsignmentNo",
@@ -530,11 +529,17 @@ export default function RDDreason({
                 maxDate: maxOldRddDate,
             },
             filterEditor: DateFilter,
-            render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+            render: ({ value }) => {
+                const formattedDate = moment(value, "DD/MM/YYYY hh:mm A").format("DD-MM-YYYY hh:mm A");
+
+                return (
+                    <div>
+                        {value && (
+                            // <p>{value}</p>
+                            <p>{formattedDate}</p>
+                        )}
+                    </div>
+                );
             },
         },
         {
@@ -550,11 +555,16 @@ export default function RDDreason({
                 minDate: minNewRddDate,
                 maxDate: maxNewRddDate,
             },
-            render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+            render: ({ value }) => {
+                const formattedDate = moment(value, "DD/MM/YYYY hh:mm A").format("DD-MM-YYYY hh:mm A");
+                return (
+                    <div>
+                        {value && (
+                            // <p>{value}</p>
+                            <p>{formattedDate}</p>
+                        )}
+                    </div>
+                );
             },
         },
         {

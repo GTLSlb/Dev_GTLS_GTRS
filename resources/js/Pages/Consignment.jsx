@@ -3,7 +3,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import "../../css/scroll.css";
 import moment from "moment";
-import swal from 'sweetalert';
+import swal from "sweetalert";
 export default function ConsignmentD({
     setActiveIndexGTRS,
     activeCon,
@@ -32,6 +32,7 @@ export default function ConsignmentD({
         };
     }, []);
     const [Consignment, setConsignment] = useState(null);
+
     const generateOptions = (Consignment) => {
         return [
             {
@@ -134,35 +135,34 @@ export default function ConsignmentD({
             .then((response) => setConsignment(response.data))
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
+                    // Handle 401 error using SweetAlert
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then(function () {
+                        axios
+                            .post("/logoutAPI")
+                            .then((response) => {
+                                if (response.status == 200) {
+                                    window.location.href = "/";
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+                    });
                 } else {
-                  // Handle other errors
-                  console.log(err);
+                    // Handle other errors
+                    console.log(err);
                 }
-              });
+            });
     }
     useEffect(() => {
         fetchData();
     }, []);
-
     let width = 0;
     const sender = Consignment ? generateOptions(Consignment) : [];
     if (Consignment)
