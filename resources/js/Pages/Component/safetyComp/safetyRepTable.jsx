@@ -133,217 +133,229 @@ export default function SafetyRepTable({
         let selectedColVal = allHeaderColumns.filter(col => col.name !== "edit");
 
         const filterValue = [];
-        filteredData?.map((val) =>
-        selectedColVal.map((col) => {
+        safetyData?.map((val) =>{
+            let isMatch = true;
+
+            for (const col of selectedColVal) {
                 const { name, value, type, operator } = col;
                 const cellValue = value;
-
+                let conditionMet = false;
+                // Skip the filter condition if no filter is set (cellValue is null or empty)
+                if (!cellValue || cellValue.length === 0) {
+                    conditionMet = true;
+                    continue;
+                }
                 if (type === "string") {
-                    if (operator === "contains") {
-                        if(cellValue?.length > 0 && val[col.name]
-                            ?.toString()
-                            .toLowerCase()
-                            .includes(cellValue?.toString().toLowerCase())){
-                                filterValue.push(val)
-                            };
-                    } else if (operator === "notContains") {
-                        if(cellValue?.length > 0 && !val[col.name]
-                            ?.toString()
-                            .toLowerCase()
-                            .includes(cellValue?.toString().toLowerCase())){
-                                filterValue.push(val)
-                            };
-                    } else if (operator === "eq") {
-                        if(
-                            cellValue?.length > 0 && cellValue?.toString().toLowerCase() ===
-                            val[col.name]?.toString().toLowerCase()
-                        ){
-                            filterValue.push(val)
-                        };
-                    } else if (operator === "neq") {
-                        if(
-                            cellValue?.length > 0 && cellValue?.toString().toLowerCase() !==
-                            val[col.name]?.toString().toLowerCase()
-                        ){
-                            filterValue.push(val)
-                        };
-                    } else if (operator === "empty") {
-                        if(cellValue?.length > 0 && val[col.name] === ""){
-                            filterValue.push(val)
-                        };
-                    } else if (operator === "notEmpty") {
-                        if(cellValue?.length > 0 && val[col.name] !== ""){
-                            filterValue.push(val)
-                        };
-                    } else if (operator === "startsWith") {
-                        if(cellValue?.length > 0 && val[col.name]
-                            ?.toString()
-                            .toLowerCase()
-                            .startsWith(cellValue?.toString().toLowerCase())){
-                                filterValue.push(val)
-                            };
-                    } else if (operator === "endsWith") {
-                        if(cellValue?.length > 0 && val[col.name].endsWith(
-                            cellValue?.toString().toLowerCase()
-                        )){
-                            filterValue.push(val)
-                        };
+                    const valLowerCase = val[col.name]
+                        ?.toString()
+                        .toLowerCase();
+                    const cellValueLowerCase = cellValue
+                        ?.toString()
+                        .toLowerCase();
+
+                    switch (operator) {
+                        case "contains":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                valLowerCase.includes(cellValueLowerCase);
+                            break;
+                        case "notContains":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                !valLowerCase.includes(cellValueLowerCase);
+                            break;
+                        case "eq":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                cellValueLowerCase === valLowerCase;
+                            break;
+                        case "neq":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                cellValueLowerCase !== valLowerCase;
+                            break;
+                        case "empty":
+                            conditionMet =
+                                cellValue?.length > 0 && val[col.name] === "";
+                            break;
+                        case "notEmpty":
+                            conditionMet =
+                                cellValue?.length > 0 && val[col.name] !== "";
+                            break;
+                        case "startsWith":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                valLowerCase.startsWith(cellValueLowerCase);
+                            break;
+                        case "endsWith":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                valLowerCase.endsWith(cellValueLowerCase);
+                            break;
+                        // ... (add other string type conditions here)
                     }
                 } else if (type === "number") {
                     const numericCellValue = parseFloat(cellValue);
                     const numericValue = parseFloat(val[col.name]);
 
-                    if (operator === "equals") {
-                        if(cellValue?.length > 0 && numericCellValue === numericValue){
-                            filterValue.push(val)
-                        };
-                    } else if (operator === "notEquals") {
-                        if(cellValue?.length > 0 && numericCellValue !== numericValue){
-                            filterValue.push(val)
-                        };
-                    } else if (operator === "greaterThan") {
-                        if(cellValue?.length > 0 && numericCellValue > numericValue){
-                            filterValue.push(val)
-                        };
-                    } else if (operator === "greaterThanOrEqual") {
-                        if(cellValue?.length > 0 && numericCellValue >= numericValue){
-                            filterValue.push(val)
-                        };
-                    } else if (operator === "lessThan") {
-                        if(cellValue?.length > 0 && numericCellValue < numericValue){
-                            filterValue.push(val)
-                        };
-                    } else if (operator === "lessThanOrEqual") {
-                        if(cellValue?.length > 0 && numericCellValue <= numericValue){
-                            filterValue.push(val)
-                        };
-                    } else if (operator === "between") {
-                        const rangeValues = value.split(",");
-                        const minRangeValue = parseFloat(rangeValues[0]);
-                        const maxRangeValue = parseFloat(rangeValues[1]);
-                        if(
-                            cellValue?.length > 0 && (numericCellValue >= minRangeValue &&
-                            numericCellValue <= maxRangeValue)
-                        ){
-                            filterValue.push(val)
-                        }
-                    } else if (operator === "notBetween") {
-                        const rangeValues = value.split(",");
-                        const minRangeValue = parseFloat(rangeValues[0]);
-                        const maxRangeValue = parseFloat(rangeValues[1]);
-                        if(
-                            cellValue?.length > 0 && (numericCellValue < minRangeValue ||
-                            numericCellValue > maxRangeValue)
-                        ){
-                            filterValue.push(val)
-                        }
+                    switch (operator) {
+                        case "equals":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                numericCellValue === numericValue;
+                            break;
+                        case "notEquals":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                numericCellValue !== numericValue;
+                            break;
+                        case "greaterThan":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                numericCellValue > numericValue;
+                            break;
+                        case "greaterThanOrEqual":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                numericCellValue >= numericValue;
+                            break;
+                        case "lessThan":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                numericCellValue < numericValue;
+                            break;
+                        case "lessThanOrEqual":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                numericCellValue <= numericValue;
+                            break;
+                        case "between":
+                            const rangeValues = value.split(",");
+                            const minRangeValue = parseFloat(rangeValues[0]);
+                            const maxRangeValue = parseFloat(rangeValues[1]);
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                numericCellValue >= minRangeValue &&
+                                numericCellValue <= maxRangeValue;
+                            break;
+                        case "notBetween":
+                            const rangeValuesNotBetween = value.split(",");
+                            const minRangeValueNotBetween = parseFloat(
+                                rangeValuesNotBetween[0]
+                            );
+                            const maxRangeValueNotBetween = parseFloat(
+                                rangeValuesNotBetween[1]
+                            );
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                (numericCellValue < minRangeValueNotBetween ||
+                                    numericCellValue > maxRangeValueNotBetween);
+                            break;
+                        // ... (add other number type conditions here if necessary)
                     }
                 } else if (type === "boolean") {
-                    const booleanCellValue = cellValue;
-                    const booleanValue = val[col.name];
+                    // Assuming booleanCellValue is a string 'true' or 'false' and needs conversion to a boolean
+                    const booleanCellValue = cellValue === "true";
+                    const booleanValue = val[col.name] === true; // Convert to boolean if it's not already
 
-                    if (operator === "eq") {
-                        if(cellValue?.length > 0 && booleanCellValue === booleanValue){
-                            filterValue.push(val)
-                        }
-                    } else if (operator === "neq") {
-                        if(cellValue?.length > 0 && booleanCellValue !== booleanValue){
-                            filterValue.push(val)
-                        }
+                    switch (operator) {
+                        case "eq":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                booleanCellValue === booleanValue;
+                            break;
+                        case "neq":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                booleanCellValue !== booleanValue;
+                            break;
+                        // ... (add other boolean type conditions here if necessary)
                     }
                 } else if (type === "select") {
-                    if (operator === "eq") {
-                        if(
-                            cellValue?.length > 0 && (cellValue?.toString().toLowerCase() ===
-                            val[col.name]?.toString().toLowerCase())
-                        ){
-                            filterValue.push(val)
-                        }
-                    } else if (operator === "neq") {
-                        if(
-                            cellValue?.length > 0 && (cellValue?.toString().toLowerCase() !==
-                            val[col.name]?.toString().toLowerCase())
-                        ){
-                            filterValue.push(val)
-                        }
-                    } else if (operator === "inlist") {
-                        const listValues = Array.isArray(value)
-                            ? value
-                            : [value];
-                        if(cellValue?.length > 0 && (listValues
-                            .map((listValue) =>
-                                listValue?.toString().toLowerCase()
-                            )
-                            .includes(val[col.name]?.toString().toLowerCase()))){
-                                filterValue.push(val)
-                            }
-                    } else if (operator === "notinlist") {
-                        const listValues = Array.isArray(value)
-                            ? value
-                            : [value];
-                        if(cellValue?.length > 0 && (listValues
-                            .map(
-                                (listValue) =>
-                                    !listValue?.toString().toLowerCase()
-                            )
-                            .includes(val[col.name]?.toString().toLowerCase()))){
-                                filterValue.push(val)
-                            }
-                    } else if (operator === "neq") {
-                        if(cellValue?.length > 0 && cellValue !== value?.toString().toLowerCase()){
-                            filterValue.push(val)
-                        }
+                    const cellValueLowerCase = cellValue
+                        ?.toString()
+                        .toLowerCase();
+                    const valLowerCase = val[col.name]
+                        ?.toString()
+                        .toLowerCase();
+
+                    switch (operator) {
+                        case "eq":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                cellValueLowerCase === valLowerCase;
+                            break;
+                        case "neq":
+                            // This case seems to be duplicated in your original code, you might want to check this
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                cellValueLowerCase !== valLowerCase;
+                            break;
+                        case "inlist":
+                            const listValues = Array.isArray(value)
+                                ? value.map((v) => v.toLowerCase())
+                                : [value?.toLowerCase()];
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                listValues.includes(valLowerCase);
+                            break;
+                        case "notinlist":
+                            const listValuesNotIn = Array.isArray(value)
+                                ? value.map((v) => v.toLowerCase())
+                                : [value?.toLowerCase()];
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                !listValuesNotIn.includes(valLowerCase);
+                            break;
+                        // ... (add other select type conditions here if necessary)
                     }
                 } else if (type === "date") {
-                    const dateValue = moment(val[col.name], "YYYY-MM-DD");
-                    const dateCellValueStart = moment(cellValue?.start, "YYYY-MM-DD");
-                    const dateCellValueEnd = moment(cellValue?.end, "YYYY-MM-DD");
-
-                    if (operator === "after") {
-                        if(cellValue?.length > 0 && dateCellValueStart.isAfter(dateValue)){
-                            filterValue.push(val)
-                        }
-                    } else if (operator === "afterOrOn") {
-                        if(cellValue?.length > 0 && dateCellValueStart.isSameOrAfter(dateValue)){
-                            filterValue.push(val)
-                        }
-                    } else if (operator === "before") {
-                        if(cellValue?.length > 0 && dateCellValueStart.isBefore(dateValue)){
-                            filterValue.push(val)
-                        }
-                    } else if (operator === "beforeOrOn") {
-                        if(cellValue?.length > 0 && dateCellValueStart.isSameOrBefore(dateValue)){
-                            filterValue.push(val)
-                        }
-                    } else if (operator === "eq") {
-                        if(cellValue?.length > 0 && dateCellValueStart.isSame(dateValue)){
-                            filterValue.push(val)
-                        }
-                    } else if (operator === "neq") {
-                        if(cellValue?.length > 0 && !dateCellValueStart.isSame(dateValue)){
-                            filterValue.push(val)
-                        }
-                    } else if (operator === "inrange") {
-                        // console.log(dateCellValueStart);
-                        // console.log(dateCellValueEnd);
-                        //console.log(dateValue);
-                        if(
-                            cellValue?.length > 0 && (dateValue.isSameOrAfter(dateCellValueStart) &&
-                            dateValue.isSameOrBefore(dateCellValueEnd))
-                        ){
-                            filterValue.push(val)
-                        }
-                    } else if (operator === "notinrange") {
-                        if(
-                            cellValue?.length > 0 && (dateValue.isBefore(dateCellValueStart) ||
-                            dateValue.isAfter(dateCellValueEnd))
-                        ){
-                            filterValue.push(val)
-                        }
+                    const dateValue = moment(val[col.name].replace("T", " "), "YYYY-MM-DD HH:mm:ss");
+                    const hasStartDate = cellValue?.start && cellValue.start.length > 0;
+                    const hasEndDate = cellValue?.end && cellValue.end.length > 0;
+                    const dateCellValueStart = hasStartDate ? moment(cellValue.start, "DD-MM-YYYY") : null;
+                    const dateCellValueEnd = hasEndDate ? moment(cellValue.end, "DD-MM-YYYY").endOf('day') : null;
+                
+                    switch (operator) {
+                        case "after":
+                            conditionMet = hasStartDate && dateCellValueStart.isAfter(dateValue);
+                            break;
+                        case "afterOrOn":
+                            conditionMet = hasStartDate && dateCellValueStart.isSameOrAfter(dateValue);
+                            break;
+                        case "before":
+                            conditionMet = hasStartDate && dateCellValueStart.isBefore(dateValue);
+                            break;
+                        case "beforeOrOn":
+                            conditionMet = hasStartDate && dateCellValueStart.isSameOrBefore(dateValue);
+                            break;
+                        case "eq":
+                            conditionMet = hasStartDate && dateCellValueStart.isSame(dateValue);
+                            break;
+                        case "neq":
+                            conditionMet = hasStartDate && !dateCellValueStart.isSame(dateValue);
+                            break;
+                        case "inrange":
+                            conditionMet = (!hasStartDate || dateValue.isSameOrAfter(dateCellValueStart)) &&
+                                           (!hasEndDate || dateValue.isSameOrBefore(dateCellValueEnd));
+                            break;
+                        case "notinrange":
+                            conditionMet = (hasStartDate && dateValue.isBefore(dateCellValueStart)) ||
+                                           (hasEndDate && dateValue.isAfter(dateCellValueEnd));
+                            break;
+                        // ... (add other date type conditions here if necessary)
                     }
                 }
-            })
-        );
+                
+                if (!conditionMet) {
+                    isMatch = false;
+                    break;
+                }
+            }
+            if (isMatch) {
+                filterValue.push(val);
+            }
+        });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
             selectedColVal = allHeaderColumns.filter(col => col.name !== "edit"); // Use all columns
