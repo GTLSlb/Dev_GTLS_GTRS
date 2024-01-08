@@ -17,6 +17,7 @@ import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import { PencilIcon } from "@heroicons/react/24/outline";
 import { canEditRDD } from "@/permissions";
+import { DataObject } from "@mui/icons-material";
 
 export default function RDDreason({
     setActiveIndexGTRS,
@@ -33,6 +34,7 @@ export default function RDDreason({
     accData,
 }) {
     window.moment = moment;
+
     const updateLocalData = (id, reason, note) => {
         // Find the item in the local data with the matching id
         const updatedData = rddData.map((item) => {
@@ -72,7 +74,6 @@ export default function RDDreason({
     useEffect(() => {
         setFilteredData(filterData());
     }, [accData]);
-    const [selectedPeople, setSelectedPeople] = useState([]);
     const [consignment, SetConsignment] = useState();
     const tableRef = useRef(null);
     const headers = [
@@ -524,22 +525,16 @@ export default function RDDreason({
             textAlign: "center",
             defaultWidth: 170,
             dateFormat: "DD-MM-YYYY",
+            filterEditor: DateFilter,
             filterEditorProps: {
                 minDate: minOldRddDate,
                 maxDate: maxOldRddDate,
             },
-            filterEditor: DateFilter,
-            render: ({ value }) => {
-                const formattedDate = moment(value, "DD/MM/YYYY hh:mm A").format("DD-MM-YYYY hh:mm A");
-
-                return (
-                    <div>
-                        {value && (
-                            // <p>{value}</p>
-                            <p>{formattedDate}</p>
-                        )}
-                    </div>
-                );
+            render: ({ value, cellProps }) => {
+                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                    "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A");
             },
         },
         {
@@ -555,16 +550,11 @@ export default function RDDreason({
                 minDate: minNewRddDate,
                 maxDate: maxNewRddDate,
             },
-            render: ({ value }) => {
-                const formattedDate = moment(value, "DD/MM/YYYY hh:mm A").format("DD-MM-YYYY hh:mm A");
-                return (
-                    <div>
-                        {value && (
-                            // <p>{value}</p>
-                            <p>{formattedDate}</p>
-                        )}
-                    </div>
-                );
+            render: ({ value, cellProps }) => {
+                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                    "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A");
             },
         },
         {
@@ -671,7 +661,6 @@ export default function RDDreason({
     ];
     const newArray = columns.slice(0, -1);
     const [newColumns, setNewColumns] = useState();
-
     useEffect(() => {
         if (canEditRDD(currentUser)) {
             setNewColumns(columns);
@@ -679,7 +668,6 @@ export default function RDDreason({
             setNewColumns(newArray);
         }
     }, []);
-
     return (
         <div className=" w-full bg-smooth ">
             {!newColumns ? (
@@ -888,7 +876,7 @@ export default function RDDreason({
                                                             <input
                                                                 type="checkbox"
                                                                 name="column"
-                                                                value="ChangeAt"
+                                                                valuef="ChangeAt"
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Change At
