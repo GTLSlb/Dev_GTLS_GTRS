@@ -101,9 +101,6 @@ export default function Navbar({ id, item,currentUser }) {
                 <div className="hidden sm:block">
                     <nav className="-mb-px flex space-x-8">
                         {sidebarElements
-                            .filter((item) =>
-                                item.role.includes(current_user_role)
-                            )
                             .map((tab) => (
                                 <a
                                     key={tab.name}
