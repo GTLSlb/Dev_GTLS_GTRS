@@ -131,42 +131,48 @@ export default function GtrsCons({
                             break;
                         // ... (add other string type conditions here)
                     }
-                } else if (type === "number") {
+                }else if (type === "number") {
                     const numericCellValue = parseFloat(cellValue);
                     const numericValue = parseFloat(val[col.name]);
 
                     switch (operator) {
-                        case "equals":
+                        case "eq":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue === numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue === numericCellValue;
                             break;
-                        case "notEquals":
+                        case "neq":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue !== numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue !== numericCellValue;
                             break;
-                        case "greaterThan":
+                        case "gt":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue > numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue > numericCellValue;
                             break;
-                        case "greaterThanOrEqual":
+                        case "gte":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue >= numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue >= numericCellValue;
                             break;
-                        case "lessThan":
+                        case "lt":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue < numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue < numericCellValue;
                             break;
-                        case "lessThanOrEqual":
+                        case "lte":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue <= numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue <= numericCellValue;
                             break;
-                        case "between":
+                        case "inrange":
                             const rangeValues = value.split(",");
                             const minRangeValue = parseFloat(rangeValues[0]);
                             const maxRangeValue = parseFloat(rangeValues[1]);
@@ -175,7 +181,7 @@ export default function GtrsCons({
                                 numericCellValue >= minRangeValue &&
                                 numericCellValue <= maxRangeValue;
                             break;
-                        case "notBetween":
+                        case "notinrange":
                             const rangeValuesNotBetween = value.split(",");
                             const minRangeValueNotBetween = parseFloat(
                                 rangeValuesNotBetween[0]

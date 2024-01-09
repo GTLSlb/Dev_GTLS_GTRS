@@ -99,7 +99,12 @@ export default function KPI({
         setLastIndex(2);
         setactiveCon(coindex);
     };
-    const [filteredData, setFilteredData] = useState(KPIData);
+    const [filteredData, setFilteredData] = useState(KPIData.map((item) => {
+        if (item?.TransitDays) {
+          item.TransitDays = parseInt(item.TransitDays);
+        }
+        return item;
+      }));
     const filterData = () => {
         const intArray = accData?.map((str) => {
             const intValue = parseInt(str);
@@ -112,7 +117,14 @@ export default function KPI({
 
             return chargeToMatch;
         });
-        return filtered;
+        const filteredKPI = filtered.map((item) => {
+            if (item?.TransitDays) {
+              item.TransitDays = parseInt(item.TransitDays);
+            }
+            return item;
+          });
+        
+        return filteredKPI;
     };
     useEffect(() => {
         setFilteredData(filterData());
@@ -213,37 +225,43 @@ export default function KPI({
                     const numericValue = parseFloat(val[col.name]);
 
                     switch (operator) {
-                        case "equals":
+                        case "eq":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue === numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue === numericCellValue;
                             break;
-                        case "notEquals":
+                        case "neq":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue !== numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue !== numericCellValue;
                             break;
-                        case "greaterThan":
+                        case "gt":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue > numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue > numericCellValue;
                             break;
-                        case "greaterThanOrEqual":
+                        case "gte":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue >= numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue >= numericCellValue;
                             break;
-                        case "lessThan":
+                        case "lt":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue < numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue < numericCellValue;
                             break;
-                        case "lessThanOrEqual":
+                        case "lte":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue <= numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue <= numericCellValue;
                             break;
-                        case "between":
+                        case "inrange":
                             const rangeValues = value.split(",");
                             const minRangeValue = parseFloat(rangeValues[0]);
                             const maxRangeValue = parseFloat(rangeValues[1]);
@@ -252,7 +270,7 @@ export default function KPI({
                                 numericCellValue >= minRangeValue &&
                                 numericCellValue <= maxRangeValue;
                             break;
-                        case "notBetween":
+                        case "notinrange":
                             const rangeValuesNotBetween = value.split(",");
                             const minRangeValueNotBetween = parseFloat(
                                 rangeValuesNotBetween[0]

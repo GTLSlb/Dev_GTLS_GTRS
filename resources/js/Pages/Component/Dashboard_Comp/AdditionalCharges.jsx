@@ -131,6 +131,7 @@ export default function AdditionalCharges({
         "Code",
     ];
     const gridRef = useRef(null);
+
     function handleFilterTable() {
         // Get the selected columns or use all columns if none are selected
         let selectedColumns = Array.from(
@@ -146,7 +147,7 @@ export default function AdditionalCharges({
         let selectedColVal = allHeaderColumns.filter(col => col.name !== "edit");
 
         const filterValue = [];
-        filteredData?.map((val) =>{
+        AdditionalData?.map((val) =>{
             let isMatch = true;
 
             for (const col of selectedColVal) {
@@ -170,12 +171,12 @@ export default function AdditionalCharges({
                         case "contains":
                             conditionMet =
                                 cellValue?.length > 0 &&
-                                valLowerCase.includes(cellValueLowerCase);
+                                valLowerCase?.includes(cellValueLowerCase);
                             break;
                         case "notContains":
                             conditionMet =
                                 cellValue?.length > 0 &&
-                                !valLowerCase.includes(cellValueLowerCase);
+                                !valLowerCase?.includes(cellValueLowerCase);
                             break;
                         case "eq":
                             conditionMet =
@@ -198,12 +199,12 @@ export default function AdditionalCharges({
                         case "startsWith":
                             conditionMet =
                                 cellValue?.length > 0 &&
-                                valLowerCase.startsWith(cellValueLowerCase);
+                                valLowerCase?.startsWith(cellValueLowerCase);
                             break;
                         case "endsWith":
                             conditionMet =
                                 cellValue?.length > 0 &&
-                                valLowerCase.endsWith(cellValueLowerCase);
+                                valLowerCase?.endsWith(cellValueLowerCase);
                             break;
                         // ... (add other string type conditions here)
                     }
@@ -212,37 +213,43 @@ export default function AdditionalCharges({
                     const numericValue = parseFloat(val[col.name]);
 
                     switch (operator) {
-                        case "equals":
+                        case "eq":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue === numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue === numericCellValue;
                             break;
-                        case "notEquals":
+                        case "neq":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue !== numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue !== numericCellValue;
                             break;
-                        case "greaterThan":
+                        case "gt":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue > numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue > numericCellValue;
                             break;
-                        case "greaterThanOrEqual":
+                        case "gte":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue >= numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue >= numericCellValue;
                             break;
-                        case "lessThan":
+                        case "lt":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue < numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue < numericCellValue;
                             break;
-                        case "lessThanOrEqual":
+                        case "lte":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue <= numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue <= numericCellValue;
                             break;
-                        case "between":
+                        case "inrange":
                             const rangeValues = value.split(",");
                             const minRangeValue = parseFloat(rangeValues[0]);
                             const maxRangeValue = parseFloat(rangeValues[1]);
@@ -251,7 +258,7 @@ export default function AdditionalCharges({
                                 numericCellValue >= minRangeValue &&
                                 numericCellValue <= maxRangeValue;
                             break;
-                        case "notBetween":
+                        case "notinrange":
                             const rangeValuesNotBetween = value.split(",");
                             const minRangeValueNotBetween = parseFloat(
                                 rangeValuesNotBetween[0]

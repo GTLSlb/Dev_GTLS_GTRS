@@ -76,7 +76,7 @@ export default function TableStructure({
                         rowStyle={rowStyle}
                         filterTypes={filterTypes}
                         scrollProps={scrollProps}
-                        showColumnMenuTool={true}
+                        showColumnMenuTool={false}
                         enableColumnAutosize={false}
                         showColumnMenuLockOptions={false}
                         showColumnMenuGroupOptions={false}

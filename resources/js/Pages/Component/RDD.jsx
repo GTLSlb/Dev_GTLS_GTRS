@@ -32,6 +32,7 @@ export default function RDDreason({
     rddReasons,
     accData,
 }) {
+  
     window.moment = moment;
     const updateLocalData = (id, reason, note) => {
         // Find the item in the local data with the matching id
@@ -178,37 +179,43 @@ export default function RDDreason({
                     const numericValue = parseFloat(val[col.name]);
 
                     switch (operator) {
-                        case "equals":
+                        case "eq":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue === numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue === numericCellValue;
                             break;
-                        case "notEquals":
+                        case "neq":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue !== numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue !== numericCellValue;
                             break;
-                        case "greaterThan":
+                        case "gt":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue > numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue > numericCellValue;
                             break;
-                        case "greaterThanOrEqual":
+                        case "gte":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue >= numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue >= numericCellValue;
                             break;
-                        case "lessThan":
+                        case "lt":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue < numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue < numericCellValue;
                             break;
-                        case "lessThanOrEqual":
+                        case "lte":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                numericCellValue <= numericValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue <= numericCellValue;
                             break;
-                        case "between":
+                        case "inrange":
                             const rangeValues = value.split(",");
                             const minRangeValue = parseFloat(rangeValues[0]);
                             const maxRangeValue = parseFloat(rangeValues[1]);
@@ -217,7 +224,7 @@ export default function RDDreason({
                                 numericCellValue >= minRangeValue &&
                                 numericCellValue <= maxRangeValue;
                             break;
-                        case "notBetween":
+                        case "notinrange":
                             const rangeValuesNotBetween = value.split(",");
                             const minRangeValueNotBetween = parseFloat(
                                 rangeValuesNotBetween[0]
@@ -251,41 +258,58 @@ export default function RDDreason({
                         // ... (add other boolean type conditions here if necessary)
                     }
                 } else if (type === "select") {
-                    const cellValueLowerCase = cellValue
+                    let cellValueLowerCase = null;
+                    let valLowerCase = null;
+                    
+                    if(typeof cellValue === 'number'){
+                        cellValueLowerCase = cellValue;
+                        valLowerCase = val[col.name];
+                    }else{
+                        cellValueLowerCase = cellValue
                         ?.toString()
                         .toLowerCase();
-                    const valLowerCase = val[col.name]
+                        valLowerCase = val[col.name]
                         ?.toString()
                         .toLowerCase();
-
+                    }
                     switch (operator) {
                         case "eq":
-                            conditionMet =
+                            if(typeof valLowerCase === 'number'){
+                                conditionMet =
+                                    cellValueLowerCase === valLowerCase;
+                            }else{
+                                conditionMet =
                                 cellValue?.length > 0 &&
                                 cellValueLowerCase === valLowerCase;
+                            }
+
                             break;
                         case "neq":
-                            // This case seems to be duplicated in your original code, you might want to check this
-                            conditionMet =
+                            if(typeof valLowerCase === 'number'){
+                                conditionMet =
+                                    cellValueLowerCase !== valLowerCase;
+                            }else{
+                                conditionMet =
                                 cellValue?.length > 0 &&
                                 cellValueLowerCase !== valLowerCase;
+                            }
                             break;
-                        case "inlist":
-                            const listValues = Array.isArray(value)
-                                ? value.map((v) => v.toLowerCase())
-                                : [value?.toLowerCase()];
-                            conditionMet =
-                                cellValue?.length > 0 &&
-                                listValues.includes(valLowerCase);
-                            break;
-                        case "notinlist":
-                            const listValuesNotIn = Array.isArray(value)
-                                ? value.map((v) => v.toLowerCase())
-                                : [value?.toLowerCase()];
-                            conditionMet =
-                                cellValue?.length > 0 &&
-                                !listValuesNotIn.includes(valLowerCase);
-                            break;
+                            case "inlist":
+                                const listValues = Array.isArray(value)
+                                    ? value.map((v) => v.toLowerCase())
+                                    : [value?.toLowerCase()];
+                                conditionMet =
+                                    cellValue?.length > 0 &&
+                                    listValues.includes(valLowerCase);
+                                break;
+                            case "notinlist":
+                                const listValuesNotIn = Array.isArray(value)
+                                    ? value.map((v) => v.toLowerCase())
+                                    : [value?.toLowerCase()];
+                                conditionMet =
+                                    cellValue?.length > 0 &&
+                                    !listValuesNotIn.includes(valLowerCase);
+                                break;
                         // ... (add other select type conditions here if necessary)
                     }
                 } else if (type === "date") {
