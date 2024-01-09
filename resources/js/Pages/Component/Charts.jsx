@@ -1144,7 +1144,7 @@ export default function charts({
 
         // Update filtersKPI
         filtersKPI?.map((item) => {
-            if (item?.name === "DespatchDate") {
+            if (item?.name === "DispatchDate") {
                 item.value = val;
             }
         });
@@ -1188,7 +1188,7 @@ export default function charts({
 
         // Update filtersKPI
         filtersKPI?.map((item) => {
-            if (item?.name === "DespatchDate") {
+            if (item?.name === "DispatchDate") {
                 item.value = val;
             }
         });
@@ -1232,7 +1232,7 @@ export default function charts({
 
         // Update filtersKPI
         filtersKPI?.map((item) => {
-            if (item?.name === "DespatchDate") {
+            if (item?.name === "DispatchDate") {
                 item.value = val;
             }
         });
@@ -1276,7 +1276,7 @@ export default function charts({
 
         // Update filtersKPI
         filtersKPI?.map((item) => {
-            if (item?.name === "DespatchDate") {
+            if (item?.name === "DispatchDate") {
                 item.value = val;
             }
         });
@@ -1320,7 +1320,7 @@ export default function charts({
 
         // Update filtersKPI
         filtersKPI?.map((item) => {
-            if (item?.name === "DespatchDate") {
+            if (item?.name === "DispatchDate") {
                 item.value = val;
             }
         });
@@ -1351,7 +1351,7 @@ export default function charts({
     useEffect(() => {
         let val = {};
         filtersKPI?.map((item) => {
-            if (item?.name == "DespatchDate") {
+            if (item?.name == "DispatchDate") {
                 val = item?.value;
             }
         });
