@@ -68,7 +68,7 @@ export default function SetFailedReasonModal({
         return foundDepartment ? foundDepartment.id : 0;
     }
     const [selectedState, setSelectedState] = useState(states[0]);
-    const [selectedReference, setSelectedReference] = useState(reference[0]);
+    const [selectedReference, setSelectedReference] = useState(reference[1]);
     const [selectedDepartment, setSelectedDepartment] = useState(
         departments[0]
     );
@@ -82,9 +82,9 @@ export default function SetFailedReasonModal({
         if (reason) {
             const state = reason.State;
             const department = reason.Department;
-            let ref = 0;
+            let ref = 1;
             if (reason.Reference == 0) {
-                ref = reason.Reference;
+                ref = 1;
             } else {
                 ref = reason.Reference - 1;
             }

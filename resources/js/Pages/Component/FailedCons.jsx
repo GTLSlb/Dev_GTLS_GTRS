@@ -31,27 +31,6 @@ import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import { canEditFailedConsignments } from "@/permissions";
 
-const people = [
-    {
-        ConsignmentId: 275576,
-        ConsignmentNo: "FOR100312",
-        SenderName: "INDUSTRIAL STEEL",
-        ReceiverName: "R AND A CONCRETING",
-        FromState: "QLD",
-        ToState: "VIC",
-        POD: true,
-        MatchTransit: false,
-        MatchRdd: false,
-    },
-    // More people...
-];
-
-const Roles = ["1", "3", "4", "5"];
-
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
-
 export default function FailedCons({
     PerfData,
     failedReasons,
@@ -116,9 +95,9 @@ export default function FailedCons({
         "Main Cause",
         "Reference",
         "Department",
-        "Resolution",
-        "OccuredAt",
         "Explanation",
+        "OccuredAt",
+        "Resolution",
     ];
     const reasonOptions = failedReasons?.map((reason) => ({
         id: reason.ReasonId,
@@ -567,7 +546,6 @@ export default function FailedCons({
         if (selectedColumns.length === 0) {
             selectedColumns = headers; // Use all columns
         }
-
         // Extract the data for the selected columns
         const data = filteredData.map((person) =>
             selectedColumns.reduce((acc, column) => {
@@ -855,7 +833,16 @@ export default function FailedCons({
                                                                 value="SENDERNAME"
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
-                                                            Sender
+                                                            Sender Name
+                                                        </label>
+                                                        <label>
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
+                                                                value="SENDERREFERENCE"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Sender Reference
                                                         </label>
                                                         <label>
                                                             <input
@@ -873,7 +860,16 @@ export default function FailedCons({
                                                                 value="RECEIVERNAME"
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
-                                                            Receiver
+                                                            Receiver Name
+                                                        </label>
+                                                        <label>
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
+                                                                value="RECEIVER REFERENCE"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Receiver Reference
                                                         </label>
                                                         <label>
                                                             <input
@@ -952,6 +948,15 @@ export default function FailedCons({
                                                             <input
                                                                 type="checkbox"
                                                                 name="column"
+                                                                value="Main Cause"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Main Cause
+                                                        </label>
+                                                        <label className="">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
                                                                 value="State"
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
@@ -992,15 +997,6 @@ export default function FailedCons({
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Occured At
-                                                        </label>
-                                                        <label className="">
-                                                            <input
-                                                                type="checkbox"
-                                                                name="column"
-                                                                value="Main Cause"
-                                                                className="text-dark rounded focus:ring-goldd"
-                                                            />{" "}
-                                                            Main Cause
                                                         </label>
                                                         <label className="">
                                                             <input

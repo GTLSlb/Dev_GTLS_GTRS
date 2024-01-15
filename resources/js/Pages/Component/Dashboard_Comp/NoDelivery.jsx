@@ -80,6 +80,7 @@ export default function NoDelivery({
                     resolve(parsedData);
                 });
                 parsedDataPromise.then((parsedData) => {
+                    console.log("NoDelivery",parsedData)
                     setNoDelData(parsedData);
                     setIsFetching(false);
                 });

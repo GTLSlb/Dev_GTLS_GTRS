@@ -34,7 +34,7 @@ export default function ForgotPassword({ status }) {
     const gtamUrl = window.Laravel.gtamUrl;
     const [isDisabled, setIsDisabled] = useState(false);
     const [timeLeft, setTimeLeft] = useState(60); // 60 seconds cooldown
-
+    const [error, setError] = useState();
     useEffect(() => {
         let timer = null;
 
@@ -70,7 +70,7 @@ export default function ForgotPassword({ status }) {
             })
             .catch((err) => {
                 setEmailLoading(false);
-                console.log(err);
+                setError(err.response.data.Message);
             });
 
         // post(route('password.email'));
@@ -164,6 +164,11 @@ export default function ForgotPassword({ status }) {
             {status && (
                 <div className="mb-4 font-medium text-sm text-green-600">
                     {status}
+                </div>
+            )}
+            {error && (
+                <div className="mb-4 font-medium text-sm text-red-600">
+                    {error}
                 </div>
             )}
             {checkEmail ? (

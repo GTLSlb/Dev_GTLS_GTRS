@@ -93,7 +93,7 @@ export default function TableStructure({
                         <div class="text-center flex justify-center flex-col">
                             {/* <img src={notFound} alt="" className="w-52 h-auto " /> */}
                             <h1 class="text-3xl font-bold text-gray-900">
-                                Congrats! <br /> Nothing To Show
+                                <br /> Nothing To Show
                             </h1>
                         </div>
                     </div>
