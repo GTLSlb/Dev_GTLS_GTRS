@@ -334,7 +334,7 @@ export default function MissingPOD({
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-        
+        console.log(jsonData);
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
@@ -394,7 +394,6 @@ export default function MissingPOD({
                 return acc;
             }, {})
         );
-
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
 
@@ -786,7 +785,16 @@ export default function MissingPOD({
                                                     <input
                                                         type="checkbox"
                                                         name="column"
-                                                        value="SENDERZONE"
+                                                        value="SENDERREFERENCE"
+                                                        className="text-dark rounded focus:ring-goldd"
+                                                    />{" "}
+                                                    Sender Reference
+                                                </label>
+                                                <label>
+                                                    <input
+                                                        type="checkbox"
+                                                        name="column"
+                                                        value="SenderState"
                                                         className="text-dark rounded focus:ring-goldd"
                                                     />{" "}
                                                     Sender State
@@ -804,7 +812,16 @@ export default function MissingPOD({
                                                     <input
                                                         type="checkbox"
                                                         name="column"
-                                                        value="RECEIVERZONE"
+                                                        value="RECEIVER REFERENCE"
+                                                        className="text-dark rounded focus:ring-goldd"
+                                                    />{" "}
+                                                    Receiver Reference
+                                                </label>
+                                                <label>
+                                                    <input
+                                                        type="checkbox"
+                                                        name="column"
+                                                        value="RECEIVERSTATE"
                                                         className="text-dark rounded focus:ring-goldd"
                                                     />{" "}
                                                     Receiver State

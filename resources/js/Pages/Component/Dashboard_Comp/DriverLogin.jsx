@@ -394,6 +394,7 @@ export default function DriverLogin({
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
+        console.log(selectedColumns)
         //DriverData
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
@@ -823,7 +824,7 @@ export default function DriverLogin({
                                                         <input
                                                             type="checkbox"
                                                             name="column"
-                                                            value="Smart SCAN"
+                                                            value="UsedForSmartSCAN"
                                                             className="text-dark rounded focus:ring-goldd"
                                                         />{" "}
                                                         Smart SCAN
@@ -832,7 +833,7 @@ export default function DriverLogin({
                                                         <input
                                                             type="checkbox"
                                                             name="column"
-                                                            value="Smart SCAN Freight"
+                                                            value="UsedForSmartSCANFreight"
                                                             className="text-dark rounded focus:ring-goldd"
                                                         />{" "}
                                                         Smart SCAN Freight
@@ -841,7 +842,7 @@ export default function DriverLogin({
                                                         <input
                                                             type="checkbox"
                                                             name="column"
-                                                            value="Smart SCAN Version"
+                                                            value="SmartSCANSoftwareVersion"
                                                             className="text-dark rounded focus:ring-goldd"
                                                         />{" "}
                                                         Smart SCAN Version
@@ -868,7 +869,7 @@ export default function DriverLogin({
                                                         <input
                                                             type="checkbox"
                                                             name="column"
-                                                            value="VLink"
+                                                            value="UsedForVLink"
                                                             className="text-dark rounded focus:ring-goldd"
                                                         />{" "}
                                                         VLink
@@ -886,7 +887,7 @@ export default function DriverLogin({
                                                         <input
                                                             type="checkbox"
                                                             name="column"
-                                                            value="Device Sim Type"
+                                                            value="MobilityDeviceSimTypes_Description"
                                                             className="text-dark rounded focus:ring-goldd"
                                                         />{" "}
                                                         Device Sim Type
@@ -895,7 +896,7 @@ export default function DriverLogin({
                                                         <input
                                                             type="checkbox"
                                                             name="column"
-                                                            value="Device Model"
+                                                            value="MobilityDeviceModels_Description"
                                                             className="text-dark rounded focus:ring-goldd"
                                                         />{" "}
                                                         Device Model
@@ -904,7 +905,7 @@ export default function DriverLogin({
                                                         <input
                                                             type="checkbox"
                                                             name="column"
-                                                            value="Device Makes"
+                                                            value="MobilityDeviceMakes_Description"
                                                             className="text-dark rounded focus:ring-goldd"
                                                         />{" "}
                                                         Device Makes

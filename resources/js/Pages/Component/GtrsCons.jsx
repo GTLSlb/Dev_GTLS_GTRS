@@ -12,7 +12,7 @@ import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import moment from "moment";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
-import { useEffect,useRef } from "react";
+import { useEffect, useRef } from "react";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -27,7 +27,6 @@ export default function GtrsCons({
     setLastIndex,
     accData,
 }) {
-    
     window.moment = moment;
     const [filteredData, setFilteredData] = useState(consData);
     const handleClick = (coindex) => {
@@ -54,23 +53,24 @@ export default function GtrsCons({
     ];
 
     const gridRef = useRef(null);
-
     function handleFilterTable() {
         // Get the selected columns or use all columns if none are selected
         let selectedColumns = Array.from(
             document.querySelectorAll('input[name="column"]:checked')
         ).map((checkbox) => checkbox.value);
-        
+
         let allHeaderColumns = gridRef.current.visibleColumns.map((column) => ({
             name: column.name,
             value: column.computedFilterValue?.value,
             type: column.computedFilterValue?.type,
             operator: column.computedFilterValue?.operator,
         }));
-        let selectedColVal = allHeaderColumns.filter(col => col.name !== "edit");
+        let selectedColVal = allHeaderColumns.filter(
+            (col) => col.name !== "edit"
+        );
 
         const filterValue = [];
-        filteredData?.map((val) =>{
+        filteredData?.map((val) => {
             let isMatch = true;
 
             for (const col of selectedColVal) {
@@ -131,7 +131,7 @@ export default function GtrsCons({
                             break;
                         // ... (add other string type conditions here)
                     }
-                }else if (type === "number") {
+                } else if (type === "number") {
                     const numericCellValue = parseFloat(cellValue);
                     const numericValue = parseFloat(val[col.name]);
 
@@ -253,43 +253,72 @@ export default function GtrsCons({
                         // ... (add other select type conditions here if necessary)
                     }
                 } else if (type === "date") {
-                    const dateValue = moment(val[col.name].replace("T", " "), "YYYY-MM-DD HH:mm:ss");
-                    const hasStartDate = cellValue?.start && cellValue.start.length > 0;
-                    const hasEndDate = cellValue?.end && cellValue.end.length > 0;
-                    const dateCellValueStart = hasStartDate ? moment(cellValue.start, "DD-MM-YYYY") : null;
-                    const dateCellValueEnd = hasEndDate ? moment(cellValue.end, "DD-MM-YYYY").endOf('day') : null;
-                
+                    const dateValue = moment(
+                        val[col.name].replace("T", " "),
+                        "YYYY-MM-DD HH:mm:ss"
+                    );
+                    const hasStartDate =
+                        cellValue?.start && cellValue.start.length > 0;
+                    const hasEndDate =
+                        cellValue?.end && cellValue.end.length > 0;
+                    const dateCellValueStart = hasStartDate
+                        ? moment(cellValue.start, "DD-MM-YYYY")
+                        : null;
+                    const dateCellValueEnd = hasEndDate
+                        ? moment(cellValue.end, "DD-MM-YYYY").endOf("day")
+                        : null;
+
                     switch (operator) {
                         case "after":
-                            conditionMet = hasStartDate && dateCellValueStart.isAfter(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isAfter(dateValue);
                             break;
                         case "afterOrOn":
-                            conditionMet = hasStartDate && dateCellValueStart.isSameOrAfter(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSameOrAfter(dateValue);
                             break;
                         case "before":
-                            conditionMet = hasStartDate && dateCellValueStart.isBefore(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isBefore(dateValue);
                             break;
                         case "beforeOrOn":
-                            conditionMet = hasStartDate && dateCellValueStart.isSameOrBefore(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSameOrBefore(dateValue);
                             break;
                         case "eq":
-                            conditionMet = hasStartDate && dateCellValueStart.isSame(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSame(dateValue);
                             break;
                         case "neq":
-                            conditionMet = hasStartDate && !dateCellValueStart.isSame(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                !dateCellValueStart.isSame(dateValue);
                             break;
                         case "inrange":
-                            conditionMet = (!hasStartDate || dateValue.isSameOrAfter(dateCellValueStart)) &&
-                                           (!hasEndDate || dateValue.isSameOrBefore(dateCellValueEnd));
+                            conditionMet =
+                                (!hasStartDate ||
+                                    dateValue.isSameOrAfter(
+                                        dateCellValueStart
+                                    )) &&
+                                (!hasEndDate ||
+                                    dateValue.isSameOrBefore(dateCellValueEnd));
                             break;
                         case "notinrange":
-                            conditionMet = (hasStartDate && dateValue.isBefore(dateCellValueStart)) ||
-                                           (hasEndDate && dateValue.isAfter(dateCellValueEnd));
+                            conditionMet =
+                                (hasStartDate &&
+                                    dateValue.isBefore(dateCellValueStart)) ||
+                                (hasEndDate &&
+                                    dateValue.isAfter(dateCellValueEnd));
                             break;
                         // ... (add other date type conditions here if necessary)
                     }
                 }
-                
+
                 if (!conditionMet) {
                     isMatch = false;
                     break;
@@ -301,7 +330,9 @@ export default function GtrsCons({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
-            selectedColVal = allHeaderColumns.filter(col => col.name !== "edit"); // Use all columns
+            selectedColVal = allHeaderColumns.filter(
+                (col) => col.name !== "edit"
+            ); // Use all columns
         } else {
             allHeaderColumns.map((header) => {
                 selectedColumns.map((column) => {
@@ -318,7 +349,7 @@ export default function GtrsCons({
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-        
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
@@ -426,7 +457,7 @@ export default function GtrsCons({
     const receiverZoneOptions = createNewLabelObjects(consData, "ReceiverZone");
     const serviceOptions = createNewLabelObjects(consData, "Service");
     const statusOptions = createNewLabelObjects(consData, "Status");
-    
+
     const groups = [
         {
             name: "senderDetails",
@@ -799,6 +830,15 @@ export default function GtrsCons({
                                             <input
                                                 type="checkbox"
                                                 name="column"
+                                                value="SenderReference"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            Sender Reference
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
                                                 value="Receiver Name"
                                                 className="text-dark rounded focus:ring-goldd"
                                             />{" "}
@@ -821,6 +861,15 @@ export default function GtrsCons({
                                                 className="text-dark rounded focus:ring-goldd"
                                             />{" "}
                                             Receiver Suburb
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
+                                                value="ReceiverReference"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            Receiver Reference
                                         </label>
                                         <label>
                                             <input

@@ -385,6 +385,7 @@ export default function SafetyRepTable({
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
+        console.log(selectedColumns)
         const filterValue = jsonData?.filterValue;
         //safetyData
         const data = filterValue.map((person) =>
@@ -846,7 +847,7 @@ export default function SafetyRepTable({
                                                             <input
                                                                 type="checkbox"
                                                                 name="column"
-                                                                value="Con No"
+                                                                value="ConsNo"
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Con No
@@ -855,7 +856,7 @@ export default function SafetyRepTable({
                                                             <input
                                                                 type="checkbox"
                                                                 name="column"
-                                                                value="Main Cause"
+                                                                value="CAUSE"
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Main Cause

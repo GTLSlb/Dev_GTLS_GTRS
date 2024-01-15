@@ -850,7 +850,7 @@ export default function RDDreason({
         },
         {
             name: "ChangeAt",
-            header: "Change At",
+            header: "Changed At",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
@@ -1007,7 +1007,7 @@ export default function RDDreason({
                                                             <input
                                                                 type="checkbox"
                                                                 name="column"
-                                                                value="AccountName"
+                                                                value="AccountNumber"
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Account Name
@@ -1020,6 +1020,15 @@ export default function RDDreason({
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Sender Name
+                                                        </label>
+                                                        <label>
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
+                                                                value="SenderReference"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Sender Reference
                                                         </label>
                                                         <label>
                                                             <input
@@ -1061,11 +1070,20 @@ export default function RDDreason({
                                                             <input
                                                                 type="checkbox"
                                                                 name="column"
+                                                                value="ReceiverReference"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Receiver Reference
+                                                        </label>
+                                                        <label className="">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
                                                                 value="ReceiverAddress"
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Receiver Address
-                                                        </label>
+                                                        </label>                       
                                                         <label className="">
                                                             <input
                                                                 type="checkbox"
@@ -1136,7 +1154,7 @@ export default function RDDreason({
                                                                 valuef="ChangeAt"
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
-                                                            Change At
+                                                            Changed At
                                                         </label>
                                                         <label className="">
                                                             <input

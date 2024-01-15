@@ -399,6 +399,7 @@ export default function AdditionalCharges({
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
+        console.log(selectedColumns)
         const filterValue = jsonData?.filterValue;
         //AdditionalData
         const data = filterValue.map((person) =>
@@ -753,6 +754,24 @@ export default function AdditionalCharges({
                                                             className="text-dark focus:ring-goldd rounded "
                                                         />{" "}
                                                         Consignment Number
+                                                    </label>
+                                                    <label>
+                                                        <input
+                                                            type="checkbox"
+                                                            name="column"
+                                                            value="SenderReference"
+                                                            className="text-dark rounded focus:ring-goldd"
+                                                        />{" "}
+                                                        Sender Reference
+                                                    </label>
+                                                    <label>
+                                                        <input
+                                                            type="checkbox"
+                                                            name="column"
+                                                            value="ReceiverReference"
+                                                            className="text-dark rounded focus:ring-goldd"
+                                                        />{" "}
+                                                        Receiver Reference
                                                     </label>
                                                     <label>
                                                         <input

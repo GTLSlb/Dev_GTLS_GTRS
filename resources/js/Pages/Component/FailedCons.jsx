@@ -808,8 +808,8 @@ export default function FailedCons({
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
+        console.log(selectedColumns)
         const filterValue = jsonData?.filterValue;
-console.log(filterValue)
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column?.replace(/\s+/g, "");
@@ -894,7 +894,6 @@ console.log(filterValue)
                         const failedReason = failedReasons?.find(
                             (reason) => reason.ReasonId === person.FailedReason
                         );
-                        console.log(failedReason?.ReasonName)
                         acc[columnKey] = failedReason?.ReasonName;
                     } else if (columnKey === "SenderState") {
                         acc[columnKey] = person["SenderState"];
@@ -1171,7 +1170,7 @@ console.log(filterValue)
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Delivery Required
-                                                            DateTime
+                                                            Date Time
                                                         </label>
                                                         <label>
                                                             <input
@@ -1204,7 +1203,7 @@ console.log(filterValue)
                                                             <input
                                                                 type="checkbox"
                                                                 name="column"
-                                                                value="Reason"
+                                                                value="FailedReason"
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Reason
@@ -1213,7 +1212,7 @@ console.log(filterValue)
                                                             <input
                                                                 type="checkbox"
                                                                 name="column"
-                                                                value="Main Cause"
+                                                                value="FailedReasonDesc"
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Main Cause
