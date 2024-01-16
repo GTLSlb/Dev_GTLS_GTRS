@@ -530,12 +530,14 @@ export default function FailedCons({
             name: column.name,
             value: column.computedFilterValue?.value,
             type: column.computedFilterValue?.type,
+            label: column.computedHeader,
             operator: column.computedFilterValue?.operator,
         }));
-        let selectedColVal = allHeaderColumns.filter(
-            (col) => col.name !== "edit"
-        );
 
+        let selectedColVal = allHeaderColumns.filter(
+            (col) => col?.label?.toString().toLowerCase() !== "edit"
+        );
+        
         const filterValue = [];
         filteredData?.map((val) => {
             let isMatch = true;
@@ -703,8 +705,15 @@ export default function FailedCons({
                             break;
                         case "inlist":
                             const listValues = Array.isArray(value)
-                                ? value.map((v) => v.toLowerCase())
+                                ? value.map((v) => {
+                                    if (typeof v === 'string'){
+                                        return v.toLowerCase()
+                                    }else{
+                                        return v.toString()
+                                    }
+                                })
                                 : [value?.toLowerCase()];
+                                
                             conditionMet =
                                 cellValue?.length > 0 &&
                                 listValues.includes(valLowerCase);
@@ -797,9 +806,19 @@ export default function FailedCons({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
+        // Use all columns except edit
             selectedColVal = allHeaderColumns.filter(
-                (col) => col.name !== "edit"
-            ); // Use all columns
+                (col) => col?.label?.toString().toLowerCase() !== "edit"
+            );
+            selectedColVal.push(
+                {
+                    "name": "Resolution",
+                    "value": "",
+                    "type": "string",
+                    "label": "Resolution",
+                    "operator": "contains"
+                }
+            ) 
         } else {
             allHeaderColumns.map((header) => {
                 selectedColumns.map((column) => {
@@ -812,6 +831,7 @@ export default function FailedCons({
                 });
             });
         }
+        console.log("selectedColVal",selectedColVal)
         return { selectedColumns: selectedColVal, filterValue: filterValue };
     }
     function handleDownloadExcel() {
@@ -834,7 +854,6 @@ export default function FailedCons({
             FailedReasonDesc: "Main Cause",
             OccuredAt: "Occured At",
             FailedNote: "Explanation",
-            null: "Resolution",
         };
 
         const selectedColumns = jsonData?.selectedColumns.map(

@@ -94,7 +94,7 @@ export default function RDDreason({
         "New Rdd",
         "Reason",
         "Reason Desc",
-        "ChangeAt",
+        "ChangedAt",
         "ChangedBy",
     ];
     const gridRef = useRef(null);
@@ -108,10 +108,14 @@ export default function RDDreason({
         let allHeaderColumns = gridRef.current.visibleColumns.map((column) => ({
             name: column.name,
             value: column.computedFilterValue?.value,
+            label: column.computedHeader,
             type: column.computedFilterValue?.type,
             operator: column.computedFilterValue?.operator,
         }));
-        let selectedColVal = allHeaderColumns.filter(col => col.name !== "edit");
+       
+        let selectedColVal = allHeaderColumns.filter(
+            (col) => col?.label?.toString().toLowerCase() !== "edit"
+        );
 
         const filterValue = [];
         filteredData?.map((val) =>{
@@ -362,7 +366,10 @@ export default function RDDreason({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
-            selectedColVal = allHeaderColumns.filter(col => col.name !== "edit"); // Use all columns
+            // Use all columns except edit
+            selectedColVal = allHeaderColumns.filter(
+                (col) => col?.label?.toString().toLowerCase() !== "edit"
+            );
         } else {
             allHeaderColumns.map((header) => {
                 selectedColumns.map((column) => {
@@ -375,6 +382,8 @@ export default function RDDreason({
                 });
             });
         }
+        console.log("selectedColumns",selectedColumns);
+        console.log("allHeaderColumns",allHeaderColumns);
         return { selectedColumns: selectedColVal, filterValue: filterValue };
     }
 
@@ -402,10 +411,10 @@ export default function RDDreason({
                             ).format("DD-MM-YYYY h:mm A") || "";
                     } else if (column === "Account Name") {
                         acc[columnKey] = person.AccountNumber;
-                    } else if (column === "ChangeAt") {
+                    } else if (column === "ChangedAt") {
                         acc[columnKey] =
                             moment(
-                                person["ChangeAt"],
+                                person["ChangedAt"],
                                 "YYYY-MM-DDTHH:mm:ss"
                             ).format("DD-MM-YYYY h:mm A") || "";
                     } else if (column === "Old Rdd") {
@@ -1151,7 +1160,7 @@ export default function RDDreason({
                                                             <input
                                                                 type="checkbox"
                                                                 name="column"
-                                                                valuef="ChangeAt"
+                                                                value="ChangedAt"
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Changed At
