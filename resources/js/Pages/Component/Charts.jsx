@@ -255,8 +255,8 @@ export default function charts({
             operator: "inrange",
             type: "date",
             value: {
-                start: minDispatchDate,
-                end: maxDispatchDate,
+                start: "",
+                end: "",
             },
         },
         {

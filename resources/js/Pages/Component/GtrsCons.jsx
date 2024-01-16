@@ -35,22 +35,6 @@ export default function GtrsCons({
         setactiveCon(coindex);
     };
     const [selected, setSelected] = useState({});
-    const headers = [
-        "Consignment No",
-        "Service",
-        "Account Name",
-        "Despatch Date",
-        "Status",
-        "Sender Name",
-        "Sender State",
-        "Sender Suburb",
-        "Sender Zone",
-        "Receiver Name",
-        "Receiver State",
-        "Receiver Suburb",
-        "Receiver Zone",
-        "POD",
-    ];
 
     const gridRef = useRef(null);
     function handleFilterTable() {
@@ -350,8 +334,28 @@ export default function GtrsCons({
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
 
+        const columnMapping = {
+            ConsignmentNo: "Consignment No",
+            AccountName: "Account Name",
+            DespatchDate: "Despatch Date",
+            SenderName: "Sender Name",
+            SenderState: "Sender State",
+            SenderSuburb: "Sender Suburb",
+            SenderZone: "Sender Zone",
+            SenderReference: "Sender Reference",
+            ReceiverName: "Receiver Name",
+            ReceiverState: "Receiver State",
+            ReceiverSuburb: "Receiver Suburb",
+            ReceiverReference: "Receiver Reference",
+            ReceiverZone: "Receiver Zone",
+        };
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
+        );
+        // Apply the mapping to the selected columns
+        const newSelectedColumns = selectedColumns.map(
+            (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
@@ -384,8 +388,8 @@ export default function GtrsCons({
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
 
-        // Apply custom styles to the header row
-        const headerRow = worksheet.addRow(selectedColumns);
+        // Apply custom styles to the new header row
+        const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
         headerRow.fill = {
             type: "pattern",

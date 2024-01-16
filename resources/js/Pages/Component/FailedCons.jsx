@@ -77,28 +77,7 @@ export default function FailedCons({
     useEffect(() => {
         setFilteredData(filterData());
     }, [accData]);
-    const headers = [
-        "Consignemnt Number",
-        "Status",
-        "Sender Name",
-        "Sender State",
-        "Receiver Name",
-        "Receiver State",
-        "Service",
-        "KPI DateTime",
-        "RDD",
-        "Arrived Date Time",
-        "Delivered Datetime",
-        "POD",
-        "State",
-        "Reason",
-        "Main Cause",
-        "Reference",
-        "Department",
-        "Explanation",
-        "OccuredAt",
-        "Resolution",
-    ];
+
     const reasonOptions = failedReasons?.map((reason) => ({
         id: reason.ReasonId,
         label: reason.ReasonName,
@@ -541,21 +520,24 @@ export default function FailedCons({
     const gridRef = useRef(null);
 
     function handleFilterTable() {
+        
         // Get the selected columns or use all columns if none are selected
         let selectedColumns = Array.from(
             document.querySelectorAll('input[name="column"]:checked')
         ).map((checkbox) => checkbox.value);
-        
+
         let allHeaderColumns = gridRef.current.visibleColumns.map((column) => ({
             name: column.name,
             value: column.computedFilterValue?.value,
             type: column.computedFilterValue?.type,
             operator: column.computedFilterValue?.operator,
         }));
-        let selectedColVal = allHeaderColumns.filter(col => col.name !== "edit");
+        let selectedColVal = allHeaderColumns.filter(
+            (col) => col.name !== "edit"
+        );
 
         const filterValue = [];
-        filteredData?.map((val) =>{
+        filteredData?.map((val) => {
             let isMatch = true;
 
             for (const col of selectedColVal) {
@@ -738,43 +720,72 @@ export default function FailedCons({
                         // ... (add other select type conditions here if necessary)
                     }
                 } else if (type === "date") {
-                    const dateValue = moment(val[col.name].replace("T", " "), "YYYY-MM-DD HH:mm:ss");
-                    const hasStartDate = cellValue?.start && cellValue.start.length > 0;
-                    const hasEndDate = cellValue?.end && cellValue.end.length > 0;
-                    const dateCellValueStart = hasStartDate ? moment(cellValue.start, "DD-MM-YYYY") : null;
-                    const dateCellValueEnd = hasEndDate ? moment(cellValue.end, "DD-MM-YYYY").endOf('day') : null;
-                
+                    const dateValue = moment(
+                        val[col.name].replace("T", " "),
+                        "YYYY-MM-DD HH:mm:ss"
+                    );
+                    const hasStartDate =
+                        cellValue?.start && cellValue.start.length > 0;
+                    const hasEndDate =
+                        cellValue?.end && cellValue.end.length > 0;
+                    const dateCellValueStart = hasStartDate
+                        ? moment(cellValue.start, "DD-MM-YYYY")
+                        : null;
+                    const dateCellValueEnd = hasEndDate
+                        ? moment(cellValue.end, "DD-MM-YYYY").endOf("day")
+                        : null;
+
                     switch (operator) {
                         case "after":
-                            conditionMet = hasStartDate && dateCellValueStart.isAfter(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isAfter(dateValue);
                             break;
                         case "afterOrOn":
-                            conditionMet = hasStartDate && dateCellValueStart.isSameOrAfter(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSameOrAfter(dateValue);
                             break;
                         case "before":
-                            conditionMet = hasStartDate && dateCellValueStart.isBefore(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isBefore(dateValue);
                             break;
                         case "beforeOrOn":
-                            conditionMet = hasStartDate && dateCellValueStart.isSameOrBefore(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSameOrBefore(dateValue);
                             break;
                         case "eq":
-                            conditionMet = hasStartDate && dateCellValueStart.isSame(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSame(dateValue);
                             break;
                         case "neq":
-                            conditionMet = hasStartDate && !dateCellValueStart.isSame(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                !dateCellValueStart.isSame(dateValue);
                             break;
                         case "inrange":
-                            conditionMet = (!hasStartDate || dateValue.isSameOrAfter(dateCellValueStart)) &&
-                                           (!hasEndDate || dateValue.isSameOrBefore(dateCellValueEnd));
+                            conditionMet =
+                                (!hasStartDate ||
+                                    dateValue.isSameOrAfter(
+                                        dateCellValueStart
+                                    )) &&
+                                (!hasEndDate ||
+                                    dateValue.isSameOrBefore(dateCellValueEnd));
                             break;
                         case "notinrange":
-                            conditionMet = (hasStartDate && dateValue.isBefore(dateCellValueStart)) ||
-                                           (hasEndDate && dateValue.isAfter(dateCellValueEnd));
+                            conditionMet =
+                                (hasStartDate &&
+                                    dateValue.isBefore(dateCellValueStart)) ||
+                                (hasEndDate &&
+                                    dateValue.isAfter(dateCellValueEnd));
                             break;
                         // ... (add other date type conditions here if necessary)
                     }
                 }
-                
+
                 if (!conditionMet) {
                     isMatch = false;
                     break;
@@ -786,7 +797,9 @@ export default function FailedCons({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
-            selectedColVal = allHeaderColumns.filter(col => col.name !== "edit"); // Use all columns
+            selectedColVal = allHeaderColumns.filter(
+                (col) => col.name !== "edit"
+            ); // Use all columns
         } else {
             allHeaderColumns.map((header) => {
                 selectedColumns.map((column) => {
@@ -801,14 +814,35 @@ export default function FailedCons({
         }
         return { selectedColumns: selectedColVal, filterValue: filterValue };
     }
-
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-        
+        const columnMapping = {
+            CONSIGNMENTNUMBER: "Consignemnt Number",
+            STATUS: "Status",
+            SENDERNAME: "Sender Name",
+            SENDERREFERENCE: "Sender Reference",
+            SenderState: "Sender State",
+            RECEIVERNAME: "Receiver Name",
+            "RECEIVER REFERENCE": "Receiver Reference",
+            RECEIVERSTATE: "Receiver State",
+            SERVICE: "Service",
+            "KPI DATETIME": "KPI DateTime",
+            DELIVERYREQUIREDDATETIME: "RDD",
+            ARRIVEDDATETIME: "Arrived Date Time",
+            DELIVEREDDATETIME: "Delivered Datetime",
+            FailedReason: "Reason",
+            FailedReasonDesc: "Main Cause",
+            OccuredAt: "Occured At",
+            FailedNote: "Explanation",
+            null: "Resolution",
+        };
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
-        console.log(selectedColumns)
+        const newSelectedColumns = selectedColumns.map(
+            (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
+        );
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
@@ -829,7 +863,7 @@ export default function FailedCons({
                                       person["KPI DATETIME"].replace("T", " "),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY h:mm A");
-                    } else if (column.toUpperCase() === "ARRIVED DATE TIME") {
+                    } else if (column.toUpperCase() === "ARRIVEDDATETIME") {
                         acc[columnKey] =
                             moment(
                                 person["ARRIVEDDATETIME"].replace("T", " "),
@@ -843,7 +877,9 @@ export default function FailedCons({
                                       ),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY h:mm A");
-                    } else if (column.toUpperCase() === "RDD") {
+                    } else if (
+                        column.toUpperCase() === "DELIVERYREQUIREDDATETIME"
+                    ) {
                         acc[columnKey] =
                             moment(
                                 person["DELIVERYREQUIREDDATETIME"].replace(
@@ -859,7 +895,7 @@ export default function FailedCons({
                                       ].replace("T", " "),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY h:mm A");
-                    } else if (column.toUpperCase() === "DELIVERED DATETIME") {
+                    } else if (column.toUpperCase() === "DELIVEREDDATETIME") {
                         acc[columnKey] =
                             moment(
                                 person["DELIVEREDDATETIME"].replace("T", " "),
@@ -890,7 +926,6 @@ export default function FailedCons({
                     } else if (column === "Consignemnt Number") {
                         acc[columnKey] = person["CONSIGNMENTNUMBER"];
                     } else if (columnKey === "FailedReason") {
-                        
                         const failedReason = failedReasons?.find(
                             (reason) => reason.ReasonId === person.FailedReason
                         );
@@ -932,8 +967,8 @@ export default function FailedCons({
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
 
-        // Apply custom styles to the header row
-        const headerRow = worksheet.addRow(selectedColumns);
+        // Apply custom styles to the new header row
+        const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
         headerRow.fill = {
             type: "pattern",

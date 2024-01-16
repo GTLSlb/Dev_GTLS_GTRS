@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useEffect,useRef } from "react";
+import { useEffect, useRef } from "react";
 import moment from "moment";
 import { saveAs } from "file-saver";
 import ExcelJS from "exceljs";
@@ -37,6 +37,7 @@ export default function KPI({
     accData,
     kpireasonsData,
 }) {
+    console.log(KPIData)
     window.moment = moment;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -99,12 +100,14 @@ export default function KPI({
         setLastIndex(2);
         setactiveCon(coindex);
     };
-    const [filteredData, setFilteredData] = useState(KPIData.map((item) => {
-        if (item?.TransitDays) {
-          item.TransitDays = parseInt(item.TransitDays);
-        }
-        return item;
-      }));
+    const [filteredData, setFilteredData] = useState(
+        KPIData.map((item) => {
+            if (item?.TransitDays) {
+                item.TransitDays = parseInt(item.TransitDays);
+            }
+            return item;
+        })
+    );
     const filterData = () => {
         const intArray = accData?.map((str) => {
             const intValue = parseInt(str);
@@ -119,29 +122,17 @@ export default function KPI({
         });
         const filteredKPI = filtered.map((item) => {
             if (item?.TransitDays) {
-              item.TransitDays = parseInt(item.TransitDays);
+                item.TransitDays = parseInt(item.TransitDays);
             }
             return item;
-          });
-        
+        });
+
         return filteredKPI;
     };
     useEffect(() => {
         setFilteredData(filterData());
     }, [accData, KPIData]);
     const [isFetching, setIsFetching] = useState();
-    const headers = [
-        "Consignment No",
-        "Sender Name",
-        "Sender Reference",
-        "Sender State",
-        "Receiver Name",
-        "Receiver Reference",
-        "Receiver State",
-        "Dispatch Date",
-        "RDD",
-        "Delivery Date",
-    ];
     const [selected, setSelected] = useState([]);
     const gridRef = useRef(null);
     function handleFilterTable() {
@@ -149,19 +140,21 @@ export default function KPI({
         let selectedColumns = Array.from(
             document.querySelectorAll('input[name="column"]:checked')
         ).map((checkbox) => checkbox.value);
-        
+
         let allHeaderColumns = gridRef.current.visibleColumns.map((column) => ({
             name: column.name,
             value: column.computedFilterValue?.value,
             type: column.computedFilterValue?.type,
             operator: column.computedFilterValue?.operator,
         }));
-        let selectedColVal = allHeaderColumns.filter(col => col.name !== "edit");
+        console.log("allHeaderColumns",allHeaderColumns)
+        let selectedColVal = allHeaderColumns.filter(
+            (col) => col.name !== "edit"
+        );
 
         const filterValue = [];
-        filteredData?.map((val) =>{
+        filteredData?.map((val) => {
             let isMatch = true;
-
             for (const col of selectedColVal) {
                 const { name, value, type, operator } = col;
                 const cellValue = value;
@@ -342,43 +335,72 @@ export default function KPI({
                         // ... (add other select type conditions here if necessary)
                     }
                 } else if (type === "date") {
-                    const dateValue = moment(val[col.name].replace("T", " "), "YYYY-MM-DD HH:mm:ss");
-                    const hasStartDate = cellValue?.start && cellValue.start.length > 0;
-                    const hasEndDate = cellValue?.end && cellValue.end.length > 0;
-                    const dateCellValueStart = hasStartDate ? moment(cellValue.start, "DD-MM-YYYY") : null;
-                    const dateCellValueEnd = hasEndDate ? moment(cellValue.end, "DD-MM-YYYY").endOf('day') : null;
-                
+                    const dateValue = moment(
+                        val[col.name].replace("T", " "),
+                        "YYYY-MM-DD HH:mm:ss"
+                    );
+                    const hasStartDate =
+                        cellValue?.start && cellValue.start.length > 0;
+                    const hasEndDate =
+                        cellValue?.end && cellValue.end.length > 0;
+                    const dateCellValueStart = hasStartDate
+                        ? moment(cellValue.start, "DD-MM-YYYY")
+                        : null;
+                    const dateCellValueEnd = hasEndDate
+                        ? moment(cellValue.end, "DD-MM-YYYY").endOf("day")
+                        : null;
+
                     switch (operator) {
                         case "after":
-                            conditionMet = hasStartDate && dateCellValueStart.isAfter(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isAfter(dateValue);
                             break;
                         case "afterOrOn":
-                            conditionMet = hasStartDate && dateCellValueStart.isSameOrAfter(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSameOrAfter(dateValue);
                             break;
                         case "before":
-                            conditionMet = hasStartDate && dateCellValueStart.isBefore(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isBefore(dateValue);
                             break;
                         case "beforeOrOn":
-                            conditionMet = hasStartDate && dateCellValueStart.isSameOrBefore(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSameOrBefore(dateValue);
                             break;
                         case "eq":
-                            conditionMet = hasStartDate && dateCellValueStart.isSame(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSame(dateValue);
                             break;
                         case "neq":
-                            conditionMet = hasStartDate && !dateCellValueStart.isSame(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                !dateCellValueStart.isSame(dateValue);
                             break;
                         case "inrange":
-                            conditionMet = (!hasStartDate || dateValue.isSameOrAfter(dateCellValueStart)) &&
-                                           (!hasEndDate || dateValue.isSameOrBefore(dateCellValueEnd));
+                            conditionMet =
+                                (!hasStartDate ||
+                                    dateValue.isSameOrAfter(
+                                        dateCellValueStart
+                                    )) &&
+                                (!hasEndDate ||
+                                    dateValue.isSameOrBefore(dateCellValueEnd));
                             break;
                         case "notinrange":
-                            conditionMet = (hasStartDate && dateValue.isBefore(dateCellValueStart)) ||
-                                           (hasEndDate && dateValue.isAfter(dateCellValueEnd));
+                            conditionMet =
+                                (hasStartDate &&
+                                    dateValue.isBefore(dateCellValueStart)) ||
+                                (hasEndDate &&
+                                    dateValue.isAfter(dateCellValueEnd));
                             break;
                         // ... (add other date type conditions here if necessary)
                     }
                 }
-                
+
                 if (!conditionMet) {
                     isMatch = false;
                     break;
@@ -390,7 +412,9 @@ export default function KPI({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
-            selectedColVal = allHeaderColumns.filter(col => col.name !== "edit"); // Use all columns
+            selectedColVal = allHeaderColumns.filter(
+                (col) => col.name !== "edit"
+            ); // Use all columns
         } else {
             allHeaderColumns.map((header) => {
                 selectedColumns.map((column) => {
@@ -407,10 +431,30 @@ export default function KPI({
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-        
+
+        const columnMapping = {
+            ConsignmentNo: "Consignment No",
+            SenderName: "Sender Name",
+            SenderReference: "Sender Reference",
+            SenderState: "Sender State",
+            ReceiverName: "Receiver Name",
+            ReceiverReference: "Receiver Reference",
+            ReceiverState: "Receiver State",
+            ReceiverPostCode: "Receiver Postal Code",
+            DispatchDate: "Dispatch Date",
+            DeliveryDate: "Delivery Date",
+            TransitDays: "Transit Days",
+            CalculatedDelDate: "Calculated Delivery Date",
+            ReasonId: "Reason",
+        };
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
+        const newSelectedColumns = selectedColumns.map(
+            (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
+        );
+
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
@@ -439,7 +483,7 @@ export default function KPI({
                         } else if (person[columnKey] === 2) {
                             acc[columnKey] = "False";
                         }
-                    } else if (column.replace(/\s+/g, "") === "DeliveryDate") {
+                    }  else if (column.replace(/\s+/g, "") === "DeliveryDate") {
                         acc[columnKey] =
                             moment(
                                 person["DeliveryDate"].replace("T", " "),
@@ -480,8 +524,8 @@ export default function KPI({
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
 
-        // Apply custom styles to the header row
-        const headerRow = worksheet.addRow(selectedColumns);
+        // Apply custom styles to the new header row
+        const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
         headerRow.fill = {
             type: "pattern",
@@ -601,7 +645,6 @@ export default function KPI({
         },
     ];
 
-    const Roles = ["1", "3", "4", "5"];
     const handleEditClick = (reason) => {
         setReason(reason);
         setIsModalOpen(!isModalOpen);
@@ -735,10 +778,6 @@ export default function KPI({
             textAlign: "center",
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
-            filterEditorProps: {
-                minDate: minDispatchDate,
-                maxDate: maxDispatchDate,
-            },
             render: ({ value, cellProps }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
@@ -891,14 +930,11 @@ export default function KPI({
             }, 1000);
         }
     };
-
     const [statusMessage, setStatusMessage] = useState("");
     const messageDisplayTime = 3000; // Time in milliseconds (3000ms = 3 seconds)
-
     const clearStatusMessage = () => {
         setStatusMessage("");
     };
-
     function CalculateKPI() {
         setLoading(true);
         axios
@@ -943,7 +979,6 @@ export default function KPI({
                 }
             });
     }
-
     return (
         <div>
             {/* <Sidebar /> */}
