@@ -122,23 +122,6 @@ export default function DriverLogin({
         let selectedColVal = allHeaderColumns.filter(
             (col) => col.name !== "edit"
         );
-        const testing = [
-            {
-                MobilityDeviceID: 101,
-                Name: "Melbourne",
-                DeviceCode: "CHRIS_MOBILE",
-                UsedForSmartSCAN: true,
-                SmartSCANSoftwareVersion: "",
-                UsedForSmartSCANFreight: false,
-                Description: "Optus",
-                LastActiveUTC: "2023-09-25 18:53:10",
-                UsedForVLink: true,
-                SoftwareVersion: "22.21.0",
-                MobilityDeviceSimTypes_Description: "",
-                MobilityDeviceModels_Description: "MWHJ2X/A",
-                MobilityDeviceMakes_Description: "IPHONE",
-            },
-        ];
         const filterValue = [];
         DriverData?.forEach((val) => {
             let isMatch = true;
@@ -391,11 +374,25 @@ export default function DriverLogin({
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
 
+        const columnMapping = {
+            "ConsignmentNo": "Consignment No",
+            "SenderReference": "Sender Reference",
+            "ReceiverReference": "Receiver Reference",
+            "Quantity": "Quantity",
+            "TotalCharge": "Total Charge",
+            "CodeRef": "Code Ref", 
+            "DescriptionRef": "Description Ref",
+            "FuelLevyAmountRef": "Fuel Levy Amount Ref",
+            "DespatchDateTime": "Despatch DateTime",
+        };
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
-        console.log(selectedColumns)
-        //DriverData
+        const newSelectedColumns = selectedColumns.map(
+            (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
+        );
+     
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
@@ -445,7 +442,7 @@ export default function DriverLogin({
         const worksheet = workbook.addWorksheet("Sheet1");
 
         // Apply custom styles to the header row
-        const headerRow = worksheet.addRow(selectedColumns);
+        const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
         headerRow.fill = {
             type: "pattern",

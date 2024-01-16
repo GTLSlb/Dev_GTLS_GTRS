@@ -33,7 +33,6 @@ export default function RDDreason({
     rddReasons,
     accData,
 }) {
-  
     window.moment = moment;
 
     const updateLocalData = (id, reason, note) => {
@@ -77,26 +76,7 @@ export default function RDDreason({
     }, [accData]);
     const [consignment, SetConsignment] = useState();
     const tableRef = useRef(null);
-    const headers = [
-        "ConsignmentNo",
-        "Debtor Name",
-        "Account Name",
-        "Sender Name",
-        "Sender Address",
-        "Sender Suburb",
-        "Sender State",
-        "Receiver Name",
-        "Receiver Address",
-        "Receiver Suburb",
-        "Receiver State",
-        "Despatch Date",
-        "Old Rdd",
-        "New Rdd",
-        "Reason",
-        "Reason Desc",
-        "ChangeAt",
-        "ChangedBy",
-    ];
+
     const gridRef = useRef(null);
 
     function handleFilterTable() {
@@ -104,17 +84,19 @@ export default function RDDreason({
         let selectedColumns = Array.from(
             document.querySelectorAll('input[name="column"]:checked')
         ).map((checkbox) => checkbox.value);
-        
+
         let allHeaderColumns = gridRef.current.visibleColumns.map((column) => ({
             name: column.name,
             value: column.computedFilterValue?.value,
             type: column.computedFilterValue?.type,
             operator: column.computedFilterValue?.operator,
         }));
-        let selectedColVal = allHeaderColumns.filter(col => col.name !== "edit");
+        let selectedColVal = allHeaderColumns.filter(
+            (col) => col.name !== "edit"
+        );
 
         const filterValue = [];
-        filteredData?.map((val) =>{
+        filteredData?.map((val) => {
             let isMatch = true;
 
             for (const col of selectedColVal) {
@@ -261,96 +243,123 @@ export default function RDDreason({
                 } else if (type === "select") {
                     let cellValueLowerCase = null;
                     let valLowerCase = null;
-                    
-                    if(typeof cellValue === 'number'){
+
+                    if (typeof cellValue === "number") {
                         cellValueLowerCase = cellValue;
                         valLowerCase = val[col.name];
-                    }else{
+                    } else {
                         cellValueLowerCase = cellValue
-                        ?.toString()
-                        .toLowerCase();
-                        valLowerCase = val[col.name]
-                        ?.toString()
-                        .toLowerCase();
+                            ?.toString()
+                            .toLowerCase();
+                        valLowerCase = val[col.name]?.toString().toLowerCase();
                     }
                     switch (operator) {
                         case "eq":
-                            if(typeof valLowerCase === 'number'){
+                            if (typeof valLowerCase === "number") {
                                 conditionMet =
                                     cellValueLowerCase === valLowerCase;
-                            }else{
+                            } else {
                                 conditionMet =
-                                cellValue?.length > 0 &&
-                                cellValueLowerCase === valLowerCase;
+                                    cellValue?.length > 0 &&
+                                    cellValueLowerCase === valLowerCase;
                             }
 
                             break;
                         case "neq":
-                            if(typeof valLowerCase === 'number'){
+                            if (typeof valLowerCase === "number") {
                                 conditionMet =
                                     cellValueLowerCase !== valLowerCase;
-                            }else{
+                            } else {
                                 conditionMet =
-                                cellValue?.length > 0 &&
-                                cellValueLowerCase !== valLowerCase;
+                                    cellValue?.length > 0 &&
+                                    cellValueLowerCase !== valLowerCase;
                             }
                             break;
-                            case "inlist":
-                                const listValues = Array.isArray(value)
-                                    ? value.map((v) => v.toLowerCase())
-                                    : [value?.toLowerCase()];
-                                conditionMet =
-                                    cellValue?.length > 0 &&
-                                    listValues.includes(valLowerCase);
-                                break;
-                            case "notinlist":
-                                const listValuesNotIn = Array.isArray(value)
-                                    ? value.map((v) => v.toLowerCase())
-                                    : [value?.toLowerCase()];
-                                conditionMet =
-                                    cellValue?.length > 0 &&
-                                    !listValuesNotIn.includes(valLowerCase);
-                                break;
+                        case "inlist":
+                            const listValues = Array.isArray(value)
+                                ? value.map((v) => v.toLowerCase())
+                                : [value?.toLowerCase()];
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                listValues.includes(valLowerCase);
+                            break;
+                        case "notinlist":
+                            const listValuesNotIn = Array.isArray(value)
+                                ? value.map((v) => v.toLowerCase())
+                                : [value?.toLowerCase()];
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                !listValuesNotIn.includes(valLowerCase);
+                            break;
                         // ... (add other select type conditions here if necessary)
                     }
                 } else if (type === "date") {
-                    const dateValue = moment(val[col.name].replace("T", " "), "YYYY-MM-DD HH:mm:ss");
-                    const hasStartDate = cellValue?.start && cellValue.start.length > 0;
-                    const hasEndDate = cellValue?.end && cellValue.end.length > 0;
-                    const dateCellValueStart = hasStartDate ? moment(cellValue.start, "DD-MM-YYYY") : null;
-                    const dateCellValueEnd = hasEndDate ? moment(cellValue.end, "DD-MM-YYYY").endOf('day') : null;
-                
+                    const dateValue = moment(
+                        val[col.name].replace("T", " "),
+                        "YYYY-MM-DD HH:mm:ss"
+                    );
+                    const hasStartDate =
+                        cellValue?.start && cellValue.start.length > 0;
+                    const hasEndDate =
+                        cellValue?.end && cellValue.end.length > 0;
+                    const dateCellValueStart = hasStartDate
+                        ? moment(cellValue.start, "DD-MM-YYYY")
+                        : null;
+                    const dateCellValueEnd = hasEndDate
+                        ? moment(cellValue.end, "DD-MM-YYYY").endOf("day")
+                        : null;
+
                     switch (operator) {
                         case "after":
-                            conditionMet = hasStartDate && dateCellValueStart.isAfter(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isAfter(dateValue);
                             break;
                         case "afterOrOn":
-                            conditionMet = hasStartDate && dateCellValueStart.isSameOrAfter(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSameOrAfter(dateValue);
                             break;
                         case "before":
-                            conditionMet = hasStartDate && dateCellValueStart.isBefore(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isBefore(dateValue);
                             break;
                         case "beforeOrOn":
-                            conditionMet = hasStartDate && dateCellValueStart.isSameOrBefore(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSameOrBefore(dateValue);
                             break;
                         case "eq":
-                            conditionMet = hasStartDate && dateCellValueStart.isSame(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSame(dateValue);
                             break;
                         case "neq":
-                            conditionMet = hasStartDate && !dateCellValueStart.isSame(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                !dateCellValueStart.isSame(dateValue);
                             break;
                         case "inrange":
-                            conditionMet = (!hasStartDate || dateValue.isSameOrAfter(dateCellValueStart)) &&
-                                           (!hasEndDate || dateValue.isSameOrBefore(dateCellValueEnd));
+                            conditionMet =
+                                (!hasStartDate ||
+                                    dateValue.isSameOrAfter(
+                                        dateCellValueStart
+                                    )) &&
+                                (!hasEndDate ||
+                                    dateValue.isSameOrBefore(dateCellValueEnd));
                             break;
                         case "notinrange":
-                            conditionMet = (hasStartDate && dateValue.isBefore(dateCellValueStart)) ||
-                                           (hasEndDate && dateValue.isAfter(dateCellValueEnd));
+                            conditionMet =
+                                (hasStartDate &&
+                                    dateValue.isBefore(dateCellValueStart)) ||
+                                (hasEndDate &&
+                                    dateValue.isAfter(dateCellValueEnd));
                             break;
                         // ... (add other date type conditions here if necessary)
                     }
                 }
-                
+
                 if (!conditionMet) {
                     isMatch = false;
                     break;
@@ -362,7 +371,9 @@ export default function RDDreason({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
-            selectedColVal = allHeaderColumns.filter(col => col.name !== "edit"); // Use all columns
+            selectedColVal = allHeaderColumns.filter(
+                (col) => col.name !== "edit"
+            ); // Use all columns
         } else {
             allHeaderColumns.map((header) => {
                 selectedColumns.map((column) => {
@@ -377,12 +388,55 @@ export default function RDDreason({
         }
         return { selectedColumns: selectedColVal, filterValue: filterValue };
     }
-
+    const headers = [
+        "ConsignmentNo",
+        "Debtor Name",
+        "Account Name",
+        "Sender Name",
+        "Sender Address",
+        "Sender Suburb",
+        "Sender State",
+        "Receiver Name",
+        "Receiver Address",
+        "Receiver Suburb",
+        "Receiver State",
+        "Despatch Date",
+        "Old Rdd",
+        "New Rdd",
+        "Reason",
+        "Reason Desc",
+        "ChangeAt",
+        "ChangedBy",
+    ];
+    const jsonData = handleFilterTable();
     function handleDownloadExcel() {
+       
         const jsonData = handleFilterTable();
-        
+        const columnMapping = {
+            ConsignmentNo: "ConsignmentNo",
+            DebtorName: "Debtor Name",
+            AccountNumber: "Account Name",
+            SenderName: "Sender Name",
+            SenderReference: "Sender Reference",
+            SenderAddress: "Sender Address",
+            SenderSuburb: "Sender Suburb",
+            SenderState: "Sender State",
+            ReceiverName: "Receiver Name",
+            ReceiverReference: "Receiver Reference",
+            ReceiverAddress: "Receiver Address",
+            ReceiverSuburb: "Receiver Suburb",
+            ReceiverState: "Receiver State",
+            DespatchDate: "Despatch Date",
+            OldRdd: "Old Rdd",
+            NewRdd: "New Rdd",
+            ReasonDesc: "Reason Desc",
+        };
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
+        );
+        const newSelectedColumns = selectedColumns.map(
+            (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
@@ -394,7 +448,7 @@ export default function RDDreason({
                             (reason) => reason.ReasonId === person.Reason
                         );
                         acc[columnKey] = Reason?.ReasonName;
-                    } else if (column === "Despatch Date") {
+                    } else if (column === "DespatchDate") {
                         acc[columnKey] =
                             moment(
                                 person["DespatchDate"],
@@ -408,17 +462,17 @@ export default function RDDreason({
                                 person["ChangeAt"],
                                 "YYYY-MM-DDTHH:mm:ss"
                             ).format("DD-MM-YYYY h:mm A") || "";
-                    } else if (column === "Old Rdd") {
+                    } else if (column === "OldRdd") {
                         acc[columnKey] =
                             moment(
                                 person["OldRdd"],
-                                "DD/MM/YYYY h:mm:ss A"
+                                "YYYY-MM-DDTHH:mm:ss"
                             ).format("DD-MM-YYYY h:mm A") || "";
-                    } else if (column === "New Rdd") {
+                    } else if (column === "NewRdd") {
                         acc[columnKey] =
                             moment(
                                 person["NewRdd"],
-                                "DD/MM/YYYY h:mm:ss A"
+                                "YYYY-MM-DDTHH:mm:ss"
                             ).format("DD-MM-YYYY h:mm A") || "";
                     } else {
                         acc[columnKey] = person[columnKey];
@@ -437,7 +491,7 @@ export default function RDDreason({
         const worksheet = workbook.addWorksheet("Sheet1");
 
         // Apply custom styles to the header row
-        const headerRow = worksheet.addRow(selectedColumns);
+        const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
         headerRow.fill = {
             type: "pattern",
@@ -1083,7 +1137,7 @@ export default function RDDreason({
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Receiver Address
-                                                        </label>                       
+                                                        </label>
                                                         <label className="">
                                                             <input
                                                                 type="checkbox"

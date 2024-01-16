@@ -37,7 +37,6 @@ export default function KPI({
     accData,
     kpireasonsData,
 }) {
-    console.log(KPIData)
     window.moment = moment;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -147,7 +146,6 @@ export default function KPI({
             type: column.computedFilterValue?.type,
             operator: column.computedFilterValue?.operator,
         }));
-        console.log("allHeaderColumns",allHeaderColumns)
         let selectedColVal = allHeaderColumns.filter(
             (col) => col.name !== "edit"
         );
@@ -483,7 +481,7 @@ export default function KPI({
                         } else if (person[columnKey] === 2) {
                             acc[columnKey] = "False";
                         }
-                    }  else if (column.replace(/\s+/g, "") === "DeliveryDate") {
+                    } else if (column.replace(/\s+/g, "") === "DeliveryDate") {
                         acc[columnKey] =
                             moment(
                                 person["DeliveryDate"].replace("T", " "),
@@ -505,6 +503,11 @@ export default function KPI({
                                       person["RDD"].replace("T", " "),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY");
+                    } else if (columnKey === "ReasonId") {
+                        const Reason = kpireasonsData?.find(
+                            (reason) => reason.ReasonId === person.ReasonId
+                        );
+                        acc[columnKey] = Reason?.ReasonName;
                     } else {
                         acc[column.replace(/\s+/g, "")] =
                             person[column.replace(/\s+/g, "")];
@@ -513,7 +516,6 @@ export default function KPI({
                     acc[column.replace(/\s+/g, "")] =
                         person[column.replace(/\s+/g, "")];
                 }
-
                 return acc;
             }, {})
         );
