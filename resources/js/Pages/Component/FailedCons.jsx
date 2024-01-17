@@ -825,13 +825,32 @@ export default function FailedCons({
                     const formattedColumn = column
                         .replace(/\s/g, "")
                         .toLowerCase();
-                    if (header?.name?.toLowerCase() === formattedColumn) {
+                    if (header?.name?.replace(/\s/g, "").toLowerCase() === formattedColumn) {
                         selectedColVal.push(header);
                     }
                 });
             });
         }
-        console.log("selectedColVal",selectedColVal)
+        selectedColumns.map((item)=>{
+            if(item == "Resolution"){
+                selectedColVal.push({
+                    "name": "Resolution",
+                    "value": "",
+                    "type": "string",
+                    "label": "Resolution",
+                    "operator": "contains"
+                });
+            }
+            if(item == 'Explanation'){
+                selectedColVal.push({
+                    "name": "FailedNote",
+                    "operator": "contains",
+                    "type": "string",
+                    "value": "",
+                });
+            }
+        })
+        
         return { selectedColumns: selectedColVal, filterValue: filterValue };
     }
     function handleDownloadExcel() {
@@ -862,6 +881,7 @@ export default function FailedCons({
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
+
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
@@ -928,15 +948,16 @@ export default function FailedCons({
                                       ),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY h:mm A");
+                                  
                     } else if (column.toUpperCase() === "OCCUREDAT") {
                         acc[columnKey] =
                             moment(
-                                person["DELIVEREDDATETIME"].replace("T", " "),
+                                person["OccuredAt"]?.replace("T", " "),
                                 "YYYY-MM-DD HH:mm:ss"
                             ).format("DD-MM-YYYY h:mm A") == "Invalid date"
                                 ? ""
                                 : moment(
-                                      person["DELIVEREDDATETIME"].replace(
+                                      person["OccuredAt"]?.replace(
                                           "T",
                                           " "
                                       ),
@@ -969,6 +990,8 @@ export default function FailedCons({
                         acc[columnKey] = person["Department"];
                     } else if (columnKey === "State") {
                         acc[columnKey] = person["State"];
+                    } else if (columnKey === "RECEIVERREFERENCE") {
+                        acc[columnKey] = person["RECEIVER REFERENCE"];
                     } else {
                         acc[columnKey] = person[columnKey.toUpperCase()];
                     }

@@ -158,40 +158,40 @@ export default function NoDelivery({
                     switch (operator) {
                         case "contains":
                             conditionMet =
-                                cellValue?.length > 0 &&
-                                valLowerCase.includes(cellValueLowerCase);
+                            cellValueLowerCase?.length > 0 &&
+                                valLowerCase?.includes(cellValueLowerCase);
                             break;
                         case "notContains":
                             conditionMet =
-                                cellValue?.length > 0 &&
+                            cellValueLowerCase?.length > 0 &&
                                 !valLowerCase.includes(cellValueLowerCase);
                             break;
                         case "eq":
                             conditionMet =
-                                cellValue?.length > 0 &&
+                            cellValueLowerCase?.length > 0 &&
                                 cellValueLowerCase === valLowerCase;
                             break;
                         case "neq":
                             conditionMet =
-                                cellValue?.length > 0 &&
+                            cellValueLowerCase?.length > 0 &&
                                 cellValueLowerCase !== valLowerCase;
                             break;
                         case "empty":
                             conditionMet =
-                                cellValue?.length > 0 && val[col.name] === "";
+                            cellValueLowerCase?.length > 0 && val[col.name] === "";
                             break;
                         case "notEmpty":
                             conditionMet =
-                                cellValue?.length > 0 && val[col.name] !== "";
+                            cellValueLowerCase?.length > 0 && val[col.name] !== "";
                             break;
                         case "startsWith":
                             conditionMet =
-                                cellValue?.length > 0 &&
+                            cellValueLowerCase?.length > 0 &&
                                 valLowerCase.startsWith(cellValueLowerCase);
                             break;
                         case "endsWith":
                             conditionMet =
-                                cellValue?.length > 0 &&
+                            cellValueLowerCase?.length > 0 &&
                                 valLowerCase.endsWith(cellValueLowerCase);
                             break;
                         // ... (add other string type conditions here)

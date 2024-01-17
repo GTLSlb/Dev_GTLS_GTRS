@@ -75,27 +75,6 @@ export default function RDDreason({
         setFilteredData(filterData());
     }, [accData]);
     const [consignment, SetConsignment] = useState();
-    const tableRef = useRef(null);
-    const headers = [
-        "ConsignmentNo",
-        "Debtor Name",
-        "Account Name",
-        "Sender Name",
-        "Sender Address",
-        "Sender Suburb",
-        "Sender State",
-        "Receiver Name",
-        "Receiver Address",
-        "Receiver Suburb",
-        "Receiver State",
-        "Despatch Date",
-        "Old Rdd",
-        "New Rdd",
-        "Reason",
-        "Reason Desc",
-        "ChangeAt",
-        "ChangedBy",
-    ];
     const gridRef = useRef(null);
 
     function handleFilterTable() {
@@ -104,15 +83,17 @@ export default function RDDreason({
             document.querySelectorAll('input[name="column"]:checked')
         ).map((checkbox) => checkbox.value);
 
-        let allHeaderColumns = gridRef.current.visibleColumns.map((column) => ({
+        let allHeaderColumns = gridRef?.current?.visibleColumns?.map((column) => ({
             name: column.name,
             value: column.computedFilterValue?.value,
             label: column.computedHeader,
             type: column.computedFilterValue?.type,
             operator: column.computedFilterValue?.operator,
         }));
-        let selectedColVal = allHeaderColumns.filter(col => col.name !== "edit");
-
+        console.log(allHeaderColumns)
+        let selectedColVal = allHeaderColumns?.filter(
+            (col) => col?.label?.toString().toLowerCase() !== "edit"
+        );
         const filterValue = [];
         filteredData?.map((val) => {
             let isMatch = true;
@@ -389,21 +370,21 @@ export default function RDDreason({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
-            selectedColVal = allHeaderColumns.filter(col => col.name !== "edit"); // Use all columns
+            selectedColVal  = allHeaderColumns?.filter(
+                (col) => col?.label?.toString().toLowerCase() !== "edit"
+            ); // Use all columns
         } else {
-            allHeaderColumns.map((header) => {
-                selectedColumns.map((column) => {
+            allHeaderColumns?.map((header) => {
+                selectedColumns?.map((column) => {
                     const formattedColumn = column
                         .replace(/\s/g, "")
                         .toLowerCase();
                     if (header.name.toLowerCase() === formattedColumn) {
-                        selectedColVal.push(header);
+                        selectedColVal?.push(header);
                     }
                 });
             });
         }
-        console.log("selectedColumns",selectedColumns);
-        console.log("allHeaderColumns",allHeaderColumns);
         return { selectedColumns: selectedColVal, filterValue: filterValue };
     }
     const headers = [
@@ -426,7 +407,7 @@ export default function RDDreason({
         "ChangeAt",
         "ChangedBy",
     ];
-    const jsonData = handleFilterTable();
+    
     function handleDownloadExcel() {
        
         const jsonData = handleFilterTable();

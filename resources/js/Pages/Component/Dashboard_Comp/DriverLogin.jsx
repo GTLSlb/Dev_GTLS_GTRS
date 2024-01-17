@@ -397,7 +397,6 @@ export default function DriverLogin({
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
-
                 if (columnKey) {
                     if (columnKey === "DeviceSimType") {
                         acc[columnKey] =

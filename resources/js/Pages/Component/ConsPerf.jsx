@@ -20,7 +20,7 @@ export default function ConsPerf({
     latestDate,
     currentUser,
 }) {
-    console.log(PerfData)
+
     const tabs = [
         { id: 0, name: "General Information", href: "", current: true },
         { id: 1, name: "Details", href: "", current: false },
@@ -123,15 +123,13 @@ export default function ConsPerf({
         "RECEIVER POSTCODE",
     ];
 
-
-
     function handleDownloadExcel() {
         // Get the selected columns or use all columns if none are selected
         
           let  selectedColumns = headers; // Use all columns
        
         // Extract the data for the selected columns  moment(consignment.DespatchDate, 'YYYY-MM-DD').format('DD-MM-YYYY')
-        const data = PerfData.map((person) =>
+        const data = filteredData.map((person) =>
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
