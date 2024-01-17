@@ -76,17 +76,19 @@ export default function MissingPOD({
         let selectedColumns = Array.from(
             document.querySelectorAll('input[name="column"]:checked')
         ).map((checkbox) => checkbox.value);
-        
+
         let allHeaderColumns = gridRef.current.visibleColumns.map((column) => ({
             name: column.name,
             value: column.computedFilterValue?.value,
             type: column.computedFilterValue?.type,
             operator: column.computedFilterValue?.operator,
         }));
-        let selectedColVal = allHeaderColumns.filter(col => col.name !== "edit");
+        let selectedColVal = allHeaderColumns.filter(
+            (col) => col.name !== "edit"
+        );
 
         const filterValue = [];
-        filteredData?.map((val) =>{
+        filteredData?.map((val) => {
             let isMatch = true;
 
             for (const col of selectedColVal) {
@@ -269,43 +271,72 @@ export default function MissingPOD({
                         // ... (add other select type conditions here if necessary)
                     }
                 } else if (type === "date") {
-                    const dateValue = moment(val[col.name].replace("T", " "), "YYYY-MM-DD HH:mm:ss");
-                    const hasStartDate = cellValue?.start && cellValue.start.length > 0;
-                    const hasEndDate = cellValue?.end && cellValue.end.length > 0;
-                    const dateCellValueStart = hasStartDate ? moment(cellValue.start, "DD-MM-YYYY") : null;
-                    const dateCellValueEnd = hasEndDate ? moment(cellValue.end, "DD-MM-YYYY").endOf('day') : null;
-                
+                    const dateValue = moment(
+                        val[col.name].replace("T", " "),
+                        "YYYY-MM-DD HH:mm:ss"
+                    );
+                    const hasStartDate =
+                        cellValue?.start && cellValue.start.length > 0;
+                    const hasEndDate =
+                        cellValue?.end && cellValue.end.length > 0;
+                    const dateCellValueStart = hasStartDate
+                        ? moment(cellValue.start, "DD-MM-YYYY")
+                        : null;
+                    const dateCellValueEnd = hasEndDate
+                        ? moment(cellValue.end, "DD-MM-YYYY").endOf("day")
+                        : null;
+
                     switch (operator) {
                         case "after":
-                            conditionMet = hasStartDate && dateCellValueStart.isAfter(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isAfter(dateValue);
                             break;
                         case "afterOrOn":
-                            conditionMet = hasStartDate && dateCellValueStart.isSameOrAfter(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSameOrAfter(dateValue);
                             break;
                         case "before":
-                            conditionMet = hasStartDate && dateCellValueStart.isBefore(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isBefore(dateValue);
                             break;
                         case "beforeOrOn":
-                            conditionMet = hasStartDate && dateCellValueStart.isSameOrBefore(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSameOrBefore(dateValue);
                             break;
                         case "eq":
-                            conditionMet = hasStartDate && dateCellValueStart.isSame(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSame(dateValue);
                             break;
                         case "neq":
-                            conditionMet = hasStartDate && !dateCellValueStart.isSame(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                !dateCellValueStart.isSame(dateValue);
                             break;
                         case "inrange":
-                            conditionMet = (!hasStartDate || dateValue.isSameOrAfter(dateCellValueStart)) &&
-                                           (!hasEndDate || dateValue.isSameOrBefore(dateCellValueEnd));
+                            conditionMet =
+                                (!hasStartDate ||
+                                    dateValue.isSameOrAfter(
+                                        dateCellValueStart
+                                    )) &&
+                                (!hasEndDate ||
+                                    dateValue.isSameOrBefore(dateCellValueEnd));
                             break;
                         case "notinrange":
-                            conditionMet = (hasStartDate && dateValue.isBefore(dateCellValueStart)) ||
-                                           (hasEndDate && dateValue.isAfter(dateCellValueEnd));
+                            conditionMet =
+                                (hasStartDate &&
+                                    dateValue.isBefore(dateCellValueStart)) ||
+                                (hasEndDate &&
+                                    dateValue.isAfter(dateCellValueEnd));
                             break;
                         // ... (add other date type conditions here if necessary)
                     }
                 }
-                
+
                 if (!conditionMet) {
                     isMatch = false;
                     break;
@@ -317,7 +348,9 @@ export default function MissingPOD({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
-            selectedColVal = allHeaderColumns.filter(col => col.name !== "edit"); // Use all columns
+            selectedColVal = allHeaderColumns.filter(
+                (col) => col.name !== "edit"
+            ); // Use all columns
         } else {
             allHeaderColumns.map((header) => {
                 selectedColumns.map((column) => {
@@ -334,9 +367,28 @@ export default function MissingPOD({
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-        console.log(jsonData);
+        [];
+        const columnMapping = {
+            CONSIGNMENTNUMBER: "Consignemnt Number",
+            SENDERNAME: "Sender Name",
+            SENDERREFERENCE: "Sender Reference",
+            SenderState: "Sender State",
+            RECEIVERNAME: "Receiver Name",
+            "RECEIVER REFERENCE": "Receiver Reference",
+            RECEIVERSTATE: "Receiver State",
+            SERVICE: "Service",
+            DESPATCHDATE: "Despatch DateTime",
+            DELIVERYREQUIREDDATETIME: "RDD",
+            ARRIVEDDATETIME: "Arrived Date Time",
+            DELIVEREDDATETIME: "Delivered Datetime",
+            POD: "POD",
+        };
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
+        );
+        const newSelectedColumns = selectedColumns.map(
+            (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
@@ -349,7 +401,7 @@ export default function MissingPOD({
                         acc[columnKey] = "false";
                     } else if (column.replace(/\s+/g, "") === "SenderState") {
                         acc[columnKey] = person["SenderState"];
-                    } else if (column.toUpperCase() === "ARRIVED DATE TIME") {
+                    } else if (column.toUpperCase() === "ARRIVEDDATETIME") {
                         const ArrivedDateTime = person["ARRIVEDDATETIME"];
                         acc[columnKey] = ArrivedDateTime
                             ? moment(
@@ -357,7 +409,7 @@ export default function MissingPOD({
                                   "YYYY-MM-DD HH:mm:ss"
                               ).format("DD-MM-YYYY h:mm A")
                             : null;
-                    } else if (column.toUpperCase() === "RDD") {
+                    } else if (column.toUpperCase() === "DELIVERYREQUIREDDATETIME") {
                         const deliveryRequiredDateTime =
                             person["DELIVERYREQUIREDDATETIME"];
                         acc[columnKey] = deliveryRequiredDateTime
@@ -366,7 +418,7 @@ export default function MissingPOD({
                                   "YYYY-MM-DD HH:mm:ss"
                               ).format("DD-MM-YYYY h:mm A")
                             : null;
-                    } else if (column.toUpperCase() === "DELIVERED DATETIME") {
+                    } else if (column.toUpperCase() === "DELIVEREDDATETIME") {
                         const deliveredDateTime = person["DELIVEREDDATETIME"];
                         acc[columnKey] = deliveredDateTime
                             ? moment(
@@ -374,7 +426,7 @@ export default function MissingPOD({
                                   "YYYY-MM-DD HH:mm:ss"
                               ).format("DD-MM-YYYY h:mm A")
                             : null;
-                    } else if (column.toUpperCase() === "DESPATCH DATETIME") {
+                    } else if (column.toUpperCase() === "DESPATCHDATE") {
                         const despatchDate = person["DESPATCHDATE"];
                         acc[columnKey] = despatchDate
                             ? moment(
@@ -401,7 +453,7 @@ export default function MissingPOD({
         const worksheet = workbook.addWorksheet("Sheet1");
 
         // Apply custom styles to the header row
-        const headerRow = worksheet.addRow(selectedColumns);
+        const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
         headerRow.fill = {
             type: "pattern",
@@ -434,7 +486,7 @@ export default function MissingPOD({
         });
     }
     const [selected, setSelected] = useState([]);
-    
+
     const groups = [
         {
             name: "senderInfo",

@@ -80,7 +80,6 @@ export default function NoDelivery({
                     resolve(parsedData);
                 });
                 parsedDataPromise.then((parsedData) => {
-                    console.log("NoDelivery",parsedData)
                     setNoDelData(parsedData);
                     setIsFetching(false);
                 });
@@ -117,22 +116,6 @@ export default function NoDelivery({
         setLastIndex(6);
         setactiveCon(coindex);
     };
-    const headers = [
-        "Consignment No",
-        "Despatch DateTime",
-        "Sender Name",
-        "Sender Suburb",
-        "Sender State",
-        "Status",
-        "Receiver Name",
-        "Receiver Suburb",
-        "Receiver State",
-        "Timeslot",
-        "POD",
-        "IsLocal",
-        "Delivery Required DateTime",
-        "Description",
-    ];
 
     const gridRef = useRef(null);
     function handleFilterTable() {
@@ -151,28 +134,6 @@ export default function NoDelivery({
             (col) => col.name !== "edit"
         );
 
-        const testing = [
-            {
-                ConsignmentID: 425761,
-                TypeID: 2,
-                ConsignmentNo: "GMI1946",
-                DespatchDateTime: "2023-12-13T10:58:57.527",
-                SenderName: "QUBE LOGISTICS",
-                SenderReference: "5721192324",
-                Send_Suburb: "MOOREBANK",
-                Send_State: "NSW",
-                AdminStatusCodes_Description: "Locked",
-                ReceiverName: "METCASH TRADING LIMITED - VIC",
-                ReceiverReference: "3435731",
-                Del_Suburb: "LAVERTON NORTH",
-                Del_State: "VIC",
-                Timeslot: false,
-                POD: false,
-                IsLocal: false,
-                DeliveryRequiredDateTime: "2023-12-18 00:00:00",
-                Description: "GENERAL FREIGHT",
-            },
-        ];
         const filterValue = [];
         NoDelData?.map((val) => {
             let isMatch = true;
@@ -357,43 +318,72 @@ export default function NoDelivery({
                         // ... (add other select type conditions here if necessary)
                     }
                 } else if (type === "date") {
-                    const dateValue = moment(val[col.name].replace("T", " "), "YYYY-MM-DD HH:mm:ss");
-                    const hasStartDate = cellValue?.start && cellValue.start.length > 0;
-                    const hasEndDate = cellValue?.end && cellValue.end.length > 0;
-                    const dateCellValueStart = hasStartDate ? moment(cellValue.start, "DD-MM-YYYY") : null;
-                    const dateCellValueEnd = hasEndDate ? moment(cellValue.end, "DD-MM-YYYY").endOf('day') : null;
-                
+                    const dateValue = moment(
+                        val[col.name].replace("T", " "),
+                        "YYYY-MM-DD HH:mm:ss"
+                    );
+                    const hasStartDate =
+                        cellValue?.start && cellValue.start.length > 0;
+                    const hasEndDate =
+                        cellValue?.end && cellValue.end.length > 0;
+                    const dateCellValueStart = hasStartDate
+                        ? moment(cellValue.start, "DD-MM-YYYY")
+                        : null;
+                    const dateCellValueEnd = hasEndDate
+                        ? moment(cellValue.end, "DD-MM-YYYY").endOf("day")
+                        : null;
+
                     switch (operator) {
                         case "after":
-                            conditionMet = hasStartDate && dateCellValueStart.isAfter(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isAfter(dateValue);
                             break;
                         case "afterOrOn":
-                            conditionMet = hasStartDate && dateCellValueStart.isSameOrAfter(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSameOrAfter(dateValue);
                             break;
                         case "before":
-                            conditionMet = hasStartDate && dateCellValueStart.isBefore(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isBefore(dateValue);
                             break;
                         case "beforeOrOn":
-                            conditionMet = hasStartDate && dateCellValueStart.isSameOrBefore(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSameOrBefore(dateValue);
                             break;
                         case "eq":
-                            conditionMet = hasStartDate && dateCellValueStart.isSame(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSame(dateValue);
                             break;
                         case "neq":
-                            conditionMet = hasStartDate && !dateCellValueStart.isSame(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                !dateCellValueStart.isSame(dateValue);
                             break;
                         case "inrange":
-                            conditionMet = (!hasStartDate || dateValue.isSameOrAfter(dateCellValueStart)) &&
-                                           (!hasEndDate || dateValue.isSameOrBefore(dateCellValueEnd));
+                            conditionMet =
+                                (!hasStartDate ||
+                                    dateValue.isSameOrAfter(
+                                        dateCellValueStart
+                                    )) &&
+                                (!hasEndDate ||
+                                    dateValue.isSameOrBefore(dateCellValueEnd));
                             break;
                         case "notinrange":
-                            conditionMet = (hasStartDate && dateValue.isBefore(dateCellValueStart)) ||
-                                           (hasEndDate && dateValue.isAfter(dateCellValueEnd));
+                            conditionMet =
+                                (hasStartDate &&
+                                    dateValue.isBefore(dateCellValueStart)) ||
+                                (hasEndDate &&
+                                    dateValue.isAfter(dateCellValueEnd));
                             break;
                         // ... (add other date type conditions here if necessary)
                     }
                 }
-                
+
                 if (!conditionMet) {
                     isMatch = false;
                     break;
@@ -425,9 +415,29 @@ export default function NoDelivery({
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
 
+        const columnMapping = {
+            ConsignmentNo: "Consignment No",
+            DespatchDateTime: "Despatch DateTime",
+            SenderName: "Sender Name",
+            SenderReference: "Sender Reference",
+            Send_Suburb: "Sender Suburb",
+            Send_State: "Sender State",
+            AdminStatusCodes_Description: "Status",
+            ReceiverName: "Receiver Name",
+            ReceiverReference: "Receiver Reference",
+            Del_Suburb: "Receiver Suburb",
+            Del_State: "Receiver State",
+            Timeslot: "Timeslot",
+            POD: "POD",
+            DeliveryRequiredDateTime: "Delivery Required DateTime",
+        };
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
+        const newSelectedColumns = selectedColumns.map(
+            (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
+        );
+
         const filterValue = jsonData?.filterValue;
         //NoDelData
         const data = filterValue.map((person) =>
@@ -497,7 +507,7 @@ export default function NoDelivery({
         const worksheet = workbook.addWorksheet("Sheet1");
 
         // Apply custom styles to the header row
-        const headerRow = worksheet.addRow(selectedColumns);
+        const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
         headerRow.fill = {
             type: "pattern",

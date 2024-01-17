@@ -382,10 +382,21 @@ export default function SafetyRepTable({
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
         
+        const columnMapping = {
+                "SafetyType": "Safety Type",
+                "ConsNo": "Cons No",
+                "CAUSE": "Main Cause",
+                "State": "State",
+                "OccuredAt": "Occured At",
+                "AddedBy" : "Added By",
+        };
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
-        console.log(selectedColumns)
+        const newSelectedColumns = selectedColumns.map(
+            (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
+        );
         const filterValue = jsonData?.filterValue;
         //safetyData
         const data = filterValue.map((person) =>
@@ -437,7 +448,7 @@ export default function SafetyRepTable({
         const worksheet = workbook.addWorksheet("Sheet1");
 
         // Apply custom styles to the header row
-        const headerRow = worksheet.addRow(selectedColumns);
+        const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
         headerRow.fill = {
             type: "pattern",

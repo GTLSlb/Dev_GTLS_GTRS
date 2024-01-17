@@ -396,10 +396,26 @@ export default function AdditionalCharges({
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
         
+        const columnMapping = {
+            "ConsignmentNo": "Consignment No",
+            "SenderReference": "Sender Reference",
+            "ReceiverReference": "Receiver Reference",
+            "Quantity": "Quantity",
+            "TotalCharge": "Total Charge",
+            "CodeRef": "Code Ref", 
+            "DescriptionRef": "Description Ref",
+            "FuelLevyAmountRef": "Fuel Levy Amount Ref",
+            "DespatchDateTime": "Despatch DateTime",
+        };
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
-        console.log(selectedColumns)
+        const newSelectedColumns = selectedColumns.map(
+            (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
+        );
+
+
         const filterValue = jsonData?.filterValue;
         //AdditionalData
         const data = filterValue.map((person) =>
@@ -435,7 +451,7 @@ export default function AdditionalCharges({
         const worksheet = workbook.addWorksheet("Sheet1");
 
         // Apply custom styles to the header row
-        const headerRow = worksheet.addRow(selectedColumns);
+        const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
         headerRow.fill = {
             type: "pattern",
