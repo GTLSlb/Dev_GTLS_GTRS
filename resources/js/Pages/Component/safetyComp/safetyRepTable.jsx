@@ -130,7 +130,8 @@ export default function SafetyRepTable({
             type: column.computedFilterValue?.type,
             operator: column.computedFilterValue?.operator,
         }));
-        let selectedColVal = allHeaderColumns.filter(col => col.name !== "edit");
+        let selectedColVal = allHeaderColumns?.filter(
+            (col) => col?.label?.toString().toLowerCase() !== "edit");
 
         const filterValue = [];
         safetyData?.map((val) =>{
@@ -288,21 +289,29 @@ export default function SafetyRepTable({
                     switch (operator) {
                         case "eq":
                             conditionMet =
-                                cellValue?.length > 0 &&
+                            cellValueLowerCase?.length > 0 &&
                                 cellValueLowerCase === valLowerCase;
                             break;
                         case "neq":
                             // This case seems to be duplicated in your original code, you might want to check this
                             conditionMet =
-                                cellValue?.length > 0 &&
+                            cellValueLowerCase?.length > 0 &&
                                 cellValueLowerCase !== valLowerCase;
                             break;
                         case "inlist":
                             const listValues = Array.isArray(value)
-                                ? value.map((v) => v.toLowerCase())
-                                : [value?.toLowerCase()];
+                                ? value.map((v) => {
+                                    if(typeof v === 'string'){
+                                        return v?.toLowerCase()
+                                    }else{
+                                        return v?.toString()
+                                    }})
+                                : typeof v === 'string'
+                                ? [value?.toLowerCase()]
+                                : [value?.toString()];
+                                
                             conditionMet =
-                                cellValue?.length > 0 &&
+                            cellValueLowerCase?.length > 0 &&
                                 listValues.includes(valLowerCase);
                             break;
                         case "notinlist":
@@ -310,7 +319,7 @@ export default function SafetyRepTable({
                                 ? value.map((v) => v.toLowerCase())
                                 : [value?.toLowerCase()];
                             conditionMet =
-                                cellValue?.length > 0 &&
+                            cellValueLowerCase?.length > 0 &&
                                 !listValuesNotIn.includes(valLowerCase);
                             break;
                         // ... (add other select type conditions here if necessary)
@@ -352,7 +361,6 @@ export default function SafetyRepTable({
                         // ... (add other date type conditions here if necessary)
                     }
                 }
-                
                 if (!conditionMet) {
                     isMatch = false;
                     break;
@@ -364,7 +372,9 @@ export default function SafetyRepTable({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
-            selectedColVal = allHeaderColumns.filter(col => col.name !== "edit"); // Use all columns
+            selectedColVal  = allHeaderColumns?.filter(
+                (col) => col?.label?.toString().toLowerCase() !== "edit"
+            ); // Use all columns except edit column
         } else {
             allHeaderColumns.map((header) => {
                 selectedColumns.map((column) => {

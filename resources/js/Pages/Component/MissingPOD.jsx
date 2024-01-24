@@ -112,7 +112,7 @@ export default function MissingPOD({
                         case "contains":
                             conditionMet =
                                 cellValue?.length > 0 &&
-                                valLowerCase.includes(cellValueLowerCase);
+                                valLowerCase?.includes(cellValueLowerCase);
                             break;
                         case "notContains":
                             conditionMet =
@@ -348,8 +348,8 @@ export default function MissingPOD({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
-            selectedColVal = allHeaderColumns.filter(
-                (col) => col.name !== "edit"
+            selectedColVal  = allHeaderColumns?.filter(
+                (col) => col?.label?.toString().toLowerCase() !== "edit"
             ); // Use all columns
         } else {
             allHeaderColumns.map((header) => {
@@ -357,7 +357,7 @@ export default function MissingPOD({
                     const formattedColumn = column
                         .replace(/\s/g, "")
                         .toLowerCase();
-                    if (header.name.toLowerCase() === formattedColumn) {
+                    if (header?.name?.replace(/\s/g, "")?.toLowerCase() == formattedColumn) {
                         selectedColVal.push(header);
                     }
                 });
@@ -367,7 +367,7 @@ export default function MissingPOD({
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-        [];
+
         const columnMapping = {
             CONSIGNMENTNUMBER: "Consignemnt Number",
             SENDERNAME: "Sender Name",
@@ -436,15 +436,15 @@ export default function MissingPOD({
                             : null;
                     } else if (column === "Consignemnt Number") {
                         acc[columnKey] = person["CONSIGNMENTNUMBER"];
-                    } else {
-                        acc[columnKey] = person[columnKey.toUpperCase()];
-                    }
+                    } 
+                else if (column.toUpperCase() === "RECEIVER REFERENCE") {
+                    acc[columnKey] = person["RECEIVER REFERENCE"];
                 } else {
                     acc[columnKey] = person[columnKey.toUpperCase()];
                 }
 
                 return acc;
-            }, {})
+            }}, {})
         );
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
@@ -759,6 +759,7 @@ export default function MissingPOD({
             },
         },
     ];
+
     const [hoverMessage, setHoverMessage] = useState("");
     const [isMessageVisible, setMessageVisible] = useState(false);
     const handleMouseEnter = () => {

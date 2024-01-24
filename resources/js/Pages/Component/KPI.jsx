@@ -47,6 +47,10 @@ export default function KPI({
             fetchData();
         }
     }, []); // Empty dependency array ensures the effect runs only once
+
+    const [reasonOptions, setReasonOptions] = useState([]);
+    const [receiverStateOptions, setReceiverStateOptions] = useState([]);
+    const [senderStateOptions, setSenderStateOptions] = useState([]);
     const fetchData = async () => {
         try {
             axios
@@ -64,6 +68,16 @@ export default function KPI({
                     });
                     parsedDataPromise.then((parsedData) => {
                         setKPIData(parsedData);
+                        setSenderStateOptions(createNewLabelObjects(parsedData, "SenderState"));
+                        setReceiverStateOptions(createNewLabelObjects(
+                            parsedData,
+                            "ReceiverState"
+                        ));
+                        setReasonOptions(kpireasonsData.map((reason) => ({
+                            id: reason.ReasonId,
+                            label: reason.ReasonName,
+                        })));
+                        
                         setIsFetching(false);
                     });
                 });
@@ -94,11 +108,16 @@ export default function KPI({
             }
         }
     };
+    useEffect(()=>{
+        console.log("reasonOptionsFetchg", reasonOptions);
+    },[reasonOptions])
+
     const handleClick = (coindex) => {
         setActiveIndexGTRS(3);
         setLastIndex(2);
         setactiveCon(coindex);
     };
+
     const [filteredData, setFilteredData] = useState(
         KPIData.map((item) => {
             if (item?.TransitDays) {
@@ -563,6 +582,7 @@ export default function KPI({
         let id = 1; // Initialize the ID
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
+
         // Map through the data and create new objects
         data?.forEach((item) => {
             const fieldValue = item[fieldName];
@@ -578,15 +598,7 @@ export default function KPI({
         });
         return newData;
     };
-    const senderStateOptions = createNewLabelObjects(KPIData, "SenderState");
-    const receiverStateOptions = createNewLabelObjects(
-        KPIData,
-        "ReceiverState"
-    );
-    const reasonOptions = kpireasonsData.map((reason) => ({
-        id: reason.ReasonId,
-        label: reason.ReasonName,
-    }));
+    
     function getMinMaxValue(data, fieldName, identifier) {
         // Check for null safety
         if (!data || !Array.isArray(data) || data.length === 0) {
@@ -661,6 +673,16 @@ export default function KPI({
             return item;
         });
         setKPIData(updatedData);
+
+        senderStateOptions = createNewLabelObjects(updatedData, "SenderState");
+        receiverStateOptions = createNewLabelObjects(
+        updatedData,
+        "ReceiverState"
+        );
+        reasonOptions = kpireasonsData.map((reason) => ({
+            id: reason.ReasonId,
+            label: reason.ReasonName,
+        }));
     };
     const columns = [
         {
@@ -921,6 +943,31 @@ export default function KPI({
             setNewColumns(newArray);
         }
     }, []);
+
+    useEffect(() => {
+        let arr = newColumns.map((item) => {
+          if (item?.name === "ReasonId") {
+            item.filterEditorProps = {
+              ...item.filterEditorProps,
+              dataSource: reasonOptions,
+            };
+          }
+          if(item?.name == "SenderState"){
+            item.filterEditorProps = {
+                ...item.filterEditorProps,
+                dataSource: senderStateOptions,
+              };
+          }
+          if(item?.name == "ReceiverState"){
+            item.filterEditorProps = {
+                ...item.filterEditorProps,
+                dataSource: receiverStateOptions,
+              };
+          }
+          return item;
+        });
+      }, [reasonOptions, receiverStateOptions, senderStateOptions]);
+
     const [hoverMessage, setHoverMessage] = useState("");
     const [isMessageVisible, setMessageVisible] = useState(false);
     const handleMouseEnter = () => {

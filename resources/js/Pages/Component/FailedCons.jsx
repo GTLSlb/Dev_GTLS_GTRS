@@ -530,12 +530,14 @@ export default function FailedCons({
             name: column.name,
             value: column.computedFilterValue?.value,
             type: column.computedFilterValue?.type,
+            label: column.computedHeader,
             operator: column.computedFilterValue?.operator,
         }));
-        let selectedColVal = allHeaderColumns.filter(
-            (col) => col.name !== "edit"
-        );
 
+        let selectedColVal = allHeaderColumns.filter(
+            (col) => col?.label?.toString().toLowerCase() !== "edit"
+        );
+        
         const filterValue = [];
         filteredData?.map((val) => {
             let isMatch = true;
@@ -703,8 +705,15 @@ export default function FailedCons({
                             break;
                         case "inlist":
                             const listValues = Array.isArray(value)
-                                ? value.map((v) => v.toLowerCase())
+                                ? value.map((v) => {
+                                    if (typeof v === 'string'){
+                                        return v.toLowerCase()
+                                    }else{
+                                        return v.toString()
+                                    }
+                                })
                                 : [value?.toLowerCase()];
+                                
                             conditionMet =
                                 cellValue?.length > 0 &&
                                 listValues.includes(valLowerCase);
@@ -797,21 +806,51 @@ export default function FailedCons({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
+        // Use all columns except edit
             selectedColVal = allHeaderColumns.filter(
-                (col) => col.name !== "edit"
-            ); // Use all columns
+                (col) => col?.label?.toString().toLowerCase() !== "edit"
+            );
+            selectedColVal.push(
+                {
+                    "name": "Resolution",
+                    "value": "",
+                    "type": "string",
+                    "label": "Resolution",
+                    "operator": "contains"
+                }
+            ) 
         } else {
             allHeaderColumns.map((header) => {
                 selectedColumns.map((column) => {
                     const formattedColumn = column
                         .replace(/\s/g, "")
                         .toLowerCase();
-                    if (header?.name?.toLowerCase() === formattedColumn) {
+                    if (header?.name?.replace(/\s/g, "").toLowerCase() === formattedColumn) {
                         selectedColVal.push(header);
                     }
                 });
             });
         }
+        selectedColumns.map((item)=>{
+            if(item == "Resolution"){
+                selectedColVal.push({
+                    "name": "Resolution",
+                    "value": "",
+                    "type": "string",
+                    "label": "Resolution",
+                    "operator": "contains"
+                });
+            }
+            if(item == 'Explanation'){
+                selectedColVal.push({
+                    "name": "FailedNote",
+                    "operator": "contains",
+                    "type": "string",
+                    "value": "",
+                });
+            }
+        })
+        
         return { selectedColumns: selectedColVal, filterValue: filterValue };
     }
     function handleDownloadExcel() {
@@ -834,7 +873,6 @@ export default function FailedCons({
             FailedReasonDesc: "Main Cause",
             OccuredAt: "Occured At",
             FailedNote: "Explanation",
-            null: "Resolution",
         };
 
         const selectedColumns = jsonData?.selectedColumns.map(
@@ -843,6 +881,7 @@ export default function FailedCons({
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
+
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
@@ -909,15 +948,16 @@ export default function FailedCons({
                                       ),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY h:mm A");
+                                  
                     } else if (column.toUpperCase() === "OCCUREDAT") {
                         acc[columnKey] =
                             moment(
-                                person["DELIVEREDDATETIME"].replace("T", " "),
+                                person["OccuredAt"]?.replace("T", " "),
                                 "YYYY-MM-DD HH:mm:ss"
                             ).format("DD-MM-YYYY h:mm A") == "Invalid date"
                                 ? ""
                                 : moment(
-                                      person["DELIVEREDDATETIME"].replace(
+                                      person["OccuredAt"]?.replace(
                                           "T",
                                           " "
                                       ),
@@ -950,6 +990,8 @@ export default function FailedCons({
                         acc[columnKey] = person["Department"];
                     } else if (columnKey === "State") {
                         acc[columnKey] = person["State"];
+                    } else if (columnKey === "RECEIVERREFERENCE") {
+                        acc[columnKey] = person["RECEIVER REFERENCE"];
                     } else {
                         acc[columnKey] = person[columnKey.toUpperCase()];
                     }
