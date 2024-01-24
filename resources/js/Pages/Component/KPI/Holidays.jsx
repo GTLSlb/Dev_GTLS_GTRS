@@ -6,8 +6,9 @@ import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import Button from "@inovua/reactdatagrid-community/packages/Button";
 import { useState } from "react";
 import TableStructure from "@/Components/TableStructure";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import moment from "moment";
+import axios from "axios";
 import AddHoliday from "./Components/AddHoliday";
 import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import { PencilIcon } from "@heroicons/react/20/solid";
@@ -55,7 +56,7 @@ export default function Holidays({
             fetchData();
         }
     }, []); // Empty dependency array ensures the effect runs only once
-
+    const gridRef = useRef(null);
     const fetchData = async () => {
         try {
             axios
@@ -347,6 +348,7 @@ export default function Holidays({
                     <TableStructure
                         id={"HolidayId"}
                         setSelected={setSelected}
+                        gridRef={gridRef}
                         selected={selected}
                         tableDataElements={holidays}
                         filterValueElements={filterValue}

@@ -7,12 +7,14 @@ import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { People } from "@mui/icons-material";
 const placeholder = "test";
+import swal from 'sweetalert';
 
 export default function SetFailedReasonModal({
     isOpen,
     handleClose,
     reason,
     url,
+    AToken,
     setReason,
     failedReasons,
     currentUser,
@@ -66,7 +68,7 @@ export default function SetFailedReasonModal({
         return foundDepartment ? foundDepartment.id : 0;
     }
     const [selectedState, setSelectedState] = useState(states[0]);
-    const [selectedReference, setSelectedReference] = useState(reference[0]);
+    const [selectedReference, setSelectedReference] = useState(reference[1]);
     const [selectedDepartment, setSelectedDepartment] = useState(
         departments[0]
     );
@@ -80,9 +82,9 @@ export default function SetFailedReasonModal({
         if (reason) {
             const state = reason.State;
             const department = reason.Department;
-            let ref = 0;
+            let ref = 1;
             if (reason.Reference == 0) {
-                ref = reason.Reference;
+                ref = 1;
             } else {
                 ref = reason.Reference - 1;
             }
@@ -141,6 +143,7 @@ export default function SetFailedReasonModal({
                 {
                     headers: {
                         UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
                     },
                 }
             );
@@ -166,8 +169,32 @@ export default function SetFailedReasonModal({
             }, 1000);
         } catch (error) {
             SetIsLoading(false);
-            // Handle error
-            setError("Error occurred while saving the data. Please try again."); // Set the error message
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                  title: 'Session Expired!',
+                  text: "Please login again",
+                  type: 'success',
+                  icon: "info",
+                  confirmButtonText: 'OK'
+                }).then(function() {
+                  axios
+                      .post("/logoutAPI")
+                      .then((response) => {
+                        if (response.status == 200) {
+                          window.location.href = "/";
+                        }
+                      })
+                      .catch((error) => {
+                        console.log(error);
+                      });
+                });
+              } else {
+                // Handle other errors
+                setError("Error occurred while saving the data. Please try again."); // Set the error message
+                console.log(err);
+              }
+            
         }
     };
     const handlePopUpClose = () => {

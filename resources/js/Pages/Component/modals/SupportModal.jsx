@@ -2,7 +2,6 @@ import ReactModal from "react-modal";
 import TextInput from "../../../Components/TextInput";
 import InputError from "../../../Components/InputError";
 import { useState } from "react";
-import axios from "axios";
 import { useEffect } from "react";
 import SupportForm from "../SupportComp/SupportForm";
 import "../../../../css/scroll.css"

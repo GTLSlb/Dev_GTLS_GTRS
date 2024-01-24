@@ -15,6 +15,7 @@ export default function TableStructure({
     filterTypesElements,
     setFilterTypesElements,
     setSelected,
+    gridRef,
     selected,
     id,
 }) {
@@ -35,7 +36,7 @@ export default function TableStructure({
         setColumns(columnsElements);
     }, [columnsElements]);
     // const [selected, setSelected] = useState({});
-    const gridRef = useRef(null);
+
     const scrollProps = Object.assign(
         {},
         ReactDataGrid.defaultProps.scrollProps,
@@ -75,7 +76,7 @@ export default function TableStructure({
                         rowStyle={rowStyle}
                         filterTypes={filterTypes}
                         scrollProps={scrollProps}
-                        showColumnMenuTool={true}
+                        showColumnMenuTool={false}
                         enableColumnAutosize={false}
                         showColumnMenuLockOptions={false}
                         showColumnMenuGroupOptions={false}
@@ -93,7 +94,7 @@ export default function TableStructure({
                         <div class="text-center flex justify-center flex-col">
                             {/* <img src={notFound} alt="" className="w-52 h-auto " /> */}
                             <h1 class="text-3xl font-bold text-gray-900">
-                                Congrats! <br /> Nothing To Show
+                                <br /> Nothing To Show
                             </h1>
                         </div>
                     </div>

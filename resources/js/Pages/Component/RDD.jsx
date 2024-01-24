@@ -17,12 +17,14 @@ import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import { PencilIcon } from "@heroicons/react/24/outline";
 import { canEditRDD } from "@/permissions";
+import { DataObject } from "@mui/icons-material";
 
 export default function RDDreason({
     setActiveIndexGTRS,
     setactiveCon,
     rddData,
     url,
+    AToken,
     setrddData,
     filterValue,
     setFilterValue,
@@ -32,6 +34,7 @@ export default function RDDreason({
     accData,
 }) {
     window.moment = moment;
+
     const updateLocalData = (id, reason, note) => {
         // Find the item in the local data with the matching id
         const updatedData = rddData.map((item) => {
@@ -71,9 +74,320 @@ export default function RDDreason({
     useEffect(() => {
         setFilteredData(filterData());
     }, [accData]);
-    const [selectedPeople, setSelectedPeople] = useState([]);
     const [consignment, SetConsignment] = useState();
     const tableRef = useRef(null);
+
+    const gridRef = useRef(null);
+
+    function handleFilterTable() {
+        // Get the selected columns or use all columns if none are selected
+        let selectedColumns = Array.from(
+            document.querySelectorAll('input[name="column"]:checked')
+        ).map((checkbox) => checkbox.value);
+
+        let allHeaderColumns = gridRef.current.visibleColumns.map((column) => ({
+            name: column.name,
+            value: column.computedFilterValue?.value,
+            type: column.computedFilterValue?.type,
+            operator: column.computedFilterValue?.operator,
+        }));
+        let selectedColVal = allHeaderColumns.filter(
+            (col) => col.name !== "edit"
+        );
+
+        const filterValue = [];
+        filteredData?.map((val) => {
+            let isMatch = true;
+
+            for (const col of selectedColVal) {
+                const { name, value, type, operator } = col;
+                const cellValue = value;
+                let conditionMet = false;
+                // Skip the filter condition if no filter is set (cellValue is null or empty)
+                if (!cellValue || cellValue.length === 0) {
+                    conditionMet = true;
+                    continue;
+                }
+                if (type === "string") {
+                    const valLowerCase = val[col.name]
+                        ?.toString()
+                        .toLowerCase();
+                    const cellValueLowerCase = cellValue
+                        ?.toString()
+                        .toLowerCase();
+
+                    switch (operator) {
+                        case "contains":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                valLowerCase.includes(cellValueLowerCase);
+                            break;
+                        case "notContains":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                !valLowerCase.includes(cellValueLowerCase);
+                            break;
+                        case "eq":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                cellValueLowerCase === valLowerCase;
+                            break;
+                        case "neq":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                cellValueLowerCase !== valLowerCase;
+                            break;
+                        case "empty":
+                            conditionMet =
+                                cellValue?.length > 0 && val[col.name] === "";
+                            break;
+                        case "notEmpty":
+                            conditionMet =
+                                cellValue?.length > 0 && val[col.name] !== "";
+                            break;
+                        case "startsWith":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                valLowerCase.startsWith(cellValueLowerCase);
+                            break;
+                        case "endsWith":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                valLowerCase.endsWith(cellValueLowerCase);
+                            break;
+                        // ... (add other string type conditions here)
+                    }
+                } else if (type === "number") {
+                    const numericCellValue = parseFloat(cellValue);
+                    const numericValue = parseFloat(val[col.name]);
+
+                    switch (operator) {
+                        case "eq":
+                            conditionMet =
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue === numericCellValue;
+                            break;
+                        case "neq":
+                            conditionMet =
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue !== numericCellValue;
+                            break;
+                        case "gt":
+                            conditionMet =
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue > numericCellValue;
+                            break;
+                        case "gte":
+                            conditionMet =
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue >= numericCellValue;
+                            break;
+                        case "lt":
+                            conditionMet =
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue < numericCellValue;
+                            break;
+                        case "lte":
+                            conditionMet =
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue <= numericCellValue;
+                            break;
+                        case "inrange":
+                            const rangeValues = value.split(",");
+                            const minRangeValue = parseFloat(rangeValues[0]);
+                            const maxRangeValue = parseFloat(rangeValues[1]);
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                numericCellValue >= minRangeValue &&
+                                numericCellValue <= maxRangeValue;
+                            break;
+                        case "notinrange":
+                            const rangeValuesNotBetween = value.split(",");
+                            const minRangeValueNotBetween = parseFloat(
+                                rangeValuesNotBetween[0]
+                            );
+                            const maxRangeValueNotBetween = parseFloat(
+                                rangeValuesNotBetween[1]
+                            );
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                (numericCellValue < minRangeValueNotBetween ||
+                                    numericCellValue > maxRangeValueNotBetween);
+                            break;
+                        // ... (add other number type conditions here if necessary)
+                    }
+                } else if (type === "boolean") {
+                    // Assuming booleanCellValue is a string 'true' or 'false' and needs conversion to a boolean
+                    const booleanCellValue = cellValue === "true";
+                    const booleanValue = val[col.name] === true; // Convert to boolean if it's not already
+
+                    switch (operator) {
+                        case "eq":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                booleanCellValue === booleanValue;
+                            break;
+                        case "neq":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                booleanCellValue !== booleanValue;
+                            break;
+                        // ... (add other boolean type conditions here if necessary)
+                    }
+                } else if (type === "select") {
+                    let cellValueLowerCase = null;
+                    let valLowerCase = null;
+
+                    if (typeof cellValue === "number") {
+                        cellValueLowerCase = cellValue;
+                        valLowerCase = val[col.name];
+                    } else {
+                        cellValueLowerCase = cellValue
+                            ?.toString()
+                            .toLowerCase();
+                        valLowerCase = val[col.name]?.toString().toLowerCase();
+                    }
+                    switch (operator) {
+                        case "eq":
+                            if (typeof valLowerCase === "number") {
+                                conditionMet =
+                                    cellValueLowerCase === valLowerCase;
+                            } else {
+                                conditionMet =
+                                    cellValue?.length > 0 &&
+                                    cellValueLowerCase === valLowerCase;
+                            }
+
+                            break;
+                        case "neq":
+                            if (typeof valLowerCase === "number") {
+                                conditionMet =
+                                    cellValueLowerCase !== valLowerCase;
+                            } else {
+                                conditionMet =
+                                    cellValue?.length > 0 &&
+                                    cellValueLowerCase !== valLowerCase;
+                            }
+                            break;
+                        case "inlist":
+                            const listValues = Array.isArray(value)
+                                ? value.map((v) => v.toLowerCase())
+                                : [value?.toLowerCase()];
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                listValues.includes(valLowerCase);
+                            break;
+                        case "notinlist":
+                            const listValuesNotIn = Array.isArray(value)
+                                ? value.map((v) => v.toLowerCase())
+                                : [value?.toLowerCase()];
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                !listValuesNotIn.includes(valLowerCase);
+                            break;
+                        // ... (add other select type conditions here if necessary)
+                    }
+                } else if (type === "date") {
+                    const dateValue = moment(
+                        val[col.name].replace("T", " "),
+                        "YYYY-MM-DD HH:mm:ss"
+                    );
+                    const hasStartDate =
+                        cellValue?.start && cellValue.start.length > 0;
+                    const hasEndDate =
+                        cellValue?.end && cellValue.end.length > 0;
+                    const dateCellValueStart = hasStartDate
+                        ? moment(cellValue.start, "DD-MM-YYYY")
+                        : null;
+                    const dateCellValueEnd = hasEndDate
+                        ? moment(cellValue.end, "DD-MM-YYYY").endOf("day")
+                        : null;
+
+                    switch (operator) {
+                        case "after":
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isAfter(dateValue);
+                            break;
+                        case "afterOrOn":
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSameOrAfter(dateValue);
+                            break;
+                        case "before":
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isBefore(dateValue);
+                            break;
+                        case "beforeOrOn":
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSameOrBefore(dateValue);
+                            break;
+                        case "eq":
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSame(dateValue);
+                            break;
+                        case "neq":
+                            conditionMet =
+                                hasStartDate &&
+                                !dateCellValueStart.isSame(dateValue);
+                            break;
+                        case "inrange":
+                            conditionMet =
+                                (!hasStartDate ||
+                                    dateValue.isSameOrAfter(
+                                        dateCellValueStart
+                                    )) &&
+                                (!hasEndDate ||
+                                    dateValue.isSameOrBefore(dateCellValueEnd));
+                            break;
+                        case "notinrange":
+                            conditionMet =
+                                (hasStartDate &&
+                                    dateValue.isBefore(dateCellValueStart)) ||
+                                (hasEndDate &&
+                                    dateValue.isAfter(dateCellValueEnd));
+                            break;
+                        // ... (add other date type conditions here if necessary)
+                    }
+                }
+
+                if (!conditionMet) {
+                    isMatch = false;
+                    break;
+                }
+            }
+            if (isMatch) {
+                filterValue.push(val);
+            }
+        });
+        selectedColVal = [];
+        if (selectedColumns.length === 0) {
+            selectedColVal = allHeaderColumns.filter(
+                (col) => col.name !== "edit"
+            ); // Use all columns
+        } else {
+            allHeaderColumns.map((header) => {
+                selectedColumns.map((column) => {
+                    const formattedColumn = column
+                        .replace(/\s/g, "")
+                        .toLowerCase();
+                    if (header.name.toLowerCase() === formattedColumn) {
+                        selectedColVal.push(header);
+                    }
+                });
+            });
+        }
+        return { selectedColumns: selectedColVal, filterValue: filterValue };
+    }
     const headers = [
         "ConsignmentNo",
         "Debtor Name",
@@ -94,18 +408,38 @@ export default function RDDreason({
         "ChangeAt",
         "ChangedBy",
     ];
+    const jsonData = handleFilterTable();
     function handleDownloadExcel() {
-        // Get the selected columns or use all columns if none are selected
-        let selectedColumns = Array.from(
-            document.querySelectorAll('input[name="column"]:checked')
-        ).map((checkbox) => checkbox.value);
+       
+        const jsonData = handleFilterTable();
+        const columnMapping = {
+            ConsignmentNo: "ConsignmentNo",
+            DebtorName: "Debtor Name",
+            AccountNumber: "Account Name",
+            SenderName: "Sender Name",
+            SenderReference: "Sender Reference",
+            SenderAddress: "Sender Address",
+            SenderSuburb: "Sender Suburb",
+            SenderState: "Sender State",
+            ReceiverName: "Receiver Name",
+            ReceiverReference: "Receiver Reference",
+            ReceiverAddress: "Receiver Address",
+            ReceiverSuburb: "Receiver Suburb",
+            ReceiverState: "Receiver State",
+            DespatchDate: "Despatch Date",
+            OldRdd: "Old Rdd",
+            NewRdd: "New Rdd",
+            ReasonDesc: "Reason Desc",
+        };
 
-        if (selectedColumns.length === 0) {
-            selectedColumns = headers; // Use all columns
-        }
-
-        // Extract the data for the selected columns
-        const data = filteredData.map((person) =>
+        const selectedColumns = jsonData?.selectedColumns.map(
+            (column) => column.name
+        );
+        const newSelectedColumns = selectedColumns.map(
+            (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
+        );
+        const filterValue = jsonData?.filterValue;
+        const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
@@ -114,55 +448,34 @@ export default function RDDreason({
                             (reason) => reason.ReasonId === person.Reason
                         );
                         acc[columnKey] = Reason?.ReasonName;
-                    } else if (column === "Despatch Date") {
+                    } else if (column === "DespatchDate") {
                         acc[columnKey] =
                             moment(
                                 person["DespatchDate"],
-                                "YYYY/MM/DD h:mm:ss"
-                            ).format("DD-MM-YYYY h:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["DespatchDate"].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY h:mm A");
+                                "YYYY-MM-DDTHH:mm:ss"
+                            ).format("DD-MM-YYYY h:mm A") || "";
                     } else if (column === "Account Name") {
                         acc[columnKey] = person.AccountNumber;
                     } else if (column === "ChangeAt") {
                         acc[columnKey] =
                             moment(
                                 person["ChangeAt"],
-                                "YYYY/MM/DD h:mm:ss"
-                            ).format("DD-MM-YYYY h:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["ChangeAt"].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY h:mm A");
-                    } else if (column === "Old Rdd") {
+                                "YYYY-MM-DDTHH:mm:ss"
+                            ).format("DD-MM-YYYY h:mm A") || "";
+                    } else if (column === "OldRdd") {
                         acc[columnKey] =
                             moment(
                                 person["OldRdd"],
-                                "DD/MM/YYYY h:mm:ss A"
-                            ).format("DD-MM-YYYY h:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["OldRdd"].replace("T", " "),
-                                      "DD/MM/YYYY HH:mm:ss A"
-                                  ).format("DD-MM-YYYY h:mm A");
-                    } else if (column === "New Rdd") {
+                                "YYYY-MM-DDTHH:mm:ss"
+                            ).format("DD-MM-YYYY h:mm A") || "";
+                    } else if (column === "NewRdd") {
                         acc[columnKey] =
                             moment(
                                 person["NewRdd"],
-                                "DD/MM/YYYY h:mm:ss A"
-                            ).format("DD-MM-YYYY h:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["NewRdd"].replace("T", " "),
-                                      "DD/MM/YYYY HH:mm:ss A"
-                                  ).format("DD-MM-YYYY h:mm A");
+                                "YYYY-MM-DDTHH:mm:ss"
+                            ).format("DD-MM-YYYY h:mm A") || "";
                     } else {
-                        acc[column.replace(/\s+/g, "")] =
-                            person[column.replace(/\s+/g, "")];
+                        acc[columnKey] = person[columnKey];
                     }
                 } else {
                     acc[columnKey] = person[columnKey.toUpperCase()];
@@ -178,7 +491,7 @@ export default function RDDreason({
         const worksheet = workbook.addWorksheet("Sheet1");
 
         // Apply custom styles to the header row
-        const headerRow = worksheet.addRow(selectedColumns);
+        const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
         headerRow.fill = {
             type: "pattern",
@@ -334,7 +647,6 @@ export default function RDDreason({
         const convertedDate = formatter.format(utcDate);
         return convertedDate;
     }
-    const Roles = ["1", "3", "4", "5"];
     const columns = [
         {
             name: "ConsignmentNo",
@@ -524,11 +836,11 @@ export default function RDDreason({
             textAlign: "center",
             defaultWidth: 170,
             dateFormat: "DD-MM-YYYY",
+            filterEditor: DateFilter,
             filterEditorProps: {
                 minDate: minOldRddDate,
                 maxDate: maxOldRddDate,
             },
-            filterEditor: DateFilter,
             render: ({ value, cellProps }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
@@ -592,7 +904,7 @@ export default function RDDreason({
         },
         {
             name: "ChangeAt",
-            header: "Change At",
+            header: "Changed At",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
@@ -660,7 +972,6 @@ export default function RDDreason({
     ];
     const newArray = columns.slice(0, -1);
     const [newColumns, setNewColumns] = useState();
-
     useEffect(() => {
         if (canEditRDD(currentUser)) {
             setNewColumns(columns);
@@ -668,7 +979,6 @@ export default function RDDreason({
             setNewColumns(newArray);
         }
     }, []);
-
     return (
         <div className=" w-full bg-smooth ">
             {!newColumns ? (
@@ -751,7 +1061,7 @@ export default function RDDreason({
                                                             <input
                                                                 type="checkbox"
                                                                 name="column"
-                                                                value="AccountName"
+                                                                value="AccountNumber"
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Account Name
@@ -764,6 +1074,15 @@ export default function RDDreason({
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Sender Name
+                                                        </label>
+                                                        <label>
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
+                                                                value="SenderReference"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Sender Reference
                                                         </label>
                                                         <label>
                                                             <input
@@ -800,6 +1119,15 @@ export default function RDDreason({
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Receiver Name
+                                                        </label>
+                                                        <label className="">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
+                                                                value="ReceiverReference"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Receiver Reference
                                                         </label>
                                                         <label className="">
                                                             <input
@@ -877,10 +1205,10 @@ export default function RDDreason({
                                                             <input
                                                                 type="checkbox"
                                                                 name="column"
-                                                                value="ChangeAt"
+                                                                valuef="ChangeAt"
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
-                                                            Change At
+                                                            Changed At
                                                         </label>
                                                         <label className="">
                                                             <input
@@ -912,6 +1240,7 @@ export default function RDDreason({
                     </div>
                     <TableStructure
                         id={"AuditId"}
+                        gridRef={gridRef}
                         setSelected={setSelected}
                         groupsElements={groups}
                         selected={selected}
@@ -924,6 +1253,7 @@ export default function RDDreason({
             )}
             <ModalRDD
                 url={url}
+                AToken={AToken}
                 isOpen={isModalOpen}
                 updateLocalData={updateLocalData}
                 handleClose={handleEditClick}

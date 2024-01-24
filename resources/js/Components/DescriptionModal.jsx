@@ -1,7 +1,6 @@
 import ReactModal from "react-modal";
 import TextInput from "./TextInput";
 import InputError from "./InputError";
-import axios from "axios";
 import { Fragment, useState, useEffect } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";

@@ -5,6 +5,8 @@ import Navbar from "./consPerf/navbar";
 import notFound from "../../assets/pictures/NotFound.png";
 import { useEffect } from "react";
 import ReactPaginate from "react-paginate";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 
 export default function ConsPerf({
     PerfData,
@@ -18,6 +20,7 @@ export default function ConsPerf({
     latestDate,
     currentUser,
 }) {
+    console.log(PerfData)
     const tabs = [
         { id: 0, name: "General Information", href: "", current: true },
         { id: 1, name: "Details", href: "", current: false },
@@ -89,13 +92,130 @@ export default function ConsPerf({
         setCurrentPage(selectedPage.selected);
     };
     const pageCount = Math.ceil(filteredData.length / PER_PAGE);
+
+    const headers = [
+        "CONSIGNMENT STATUS",
+        "ACCOUNT NUMBER",
+        "POD",
+        "KPI DATETIME",
+        "POD DATETIME",
+        "STATUS",
+        "LOADING TIME",
+        "DELIVERY REQUIRED DATETIME",
+        "SERVICE",
+        "TOTAL QUANTITY",
+        "DELIVERED DATE TIME",
+        "MANIFEST NO",
+        "TOTAL WEIGHT",
+        "DESPATCHDATE",
+        "FUELLEVY",
+        "NETT AMOUNT",
+        "RATED AMOUNT",
+        "SENDER NAME",
+        "SENDER SUBURB",
+        "SENDER REFERENCE",
+        "SENDER ZONE",
+        "SENDER POSTCODE",
+        "RECEIVER NAME",
+        "RECEIVER SUBURB",
+        "RECEIVER REFERENCE",
+        "RECEIVER ZONE",
+        "RECEIVER POSTCODE",
+    ];
+
+
+
+    function handleDownloadExcel() {
+        // Get the selected columns or use all columns if none are selected
+        
+          let  selectedColumns = headers; // Use all columns
+       
+        // Extract the data for the selected columns  moment(consignment.DespatchDate, 'YYYY-MM-DD').format('DD-MM-YYYY')
+        const data = PerfData.map((person) =>
+            selectedColumns.reduce((acc, column) => {
+                const columnKey = column.replace(/\s+/g, "");
+                if (columnKey) {
+                    if (column.replace(/\s+/g, "") === "RECEIVERREFERENCE") {
+                        acc["RECEIVER REFERENCE"]=person["RECEIVER REFERENCE"]
+                    } else if(column.replace(/\s+/g, "") === "KPIDATETIME"){
+                        acc[columnKey] =moment(
+                            person["KPI DATETIME"].replace("T", " "),
+                            "YYYY-MM-DD HH:mm:ss"
+                        ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
+                            ? ""
+                            : moment(
+                                  person["KPI DATETIME"].replace("T", " "),
+                                  "YYYY-MM-DD HH:mm:ss"
+                              ).format("DD-MM-YYYY HH:mm A");
+                    }else if(column.replace(/\s+/g, "") === "PODDATETIME"){
+                        acc[columnKey] =moment(
+                            person["POD DATETIME"]?.replace("T", " "),
+                            "YYYY-MM-DD HH:mm:ss"
+                        ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
+                            ? ""
+                            : moment(
+                                  person["POD DATETIME"]?.replace("T", " "),
+                                  "YYYY-MM-DD HH:mm:ss"
+                              ).format("DD-MM-YYYY HH:mm A");
+                    } else {
+                        acc[column.replace(/\s+/g, "")] =
+                            person[column.replace(/\s+/g, "")];
+                    }
+                }
+                return acc;
+            }, {})
+        );
+
+        // Create a new workbook
+        const workbook = new ExcelJS.Workbook();
+
+        // Add a worksheet to the workbook
+        const worksheet = workbook.addWorksheet("Sheet1");
+
+        // Apply custom styles to the header row
+        const headerRow = worksheet.addRow(selectedColumns);
+        headerRow.font = { bold: true };
+        headerRow.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
+        };
+        headerRow.alignment = { horizontal: "center" };
+
+        // Add the data to the worksheet
+        data.forEach((rowData) => {
+            worksheet.addRow(Object.values(rowData));
+        });
+
+        // Set column widths
+        const columnWidths = selectedColumns.map(() => 15); // Set width of each column
+        worksheet.columns = columnWidths.map((width, index) => ({
+            width,
+            key: selectedColumns[index],
+        }));
+
+        // Generate the Excel file
+        workbook.xlsx.writeBuffer().then((buffer) => {
+            // Convert the buffer to a Blob
+            const blob = new Blob([buffer], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+
+            // Save the file using FileSaver.js or alternative method
+            saveAs(blob, "Consignments.xlsx");
+        });
+    }
+
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
             <div className="sm:flex sm:items-center">
-                <div className="sm:flex-auto mt-6">
+                <div className="flex items-center justify-between w-full mt-6">
                     <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
                         Consignments performance
                     </h1>
+                    <button onClick={handleDownloadExcel} className="text-white bg-dark hover:bg-dark  font-medium rounded-lg text-sm px-5 py-2 text-center mr-2 dark:bg-gray-800 dark:hover:bg-gray-600 dark:focus:ring-blue-800">
+                        Export
+                    </button>
                 </div>
             </div>
             <div className="mt-3">
@@ -117,7 +237,7 @@ export default function ConsPerf({
                                 max={EDate}
                                 onChange={handleStartDateChange}
                                 id="from-date"
-                                className="flex-item block w-full max-w-lg h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                                className="flex-item block w-full h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 md:max-w-xs sm:text-sm sm:leading-6"
                             />
                         </div>
 
@@ -138,10 +258,10 @@ export default function ConsPerf({
                                 max={latestDate}
                                 onChange={handleEndDateChange}
                                 id="to-date"
-                                className="block w-full max-w-lg h-[36px]  rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                                className="block w-full h-[36px]  rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 md:max-w-xs sm:text-sm sm:leading-6"
                             />
                         </div>
-                        <div className="w-72 flex-item w-full sm:max-w-xs max-w-lg">
+                        <div className="flex-item w-full md:max-w-xs mt-4 md:mt-0">
                             <div className="relative border rounded">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
