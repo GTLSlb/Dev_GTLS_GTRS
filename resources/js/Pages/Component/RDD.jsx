@@ -75,8 +75,6 @@ export default function RDDreason({
         setFilteredData(filterData());
     }, [accData]);
     const [consignment, SetConsignment] = useState();
-    const tableRef = useRef(null);
-
     const gridRef = useRef(null);
 
     function handleFilterTable() {
@@ -408,9 +406,7 @@ export default function RDDreason({
         "ChangeAt",
         "ChangedBy",
     ];
-    const jsonData = handleFilterTable();
     function handleDownloadExcel() {
-       
         const jsonData = handleFilterTable();
         const columnMapping = {
             ConsignmentNo: "ConsignmentNo",
@@ -1223,8 +1219,8 @@ export default function RDDreason({
                                                 </div>
                                                 <div className="grid grid-cols-1 divide-x divide-gray-900/5 bg-gray-50">
                                                     <button
-                                                        onClick={
-                                                            handleDownloadExcel
+                                                        onClick={() =>
+                                                            handleDownloadExcel()
                                                         }
                                                         className="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100"
                                                     >

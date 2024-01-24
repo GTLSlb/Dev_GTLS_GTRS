@@ -170,6 +170,9 @@ export default function FailedCons({
     const minKPIDate = getMinMaxValue(data, "KPI DATETIME", 1);
     const maxKPIDate = getMinMaxValue(data, "KPI DATETIME", 2);
 
+    const minDespatchDate = getMinMaxValue(data, "DESPATCHDATE", 1);
+    const maxDespatchDate = getMinMaxValue(data, "DESPATCHDATE", 2);
+
     const minRddDate = getMinMaxValue(data, "DELIVERYREQUIREDDATETIME", 1);
     const maxRddDate = getMinMaxValue(data, "DELIVERYREQUIREDDATETIME", 2);
 
@@ -294,6 +297,25 @@ export default function FailedCons({
             filterEditorProps: {
                 minDate: minKPIDate,
                 maxDate: maxKPIDate,
+            },
+            filterEditor: DateFilter,
+            render: ({ value, cellProps }) => {
+                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                    "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A");
+            },
+        },
+        {
+            name: "DESPATCHDATE",
+            header: "Despatch Date",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            dateFormat: "DD-MM-YYYY",
+            filterEditorProps: {
+                minDate: minDespatchDate,
+                maxDate: maxDespatchDate,
             },
             filterEditor: DateFilter,
             render: ({ value, cellProps }) => {
@@ -520,7 +542,6 @@ export default function FailedCons({
     const gridRef = useRef(null);
 
     function handleFilterTable() {
-        
         // Get the selected columns or use all columns if none are selected
         let selectedColumns = Array.from(
             document.querySelectorAll('input[name="column"]:checked')
@@ -828,6 +849,7 @@ export default function FailedCons({
             SERVICE: "Service",
             "KPI DATETIME": "KPI DateTime",
             DELIVERYREQUIREDDATETIME: "RDD",
+            DESPATCHDATE: "Despatch Date",
             ARRIVEDDATETIME: "Arrived Date Time",
             DELIVEREDDATETIME: "Delivered Datetime",
             FailedReason: "Reason",
@@ -836,7 +858,7 @@ export default function FailedCons({
             FailedNote: "Explanation",
             null: "Resolution",
         };
-
+        
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
@@ -892,6 +914,24 @@ export default function FailedCons({
                                 : moment(
                                       person[
                                           "DELIVERYREQUIREDDATETIME"
+                                      ].replace("T", " "),
+                                      "YYYY-MM-DD HH:mm:ss"
+                                  ).format("DD-MM-YYYY h:mm A");
+                    }else if (
+                        column.toUpperCase() === "DESPATCHDATE"
+                    ) {
+                        acc[columnKey] =
+                            moment(
+                                person["DESPATCHDATE"].replace(
+                                    "T",
+                                    " "
+                                ),
+                                "YYYY-MM-DD HH:mm:ss"
+                            ).format("DD-MM-YYYY h:mm A") == "Invalid date"
+                                ? ""
+                                : moment(
+                                      person[
+                                          "DESPATCHDATE"
                                       ].replace("T", " "),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY h:mm A");
@@ -1196,6 +1236,15 @@ export default function FailedCons({
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             KPI Time
+                                                        </label>
+                                                        <label>
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
+                                                                value="DESPATCHDATE"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Despatch Date
                                                         </label>
                                                         <label>
                                                             <input
