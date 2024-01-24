@@ -131,7 +131,6 @@ export default function AdditionalCharges({
         "Code",
     ];
     const gridRef = useRef(null);
-
     function handleFilterTable() {
         // Get the selected columns or use all columns if none are selected
         let selectedColumns = Array.from(
