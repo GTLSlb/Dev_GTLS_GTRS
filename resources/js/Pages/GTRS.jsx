@@ -388,7 +388,6 @@ export default function Gtrs({
         return false;
     }
 
-    
     useEffect(() => {
         if (loadingGtrs) {
             if (user == {}) {
@@ -412,6 +411,7 @@ export default function Gtrs({
                 <div className="bg-smooth">
                     <div className="md:pl-20 pt-16 ">
                         <Charts
+                            setCusomterAccounts={setCusomterAccounts}
                             kpireasonsData={kpireasonsData}
                             setkpireasonsData={setkpireasonsData}
                             userBody={userBody}

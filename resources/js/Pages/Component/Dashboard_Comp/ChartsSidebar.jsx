@@ -158,13 +158,13 @@ function classNames(...classes) {
 export default function ChartsSidebar({
     sessionData,
     activeIndexGTRS,
+    setCusomterAccounts,
     customerAccounts,
     setActiveIndexGTRS,
     currentUser,
     user,
     onData,
 }) {
-
     const [customerOptions, setCustomerOptions] = useState([]);
     const [showList, setShowList] = useState(false);
     // const showSelect = true;
@@ -182,6 +182,7 @@ export default function ChartsSidebar({
                 : option
         );
         setCustomerOptions(value);
+        setCusomterAccounts(value);
         handleSelectedCValue(event);
     };
     const handleSelectedCValue = (event) => {
@@ -194,12 +195,6 @@ export default function ChartsSidebar({
             );
         }
     };
-    function sortObjectsByParentId(objects) {
-        const sortedObjects = [...objects].sort(
-            (a, b) => a.parent_id - b.parent_id
-        );
-        return sortedObjects;
-    }
     useEffect(() => {
         setCustomerOptions(customerAccounts);
     }, []);
@@ -255,7 +250,6 @@ export default function ChartsSidebar({
         });
         setSidebarElements(updatedElements);
     };
-
     const filterNavigation = (navigation, user) => {
         return navigation.filter((navItem) => {
             // Check if the navigation item has sub-options
@@ -286,9 +280,7 @@ export default function ChartsSidebar({
             }
         });
     };
-    // Example usage
     const filteredNavigation = filterNavigation(navigation, currentUser);
-
     useEffect(() => {
         setSidebarElements(filteredNavigation);
         setActiveIndexGTRS(filteredNavigation[0]?.id);

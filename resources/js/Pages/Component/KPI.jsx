@@ -108,10 +108,6 @@ export default function KPI({
             }
         }
     };
-    useEffect(()=>{
-        console.log("reasonOptionsFetchg", reasonOptions);
-    },[reasonOptions])
-
     const handleClick = (coindex) => {
         setActiveIndexGTRS(3);
         setLastIndex(2);
