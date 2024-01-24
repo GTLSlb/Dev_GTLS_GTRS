@@ -170,6 +170,9 @@ export default function FailedCons({
     const minKPIDate = getMinMaxValue(data, "KPI DATETIME", 1);
     const maxKPIDate = getMinMaxValue(data, "KPI DATETIME", 2);
 
+    const minDespatchDate = getMinMaxValue(data, "DESPATCHDATE", 1);
+    const maxDespatchDate = getMinMaxValue(data, "DESPATCHDATE", 2);
+
     const minRddDate = getMinMaxValue(data, "DELIVERYREQUIREDDATETIME", 1);
     const maxRddDate = getMinMaxValue(data, "DELIVERYREQUIREDDATETIME", 2);
 
@@ -294,6 +297,25 @@ export default function FailedCons({
             filterEditorProps: {
                 minDate: minKPIDate,
                 maxDate: maxKPIDate,
+            },
+            filterEditor: DateFilter,
+            render: ({ value, cellProps }) => {
+                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                    "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A");
+            },
+        },
+        {
+            name: "DESPATCHDATE",
+            header: "Despatch Date",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            dateFormat: "DD-MM-YYYY",
+            filterEditorProps: {
+                minDate: minDespatchDate,
+                maxDate: maxDespatchDate,
             },
             filterEditor: DateFilter,
             render: ({ value, cellProps }) => {
@@ -520,7 +542,6 @@ export default function FailedCons({
     const gridRef = useRef(null);
 
     function handleFilterTable() {
-        
         // Get the selected columns or use all columns if none are selected
         let selectedColumns = Array.from(
             document.querySelectorAll('input[name="column"]:checked')
@@ -530,12 +551,14 @@ export default function FailedCons({
             name: column.name,
             value: column.computedFilterValue?.value,
             type: column.computedFilterValue?.type,
+            label: column.computedHeader,
             operator: column.computedFilterValue?.operator,
         }));
-        let selectedColVal = allHeaderColumns.filter(
-            (col) => col.name !== "edit"
-        );
 
+        let selectedColVal = allHeaderColumns.filter(
+            (col) => col?.label?.toString().toLowerCase() !== "edit"
+        );
+        
         const filterValue = [];
         filteredData?.map((val) => {
             let isMatch = true;
@@ -703,8 +726,15 @@ export default function FailedCons({
                             break;
                         case "inlist":
                             const listValues = Array.isArray(value)
-                                ? value.map((v) => v.toLowerCase())
+                                ? value.map((v) => {
+                                    if (typeof v === 'string'){
+                                        return v.toLowerCase()
+                                    }else{
+                                        return v.toString()
+                                    }
+                                })
                                 : [value?.toLowerCase()];
+                                
                             conditionMet =
                                 cellValue?.length > 0 &&
                                 listValues.includes(valLowerCase);
@@ -797,21 +827,51 @@ export default function FailedCons({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
+        // Use all columns except edit
             selectedColVal = allHeaderColumns.filter(
-                (col) => col.name !== "edit"
-            ); // Use all columns
+                (col) => col?.label?.toString().toLowerCase() !== "edit"
+            );
+            selectedColVal.push(
+                {
+                    "name": "Resolution",
+                    "value": "",
+                    "type": "string",
+                    "label": "Resolution",
+                    "operator": "contains"
+                }
+            ) 
         } else {
             allHeaderColumns.map((header) => {
                 selectedColumns.map((column) => {
                     const formattedColumn = column
                         .replace(/\s/g, "")
                         .toLowerCase();
-                    if (header?.name?.toLowerCase() === formattedColumn) {
+                    if (header?.name?.replace(/\s/g, "").toLowerCase() === formattedColumn) {
                         selectedColVal.push(header);
                     }
                 });
             });
         }
+        selectedColumns.map((item)=>{
+            if(item == "Resolution"){
+                selectedColVal.push({
+                    "name": "Resolution",
+                    "value": "",
+                    "type": "string",
+                    "label": "Resolution",
+                    "operator": "contains"
+                });
+            }
+            if(item == 'Explanation'){
+                selectedColVal.push({
+                    "name": "FailedNote",
+                    "operator": "contains",
+                    "type": "string",
+                    "value": "",
+                });
+            }
+        })
+        
         return { selectedColumns: selectedColVal, filterValue: filterValue };
     }
     function handleDownloadExcel() {
@@ -828,21 +888,22 @@ export default function FailedCons({
             SERVICE: "Service",
             "KPI DATETIME": "KPI DateTime",
             DELIVERYREQUIREDDATETIME: "RDD",
+            DESPATCHDATE: "Despatch Date",
             ARRIVEDDATETIME: "Arrived Date Time",
             DELIVEREDDATETIME: "Delivered Datetime",
             FailedReason: "Reason",
             FailedReasonDesc: "Main Cause",
             OccuredAt: "Occured At",
             FailedNote: "Explanation",
-            null: "Resolution",
         };
-
+        
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
+
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
@@ -895,6 +956,24 @@ export default function FailedCons({
                                       ].replace("T", " "),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY h:mm A");
+                    }else if (
+                        column.toUpperCase() === "DESPATCHDATE"
+                    ) {
+                        acc[columnKey] =
+                            moment(
+                                person["DESPATCHDATE"].replace(
+                                    "T",
+                                    " "
+                                ),
+                                "YYYY-MM-DD HH:mm:ss"
+                            ).format("DD-MM-YYYY h:mm A") == "Invalid date"
+                                ? ""
+                                : moment(
+                                      person[
+                                          "DESPATCHDATE"
+                                      ].replace("T", " "),
+                                      "YYYY-MM-DD HH:mm:ss"
+                                  ).format("DD-MM-YYYY h:mm A");
                     } else if (column.toUpperCase() === "DELIVEREDDATETIME") {
                         acc[columnKey] =
                             moment(
@@ -909,15 +988,16 @@ export default function FailedCons({
                                       ),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY h:mm A");
+                                  
                     } else if (column.toUpperCase() === "OCCUREDAT") {
                         acc[columnKey] =
                             moment(
-                                person["DELIVEREDDATETIME"].replace("T", " "),
+                                person["OccuredAt"]?.replace("T", " "),
                                 "YYYY-MM-DD HH:mm:ss"
                             ).format("DD-MM-YYYY h:mm A") == "Invalid date"
                                 ? ""
                                 : moment(
-                                      person["DELIVEREDDATETIME"].replace(
+                                      person["OccuredAt"]?.replace(
                                           "T",
                                           " "
                                       ),
@@ -950,6 +1030,8 @@ export default function FailedCons({
                         acc[columnKey] = person["Department"];
                     } else if (columnKey === "State") {
                         acc[columnKey] = person["State"];
+                    } else if (columnKey === "RECEIVERREFERENCE") {
+                        acc[columnKey] = person["RECEIVER REFERENCE"];
                     } else {
                         acc[columnKey] = person[columnKey.toUpperCase()];
                     }
@@ -1196,6 +1278,15 @@ export default function FailedCons({
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             KPI Time
+                                                        </label>
+                                                        <label>
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
+                                                                value="DESPATCHDATE"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Despatch Date
                                                         </label>
                                                         <label>
                                                             <input

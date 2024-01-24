@@ -19,6 +19,7 @@ export default function TableStructure({
     selected,
     id,
 }) {
+
     const [tableData, setTableData] = useState(tableDataElements);
     const [currentPage, setCurrentPage] = useState(4);
     const [filters, setFilters] = useState(filterValueElements);
@@ -69,7 +70,7 @@ export default function TableStructure({
                     <ReactDataGrid
                         idProperty={id}
                         handle={(ref) =>
-                            (gridRef.current = ref ? ref.current : null)
+                            (gridRef.current = ref ? ref.current : [])
                         }
                         className={"rounded-lg shadow-lg overflow-hidden"}
                         pagination

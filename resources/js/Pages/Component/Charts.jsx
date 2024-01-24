@@ -465,6 +465,13 @@ export default function charts({
             value: "",
         },
         {
+            name: "DESPATCHDATE",
+            operator: "inrange",
+            type: "date",
+            emptyValue: "",
+            value: "",
+        },
+        {
             name: "DELIVERYREQUIREDDATETIME",
             operator: "inrange",
             type: "date",
