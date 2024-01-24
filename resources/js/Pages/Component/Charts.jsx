@@ -20,6 +20,7 @@ import KPIReasons from "./KPI/KPIReasons";
 import AddTransit from "./KPI/AddTransit";
 
 export default function charts({
+    setCusomterAccounts,
     setPerfData,
     userBody,
     sessionData,
@@ -282,8 +283,8 @@ export default function charts({
         },
         {
             name: "TransitDays",
-            operator: 'eq', 
-            type: 'number', 
+            operator: "eq",
+            type: "number",
             value: "",
             //emptyValue: "",
         },
@@ -1398,7 +1399,6 @@ export default function charts({
         });
     }, [filtersKPI]);
 
-
     const components = [
         <MainCharts
             chartsData={chartsData}
@@ -1680,6 +1680,9 @@ export default function charts({
                             >
                                 <div className=" inset-0 rounded-lg border-dashed border-gray-200">
                                     <ChartsSidebar
+                                        setCusomterAccounts={
+                                            setCusomterAccounts
+                                        }
                                         customerAccounts={customerAccounts}
                                         activeIndexGTRS={activeIndexGTRS}
                                         sessionData={sessionData}

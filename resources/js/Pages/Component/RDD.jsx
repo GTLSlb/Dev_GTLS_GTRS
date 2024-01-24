@@ -90,7 +90,6 @@ export default function RDDreason({
             type: column.computedFilterValue?.type,
             operator: column.computedFilterValue?.operator,
         }));
-        console.log(allHeaderColumns)
         let selectedColVal = allHeaderColumns?.filter(
             (col) => col?.label?.toString().toLowerCase() !== "edit"
         );
