@@ -1093,7 +1093,6 @@ export default function FailedCons({
         state,
         OccuredAt
     ) => {
-        console.log(OccuredAt);
         // Find the item in the local data with the matching id
         const updatedData = filteredData?.map((item) => {
             if (item.CONSIGNMNENTID === id) {
