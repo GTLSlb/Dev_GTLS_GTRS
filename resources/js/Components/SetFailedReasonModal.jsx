@@ -28,7 +28,7 @@ export default function SetFailedReasonModal({
     const [isLoading, SetIsLoading] = useState(false);
     const [selected, setSelected] = useState();
     const [showDesc, setShowDesc] = useState();
-    const [occurredAt, setOccuredAt] = useState();
+    const [occurredAt, setOccuredAt] = useState(null);
     const reference = [
         { id: 1, name: "Internal", unavailable: false },
         { id: 2, name: "External", unavailable: false },
@@ -137,16 +137,16 @@ export default function SetFailedReasonModal({
         try {
             SetIsLoading(true);
             // Make the API request using Axios or any other library
-            const response = await axios.post(
-                `${url}add/ConsFailedReason`,
-                data,
-                {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
-                    },
-                }
-            );
+            // const response = await axios.post(
+            //     `${url}add/ConsFailedReason`,
+            //     data,
+            //     {
+            //         headers: {
+            //             UserId: currentUser.UserId,
+            //             Authorization: `Bearer ${AToken}`,
+            //         },
+            //     }
+            // );
             // Handle the response as needed
             // setInputValue("");
             setSuccess(true);
@@ -206,6 +206,7 @@ export default function SetFailedReasonModal({
         setShowDesc(event);
     }
     function handleDateChange(event) {
+        console.log(event.target.value);
         const occurredAttDate = new Date(event.target.value);
         setOccuredAt(occurredAttDate.toLocaleString("sv-SE"));
     }
