@@ -137,16 +137,16 @@ export default function SetFailedReasonModal({
         try {
             SetIsLoading(true);
             // Make the API request using Axios or any other library
-            // const response = await axios.post(
-            //     `${url}add/ConsFailedReason`,
-            //     data,
-            //     {
-            //         headers: {
-            //             UserId: currentUser.UserId,
-            //             Authorization: `Bearer ${AToken}`,
-            //         },
-            //     }
-            // );
+            const response = await axios.post(
+                `${url}add/ConsFailedReason`,
+                data,
+                {
+                    headers: {
+                        UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
+                    },
+                }
+            );
             // Handle the response as needed
             // setInputValue("");
             setSuccess(true);
