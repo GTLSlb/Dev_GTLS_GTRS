@@ -132,7 +132,7 @@ export default function AddFailedReason({
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-300  max-h-80 overflow-y-scroll">
-                                        {Data?.map((reason, index) => (
+                                        {Data?.reverse().map((reason, index) => (
                                             <tr
                                                 key={index}
                                                 className={[
