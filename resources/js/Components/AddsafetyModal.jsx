@@ -100,18 +100,19 @@ export default function SafetyModal({
         event.preventDefault(); // Prevent the default form submission behavior
         try {
             SetIsLoading(true);
+            console.log(formValues);
             // Make the API request using Axios or any other library
-            const response = await axios.post(
-                `${url}Add/SafetyReport`,
-                formValues,
-                {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
-                    },
-                }
-            );
-            updateLocalData(id, formValues);
+            // const response = await axios.post(
+            //     `${url}Add/SafetyReport`,
+            //     formValues,
+            //     {
+            //         headers: {
+            //             UserId: currentUser.UserId,
+            //             Authorization: `Bearer ${AToken}`,
+            //         },
+            //     }
+            // );
+            // updateLocalData(id, formValues);
             setSuccess(true);
             setTimeout(() => {
                 handleClose();

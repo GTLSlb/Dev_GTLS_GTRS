@@ -910,7 +910,7 @@ export default function RDDreason({
                 minDate: minChangeAtDate,
                 maxDate: maxChangeAtDate,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 {
                     return (
                         <p>
@@ -924,7 +924,7 @@ export default function RDDreason({
                                       convertUtcToUserTimezone(value + "Z"),
 
                                       "MM/DD/YYYY, h:mm:ss A"
-                                  ).format("DD-MM-YYYY hh:mm A")}
+                                  ).format("DD-MM-YYYY")}
                         </p>
                     );
                 }

@@ -68,16 +68,19 @@ export default function KPI({
                     });
                     parsedDataPromise.then((parsedData) => {
                         setKPIData(parsedData);
-                        setSenderStateOptions(createNewLabelObjects(parsedData, "SenderState"));
-                        setReceiverStateOptions(createNewLabelObjects(
-                            parsedData,
-                            "ReceiverState"
-                        ));
-                        setReasonOptions(kpireasonsData.map((reason) => ({
-                            id: reason.ReasonId,
-                            label: reason.ReasonName,
-                        })));
-                        
+                        setSenderStateOptions(
+                            createNewLabelObjects(parsedData, "SenderState")
+                        );
+                        setReceiverStateOptions(
+                            createNewLabelObjects(parsedData, "ReceiverState")
+                        );
+                        setReasonOptions(
+                            kpireasonsData.map((reason) => ({
+                                id: reason.ReasonId,
+                                label: reason.ReasonName,
+                            }))
+                        );
+
                         setIsFetching(false);
                     });
                 });
@@ -594,7 +597,7 @@ export default function KPI({
         });
         return newData;
     };
-    
+
     function getMinMaxValue(data, fieldName, identifier) {
         // Check for null safety
         if (!data || !Array.isArray(data) || data.length === 0) {
@@ -670,15 +673,18 @@ export default function KPI({
         });
         setKPIData(updatedData);
 
-        senderStateOptions = createNewLabelObjects(updatedData, "SenderState");
-        receiverStateOptions = createNewLabelObjects(
-        updatedData,
-        "ReceiverState"
+        setSenderStateOptions(
+            createNewLabelObjects(updatedData, "SenderState")
         );
-        reasonOptions = kpireasonsData.map((reason) => ({
-            id: reason.ReasonId,
-            label: reason.ReasonName,
-        }));
+        setReceiverStateOptions(
+            createNewLabelObjects(updatedData, "ReceiverState")
+        );
+        setReasonOptions(
+            kpireasonsData.map((reason) => ({
+                id: reason.ReasonId,
+                label: reason.ReasonName,
+            }))
+        );
     };
     const columns = [
         {
@@ -942,27 +948,27 @@ export default function KPI({
 
     useEffect(() => {
         let arr = newColumns.map((item) => {
-          if (item?.name === "ReasonId") {
-            item.filterEditorProps = {
-              ...item.filterEditorProps,
-              dataSource: reasonOptions,
-            };
-          }
-          if(item?.name == "SenderState"){
-            item.filterEditorProps = {
-                ...item.filterEditorProps,
-                dataSource: senderStateOptions,
-              };
-          }
-          if(item?.name == "ReceiverState"){
-            item.filterEditorProps = {
-                ...item.filterEditorProps,
-                dataSource: receiverStateOptions,
-              };
-          }
-          return item;
+            if (item?.name === "ReasonId") {
+                item.filterEditorProps = {
+                    ...item.filterEditorProps,
+                    dataSource: reasonOptions,
+                };
+            }
+            if (item?.name == "SenderState") {
+                item.filterEditorProps = {
+                    ...item.filterEditorProps,
+                    dataSource: senderStateOptions,
+                };
+            }
+            if (item?.name == "ReceiverState") {
+                item.filterEditorProps = {
+                    ...item.filterEditorProps,
+                    dataSource: receiverStateOptions,
+                };
+            }
+            return item;
         });
-      }, [reasonOptions, receiverStateOptions, senderStateOptions]);
+    }, [reasonOptions, receiverStateOptions, senderStateOptions]);
 
     const [hoverMessage, setHoverMessage] = useState("");
     const [isMessageVisible, setMessageVisible] = useState(false);

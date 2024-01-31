@@ -13,6 +13,7 @@ export default function AddFailedReason({
     failedReasons,
     setFailedReasons,
     currentUser,
+    AToken,
     url,
 }) {
     const [Data, setData] = useState(failedReasons);
@@ -27,7 +28,7 @@ export default function AddFailedReason({
         axios
             .get(`${url}FailureReasons`, {
                 headers: {
-                    RoleId: currentUser.UserId,
+                    UserId: currentUser.UserId,
                     Authorization: `Bearer ${AToken}`,
                 },
             })
@@ -215,6 +216,7 @@ export default function AddFailedReason({
                 updateLocalData={updateLocalData}
                 currentUser={currentUser}
                 failedReasons={failedReasons}
+                AToken={AToken}
                 // reasonAuditId={reasonAuditId}
                 // rddReason={rddReason}
                 // currentUser={currentUser}
