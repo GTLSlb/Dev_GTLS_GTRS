@@ -56,9 +56,11 @@ export default function FailedCons({
         setLastIndex(5);
         setactiveCon(coindex);
     };
+    const excludedDebtorIds = [1514, 364, 247, 246, 245, 244];
     const [data, setData] = useState(
-        PerfData?.filter((obj) => obj.STATUS === "FAIL")
+        PerfData?.filter((obj) => obj.STATUS === "FAIL" && !excludedDebtorIds.includes(obj.ChargeTo))
     );
+
     const [filteredData, setFilteredData] = useState(data);
     const filterData = () => {
         const intArray = accData?.map((str) => {
@@ -313,11 +315,11 @@ export default function FailedCons({
             textAlign: "center",
             defaultWidth: 170,
             dateFormat: "DD-MM-YYYY",
+            filterEditor: DateFilter,
             filterEditorProps: {
                 minDate: minDespatchDate,
                 maxDate: maxDespatchDate,
             },
-            filterEditor: DateFilter,
             render: ({ value, cellProps }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
@@ -558,7 +560,7 @@ export default function FailedCons({
         let selectedColVal = allHeaderColumns.filter(
             (col) => col?.label?.toString().toLowerCase() !== "edit"
         );
-        
+
         const filterValue = [];
         filteredData?.map((val) => {
             let isMatch = true;
@@ -727,14 +729,14 @@ export default function FailedCons({
                         case "inlist":
                             const listValues = Array.isArray(value)
                                 ? value.map((v) => {
-                                    if (typeof v === 'string'){
-                                        return v.toLowerCase()
-                                    }else{
-                                        return v.toString()
-                                    }
-                                })
+                                      if (typeof v === "string") {
+                                          return v.toLowerCase();
+                                      } else {
+                                          return v.toString();
+                                      }
+                                  })
                                 : [value?.toLowerCase()];
-                                
+
                             conditionMet =
                                 cellValue?.length > 0 &&
                                 listValues.includes(valLowerCase);
@@ -827,51 +829,52 @@ export default function FailedCons({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
-        // Use all columns except edit
+            // Use all columns except edit
             selectedColVal = allHeaderColumns.filter(
                 (col) => col?.label?.toString().toLowerCase() !== "edit"
             );
-            selectedColVal.push(
-                {
-                    "name": "Resolution",
-                    "value": "",
-                    "type": "string",
-                    "label": "Resolution",
-                    "operator": "contains"
-                }
-            ) 
+            selectedColVal.push({
+                name: "Resolution",
+                value: "",
+                type: "string",
+                label: "Resolution",
+                operator: "contains",
+            });
         } else {
             allHeaderColumns.map((header) => {
                 selectedColumns.map((column) => {
                     const formattedColumn = column
                         .replace(/\s/g, "")
                         .toLowerCase();
-                    if (header?.name?.replace(/\s/g, "").toLowerCase() === formattedColumn) {
+                    if (
+                        header?.name?.replace(/\s/g, "").toLowerCase() ===
+                        formattedColumn
+                    ) {
                         selectedColVal.push(header);
                     }
                 });
             });
         }
-        selectedColumns.map((item)=>{
-            if(item == "Resolution"){
+        selectedColumns.map((item) => {
+            if (item == "Resolution") {
                 selectedColVal.push({
-                    "name": "Resolution",
-                    "value": "",
-                    "type": "string",
-                    "label": "Resolution",
-                    "operator": "contains"
+                    name: "Resolution",
+                    value: "",
+                    type: "string",
+                    label: "Resolution",
+                    operator: "contains",
                 });
             }
-            if(item == 'Explanation'){
+            if (item == "Explanation") {
                 selectedColVal.push({
-                    "name": "FailedNote",
-                    "operator": "contains",
-                    "type": "string",
-                    "value": "",
+                    name: "FailedNote",
+                    operator: "contains",
+                    type: "string",
+                    value: "",
                 });
             }
-        })
-        
+        });
+
         return { selectedColumns: selectedColVal, filterValue: filterValue };
     }
     function handleDownloadExcel() {
@@ -896,7 +899,7 @@ export default function FailedCons({
             OccuredAt: "Occured At",
             FailedNote: "Explanation",
         };
-        
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
@@ -956,22 +959,15 @@ export default function FailedCons({
                                       ].replace("T", " "),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY h:mm A");
-                    }else if (
-                        column.toUpperCase() === "DESPATCHDATE"
-                    ) {
+                    } else if (column.toUpperCase() === "DESPATCHDATE") {
                         acc[columnKey] =
                             moment(
-                                person["DESPATCHDATE"].replace(
-                                    "T",
-                                    " "
-                                ),
+                                person["DESPATCHDATE"].replace("T", " "),
                                 "YYYY-MM-DD HH:mm:ss"
                             ).format("DD-MM-YYYY h:mm A") == "Invalid date"
                                 ? ""
                                 : moment(
-                                      person[
-                                          "DESPATCHDATE"
-                                      ].replace("T", " "),
+                                      person["DESPATCHDATE"].replace("T", " "),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY h:mm A");
                     } else if (column.toUpperCase() === "DELIVEREDDATETIME") {
@@ -988,7 +984,6 @@ export default function FailedCons({
                                       ),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY h:mm A");
-                                  
                     } else if (column.toUpperCase() === "OCCUREDAT") {
                         acc[columnKey] =
                             moment(
@@ -997,10 +992,7 @@ export default function FailedCons({
                             ).format("DD-MM-YYYY h:mm A") == "Invalid date"
                                 ? ""
                                 : moment(
-                                      person["OccuredAt"]?.replace(
-                                          "T",
-                                          " "
-                                      ),
+                                      person["OccuredAt"]?.replace("T", " "),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY h:mm A");
                     } else if (column === "Consignemnt Number") {

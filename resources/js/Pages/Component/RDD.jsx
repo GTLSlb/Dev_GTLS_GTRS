@@ -83,13 +83,15 @@ export default function RDDreason({
             document.querySelectorAll('input[name="column"]:checked')
         ).map((checkbox) => checkbox.value);
 
-        let allHeaderColumns = gridRef?.current?.visibleColumns?.map((column) => ({
-            name: column.name,
-            value: column.computedFilterValue?.value,
-            label: column.computedHeader,
-            type: column.computedFilterValue?.type,
-            operator: column.computedFilterValue?.operator,
-        }));
+        let allHeaderColumns = gridRef?.current?.visibleColumns?.map(
+            (column) => ({
+                name: column.name,
+                value: column.computedFilterValue?.value,
+                label: column.computedHeader,
+                type: column.computedFilterValue?.type,
+                operator: column.computedFilterValue?.operator,
+            })
+        );
         let selectedColVal = allHeaderColumns?.filter(
             (col) => col?.label?.toString().toLowerCase() !== "edit"
         );
@@ -369,7 +371,7 @@ export default function RDDreason({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
-            selectedColVal  = allHeaderColumns?.filter(
+            selectedColVal = allHeaderColumns?.filter(
                 (col) => col?.label?.toString().toLowerCase() !== "edit"
             ); // Use all columns
         } else {
@@ -463,13 +465,23 @@ export default function RDDreason({
                             moment(
                                 person["OldRdd"],
                                 "YYYY-MM-DDTHH:mm:ss"
-                            ).format("DD-MM-YYYY h:mm A") || "";
+                            ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
+                                ? ""
+                                : moment(
+                                      person["OldRdd"],
+                                      "YYYY-MM-DDTHH:mm:ss"
+                                  ).format("DD-MM-YYYY HH:mm A");
                     } else if (column === "NewRdd") {
                         acc[columnKey] =
                             moment(
                                 person["NewRdd"],
                                 "YYYY-MM-DDTHH:mm:ss"
-                            ).format("DD-MM-YYYY h:mm A") || "";
+                            ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
+                                ? ""
+                                : moment(
+                                      person["NewRdd"],
+                                      "YYYY-MM-DDTHH:mm:ss"
+                                  ).format("DD-MM-YYYY HH:mm A");
                     } else {
                         acc[columnKey] = person[columnKey];
                     }

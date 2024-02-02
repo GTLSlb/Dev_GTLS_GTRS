@@ -12,6 +12,7 @@ export default function ConsPerf({
     PerfData,
     IDfilter,
     EDate,
+    dispatchDate,
     accData,
     setEDate,
     SDate,
@@ -20,19 +21,9 @@ export default function ConsPerf({
     latestDate,
     currentUser,
 }) {
-    const tabs = [
-        { id: 0, name: "General Information", href: "", current: true },
-        { id: 1, name: "Details", href: "", current: false },
-        { id: 2, name: "Interview", href: "", current: false },
-        { id: 3, name: "Offer", href: "", current: false },
-    ];
+    console.log(dispatchDate);
     const [currentPage, setCurrentPage] = useState(0);
-    // const userstoredData = localStorage.getItem("userInfor");
-    // const userparsdeData = JSON.parse(userstoredData);
-    // const current_user_id = userparsdeData.user_id;
-    const [performance, setPerformance] = useState(PerfData);
     const [filteredData, setFilteredData] = useState(PerfData);
-
     const [selectedConsignment, setSelectedConsignment] = useState("");
     const handleStartDateChange = (event) => {
         const value = event.target.value;

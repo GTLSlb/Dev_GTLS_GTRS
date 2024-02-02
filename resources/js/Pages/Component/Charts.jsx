@@ -256,8 +256,8 @@ export default function charts({
             operator: "inrange",
             type: "date",
             value: {
-                start: "",
-                end: "",
+                start: minDispatchDate,
+                end: maxDispatchDate,
             },
         },
         {
@@ -283,7 +283,7 @@ export default function charts({
         },
         {
             name: "TransitDays",
-            operator: "eq",
+            operator: "gte",
             type: "number",
             value: "",
             //emptyValue: "",
@@ -469,8 +469,10 @@ export default function charts({
             name: "DESPATCHDATE",
             operator: "inrange",
             type: "date",
-            emptyValue: "",
-            value: "",
+            value: {
+                start: minDispatchDate,
+                end: maxDispatchDate,
+            },
         },
         {
             name: "DELIVERYREQUIREDDATETIME",
@@ -1057,7 +1059,7 @@ export default function charts({
             value: "",
         },
     ]);
-
+    
     function getOldestDespatchDate(data) {
         // Filter out elements with invalid 'CreatedDate' values
         const validData = data.filter((item) => isValidDate(item.DespatchDate));

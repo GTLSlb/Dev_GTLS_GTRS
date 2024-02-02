@@ -37,6 +37,7 @@ export default function KPI({
     accData,
     kpireasonsData,
 }) {
+    console.log(KPIData, "KPIData");
     window.moment = moment;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -804,6 +805,10 @@ export default function KPI({
             textAlign: "center",
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
+            filterEditorProps: {
+                minDate: minDispatchDate,
+                maxDate: maxDispatchDate,
+            },
             render: ({ value, cellProps }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
