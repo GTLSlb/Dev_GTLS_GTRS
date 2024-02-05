@@ -405,7 +405,7 @@ export default function Gtrs({
         setLoadingGtrs(true);
     }
 
-    if (loadingGtrs && AToken) {
+    if (loadingGtrs && AToken ) {
         if (canAccess) {
             return (
                 <div className="bg-smooth">

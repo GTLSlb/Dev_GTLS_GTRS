@@ -10,9 +10,7 @@ import { saveAs } from "file-saver";
 
 export default function ConsPerf({
     PerfData,
-    IDfilter,
     EDate,
-    dispatchDate,
     accData,
     setEDate,
     SDate,
@@ -20,20 +18,23 @@ export default function ConsPerf({
     oldestDate,
     latestDate,
     currentUser,
+    setSharedStartDate,
+    setSharedEndDate,
 }) {
-    console.log(dispatchDate);
+
     const [currentPage, setCurrentPage] = useState(0);
     const [filteredData, setFilteredData] = useState(PerfData);
     const [selectedConsignment, setSelectedConsignment] = useState("");
     const handleStartDateChange = (event) => {
         const value = event.target.value;
         setSDate(value);
+        setSharedStartDate(value);
         filterData(value, EDate, selectedConsignment);
     };
     const handleEndDateChange = (event) => {
         const value = event.target.value;
         setEDate(value);
-        // filterData(SDate, value);
+        setSharedEndDate(value);
         filterData(SDate, value, selectedConsignment);
     };
     const handleConsignmentChange = (value) => {

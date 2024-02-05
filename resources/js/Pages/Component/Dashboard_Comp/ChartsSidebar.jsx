@@ -150,14 +150,11 @@ const navigation = [
     },
 ];
 
-const admins = ["4", "1"];
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
 export default function ChartsSidebar({
-    sessionData,
-    activeIndexGTRS,
     setCusomterAccounts,
     customerAccounts,
     setActiveIndexGTRS,
@@ -285,7 +282,6 @@ export default function ChartsSidebar({
         setSidebarElements(filteredNavigation);
         setActiveIndexGTRS(filteredNavigation[0]?.id);
     }, []);
-    console.log(user)
     return (
         <div className="h-full xl:fixed xl:w-64 lg:h-full bg-gray-200 w-full ">
             {/* Static sidebar for desktop */}
