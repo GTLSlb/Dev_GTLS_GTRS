@@ -285,6 +285,7 @@ export default function ChartsSidebar({
         setSidebarElements(filteredNavigation);
         setActiveIndexGTRS(filteredNavigation[0]?.id);
     }, []);
+    console.log(user)
     return (
         <div className="h-full xl:fixed xl:w-64 lg:h-full bg-gray-200 w-full ">
             {/* Static sidebar for desktop */}
@@ -296,7 +297,7 @@ export default function ChartsSidebar({
                             <div className="group block w-full flex-shrink-0">
                                 <div className="flex items-center">
                                     <div>
-                                        {user.Picture ? (
+                                        {user.Picture.length == 0 ? (
                                             <img
                                                 className="inline-block h-14 w-14"
                                                 src={`/app/icons/blank-profile.jpg`}
