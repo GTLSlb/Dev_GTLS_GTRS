@@ -3,6 +3,7 @@ import FailedCons from "./FailedCons";
 import AddFailedReason from "./AddFailedReason";
 import { canViewFailedReasons } from "@/permissions";
 import swal from 'sweetalert';
+import axios from "axios";
 export default function FailedConsMain({
     url,
     PerfData,

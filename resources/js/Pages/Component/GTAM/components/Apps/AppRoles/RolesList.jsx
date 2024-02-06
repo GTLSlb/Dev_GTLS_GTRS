@@ -69,7 +69,6 @@ let role= RolesElements?.find(
             RoleName: roleName,
             StatusId: status,
         };
-        console.log(inputValues);
         axios
             .post(`${url}api/GTAM/Add/AppRole`, inputValues, {
                 headers: {
@@ -77,7 +76,6 @@ let role= RolesElements?.find(
                 },
             })
             .then((res) => {
-                console.log("done");
                 AlertToast("Saved successfully",1)
                 setEditIndex(null);
                 setRoleName(null)

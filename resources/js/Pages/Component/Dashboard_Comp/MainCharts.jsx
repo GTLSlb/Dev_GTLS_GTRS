@@ -540,24 +540,24 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
     }, [cols]);
     if (chartsData.length > 0) {
         return (
-            <div className=" px-4 sm:px-6 lg:px-8 pb-6 bg-smooth">
+            <div className=" px-4 sm:px-6 pb-4 bg-smooth">
                 <div className="sm:flex sm:items-center">
-                    <div className="sm:flex-auto mt-6">
-                        <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
+                    <div className="sm:flex-auto md:mt-6">
+                        <h1 className="text-2xl py-2 px-2 font-extrabold text-gray-600">
                             Dashboard
                         </h1>
                     </div>
                 </div>
-                <div className="mt-3">
-                    <div className="w-full relative">
-                        <div className=" sm:border-gray-200 text-gray-400 flex flex-col  2xl:flex-row gap-y-4 gap-x-2 2xl:items-center">
+                <div className="mt-3 w-full">
+                    <div className="w-full relative px-2">
+                        <div className=" sm:border-gray-200 text-gray-400 flex flex-col md:flex-row gap-y-4 gap-x-2 2xl:items-center">
                             <label
                                 htmlFor="last-name"
-                                className="inline-block text-sm font-medium leading-6  flex-item items-center"
+                                className="inline-block text-sm font-medium leading-6 flex-item items-center"
                             >
                                 Date From
                             </label>
-                            <div className="sm:mt-0 md:px-4 ">
+                            <div className="sm:mt-0 md:px-4">
                                 <input
                                     onKeyDown={(e) => e.preventDefault()}
                                     type="date"
@@ -567,7 +567,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                                     max={EDate}
                                     onChange={handleStartDateChange}
                                     id="from-date"
-                                    className="flex-item block w-full max-w-lg h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                                    className="flex-item block w-full h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 lg:max-w-xs sm:text-sm sm:leading-6"
                                 />
                             </div>
 
@@ -588,18 +588,18 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                                     value={EDate}
                                     onChange={handleEndDateChange}
                                     id="to-date"
-                                    className="block w-full max-w-lg h-[36px]  rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                                    className="block w-full h-[36px]  rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 lg:max-w-xs sm:text-sm sm:leading-6"
                                 />
                             </div>
 
                             <label
                                 htmlFor="last-name"
-                                className="block text-sm font-medium leading-6  text-gray-400 sm:pt-1.5 mr-5"
+                                className="hidden lg:block text-sm font-medium leading-6 text-gray-400 sm:pt-1.5 2xl:mr-5"
                             >
                                 Receiver Name
                             </label>
 
-                            <div className="inline-block ">
+                            <div className="hidden lg:inline-block">
                                 <div className=" flex items-center">
                                     <div className="mt-2 w-full sm:mt-0 ">
                                         <Select
@@ -618,9 +618,9 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                                 </div>
                             </div>
 
-                            <Popover className="relative object-right flex-item md:ml-auto mr-5">
+                            <Popover className="relative object-right flex-item md:ml-auto">
                                 <Popover.Button
-                                    className={` inline-flex items-center w-[5.5rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+                                    className={`inline-flex items-center w-[5.5rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
                                 >
                                     Presets
                                     <ChevronDownIcon
@@ -678,6 +678,33 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                             </Popover>
                         </div>
                     </div>
+                    <div className="lg:hidden px-2 py-3 w-full">
+                    <label
+                                htmlFor="last-name"
+                                className="block text-sm font-medium leading-6  text-gray-400 sm:pt-1.5 mr-5"
+                            >
+                                Receiver Name
+                            </label>
+
+                            <div className="inline-block w-full">
+                                <div className=" flex items-center">
+                                    <div className="mt-2 w-full sm:mt-0 ">
+                                        <Select
+                                            styles={customStyles}
+                                            isMulti
+                                            name="colors"
+                                            value={selectedReceiver}
+                                            options={getFilteredOptions()}
+                                            onChange={
+                                                handleReceiverSelectChange
+                                            }
+                                            className="basic-multi-select text-red "
+                                            classNamePrefix="select"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
                 </div>
                 {hasData ? (
                     <ReactGridLayout

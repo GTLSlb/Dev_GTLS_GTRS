@@ -4,6 +4,7 @@ import RDDreason from "./RDD";
 import "../../../css/radio.css";
 import { canViewRDDReasons } from "@/permissions";
 import swal from 'sweetalert';
+import axios from "axios";
 export default function RDDMain({
     setActiveIndexGTRS,
     setactiveCon,
@@ -30,7 +31,65 @@ export default function RDDMain({
 
     const [isFetching, setIsFetching] = useState();
     const [isFetchingReasons, setIsFetchingReasons] = useState();
+    const parseDateString = (dateString) => {
+        // Check if dateString is undefined, null, or empty
+        if (!dateString || !dateString.trim()) {
+            return null; // or return any other default value as needed
+        }
 
+        const parts = dateString.split(/[\s/:]/);
+
+        let dateObject;
+
+        if (parts.length === 7) {
+            // If there is a time component
+            dateObject = new Date(
+                parts[2],
+                parts[1] - 1,
+                parts[0],
+                parts[3],
+                parts[4],
+                parts[5]
+            );
+        } else {
+            // If there is no time component
+            dateObject = new Date(parts[2], parts[1] - 1, parts[0]);
+        }
+
+        return dateObject;
+    };
+    const formatDate = (date) => {
+        if (!(date instanceof Date) || isNaN(date.getTime())) {
+          return ""; // or return any other default value as needed
+        }
+      
+        const options = {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          timeZone: "UTC",
+        };
+      
+        return date.toISOString().slice(0, 19); // UTC time
+    };
+    const updateFieldWithData = (data, fieldName) => {
+        if (!data || data.length === 0) {
+            return []; // or return any other default value as needed
+        }
+
+        const updatedData = data.map((item) => {
+            const fieldValue = item[fieldName];
+            const parsedDate = parseDateString(fieldValue);
+            const formattedDate = formatDate(parsedDate);
+            // Return a new object with the updated field
+            return { ...item, [fieldName]: formattedDate };
+        });
+        setrddData(updatedData);
+        return updatedData;
+    };
     useEffect(() => {
         if (!rddData) {
             setIsFetching(true);
@@ -55,7 +114,9 @@ export default function RDDMain({
                         resolve(parsedData);
                     });
                     parsedDataPromise.then((parsedData) => {
-                        setrddData(parsedData || []);
+                        const updatedOldRddData = updateFieldWithData(parsedData, "OldRdd");
+                        const updatedNewRddData = updateFieldWithData(updatedOldRddData, "NewRdd");
+                        setrddData(updatedNewRddData || []);
                         setIsFetching(false);
                     });
                 })

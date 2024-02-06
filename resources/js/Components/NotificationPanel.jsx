@@ -110,19 +110,26 @@ const NotificationPanel = ({
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
-                    // Handle 401 error
-                    alert('Session Expired, Please Login Again');
-                    // axios
-                    // .post("/logoutAPI")
-                    // .then((response) => {
-                    //     if (response.status == 200) {
-                    //         window.location.href = "/";
-                    //     }
-                    // })
-                    // .catch((error) => {
-                    //     console.log(error);
-                    // });
-                } else {
+                    // Handle 401 error using SweetAlert
+                    swal({
+                      title: 'Session Expired!',
+                      text: "Please login again",
+                      type: 'success',
+                      icon: "info",
+                      confirmButtonText: 'OK'
+                    }).then(function() {
+                      axios
+                          .post("/logoutAPI")
+                          .then((response) => {
+                            if (response.status == 200) {
+                              window.location.href = "/";
+                            }
+                          })
+                          .catch((error) => {
+                            console.log(error);
+                          });
+                    });
+                  } else {
                     // Handle other errors
                     console.log(err);
                 }

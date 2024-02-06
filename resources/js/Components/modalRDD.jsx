@@ -5,13 +5,14 @@ import axios from "axios";
 import { Fragment, useState, useEffect } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-
-const placeholder = "test";
+import swal from "sweetalert";
+import { set } from "date-fns";
 
 export default function ModalRDD({
     isOpen,
     handleClose,
     url,
+    AToken,
     consignment,
     currentUser,
     updateLocalData,
@@ -22,12 +23,17 @@ export default function ModalRDD({
     const [inputValue, setInputValue] = useState("");
     const [consignmentrdd, setConsignmentrdd] = useState(consignment);
     const [note, setNote] = useState("");
-    const [isLoading,SetIsLoading] = useState(false)
-    const [audit, setAudit] = useState();
+    const [isLoading, SetIsLoading] = useState(false);
     const [reasonname, setReasonName] = useState();
     const [selected, setSelected] = useState();
     const [showDesc, setShowDesc] = useState();
 
+    useEffect(() => {
+        setSelected(null);
+    }, [isOpen]);
+    useEffect(() => {
+        setShowDesc(selected);
+    }, [selected]);
     function handleReasonChange(event) {
         setSelected(event);
         setShowDesc(event);
@@ -72,37 +78,55 @@ export default function ModalRDD({
     };
     const handleSubmit = async (event) => {
         event.preventDefault(); // Prevent the default form submission behavior
-
         try {
             // Make the API request using Axios or any other library
-            SetIsLoading(true)
+            SetIsLoading(true);
             const response = await axios
                 .post(`${url}Add/RDD`, data, {
                     headers: {
                         UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
                     },
                 })
-                .then((res) => {
-                })
+                .then((res) => {})
                 .catch((err) => {
-                    console.log(err.response);
+                    if (err.response && err.response.status === 401) {
+                        // Handle 401 error using SweetAlert
+                        swal({
+                            title: "Session Expired!",
+                            text: "Please login again",
+                            type: "success",
+                            icon: "info",
+                            confirmButtonText: "OK",
+                        }).then(function () {
+                            axios
+                                .post("/logoutAPI")
+                                .then((response) => {
+                                    if (response.status == 200) {
+                                        window.location.href = "/";
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.log(error);
+                                });
+                        });
+                    } else {
+                        // Handle other errors
+                        console.log(err);
+                    }
                 });
             // Handle the response as needed
-            updateLocalData(
-                consignment.AuditId,
-                selected?.ReasonId,
-                note
-            );
+            updateLocalData(consignment.AuditId, selected?.ReasonId, note);
             setInputValue("");
             setSuccess(true);
 
             setTimeout(() => {
                 handleClose();
-                SetIsLoading(false)
+                SetIsLoading(false);
                 setSuccess(false);
             }, 1000);
         } catch (error) {
-            SetIsLoading(false)
+            SetIsLoading(false);
             // Handle error
             setError("Error occurred while saving the data. Please try again."); // Set the error message
         }
@@ -115,7 +139,6 @@ export default function ModalRDD({
             className="fixed inset-0 flex items-center justify-center"
             overlayClassName="fixed inset-0 bg-black bg-opacity-60"
         >
-
             <div className="bg-white w-96 rounded-lg shadow-lg p-6 ">
                 <div className="flex justify-end">
                     <button
@@ -144,7 +167,7 @@ export default function ModalRDD({
                 </h2>
 
                 <form onSubmit={handleSubmit}>
-                {error && <div className="text-red-500 mb-4">{error}</div>}
+                    {error && <div className="text-red-500 mb-4">{error}</div>}
                     <Listbox value={selected} onChange={handleReasonChange}>
                         {({ open }) => (
                             <>
@@ -172,7 +195,8 @@ export default function ModalRDD({
                                         leaveTo="opacity-0"
                                     >
                                         <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                            {rddReasons?.filter(
+                                            {rddReasons
+                                                ?.filter(
                                                     (reason) =>
                                                         reason.ReasonStatus ===
                                                         true
@@ -269,12 +293,12 @@ export default function ModalRDD({
                             className="rounded-md bg-dark w-20 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-goldd focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         >
                             {isLoading ? (
-                                    <div className=" inset-0 flex justify-center items-center bg-opacity-50">
-                                        <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-smooth"></div>
-                                    </div>
-                                ) : (
-                                    "Save"
-                                )}
+                                <div className=" inset-0 flex justify-center items-center bg-opacity-50">
+                                    <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-smooth"></div>
+                                </div>
+                            ) : (
+                                "Save"
+                            )}
                         </button>
                     </div>
                 </form>

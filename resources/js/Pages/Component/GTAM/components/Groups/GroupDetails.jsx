@@ -198,7 +198,7 @@ export default function GroupDetails({
 
     function handleEdit(item) {
         setIsLoading(true)
-        console.log(item);
+        // console.log(item);
         setEditIndex(item.AppId);
 
         if (item.Roles) {
@@ -228,7 +228,7 @@ export default function GroupDetails({
             RoleId: selected.RoleId,
             StatusId: switchStatus ? 1 : 2,
         };
-        console.log(inputValues);
+        // console.log(inputValues);
         axios
             .post(`${url}api/GTAM/Add/GroupRoles`, inputValues, {
                 headers: {
@@ -236,7 +236,7 @@ export default function GroupDetails({
                 },
             })
             .then((res) => {
-                console.log("done");
+
                 AlertToast("Saved successfully",1)
                 setEditIndex(null);
                 getGroups();
@@ -251,7 +251,7 @@ export default function GroupDetails({
                 console.log(err);
             });
     };
-    console.log(editIndex);
+    // console.log(editIndex);
     return (
         <div>
             <div

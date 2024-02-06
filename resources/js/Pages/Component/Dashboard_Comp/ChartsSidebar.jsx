@@ -150,21 +150,18 @@ const navigation = [
     },
 ];
 
-const admins = ["4", "1"];
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
 export default function ChartsSidebar({
-    sessionData,
-    activeIndexGTRS,
+    setCusomterAccounts,
     customerAccounts,
     setActiveIndexGTRS,
     currentUser,
     user,
     onData,
 }) {
-
     const [customerOptions, setCustomerOptions] = useState([]);
     const [showList, setShowList] = useState(false);
     // const showSelect = true;
@@ -182,6 +179,7 @@ export default function ChartsSidebar({
                 : option
         );
         setCustomerOptions(value);
+        setCusomterAccounts(value);
         handleSelectedCValue(event);
     };
     const handleSelectedCValue = (event) => {
@@ -194,12 +192,6 @@ export default function ChartsSidebar({
             );
         }
     };
-    function sortObjectsByParentId(objects) {
-        const sortedObjects = [...objects].sort(
-            (a, b) => a.parent_id - b.parent_id
-        );
-        return sortedObjects;
-    }
     useEffect(() => {
         setCustomerOptions(customerAccounts);
     }, []);
@@ -255,7 +247,6 @@ export default function ChartsSidebar({
         });
         setSidebarElements(updatedElements);
     };
-
     const filterNavigation = (navigation, user) => {
         return navigation.filter((navItem) => {
             // Check if the navigation item has sub-options
@@ -286,18 +277,15 @@ export default function ChartsSidebar({
             }
         });
     };
-    // Example usage
     const filteredNavigation = filterNavigation(navigation, currentUser);
-
     useEffect(() => {
         setSidebarElements(filteredNavigation);
         setActiveIndexGTRS(filteredNavigation[0]?.id);
     }, []);
-
     return (
-        <div className="h-full xl:fixed xl:w-64 md:h-full xl:fixed bg-gray-200 w-full ">
+        <div className="h-full xl:fixed xl:w-64 lg:h-full bg-gray-200 w-full ">
             {/* Static sidebar for desktop */}
-            <div className=" h-[90%] md:inset-y-0 flex md:w-full md:flex-row ">
+            <div className=" h-[90%] md:inset-y-0 flex w-full md:flex-row ">
                 {/* Sidebar component, swap this element with another sidebar if you like */}
                 <div className=" h-full w-full overflow-y-scroll containerscroll">
                     <div className="flex flex-col">
@@ -305,7 +293,7 @@ export default function ChartsSidebar({
                             <div className="group block w-full flex-shrink-0">
                                 <div className="flex items-center">
                                     <div>
-                                        {user.Picture ? (
+                                        {user.Picture.length == 0 ? (
                                             <img
                                                 className="inline-block h-14 w-14"
                                                 src={`/app/icons/blank-profile.jpg`}
@@ -321,7 +309,7 @@ export default function ChartsSidebar({
                                     </div>
                                     <div className="ml-3">
                                         <p className="text-sm font-medium text-gray-800">
-                                            {user?.name ? user?.name : `${user?.FirstName} ${user?.LastName}`}
+                                            {user.TypeId == 1 ? <p>{user.CustomerName}</p> :<p>{user.FirstName}{" "}{user.LastName}</p>}
                                         </p>
                                         <p className=" text-[0.7rem] text-gray-500 ">
                                             {user.Email}
@@ -351,7 +339,7 @@ export default function ChartsSidebar({
                                                 {customerAccounts?.map(
                                                     (option) => (
                                                         <div
-                                                            className="flex items-center"
+                                                            className="flex items-start"
                                                             key={
                                                                 option.DebtorId
                                                             }
@@ -394,7 +382,7 @@ export default function ChartsSidebar({
                             )}
                         </div>
                     </div>
-                    <div className=" pt-2 pb-4 w-full">
+                    <div className="pt-5 w-full">
                         <nav className="mt-5 flex-1 hidden xl:flex-col space-y-1 px-2 w-full md:flex-row md:flex md:mt-0 ">
                             {sidebarElements?.map((item) => (
                                 <div key={item.id}>
@@ -416,7 +404,7 @@ export default function ChartsSidebar({
                                                                 item.current
                                                                     ? "bg-gray-300 text-gray-900"
                                                                     : "text-gray-700 hover:bg-gray-500 hover:text-white",
-                                                                "group flex flex-row justify-between items-center px-2 py-2 text-sm font-medium rounded-md lg:w-1/2 xl:w-full"
+                                                                "group flex flex-row justify-between items-center px-2 py-2 text-sm font-medium rounded-md w-full"
                                                             )}
                                                         >
                                                             <div className="flex items-center">
@@ -504,7 +492,7 @@ export default function ChartsSidebar({
                                                 item.current
                                                     ? "bg-gray-300 text-gray-900"
                                                     : "text-gray-700 hover:bg-gray-500 hover:text-white",
-                                                "group flex flex-row items-center px-2 py-2 text-sm font-medium rounded-md lg:w-1/2 xl:w-full"
+                                                "group flex flex-row items-center px-2 py-2 text-sm font-medium rounded-md w-full"
                                             )}
                                         >
                                             <item.icon

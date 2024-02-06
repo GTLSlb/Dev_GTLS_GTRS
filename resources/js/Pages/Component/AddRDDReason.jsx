@@ -52,11 +52,12 @@ export default function AddRDDReason({
 
     const pageCount = Math.ceil(filteredData.length / PER_PAGE);
     const tableRef = useRef(null);
+
     function fetchData() {
         axios
             .get(`${url}RddChangeReason`, {
                 headers: {
-                    RoleId: currentUser.UserId,
+                    UserId: currentUser.UserId,
                     Authorization: `Bearer ${AToken}`,
                 },
             })

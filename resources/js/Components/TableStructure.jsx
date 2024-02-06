@@ -15,9 +15,11 @@ export default function TableStructure({
     filterTypesElements,
     setFilterTypesElements,
     setSelected,
+    gridRef,
     selected,
     id,
 }) {
+
     const [tableData, setTableData] = useState(tableDataElements);
     const [currentPage, setCurrentPage] = useState(4);
     const [filters, setFilters] = useState(filterValueElements);
@@ -35,7 +37,7 @@ export default function TableStructure({
         setColumns(columnsElements);
     }, [columnsElements]);
     // const [selected, setSelected] = useState({});
-    const gridRef = useRef(null);
+
     const scrollProps = Object.assign(
         {},
         ReactDataGrid.defaultProps.scrollProps,
@@ -59,25 +61,7 @@ export default function TableStructure({
     const onFilterValueChange = useCallback((filterValue) => {
         setFilterValueElements(filterValue);
     }, []);
-    // const onSelectionChange = useCallback(
-    //     ({ selected }) => {
-    //         if (selected === true) {
-    //             if (filters) {
-    //                 setSelected(filter(tableData, filters));
-    //                 setSelectedRows(selected);
-    //             } else {
-    //                 console.log("No filters")
-    //                 setSelected(tableData);
-    //                 setSelectedRows(selected);
-    //             }
-    //         } else {
-    //             setSelected(selected);
-    //             setSelectedRows(selected);
-    //         }
-    //     },
-    //     [filters]
-    // );
-    
+
     return (
         <div className="">
             {/* <Sidebar /> */}
@@ -86,14 +70,14 @@ export default function TableStructure({
                     <ReactDataGrid
                         idProperty={id}
                         handle={(ref) =>
-                            (gridRef.current = ref ? ref.current : null)
+                            (gridRef.current = ref ? ref.current : [])
                         }
                         className={"rounded-lg shadow-lg overflow-hidden"}
                         pagination
                         rowStyle={rowStyle}
                         filterTypes={filterTypes}
                         scrollProps={scrollProps}
-                        showColumnMenuTool={true}
+                        showColumnMenuTool={false}
                         enableColumnAutosize={false}
                         showColumnMenuLockOptions={false}
                         showColumnMenuGroupOptions={false}
@@ -106,14 +90,16 @@ export default function TableStructure({
                         groups={groups}
                         dataSource={tableData}
                     />
-                ) :                 <div className="h-64 flex items-center justify-center mt-10">
-                <div class="text-center flex justify-center flex-col">
-                    {/* <img src={notFound} alt="" className="w-52 h-auto " /> */}
-                    <h1 class="text-3xl font-bold text-gray-900">
-                        Congrats! <br/> Nothing To Show
-                    </h1>
-                </div>
-            </div>}
+                ) : (
+                    <div className="h-64 flex items-center justify-center mt-10">
+                        <div class="text-center flex justify-center flex-col">
+                            {/* <img src={notFound} alt="" className="w-52 h-auto " /> */}
+                            <h1 class="text-3xl font-bold text-gray-900">
+                                <br /> Nothing To Show
+                            </h1>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

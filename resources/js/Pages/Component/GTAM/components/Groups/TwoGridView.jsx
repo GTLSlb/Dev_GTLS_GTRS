@@ -111,7 +111,7 @@ export default function TwoGridView({
     setActiveGroup,
     allApps,
 }) {
-    console.log(activeGroup);
+
     const [step, setStep] = useState(1);
     const [activePage, setActivePage] = useState(0);
 

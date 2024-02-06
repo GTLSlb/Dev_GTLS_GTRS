@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import notFound from "../../assets/pictures/NotFound.png";
 import AddFailedModal from "@/Pages/Component/modals/AddFailedModal";
 import { canAddFailedReasons, canEditFailedReasons } from "@/permissions";
-
+import swal from 'sweetalert';
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -13,6 +13,7 @@ export default function AddFailedReason({
     failedReasons,
     setFailedReasons,
     currentUser,
+    AToken,
     url,
 }) {
     const [Data, setData] = useState(failedReasons);
@@ -25,9 +26,10 @@ export default function AddFailedReason({
     const [selectedPeople, setSelectedPeople] = useState([]);
     function fetchData() {
         axios
-            .get(`${url}api/FailureReasons`, {
+            .get(`${url}FailureReasons`, {
                 headers: {
-                    RoleId: currentUser.UserId,
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
                 },
             })
             .then((res) => {
@@ -42,7 +44,30 @@ export default function AddFailedReason({
                 });
             })
             .catch((err) => {
-                console.log(err);
+                if (err.response && err.response.status === 401) {
+                    // Handle 401 error using SweetAlert
+                    swal({
+                      title: 'Session Expired!',
+                      text: "Please login again",
+                      type: 'success',
+                      icon: "info",
+                      confirmButtonText: 'OK'
+                    }).then(function() {
+                      axios
+                          .post("/logoutAPI")
+                          .then((response) => {
+                            if (response.status == 200) {
+                              window.location.href = "/";
+                            }
+                          })
+                          .catch((error) => {
+                            console.log(error);
+                          });
+                    });
+                  } else {
+                    // Handle other errors
+                    console.log(err);
+                  }
             });
     }
 
@@ -107,7 +132,7 @@ export default function AddFailedReason({
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-300  max-h-80 overflow-y-scroll">
-                                        {Data?.map((reason, index) => (
+                                        {Data?.reverse().map((reason, index) => (
                                             <tr
                                                 key={index}
                                                 className={[
@@ -191,6 +216,7 @@ export default function AddFailedReason({
                 updateLocalData={updateLocalData}
                 currentUser={currentUser}
                 failedReasons={failedReasons}
+                AToken={AToken}
                 // reasonAuditId={reasonAuditId}
                 // rddReason={rddReason}
                 // currentUser={currentUser}

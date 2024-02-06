@@ -48,9 +48,9 @@ export default function MainSidebar({
 }) {
     const invoicesRoles = [6, 7, 8, 9, 10];
     const [gtrsCurrent, setGtrsCurrent] = useState();
-    useEffect(() => {
-        handleSetActivePage(0);
-    }, []);
+    // useEffect(() => {
+    //     handleSetActivePage(0);
+    // }, []);
 
     const current_user_role = currentUser?.role_id;
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -151,60 +151,60 @@ export default function MainSidebar({
             role: ["1", "2", "3", "4", "5"],
         },
         {
-            id: 1,
+            id: 2,
             name: "Invoices",
             href: "https://gtis.gtls.au",
             icon: DocumentChartBarIcon,
             current: gtrsCurrent,
             options: [
-                {
-                    id: 0,
-                    name: "Dashboard",
-                    current: false,
-                    role: ["1"],
-                },
-                {
-                    id: 1,
-                    name: "Invoices",
-                    current: false,
-                    role: ["1", "6", "7", "8", "9", "10"],
-                },
-                {
-                    id: 2,
-                    name: "Purchase order",
-                    current: false,
-                    role: ["1", "6", "7", "8", "9", "10"],
-                },
-                {
-                    id: 3,
-                    name: "Suppliers",
-                    current: false,
-                    role: ["1", "6", "7", "8", "9", "10"],
-                },
-                {
-                    id: 4,
-                    name: "Services",
-                    current: false,
-                    role: ["1", "6", "7", "8", "9", "10"],
-                },
-                {
-                    id: 5,
-                    name: "Companies",
-                    current: false,
-                    role: ["1", "6", "7", "8", "9", "10"],
-                },
-                {
-                    id: 11,
-                    name: "Categories",
-                    current: false,
-                    role: ["1", "6", "7", "8", "9", "10"],
-                },
-                {
-                    id: 12,
-                    name: "Close reasons",
-                    current: false,
-                    role: ["1", "6", "7", "8", "9", "10"],
-                },
+                // {
+                //     id: 0,
+                //     name: "Dashboard",
+                //     current: false,
+                //     role: ["1"],
+                // },
+                // {
+                //     id: 1,
+                //     name: "Invoices",
+                //     current: false,
+                //     role: ["1", "6", "7", "8", "9", "10"],
+                // },
+                // {
+                //     id: 2,
+                //     name: "Purchase order",
+                //     current: false,
+                //     role: ["1", "6", "7", "8", "9", "10"],
+                // },
+                // {
+                //     id: 3,
+                //     name: "Suppliers",
+                //     current: false,
+                //     role: ["1", "6", "7", "8", "9", "10"],
+                // },
+                // {
+                //     id: 4,
+                //     name: "Services",
+                //     current: false,
+                //     role: ["1", "6", "7", "8", "9", "10"],
+                // },
+                // {
+                //     id: 5,
+                //     name: "Companies",
+                //     current: false,
+                //     role: ["1", "6", "7", "8", "9", "10"],
+                // },
+                // {
+                //     id: 11,
+                //     name: "Categories",
+                //     current: false,
+                //     role: ["1", "6", "7", "8", "9", "10"],
+                // },
+                // {
+                //     id: 12,
+                //     name: "Close reasons",
+                //     current: false,
+                //     role: ["1", "6", "7", "8", "9", "10"],
+                // },
             ],
             role: ["1", "6", "7", "8", "9", "10"],
         },
@@ -221,36 +221,36 @@ export default function MainSidebar({
                 //     current: false,
                 //     role: ["1", "2", "3", "4", "5"],
                 // },
-                {
-                    id: 1,
-                    name: "Employees",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 2,
-                    name: "Roles",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 3,
-                    name: "Apps",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 4,
-                    name: "Groups",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 5,
-                    name: "Branches",
-                    current: false,
-                    role: ["1", "4"],
-                },
+                // {
+                //     id: 1,
+                //     name: "Employees",
+                //     current: false,
+                //     role: ["1", "2", "3", "4", "5"],
+                // },
+                // {
+                //     id: 2,
+                //     name: "Roles",
+                //     current: false,
+                //     role: ["1", "2", "3", "4", "5"],
+                // },
+                // {
+                //     id: 3,
+                //     name: "Apps",
+                //     current: false,
+                //     role: ["1", "2", "3", "4", "5"],
+                // },
+                // {
+                //     id: 4,
+                //     name: "Groups",
+                //     current: false,
+                //     role: ["1", "2", "3", "4", "5"],
+                // },
+                // {
+                //     id: 5,
+                //     name: "Branches",
+                //     current: false,
+                //     role: ["1", "4"],
+                // },
             ],
             role: ["1"],
         },
@@ -377,16 +377,19 @@ export default function MainSidebar({
 
         // { name: 'Settings', href: '#', icon: CogIcon, current: false },
     ];
-    const [sidebarElements, setSidebarElements] = useState(sidebarNavigation);
-    const handleSetActivePage = (id) => {
-        setactivePage(id);
-        setSidebarElements((prevData) =>
-            prevData.map((item) => ({
-                ...item,
-                current: item.id === id ? true : false,
-            }))
-        );
-    };
+    const [sidebarElements, setSidebarElements] = useState([]);
+    useEffect(() => {
+        let elements = [];
+       sidebarNavigation?.map((item)=>{
+           allowedApplications?.map((element)=>{
+               if(item.id == element.AppId){
+                    item.href=element?.AppURL
+                    elements.push(item)
+               }
+           })
+       })
+       setSidebarElements(elements.reverse())
+    },[allowedApplications])
     const handleClick = (index) => {
         if (index == 5 || index == 6) {
             setMobileMenuOpen(false);
@@ -406,18 +409,23 @@ export default function MainSidebar({
     const handleClickSupport = (index) => {};
 
     const handleClickSide = (index, tabind) => {
-        setactivePage(index);
+        setactivePage(0);
         if (index == 3) {
             setActiveIndexGTRS(tabind);
-        } else if (index == 4) {
+        } else if (index == 2) {
             setActiveIndexInv(tabind);
         } else if (index == 1) {
             setActiveIndexGtam(tabind);
         }
 
         setMobileMenuOpen(false);
-        const updatedElements = sidebarNavigation.map((element) => {
+        const updatedElements = sidebarElements.map((element) => {
             if (element.id === index) {
+                element?.options.map((option)=>{
+                    if(option.id == tabind){
+                        option.current = true;
+                    }
+                })
                 return { ...element, current: true };
             } else {
                 return { ...element, current: false };
@@ -425,6 +433,7 @@ export default function MainSidebar({
         });
         setSidebarElements(updatedElements);
     };
+
     function classNames(...classes) {
         return classes.filter(Boolean).join(" ");
     }
@@ -467,12 +476,16 @@ export default function MainSidebar({
         }
         return array;
     }
-    
+    const handleMenuSide = (item) => {
+        if(item?.options?.length == 0){
+            window.location.href = item?.href;
+        }
+    }
     moveToHead(allowedApplications, 3);
 
     return (
         <div>
-            <div className="hidden md:flex md:flex-shrink-0 h-full fixed top-0 left-0 z-50 w-auto h-screen">
+            <div className="hidden md:flex md:flex-shrink-0 h-full fixed top-0 left-0 z-50 w-auto">
                 <div className="flex w-20 flex-col">
                     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-gray-800 containerscroll">
                         <div className="flex-1">
@@ -518,13 +531,13 @@ export default function MainSidebar({
                                                 />
                                             ) : (
                                                 <img
-                                                    src={`AppLogo/${item.AppIcon}`}
+                                                    src={`${item.AppIcon}`}
                                                     className={classNames(
                                                         item.AppId ==
                                                             currentAppId
                                                             ? "text-yellow-400"
                                                             : "text-gray-400 group-hover:text-white",
-                                                        "h-6 w-8"
+                                                        "h-8 w-8"
                                                     )}
                                                     aria-hidden="true"
                                                 />
@@ -643,11 +656,11 @@ export default function MainSidebar({
                                     <nav className="flex h-full flex-col">
                                         <div className="space-y-1 ">
                                             {sidebarElements
-                                                .filter((item) =>
-                                                    item.role.includes(
-                                                        current_user_role
-                                                    )
-                                                )
+                                                // .filter((item) =>
+                                                //     item.role.includes(
+                                                //         current_user_role
+                                                //     )
+                                                // )
                                                 .map((item) => (
                                                     // {sidebarElements.map((item) => (
                                                     <Accordion
@@ -664,12 +677,12 @@ export default function MainSidebar({
                                                                 {({ open }) => (
                                                                     <>
                                                                         <AccordionHeader
-                                                                            // className=" "
+                                                                            onClick={() => handleMenuSide(item)}
                                                                             className={classNames(
                                                                                 item.current
                                                                                     ? "bg-gray-700 text-white"
                                                                                     : "text-gray-400 hover:bg-gray-900 hover:text-white",
-                                                                                "group py-2 px-3 rounded-md flex gap-x-2 items-center text-sm font-medium w-full flex justify- items-center text-gray-600  p-4"
+                                                                                "group py-2 px-3 rounded-md gap-x-2 text-sm font-medium w-full flex justify- items-center text-gray-600  p-4"
                                                                             )}
                                                                         >
                                                                             {item.icon ? (
@@ -705,21 +718,21 @@ export default function MainSidebar({
                                                                                     item.name
                                                                                 }
                                                                             </span>
-                                                                            <ChevronDownIcon className="h-3" />
+                                                                            {item?.options.length > 0 ?<ChevronDownIcon className="h-3" /> : null}
                                                                         </AccordionHeader>
                                                                         {/* {sidebarElements.filter(item => item.role.includes(current_user_role)).map((item) => ( */}
                                                                         {/* Mobile view  */}
                                                                         {item.options ? (
                                                                             <AccordionBody className="pl-8 flex flex-col">
                                                                                 {item.options
-                                                                                    .filter(
-                                                                                        (
-                                                                                            item
-                                                                                        ) =>
-                                                                                            item.role.includes(
-                                                                                                current_user_role
-                                                                                            )
-                                                                                    )
+                                                                                    // .filter(
+                                                                                    //     (
+                                                                                    //         item
+                                                                                    //     ) =>
+                                                                                    //         item.role.includes(
+                                                                                    //             current_user_role
+                                                                                    //         )
+                                                                                    // )
                                                                                     .map(
                                                                                         (
                                                                                             option
@@ -842,10 +855,11 @@ export default function MainSidebar({
                                         </div>
                                     </nav>
                                 </div>
+                                <div className="flex flex-col flex-shrink-0 pb-5">
                                 <a
                                     href="https://support.gtls.com.au/help/2703577665"
                                     target="_blank"
-                                    className="flex justify-center"
+                                    className="flex"
                                 >
                                     {" "}
                                     <button
@@ -866,7 +880,7 @@ export default function MainSidebar({
                                         <span className="mt-2">Support</span>
                                     </button>
                                 </a>
-                                <button onClick={handleLogout}>
+                                <button  onClick={() => handleLogout()}>
                                     <ResponsiveNavLink
                                         // href={route("logout")}
                                         as="button"
@@ -878,6 +892,7 @@ export default function MainSidebar({
                                         </span>
                                     </ResponsiveNavLink>
                                 </button>
+                                </div>
                             </Dialog.Panel>
                         </Transition.Child>
                         <div className="w-14 flex-shrink-0" aria-hidden="true">

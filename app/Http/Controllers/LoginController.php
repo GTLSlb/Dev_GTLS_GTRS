@@ -35,11 +35,20 @@ class LoginController extends Controller
             'Password' => $password,
         ];
 
-        $url = $_ENV['GTAM_API_URL'];
+        $url = $_ENV['GTAM_API_URL']; //LOGIN API
         $appID = $_ENV['REACT_APP_ID'];
+        $expiration = time() - (60 * 60 * 24);
 
-        $response = Http::withHeaders($headers)->get("$url" . "Login");
+        // Get an array of all the cookies
+        $cookies = $_COOKIE;
+
+        // Loop through each cookie and set it to expire
+        foreach ($cookies as $name => $value) {
+            setcookie($name, '', $expiration);
+        }
         
+        $response = Http::withHeaders($headers)->get("$url" . "Login");
+
         if ($response->successful()) {
             $responseData = $response->json();
             if (!empty($responseData)) {
@@ -51,7 +60,9 @@ class LoginController extends Controller
                     'PasswordDb' => $responseData[0]['UserId'],
                     'PasswordInput' => $request->input('Password'),
                 ];
+                
                 $authenticatedUser = $authProvider->attempt($credentials, true);
+                
                 if ($authenticatedUser) {
                     // Redirect to the intended page with the obtained user 
                     $user = null;
@@ -67,9 +78,7 @@ class LoginController extends Controller
                     $tokenURL = $_ENV['GTRS_API_URL'];
                     $tokenRes = Http::withHeaders($TokenHeaders)
                     ->asForm()
-                    ->post("$tokenURL" . "Token", $TokenBody);
-
-                    
+                    ->post("$tokenURL" . "/Token", $TokenBody);
                     if($responseData[0]['TypeId'] == 1) // the user is a customer
                     {
                         $user = new Customer($responseData[0]);
@@ -81,50 +90,49 @@ class LoginController extends Controller
                         $user = new Driver($responseData[0]);
                     }
                     if ($tokenRes->successful()) {
-                        
+
                         $token = $tokenRes->json();
                         $cookieName = 'gtrs_access_token';
                         $cookieValue = $token['access_token'];
                         // $expiry = $token['expires_in'];
-                        $expiry = 60 * 60 * 24 * 2; //48h
+                        $expiry = 60 * 60 * 24; //24h
                         //$expiry = 60;
                         $expirationTime = time() + $expiry;
                         setcookie($cookieName, $cookieValue, $expirationTime, '/', '', true);
                         //dd($expirationTime);
                         setcookie('gtrs_refresh_token', $token['refresh_token'], $expirationTime, '/', '', true);
-                        
+                            
                         $userId = $user['UserId'];
-                    $request->session()->regenerate();
-                    $request->session()->put('user', $user);
-                    $request->session()->put('user_id', $userId);
-                    $request->session()->put('newRoute', route('loginapi'));
+                        $request->session()->regenerate();
+                        $request->session()->put('user', $user);
+                        $request->session()->put('user_id', $userId);
+                        $request->session()->put('newRoute', route('loginapi'));
 
-                    $sessionId = $request->session()->getId();
-                    $payload = $request->session()->get('_token');
-                    $userSession = $request->session()->get('user');
-                    $user = json_encode($userSession->getAttributes());
+                        $sessionId = $request->session()->getId();
+                        $payload = $request->session()->get('_token');
+                        $userSession = $request->session()->get('user');
+                        $user = json_encode($userSession->getAttributes());
 
-                    //dd($user->getAttributes());
-                    $lastActivity = time();
-                    DB::table('custom_sessions')->insert([
-                        'id' => $sessionId,
-                        'user_id' => $userId,
-                        'payload' => $payload,
-                        'user' => $user,
-                        'last_activity' => $lastActivity,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                    //dd($request->session()->get('user')->UserId);
-                    $request->session()->save();
-                        if ($request->session()->get('newRoute') && $request->session()->get('user')) {
-                            return response($request, 200);
+                        $lastActivity = time();
+                        DB::table('custom_sessions')->insert([
+                            'id' => $sessionId,
+                            'user_id' => $userId,
+                            'payload' => $payload,
+                            'user' => $user,
+                            'last_activity' => $lastActivity,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                        //dd($request->session()->get('user')->UserId);
+                        $request->session()->save();
+                            if ($request->session()->get('newRoute') && $request->session()->get('user')) {
+                                return response($request, 200);
+                            }
+                        }else{
+                            $errorMessage = 'Something went wrong, try again later';
+                            $statusCode = 500;
+                            return response(['error' => $response, 'Message' => $errorMessage], $statusCode);
                         }
-                    }else{
-                        $errorMessage = 'Something went wrong, try again later';
-                        $statusCode = 500;
-                        return response(['error' => $response, 'Message' => $errorMessage], $statusCode);
-                    }
                     
 
                 } else {
@@ -145,6 +153,14 @@ class LoginController extends Controller
     {
         $request->session()->invalidate();
         $request->session()->flush();
+        $expiration = time() - (60 * 60 * 24); // expiration time set to 24h before current time 
+        // Get an array of all the cookies
+        $cookies = $_COOKIE;
+
+        // Loop through each cookie and set it to expire
+        foreach ($cookies as $name => $value) {
+            setcookie($name, '', $expiration);
+        }
         $request->session()->regenerateToken();
         return redirect('/');
     }

@@ -31,7 +31,7 @@ export default function MainNavbar({
     ];
 
     return (
-        <header className="w-full flex flex-1 flex-col  md:ml-20 fixed top-0 z-50 shadow shadow-md">
+        <header className="w-full flex flex-1 flex-col  md:ml-20 fixed top-0 z-50 shadow-md">
             <div className="relative z-10 flex h-16 flex-shrink-0 w-full border-b border-gray-200 bg-white shadow-sm ">
                 <button
                     type="button"
@@ -47,7 +47,7 @@ export default function MainNavbar({
                 <div className="flex justify-between items-center lg:gap-x-16 px-4 sm:px-6 w-11/12">
                     <div className=" text-sm font-bold leading-7 text-gray-700 sm:truncate sm:text-lg sm:tracking-tight mr-2">
                         <span className="text-goldd">GOLD </span>TIGER{" "}
-                        {names[activePage]}
+                        Report System
                     </div>
                     <div className={activePage == 4 ? "" : "hidden"}>
                         <NotificationPanel
