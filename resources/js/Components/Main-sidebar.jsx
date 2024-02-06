@@ -531,7 +531,7 @@ export default function MainSidebar({
                                                 />
                                             ) : (
                                                 <img
-                                                    src={`${item.AppIcon}`}
+                                                    src={`AppLogo/${item.AppIcon}`}
                                                     className={classNames(
                                                         item.AppId ==
                                                             currentAppId
