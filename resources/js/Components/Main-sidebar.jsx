@@ -531,13 +531,13 @@ export default function MainSidebar({
                                                 />
                                             ) : (
                                                 <img
-                                                    src={`AppLogo/${item.AppIcon}`}
+                                                    src={`${item.AppIcon}`}
                                                     className={classNames(
                                                         item.AppId ==
                                                             currentAppId
                                                             ? "text-yellow-400"
                                                             : "text-gray-400 group-hover:text-white",
-                                                        "h-6 w-8"
+                                                        "h-8 w-8"
                                                     )}
                                                     aria-hidden="true"
                                                 />

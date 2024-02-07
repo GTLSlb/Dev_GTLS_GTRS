@@ -83,14 +83,15 @@ export default function RDDreason({
             document.querySelectorAll('input[name="column"]:checked')
         ).map((checkbox) => checkbox.value);
 
-        let allHeaderColumns = gridRef?.current?.visibleColumns?.map((column) => ({
-            name: column.name,
-            value: column.computedFilterValue?.value,
-            label: column.computedHeader,
-            type: column.computedFilterValue?.type,
-            operator: column.computedFilterValue?.operator,
-        }));
-        console.log(allHeaderColumns)
+        let allHeaderColumns = gridRef?.current?.visibleColumns?.map(
+            (column) => ({
+                name: column.name,
+                value: column.computedFilterValue?.value,
+                label: column.computedHeader,
+                type: column.computedFilterValue?.type,
+                operator: column.computedFilterValue?.operator,
+            })
+        );
         let selectedColVal = allHeaderColumns?.filter(
             (col) => col?.label?.toString().toLowerCase() !== "edit"
         );
@@ -370,7 +371,7 @@ export default function RDDreason({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
-            selectedColVal  = allHeaderColumns?.filter(
+            selectedColVal = allHeaderColumns?.filter(
                 (col) => col?.label?.toString().toLowerCase() !== "edit"
             ); // Use all columns
         } else {
@@ -407,9 +408,7 @@ export default function RDDreason({
         "ChangeAt",
         "ChangedBy",
     ];
-    
     function handleDownloadExcel() {
-       
         const jsonData = handleFilterTable();
         const columnMapping = {
             ConsignmentNo: "ConsignmentNo",
@@ -466,13 +465,23 @@ export default function RDDreason({
                             moment(
                                 person["OldRdd"],
                                 "YYYY-MM-DDTHH:mm:ss"
-                            ).format("DD-MM-YYYY h:mm A") || "";
+                            ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
+                                ? ""
+                                : moment(
+                                      person["OldRdd"],
+                                      "YYYY-MM-DDTHH:mm:ss"
+                                  ).format("DD-MM-YYYY HH:mm A");
                     } else if (column === "NewRdd") {
                         acc[columnKey] =
                             moment(
                                 person["NewRdd"],
                                 "YYYY-MM-DDTHH:mm:ss"
-                            ).format("DD-MM-YYYY h:mm A") || "";
+                            ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
+                                ? ""
+                                : moment(
+                                      person["NewRdd"],
+                                      "YYYY-MM-DDTHH:mm:ss"
+                                  ).format("DD-MM-YYYY HH:mm A");
                     } else {
                         acc[columnKey] = person[columnKey];
                     }
@@ -913,7 +922,7 @@ export default function RDDreason({
                 minDate: minChangeAtDate,
                 maxDate: maxChangeAtDate,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 {
                     return (
                         <p>
@@ -927,7 +936,7 @@ export default function RDDreason({
                                       convertUtcToUserTimezone(value + "Z"),
 
                                       "MM/DD/YYYY, h:mm:ss A"
-                                  ).format("DD-MM-YYYY hh:mm A")}
+                                  ).format("DD-MM-YYYY")}
                         </p>
                     );
                 }
@@ -1222,8 +1231,8 @@ export default function RDDreason({
                                                 </div>
                                                 <div className="grid grid-cols-1 divide-x divide-gray-900/5 bg-gray-50">
                                                     <button
-                                                        onClick={
-                                                            handleDownloadExcel
+                                                        onClick={() =>
+                                                            handleDownloadExcel()
                                                         }
                                                         className="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100"
                                                     >

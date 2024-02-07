@@ -388,7 +388,6 @@ export default function Gtrs({
         return false;
     }
 
-    
     useEffect(() => {
         if (loadingGtrs) {
             if (user == {}) {
@@ -406,12 +405,13 @@ export default function Gtrs({
         setLoadingGtrs(true);
     }
 
-    if (loadingGtrs && AToken) {
+    if (loadingGtrs && AToken ) {
         if (canAccess) {
             return (
                 <div className="bg-smooth">
                     <div className="md:pl-20 pt-16 ">
                         <Charts
+                            setCusomterAccounts={setCusomterAccounts}
                             kpireasonsData={kpireasonsData}
                             setkpireasonsData={setkpireasonsData}
                             userBody={userBody}

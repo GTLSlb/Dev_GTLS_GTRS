@@ -37,6 +37,7 @@ export default function KPI({
     accData,
     kpireasonsData,
 }) {
+    console.log(KPIData, "KPIData");
     window.moment = moment;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -68,16 +69,19 @@ export default function KPI({
                     });
                     parsedDataPromise.then((parsedData) => {
                         setKPIData(parsedData);
-                        setSenderStateOptions(createNewLabelObjects(parsedData, "SenderState"));
-                        setReceiverStateOptions(createNewLabelObjects(
-                            parsedData,
-                            "ReceiverState"
-                        ));
-                        setReasonOptions(kpireasonsData.map((reason) => ({
-                            id: reason.ReasonId,
-                            label: reason.ReasonName,
-                        })));
-                        
+                        setSenderStateOptions(
+                            createNewLabelObjects(parsedData, "SenderState")
+                        );
+                        setReceiverStateOptions(
+                            createNewLabelObjects(parsedData, "ReceiverState")
+                        );
+                        setReasonOptions(
+                            kpireasonsData.map((reason) => ({
+                                id: reason.ReasonId,
+                                label: reason.ReasonName,
+                            }))
+                        );
+
                         setIsFetching(false);
                     });
                 });
@@ -108,10 +112,6 @@ export default function KPI({
             }
         }
     };
-    useEffect(()=>{
-        console.log("reasonOptionsFetchg", reasonOptions);
-    },[reasonOptions])
-
     const handleClick = (coindex) => {
         setActiveIndexGTRS(3);
         setLastIndex(2);
@@ -598,7 +598,7 @@ export default function KPI({
         });
         return newData;
     };
-    
+
     function getMinMaxValue(data, fieldName, identifier) {
         // Check for null safety
         if (!data || !Array.isArray(data) || data.length === 0) {
@@ -674,15 +674,18 @@ export default function KPI({
         });
         setKPIData(updatedData);
 
-        senderStateOptions = createNewLabelObjects(updatedData, "SenderState");
-        receiverStateOptions = createNewLabelObjects(
-        updatedData,
-        "ReceiverState"
+        setSenderStateOptions(
+            createNewLabelObjects(updatedData, "SenderState")
         );
-        reasonOptions = kpireasonsData.map((reason) => ({
-            id: reason.ReasonId,
-            label: reason.ReasonName,
-        }));
+        setReceiverStateOptions(
+            createNewLabelObjects(updatedData, "ReceiverState")
+        );
+        setReasonOptions(
+            kpireasonsData.map((reason) => ({
+                id: reason.ReasonId,
+                label: reason.ReasonName,
+            }))
+        );
     };
     const columns = [
         {
@@ -802,6 +805,10 @@ export default function KPI({
             textAlign: "center",
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
+            filterEditorProps: {
+                minDate: minDispatchDate,
+                maxDate: maxDispatchDate,
+            },
             render: ({ value, cellProps }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
@@ -946,27 +953,27 @@ export default function KPI({
 
     useEffect(() => {
         let arr = newColumns.map((item) => {
-          if (item?.name === "ReasonId") {
-            item.filterEditorProps = {
-              ...item.filterEditorProps,
-              dataSource: reasonOptions,
-            };
-          }
-          if(item?.name == "SenderState"){
-            item.filterEditorProps = {
-                ...item.filterEditorProps,
-                dataSource: senderStateOptions,
-              };
-          }
-          if(item?.name == "ReceiverState"){
-            item.filterEditorProps = {
-                ...item.filterEditorProps,
-                dataSource: receiverStateOptions,
-              };
-          }
-          return item;
+            if (item?.name === "ReasonId") {
+                item.filterEditorProps = {
+                    ...item.filterEditorProps,
+                    dataSource: reasonOptions,
+                };
+            }
+            if (item?.name == "SenderState") {
+                item.filterEditorProps = {
+                    ...item.filterEditorProps,
+                    dataSource: senderStateOptions,
+                };
+            }
+            if (item?.name == "ReceiverState") {
+                item.filterEditorProps = {
+                    ...item.filterEditorProps,
+                    dataSource: receiverStateOptions,
+                };
+            }
+            return item;
         });
-      }, [reasonOptions, receiverStateOptions, senderStateOptions]);
+    }, [reasonOptions, receiverStateOptions, senderStateOptions]);
 
     const [hoverMessage, setHoverMessage] = useState("");
     const [isMessageVisible, setMessageVisible] = useState(false);

@@ -36,6 +36,7 @@ export default function AddSafetyType({
                 },
             })
             .then((res) => {
+                console.log("SafetyType",res)
                 const x = JSON.stringify(res.data);
                 const parsedDataPromise = new Promise((resolve, reject) => {
                     const parsedData = JSON.parse(x);
@@ -47,6 +48,7 @@ export default function AddSafetyType({
                 });
             })
             .catch((err) => {
+                console.log("SafetyType err",err)
                 if (err.response && err.response.status === 401) {
                   // Handle 401 error using SweetAlert
                   swal({
@@ -74,6 +76,7 @@ export default function AddSafetyType({
               });
     }
     const updateLocalData = () => {
+        console.log("123");
         fetchData();
     };
     return (

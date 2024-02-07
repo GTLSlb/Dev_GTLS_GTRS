@@ -20,6 +20,7 @@ import KPIReasons from "./KPI/KPIReasons";
 import AddTransit from "./KPI/AddTransit";
 
 export default function charts({
+    setCusomterAccounts,
     setPerfData,
     userBody,
     sessionData,
@@ -66,6 +67,12 @@ export default function charts({
     const latestDate = getLatestDespatchDate(consData);
     const [dataFromChild, setDataFromChild] = useState(null);
     const [transitDay, setTransitDay] = useState(null);
+    const [sharedStartDate, setSharedStartDate] = useState(
+        getOldestDespatchDate(consData)
+    );
+    const [sharedEndDate, setSharedEndDate] = useState(
+        getLatestDespatchDate(consData)
+    );
 
     const minDate = getMinMaxValue(consData, "DespatchDate", 1);
     const maxDate = getMinMaxValue(consData, "DespatchDate", 2);
@@ -255,8 +262,8 @@ export default function charts({
             operator: "inrange",
             type: "date",
             value: {
-                start: "",
-                end: "",
+                start: minDispatchDate,
+                end: maxDispatchDate,
             },
         },
         {
@@ -282,8 +289,8 @@ export default function charts({
         },
         {
             name: "TransitDays",
-            operator: 'eq', 
-            type: 'number', 
+            operator: "gte",
+            type: "number",
             value: "",
             //emptyValue: "",
         },
@@ -463,6 +470,15 @@ export default function charts({
             type: "date",
             emptyValue: "",
             value: "",
+        },
+        {
+            name: "DESPATCHDATE",
+            operator: "inrange",
+            type: "date",
+            value: {
+                start: minDispatchDate,
+                end: maxDispatchDate,
+            },
         },
         {
             name: "DELIVERYREQUIREDDATETIME",
@@ -1126,7 +1142,17 @@ export default function charts({
 
         return `${day}-${month}-${year}`;
     }
-
+    // Function to format the date
+    const formatDate = (dateString) => {
+        const [day, month, year] = dateString.split("-");
+        // Using template literals to format the date
+        return `${year}-${month}-${day}`;
+    };
+    // Function to format the date to "DD-MM-YYYY"
+    const formatDateToDDMMYYYY = (dateString) => {
+        const [year, month, day] = dateString.split("-");
+        return `${day}-${month}-${year}`;
+    };
     // Update filters if the change is in consignments
     useEffect(() => {
         let val = {};
@@ -1169,6 +1195,13 @@ export default function charts({
                 item.value = val;
             }
         });
+        filtersFailed?.map((item) => {
+            if (item?.name == "DESPATCHDATE") {
+                item.value = val;
+            }
+        });
+        setSDate(formatDate(val.start));
+        setEDate(formatDate(val.end));
     }, [filtersCons]);
 
     // Update filters if the change is in add charges
@@ -1213,6 +1246,13 @@ export default function charts({
                 item.value = val;
             }
         });
+        filtersFailed?.map((item) => {
+            if (item?.name == "DESPATCHDATE") {
+                item.value = val;
+            }
+        });
+        setSDate(formatDate(val.start));
+        setEDate(formatDate(val.end));
     }, [filtersAddCharges]);
 
     // Update filters if the change is in no delivery info
@@ -1257,6 +1297,13 @@ export default function charts({
                 item.value = val;
             }
         });
+        filtersFailed?.map((item) => {
+            if (item?.name == "DESPATCHDATE") {
+                item.value = val;
+            }
+        });
+        setSDate(formatDate(val.start));
+        setEDate(formatDate(val.end));
     }, [filtersNoDelInfo]);
 
     // Update filters if the change is in RDD
@@ -1301,6 +1348,13 @@ export default function charts({
                 item.value = val;
             }
         });
+        filtersFailed?.map((item) => {
+            if (item?.name == "DESPATCHDATE") {
+                item.value = val;
+            }
+        });
+        setSDate(formatDate(val.start));
+        setEDate(formatDate(val.end));
     }, [filtersRDD]);
 
     // Update filters if the change is in missing pod
@@ -1345,6 +1399,13 @@ export default function charts({
                 item.value = val;
             }
         });
+        filtersFailed?.map((item) => {
+            if (item?.name == "DESPATCHDATE") {
+                item.value = val;
+            }
+        });
+        setSDate(formatDate(val.start));
+        setEDate(formatDate(val.end));
     }, [filtersMissingPOD]);
 
     // Update filters if the change is in kpi
@@ -1389,9 +1450,108 @@ export default function charts({
                 item.value = val;
             }
         });
+        filtersFailed?.map((item) => {
+            if (item?.name == "DESPATCHDATE") {
+                item.value = val;
+            }
+        });
+        setSDate(formatDate(val.start));
+        setEDate(formatDate(val.end));
     }, [filtersKPI]);
+    // Update filters if the change is in failed cons
+    useEffect(() => {
+        let val = {};
+        filtersFailed?.map((item) => {
+            if (item?.name == "DESPATCHDATE") {
+                val = item?.value;
+            }
+        });
+        // Update filtersKPI
+        filtersKPI?.map((item) => {
+            if (item?.name === "DispatchDate") {
+                item.value = val;
+            }
+        });
+        // Update filtersAddCharges
+        filtersAddCharges?.map((item) => {
+            if (item?.name === "DespatchDateTime") {
+                item.value = val;
+            }
+        });
+        // Update filtersMissingPOD
+        filtersMissingPOD?.map((item) => {
+            if (item?.name === "DESPATCHDATE") {
+                item.value = val;
+            }
+        });
+        // Update filtersRDD
+        filtersRDD?.map((item) => {
+            if (item?.name === "DespatchDate") {
+                item.value = val;
+            }
+        });
+        // Update filtersNoDelInfo
+        filtersNoDelInfo?.map((item) => {
+            if (item?.name === "DespatchDateTime") {
+                item.value = val;
+            }
+        });
+        // Update filtersCons
+        filtersCons?.map((item) => {
+            if (item?.name === "DespatchDate") {
+                item.value = val;
+            }
+        });
+        setSDate(formatDate(val.start));
+        setEDate(formatDate(val.end));
+    }, [filtersFailed]);
+    //Update Filters if the change is in the Perfromance Report
+    useEffect(() => {
+        const val = {
+            start: formatDateToDDMMYYYY(sharedStartDate),
+            end: formatDateToDDMMYYYY(sharedEndDate),
+        };
+        // Update filtersAddCharges
+        filtersAddCharges?.map((item) => {
+            if (item?.name === "DespatchDateTime") {
+                item.value = val;
+            }
+        });
 
+        // Update filtersKPI
+        filtersKPI?.map((item) => {
+            if (item?.name === "DispatchDate") {
+                item.value = val;
+            }
+        });
+        // Update filtersMissingPOD
+        filtersMissingPOD?.map((item) => {
+            if (item?.name === "DESPATCHDATE") {
+                item.value = val;
+            }
+        });
 
+        // Update filtersRDD
+        filtersRDD?.map((item) => {
+            if (item?.name === "DespatchDate") {
+                item.value = val;
+            }
+        });
+
+        // Update filtersNoDelInfo
+        filtersNoDelInfo?.map((item) => {
+            if (item?.name === "DespatchDateTime") {
+                item.value = val;
+            }
+        });
+
+        // Update filtersCons
+        filtersCons?.map((item) => {
+            if (item?.name === "DespatchDate") {
+                item.value = val;
+            }
+        });
+    }, [sharedEndDate, sharedStartDate]);
     const components = [
         <MainCharts
             chartsData={chartsData}
@@ -1457,6 +1617,8 @@ export default function charts({
             currentUser={currentUser}
         />,
         <ConsPerf
+            setSharedStartDate={setSharedStartDate}
+            setSharedEndDate={setSharedEndDate}
             oldestDate={oldestDate}
             latestDate={latestDate}
             currentUser={currentUser}
@@ -1673,6 +1835,9 @@ export default function charts({
                             >
                                 <div className=" inset-0 rounded-lg border-dashed border-gray-200">
                                     <ChartsSidebar
+                                        setCusomterAccounts={
+                                            setCusomterAccounts
+                                        }
                                         customerAccounts={customerAccounts}
                                         activeIndexGTRS={activeIndexGTRS}
                                         sessionData={sessionData}

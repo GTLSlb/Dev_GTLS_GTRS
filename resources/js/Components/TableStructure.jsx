@@ -70,7 +70,7 @@ export default function TableStructure({
                     <ReactDataGrid
                         idProperty={id}
                         handle={(ref) =>
-                            (gridRef.current = ref ? ref.current : null)
+                            (gridRef.current = ref ? ref.current : [])
                         }
                         className={"rounded-lg shadow-lg overflow-hidden"}
                         pagination

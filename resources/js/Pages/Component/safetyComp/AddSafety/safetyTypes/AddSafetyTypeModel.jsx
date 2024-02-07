@@ -55,12 +55,6 @@ export default function AddSafetyTypeModal({
         // setdescription("");
         handleClose(); // Clear the input value
     };
-    const testData = {
-        TypeId: null,
-        TypeName: "test123",
-        TypeStatus: "false",
-    };
-
     const handleSubmit = async (event) => {
         event.preventDefault();
         // Prevent the default form submission behavior
@@ -81,7 +75,6 @@ export default function AddSafetyTypeModal({
             // Handle the response as needed
             // setInputValue("");
             setSuccess(true);
-
             setTimeout(() => {
                 handleClose();
                 setName("");
