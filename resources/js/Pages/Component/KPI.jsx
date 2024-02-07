@@ -37,7 +37,7 @@ export default function KPI({
     accData,
     kpireasonsData,
 }) {
-    console.log(KPIData, "KPIData");
+
     window.moment = moment;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);

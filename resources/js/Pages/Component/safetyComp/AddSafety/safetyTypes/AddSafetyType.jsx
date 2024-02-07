@@ -36,7 +36,7 @@ export default function AddSafetyType({
                 },
             })
             .then((res) => {
-                console.log("SafetyType",res)
+                // console.log("SafetyType",res)
                 const x = JSON.stringify(res.data);
                 const parsedDataPromise = new Promise((resolve, reject) => {
                     const parsedData = JSON.parse(x);
@@ -76,7 +76,6 @@ export default function AddSafetyType({
               });
     }
     const updateLocalData = () => {
-        console.log("123");
         fetchData();
     };
     return (
