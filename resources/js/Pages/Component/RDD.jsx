@@ -425,6 +425,8 @@ export default function RDDreason({
             ReceiverSuburb: "Receiver Suburb",
             ReceiverState: "Receiver State",
             DespatchDate: "Despatch Date",
+            ChangeAt: "Changed At",
+            ChangedBy: "Changed By",
             OldRdd: "Old Rdd",
             NewRdd: "New Rdd",
             ReasonDesc: "Reason Desc",
@@ -482,6 +484,23 @@ export default function RDDreason({
                                       person["NewRdd"],
                                       "YYYY-MM-DDTHH:mm:ss"
                                   ).format("DD-MM-YYYY HH:mm A");
+                    } else if (column === "ChangeAt") {
+                        acc[columnKey] =
+                            moment(
+                                convertUtcToUserTimezone(
+                                    person["ChangeAt"] + "Z"
+                                ),
+
+                                "MM/DD/YYYY, h:mm:ss A"
+                            ).format("YYYY-MM-DD hh:mm A") == "Invalid date"
+                                ? ""
+                                : moment(
+                                      convertUtcToUserTimezone(
+                                          person["ChangeAt"] + "Z"
+                                      ),
+
+                                      "MM/DD/YYYY, h:mm:ss A"
+                                  ).format("DD-MM-YYYY");
                     } else {
                         acc[columnKey] = person[columnKey];
                     }
