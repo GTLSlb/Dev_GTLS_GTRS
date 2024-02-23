@@ -889,7 +889,7 @@ export default function RDDreason({
                 maxDate: maxNewRddDate,
             },
             render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                return moment(value).format("DD/MM/YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
                     : moment(value).format("DD-MM-YYYY hh:mm A");
