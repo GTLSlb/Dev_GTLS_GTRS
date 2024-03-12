@@ -81,7 +81,6 @@ export default function ConsPerf({
         setCurrentPage(selectedPage.selected);
     };
     const pageCount = Math.ceil(filteredData.length / PER_PAGE);
-    console.log(filteredData);
     const headers = [
         "CONSIGNMENT NUMBER",
         "CONSIGNMENT STATUS",

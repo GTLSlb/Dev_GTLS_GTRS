@@ -37,7 +37,6 @@ export default function KPI({
     accData,
     kpireasonsData,
 }) {
-    console.log(KPIData, "KPIData");
     window.moment = moment;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -62,9 +61,7 @@ export default function KPI({
                 },
             });
 
-            const dataWithPassFail = response.data.map((item) => {
-                console.log(`Processing item: ${item.ConsignmentNo}, MatchDel: ${item.MatchDel}, DeliveryDate: ${item.DeliveryDate}, CalculatedDelDate: ${item.CalculatedDelDate}`);
-            
+            const dataWithPassFail = response.data.map((item) => {            
                 if (item.MatchDel) {
                     item['Pass/Fail'] = 'Pass';
                 } else if (!item.MatchDel && (!item.DeliveryDate || !item.CalculatedDelDate)) {

@@ -187,7 +187,6 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
     };
     const getKPIStatusCounter = (data) => {
         const counter = [];
-        console.log(data);
         for (const item of data) {
             // Convert the boolean KPIStatus to 'pass' or 'fail'
             const KPIStatus = item.KPI ? 'Pass' : 'Fail';
