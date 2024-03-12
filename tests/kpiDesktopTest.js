@@ -272,10 +272,8 @@ describe("Testing Holidays", function () {
                     filteredItems.push(element);
                 }
             }
-            console.log(filteredItems);
             for (let ele of filteredItems) {
                 const text = await ele.getText();
-                console.log(text);
                 if (text != "NAT") {
                     assert.ok(false, "Value does not match filtered value");
                 }

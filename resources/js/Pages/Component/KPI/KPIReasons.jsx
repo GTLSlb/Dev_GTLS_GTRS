@@ -87,7 +87,6 @@ export default function KPIReasons({
         { label: "Reason", key: "ReasonName" },
         { label: "Status", key: "ReasonStatus" },
     ];
-    console.log(kpireasonsData);
     useEffect(() => {
         setFilteredData(kpireasonsData);
     }, [kpireasonsData]);
