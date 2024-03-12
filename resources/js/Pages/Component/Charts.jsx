@@ -49,7 +49,6 @@ export default function charts({
     const current = new Date();
     const month = current.getMonth() + 1;
     const formattedMonth = month < 10 ? `0${month}` : month;
-    const todate = `${current.getFullYear()}-${formattedMonth}-${current.getDate()}`;
     const [KPIData, setKPIData] = useState([]);
     const [transitDays, setTransitDays] = useState();
     const [holidays, setHolidays] = useState();
@@ -1144,14 +1143,22 @@ export default function charts({
     }
     // Function to format the date
     const formatDate = (dateString) => {
-        const [day, month, year] = dateString.split("-");
-        // Using template literals to format the date
-        return `${year}-${month}-${day}`;
+        if (dateString) {
+            const [day, month, year] = dateString.split("-");
+            // Using template literals to format the date
+            return `${year}-${month}-${day}`;
+        } else {
+            return dateString;
+        }
     };
     // Function to format the date to "DD-MM-YYYY"
     const formatDateToDDMMYYYY = (dateString) => {
-        const [year, month, day] = dateString.split("-");
-        return `${day}-${month}-${year}`;
+        if (dateString) {
+            const [year, month, day] = dateString.split("-");
+            return `${day}-${month}-${year}`;
+        }else {
+            return dateString;
+        }
     };
     // Update filters if the change is in consignments
     useEffect(() => {
