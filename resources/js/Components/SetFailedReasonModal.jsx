@@ -206,7 +206,6 @@ export default function SetFailedReasonModal({
         setShowDesc(event);
     }
     function handleDateChange(event) {
-        console.log(event.target.value);
         const occurredAttDate = new Date(event.target.value);
         setOccuredAt(occurredAttDate.toLocaleString("sv-SE"));
     }

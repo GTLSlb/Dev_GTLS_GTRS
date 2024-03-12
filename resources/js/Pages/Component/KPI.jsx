@@ -37,7 +37,6 @@ export default function KPI({
     accData,
     kpireasonsData,
 }) {
-
     window.moment = moment;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -52,66 +51,57 @@ export default function KPI({
     const [reasonOptions, setReasonOptions] = useState([]);
     const [receiverStateOptions, setReceiverStateOptions] = useState([]);
     const [senderStateOptions, setSenderStateOptions] = useState([]);
+
     const fetchData = async () => {
         try {
-            axios
-                .get(`${url}/KPI`, {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
-                    },
-                })
-                .then((res) => {
-                    const x = JSON.stringify(res.data);
-                    const parsedDataPromise = new Promise((resolve, reject) => {
-                        const parsedData = JSON.parse(x);
-                        resolve(parsedData);
-                    });
-                    parsedDataPromise.then((parsedData) => {
-                        setKPIData(parsedData);
-                        setSenderStateOptions(
-                            createNewLabelObjects(parsedData, "SenderState")
-                        );
-                        setReceiverStateOptions(
-                            createNewLabelObjects(parsedData, "ReceiverState")
-                        );
-                        setReasonOptions(
-                            kpireasonsData.map((reason) => ({
-                                id: reason.ReasonId,
-                                label: reason.ReasonName,
-                            }))
-                        );
+            const response = await axios.get(`${url}/KPI`, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            });
 
-                        setIsFetching(false);
-                    });
-                });
+            const dataWithPassFail = response.data.map((item) => {            
+                if (item.MatchDel) {
+                    item['Pass/Fail'] = 'Pass';
+                } else if (!item.MatchDel && (!item.DeliveryDate || !item.CalculatedDelDate)) {
+                    item['Pass/Fail'] = 'N/A';
+                } else {
+                    item['Pass/Fail'] = 'Fail';
+                }
+                return item;
+            });
+    
+            setKPIData(dataWithPassFail);
+            setSenderStateOptions(createNewLabelObjects(dataWithPassFail, "SenderState"));
+            setReceiverStateOptions(createNewLabelObjects(dataWithPassFail, "ReceiverState"));
+            setReasonOptions(kpireasonsData.map(reason => ({
+                id: reason.ReasonId,
+                label: reason.ReasonName,
+            })));
         } catch (error) {
             if (error.response && error.response.status === 401) {
-                // Handle 401 error using SweetAlert
                 swal({
                     title: "Session Expired!",
                     text: "Please login again",
-                    type: "success",
+                    type: "error",
                     icon: "info",
                     confirmButtonText: "OK",
-                }).then(function () {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                            if (response.status == 200) {
-                                window.location.href = "/";
-                            }
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                        });
+                }).then(() => {
+                    axios.post("/logoutAPI").then((response) => {
+                        if (response.status === 200) {
+                            window.location.href = "/";
+                        }
+                    }).catch((error) => {
+                        console.error(error);
+                    });
                 });
             } else {
-                // Handle other errors
-                console.log(err);
+                console.error(error);
             }
         }
     };
+
     const handleClick = (coindex) => {
         setActiveIndexGTRS(3);
         setLastIndex(2);
@@ -883,6 +873,13 @@ export default function KPI({
                     ? ""
                     : moment(value).format("DD-MM-YYYY");
             },
+        },
+        {
+            name: "Pass/Fail",
+            header: "Pass/Fail",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 100,
         },
         {
             name: "ReasonId",

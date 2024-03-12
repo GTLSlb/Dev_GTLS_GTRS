@@ -36,33 +36,32 @@ export default function RDDMain({
         if (!dateString || !dateString.trim()) {
             return null; // or return any other default value as needed
         }
-
         const parts = dateString.split(/[\s/:]/);
-
         let dateObject;
-
         if (parts.length === 7) {
             // If there is a time component
             dateObject = new Date(
-                parts[2],
-                parts[1] - 1,
-                parts[0],
-                parts[3],
-                parts[4],
-                parts[5]
+                Date.UTC(
+                    parts[2],
+                    parts[1] - 1,
+                    parts[0],
+                    parts[3],
+                    parts[4],
+                    parts[5]
+                )
             );
         } else {
             // If there is no time component
-            dateObject = new Date(parts[2], parts[1] - 1, parts[0]);
+            dateObject = new Date(Date.UTC(parts[2], parts[1] - 1, parts[0]));
         }
-
         return dateObject;
     };
+    
+    
     const formatDate = (date) => {
         if (!(date instanceof Date) || isNaN(date.getTime())) {
           return ""; // or return any other default value as needed
         }
-      
         const options = {
           year: "numeric",
           month: "2-digit",
@@ -98,6 +97,7 @@ export default function RDDMain({
             fetchReasonData();
         }
     }, []); // Empty dependency array ensures the effect runs only once
+
     const fetchData = async () => {
         try {
             axios
@@ -114,6 +114,7 @@ export default function RDDMain({
                         resolve(parsedData);
                     });
                     parsedDataPromise.then((parsedData) => {
+                        console.log(parsedData)
                         const updatedOldRddData = updateFieldWithData(parsedData, "OldRdd");
                         const updatedNewRddData = updateFieldWithData(updatedOldRddData, "NewRdd");
                         setrddData(updatedNewRddData || []);

@@ -548,8 +548,6 @@ export default function SafetyRepTable({
         return uniqueId;
     };
     const updateLocalData = (id, updates) => {
-        //console.log("Fromt the UPDATE LOCAL Data")
-        //console.log("id", id, "updates", updates);
         let itemFound = false;
 
         const updatedData = safetyData?.map((item) => {

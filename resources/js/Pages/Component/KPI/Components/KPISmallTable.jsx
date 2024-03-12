@@ -137,7 +137,7 @@ export default function SmallTableKPI({
         let dataToSend = newObject;
         dataToSend = { ...dataToSend, ReasonStatus: 1, ReasonId: null };
         if (newObject.ReasonName == null) {
-            console.log("Please enter a name", 3);
+            AlertToast("Please enter a name", 3);
         } else {
             axios
                 .post(addurl, dataToSend, {

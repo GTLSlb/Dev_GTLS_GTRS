@@ -293,7 +293,7 @@ export default function ChartsSidebar({
                             <div className="group block w-full flex-shrink-0">
                                 <div className="flex items-center">
                                     <div>
-                                        {user.Picture.length == 0 ? (
+                                        {!user.Picture || user.Picture.length == 0 ? (
                                             <img
                                                 className="inline-block h-14 w-14"
                                                 src={`/app/icons/blank-profile.jpg`}
