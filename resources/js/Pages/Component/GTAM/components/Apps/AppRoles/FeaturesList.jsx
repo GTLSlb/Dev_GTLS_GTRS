@@ -14,7 +14,7 @@ export default function FeaturesList({ features, allData, activePage,getRoles,
     application,url }) {
     const [selected, setSelected] = useState();
     const [isLoading, setIsLoading] = useState(false);
-    // console.log(allData)
+
 
     // const [status, setStatus] = useState(true);
     const [permissions, setPermissions] = useState();

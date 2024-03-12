@@ -302,7 +302,7 @@ export default function ChartsSidebar({
                                         ) : (
                                             <img
                                                 className="inline-block h-14 w-14 object-contain"
-                                                src={`/app/icons/${user.Picture}`}
+                                                src={`https://gtam-test.gtls.com.lb/${user.Picture}`}
                                                 alt=""
                                             />
                                         )}
