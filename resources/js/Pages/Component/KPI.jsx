@@ -40,6 +40,7 @@ export default function KPI({
     window.moment = moment;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [isFetching, setIsFetching] = useState();
     const [reason, setReason] = useState();
     useEffect(() => {
         if (KPIData.length == 0) {
@@ -54,31 +55,42 @@ export default function KPI({
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`${url}/KPI`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            });
-
-            const dataWithPassFail = response.data.map((item) => {            
-                if (item.MatchDel) {
-                    item['Pass/Fail'] = 'Pass';
-                } else if (!item.MatchDel && (!item.DeliveryDate || !item.CalculatedDelDate)) {
-                    item['Pass/Fail'] = 'N/A';
-                } else {
-                    item['Pass/Fail'] = 'Fail';
-                }
-                return item;
-            });
-    
-            setKPIData(dataWithPassFail);
-            setSenderStateOptions(createNewLabelObjects(dataWithPassFail, "SenderState"));
-            setReceiverStateOptions(createNewLabelObjects(dataWithPassFail, "ReceiverState"));
-            setReasonOptions(kpireasonsData.map(reason => ({
-                id: reason.ReasonId,
-                label: reason.ReasonName,
-            })));
+            const response = await axios
+                .get(`${url}/KPI`, {
+                    headers: {
+                        UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
+                    },
+                })
+                .then((res) => {
+                    const dataWithPassFail = res.data.map((item) => {
+                        if (item.MatchDel) {
+                            item["Pass/Fail"] = "Pass";
+                        } else if (
+                            !item.MatchDel &&
+                            (!item.DeliveryDate || !item.CalculatedDelDate)
+                        ) {
+                            item["Pass/Fail"] = "N/A";
+                        } else {
+                            item["Pass/Fail"] = "Fail";
+                        }
+                        return item;
+                    });
+                    setKPIData(dataWithPassFail);
+                    setSenderStateOptions(
+                        createNewLabelObjects(dataWithPassFail, "SenderState")
+                    );
+                    setReceiverStateOptions(
+                        createNewLabelObjects(dataWithPassFail, "ReceiverState")
+                    );
+                    setReasonOptions(
+                        kpireasonsData.map((reason) => ({
+                            id: reason.ReasonId,
+                            label: reason.ReasonName,
+                        }))
+                    );
+                    setIsFetching(false);
+                });
         } catch (error) {
             if (error.response && error.response.status === 401) {
                 swal({
@@ -88,13 +100,16 @@ export default function KPI({
                     icon: "info",
                     confirmButtonText: "OK",
                 }).then(() => {
-                    axios.post("/logoutAPI").then((response) => {
-                        if (response.status === 200) {
-                            window.location.href = "/";
-                        }
-                    }).catch((error) => {
-                        console.error(error);
-                    });
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                            if (response.status === 200) {
+                                window.location.href = "/";
+                            }
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                        });
                 });
             } else {
                 console.error(error);
@@ -140,7 +155,6 @@ export default function KPI({
     useEffect(() => {
         setFilteredData(filterData());
     }, [accData, KPIData]);
-    const [isFetching, setIsFetching] = useState();
     const [selected, setSelected] = useState([]);
     const gridRef = useRef(null);
     function handleFilterTable() {
