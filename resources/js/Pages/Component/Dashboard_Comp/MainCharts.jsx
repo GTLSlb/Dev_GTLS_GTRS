@@ -187,11 +187,9 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
     };
     const getKPIStatusCounter = (data) => {
         const counter = [];
-    
         for (const item of data) {
             // Convert the boolean KPIStatus to 'pass' or 'fail'
-            const KPIStatus = item.KPI ? 'Pass' : 'Fail';
-    
+            const KPIStatus = item.MatchDel == 0 ? "N/A" : item.MatchDel == 1 ? "Pass" : "Fail";
             const existingStatus = counter.find(
                 (obj) => obj.label === KPIStatus
             );

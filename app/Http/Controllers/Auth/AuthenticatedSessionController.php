@@ -17,12 +17,48 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): Response
+    public function create(Request $request)
     {
-        return Inertia::render('Auth/Login', [
-            'canResetPassword' => Route::has('password.request'),
-            'status' => session('status'),
-        ]);
+
+        if ($request->session()->has('user')) {
+            $url = $_COOKIE['previous_page'];
+            $delimiter = '/';
+            $position = 0;
+            $occurrence = 3;
+
+            for ($i = 0; $i < $occurrence; $i++) {
+                $position = strpos($url, $delimiter, $position + 1);
+
+                if ($position === false) {
+                    break;
+                }
+            }
+
+            if ($position !== false) {
+                $textAfterThirdSlash = substr($url, $position + 1);
+                $matchedRoute = $textAfterThirdSlash;
+            } else {
+                $matchedRoute = null;
+            }
+
+            if($matchedRoute == null){
+                return Inertia::render('Auth/Login');
+            }else if($matchedRoute == 'login'){
+                return Inertia::render('Auth/Login', [
+                    'canResetPassword' => Route::has('password.request'),
+                    'status' => session('status'),
+                ]);
+            }
+            else{
+                return redirect($matchedRoute);
+            }  
+        } else {
+            // 'user' value exists and is not null, don't do anything
+            return Inertia::render('Auth/Login', [
+                'canResetPassword' => Route::has('password.request'),
+                'status' => session('status'),
+            ]);
+        }
     }
 
     /**

@@ -67,6 +67,10 @@ export default function Gtrs({
         debtorIds = currentUser.UserId;
     }
     useEffect(() => {
+        document.cookie =
+            "previous_page=" + encodeURIComponent(window.location.href);
+    }, []);
+    useEffect(() => {
         setUserBody(debtorIds);
         setLoadingGtrs(false);
         axios
@@ -405,7 +409,7 @@ export default function Gtrs({
         setLoadingGtrs(true);
     }
 
-    if (loadingGtrs && AToken ) {
+    if (loadingGtrs && AToken) {
         if (canAccess) {
             return (
                 <div className="bg-smooth">

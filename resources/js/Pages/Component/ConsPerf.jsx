@@ -21,7 +21,6 @@ export default function ConsPerf({
     setSharedStartDate,
     setSharedEndDate,
 }) {
-
     const [currentPage, setCurrentPage] = useState(0);
     const [filteredData, setFilteredData] = useState(PerfData);
     const [selectedConsignment, setSelectedConsignment] = useState("");
@@ -82,8 +81,8 @@ export default function ConsPerf({
         setCurrentPage(selectedPage.selected);
     };
     const pageCount = Math.ceil(filteredData.length / PER_PAGE);
-
     const headers = [
+        "CONSIGNMENT NUMBER",
         "CONSIGNMENT STATUS",
         "ACCOUNT NAME",
         "POD",
@@ -150,18 +149,26 @@ export default function ConsPerf({
                                       person["POD DATETIME"]?.replace("T", " "),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY HH:mm A");
-                    } else if (column.replace(/\s+/g, "") === "DELIVERYREQUIREDDATETIME") {
+                    } else if (
+                        column.replace(/\s+/g, "") ===
+                        "DELIVERYREQUIREDDATETIME"
+                    ) {
                         acc[columnKey] =
                             moment(
-                                person["DELIVERYREQUIREDDATETIME"]?.replace("T", " "),
+                                person["DELIVERYREQUIREDDATETIME"]?.replace(
+                                    "T",
+                                    " "
+                                ),
                                 "YYYY-MM-DD HH:mm:ss"
                             ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
                                 ? ""
                                 : moment(
-                                      person["DELIVERYREQUIREDDATETIME"]?.replace("T", " "),
+                                      person[
+                                          "DELIVERYREQUIREDDATETIME"
+                                      ]?.replace("T", " "),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY HH:mm A");
-                    }else if (column.replace(/\s+/g, "") === "DESPATCHDATE") {
+                    } else if (column.replace(/\s+/g, "") === "DESPATCHDATE") {
                         acc[columnKey] =
                             moment(
                                 person["DESPATCHDATE"]?.replace("T", " "),

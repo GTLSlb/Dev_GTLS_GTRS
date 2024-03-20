@@ -293,7 +293,6 @@ export default function ChartsSidebar({
                             <div className="group block w-full flex-shrink-0">
                                 <div className="flex items-center">
                                     <div>
-                                        {console.log(user)}
                                         {!user.Picture || user.Picture.length == 0 ? (
                                             <img
                                                 className="inline-block h-14 w-14"
@@ -303,7 +302,7 @@ export default function ChartsSidebar({
                                         ) : (
                                             <img
                                                 className="inline-block h-14 w-14 object-contain"
-                                                src={`/app/icons/${user.Picture}`}
+                                                src={`https://gtam-test.gtls.com.lb/${user.Picture}`}
                                                 alt=""
                                             />
                                         )}

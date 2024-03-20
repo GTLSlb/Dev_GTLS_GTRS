@@ -37,10 +37,10 @@ export default function KPI({
     accData,
     kpireasonsData,
 }) {
-    console.log(KPIData, "KPIData");
     window.moment = moment;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [isFetching, setIsFetching] = useState();
     const [reason, setReason] = useState();
     useEffect(() => {
         if (KPIData.length == 0) {
@@ -52,9 +52,10 @@ export default function KPI({
     const [reasonOptions, setReasonOptions] = useState([]);
     const [receiverStateOptions, setReceiverStateOptions] = useState([]);
     const [senderStateOptions, setSenderStateOptions] = useState([]);
+
     const fetchData = async () => {
         try {
-            axios
+            const response = await axios
                 .get(`${url}/KPI`, {
                     headers: {
                         UserId: currentUser.UserId,
@@ -63,55 +64,47 @@ export default function KPI({
                 })
                 .then((res) => {
                     const x = JSON.stringify(res.data);
-                    const parsedDataPromise = new Promise((resolve, reject) => {
-                        const parsedData = JSON.parse(x);
-                        resolve(parsedData);
-                    });
-                    parsedDataPromise.then((parsedData) => {
-                        setKPIData(parsedData);
-                        setSenderStateOptions(
-                            createNewLabelObjects(parsedData, "SenderState")
-                        );
-                        setReceiverStateOptions(
-                            createNewLabelObjects(parsedData, "ReceiverState")
-                        );
-                        setReasonOptions(
-                            kpireasonsData.map((reason) => ({
-                                id: reason.ReasonId,
-                                label: reason.ReasonName,
-                            }))
-                        );
-
-                        setIsFetching(false);
-                    });
+                    setKPIData(res.data);
+                    setSenderStateOptions(
+                        createNewLabelObjects(res.data, "SenderState")
+                    );
+                    setReceiverStateOptions(
+                        createNewLabelObjects(res.data, "ReceiverState")
+                    );
+                    setReasonOptions(
+                        kpireasonsData.map((reason) => ({
+                            id: reason.ReasonId,
+                            label: reason.ReasonName,
+                        }))
+                    );
+                    setIsFetching(false);
                 });
         } catch (error) {
             if (error.response && error.response.status === 401) {
-                // Handle 401 error using SweetAlert
                 swal({
                     title: "Session Expired!",
                     text: "Please login again",
-                    type: "success",
+                    type: "error",
                     icon: "info",
                     confirmButtonText: "OK",
-                }).then(function () {
+                }).then(() => {
                     axios
                         .post("/logoutAPI")
                         .then((response) => {
-                            if (response.status == 200) {
+                            if (response.status === 200) {
                                 window.location.href = "/";
                             }
                         })
                         .catch((error) => {
-                            console.log(error);
+                            console.error(error);
                         });
                 });
             } else {
-                // Handle other errors
-                console.log(err);
+                console.error(error);
             }
         }
     };
+
     const handleClick = (coindex) => {
         setActiveIndexGTRS(3);
         setLastIndex(2);
@@ -150,7 +143,6 @@ export default function KPI({
     useEffect(() => {
         setFilteredData(filterData());
     }, [accData, KPIData]);
-    const [isFetching, setIsFetching] = useState();
     const [selected, setSelected] = useState([]);
     const gridRef = useRef(null);
     function handleFilterTable() {
@@ -658,7 +650,6 @@ export default function KPI({
             headerAlign: "center",
         },
     ];
-
     const handleEditClick = (reason) => {
         setReason(reason);
         setIsModalOpen(!isModalOpen);
@@ -687,6 +678,21 @@ export default function KPI({
             }))
         );
     };
+
+    const kpiStatusOptions = [
+        {
+            id: 0,
+            label: "N/A",
+        },
+        {
+            id: 1,
+            label: "Pass",
+        },
+        {
+            id: 2,
+            label: "Fail",
+        },
+    ];
     const columns = [
         {
             name: "ConsignmentNo",
@@ -882,6 +888,27 @@ export default function KPI({
                 return moment(value).format("DD-MM-YYYY") == "Invalid date"
                     ? ""
                     : moment(value).format("DD-MM-YYYY");
+            },
+        },
+        {
+            name: "MatchDel",
+            header: "Pass/Fail",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 200,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: false,
+                wrapMultiple: false,
+                dataSource: kpiStatusOptions,
+            },
+            render: ({ value, data }) => {
+                return (
+                    <span className="">
+                        {" "}
+                        {value == 0 ? "" : value == 1 ? "Pass" : "Fail"}
+                    </span>
+                );
             },
         },
         {

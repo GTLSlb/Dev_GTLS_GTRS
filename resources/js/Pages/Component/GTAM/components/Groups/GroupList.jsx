@@ -14,7 +14,7 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
-const colors=[
+const colors = [
     "bg-pink-600",
     "bg-rose-600",
     "bg-fuchsia-600",
@@ -27,7 +27,7 @@ const colors=[
     "bg-orange-600",
     "bg-red-600",
     "bg-slate-600",
-]
+];
 
 export default function GroupList({
     currentUser,
@@ -60,7 +60,7 @@ export default function GroupList({
             groups?.map((item, index) => ({
                 ...item,
                 active: index == 0,
-                color:colors[Math.floor(Math.random() * colors.length)],
+                color: colors[Math.floor(Math.random() * colors.length)],
             }))
         );
     }, [groups]);
@@ -75,53 +75,46 @@ export default function GroupList({
 
     function handleCreateGroup(id) {
         setIsLoading(true);
-        let group= groupsElements?.find(
-            (item) =>
-                item.GroupName === groupName
-        )
-        // console.log(groupsElements?.find(
-        //     (item) =>
-        //         item.GroupName === groupName
-        // ))
-        // console.log(id)
-                if(group && group.GroupId != id ){ 
-                    AlertToast("Can't use same name",3)
-                    setIsLoading(false)
-                }
-                else if(groupName==null){
-                    AlertToast("insert a role name please",3)
-                    setIsLoading(false)
-                }else{
-        const inputValues = {
-            GroupId: id ? id : null,
-            GroupName: groupName,
-            StatusId: status,
-        };
-        
-        axios
-            .post(`${url}api/GTAM/Add/Group`, inputValues, {
-                headers: {
-                    UserId: currentUser.user_id,
-                },
-            })
-            .then((res) => {
-                setIsLoading(false);
-                AlertToast("Saved successfully", 1);
-                setAdding(false);
-                setEditIndex(null);
-                setGroupName(null);
-                getGroups();
+        let group = groupsElements?.find(
+            (item) => item.GroupName === groupName
+        );
+        if (group && group.GroupId != id) {
+            AlertToast("Can't use same name", 3);
+            setIsLoading(false);
+        } else if (groupName == null) {
+            AlertToast("insert a role name please", 3);
+            setIsLoading(false);
+        } else {
+            const inputValues = {
+                GroupId: id ? id : null,
+                GroupName: groupName,
+                StatusId: status,
+            };
 
-                // AlertToast("Saved Successfully", 1);
-                // SetIsLoading(false);
-            })
-            .catch((err) => {
-                setIsLoading(false);
-                AlertToast("Something went wrong", 2);
-                // SetIsLoading(false);
-                // AlertToast("Error please try again.", 2);
-                console.log(err);
-            });
+            axios
+                .post(`${url}api/GTAM/Add/Group`, inputValues, {
+                    headers: {
+                        UserId: currentUser.user_id,
+                    },
+                })
+                .then((res) => {
+                    setIsLoading(false);
+                    AlertToast("Saved successfully", 1);
+                    setAdding(false);
+                    setEditIndex(null);
+                    setGroupName(null);
+                    getGroups();
+
+                    // AlertToast("Saved Successfully", 1);
+                    // SetIsLoading(false);
+                })
+                .catch((err) => {
+                    setIsLoading(false);
+                    AlertToast("Something went wrong", 2);
+                    // SetIsLoading(false);
+                    // AlertToast("Error please try again.", 2);
+                    console.log(err);
+                });
         }
     }
 
@@ -187,9 +180,7 @@ export default function GroupList({
                         key={group.GroupId}
                         className={classNames(
                             group.active
-                                ? 
-                                     "bg-gray-100 border-l-2 border-green-500"
-                                    
+                                ? "bg-gray-100 border-l-2 border-green-500"
                                 : "text-indigo-600",
                             "relative py-4 hover:bg-gray-50"
                         )}
@@ -312,8 +303,16 @@ export default function GroupList({
                             <div className="px-4 sm:px-6 lg:px-8">
                                 <div className="mx-auto flex  justify-between gap-x-6">
                                     <div className="flex min-w-0 gap-x-4 items-center">
-                                        <div className={`text-smooth ${group.color} rounded-full flex justify-center items-center w-10  h-10`}>
-                                           <p> {group.GroupName.substring(0, 2).toUpperCase()}</p>
+                                        <div
+                                            className={`text-smooth ${group.color} rounded-full flex justify-center items-center w-10  h-10`}
+                                        >
+                                            <p>
+                                                {" "}
+                                                {group.GroupName.substring(
+                                                    0,
+                                                    2
+                                                ).toUpperCase()}
+                                            </p>
                                         </div>
                                         <div className="flex flex-col gap-y-0">
                                             {" "}
@@ -322,40 +321,44 @@ export default function GroupList({
                                                     {group.GroupName}
                                                 </p>
                                             </div>
-                                        
-                                        <div className="flex min-w-0 gap-x-4 items-center">
-                                            <div className="">
-                                                {group.StatusId == 1 ? (
-                                                    <div className="flex items-center gap-x-2">
-                                                        <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                                                        <p className="text-dark text-xs">
-                                                            Active
-                                                        </p>
-                                                    </div>
-                                                ) : (
-                                                    <div className="flex items-center gap-x-2">
-                                                        <div className="h-2 w-2 rounded-full bg-red-500"></div>
-                                                        <p className="text-dark text-xs">
-                                                            Inactive
-                                                        </p>
-                                                    </div>
-                                                )}
+                                            <div className="flex min-w-0 gap-x-4 items-center">
+                                                <div className="">
+                                                    {group.StatusId == 1 ? (
+                                                        <div className="flex items-center gap-x-2">
+                                                            <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                                                            <p className="text-dark text-xs">
+                                                                Active
+                                                            </p>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex items-center gap-x-2">
+                                                            <div className="h-2 w-2 rounded-full bg-red-500"></div>
+                                                            <p className="text-dark text-xs">
+                                                                Inactive
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <button
+                                                    className="flex items-center"
+                                                    onClick={() => {
+                                                        setEditIndex(
+                                                            group.GroupId
+                                                        );
+                                                        setGroupName(
+                                                            group.GroupName
+                                                        );
+                                                        setStatus(
+                                                            group.StatusId
+                                                        );
+                                                    }}
+                                                >
+                                                    <p className="text-xs text-blue-500">
+                                                        Edit
+                                                    </p>
+                                                </button>
                                             </div>
-                                            <button
-                                            className="flex items-center"
-                                                onClick={() => {
-                                                    setEditIndex(group.GroupId);
-                                                    setGroupName(
-                                                        group.GroupName
-                                                    );
-                                                    setStatus(group.StatusId);
-                                                }}
-                                            >
-                                                <p className="text-xs text-blue-500">Edit</p>
-                                                
-                                                
-                                            </button>
-                                        </div></div>
+                                        </div>
                                     </div>
                                     <div className="flex shrink-0 items-center gap-x-4">
                                         <ChevronRightIcon

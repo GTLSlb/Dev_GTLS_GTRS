@@ -14,7 +14,6 @@ export default function KPIModalAddReason({
     updateLocalData,
     kpiReasons,
 }) {
-    console.log(kpi);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
     const [inputValue, setInputValue] = useState("");
