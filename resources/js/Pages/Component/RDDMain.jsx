@@ -114,7 +114,6 @@ export default function RDDMain({
                         resolve(parsedData);
                     });
                     parsedDataPromise.then((parsedData) => {
-                        console.log(parsedData)
                         const updatedOldRddData = updateFieldWithData(parsedData, "OldRdd");
                         const updatedNewRddData = updateFieldWithData(updatedOldRddData, "NewRdd");
                         setrddData(updatedNewRddData || []);
