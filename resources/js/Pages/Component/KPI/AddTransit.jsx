@@ -9,7 +9,7 @@ import {
 } from "@heroicons/react/20/solid";
 import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import { useEffect } from "react";
-import swal from 'sweetalert';
+import swal from "sweetalert";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -25,32 +25,32 @@ export default function AddTransit({
 }) {
     const states = [
         {
-            id: 1,
+            id: "ACT",
             label: "ACT",
         },
         {
-            id: 2,
+            id: "NSW",
             label: "NSW",
         },
         {
-            id: 3,
+            id: "QLD",
             label: "QLD",
         },
         {
-            id: 4,
+            id: "SA",
             label: "SA",
         },
         {
-            id: 5,
+            id: "VIC",
             label: "VIC",
         },
 
         {
-            id: 6,
+            id: "TAS",
             label: "TAS",
         },
         {
-            id: 7,
+            id: "WA",
             label: "WA",
         },
     ];
@@ -67,13 +67,20 @@ export default function AddTransit({
         { id: 3, label: "Food Solutions - QLD" },
         { id: 4, label: "METCASH" },
     ];
-
     const [object, setObject] = useState(transitDay);
     const [isLoading, setIsLoading] = useState(false);
-    const [selectedRstate, setSelectedRstate] = useState();
-    const [selectedSstate, setSelectedSstate] = useState();
-    const [selectedCustomer, setSelectedCustomer] = useState();
-    const [selectedType, setSelectedType] = useState();
+    const [selectedRstate, setSelectedRstate] = useState(
+        transitDay?.ReceiverState || null
+    );
+    const [selectedSstate, setSelectedSstate] = useState(
+        transitDay?.SenderState || null
+    );
+    const [selectedCustomer, setSelectedCustomer] = useState(
+        transitDay?.CustomerId || null
+    );
+    const [selectedType, setSelectedType] = useState(
+        transitDay?.CustomerTypeId || null
+    );
     const [isChecked, setIsChecked] = useState(false);
     const handleCheckboxChange = () => {
         setIsChecked(!isChecked);
@@ -99,67 +106,54 @@ export default function AddTransit({
                     });
                 });
         } catch (error) {
-                if (error.response && error.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
+            if (error.response && error.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
                     text: "Please login again",
-                    type: 'success',
+                    type: "success",
                     icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(function() {
+                    confirmButtonText: "OK",
+                }).then(function () {
                     axios
                         .post("/logoutAPI")
                         .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
+                            if (response.status == 200) {
+                                window.location.href = "/";
+                            }
                         })
                         .catch((error) => {
-                          console.log(error);
+                            console.log(error);
                         });
-                  });
-                } else {
-                  // Handle other errors
-                  console.log(err);
-                }
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+            }
         }
     };
 
-    useEffect(() => {
-        if (transitDay) {
-            setSelectedRstate(
-                states.find((item) => item.label == transitDay.ReceiverState)
-            );
-            setSelectedSstate(
-                states.find((item) => item.label == transitDay.SenderState)
-            );
-            setSelectedType(
-                types.find((item) => item.id == transitDay.CustomerType)
-            );
-            setSelectedCustomer(
-                customers.find((item) => item.id == transitDay.CustomerId)
-            );
-        }
-    }, []);
     function AddTransit(e) {
         e.preventDefault();
         setIsLoading(true);
         const inputValues = {
             TransitId: object ? object.TransitId : null,
-            CustomerId:  selectedCustomer.id,
-            CustomerType: object?object.CustomerId == 1 ? selectedType.id : null:null,
-            SenderState: selectedSstate.label,
+            CustomerId: selectedCustomer,
+            CustomerTypeId: selectedCustomer == 1 ? selectedType : 0,
+            SenderState: selectedSstate,
             SenderCity: document.getElementById("SenderCity").value,
             SenderSuburb: document.getElementById("SenderSuburb").value,
             SenderPostCode: document.getElementById("SenderPostCode").value,
             ReceiverName: document.getElementById("ReceiverName").value,
-            ReceiverState: selectedRstate.label,
+            ReceiverState: selectedRstate,
             ReceiverCity: document.getElementById("ReceiverCity").value,
             ReceiverSuburb: document.getElementById("ReceiverSuburb").value,
             ReceiverPostCode: document.getElementById("ReceiverPostCode").value,
             TransitTime: document.getElementById("TransitTime").value,
         };
+        setIsLoading(false);
+
+        // AlertToast("Saved successfully", 1);
         axios
             .post(`${url}Add/Transit`, inputValues, {
                 headers: {
@@ -168,39 +162,39 @@ export default function AddTransit({
                 },
             })
             .then((res) => {
-                fetchData()
+                fetchData();
                 setTransitDay(null);
                 setActiveIndexGTRS(12);
                 setIsLoading(false);
-                // AlertToast("Saved successfully", 1);
+                AlertToast("Saved successfully", 1);
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
+                    // Handle 401 error using SweetAlert
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then(function () {
+                        axios
+                            .post("/logoutAPI")
+                            .then((response) => {
+                                if (response.status == 200) {
+                                    window.location.href = "/";
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+                    });
                 } else {
-                  // Handle other errors
-                  console.log(err);
-                  setIsLoading(false);
+                    // Handle other errors
+                    console.log(err);
+                    setIsLoading(false);
                 }
-              });
+            });
     }
 
     function CancelHandle() {
@@ -214,327 +208,109 @@ export default function AddTransit({
                     <p className="font-bold text-lg">Add Transit</p>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-5 items-center py-4">
                         <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="name" className="block w-48 ">
-                                Customer Name:{" "}
-                            </label>
-                            <div className="sm:w-96">
-                                <div>
-                                    <Listbox
-                                        value={selectedCustomer}
-                                        onChange={(e) => {
-                                            setSelectedCustomer(e);
-                                        }}
-                                    >
-                                        {({ open }) => (
-                                            <>
-                                                <div className="relative ">
-                                                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-[0.07rem] pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                                        <span className="block truncate">
-                                                            {selectedCustomer
-                                                                ? selectedCustomer?.label
-                                                                : " -- No Customer -- "}
-                                                        </span>
-                                                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                                            <ChevronDownIcon
-                                                                className="h-5 w-5 text-gray-400"
-                                                                aria-hidden="true"
-                                                            />
-                                                        </span>
-                                                    </Listbox.Button>
+                            <div className="col-span-2 flex items-center gap-x-2">
+                                <label
+                                    htmlFor="CustomerId"
+                                    className="block w-48"
+                                >
+                                    Customer Name:
+                                </label>
+                                <select
+                                    id="CustomerId"
+                                    name="CustomerId"
+                                    className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
+                                    // defaultValue={modalSafetyType}
+                                    // value={formValues.SafetyType || ""}
+                                    value={selectedCustomer}
+                                    onChange={(e) => {
+                                        setSelectedCustomer(e.target.value);
+                                    }}
+                                    required
+                                >
+                                    <option value="">
+                                        --Select a Customer Type--
+                                    </option>
 
-                                                    <Transition
-                                                        show={open}
-                                                        as={Fragment}
-                                                        leave="transition ease-in duration-100"
-                                                        leaveFrom="opacity-100"
-                                                        leaveTo="opacity-0"
-                                                    >
-                                                        <Listbox.Options className="absolute z-20 mt-1 max-h-32 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                                            {customers.map(
-                                                                (customer) => (
-                                                                    <Listbox.Option
-                                                                        key={
-                                                                            customer.id
-                                                                        }
-                                                                        className={({
-                                                                            active,
-                                                                        }) =>
-                                                                            classNames(
-                                                                                active
-                                                                                    ? "bg-indigo-600 text-white"
-                                                                                    : "text-gray-900",
-                                                                                "relative cursor-default select-none py-2 pl-3 pr-9"
-                                                                            )
-                                                                        }
-                                                                        value={
-                                                                            customer
-                                                                        }
-                                                                    >
-                                                                        {({
-                                                                            selected,
-                                                                            active,
-                                                                        }) => (
-                                                                            <>
-                                                                                <span
-                                                                                    className={classNames(
-                                                                                        selected
-                                                                                            ? "font-semibold"
-                                                                                            : "font-normal",
-                                                                                        "block truncate"
-                                                                                    )}
-                                                                                >
-                                                                                    {
-                                                                                        customer.label
-                                                                                    }
-                                                                                </span>
-
-                                                                                {selected ? (
-                                                                                    <span
-                                                                                        className={classNames(
-                                                                                            active
-                                                                                                ? "text-white"
-                                                                                                : "text-indigo-600",
-                                                                                            "absolute inset-y-0 right-0 flex items-center pr-4"
-                                                                                        )}
-                                                                                    >
-                                                                                        <CheckIcon
-                                                                                            className="h-5 w-5"
-                                                                                            aria-hidden="true"
-                                                                                        />
-                                                                                    </span>
-                                                                                ) : null}
-                                                                            </>
-                                                                        )}
-                                                                    </Listbox.Option>
-                                                                )
-                                                            )}
-                                                        </Listbox.Options>
-                                                    </Transition>
-                                                </div>
-                                            </>
-                                        )}
-                                    </Listbox>
-                                </div>
+                                    {customers?.map((customer) => {
+                                        return (
+                                            <option
+                                                key={customer.id}
+                                                value={customer.id}
+                                            >
+                                                {customer.label}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
                             </div>
                         </div>
 
-                        {
-                            object?.CustomerId == 1 || selectedCustomer?.id ==1 ? (
-                                <div className="col-span-2 flex items-center gap-x-2">
-                                    <label
-                                        htmlFor="name"
-                                        className="block w-48 "
-                                    >
-                                        Customer Type:{" "}
-                                    </label>
-                                    <div className="sm:w-96">
-                                        <div>
-                                            <Listbox
-                                                value={selectedType}
-                                                onChange={(e) => {
-                                                    setSelectedType(e);
-                                                }}
+                        {object?.CustomerId == 1 || selectedCustomer == 1 ? (
+                            <div className="col-span-2 flex items-center gap-x-2">
+                                <label
+                                    htmlFor="SafetyType"
+                                    className="block w-48"
+                                >
+                                    Customer Type:
+                                </label>
+                                <select
+                                    id="SafetyType"
+                                    name="SafetyType"
+                                    className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
+                                    // defaultValue={modalSafetyType}
+                                    // value={formValues.SafetyType || ""}
+                                    value={selectedType}
+                                    onChange={(e) => {
+                                        setSelectedType(e.target.value);
+                                    }}
+                                    required
+                                >
+                                    <option value="">
+                                        --Select a Customer Type--
+                                    </option>
+
+                                    {types?.map((type) => {
+                                        return (
+                                            <option
+                                                key={type.id}
+                                                value={type.id}
                                             >
-                                                {({ open }) => (
-                                                    <>
-                                                        <div className="relative ">
-                                                            <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-[0.07rem] pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                                                <span className="block truncate">
-                                                                    {selectedType
-                                                                        ? selectedType?.label
-                                                                        : " -- No Types -- "}
-                                                                </span>
-                                                                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                                                    <ChevronDownIcon
-                                                                        className="h-5 w-5 text-gray-400"
-                                                                        aria-hidden="true"
-                                                                    />
-                                                                </span>
-                                                            </Listbox.Button>
-
-                                                            <Transition
-                                                                show={open}
-                                                                as={Fragment}
-                                                                leave="transition ease-in duration-100"
-                                                                leaveFrom="opacity-100"
-                                                                leaveTo="opacity-0"
-                                                            >
-                                                                <Listbox.Options className="absolute z-20 mt-1 max-h-32 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                                                    {types.map(
-                                                                        (
-                                                                            type
-                                                                        ) => (
-                                                                            <Listbox.Option
-                                                                                key={
-                                                                                    type.id
-                                                                                }
-                                                                                className={({
-                                                                                    active,
-                                                                                }) =>
-                                                                                    classNames(
-                                                                                        active
-                                                                                            ? "bg-indigo-600 text-white"
-                                                                                            : "text-gray-900",
-                                                                                        "relative cursor-default select-none py-2 pl-3 pr-9"
-                                                                                    )
-                                                                                }
-                                                                                value={
-                                                                                    type
-                                                                                }
-                                                                            >
-                                                                                {({
-                                                                                    selected,
-                                                                                    active,
-                                                                                }) => (
-                                                                                    <>
-                                                                                        <span
-                                                                                            className={classNames(
-                                                                                                selected
-                                                                                                    ? "font-semibold"
-                                                                                                    : "font-normal",
-                                                                                                "block truncate"
-                                                                                            )}
-                                                                                        >
-                                                                                            {
-                                                                                                type.label
-                                                                                            }
-                                                                                        </span>
-
-                                                                                        {selected ? (
-                                                                                            <span
-                                                                                                className={classNames(
-                                                                                                    active
-                                                                                                        ? "text-white"
-                                                                                                        : "text-indigo-600",
-                                                                                                    "absolute inset-y-0 right-0 flex items-center pr-4"
-                                                                                                )}
-                                                                                            >
-                                                                                                <CheckIcon
-                                                                                                    className="h-5 w-5"
-                                                                                                    aria-hidden="true"
-                                                                                                />
-                                                                                            </span>
-                                                                                        ) : null}
-                                                                                    </>
-                                                                                )}
-                                                                            </Listbox.Option>
-                                                                        )
-                                                                    )}
-                                                                </Listbox.Options>
-                                                            </Transition>
-                                                        </div>
-                                                    </>
-                                                )}
-                                            </Listbox>
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : <div></div>
-                        }
+                                                {type.label}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                            </div>
+                        ) : (
+                            <div></div>
+                        )}
 
                         <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="name" className="block w-48 ">
-                                Sender State:{" "}
+                            <label htmlFor="SenderState" className="block w-48">
+                                Sender State:
                             </label>
-                            <div className="sm:w-96">
-                                <div>
-                                    <Listbox
-                                        value={selectedSstate}
-                                        onChange={(e) => {
-                                            setSelectedSstate(e);
-                                        }}
-                                    >
-                                        {({ open }) => (
-                                            <>
-                                                <div className="relative ">
-                                                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-[0.07rem] pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                                        <span className="block truncate">
-                                                            {selectedSstate
-                                                                ? selectedSstate?.label
-                                                                : " -- No State -- "}
-                                                        </span>
-                                                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                                            <ChevronDownIcon
-                                                                className="h-5 w-5 text-gray-400"
-                                                                aria-hidden="true"
-                                                            />
-                                                        </span>
-                                                    </Listbox.Button>
+                            <select
+                                id="SenderState"
+                                name="SenderState"
+                                className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
+                                // defaultValue={modalSafetyType}
+                                // value={formValues.SafetyType || ""}
+                                value={selectedSstate}
+                                onChange={(e) => {
+                                    setSelectedSstate(e.target.value);
+                                }}
+                                required
+                            >
+                                <option value="">--Select a State--</option>
 
-                                                    <Transition
-                                                        show={open}
-                                                        as={Fragment}
-                                                        leave="transition ease-in duration-100"
-                                                        leaveFrom="opacity-100"
-                                                        leaveTo="opacity-0"
-                                                    >
-                                                        <Listbox.Options className="absolute z-20 mt-1 max-h-32 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                                            {states.map(
-                                                                (state) => (
-                                                                    <Listbox.Option
-                                                                        key={
-                                                                            state.id
-                                                                        }
-                                                                        className={({
-                                                                            active,
-                                                                        }) =>
-                                                                            classNames(
-                                                                                active
-                                                                                    ? "bg-indigo-600 text-white"
-                                                                                    : "text-gray-900",
-                                                                                "relative cursor-default select-none py-2 pl-3 pr-9"
-                                                                            )
-                                                                        }
-                                                                        value={
-                                                                            state
-                                                                        }
-                                                                    >
-                                                                        {({
-                                                                            selected,
-                                                                            active,
-                                                                        }) => (
-                                                                            <>
-                                                                                <span
-                                                                                    className={classNames(
-                                                                                        selected
-                                                                                            ? "font-semibold"
-                                                                                            : "font-normal",
-                                                                                        "block truncate"
-                                                                                    )}
-                                                                                >
-                                                                                    {
-                                                                                        state.label
-                                                                                    }
-                                                                                </span>
-
-                                                                                {selected ? (
-                                                                                    <span
-                                                                                        className={classNames(
-                                                                                            active
-                                                                                                ? "text-white"
-                                                                                                : "text-indigo-600",
-                                                                                            "absolute inset-y-0 right-0 flex items-center pr-4"
-                                                                                        )}
-                                                                                    >
-                                                                                        <CheckIcon
-                                                                                            className="h-5 w-5"
-                                                                                            aria-hidden="true"
-                                                                                        />
-                                                                                    </span>
-                                                                                ) : null}
-                                                                            </>
-                                                                        )}
-                                                                    </Listbox.Option>
-                                                                )
-                                                            )}
-                                                        </Listbox.Options>
-                                                    </Transition>
-                                                </div>
-                                            </>
-                                        )}
-                                    </Listbox>
-                                </div>
-                            </div>
+                                {states?.map((state) => {
+                                    return (
+                                        <option key={state.id} value={state.id}>
+                                            {state.label}
+                                        </option>
+                                    );
+                                })}
+                            </select>
                         </div>
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label htmlFor="name" className="block w-48 ">
@@ -587,108 +363,34 @@ export default function AddTransit({
                             />
                         </div>
                         <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="name" className="block w-48 ">
-                                Receiver State:{" "}
+                            <label
+                                htmlFor="ReceiverState"
+                                className="block w-48"
+                            >
+                                Receiver State:
                             </label>
-                            <div className="sm:w-96">
-                                <div>
-                                    <Listbox
-                                        value={selectedRstate}
-                                        onChange={(e) => {
-                                            setSelectedRstate(e);
-                                        }}
-                                    >
-                                        {({ open }) => (
-                                            <>
-                                                <div className="relative ">
-                                                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-[0.07rem] pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                                        <span className="block truncate">
-                                                            {selectedRstate
-                                                                ? selectedRstate?.label
-                                                                : " -- No State -- "}
-                                                        </span>
-                                                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                                            <ChevronDownIcon
-                                                                className="h-5 w-5 text-gray-400"
-                                                                aria-hidden="true"
-                                                            />
-                                                        </span>
-                                                    </Listbox.Button>
+                            <select
+                                id="ReceiverState"
+                                name="ReceiverState"
+                                className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
+                                // defaultValue={modalSafetyType}
+                                // value={formValues.SafetyType || ""}
+                                value={selectedRstate}
+                                onChange={(e) => {
+                                    setSelectedRstate(e.target.value);
+                                }}
+                                required
+                            >
+                                <option value="">--Select a State--</option>
 
-                                                    <Transition
-                                                        show={open}
-                                                        as={Fragment}
-                                                        leave="transition ease-in duration-100"
-                                                        leaveFrom="opacity-100"
-                                                        leaveTo="opacity-0"
-                                                    >
-                                                        <Listbox.Options className="absolute z-20 mt-1 max-h-32 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                                            {states.map(
-                                                                (state) => (
-                                                                    <Listbox.Option
-                                                                        key={
-                                                                            state.id
-                                                                        }
-                                                                        className={({
-                                                                            active,
-                                                                        }) =>
-                                                                            classNames(
-                                                                                active
-                                                                                    ? "bg-indigo-600 text-white"
-                                                                                    : "text-gray-900",
-                                                                                "relative cursor-default select-none py-2 pl-3 pr-9"
-                                                                            )
-                                                                        }
-                                                                        value={
-                                                                            state
-                                                                        }
-                                                                    >
-                                                                        {({
-                                                                            selected,
-                                                                            active,
-                                                                        }) => (
-                                                                            <>
-                                                                                <span
-                                                                                    className={classNames(
-                                                                                        selected
-                                                                                            ? "font-semibold"
-                                                                                            : "font-normal",
-                                                                                        "block truncate"
-                                                                                    )}
-                                                                                >
-                                                                                    {
-                                                                                        state.label
-                                                                                    }
-                                                                                </span>
-
-                                                                                {selected ? (
-                                                                                    <span
-                                                                                        className={classNames(
-                                                                                            active
-                                                                                                ? "text-white"
-                                                                                                : "text-indigo-600",
-                                                                                            "absolute inset-y-0 right-0 flex items-center pr-4"
-                                                                                        )}
-                                                                                    >
-                                                                                        <CheckIcon
-                                                                                            className="h-5 w-5"
-                                                                                            aria-hidden="true"
-                                                                                        />
-                                                                                    </span>
-                                                                                ) : null}
-                                                                            </>
-                                                                        )}
-                                                                    </Listbox.Option>
-                                                                )
-                                                            )}
-                                                        </Listbox.Options>
-                                                    </Transition>
-                                                </div>
-                                            </>
-                                        )}
-                                    </Listbox>
-                                </div>
-                            </div>
+                                {states?.map((state) => {
+                                    return (
+                                        <option key={state.id} value={state.id}>
+                                            {state.label}
+                                        </option>
+                                    );
+                                })}
+                            </select>
                         </div>
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label htmlFor="name" className="block w-48 ">

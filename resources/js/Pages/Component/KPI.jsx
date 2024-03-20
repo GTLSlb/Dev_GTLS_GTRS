@@ -63,25 +63,13 @@ export default function KPI({
                     },
                 })
                 .then((res) => {
-                    const dataWithPassFail = res.data.map((item) => {
-                        if (item.MatchDel) {
-                            item["Pass/Fail"] = "Pass";
-                        } else if (
-                            !item.MatchDel &&
-                            (!item.DeliveryDate || !item.CalculatedDelDate)
-                        ) {
-                            item["Pass/Fail"] = "N/A";
-                        } else {
-                            item["Pass/Fail"] = "Fail";
-                        }
-                        return item;
-                    });
-                    setKPIData(dataWithPassFail);
+                    const x = JSON.stringify(res.data);
+                    setKPIData(res.data);
                     setSenderStateOptions(
-                        createNewLabelObjects(dataWithPassFail, "SenderState")
+                        createNewLabelObjects(res.data, "SenderState")
                     );
                     setReceiverStateOptions(
-                        createNewLabelObjects(dataWithPassFail, "ReceiverState")
+                        createNewLabelObjects(res.data, "ReceiverState")
                     );
                     setReasonOptions(
                         kpireasonsData.map((reason) => ({
@@ -662,7 +650,6 @@ export default function KPI({
             headerAlign: "center",
         },
     ];
-
     const handleEditClick = (reason) => {
         setReason(reason);
         setIsModalOpen(!isModalOpen);
@@ -691,6 +678,21 @@ export default function KPI({
             }))
         );
     };
+
+    const kpiStatusOptions = [
+        {
+            id: 0,
+            label: "N/A",
+        },
+        {
+            id: 1,
+            label: "Pass",
+        },
+        {
+            id: 2,
+            label: "Fail",
+        },
+    ];
     const columns = [
         {
             name: "ConsignmentNo",
@@ -889,11 +891,25 @@ export default function KPI({
             },
         },
         {
-            name: "Pass/Fail",
+            name: "MatchDel",
             header: "Pass/Fail",
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 100,
+            defaultWidth: 200,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: false,
+                wrapMultiple: false,
+                dataSource: kpiStatusOptions,
+            },
+            render: ({ value, data }) => {
+                return (
+                    <span className="">
+                        {" "}
+                        {value == 0 ? "" : value == 1 ? "Pass" : "Fail"}
+                    </span>
+                );
+            },
         },
         {
             name: "ReasonId",

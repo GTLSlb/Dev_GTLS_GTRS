@@ -301,6 +301,13 @@ export default function charts({
             //emptyValue: "",
         },
         {
+            name: "MatchDel",
+            operator: "eq",
+            type: "select",
+            value: null,
+            //emptyValue: "",
+        },
+        {
             name: "ReasonId",
             operator: "eq",
             type: "select",
