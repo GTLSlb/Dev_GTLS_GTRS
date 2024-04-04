@@ -21,6 +21,7 @@ export default function SafetyRep({
     setsafetyDataState,
     setSafetyTypes,
     safetyTypes,
+    customerAccounts,
     safetyCauses,
     setSafetyCauses,
     oldestDate,
@@ -101,48 +102,47 @@ export default function SafetyRep({
             fetchDataCauses();
         }
     }, []);
-    function fetchData() {
+    async function fetchData() {
         setIsFetching(true);
-        return axios
-            .get(`${url}SafetyReport`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                getEarliestDate(res.data);
-                getLatestDate(res.data);
-                setsafetyDataState(res.data || []);
-                setFilteredData(res.data || []);
-                setIsFetching(false);
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
+        try {
+            const res = await axios
+                .get(`${url}SafetyReport`, {
+                    headers: {
+                        UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`
+                    }
+                });
+            getEarliestDate(res.data);
+            getLatestDate(res.data);
+            setsafetyDataState(res.data || []);
+            setFilteredData(res.data || []);
+            setIsFetching(false);
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
                     title: 'Session Expired!',
                     text: "Please login again",
                     type: 'success',
                     icon: "info",
                     confirmButtonText: 'OK'
-                  }).then(function() {
+                }).then(function () {
                     axios
                         .post("/logoutAPI")
                         .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
+                            if (response.status == 200) {
+                                window.location.href = "/";
+                            }
                         })
                         .catch((error) => {
-                          console.log(error);
+                            console.log(error);
                         });
-                  });
-                } else {
-                  // Handle other errors
-                  console.log(err);
-                }
-              });
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+            }
+        }
     }
     function fetchDataTypes() {
         axios
@@ -306,14 +306,16 @@ export default function SafetyRep({
         }),
         // Add more style functions here as needed
     };
-
     let components = [
         <SafetyRepTable
             url={url}
+            fetchData={fetchData}
             AToken={AToken}
+            customerAccounts={customerAccounts}
             safetyCauses={safetyCauses}
             filterValue={filterValue}
             setFilterValue={setFilterValue}
+            setsafetyData={setsafetyDataState}
             safetyTypes={safetyTypes}
             safetyData={safetyDataState}
             currentPageRep={currentPage}

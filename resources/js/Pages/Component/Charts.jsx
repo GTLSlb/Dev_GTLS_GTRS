@@ -795,6 +795,12 @@ export default function charts({
             value: "",
         },
         {
+            name: "DebtorId",
+            operator: "eq",
+            type: "select",
+            value: null,
+        },
+        {
             name: "CAUSE",
             operator: "contains",
             type: "string",
@@ -1751,6 +1757,7 @@ export default function charts({
             latestDate={latestDate}
             url={url}
             AToken={AToken}
+            customerAccounts={customerAccounts}
             filterValue={filtersSafety}
             setFilterValue={setFiltersSafety}
             setSafetyTypes={setSafetyTypes}

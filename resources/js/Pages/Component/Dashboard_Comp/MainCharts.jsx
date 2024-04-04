@@ -616,7 +616,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                                 </div>
                             </div>
 
-                            <Popover className="relative object-right flex-item md:ml-auto">
+                            <Popover className="relative object-right flex-item md:ml-auto hidden">
                                 <Popover.Button
                                     className={`inline-flex items-center w-[5.5rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
                                 >

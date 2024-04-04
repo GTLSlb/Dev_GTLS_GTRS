@@ -32,11 +32,14 @@ export default function SafetyRepTable({
     AToken,
     url,
     filterValue,
+    customerAccounts,
     setFilterValue,
     currentUser,
     setFilteredData,
     setDataEdited,
     safetyTypes,
+    fetchData,
+    setsafetyData,
     safetyCauses,
 }) {
     window.moment = moment;
@@ -99,31 +102,13 @@ export default function SafetyRepTable({
             checkbox.current.indeterminate = isIndeterminate;
         }
     }, [selectedRecords]);
-    function toggleAll() {
-        setselectedRecords(checked || indeterminate ? [] : safetyData);
-        setChecked(!checked && !indeterminate);
-        setIndeterminate(false);
-    }
-    const Roles = ["1", "3", "4", "5"];
-    const tableRef = useRef(null);
-    const headers = [
-        "Safety Type",
-        "Cons No",
-        "Main Cause",
-        "State",
-        "Explanation",
-        "Resolution",
-        "Reference",
-        "Occured At",
-        "Added By",
-    ];
     const gridRef = useRef(null);
     function handleFilterTable() {
         // Get the selected columns or use all columns if none are selected
         let selectedColumns = Array.from(
             document.querySelectorAll('input[name="column"]:checked')
         ).map((checkbox) => checkbox.value);
-        
+
         let allHeaderColumns = gridRef.current.visibleColumns.map((column) => ({
             name: column.name,
             value: column.computedFilterValue?.value,
@@ -131,10 +116,11 @@ export default function SafetyRepTable({
             operator: column.computedFilterValue?.operator,
         }));
         let selectedColVal = allHeaderColumns?.filter(
-            (col) => col?.label?.toString().toLowerCase() !== "edit");
+            (col) => col?.label?.toString().toLowerCase() !== "edit"
+        );
 
         const filterValue = [];
-        safetyData?.map((val) =>{
+        safetyData?.map((val) => {
             let isMatch = true;
 
             for (const col of selectedColVal) {
@@ -289,29 +275,30 @@ export default function SafetyRepTable({
                     switch (operator) {
                         case "eq":
                             conditionMet =
-                            cellValueLowerCase?.length > 0 &&
+                                cellValueLowerCase?.length > 0 &&
                                 cellValueLowerCase === valLowerCase;
                             break;
                         case "neq":
                             // This case seems to be duplicated in your original code, you might want to check this
                             conditionMet =
-                            cellValueLowerCase?.length > 0 &&
+                                cellValueLowerCase?.length > 0 &&
                                 cellValueLowerCase !== valLowerCase;
                             break;
                         case "inlist":
                             const listValues = Array.isArray(value)
                                 ? value.map((v) => {
-                                    if(typeof v === 'string'){
-                                        return v?.toLowerCase()
-                                    }else{
-                                        return v?.toString()
-                                    }})
-                                : typeof v === 'string'
+                                      if (typeof v === "string") {
+                                          return v?.toLowerCase();
+                                      } else {
+                                          return v?.toString();
+                                      }
+                                  })
+                                : typeof v === "string"
                                 ? [value?.toLowerCase()]
                                 : [value?.toString()];
-                                
+
                             conditionMet =
-                            cellValueLowerCase?.length > 0 &&
+                                cellValueLowerCase?.length > 0 &&
                                 listValues.includes(valLowerCase);
                             break;
                         case "notinlist":
@@ -319,44 +306,73 @@ export default function SafetyRepTable({
                                 ? value.map((v) => v.toLowerCase())
                                 : [value?.toLowerCase()];
                             conditionMet =
-                            cellValueLowerCase?.length > 0 &&
+                                cellValueLowerCase?.length > 0 &&
                                 !listValuesNotIn.includes(valLowerCase);
                             break;
                         // ... (add other select type conditions here if necessary)
                     }
                 } else if (type === "date") {
-                    const dateValue = moment(val[col.name].replace("T", " "), "YYYY-MM-DD HH:mm:ss");
-                    const hasStartDate = cellValue?.start && cellValue.start.length > 0;
-                    const hasEndDate = cellValue?.end && cellValue.end.length > 0;
-                    const dateCellValueStart = hasStartDate ? moment(cellValue.start, "DD-MM-YYYY") : null;
-                    const dateCellValueEnd = hasEndDate ? moment(cellValue.end, "DD-MM-YYYY").endOf('day') : null;
-                
+                    const dateValue = moment(
+                        val[col.name].replace("T", " "),
+                        "YYYY-MM-DD HH:mm:ss"
+                    );
+                    const hasStartDate =
+                        cellValue?.start && cellValue.start.length > 0;
+                    const hasEndDate =
+                        cellValue?.end && cellValue.end.length > 0;
+                    const dateCellValueStart = hasStartDate
+                        ? moment(cellValue.start, "DD-MM-YYYY")
+                        : null;
+                    const dateCellValueEnd = hasEndDate
+                        ? moment(cellValue.end, "DD-MM-YYYY").endOf("day")
+                        : null;
+
                     switch (operator) {
                         case "after":
-                            conditionMet = hasStartDate && dateCellValueStart.isAfter(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isAfter(dateValue);
                             break;
                         case "afterOrOn":
-                            conditionMet = hasStartDate && dateCellValueStart.isSameOrAfter(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSameOrAfter(dateValue);
                             break;
                         case "before":
-                            conditionMet = hasStartDate && dateCellValueStart.isBefore(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isBefore(dateValue);
                             break;
                         case "beforeOrOn":
-                            conditionMet = hasStartDate && dateCellValueStart.isSameOrBefore(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSameOrBefore(dateValue);
                             break;
                         case "eq":
-                            conditionMet = hasStartDate && dateCellValueStart.isSame(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                dateCellValueStart.isSame(dateValue);
                             break;
                         case "neq":
-                            conditionMet = hasStartDate && !dateCellValueStart.isSame(dateValue);
+                            conditionMet =
+                                hasStartDate &&
+                                !dateCellValueStart.isSame(dateValue);
                             break;
                         case "inrange":
-                            conditionMet = (!hasStartDate || dateValue.isSameOrAfter(dateCellValueStart)) &&
-                                           (!hasEndDate || dateValue.isSameOrBefore(dateCellValueEnd));
+                            conditionMet =
+                                (!hasStartDate ||
+                                    dateValue.isSameOrAfter(
+                                        dateCellValueStart
+                                    )) &&
+                                (!hasEndDate ||
+                                    dateValue.isSameOrBefore(dateCellValueEnd));
                             break;
                         case "notinrange":
-                            conditionMet = (hasStartDate && dateValue.isBefore(dateCellValueStart)) ||
-                                           (hasEndDate && dateValue.isAfter(dateCellValueEnd));
+                            conditionMet =
+                                (hasStartDate &&
+                                    dateValue.isBefore(dateCellValueStart)) ||
+                                (hasEndDate &&
+                                    dateValue.isAfter(dateCellValueEnd));
                             break;
                         // ... (add other date type conditions here if necessary)
                     }
@@ -372,7 +388,7 @@ export default function SafetyRepTable({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
-            selectedColVal  = allHeaderColumns?.filter(
+            selectedColVal = allHeaderColumns?.filter(
                 (col) => col?.label?.toString().toLowerCase() !== "edit"
             ); // Use all columns except edit column
         } else {
@@ -391,14 +407,15 @@ export default function SafetyRepTable({
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-        
+
         const columnMapping = {
-                "SafetyType": "Safety Type",
-                "ConsNo": "Cons No",
-                "CAUSE": "Main Cause",
-                "State": "State",
-                "OccuredAt": "Occured At",
-                "AddedBy" : "Added By",
+            SafetyType: "Safety Type",
+            ConsNo: "Cons No",
+            DebtorId: "Account Name",
+            CAUSE: "Main Cause",
+            State: "State",
+            OccuredAt: "Occured At",
+            AddedBy: "Added By",
         };
 
         const selectedColumns = jsonData?.selectedColumns.map(
@@ -409,6 +426,7 @@ export default function SafetyRepTable({
         );
         const filterValue = jsonData?.filterValue;
         //safetyData
+        
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
@@ -419,6 +437,13 @@ export default function SafetyRepTable({
                                 reason.SafetyTypeId === person.SafetyType
                         );
                         acc[columnKey] = Reason?.SafetyTypeName;
+                    }
+                    if (columnKey === "DebtorId") {
+                        const Reason = customerAccounts?.find(
+                            (reason) =>
+                                reason.DebtorId == person.DebtorId
+                        );
+                        acc[columnKey] = Reason?.AccountNo;
                     } else if (columnKey === "OccuredAt") {
                         acc[columnKey] =
                             moment(
@@ -512,6 +537,7 @@ export default function SafetyRepTable({
     const handleEditClick = (
         reportId,
         safetyType,
+        debtorId,
         mainCause,
         state,
         expl,
@@ -523,6 +549,7 @@ export default function SafetyRepTable({
     ) => {
         setbuttonAction(2); //To define it's a Edit Action
         setmodalRepId(reportId);
+        setmodalDebtorId(debtorId);
         setmodalSafetyType(safetyType);
         setmodalMainCause(mainCause);
         setmodalState(state);
@@ -563,7 +590,7 @@ export default function SafetyRepTable({
             // Create a new item if the provided id was not found
             updatedData?.push({ id: generateUniqueId(), ...updates });
         }
-        setFilteredData(updatedData);
+        setsafetyData(updatedData);
         setDataEdited(true);
     };
     const [hoverMessage, setHoverMessage] = useState("");
@@ -602,6 +629,10 @@ export default function SafetyRepTable({
     const safetyTypeOptions = safetyTypes.map((reason) => ({
         id: reason.SafetyTypeId,
         label: reason.SafetyTypeName,
+    }));
+    const debtorsOptions = customerAccounts.map((reason) => ({
+        id: parseInt(reason.DebtorId.trim(), 10), // Convert id to integer and remove any whitespace
+        label: reason.AccountNo,
     }));
     const referenceOptions = [
         {
@@ -646,6 +677,31 @@ export default function SafetyRepTable({
             textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
+        },
+        {
+            name: "DebtorId",
+            header: "Account Name",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: false,
+                wrapMultiple: false,
+                dataSource: debtorsOptions,
+            },
+            defaultWidth: 200,
+            render: ({ value }) => {
+                return (
+                    <div>
+                        {/* {value} */}
+                        {
+                            customerAccounts?.find(
+                                (customer) => customer.DebtorId == value
+                            )?.AccountNo
+                        }
+                    </div>
+                );
+            },
         },
         {
             name: "CAUSE",
@@ -751,6 +807,7 @@ export default function SafetyRepTable({
                                     handleEditClick(
                                         data.ReportId,
                                         data.SafetyType,
+                                        data.DebtorId,
                                         data.CAUSE,
                                         data.State,
                                         data.Explanation,
@@ -873,6 +930,14 @@ export default function SafetyRepTable({
                                                             />{" "}
                                                             Con No
                                                         </label>
+                                                        <label className="">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
+                                                                value="DebtorId"
+                                                                className="text-dark focus:ring-goldd rounded "
+                                                            />{" "}Account Name
+                                                        </label>
                                                         <label>
                                                             <input
                                                                 type="checkbox"
@@ -977,6 +1042,7 @@ export default function SafetyRepTable({
             <SafetyModal
                 url={url}
                 AToken={AToken}
+                customerAccounts={debtorsOptions}
                 safetyTypes={safetyTypes}
                 safetyCauses={safetyCauses}
                 isOpen={isModalOpen}
