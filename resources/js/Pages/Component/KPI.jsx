@@ -455,6 +455,7 @@ export default function KPI({
             TransitDays: "Transit Days",
             CalculatedDelDate: "Calculated Delivery Date",
             ReasonId: "Reason",
+            MatchDel: "Pass/Fail",
         };
 
         const selectedColumns = jsonData?.selectedColumns.map(
@@ -503,6 +504,14 @@ export default function KPI({
                                       person["DeliveryDate"].replace("T", " "),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY");
+                    } else if (column.replace(/\s+/g, "") === "MatchDel") {
+                        if (person[columnKey] == 0) {
+                            acc[columnKey] = "";
+                        } else if (person[columnKey] == 1) {
+                            acc[columnKey] = "PASS";
+                        } else if (person[columnKey] == 2) {
+                            acc[columnKey] = "FAIL";
+                        }
                     } else if (column === "RDD") {
                         acc[columnKey] =
                             moment(
@@ -902,13 +911,19 @@ export default function KPI({
                 wrapMultiple: false,
                 dataSource: kpiStatusOptions,
             },
-            render: ({ value, data }) => {
-                return (
-                    <span className="">
-                        {" "}
-                        {value == 0 ? "" : value == 1 ? "Pass" : "Fail"}
+
+            render: ({ value }) => {
+                return value == 1 ? (
+                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                        Pass
                     </span>
-                );
+                ) : value == 2 ? (
+                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                        Fail
+                    </span>
+                ): (
+                    null
+                )
             },
         },
         {
@@ -1246,6 +1261,15 @@ export default function KPI({
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Delivery Date
+                                                        </label>
+                                                        <label className="">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
+                                                                value="MatchDel"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Pass / Fail
                                                         </label>
                                                     </div>
                                                 </div>

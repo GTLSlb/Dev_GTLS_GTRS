@@ -21,6 +21,7 @@ export default function SafetyRep({
     setsafetyDataState,
     setSafetyTypes,
     safetyTypes,
+    customerAccounts,
     safetyCauses,
     setSafetyCauses,
     oldestDate,
@@ -101,48 +102,47 @@ export default function SafetyRep({
             fetchDataCauses();
         }
     }, []);
-    function fetchData() {
+    async function fetchData() {
         setIsFetching(true);
-        return axios
-            .get(`${url}SafetyReport`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                getEarliestDate(res.data);
-                getLatestDate(res.data);
-                setsafetyDataState(res.data || []);
-                setFilteredData(res.data || []);
-                setIsFetching(false);
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
+        try {
+            const res = await axios
+                .get(`${url}SafetyReport`, {
+                    headers: {
+                        UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`
+                    }
+                });
+            getEarliestDate(res.data);
+            getLatestDate(res.data);
+            setsafetyDataState(res.data || []);
+            setFilteredData(res.data || []);
+            setIsFetching(false);
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
                     title: 'Session Expired!',
                     text: "Please login again",
                     type: 'success',
                     icon: "info",
                     confirmButtonText: 'OK'
-                  }).then(function() {
+                }).then(function () {
                     axios
                         .post("/logoutAPI")
                         .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
+                            if (response.status == 200) {
+                                window.location.href = "/";
+                            }
                         })
                         .catch((error) => {
-                          console.log(error);
+                            console.log(error);
                         });
-                  });
-                } else {
-                  // Handle other errors
-                  console.log(err);
-                }
-              });
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+            }
+        }
     }
     function fetchDataTypes() {
         axios
@@ -256,6 +256,11 @@ export default function SafetyRep({
     };
     const filterData = (startDate, endDate) => {
         // Filter the data based on the start and end date filters
+        const intArray = accData?.map((str) => {
+            const intValue = parseInt(str);
+            return isNaN(intValue) ? 0 : intValue;
+        });
+
         const filtered = safetyDataState?.filter((item) => {
             const itemDate = new Date(item.OccuredAt); // Convert item's date string to Date object
             const filterStartDate = new Date(startDate); // Convert start date string to Date object
@@ -264,6 +269,8 @@ export default function SafetyRep({
             filterEndDate.setSeconds(59);
             filterEndDate.setMinutes(59);
             filterEndDate.setHours(23);
+            const chargeToMatch =
+                intArray?.length === 0 || intArray?.includes(item.DebtorId);
             const typeMatch =
                 selectedTypes.length === 0 ||
                 selectedTypes.some(
@@ -272,7 +279,8 @@ export default function SafetyRep({
             return (
                 itemDate >= filterStartDate &&
                 itemDate <= filterEndDate &&
-                typeMatch
+                typeMatch && 
+                chargeToMatch
             ); // Compare the item date to the filter dates
         });
         setFilteredData(filtered);
@@ -306,16 +314,18 @@ export default function SafetyRep({
         }),
         // Add more style functions here as needed
     };
-
     let components = [
         <SafetyRepTable
             url={url}
+            fetchData={fetchData}
             AToken={AToken}
+            customerAccounts={customerAccounts}
             safetyCauses={safetyCauses}
             filterValue={filterValue}
             setFilterValue={setFilterValue}
+            setsafetyData={setsafetyDataState}
             safetyTypes={safetyTypes}
-            safetyData={safetyDataState}
+            safetyData={filteredData}
             currentPageRep={currentPage}
             currentUser={currentUser}
             setFilteredData={setFilteredData}
