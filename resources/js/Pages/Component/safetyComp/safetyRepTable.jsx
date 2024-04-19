@@ -43,7 +43,6 @@ export default function SafetyRepTable({
     safetyCauses,
 }) {
     window.moment = moment;
-
     const minDate = getMinMaxValue(safetyData, "OccuredAt", 1);
     const maxDate = getMinMaxValue(safetyData, "OccuredAt", 2);
     function getMinMaxValue(data, fieldName, identifier) {
@@ -426,7 +425,7 @@ export default function SafetyRepTable({
         );
         const filterValue = jsonData?.filterValue;
         //safetyData
-        
+
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
@@ -440,8 +439,7 @@ export default function SafetyRepTable({
                     }
                     if (columnKey === "DebtorId") {
                         const Reason = customerAccounts?.find(
-                            (reason) =>
-                                reason.DebtorId == person.DebtorId
+                            (reason) => reason.DebtorId == person.DebtorId
                         );
                         acc[columnKey] = Reason?.AccountNo;
                     } else if (columnKey === "OccuredAt") {
@@ -936,7 +934,8 @@ export default function SafetyRepTable({
                                                                 name="column"
                                                                 value="DebtorId"
                                                                 className="text-dark focus:ring-goldd rounded "
-                                                            />{" "}Account Name
+                                                            />{" "}
+                                                            Account Name
                                                         </label>
                                                         <label>
                                                             <input

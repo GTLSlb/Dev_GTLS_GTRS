@@ -256,6 +256,11 @@ export default function SafetyRep({
     };
     const filterData = (startDate, endDate) => {
         // Filter the data based on the start and end date filters
+        const intArray = accData?.map((str) => {
+            const intValue = parseInt(str);
+            return isNaN(intValue) ? 0 : intValue;
+        });
+
         const filtered = safetyDataState?.filter((item) => {
             const itemDate = new Date(item.OccuredAt); // Convert item's date string to Date object
             const filterStartDate = new Date(startDate); // Convert start date string to Date object
@@ -264,6 +269,8 @@ export default function SafetyRep({
             filterEndDate.setSeconds(59);
             filterEndDate.setMinutes(59);
             filterEndDate.setHours(23);
+            const chargeToMatch =
+                intArray?.length === 0 || intArray?.includes(item.DebtorId);
             const typeMatch =
                 selectedTypes.length === 0 ||
                 selectedTypes.some(
@@ -272,7 +279,8 @@ export default function SafetyRep({
             return (
                 itemDate >= filterStartDate &&
                 itemDate <= filterEndDate &&
-                typeMatch
+                typeMatch && 
+                chargeToMatch
             ); // Compare the item date to the filter dates
         });
         setFilteredData(filtered);
@@ -317,7 +325,7 @@ export default function SafetyRep({
             setFilterValue={setFilterValue}
             setsafetyData={setsafetyDataState}
             safetyTypes={safetyTypes}
-            safetyData={safetyDataState}
+            safetyData={filteredData}
             currentPageRep={currentPage}
             currentUser={currentUser}
             setFilteredData={setFilteredData}
