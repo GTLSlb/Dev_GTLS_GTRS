@@ -464,10 +464,16 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
             const intValue = parseInt(str);
             return isNaN(intValue) ? 0 : intValue;
         });
-        if (intArray.length === 0) {
+        if (intArray) {
+            if (intArray && intArray?.length === 0) {
+                setFilteredSafety(safetyData);
+            } else {
+                setFilteredSafety(
+                    filterReportsByDebtorId(safetyData, intArray)
+                );
+            }
+        }else {
             setFilteredSafety(safetyData);
-        } else {
-            setFilteredSafety(filterReportsByDebtorId(safetyData, intArray));
         }
 
         // Filter the data based on the start and end date filters, selected receiver names, and chargeTo values
