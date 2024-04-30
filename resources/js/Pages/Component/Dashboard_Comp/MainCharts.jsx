@@ -20,12 +20,15 @@ import { useEffect } from "react";
 import MultiChartLine from "./Dashboard_Charts/MultiLineChart";
 import DoubleBarChart from "./Dashboard_Charts/DoublBarChart";
 export default function MainCharts({ accData, safetyData, chartsData }) {
+    const [filteredSafety, setFilteredSafety] = useState(safetyData);
 
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
     const [EDate, setEDate] = useState(getLatestDespatchDate(chartsData));
     function getOldestDespatchDate(data) {
         // Filter out elements with invalid 'CreatedDate' values
-        const validData = data?.filter((item) => isValidDate(item?.DespatchDate));
+        const validData = data?.filter((item) =>
+            isValidDate(item?.DespatchDate)
+        );
         // Sort the validData array based on the 'CreatedDate' property
         const sortedData = validData.sort(
             (a, b) => new Date(a.DespatchDate) - new Date(b.DespatchDate)
@@ -95,6 +98,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
         };
     }, []);
     const [selectedReceiver, setselectedReceiver] = useState([]);
+
     const calculateStatistics = (data) => {
         let safetyCounter = 0;
         const uniqueReceivers = new Set();
@@ -108,8 +112,8 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
         let totalConsPending = 0;
         let podCounter = 0;
         let totalChep = 0;
-        if (safetyData) {
-            safetyCounter = Object.keys(safetyData).length;
+        if (filteredSafety) {
+            safetyCounter = Object.keys(filteredSafety).length;
         } else {
             safetyCounter = 0;
         }
@@ -189,18 +193,23 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
         const counter = [];
         for (const item of data) {
             // Convert the boolean KPIStatus to 'pass' or 'fail'
-            const KPIStatus = item.MatchDel == 0 ? "N/A" : item.MatchDel == 1 ? "Pass" : "Fail";
+            const KPIStatus =
+                item.MatchDel == 0
+                    ? "N/A"
+                    : item.MatchDel == 1
+                    ? "Pass"
+                    : "Fail";
             const existingStatus = counter.find(
                 (obj) => obj.label === KPIStatus
             );
-    
+
             if (existingStatus) {
                 existingStatus.value++;
             } else {
                 counter.push({ label: KPIStatus, value: 1 });
             }
         }
-    
+
         return counter;
     };
     // Information for the first charts
@@ -396,6 +405,9 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
         value: name,
         label: name,
     }));
+    function filterReportsByDebtorId(safetyData, debtorIds) {
+        return safetyData.filter((data) => debtorIds.includes(data.DebtorId));
+    }
     const getFilteredOptions = () => {
         // Filter the options based on the selected receivers
         return receiverOptions.filter(
@@ -452,6 +464,12 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
             const intValue = parseInt(str);
             return isNaN(intValue) ? 0 : intValue;
         });
+        if (intArray.length === 0) {
+            setFilteredSafety(safetyData);
+        } else {
+            setFilteredSafety(filterReportsByDebtorId(safetyData, intArray));
+        }
+
         // Filter the data based on the start and end date filters, selected receiver names, and chargeTo values
         const filtered = chartsData.filter((item) => {
             const isIncluded =
@@ -479,7 +497,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
         const hasData = filtered?.length > 0;
         setFilteredData(filtered);
         setHasData(hasData);
-    }; 
+    };
     useEffect(() => {
         filterData(SDate, EDate);
     }, [accData, selectedReceiver]);
@@ -677,32 +695,30 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                         </div>
                     </div>
                     <div className="lg:hidden px-2 py-3 w-full">
-                    <label
-                                htmlFor="last-name"
-                                className="block text-sm font-medium leading-6  text-gray-400 sm:pt-1.5 mr-5"
-                            >
-                                Receiver Name
-                            </label>
+                        <label
+                            htmlFor="last-name"
+                            className="block text-sm font-medium leading-6  text-gray-400 sm:pt-1.5 mr-5"
+                        >
+                            Receiver Name
+                        </label>
 
-                            <div className="inline-block w-full">
-                                <div className=" flex items-center">
-                                    <div className="mt-2 w-full sm:mt-0 ">
-                                        <Select
-                                            styles={customStyles}
-                                            isMulti
-                                            name="colors"
-                                            value={selectedReceiver}
-                                            options={getFilteredOptions()}
-                                            onChange={
-                                                handleReceiverSelectChange
-                                            }
-                                            className="basic-multi-select text-red "
-                                            classNamePrefix="select"
-                                        />
-                                    </div>
+                        <div className="inline-block w-full">
+                            <div className=" flex items-center">
+                                <div className="mt-2 w-full sm:mt-0 ">
+                                    <Select
+                                        styles={customStyles}
+                                        isMulti
+                                        name="colors"
+                                        value={selectedReceiver}
+                                        options={getFilteredOptions()}
+                                        onChange={handleReceiverSelectChange}
+                                        className="basic-multi-select text-red "
+                                        classNamePrefix="select"
+                                    />
                                 </div>
                             </div>
-                            </div>
+                        </div>
+                    </div>
                 </div>
                 {hasData ? (
                     <ReactGridLayout
