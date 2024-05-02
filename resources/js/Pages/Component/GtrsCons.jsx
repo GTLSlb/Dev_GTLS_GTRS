@@ -27,6 +27,7 @@ export default function GtrsCons({
     setLastIndex,
     accData,
 }) {
+
     window.moment = moment;
     const [filteredData, setFilteredData] = useState(consData);
     const handleClick = (coindex) => {
@@ -670,22 +671,6 @@ export default function GtrsCons({
                 );
             },
         },
-        // {
-        //     header: "Edit",
-        //     headerAlign: "center",
-        //     textAlign: "center",
-        //     render: ({ value, data }) => {
-        //         return (
-        //                 <Button
-        //                     onClick={() => {
-        //                         testButton(data);
-        //                     }}
-        //                 >
-        //                     Edit
-        //                 </Button>
-        //         );
-        //     },
-        // },
     ];
     const filterData = () => {
         const intArray = accData?.map((str) => {

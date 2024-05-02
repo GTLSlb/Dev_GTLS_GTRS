@@ -395,7 +395,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
     };
     const [hasData, setHasData] = useState(true);
     const uniqueReceiverNames = Array.from(
-        new Set(chartsData.map((item) => item.ReceiverName))
+        new Set(filteredData.map((item) => item.ReceiverName))
     );
     const handleReceiverSelectChange = (selectedOptions) => {
         setselectedReceiver(selectedOptions);
@@ -472,7 +472,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                     filterReportsByDebtorId(safetyData, intArray)
                 );
             }
-        }else {
+        } else {
             setFilteredSafety(safetyData);
         }
 
