@@ -9,18 +9,8 @@ import TableStructure from "@/Components/TableStructure";
 import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import { canAddTransitDays, canEditTransitDays } from "@/permissions";
-import swal from 'sweetalert';
+import swal from "sweetalert";
 import axios from "axios";
-
-const temp = [
-    {
-        HolidayId: 1,
-        HolidayName: "holiday1",
-        HolidayDate: "2023-06-06",
-        HolidayState: "1",
-        HolidayDesc: "test",
-    },
-];
 
 export default function TransitDays({
     transitDays,
@@ -62,30 +52,30 @@ export default function TransitDays({
                     });
                 });
         } catch (error) {
-                if (error.response && error.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
+            if (error.response && error.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
                     text: "Please login again",
-                    type: 'success',
+                    type: "success",
                     icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(function() {
+                    confirmButtonText: "OK",
+                }).then(function () {
                     axios
                         .post("/logoutAPI")
                         .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
+                            if (response.status == 200) {
+                                window.location.href = "/";
+                            }
                         })
                         .catch((error) => {
-                          console.log(error);
+                            console.log(error);
                         });
-                  });
-                } else {
-                  // Handle other errors
-                  console.log(err);
-                }
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+            }
         }
     };
     const groups = [
@@ -143,18 +133,45 @@ export default function TransitDays({
         "ReceiverSuburb"
     );
     const [selected, setSelected] = useState([]);
-    const customers = [
-        { id: "UNILEVER", label: "UNILEVER" },
-        { id: "GMI", label: "GMI" },
-        { id: "FREIGHT PEOPLE", label: "FREIGHT PEOPLE" },
-    ];
-    const types = [
-        { id: "FOOD", label: "FOOD" },
-        { id: "HPC", label: "HPC" },
-        { id: "Food Solutions - QLD", label: "Food Solutions - QLD" },
-        { id: "METCASH", label: "METCASH" },
-    ];
+    const customers = getUniqueCustomers(transitDays);
+    function getUniqueCustomers(data) {
+        // Create a Set to store unique customer names
+        const customerSet = new Set();
 
+        // Loop through each object in the data array
+        data?.forEach((item) => {
+            // Add the CustomerName to the set
+            customerSet.add(item.CustomerName);
+        });
+
+        // Convert the set to an array of objects with id and label
+        const uniqueCustomers = Array.from(customerSet).map((customer) => ({
+            id: customer,
+            label: customer,
+        }));
+
+        return uniqueCustomers;
+    }
+
+    const types = getUniqueCustomerTypes(transitDays);
+    function getUniqueCustomerTypes(data) {
+        // Create a Set to store unique type
+        const typeSet = new Set();
+
+        // Loop through each object in the data array
+        data?.forEach((item) => {
+            // Add the type to the set
+            typeSet.add(item.CustomerType);
+        });
+
+        // Convert the set to an array of objects with id and label
+        const uniqueCustomers = Array.from(typeSet).map((type) => ({
+            id: type,
+            label: type,
+        }));
+
+        return uniqueCustomers;
+    }
     const filterIcon = (className) => {
         return (
             <svg
