@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Middleware\ApiAuth;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -151,18 +152,55 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
-        $request->session()->invalidate();
-        $request->session()->flush();
-        $expiration = time() - (60 * 60 * 24); // expiration time set to 24h before current time 
-        // Get an array of all the cookies
-        $cookies = $_COOKIE;
-
-        // Loop through each cookie and set it to expire
-        foreach ($cookies as $name => $value) {
-            setcookie($name, '', $expiration);
+        // Retrieve the 'gtrs_access_token' cookie
+        $token = isset($_COOKIE['gtrs_access_token']) ? $_COOKIE['gtrs_access_token'] : null;
+    
+        // Create an instance of the RegisteredUserController and get the current user
+        $userController = new RegisteredUserController();
+        $user = $userController->getCurrentUserName($request);
+    
+        // Extract the UserId from the response
+        $UserId = $user->original['UserId'];
+    
+        // Set up headers for the logout request
+        $headers = [
+            'UserId' => $UserId,
+            'Authorization' => "Bearer " . "$token",
+        ];
+    
+        // Define the URL for the logout request
+        $url = env('GTAM_API_URL') . "Logout";
+    
+        // Send the logout request to the external API
+        $response = Http::withHeaders($headers)->get($url);
+    
+        // Check if the logout request was successful
+        if ($response->successful()) {
+            // Invalidate and flush the session
+            $request->session()->invalidate();
+            $request->session()->flush();
+    
+            // Set the expiration time for the cookies to 24 hours before the current time
+            $expiration = time() - (60 * 60 * 24);
+    
+            // Get an array of all the cookies
+            $cookies = $_COOKIE;
+    
+            // Loop through each cookie and set it to expire
+            foreach ($cookies as $name => $value) {
+                setcookie($name, '', $expiration);
+            }
+    
+            // Regenerate the session token
+            $request->session()->regenerateToken();
+    
+            // Redirect to the login page
+            return redirect('/login');
+        } else {
+            // Handle the case where the logout request fails
+            // You can log an error or return a specific response
+            return redirect()->back()->withErrors(['error' => 'Logout failed. Please try again.']);
         }
-        $request->session()->regenerateToken();
-        return redirect('/');
     }
 }
 ?>
