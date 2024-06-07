@@ -208,6 +208,7 @@ export default function AddTransit({
             <div className="shadow bg-white p-6 rounded-lg ">
                 <form onSubmit={AddTransit}>
                     <p className="font-bold text-lg">Add Transit</p>
+                    <div className="border-b mt-2" />
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-5 items-center py-4">
                         <div className="col-span-2 flex items-center gap-x-2">
                             <div className="col-span-2 flex items-center gap-x-2">
@@ -287,6 +288,21 @@ export default function AddTransit({
                             <div></div>
                         )}
 
+                        {/* Sender Title Border  */}
+                        <div className="col-span-2 flex items-center gap-x-2">
+                            <div className="flex flex-col">
+                                <p className="font-bold text-lg">Sender</p>
+                            </div>
+                        </div>
+
+                        {/* Receiver Title Border  */}
+                        <div className="col-span-2 flex items-center gap-x-2">
+                            <div className="flex flex-col">
+                                <p className="font-bold text-lg">Receiver</p>
+                            </div>
+                        </div>
+
+                        {/* Sender State  */}
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label htmlFor="SenderState" className="block w-48">
                                 Sender State:
@@ -314,56 +330,8 @@ export default function AddTransit({
                                 })}
                             </select>
                         </div>
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="name" className="block w-48 ">
-                                Sender City:{" "}
-                            </label>
-                            <input
-                                type="text"
-                                name="name"
-                                id="SenderCity"
-                                defaultValue={object ? object.SenderCity : ""}
-                                className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
-                            />
-                        </div>
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="name" className="block w-48 ">
-                                Sender Suburb:{" "}
-                            </label>
-                            <input
-                                type="text"
-                                name="name"
-                                defaultValue={object ? object.SenderSuburb : ""}
-                                id="SenderSuburb"
-                                className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
-                            />
-                        </div>
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="name" className="block w-48 ">
-                                Sender PostCode:{" "}
-                            </label>
-                            <input
-                                type="number"
-                                name="name"
-                                id="SenderPostCode"
-                                defaultValue={
-                                    object ? object.SenderPostCode : ""
-                                }
-                                className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
-                            />
-                        </div>
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="name" className="block w-48 ">
-                                Receiver Name:{" "}
-                            </label>
-                            <input
-                                type="text"
-                                name="name"
-                                defaultValue={object ? object.ReceiverName : ""}
-                                id="ReceiverName"
-                                className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
-                            />
-                        </div>
+
+                        {/* Receiver State  */}
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label
                                 htmlFor="ReceiverState"
@@ -394,6 +362,22 @@ export default function AddTransit({
                                 })}
                             </select>
                         </div>
+
+                        {/* Sender City  */}
+                        <div className="col-span-2 flex items-center gap-x-2">
+                            <label htmlFor="name" className="block w-48 ">
+                                Sender City:{" "}
+                            </label>
+                            <input
+                                type="text"
+                                name="name"
+                                id="SenderCity"
+                                defaultValue={object ? object.SenderCity : ""}
+                                className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
+                            />
+                        </div>
+
+                        {/* Receiver City  */}
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label htmlFor="name" className="block w-48 ">
                                 Receiver City:{" "}
@@ -406,6 +390,22 @@ export default function AddTransit({
                                 className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
                             />
                         </div>
+
+                        {/* Sender Suburb  */}
+                        <div className="col-span-2 flex items-center gap-x-2">
+                            <label htmlFor="name" className="block w-48 ">
+                                Sender Suburb:{" "}
+                            </label>
+                            <input
+                                type="text"
+                                name="name"
+                                defaultValue={object ? object.SenderSuburb : ""}
+                                id="SenderSuburb"
+                                className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
+                            />
+                        </div>
+
+                        {/* Receiver Suburb  */}
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label htmlFor="name" className="block w-48">
                                 Receiver Suburb:{" "}
@@ -420,6 +420,24 @@ export default function AddTransit({
                                 className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
                             />
                         </div>
+
+                        {/* Sender PostCode  */}
+                        <div className="col-span-2 flex items-center gap-x-2">
+                            <label htmlFor="name" className="block w-48 ">
+                                Sender PostCode:{" "}
+                            </label>
+                            <input
+                                type="number"
+                                name="name"
+                                id="SenderPostCode"
+                                defaultValue={
+                                    object ? object.SenderPostCode : ""
+                                }
+                                className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
+                            />
+                        </div>
+
+                        {/* Receiver PostCode  */}
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label htmlFor="name" className="block w-48">
                                 Receiver PostCode:{" "}
@@ -434,6 +452,31 @@ export default function AddTransit({
                                 className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
                             />
                         </div>
+
+                        <div className="col-span-2 flex items-center gap-x-2">
+                        </div>
+
+                        {/* Receiver Name  */}
+                        <div className="col-span-2 flex items-center gap-x-2">
+                            <label htmlFor="name" className="block w-48 ">
+                                Receiver Name:{" "}
+                            </label>
+                            <input
+                                type="text"
+                                name="name"
+                                defaultValue={object ? object.ReceiverName : ""}
+                                id="ReceiverName"
+                                className="rounded sm:w-96 max-w-lg bg-gray-50 border border-gray-300 h-7"
+                            />
+                        </div>
+
+                       {/* Sender Title Border  */}
+                       <div className="col-span-4 flex items-center gap-x-2">
+                            <div className="flex flex-col">
+                                <p className="font-bold text-lg">Transit</p>
+                            </div>
+                        </div>
+                        {/* Transit Time  */}
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label htmlFor="name" className="block  w-48">
                                 Transit Time:{" "}
@@ -444,7 +487,7 @@ export default function AddTransit({
                                 name="TransitTime"
                                 id="TransitTime"
                                 required
-                                className="block sm:w-96 max-w-lg h-7 rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                                className="rounded sm:w-96 max-w-lg bg-gray-50 border border-gray-300 h-7"
                             />
                         </div>
                     </div>
