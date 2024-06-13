@@ -291,48 +291,49 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
     };
     const getMonthlyRecordCounts = (data) => {
         const monthlyCounts = {};
-
+    
         for (const item of data) {
             const despatchDate = new Date(item.DespatchDate);
             const month = despatchDate.getMonth() + 1;
             const year = despatchDate.getFullYear();
             const monthYear = `${year}-${month.toString().padStart(2, "0")}`;
-
+    
             if (monthlyCounts.hasOwnProperty(monthYear)) {
                 monthlyCounts[monthYear]++;
             } else {
                 monthlyCounts[monthYear] = 1;
             }
         }
-
+    
         const sortedCounts = Object.entries(monthlyCounts).sort(([a], [b]) => {
-            const [monthA, yearA] = a.split("-");
-            const [monthB, yearB] = b.split("-");
+            const [yearA, monthA] = a.split("-");
+            const [yearB, monthB] = b.split("-");
             return new Date(yearA, monthA - 1) - new Date(yearB, monthB - 1);
         });
-
+    
         const monthlyRecordCounts = sortedCounts.map(([monthYear, value]) => ({
             data: monthYear,
             value,
         }));
-
+    
+        console.log(monthlyRecordCounts);
         return monthlyRecordCounts;
     };
     const getPODCounts = (data) => {
         const podCounts = {};
         const today = new Date(); // Get today's date
-
+    
         for (const item of data) {
             const despatchDate = new Date(item.DespatchDate);
             if (despatchDate > today) {
                 continue; // Skip data with a future despatch date
             }
-
+    
             const month = despatchDate.getMonth() + 1;
             const year = despatchDate.getFullYear();
             const monthYear = `${year}-${month.toString().padStart(2, "0")}`;
             const pod = item.POD;
-
+    
             if (podCounts.hasOwnProperty(monthYear)) {
                 if (pod) {
                     podCounts[monthYear].true++;
@@ -347,20 +348,20 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                 };
             }
         }
-
+    
         const formattedCounts = Object.entries(podCounts).flatMap(
             ([monthYear, counts]) => [
                 { pod: "true", monthYear, value: counts.true },
                 { pod: "false", monthYear, value: counts.false },
             ]
         );
-
+    
         formattedCounts.sort((a, b) => {
-            const [monthA, yearA] = a.monthYear.split("-");
-            const [monthB, yearB] = b.monthYear.split("-");
+            const [yearA, monthA] = a.monthYear.split("-");
+            const [yearB, monthB] = b.monthYear.split("-");
             return new Date(yearA, monthA - 1) - new Date(yearB, monthB - 1);
         });
-
+    
         return formattedCounts;
     };
     function getPODCountsByState(data) {
