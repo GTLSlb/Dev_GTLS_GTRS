@@ -455,6 +455,7 @@ export default function KPI({
             ReceiverName: "Receiver Name",
             ReceiverReference: "Receiver Reference",
             ReceiverState: "Receiver State",
+            ReceiverSuburb: "Receiver Suburb",
             ReceiverPostCode: "Receiver Postal Code",
             DispatchDate: "Dispatch Date",
             DeliveryDate: "Delivery Date",
@@ -800,6 +801,16 @@ export default function KPI({
                 wrapMultiple: false,
                 dataSource: receiverStateOptions,
             },
+            defaultWidth: 200,
+        },
+        {
+            name: "ReceiverSuburb",
+            group: "receiverDetails",
+            header: "Suburb",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
             defaultWidth: 200,
         },
         {
@@ -1240,6 +1251,15 @@ export default function KPI({
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Receiver State
+                                                        </label>
+                                                        <label>
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
+                                                                value="Receiver Suburb"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Receiver Suburb
                                                         </label>
                                                         <label>
                                                             <input

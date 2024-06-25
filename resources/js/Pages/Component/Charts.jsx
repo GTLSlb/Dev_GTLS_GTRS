@@ -257,6 +257,13 @@ export default function charts({
             //emptyValue: "",
         },
         {
+            name: "ReceiverSuburb",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
             name: "DispatchDate",
             operator: "inrange",
             type: "date",
