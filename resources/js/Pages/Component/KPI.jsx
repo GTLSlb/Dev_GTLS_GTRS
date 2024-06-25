@@ -142,6 +142,12 @@ export default function KPI({
     };
     useEffect(() => {
         setFilteredData(filterData());
+        setReceiverStateOptions(
+            createNewLabelObjects(filterData(), "ReceiverState")
+        )
+        setSenderStateOptions(
+            createNewLabelObjects(filterData(), "SenderState")
+        );
     }, [accData, KPIData]);
     const [selected, setSelected] = useState([]);
     const gridRef = useRef(null);
