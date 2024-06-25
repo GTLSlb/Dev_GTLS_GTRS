@@ -112,6 +112,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
         let totalConsPending = 0;
         let podCounter = 0;
         let totalChep = 0;
+        let fuelLevy = 0;
         if (filteredSafety) {
             safetyCounter = Object.keys(filteredSafety).length;
         } else {
@@ -127,6 +128,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
             NetAmount,
             ConsStatus,
             POD,
+            FuelLevy,
         } of data) {
             uniqueReceivers.add(ReceiverName);
             totalWeight += TottalWeight;
@@ -135,7 +137,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
             totalCustomerOwn += TotalCustomerOwn;
             totalChep += TotalChep;
             totalCost += NetAmount;
-
+            fuelLevy += FuelLevy;
             // Calculate other statistics
             if (ConsStatus === "PASS") {
                 totalNoConsPassed++;
@@ -168,6 +170,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
             podPercentage,
             totalChep,
             safetyCounter,
+            fuelLevy,
         };
     };
     const getConsStatusCounter = (data) => {
@@ -315,9 +318,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
             data: monthYear,
             value,
         }));
-    
-        console.log(monthlyRecordCounts);
-        return monthlyRecordCounts;
+            return monthlyRecordCounts;
     };
     const getPODCounts = (data) => {
         const podCounts = {};

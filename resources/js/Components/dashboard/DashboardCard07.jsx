@@ -4,13 +4,13 @@ function DashboardCard07(props) {
   const data = props.InfoData;
   const percentagePassed = (data.totalNoConsPassed / data.totalNoConsShipped) * 100;
   const percentageFailed = (data.totalConsFailed / data.totalNoConsShipped) * 100;
-
+  console.log("from charts",props)
   return (
     <div className="col-span-full h-full xl:col-span-4 bg-white shadow-lg rounded-sm border border-slate-200">
       <header className="px-5 py-2 border-b border-slate-100">
         <h2 className="font-semibold text-slate-800 ">Information</h2>
       </header>
-      <div className="p-3">
+      <div className="px-4">
 
         {/* Table */}
         <div className="overflow-x-auto">
@@ -20,7 +20,7 @@ function DashboardCard07(props) {
             <tbody className="text-sm font-medium divide-y divide-slate-100">
               {/* Row */}
               <tr>
-                <td className="p-1">
+                <td className="px-1">
                   <div className="flex items-center py-1 font-extrabold">
                     <div className="text-slate-800 text-sm"># of Rec's</div>
                   </div>
@@ -151,6 +151,16 @@ function DashboardCard07(props) {
                 </td>
                 <td className="px-1">
                   <div className="text-center text-sm text-right"> {data.safetyCounter} </div>
+                </td>
+              </tr>
+              <tr>
+                <td className="px-1">
+                  <div className="flex items-center py-1 font-extrabold">
+                    <div className="text-slate-800 text-sm">Fuel Surcharge cost</div>
+                  </div>
+                </td>
+                <td className="px-1">
+                  <div className="text-center text-sm text-right">{data.fuelLevy?.toFixed(2)} </div>
                 </td>
               </tr>
               {/* Row */}
