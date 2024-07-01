@@ -15,7 +15,8 @@ import {
     CameraIcon,
 } from "@heroicons/react/24/solid";
 import "../../../../css/scroll.css";
-import { Icon } from "@mui/material";
+import TaskIcon from '@mui/icons-material/Task';
+
 import { useEffect } from "react";
 import {
     Accordion,
@@ -99,7 +100,14 @@ const navigation = [
         current: false,
         feature: "View_failedConsignment",
     },
-
+    {
+        id: 16,
+        name: "Transport Report",
+        href: "#",
+        icon: TaskIcon,
+        current: false,
+        feature: "View_Transport",
+    },
     {
         id: 9,
         name: "RDD",

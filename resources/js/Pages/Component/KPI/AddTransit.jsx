@@ -211,30 +211,23 @@ export default function AddTransit({
                     <div className="border-b mt-2" />
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-5 items-center py-4">
                         <div className="col-span-2 flex items-center gap-x-2">
-                            <div className="col-span-2 flex items-center gap-x-2">
-                                <label
-                                    htmlFor="CustomerId"
-                                    className="block w-48"
-                                >
-                                    Customer Name:
-                                </label>
-                                <select
-                                    id="CustomerId"
-                                    name="CustomerId"
-                                    className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
-                                    // defaultValue={modalSafetyType}
-                                    // value={formValues.SafetyType || ""}
-                                    value={selectedCustomer}
-                                    onChange={(e) => {
-                                        setSelectedCustomer(e.target.value);
-                                    }}
-                                    required
-                                >
-                                    <option value="">
-                                        --Select a Customer Type--
-                                    </option>
-
-                                    {customers?.map((customer) => {
+                            <label htmlFor="CustomerId" className="block w-48">
+                            Customer Name:
+                            </label>
+                            <select
+                                id="CustomerId"
+                                name="CustomerId"
+                                className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
+                                // defaultValue={modalSafetyType}
+                                // value={formValues.SafetyType || ""}
+                                value={selectedSstate}
+                                onChange={(e) => {
+                                    setSelectedCustomer(e.target.value);
+                                }}
+                                required
+                            >
+                                <option value="">--Select a Customer--</option>
+                                {customers?.map((customer) => {
                                         return (
                                             <option
                                                 key={customer.id}
@@ -244,10 +237,8 @@ export default function AddTransit({
                                             </option>
                                         );
                                     })}
-                                </select>
-                            </div>
+                            </select>
                         </div>
-
                         {object?.CustomerId == 1 || selectedCustomer == 1 ? (
                             <div className="col-span-2 flex items-center gap-x-2">
                                 <label
@@ -285,7 +276,7 @@ export default function AddTransit({
                                 </select>
                             </div>
                         ) : (
-                            <div></div>
+                            <div className="col-span-2"></div>
                         )}
 
                         {/* Sender Title Border  */}
