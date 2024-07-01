@@ -18,6 +18,7 @@ import TransitDays from "./KPI/TransitDays";
 import Holidays from "./KPI/Holidays";
 import KPIReasons from "./KPI/KPIReasons";
 import AddTransit from "./KPI/AddTransit";
+import TransportRep from "./TransportRep";
 
 export default function charts({
     setCusomterAccounts,
@@ -38,6 +39,7 @@ export default function charts({
     IDfilter,
     rddReasons,
     setrddReasons,
+    transportData,
     url,
     user,
     AToken,
@@ -205,6 +207,106 @@ export default function charts({
             emptyValue: "",
         },
     ]);
+    const [filtersTransport, setFiltersTransport] = useState([
+        {
+            name: "CustomerName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "CustomerPO",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "DeliveryNo",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "RDD",
+            operator: "inrange",
+            type: "date",
+            value: "",
+        },
+        {
+            name: "LTLFTL",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "State",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "PostalCode",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "Carrier",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "PickupDate",
+            operator: "inrange",
+            type: "date",
+            value: {
+                start: minDate,
+                end: maxDate,
+            },
+        },
+        {
+            name: "Status",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ActualDeliveryDate",
+            operator: "inrange",
+            type: "date",
+            value: "",
+        },
+        {
+            name: "OnTime",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "DelayReason",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "TransportComments",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+    ]);
 
     const [filtersKPI, setFiltersKPI] = useState([
         {
@@ -254,6 +356,13 @@ export default function charts({
             operator: "inlist",
             type: "select",
             value: null,
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverSuburb",
+            operator: "contains",
+            type: "string",
+            value: "",
             //emptyValue: "",
         },
         {
@@ -1169,7 +1278,7 @@ export default function charts({
         if (dateString) {
             const [year, month, day] = dateString.split("-");
             return `${day}-${month}-${year}`;
-        }else {
+        } else {
             return dateString;
         }
     };
@@ -1839,6 +1948,25 @@ export default function charts({
             AToken={AToken}
             setActiveIndexGTRS={setActiveIndexGTRS}
             transitDay={transitDay}
+        />,
+        <TransportRep
+            oldestDate={oldestDate}
+            latestDate={latestDate}
+            accData={dataFromChild}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            setactiveCon={setactiveCon}
+            transportData={transportData}
+            AToken={AToken}
+            filterValue={filtersTransport}
+            setFilterValue={setFiltersTransport}
+            minDate={minDate}
+            maxDate={maxDate}
+            setLastIndex={setLastIndex}
+            IDfilter={IDfilter}
+            EDate={EDate}
+            setEDate={setEDate}
+            SDate={SDate}
+            setSDate={setSDate}
         />,
     ];
     return (
