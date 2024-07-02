@@ -220,7 +220,7 @@ export default function AddTransit({
                                 className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
                                 // defaultValue={modalSafetyType}
                                 // value={formValues.SafetyType || ""}
-                                value={selectedSstate}
+                                value={selectedCustomer}
                                 onChange={(e) => {
                                     setSelectedCustomer(e.target.value);
                                 }}
