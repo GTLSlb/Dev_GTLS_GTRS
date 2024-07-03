@@ -68,6 +68,7 @@ export default function charts({
     const latestDate = getLatestDespatchDate(consData);
     const [dataFromChild, setDataFromChild] = useState(null);
     const [transitDay, setTransitDay] = useState(null);
+
     const [sharedStartDate, setSharedStartDate] = useState(
         getOldestDespatchDate(consData)
     );
@@ -230,10 +231,18 @@ export default function charts({
             emptyValue: "",
         },
         {
-            name: "RDD",
+            name: "RddDate",
             operator: "inrange",
             type: "date",
             value: "",
+            emptyValue: "",
+        },
+        {
+            name: "RddTime",
+            operator: "eq",
+            type: "string",
+            value: "",
+            emptyValue: "",
         },
         {
             name: "LTLFTL",
@@ -268,9 +277,17 @@ export default function charts({
             operator: "inrange",
             type: "date",
             value: {
-                start: minDate,
-                end: maxDate,
+                start: "2023-07-01",
+                end: "2023-07-31",
             },
+            emptyValue: "",
+        },
+        {
+            name: "PickupTime",
+            operator: "eq",
+            type: "string",
+            value: "",
+            emptyValue: "",
         },
         {
             name: "Status",
@@ -284,6 +301,14 @@ export default function charts({
             operator: "inrange",
             type: "date",
             value: "",
+            emptyValue: "",
+        },
+        {
+            name: "ActualDeliveryTime",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            emptyValue: "",
         },
         {
             name: "OnTime",

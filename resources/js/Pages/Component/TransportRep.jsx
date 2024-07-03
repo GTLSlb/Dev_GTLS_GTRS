@@ -27,16 +27,183 @@ function TransportRep({
     setLastIndex,
     accData,
 }) {
-    window.moment = moment;
-    const [filteredData, setFilteredData] = useState(transportData);
-    const handleClick = (coindex) => {
-        setActiveIndexGTRS(3);
-        setLastIndex(1);
-        setactiveCon(coindex);
-    };
-    const [selected, setSelected] = useState({});
+    const RDDTimeFilter = ({ filterValue, onChange }) => {
+        const [value, setValue] = useState(
+            filterValue ? filterValue.value : ""
+        );
 
+        const handleChange = (event) => {
+            const newValue = event.target.value + ":00";
+            setValue(newValue);
+            onChange({
+                name: "RddTime",
+                value: newValue,
+                operator: "eq",
+                emptyValue: "",
+                type: "string",
+            });
+        };
+
+        const handleClear = () => {
+            setValue("");
+            onChange({
+                name: "RddTime",
+                value: "",
+                operator: "eq",
+                emptyValue: "",
+                type: "string",
+            });
+        };
+
+        useEffect(() => {
+            setValue(filterValue ? filterValue.value : "");
+        }, [filterValue]);
+
+        return (
+            <div className="flex gap-2 mx-1">
+                <input
+                    type="time"
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm"
+                    value={value.slice(0, 5)}
+                    onChange={handleChange}
+                />
+                <button onClick={handleClear}>
+                    <svg
+                        tabindex="0"
+                        class="InovuaReactDataGrid__column-header__filter-settings-icon"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            d="M13.222 2H.778C.348 2 0 1.552 0 1s.348-1 .778-1h12.444c.43 0 .778.448.778 1s-.348 1-.778 1zM1.556 3.111l3.888 4.667v5.444c0 .43.349.778.778.778h1.556c.43 0 .778-.348.778-.778V7.778l3.888-4.667H1.556z"
+                        ></path>
+                    </svg>
+                </button>
+            </div>
+        );
+    };
+    const PickTimeFilter = ({ filterValue, onChange }) => {
+        const [value, setValue] = useState(
+            filterValue ? filterValue.value : ""
+        );
+
+        const handleChange = (event) => {
+            const newValue = event.target.value + ":00";
+            setValue(newValue);
+            onChange({
+                name: "PickupTime",
+                value: newValue,
+                operator: "eq",
+                emptyValue: "",
+                type: "string",
+            });
+        };
+
+        const handleClear = () => {
+            setValue("");
+            onChange({
+                name: "PickupTime",
+                value: "",
+                operator: "eq",
+                emptyValue: "",
+                type: "string",
+            });
+        };
+
+        useEffect(() => {
+            setValue(filterValue ? filterValue.value : "");
+        }, [filterValue]);
+
+        return (
+            <div className="flex gap-2 mx-1">
+                <input
+                    type="time"
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm"
+                    value={value.slice(0, 5)}
+                    onChange={handleChange}
+                />
+                <button onClick={handleClear}>
+                    <svg
+                        tabindex="0"
+                        class="InovuaReactDataGrid__column-header__filter-settings-icon"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            d="M13.222 2H.778C.348 2 0 1.552 0 1s.348-1 .778-1h12.444c.43 0 .778.448.778 1s-.348 1-.778 1zM1.556 3.111l3.888 4.667v5.444c0 .43.349.778.778.778h1.556c.43 0 .778-.348.778-.778V7.778l3.888-4.667H1.556z"
+                        ></path>
+                    </svg>
+                </button>
+            </div>
+        );
+    };
+    const DeliveryTimeFilter = ({ filterValue, onChange }) => {
+        const [value, setValue] = useState(
+            filterValue ? filterValue.value : ""
+        );
+
+        const handleChange = (event) => {
+            const newValue = event.target.value + ":00";
+            setValue(newValue);
+            onChange({
+                name: "ActualDeliveryTime",
+                value: newValue,
+                operator: "eq",
+                emptyValue: "",
+                type: "string",
+            });
+        };
+
+        const handleClear = () => {
+            setValue("");
+            onChange({
+                name: "ActualDeliveryTime",
+                value: "",
+                operator: "eq",
+                emptyValue: "",
+                type: "string",
+            });
+        };
+
+        useEffect(() => {
+            setValue(filterValue ? filterValue.value : "");
+        }, [filterValue]);
+
+        return (
+            <div className="flex gap-2 mx-1">
+                <input
+                    type="time"
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm"
+                    value={value.slice(0, 5)}
+                    onChange={handleChange}
+                />
+                <button onClick={handleClear}>
+                    <svg
+                        tabindex="0"
+                        class="InovuaReactDataGrid__column-header__filter-settings-icon"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            d="M13.222 2H.778C.348 2 0 1.552 0 1s.348-1 .778-1h12.444c.43 0 .778.448.778 1s-.348 1-.778 1zM1.556 3.111l3.888 4.667v5.444c0 .43.349.778.778.778h1.556c.43 0 .778-.348.778-.778V7.778l3.888-4.667H1.556z"
+                        ></path>
+                    </svg>
+                </button>
+            </div>
+        );
+    };
+    window.moment = moment;
+
+    const [filteredData, setFilteredData] = useState(transportData);
+    const [selected, setSelected] = useState({});
     const gridRef = useRef(null);
+
     function handleFilterTable() {
         // Get the selected columns or use all columns if none are selected
         let selectedColumns = Array.from(
@@ -49,6 +216,7 @@ function TransportRep({
             type: column.computedFilterValue?.type,
             operator: column.computedFilterValue?.operator,
         }));
+
         let selectedColVal = allHeaderColumns.filter(
             (col) => col.name !== "edit"
         );
@@ -331,6 +499,67 @@ function TransportRep({
         }
         return { selectedColumns: selectedColVal, filterValue: filterValue };
     }
+
+    function extractFormattedDate(datetime) {
+        if (!datetime) return null;
+
+        // Split the datetime string to get the date part
+        const datePart = datetime.split(" ")[0];
+
+        if (!datePart) return null;
+
+        // Split the date part into year, month, and day
+        const [year, month, day] = datePart.split("-");
+
+        if (!year || !month || !day) return null;
+
+        // Rearrange into DD-MM-YYYY format
+        const formattedDate = `${day}-${month}-${year}`;
+        return formattedDate;
+    }
+
+    function extractTime(datetime) {
+        if (!datetime) return null;
+
+        // Split the datetime string to get the time part
+        const timePart = datetime.split(" ")[1];
+
+        if (!timePart) return null;
+
+        // Split the time part and join the first two parts (HH:MM)
+        const [hours, minutes] = timePart.split(":");
+        return `${hours}:${minutes}`;
+    }
+
+    function extractUTCFormattedDate(datetime) {
+        if (!datetime) return null;
+
+        // Split the datetime string to get the date part
+        const datePart = datetime.split("T")[0];
+
+        if (!datePart) return null;
+
+        // Split the date part into year, month, and day
+        const [year, month, day] = datePart.split("-");
+
+        if (!year || !month || !day) return null;
+
+        // Rearrange into DD-MM-YYYY format
+        const formattedDate = `${day}-${month}-${year}`;
+        return formattedDate;
+    }
+
+    function extractUTCTime(datetime) {
+        if (!datetime) return null;
+
+        // Split the datetime string to get the time part
+        const timePart = datetime.split("T")[1];
+
+        if (!timePart) return null;
+
+        return timePart;
+    }
+
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
 
@@ -338,14 +567,17 @@ function TransportRep({
             CustomerName: "Customer Name",
             CustomerPO: "Customer PO",
             DeliveryNo: "Delivery No",
-            RDD: "RDD",
+            RddDate: "RDD Date",
+            RddTime: "RDD Time",
             LTLFTL: "LTL/FTL",
             State: "State",
             PostalCode: "Postal Code",
             Carrier: "Carrier",
             PickupDate: "Pickup Date",
+            PickupTime: "Pickup Time",
             Status: "Status",
             ActualDeliveryDate: "Actual Delivery Date",
+            ActualDeliveryTime: "Actual Delivery Time",
             OnTime: "On Time",
             DelayReason: "Delay Reason",
             TransportComments: "Transport Comments",
@@ -354,50 +586,36 @@ function TransportRep({
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
+
         // Apply the mapping to the selected columns
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
+
         const filterValue = jsonData?.filterValue;
+
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
-                    if (column.replace(/\s+/g, "") === "PickupDate") {
+                    if (column.replace(/\s+/g, "") === "RddDate") {
+                        acc["RddDate"] = person["RddDate"];
+                    } else if (column.replace(/\s+/g, "") === "RddTime") {
+                        acc[column.replace(/\s+/g, "")] = person["RddTime"];
+                    } else if (column.replace(/\s+/g, "") === "PickupDate") {
+                        acc["PickupDate"] = person["PickupDate"];
+                    } else if (column.replace(/\s+/g, "") === "PickupTime") {
+                        acc[column.replace(/\s+/g, "")] = person["PickupTime"];
+                    } else if (
+                        column.replace(/\s+/g, "") === "ActualDeliveryDate"
+                    ) {
+                        acc["ActualDeliveryDate"] =
+                            person["ActualDeliveryDate"];
+                    } else if (
+                        column.replace(/\s+/g, "") === "ActualDeliveryTime"
+                    ) {
                         acc[column.replace(/\s+/g, "")] =
-                            moment(
-                                person["PickupDate"].replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY hh:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["PickupDate"].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY h:mm A");
-                    }
-                    if (column.replace(/\s+/g, "") === "ActualDeliveryDate") {
-                        acc[column.replace(/\s+/g, "")] =
-                            moment(
-                                person["ActualDeliveryDate"].replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY hh:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["ActualDeliveryDate"].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY h:mm A");
-                    }
-                    if (column.replace(/\s+/g, "") === "RDD") {
-                        acc[column.replace(/\s+/g, "")] =
-                            moment(
-                                person["RDD"].replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY hh:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["RDD"].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY h:mm A");
+                            person["ActualDeliveryTime"];
                     } else {
                         acc[column.replace(/\s+/g, "")] =
                             person[column.replace(/\s+/g, "")];
@@ -446,6 +664,7 @@ function TransportRep({
             saveAs(blob, "Transport-Report.xlsx");
         });
     }
+
     const [hoverMessage, setHoverMessage] = useState("");
     const [isMessageVisible, setMessageVisible] = useState(false);
     const handleMouseEnter = () => {
@@ -561,8 +780,8 @@ function TransportRep({
             filterEditor: StringFilter,
         },
         {
-            name: "RDD",
-            header: "RDD",
+            name: "RddDate",
+            header: "Required Delivery Date",
             headerAlign: "center",
             textAlign: "center",
             defaultFlex: 1,
@@ -573,12 +792,19 @@ function TransportRep({
                 minDate: minRDDDate,
                 maxDate: maxRDDDate,
             },
-            render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+            render: ({ value }) => {
+                return extractFormattedDate(value);
             },
+        },
+        {
+            name: "RddTime",
+            header: "Required Delivery Time",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: RDDTimeFilter,
+            // render: ({ value, data }) => {
+            //     return extractTime(data.RDD);
+            // },
         },
         {
             name: "LTLFTL",
@@ -637,11 +863,17 @@ function TransportRep({
                 maxDate: maxDate,
             },
             render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+                return extractUTCFormattedDate(value);
             },
+        },
+        {
+            name: "PickupTime",
+            header: "Pickup Time",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultFlex: 1,
+            minWidth: 200,
+            filterEditor: PickTimeFilter,
         },
         {
             name: "Status",
@@ -669,11 +901,17 @@ function TransportRep({
                 maxDate: maxArrivedDate,
             },
             render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+                return extractFormattedDate(value);
             },
+        },
+        {
+            name: "ActualDeliveryTime",
+            header: "Actual Delivery Time",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultFlex: 1,
+            minWidth: 200,
+            filterEditor: DeliveryTimeFilter,
         },
         {
             name: "OnTime",
@@ -722,6 +960,7 @@ function TransportRep({
             const intValue = parseInt(str);
             return isNaN(intValue) ? 0 : intValue;
         });
+
         // Filter the data based on the start and end date filters, selected receiver names, and chargeTo values
         const filtered = transportData.filter((item) => {
             const chargeToMatch =
@@ -729,6 +968,7 @@ function TransportRep({
 
             return chargeToMatch;
         });
+
         return filtered;
     };
     useEffect(() => {
@@ -810,10 +1050,19 @@ function TransportRep({
                                             <input
                                                 type="checkbox"
                                                 name="column"
-                                                value="RDD"
+                                                value="RDDDate"
                                                 className="text-dark rounded focus:ring-goldd"
                                             />{" "}
-                                            RDD
+                                            RDD Date
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
+                                                value="RDDTime"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            RDD Time
                                         </label>
                                         <label>
                                             <input
@@ -864,6 +1113,15 @@ function TransportRep({
                                             <input
                                                 type="checkbox"
                                                 name="column"
+                                                value="PickupTime"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            Pickup Time
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
                                                 value="Status"
                                                 className="text-dark rounded focus:ring-goldd"
                                             />{" "}
@@ -877,6 +1135,15 @@ function TransportRep({
                                                 className="text-dark rounded focus:ring-goldd"
                                             />{" "}
                                             Actual Delivery Date
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
+                                                value="ActualDeliveryTime"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            Actual Delivery Time
                                         </label>
                                         <label>
                                             <input
