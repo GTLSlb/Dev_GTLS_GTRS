@@ -288,34 +288,102 @@ export default function MissingPOD({
 
                     switch (operator) {
                         case "after":
+                            // Parse the cellValue date with the format you know it might have
+                            const afterd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+
+                            // Parse the dateValue as an ISO 8601 date string
+                            const afterdateToCompare = moment(dateValue);
+
+                            // Check if both dates are valid and if cellValue is after dateValue
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isAfter(dateValue);
+                                afterd.isValid() &&
+                                afterdateToCompare.isValid() &&
+                                afterdateToCompare.isAfter(afterd);
+
                             break;
                         case "afterOrOn":
+                            const afterOrOnd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const afterOrOnDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSameOrAfter(dateValue);
+                                afterOrOnd.isValid() &&
+                                afterOrOnDateToCompare.isValid() &&
+                                afterOrOnDateToCompare.isSameOrAfter(
+                                    afterOrOnd
+                                );
                             break;
+
                         case "before":
+                            const befored = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const beforeDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isBefore(dateValue);
+                                befored.isValid() &&
+                                beforeDateToCompare.isValid() &&
+                                beforeDateToCompare.isBefore(befored);
+
                             break;
+
                         case "beforeOrOn":
+                            const beforeOrOnd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const beforeOrOnDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSameOrBefore(dateValue);
+                                beforeOrOnd.isValid() &&
+                                beforeOrOnDateToCompare.isValid() &&
+                                beforeOrOnDateToCompare.isSameOrBefore(
+                                    beforeOrOnd
+                                );
+
                             break;
                         case "eq":
+                            // Parse the cellValue date with the format you know it might have
+                            const d = moment(
+                                cellValue,
+                                ["DD-MM-YYYY", moment.ISO_8601],
+                                true
+                            );
+
+                            // Parse the dateValue with the expected format or formats
+                            const dateToCompare = moment(
+                                dateValue,
+                                ["YYYY-MM-DD HH:mm:ss", moment.ISO_8601],
+                                true
+                            );
+
+                            // Check if both dates are valid and if they represent the same calendar day
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSame(dateValue);
+                                cellValue &&
+                                d.isValid() &&
+                                dateToCompare.isValid() &&
+                                d.isSame(dateToCompare, "day");
+
                             break;
                         case "neq":
+                            const neqd = moment(cellValue, "DD-MM-YYYY", true);
+                            const neqDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                !dateCellValueStart.isSame(dateValue);
+                                neqd.isValid() &&
+                                neqDateToCompare.isValid() &&
+                                !neqd.isSame(neqDateToCompare, "day");
+
                             break;
                         case "inrange":
                             conditionMet =
@@ -348,7 +416,7 @@ export default function MissingPOD({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
-            selectedColVal  = allHeaderColumns?.filter(
+            selectedColVal = allHeaderColumns?.filter(
                 (col) => col?.label?.toString().toLowerCase() !== "edit"
             ); // Use all columns
         } else {
@@ -357,7 +425,10 @@ export default function MissingPOD({
                     const formattedColumn = column
                         .replace(/\s/g, "")
                         .toLowerCase();
-                    if (header?.name?.replace(/\s/g, "")?.toLowerCase() == formattedColumn) {
+                    if (
+                        header?.name?.replace(/\s/g, "")?.toLowerCase() ==
+                        formattedColumn
+                    ) {
                         selectedColVal.push(header);
                     }
                 });
@@ -409,7 +480,9 @@ export default function MissingPOD({
                                   "YYYY-MM-DD HH:mm:ss"
                               ).format("DD-MM-YYYY h:mm A")
                             : null;
-                    } else if (column.toUpperCase() === "DELIVERYREQUIREDDATETIME") {
+                    } else if (
+                        column.toUpperCase() === "DELIVERYREQUIREDDATETIME"
+                    ) {
                         const deliveryRequiredDateTime =
                             person["DELIVERYREQUIREDDATETIME"];
                         acc[columnKey] = deliveryRequiredDateTime
@@ -436,15 +509,15 @@ export default function MissingPOD({
                             : null;
                     } else if (column === "Consignemnt Number") {
                         acc[columnKey] = person["CONSIGNMENTNUMBER"];
-                    } 
-                else if (column.toUpperCase() === "RECEIVER REFERENCE") {
-                    acc[columnKey] = person["RECEIVER REFERENCE"];
-                } else {
-                    acc[columnKey] = person[columnKey.toUpperCase()];
-                }
+                    } else if (column.toUpperCase() === "RECEIVER REFERENCE") {
+                        acc[columnKey] = person["RECEIVER REFERENCE"];
+                    } else {
+                        acc[columnKey] = person[columnKey.toUpperCase()];
+                    }
 
-                return acc;
-            }}, {})
+                    return acc;
+                }
+            }, {})
         );
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();

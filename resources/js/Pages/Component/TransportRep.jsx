@@ -199,7 +199,6 @@ function TransportRep({
         );
     };
     window.moment = moment;
-
     const [filteredData, setFilteredData] = useState(transportData);
     const [selected, setSelected] = useState({});
     const gridRef = useRef(null);
@@ -422,34 +421,102 @@ function TransportRep({
 
                     switch (operator) {
                         case "after":
+                            // Parse the cellValue date with the format you know it might have
+                            const afterd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+
+                            // Parse the dateValue as an ISO 8601 date string
+                            const afterdateToCompare = moment(dateValue);
+
+                            // Check if both dates are valid and if cellValue is after dateValue
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isAfter(dateValue);
+                                afterd.isValid() &&
+                                afterdateToCompare.isValid() &&
+                                afterdateToCompare.isAfter(afterd);
+
                             break;
                         case "afterOrOn":
+                            const afterOrOnd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const afterOrOnDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSameOrAfter(dateValue);
+                                afterOrOnd.isValid() &&
+                                afterOrOnDateToCompare.isValid() &&
+                                afterOrOnDateToCompare.isSameOrAfter(
+                                    afterOrOnd
+                                );
                             break;
+
                         case "before":
+                            const befored = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const beforeDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isBefore(dateValue);
+                                befored.isValid() &&
+                                beforeDateToCompare.isValid() &&
+                                beforeDateToCompare.isBefore(befored);
+
                             break;
+
                         case "beforeOrOn":
+                            const beforeOrOnd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const beforeOrOnDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSameOrBefore(dateValue);
+                                beforeOrOnd.isValid() &&
+                                beforeOrOnDateToCompare.isValid() &&
+                                beforeOrOnDateToCompare.isSameOrBefore(
+                                    beforeOrOnd
+                                );
+
                             break;
                         case "eq":
+                            // Parse the cellValue date with the format you know it might have
+                            const d = moment(
+                                cellValue,
+                                ["DD-MM-YYYY", moment.ISO_8601],
+                                true
+                            );
+
+                            // Parse the dateValue with the expected format or formats
+                            const dateToCompare = moment(
+                                dateValue,
+                                ["YYYY-MM-DD HH:mm:ss", moment.ISO_8601],
+                                true
+                            );
+
+                            // Check if both dates are valid and if they represent the same calendar day
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSame(dateValue);
+                                cellValue &&
+                                d.isValid() &&
+                                dateToCompare.isValid() &&
+                                d.isSame(dateToCompare, "day");
+
                             break;
                         case "neq":
+                            const neqd = moment(cellValue, "DD-MM-YYYY", true);
+                            const neqDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                !dateCellValueStart.isSame(dateValue);
+                                neqd.isValid() &&
+                                neqDateToCompare.isValid() &&
+                                !neqd.isSame(neqDateToCompare, "day");
+
                             break;
                         case "inrange":
                             conditionMet =
@@ -497,9 +564,12 @@ function TransportRep({
                 });
             });
         }
-        return { selectedColumns: selectedColVal, filterValue: filterValue };
+        return {
+            selectedColumns: selectedColVal,
+            filterValue: filterValue,
+            filteredData: filteredData,
+        };
     }
-
     function extractFormattedDate(datetime) {
         if (!datetime) return null;
 
@@ -517,20 +587,6 @@ function TransportRep({
         const formattedDate = `${day}-${month}-${year}`;
         return formattedDate;
     }
-
-    function extractTime(datetime) {
-        if (!datetime) return null;
-
-        // Split the datetime string to get the time part
-        const timePart = datetime.split(" ")[1];
-
-        if (!timePart) return null;
-
-        // Split the time part and join the first two parts (HH:MM)
-        const [hours, minutes] = timePart.split(":");
-        return `${hours}:${minutes}`;
-    }
-
     function extractUTCFormattedDate(datetime) {
         if (!datetime) return null;
 
@@ -548,21 +604,17 @@ function TransportRep({
         const formattedDate = `${day}-${month}-${year}`;
         return formattedDate;
     }
+    function formatDate(date) {
+        // Check if the date is null, undefined, or invalid
+        if (!date || !moment(date, "YYYY-MM-DD", true).isValid()) {
+            return " ";
+        }
 
-    function extractUTCTime(datetime) {
-        if (!datetime) return null;
-
-        // Split the datetime string to get the time part
-        const timePart = datetime.split("T")[1];
-
-        if (!timePart) return null;
-
-        return timePart;
+        // Format the date to "DD-MM-YYYY"
+        return moment(date).format("DD-MM-YYYY");
     }
-
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-
         const columnMapping = {
             CustomerName: "Customer Name",
             CustomerPO: "Customer PO",
@@ -599,18 +651,19 @@ function TransportRep({
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
                     if (column.replace(/\s+/g, "") === "RddDate") {
-                        acc["RddDate"] = person["RddDate"];
+                        acc["RddDate"] = formatDate(person["RddDate"]);
                     } else if (column.replace(/\s+/g, "") === "RddTime") {
                         acc[column.replace(/\s+/g, "")] = person["RddTime"];
                     } else if (column.replace(/\s+/g, "") === "PickupDate") {
-                        acc["PickupDate"] = person["PickupDate"];
+                        acc["PickupDate"] = formatDate(person["PickupDate"]);
                     } else if (column.replace(/\s+/g, "") === "PickupTime") {
                         acc[column.replace(/\s+/g, "")] = person["PickupTime"];
                     } else if (
                         column.replace(/\s+/g, "") === "ActualDeliveryDate"
                     ) {
-                        acc["ActualDeliveryDate"] =
-                            person["ActualDeliveryDate"];
+                        acc["ActualDeliveryDate"] = formatDate(
+                            person["ActualDeliveryDate"]
+                        );
                     } else if (
                         column.replace(/\s+/g, "") === "ActualDeliveryTime"
                     ) {
@@ -624,7 +677,6 @@ function TransportRep({
                 return acc;
             }, {})
         );
-
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
 
@@ -664,7 +716,6 @@ function TransportRep({
             saveAs(blob, "Transport-Report.xlsx");
         });
     }
-
     const [hoverMessage, setHoverMessage] = useState("");
     const [isMessageVisible, setMessageVisible] = useState(false);
     const handleMouseEnter = () => {
@@ -734,7 +785,6 @@ function TransportRep({
 
         return `${day}-${month}-${year}`;
     }
-    // Usage example remains the same
     const minRDDDate = getMinMaxValue(transportData, "RDD", 1);
     const maxRDDDate = getMinMaxValue(transportData, "RDD", 2);
     const minArrivedDate = getMinMaxValue(
@@ -1193,6 +1243,7 @@ function TransportRep({
                 gridRef={gridRef}
                 selected={selected}
                 tableDataElements={filteredData}
+                settableDataElements={setFilteredData}
                 filterValueElements={filterValue}
                 setFilterValueElements={setFilterValue}
                 columnsElements={columns}
