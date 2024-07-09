@@ -309,24 +309,103 @@ export default function DriverLogin({
                 
                     switch (operator) {
                         case "after":
-                            conditionMet = hasStartDate && dateCellValueStart.isAfter(dateValue);
+                            // Parse the cellValue date with the format you know it might have
+                            const afterd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+
+                            // Parse the dateValue as an ISO 8601 date string
+                            const afterdateToCompare = moment(dateValue);
+
+                            // Check if both dates are valid and if cellValue is after dateValue
+                            conditionMet =
+                                afterd.isValid() &&
+                                afterdateToCompare.isValid() &&
+                                afterdateToCompare.isAfter(afterd);
+
                             break;
                         case "afterOrOn":
-                            conditionMet = hasStartDate && dateCellValueStart.isSameOrAfter(dateValue);
+                            const afterOrOnd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const afterOrOnDateToCompare = moment(dateValue);
+
+                            conditionMet =
+                                afterOrOnd.isValid() &&
+                                afterOrOnDateToCompare.isValid() &&
+                                afterOrOnDateToCompare.isSameOrAfter(
+                                    afterOrOnd
+                                );
                             break;
+
                         case "before":
-                            conditionMet = hasStartDate && dateCellValueStart.isBefore(dateValue);
+                            const befored = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const beforeDateToCompare = moment(dateValue);
+
+                            conditionMet =
+                                befored.isValid() &&
+                                beforeDateToCompare.isValid() &&
+                                beforeDateToCompare.isBefore(befored);
+
                             break;
+
                         case "beforeOrOn":
-                            conditionMet = hasStartDate && dateCellValueStart.isSameOrBefore(dateValue);
+                            const beforeOrOnd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const beforeOrOnDateToCompare = moment(dateValue);
+
+                            conditionMet =
+                                beforeOrOnd.isValid() &&
+                                beforeOrOnDateToCompare.isValid() &&
+                                beforeOrOnDateToCompare.isSameOrBefore(
+                                    beforeOrOnd
+                                );
+
                             break;
                         case "eq":
-                            conditionMet = hasStartDate && dateCellValueStart.isSame(dateValue);
+                            // Parse the cellValue date with the format you know it might have
+                            const d = moment(
+                                cellValue,
+                                ["DD-MM-YYYY", moment.ISO_8601],
+                                true
+                            );
+
+                            // Parse the dateValue with the expected format or formats
+                            const dateToCompare = moment(
+                                dateValue,
+                                ["YYYY-MM-DD HH:mm:ss", moment.ISO_8601],
+                                true
+                            );
+
+                            // Check if both dates are valid and if they represent the same calendar day
+                            conditionMet =
+                                cellValue &&
+                                d.isValid() &&
+                                dateToCompare.isValid() &&
+                                d.isSame(dateToCompare, "day");
+
                             break;
                         case "neq":
-                            conditionMet = hasStartDate && !dateCellValueStart.isSame(dateValue);
-                            break;
-                        case "inrange":
+                            const neqd = moment(cellValue, "DD-MM-YYYY", true);
+                            const neqDateToCompare = moment(dateValue);
+
+                            conditionMet =
+                                neqd.isValid() &&
+                                neqDateToCompare.isValid() &&
+                                !neqd.isSame(neqDateToCompare, "day");
+
+                            break;case "inrange":
                             conditionMet = (!hasStartDate || dateValue.isSameOrAfter(dateCellValueStart)) &&
                                            (!hasEndDate || dateValue.isSameOrBefore(dateCellValueEnd));
                             break;
