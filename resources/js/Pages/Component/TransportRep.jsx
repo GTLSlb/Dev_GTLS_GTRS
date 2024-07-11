@@ -634,55 +634,48 @@ function TransportRep({
             DelayReason: "Delay Reason",
             TransportComments: "Transport Comments",
         };
-
+    
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
-
+    
         // Apply the mapping to the selected columns
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
-
+    
         const filterValue = jsonData?.filterValue;
-
+    
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
-                    if (column.replace(/\s+/g, "") === "RddDate") {
-                        acc["RddDate"] = formatDate(person["RddDate"]);
-                    } else if (column.replace(/\s+/g, "") === "RddTime") {
-                        acc[column.replace(/\s+/g, "")] = person["RddTime"];
-                    } else if (column.replace(/\s+/g, "") === "PickupDate") {
-                        acc["PickupDate"] = formatDate(person["PickupDate"]);
-                    } else if (column.replace(/\s+/g, "") === "PickupTime") {
-                        acc[column.replace(/\s+/g, "")] = person["PickupTime"];
-                    } else if (
-                        column.replace(/\s+/g, "") === "ActualDeliveryDate"
-                    ) {
-                        acc["ActualDeliveryDate"] = formatDate(
-                            person["ActualDeliveryDate"]
-                        );
-                    } else if (
-                        column.replace(/\s+/g, "") === "ActualDeliveryTime"
-                    ) {
-                        acc[column.replace(/\s+/g, "")] =
-                            person["ActualDeliveryTime"];
+                    if (columnKey === "RddDate") {
+                        acc["RDD Date"] = new Date(person["RddDate"]);
+                    } else if (columnKey === "RddTime") {
+                        acc["RDD Time"] = person["RddTime"];
+                    } else if (columnKey === "PickupDate") {
+                        acc["Pickup Date"] = formatDate(person["PickupDate"]);
+                    } else if (columnKey === "PickupTime") {
+                        acc["Pickup Time"] = person["PickupTime"];
+                    } else if (columnKey === "ActualDeliveryDate") {
+                        acc["Actual Delivery Date"] = formatDate(person["ActualDeliveryDate"]);
+                    } else if (columnKey === "ActualDeliveryTime") {
+                        acc["Actual Delivery Time"] = person["ActualDeliveryTime"];
                     } else {
-                        acc[column.replace(/\s+/g, "")] =
-                            person[column.replace(/\s+/g, "")];
+                        acc[columnMapping[columnKey] || columnKey] = person[columnKey];
                     }
                 }
                 return acc;
             }, {})
         );
+    
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
-
+    
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
-
+    
         // Apply custom styles to the new header row
         const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
@@ -692,26 +685,33 @@ function TransportRep({
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
         headerRow.alignment = { horizontal: "center" };
-
+    
         // Add the data to the worksheet
         data.forEach((rowData) => {
-            worksheet.addRow(Object.values(rowData));
+            const row = worksheet.addRow(Object.values(rowData));
+    
+            // Apply date format to the RDD Date column
+            const rddDateIndex = newSelectedColumns.indexOf("RDD Date");
+            if (rddDateIndex !== -1) {
+                const cell = row.getCell(rddDateIndex + 1); // +1 because ExcelJS is 1-based indexing
+                cell.numFmt = 'dd-mm-yy';
+            }
         });
-
+    
         // Set column widths
-        const columnWidths = selectedColumns.map(() => 15); // Set width of each column
+        const columnWidths = newSelectedColumns.map(() => 15); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
-            key: selectedColumns[index],
+            key: newSelectedColumns[index],
         }));
-
+    
         // Generate the Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
             // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-
+    
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "Transport-Report.xlsx");
         });

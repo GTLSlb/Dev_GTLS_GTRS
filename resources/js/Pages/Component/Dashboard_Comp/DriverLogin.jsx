@@ -447,7 +447,7 @@ export default function DriverLogin({
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-
+    
         const columnMapping = {
             "ConsignmentNo": "Consignment No",
             "SenderReference": "Sender Reference",
@@ -459,47 +459,57 @@ export default function DriverLogin({
             "FuelLevyAmountRef": "Fuel Levy Amount Ref",
             "DespatchDateTime": "Despatch DateTime",
         };
-
+    
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
-     
+    
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
                     if (columnKey === "DeviceSimType") {
-                        acc[columnKey] =
-                            person["MobilityDeviceSimTypes_Description"];
+                        acc[columnKey] = person["MobilityDeviceSimTypes_Description"];
                     } else if (columnKey === "SmartSCANVersion") {
                         acc[columnKey] = person["SmartSCANSoftwareVersion"];
                     } else if (columnKey === "DeviceModel") {
-                        acc[columnKey] =
-                            person["MobilityDeviceModels_Description"];
+                        acc[columnKey] = person["MobilityDeviceModels_Description"];
                     } else if (columnKey === "LastActiveUTC") {
-                        acc[columnKey] =
-                            person["LastActiveUTC"] == ""
-                                ? ""
-                                : moment(
-                                      person["LastActiveUTC"].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY h:mm A");
+                        const date = new Date(person[columnKey]);
+                        if (!isNaN(date)) {
+                            acc[columnKey] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[columnKey] = "";
+                        }
                     } else if (columnKey === "DeviceMakes") {
-                        acc[columnKey] =
-                            person["MobilityDeviceMakes_Description"];
+                        acc[columnKey] = person["MobilityDeviceMakes_Description"];
                     } else if (columnKey === "VLink") {
                         acc[columnKey] = person["UsedForVLink"];
                     } else if (columnKey === "SmartSCANFreight") {
                         acc[columnKey] = person["UsedForSmartSCANFreight"];
                     } else if (columnKey === "SmartSCAN") {
                         acc[columnKey] = person["UsedForSmartSCAN"];
+                    } else if (columnKey === "DespatchDateTime") {
+                        const date = new Date(person[columnKey]);
+                        if (!isNaN(date)) {
+                            acc[columnKey] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[columnKey] = "";
+                        }
                     } else {
-                        acc[column.replace(/\s+/g, "")] =
-                            person[column.replace(/\s+/g, "")];
+                        acc[column.replace(/\s+/g, "")] = person[column.replace(/\s+/g, "")];
                     }
                 } else {
                     acc[columnKey] = person[columnKey];
@@ -507,13 +517,13 @@ export default function DriverLogin({
                 return acc;
             }, {})
         );
-
+    
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
-
+    
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
-
+    
         // Apply custom styles to the header row
         const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
@@ -523,30 +533,39 @@ export default function DriverLogin({
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
         headerRow.alignment = { horizontal: "center" };
-
+    
         // Add the data to the worksheet
         data.forEach((rowData) => {
-            worksheet.addRow(Object.values(rowData));
+            const row = worksheet.addRow(Object.values(rowData));
+    
+            // Apply date format to the LastActiveUTC column
+            const lastActiveUtcIndex = newSelectedColumns.indexOf("LastActiveUTC");
+            if (lastActiveUtcIndex !== -1) {
+                const cell = row.getCell(lastActiveUtcIndex + 1);
+                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+            }
         });
-
+    
         // Set column widths
-        const columnWidths = selectedColumns.map(() => 15); // Set width of each column
+        const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
         }));
-
+    
         // Generate the Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
             // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-
+    
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "Driver-Login.xlsx");
         });
     }
+    
+    
     const [selected, setSelected] = useState([]);
 
     const filterIcon = (className) => {

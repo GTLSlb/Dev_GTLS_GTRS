@@ -499,13 +499,14 @@ export default function RDDreason({
             NewRdd: "New Rdd",
             ReasonDesc: "Reason Desc",
         };
-
+    
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
+    
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
@@ -516,75 +517,59 @@ export default function RDDreason({
                             (reason) => reason.ReasonId === person.Reason
                         );
                         acc[columnKey] = Reason?.ReasonName;
-                    } else if (column === "DespatchDate") {
-                        acc[columnKey] =
-                            moment(
-                                person["DespatchDate"],
-                                "YYYY-MM-DDTHH:mm:ss"
-                            ).format("DD-MM-YYYY h:mm A") || "";
+                    } else if (
+                        ["DespatchDate", "ChangeAt", "OldRdd", "NewRdd"].includes(columnKey)
+                    ) {
+                        const date = new Date(person[columnKey]);
+                        if (!isNaN(date)) {
+                            acc[columnKey] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[columnKey] = "";
+                        }
                     } else if (column === "Account Name") {
                         acc[columnKey] = person.AccountNumber;
                     } else if (column === "ChangedAt") {
-                        acc[columnKey] =
-                            moment(
-                                person["ChangedAt"],
-                                "YYYY-MM-DDTHH:mm:ss"
-                            ).format("DD-MM-YYYY h:mm A") || "";
-                    } else if (column === "OldRdd") {
-                        acc[columnKey] =
-                            moment(
-                                person["OldRdd"],
-                                "YYYY-MM-DDTHH:mm:ss"
-                            ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["OldRdd"],
-                                      "YYYY-MM-DDTHH:mm:ss"
-                                  ).format("DD-MM-YYYY HH:mm A");
-                    } else if (column === "NewRdd") {
-                        acc[columnKey] =
-                            moment(
-                                person["NewRdd"],
-                                "YYYY-MM-DDTHH:mm:ss"
-                            ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["NewRdd"],
-                                      "YYYY-MM-DDTHH:mm:ss"
-                                  ).format("DD-MM-YYYY HH:mm A");
+                        const date = new Date(person["ChangedAt"]);
+                        if (!isNaN(date)) {
+                            acc[columnKey] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[columnKey] = "";
+                        }
                     } else if (column === "ChangeAt") {
-                        acc[columnKey] =
-                            moment(
-                                convertUtcToUserTimezone(
-                                    person["ChangeAt"] + "Z"
-                                ),
-
-                                "MM/DD/YYYY, h:mm:ss A"
-                            ).format("YYYY-MM-DD hh:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      convertUtcToUserTimezone(
-                                          person["ChangeAt"] + "Z"
-                                      ),
-
-                                      "MM/DD/YYYY, h:mm:ss A"
-                                  ).format("DD-MM-YYYY");
+                        const date = new Date(person["ChangeAt"]);
+                        if (!isNaN(date)) {
+                            acc[columnKey] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[columnKey] = "";
+                        }
                     } else {
                         acc[columnKey] = person[columnKey];
                     }
                 } else {
-                    acc[columnKey] = person[columnKey.toUpperCase()];
+                    acc[columnKey] = person[columnKey?.toUpperCase()];
                 }
                 return acc;
             }, {})
         );
-
+    
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
-
+    
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
-
+    
         // Apply custom styles to the header row
         const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
@@ -594,26 +579,54 @@ export default function RDDreason({
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
         headerRow.alignment = { horizontal: "center" };
-
+    
         // Add the data to the worksheet
         data.forEach((rowData) => {
-            worksheet.addRow(Object.values(rowData));
+            const row = worksheet.addRow(Object.values(rowData));
+    
+            // Apply date format to the DespatchDate column
+            const despatchDateIndex = newSelectedColumns.indexOf("Despatch Date");
+            if (despatchDateIndex !== -1) {
+                const cell = row.getCell(despatchDateIndex + 1);
+                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+            }
+    
+            // Apply date format to the ChangedAt column
+            const changedAtDateIndex = newSelectedColumns.indexOf("Changed At");
+            if (changedAtDateIndex !== -1) {
+                const cell = row.getCell(changedAtDateIndex + 1);
+                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+            }
+    
+            // Apply date format to the OldRdd column
+            const oldRddDateIndex = newSelectedColumns.indexOf("Old Rdd");
+            if (oldRddDateIndex !== -1) {
+                const cell = row.getCell(oldRddDateIndex + 1);
+                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+            }
+    
+            // Apply date format to the NewRdd column
+            const newRddDateIndex = newSelectedColumns.indexOf("New Rdd");
+            if (newRddDateIndex !== -1) {
+                const cell = row.getCell(newRddDateIndex + 1);
+                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+            }
         });
-
+    
         // Set column widths
-        const columnWidths = selectedColumns.map(() => 15); // Set width of each column
+        const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
         }));
-
+    
         // Generate the Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
             // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-
+    
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "RDD-Report.xlsx");
         });

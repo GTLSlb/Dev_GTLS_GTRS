@@ -474,7 +474,7 @@ export default function SafetyRepTable({
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-
+    
         const columnMapping = {
             SafetyType: "Safety Type",
             ConsNo: "Cons No",
@@ -484,43 +484,40 @@ export default function SafetyRepTable({
             OccuredAt: "Occured At",
             AddedBy: "Added By",
         };
-
+    
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
+    
         const filterValue = jsonData?.filterValue;
-        //safetyData
-
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
                     if (columnKey === "SafetyType") {
                         const Reason = safetyTypes?.find(
-                            (reason) =>
-                                reason.SafetyTypeId === person.SafetyType
+                            (reason) => reason.SafetyTypeId === person.SafetyType
                         );
                         acc[columnKey] = Reason?.SafetyTypeName;
-                    }
-                    if (columnKey === "DebtorId") {
+                    } else if (columnKey === "DebtorId") {
                         const Reason = customerAccounts?.find(
                             (reason) => reason.DebtorId == person.DebtorId
                         );
                         acc[columnKey] = Reason?.AccountNo;
                     } else if (columnKey === "OccuredAt") {
-                        acc[columnKey] =
-                            moment(
-                                person["OccuredAt"],
-                                "YYYY/MM/DD h:mm:ss"
-                            ).format("DD-MM-YYYY h:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["OccuredAt"].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY h:mm A");
+                        const date = new Date(person[columnKey]);
+                        if (!isNaN(date)) {
+                            acc[columnKey] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[columnKey] = "";
+                        }
                     } else if (columnKey === "MainCause") {
                         acc[columnKey] = person?.CAUSE;
                     } else if (columnKey === "Reference") {
@@ -536,18 +533,18 @@ export default function SafetyRepTable({
                             person[column.replace(/\s+/g, "")];
                     }
                 } else {
-                    acc[columnKey] = person[columnKey.toUpperCase()];
+                    acc[columnKey] = person[columnKey?.toUpperCase()];
                 }
                 return acc;
             }, {})
         );
-
+    
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
-
+    
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
-
+    
         // Apply custom styles to the header row
         const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
@@ -557,26 +554,33 @@ export default function SafetyRepTable({
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
         headerRow.alignment = { horizontal: "center" };
-
+    
         // Add the data to the worksheet
         data.forEach((rowData) => {
-            worksheet.addRow(Object.values(rowData));
+            const row = worksheet.addRow(Object.values(rowData));
+    
+            // Apply date format to the OccuredAt column
+            const occuredAtIndex = newSelectedColumns.indexOf("Occured At");
+            if (occuredAtIndex !== -1) {
+                const cell = row.getCell(occuredAtIndex + 1);
+                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+            }
         });
-
+    
         // Set column widths
-        const columnWidths = selectedColumns.map(() => 15); // Set width of each column
+        const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
         }));
-
+    
         // Generate the Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
             // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-
+    
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "Safety-Report.xlsx");
         });
