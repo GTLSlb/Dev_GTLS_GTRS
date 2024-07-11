@@ -210,7 +210,7 @@ export default function ConsPerf({
         });
 
         // Set column widths
-        const columnWidths = selectedColumns.map(() => 15); // Set width of each column
+        const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],

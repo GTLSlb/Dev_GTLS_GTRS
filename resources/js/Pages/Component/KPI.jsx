@@ -550,18 +550,22 @@ export default function KPI({
                         acc[columnKey] = "true";
                     } else if (person[columnKey] === false) {
                         acc[columnKey] = "false";
-                    } else if (column.replace(/\s+/g, "") === "DispatchDate") {
-                        acc[columnKey] =
-                            moment(
-                                person["DispatchDate"].replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["DispatchDate"].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY");
-                    } else if (column.replace(/\s+/g, "") === "MatchRdd") {
+                    } else if (
+                        ["DispatchDate", "DeliveryDate", "RDD"].includes(
+                            columnKey
+                        )
+                    ) {
+                        const date = new Date(person[columnKey]);
+                        if (!isNaN(date)) {
+                            acc[column] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                    86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[column] = "";
+                        }
+                    } else if (columnKey === "MatchRdd") {
                         if (person[columnKey] === 3) {
                             acc[columnKey] = "Pending";
                         } else if (person[columnKey] === 1) {
@@ -569,18 +573,7 @@ export default function KPI({
                         } else if (person[columnKey] === 2) {
                             acc[columnKey] = "False";
                         }
-                    } else if (column.replace(/\s+/g, "") === "DeliveryDate") {
-                        acc[columnKey] =
-                            moment(
-                                person["DeliveryDate"].replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["DeliveryDate"].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY");
-                    } else if (column.replace(/\s+/g, "") === "MatchDel") {
+                    } else if (columnKey === "MatchDel") {
                         if (person[columnKey] == 0) {
                             acc[columnKey] = "";
                         } else if (person[columnKey] == 1) {
@@ -588,29 +581,16 @@ export default function KPI({
                         } else if (person[columnKey] == 2) {
                             acc[columnKey] = "FAIL";
                         }
-                    } else if (column === "RDD") {
-                        acc[columnKey] =
-                            moment(
-                                person["RDD"].replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["RDD"].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY");
                     } else if (columnKey === "ReasonId") {
                         const Reason = kpireasonsData?.find(
                             (reason) => reason.ReasonId === person.ReasonId
                         );
                         acc[columnKey] = Reason?.ReasonName;
                     } else {
-                        acc[column.replace(/\s+/g, "")] =
-                            person[column.replace(/\s+/g, "")];
+                        acc[columnKey] = person[columnKey];
                     }
                 } else {
-                    acc[column.replace(/\s+/g, "")] =
-                        person[column.replace(/\s+/g, "")];
+                    acc[columnKey] = person[columnKey];
                 }
                 return acc;
             }, {})
@@ -632,13 +612,33 @@ export default function KPI({
         };
         headerRow.alignment = { horizontal: "center" };
 
-        // Add the data to the worksheet
         data.forEach((rowData) => {
-            worksheet.addRow(Object.values(rowData));
+            const row = worksheet.addRow(Object.values(rowData));
+    
+            // Apply date format to the Dispatch Date column
+            const dispatchDateIndex = newSelectedColumns.indexOf("Dispatch Date");
+            if (dispatchDateIndex !== -1) {
+                const cell = row.getCell(dispatchDateIndex + 1);
+                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+            }
+    
+            // Apply date format to the Delivery Date column
+            const deliveryDateIndex = newSelectedColumns.indexOf("Delivery Date");
+            if (deliveryDateIndex !== -1) {
+                const cell = row.getCell(deliveryDateIndex + 1);
+                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+            }
+    
+            // Apply date format to the RDD column
+            const RDDDateIndex = newSelectedColumns.indexOf("RDD");
+            if (RDDDateIndex !== -1) {
+                const cell = row.getCell(RDDDateIndex + 1);
+                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+            }
         });
 
         // Set column widths
-        const columnWidths = selectedColumns.map(() => 15); // Set width of each column
+        const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
@@ -655,6 +655,7 @@ export default function KPI({
             saveAs(blob, "KPI-Report.xlsx");
         });
     }
+
     const createNewLabelObjects = (data, fieldName) => {
         let id = 1; // Initialize the ID
         const uniqueLabels = new Set(); // To keep track of unique labels
