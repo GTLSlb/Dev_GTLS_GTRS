@@ -44,6 +44,8 @@ export default function FailedCons({
     currentUser,
     accData,
 }) {
+
+    
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [reason, setReason] = useState();
     const handleEditClick = (reason) => {
@@ -64,7 +66,6 @@ export default function FailedCons({
                 !excludedDebtorIds.includes(obj.ChargeTo)
         )
     );
-
     const [filteredData, setFilteredData] = useState(data);
     const filterData = () => {
         const intArray = accData?.map((str) => {
@@ -295,7 +296,7 @@ export default function FailedCons({
         },
         {
             name: "KPI DATETIME",
-            header: "KPI Time",
+            header: "KPI DateTime",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
@@ -972,14 +973,14 @@ export default function FailedCons({
             OccuredAt: "Occured At",
             FailedNote: "Explanation",
         };
-    
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
-    
+
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
@@ -990,27 +991,41 @@ export default function FailedCons({
                     } else if (person[columnKey] === false) {
                         acc[columnKey] = "false";
                     } else if (
-                        ["DESPATCHDATE", "ARRIVEDDATETIME", "DELIVEREDDATETIME", "OCCUREDAT"].includes(
-                            columnKey
-                        )
+                        [
+                            "DESPATCHDATE",
+                            "ARRIVEDDATETIME",
+                            "DELIVEREDDATETIME",
+                            "OccuredAt",
+                        ].includes(columnKey)
                     ) {
                         const date = new Date(person[columnKey]);
                         if (!isNaN(date)) {
                             acc[columnKey] =
                                 (date.getTime() -
                                     date.getTimezoneOffset() * 60000) /
-                                86400000 +
+                                    86400000 +
                                 25569; // Convert to Excel date serial number
                         } else {
                             acc[columnKey] = "";
                         }
-                    } else if (columnKey === "KPI_DATETIME" || columnKey === "DELIVERYREQUIREDDATETIME") {
+                    } else if ( columnKey === "DELIVERYREQUIREDDATETIME") {
                         const date = new Date(person[columnKey]);
                         if (!isNaN(date)) {
                             acc[columnKey] =
                                 (date.getTime() -
                                     date.getTimezoneOffset() * 60000) /
-                                86400000 +
+                                    86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[columnKey] = "";
+                        }
+                    } else if (columnKey == "KPIDATETIME") {
+                        const date = new Date(person["KPI DATETIME"]);
+                        if (!isNaN(date)) {
+                            acc[columnKey] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                    86400000 +
                                 25569; // Convert to Excel date serial number
                         } else {
                             acc[columnKey] = "";
@@ -1050,17 +1065,17 @@ export default function FailedCons({
                 } else {
                     acc[columnKey] = person[columnKey?.toUpperCase()];
                 }
-    
+
                 return acc;
             }, {})
         );
-    
+
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
-    
+
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
-    
+
         // Apply custom styles to the new header row
         const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
@@ -1070,73 +1085,75 @@ export default function FailedCons({
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
         headerRow.alignment = { horizontal: "center" };
-    
+
         // Add the data to the worksheet
         data.forEach((rowData) => {
             const row = worksheet.addRow(Object.values(rowData));
-    
             // Apply date format to the DESPATCHDATE column
-            const despatchDateIndex = newSelectedColumns.indexOf("Despatch Date");
+            const despatchDateIndex =
+                newSelectedColumns.indexOf("Despatch Date");
             if (despatchDateIndex !== -1) {
                 const cell = row.getCell(despatchDateIndex + 1);
-                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
-    
+
             // Apply date format to the ARRIVEDDATETIME column
-            const arrivedDateIndex = newSelectedColumns.indexOf("Arrived Date Time");
+            const arrivedDateIndex =
+                newSelectedColumns.indexOf("Arrived Date Time");
             if (arrivedDateIndex !== -1) {
                 const cell = row.getCell(arrivedDateIndex + 1);
-                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
-    
+
             // Apply date format to the DELIVEREDDATETIME column
-            const deliveredDateIndex = newSelectedColumns.indexOf("Delivered Datetime");
+            const deliveredDateIndex =
+                newSelectedColumns.indexOf("Delivered Datetime");
             if (deliveredDateIndex !== -1) {
                 const cell = row.getCell(deliveredDateIndex + 1);
-                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
-    
+
             // Apply date format to the OCCUREDAT column
             const occuredAtDateIndex = newSelectedColumns.indexOf("Occured At");
             if (occuredAtDateIndex !== -1) {
                 const cell = row.getCell(occuredAtDateIndex + 1);
-                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
-    
+
             // Apply date format to the DELIVERYREQUIREDDATETIME column
             const deliveryReqDateIndex = newSelectedColumns.indexOf("RDD");
             if (deliveryReqDateIndex !== -1) {
                 const cell = row.getCell(deliveryReqDateIndex + 1);
-                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
-    
+
             // Apply date format to the KPI_DATETIME column
             const kpiDateTimeIndex = newSelectedColumns.indexOf("KPI DateTime");
             if (kpiDateTimeIndex !== -1) {
                 const cell = row.getCell(kpiDateTimeIndex + 1);
-                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
         });
-    
+
         // Set column widths
         const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
         }));
-    
+
         // Generate the Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
             // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-    
+
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "Failed-Consignments.xlsx");
         });
     }
-    
+
     const updateLocalData = (
         id,
         reasonid,
