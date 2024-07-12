@@ -119,6 +119,7 @@ export default function KPI({
             return item;
         })
     );
+
     const filterData = () => {
         const intArray = accData?.map((str) => {
             const intValue = parseInt(str);
@@ -565,6 +566,17 @@ export default function KPI({
                         } else {
                             acc[column] = "";
                         }
+                    } else if (columnKey == "CalculatedDelDate") {
+                        const date = new Date(person[columnKey]);
+                        if (!isNaN(date)) {
+                            acc[column] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                    86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[column] = "";
+                        }   
                     } else if (columnKey === "MatchRdd") {
                         if (person[columnKey] === 3) {
                             acc[columnKey] = "Pending";
@@ -614,27 +626,35 @@ export default function KPI({
 
         data.forEach((rowData) => {
             const row = worksheet.addRow(Object.values(rowData));
-    
             // Apply date format to the Dispatch Date column
-            const dispatchDateIndex = newSelectedColumns.indexOf("Dispatch Date");
+            const dispatchDateIndex =
+                newSelectedColumns.indexOf("Dispatch Date");
             if (dispatchDateIndex !== -1) {
                 const cell = row.getCell(dispatchDateIndex + 1);
-                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
-    
+
             // Apply date format to the Delivery Date column
-            const deliveryDateIndex = newSelectedColumns.indexOf("Delivery Date");
+            const deliveryDateIndex =
+                newSelectedColumns.indexOf("Delivery Date");
             if (deliveryDateIndex !== -1) {
                 const cell = row.getCell(deliveryDateIndex + 1);
-                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
-    
+
             // Apply date format to the RDD column
             const RDDDateIndex = newSelectedColumns.indexOf("RDD");
             if (RDDDateIndex !== -1) {
                 const cell = row.getCell(RDDDateIndex + 1);
-                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
+            // Apply date format to the RDD column
+            const CalculatedDateIndex = newSelectedColumns.indexOf("Calculated Delivery Date");
+            if (CalculatedDateIndex !== -1) {
+                const cell = row.getCell(CalculatedDateIndex + 1);
+                cell.numFmt = "dd-mm-yyyy";
+            }
+            
         });
 
         // Set column widths
