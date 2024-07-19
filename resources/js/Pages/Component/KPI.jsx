@@ -18,6 +18,7 @@ import Success from "../../Components/lottie/Data/Success.json";
 import { canCalculateKPI, canEditKPI } from "@/permissions";
 import axios from "axios";
 import swal from "sweetalert";
+import ReactDataGrid from "@inovua/reactdatagrid-community";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -55,30 +56,29 @@ export default function KPI({
 
     const fetchData = async () => {
         try {
-            const response = await axios
-                .get(`${url}/KPI`, {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
-                    },
-                })
-                .then((res) => {
-                    const x = JSON.stringify(res.data);
-                    setKPIData(res.data);
-                    setSenderStateOptions(
-                        createNewLabelObjects(res.data, "SenderState")
-                    );
-                    setReceiverStateOptions(
-                        createNewLabelObjects(res.data, "ReceiverState")
-                    );
-                    setReasonOptions(
-                        kpireasonsData.map((reason) => ({
-                            id: reason.ReasonId,
-                            label: reason.ReasonName,
-                        }))
-                    );
-                    setIsFetching(false);
-                });
+            const response = await axios.get(`${url}/KPI`, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            });
+    
+            // Convert TransitDays to string
+            const modifiedData = response.data.map((item) => ({
+                ...item,
+                TransitDays: item.TransitDays.toString(),
+            }));
+    
+            setKPIData(modifiedData);
+            setSenderStateOptions(createNewLabelObjects(modifiedData, "SenderState"));
+            setReceiverStateOptions(createNewLabelObjects(modifiedData, "ReceiverState"));
+            setReasonOptions(
+                kpireasonsData.map((reason) => ({
+                    id: reason.ReasonId,
+                    label: reason.ReasonName,
+                }))
+            );
+            setIsFetching(false);
         } catch (error) {
             if (error.response && error.response.status === 401) {
                 swal({
@@ -88,8 +88,7 @@ export default function KPI({
                     icon: "info",
                     confirmButtonText: "OK",
                 }).then(() => {
-                    axios
-                        .post("/logoutAPI")
+                    axios.post("/logoutAPI")
                         .then((response) => {
                             if (response.status === 200) {
                                 window.location.href = "/";
@@ -104,13 +103,12 @@ export default function KPI({
             }
         }
     };
-
+    
     const handleClick = (coindex) => {
         setActiveIndexGTRS(3);
         setLastIndex(2);
         setactiveCon(coindex);
     };
-
     const [filteredData, setFilteredData] = useState(
         KPIData.map((item) => {
             if (item?.TransitDays) {
@@ -576,7 +574,7 @@ export default function KPI({
                                 25569; // Convert to Excel date serial number
                         } else {
                             acc[column] = "";
-                        }   
+                        }
                     } else if (columnKey === "MatchRdd") {
                         if (person[columnKey] === 3) {
                             acc[columnKey] = "Pending";
@@ -649,12 +647,13 @@ export default function KPI({
                 cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
             // Apply date format to the RDD column
-            const CalculatedDateIndex = newSelectedColumns.indexOf("Calculated Delivery Date");
+            const CalculatedDateIndex = newSelectedColumns.indexOf(
+                "Calculated Delivery Date"
+            );
             if (CalculatedDateIndex !== -1) {
                 const cell = row.getCell(CalculatedDateIndex + 1);
                 cell.numFmt = "dd-mm-yyyy";
             }
-            
         });
 
         // Set column widths
@@ -911,11 +910,6 @@ export default function KPI({
             headerAlign: "center",
             textAlign: "center",
             filterEditor: StringFilter,
-            // filterEditorProps: {
-            //     multiple: true,
-            //     wrapMultiple: false,
-            //     dataSource: receiverStateOptions,
-            // },
             defaultWidth: 200,
         },
         {
@@ -981,11 +975,11 @@ export default function KPI({
         {
             name: "TransitDays",
             header: "Transit Days",
+            type: "string",
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 170,
-            type: "number",
-            filterEditor: NumberFilter,
+            filterEditor: StringFilter,
+            defaultWidth: 200,
         },
         {
             name: "CalculatedDelDate",

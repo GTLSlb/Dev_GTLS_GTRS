@@ -15,7 +15,7 @@ import {
     CameraIcon,
 } from "@heroicons/react/24/solid";
 import "../../../../css/scroll.css";
-import TaskIcon from '@mui/icons-material/Task';
+import TaskIcon from "@mui/icons-material/Task";
 
 import { useEffect } from "react";
 import {
@@ -58,12 +58,28 @@ const navigation = [
                 feature: "KPI_view",
             },
             {
+                id: 17,
+                name: "New KPI",
+                href: "#",
+                current: false,
+                icon: ClipboardDocumentCheckIcon,
+                feature: "New_KPI_view",
+            },
+            {
                 id: 12,
                 name: "Transit Days",
                 href: "#",
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
                 feature: "View_TransitDays",
+            },
+            {
+                id: 18,
+                name: "New Transit Days",
+                href: "#",
+                current: false,
+                icon: ClipboardDocumentCheckIcon,
+                feature: "View_NewTransitDays",
             },
             {
                 id: 13,
@@ -301,7 +317,8 @@ export default function ChartsSidebar({
                             <div className="group block w-full flex-shrink-0">
                                 <div className="flex items-center">
                                     <div className="hidden">
-                                        {!user.Picture || user.Picture.length == 0 ? (
+                                        {!user.Picture ||
+                                        user.Picture.length == 0 ? (
                                             <img
                                                 className="inline-block h-14 w-14"
                                                 src={`/app/icons/blank-profile.jpg`}
@@ -317,7 +334,14 @@ export default function ChartsSidebar({
                                     </div>
                                     <div className="ml-3">
                                         <p className="text-sm font-medium text-gray-800">
-                                            {user.TypeId == 1 ? <p>{user.CustomerName}</p> :<p>{user.FirstName}{" "}{user.LastName}</p>}
+                                            {user.TypeId == 1 ? (
+                                                <p>{user.CustomerName}</p>
+                                            ) : (
+                                                <p>
+                                                    {user.FirstName}{" "}
+                                                    {user.LastName}
+                                                </p>
+                                            )}
                                         </p>
                                         <p className=" text-[0.7rem] text-gray-500 ">
                                             {user.Email}
