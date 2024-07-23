@@ -27,6 +27,7 @@ function TransportRep({
     setLastIndex,
     accData,
 }) {
+    console.log(transportData);
     const RDDTimeFilter = ({ filterValue, onChange }) => {
         const [value, setValue] = useState(
             filterValue ? filterValue.value : ""
@@ -616,6 +617,8 @@ function TransportRep({
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
         const columnMapping = {
+            SenderName: "Sender Name",
+            SenderState: "Sender State",
             CustomerName: "Customer Name",
             CustomerPO: "Customer PO",
             DeliveryNo: "Delivery No",
@@ -668,7 +671,9 @@ function TransportRep({
                         acc["Pickup Time"] = person["PickupTime"];
                     } else if (columnKey === "ActualDeliveryDate") {
                         if (person["ActualDeliveryDate"]) {
-                            acc["Actual Delivery Date"] = new Date(person["ActualDeliveryDate"]);
+                            acc["Actual Delivery Date"] = new Date(
+                                person["ActualDeliveryDate"]
+                            );
                         } else {
                             acc["Actual Delivery Date"] = null;
                         }
@@ -715,7 +720,9 @@ function TransportRep({
                 const cell = row.getCell(PickDateIndex + 1); // +1 because ExcelJS is 1-based indexing
                 cell.numFmt = "dd-mm-yy";
             }
-            const actualDateIndex = newSelectedColumns.indexOf("Actual Delivery Date");
+            const actualDateIndex = newSelectedColumns.indexOf(
+                "Actual Delivery Date"
+            );
             if (actualDateIndex !== -1) {
                 const cell = row.getCell(actualDateIndex + 1); // +1 because ExcelJS is 1-based indexing
                 cell.numFmt = "dd-mm-yy";
@@ -824,8 +831,35 @@ function TransportRep({
     const statusOptions = createNewLabelObjects(transportData, "Status");
     const LTLFTLOptions = createNewLabelObjects(transportData, "LTLFTL");
     const stateOptions = createNewLabelObjects(transportData, "State");
+    const SenderstateOptions = createNewLabelObjects(
+        transportData,
+        "SenderState"
+    );
     const onTimeOptions = createNewLabelObjects(transportData, "OnTime");
     const columns = [
+        {
+            name: "SenderName",
+            header: "Sender Name",
+            group: "personalInfo",
+            defaultWidth: 200,
+            filterEditor: StringFilter,
+            headerAlign: "center",
+            textAlign: "center",
+        },
+        {
+            name: "SenderState",
+            header: "Sender State",
+            type: "string",
+            defaultWidth: 200,
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: SenderstateOptions,
+            },
+        },
         {
             name: "CustomerName",
             header: "Customer Name",
@@ -1097,11 +1131,30 @@ function TransportRep({
                                             <input
                                                 type="checkbox"
                                                 name="column"
+                                                value="SenderName"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            Sender Name
+                                        </label>
+                                        <label className="">
+                                            <input
+                                                type="checkbox"
+                                                name="column"
+                                                value="SenderState"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            Sender State
+                                        </label>
+                                        <label className="">
+                                            <input
+                                                type="checkbox"
+                                                name="column"
                                                 value="CustomerName"
                                                 className="text-dark rounded focus:ring-goldd"
                                             />{" "}
                                             Customer Name
                                         </label>
+
                                         <label className="">
                                             <input
                                                 type="checkbox"

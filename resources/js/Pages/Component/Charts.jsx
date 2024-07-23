@@ -221,6 +221,20 @@ export default function charts({
             emptyValue: "",
         },
         {
+            name: "SenderName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "SenderState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
             name: "CustomerPO",
             operator: "contains",
             type: "string",
