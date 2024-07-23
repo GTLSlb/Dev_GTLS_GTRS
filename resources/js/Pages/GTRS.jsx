@@ -59,9 +59,7 @@ export default function Gtrs({
     const debtorIdsArray = userdata?.Accounts?.map((account) => {
         return { UserId: account.DebtorId };
     });
-
     // Usage
-
     let debtorIds;
     if (userdata.TypeId == 1) {
         debtorIds = debtorIdsArray;

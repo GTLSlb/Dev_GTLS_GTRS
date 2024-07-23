@@ -54,6 +54,7 @@ export default function charts({
     const current = new Date();
     const month = current.getMonth() + 1;
     const [KPIData, setKPIData] = useState([]);
+    const [NewKPIData, setNewKPIData] = useState([]);
     const [transitDays, setTransitDays] = useState();
     const [newTransitDays, setNewTransitDays] = useState();
     const [holidays, setHolidays] = useState();
@@ -440,10 +441,10 @@ export default function charts({
         },
         {
             name: "TransitDays",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: null,
+            operator: "eq",
+            type: "number",
+            value: null,
+            // emptyValue: null,
         },
         {
             name: "CalculatedDelDate",
@@ -467,7 +468,122 @@ export default function charts({
             //emptyValue: null,
         },
     ]);
-
+    const [filtersNewKPI, setFiltersNewKPI] = useState([
+        {
+            name: "ConsignmentNo",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderReference",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverReference",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverSuburb",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "DispatchDate",
+            operator: "inrange",
+            type: "date",
+            value: {
+                start: minDispatchDate,
+                end: maxDispatchDate,
+            },
+        },
+        {
+            name: "ReceiverPostCode",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: null,
+        },
+        {
+            name: "RDD",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "DeliveryDate",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "TransitDays",
+            operator: "eq",
+            type: "number",
+            value: null,
+            // emptyValue: null,
+        },
+        {
+            name: "CalculatedDelDate",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "MatchDel",
+            operator: "eq",
+            type: "select",
+            value: null,
+            //emptyValue: "",
+        },
+        {
+            name: "ReasonId",
+            operator: "eq",
+            type: "select",
+            value: null,
+            //emptyValue: null,
+        },
+    ]);
     const [filtersTransit, setFiltersTransit] = useState([
         {
             name: "CustomerName",
@@ -2085,7 +2201,28 @@ export default function charts({
             SDate={SDate}
             setSDate={setSDate}
         />,
-        <NewKPI />,
+        <NewKPI
+            kpireasonsData={kpireasonsData}
+            oldestDate={oldestDate}
+            latestDate={latestDate}
+            KPIData={NewKPIData}
+            filterValue={filtersNewKPI}
+            setFilterValue={setFiltersNewKPI}
+            setKPIData={setNewKPIData}
+            currentUser={currentUser}
+            userBody={userBody}
+            accData={dataFromChild}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            url={url}
+            AToken={AToken}
+            setactiveCon={setactiveCon}
+            setLastIndex={setLastIndex}
+            IDfilter={IDfilter}
+            EDate={EDate}
+            setEDate={setEDate}
+            SDate={SDate}
+            setSDate={setSDate}
+        />,
         <NewTransitDays
             setNewTransitDay={setNewTransitDay}
             newTransitDay={newtransitDay}

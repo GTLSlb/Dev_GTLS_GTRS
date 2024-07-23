@@ -222,12 +222,18 @@ export default function ChartsSidebar({
     useEffect(() => {
         onData(optionSelected);
     }, [optionSelected]);
-    const current_user_role = currentUser.role_id;
     const [sidebarElements, setSidebarElements] = useState(navigation);
     const handleClick = (index) => {
         setActiveIndexGTRS(index);
         const updatedElements = sidebarElements.map((element) => {
-            if (element.id === index || index == 12 || index == 13) {
+            if (
+                element.id === index ||
+                index == 12 ||
+                index == 13 ||
+                index == 14 ||
+                index == 17 ||
+                index == 18
+            ) {
                 if (element.options) {
                     return {
                         ...element,
@@ -472,44 +478,33 @@ export default function ChartsSidebar({
                                                         </AccordionHeader>
 
                                                         <AccordionBody className="pl-10 flex gap-y-1 mt-1 flex-col">
-                                                            {item.options
-                                                                // .filter(
-                                                                //     (
-                                                                //         item
-                                                                //     ) =>
-                                                                //         item.role.includes(
-                                                                //             current_user_role
-                                                                //         )
-                                                                // )
-                                                                .map(
-                                                                    (
-                                                                        option
-                                                                    ) => (
-                                                                        <button
-                                                                            id={
-                                                                                option.name
-                                                                            }
-                                                                            key={
+                                                            {item.options.map(
+                                                                (option) => (
+                                                                    <button
+                                                                        id={
+                                                                            option.name
+                                                                        }
+                                                                        key={
+                                                                            option.id
+                                                                        }
+                                                                        onClick={() =>
+                                                                            handleClick(
                                                                                 option.id
-                                                                            }
-                                                                            onClick={() =>
-                                                                                handleClick(
-                                                                                    option.id
-                                                                                )
-                                                                            }
-                                                                            className={classNames(
-                                                                                option.current
-                                                                                    ? "bg-gray-300"
-                                                                                    : "",
-                                                                                "p-2 font-semibold hover:bg-gray-300 rounded text-left text-dark text-xs"
-                                                                            )}
-                                                                        >
-                                                                            {
-                                                                                option.name
-                                                                            }
-                                                                        </button>
-                                                                    )
-                                                                )}
+                                                                            )
+                                                                        }
+                                                                        className={classNames(
+                                                                            option.current
+                                                                                ? "bg-gray-300"
+                                                                                : "",
+                                                                            "p-2 font-semibold hover:bg-gray-300 rounded text-left text-dark text-xs"
+                                                                        )}
+                                                                    >
+                                                                        {
+                                                                            option.name
+                                                                        }
+                                                                    </button>
+                                                                )
+                                                            )}
                                                         </AccordionBody>
                                                     </>
                                                 )}

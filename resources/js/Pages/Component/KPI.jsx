@@ -978,7 +978,7 @@ export default function KPI({
             type: "string",
             headerAlign: "center",
             textAlign: "center",
-            filterEditor: StringFilter,
+            filterEditor: NumberFilter,
             defaultWidth: 200,
         },
         {
@@ -1137,7 +1137,7 @@ export default function KPI({
         axios
             .get(`${url}KpiCalculation`, {
                 headers: {
-                    UserId: currentUser.user_id,
+                    UserId: currentUser.UserId,
                     Authorization: `Bearer ${AToken}`,
                 },
             })
@@ -1176,6 +1176,55 @@ export default function KPI({
                 }
             });
     }
+
+    const customFilterTypes = Object.assign({}, ReactDataGrid.defaultProps.filterTypes, {
+        number: {
+          name: 'number',
+          operators: [
+            {
+              name: 'empty',
+              fn: ({ value }) => value == null || value === ''
+            },
+            {
+              name: 'notEmpty',
+              fn: ({ value }) => value != null && value !== ''
+            },
+            {
+              name: 'eq',
+              fn: ({ value, filterValue }) => value == null || filterValue == null ? true : value == filterValue
+            },
+            {
+              name: 'neq',
+              fn: ({ value, filterValue }) => value == null || filterValue == null ? true : value != filterValue
+            },
+            {
+              name: 'gt',
+              fn: ({ value, filterValue }) => value > filterValue
+            },
+            {
+              name: 'gte',
+              fn: ({ value, filterValue }) => value >= filterValue
+            },
+            {
+              name: 'lt',
+              fn: ({ value, filterValue }) => value < filterValue
+            },
+            {
+              name: 'lte',
+              fn: ({ value, filterValue }) => value <= filterValue
+            },
+            {
+              name: 'inRange',
+              fn: ({ value, filterValue }) => {
+                const [min, max] = filterValue.split(':').map(Number);
+                return value >= min && value <= max;
+              }
+            }
+          ]
+        }
+      });
+
+      
     return (
         <div>
             {/* <Sidebar /> */}
@@ -1405,6 +1454,7 @@ export default function KPI({
                         selected={selected}
                         groupsElements={groups}
                         tableDataElements={filteredData}
+                        filterTypesElements={customFilterTypes}
                         filterValueElements={filterValue}
                         setFilterValueElements={setFilterValue}
                         columnsElements={newColumns}
