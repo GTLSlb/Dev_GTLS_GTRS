@@ -99,7 +99,7 @@ export function canEditKPI(currentUser) {
 export function canEditNewKPI(currentUser) {
     // Define the specific permission to check for editing KPI
     const targetPermissionName = "NewKpi_edit";
-    const pageName = "KPI"; // Adjust the page name as needed
+    const pageName = "New KPI"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
