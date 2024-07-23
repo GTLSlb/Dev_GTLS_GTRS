@@ -15,7 +15,7 @@ import KPIModalAddReason from "./KPI/KPImodal";
 import LottieComponent from "@/Components/lottie/LottieComponent";
 import Truck from "../../Components/lottie/Data/Truck.json";
 import Success from "../../Components/lottie/Data/Success.json";
-import { canCalculateKPI, canEditKPI } from "@/permissions";
+import { canCalculateNewKPI, canEditNewKPI } from "@/permissions";
 import axios from "axios";
 import swal from "sweetalert";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
@@ -1067,7 +1067,7 @@ function NewKPI({
             render: ({ value, data }) => {
                 return (
                     <div>
-                        {canEditKPI(currentUser) ? (
+                        {canEditNewKPI(currentUser) ? (
                             <button
                                 className={
                                     "rounded text-blue-500 justify-center items-center  "
@@ -1093,7 +1093,7 @@ function NewKPI({
     const [newColumns, setNewColumns] = useState([]);
 
     useEffect(() => {
-        if (canEditKPI(currentUser)) {
+        if (canEditNewKPI(currentUser)) {
             setNewColumns(columns);
         } else {
             setNewColumns(newArray);
@@ -1277,7 +1277,7 @@ function NewKPI({
                                         width={35}
                                     />
                                 )}
-                                {canCalculateKPI(currentUser) ? (
+                                {canCalculateNewKPI(currentUser) ? (
                                     <button
                                         className={`inline-flex items-center w-[11rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
                                         disabled={
