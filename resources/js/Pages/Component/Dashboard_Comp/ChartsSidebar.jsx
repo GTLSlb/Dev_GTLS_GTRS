@@ -57,14 +57,7 @@ const navigation = [
                 icon: ClipboardDocumentCheckIcon,
                 feature: "KPI_view",
             },
-            {
-                id: 17,
-                name: "New KPI",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "New_KPI_view",
-            },
+
             {
                 id: 12,
                 name: "Transit Days",
@@ -72,6 +65,14 @@ const navigation = [
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
                 feature: "View_TransitDays",
+            },
+            {
+                id: 17,
+                name: "New KPI",
+                href: "#",
+                current: false,
+                icon: ClipboardDocumentCheckIcon,
+                feature: "New_KPI_view",
             },
             {
                 id: 18,

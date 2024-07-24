@@ -40,8 +40,6 @@ function NewKPI({
     kpireasonsData,
 }) {
     window.moment = moment;
-
-   console.log(KPIData)
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isFetching, setIsFetching] = useState();

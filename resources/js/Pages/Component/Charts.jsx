@@ -2232,6 +2232,7 @@ export default function charts({
             newTransitDays={newTransitDays}
             filterValue={filtersNewTransit}
             currentUser={currentUser}
+            accData={dataFromChild}
             AToken={AToken}
             url={url}
         />,
