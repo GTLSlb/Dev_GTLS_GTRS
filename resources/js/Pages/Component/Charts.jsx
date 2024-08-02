@@ -592,10 +592,11 @@ export default function charts({
             value: null,
         },
         {
-            name: "CustomerType",
+            name: "CustomerTypeId",
             operator: "inlist",
             type: "select",
             value: null,
+            emptyValue: null,
         },
         {
             name: "SenderState",
@@ -666,10 +667,11 @@ export default function charts({
             value: null,
         },
         {
-            name: "CustomerType",
-            operator: "inlist",
+            name: "CustomerTypeId",
+            operator: "eq",
             type: "select",
             value: null,
+            // emptyValue: "",
         },
         {
             name: "SenderState",
@@ -677,18 +679,6 @@ export default function charts({
             type: "select",
             value: null,
         },
-        // {
-        //     name: "SenderCity",
-        //     operator: "inlist",
-        //     type: "select",
-        //     value: null,
-        // },
-        // {
-        //     name: "SenderSuburb",
-        //     operator: "inlist",
-        //     type: "select",
-        //     value: null,
-        // },
         {
             name: "SenderPostCode",
             operator: "eq",
@@ -707,18 +697,6 @@ export default function charts({
             type: "select",
             value: null,
         },
-        // {
-        //     name: "ReceiverCity",
-        //     operator: "inlist",
-        //     type: "select",
-        //     value: null,
-        // },
-        // {
-        //     name: "ReceiverSuburb",
-        //     operator: "inlist",
-        //     type: "select",
-        //     value: null,
-        // },
         {
             name: "ReceiverPostCode",
             operator: "eq",

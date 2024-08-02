@@ -112,8 +112,15 @@ function NewTransitDays({
         });
         return newData;
     };
-    const [receiverStateOptions, setReceiverStateOptions] = useState([]);
-    const [senderStateOptions, setSenderStateOptions] = useState([]);
+    // const [receiverStateOptions, setReceiverStateOptions] = useState([]);
+    const receiverStateOptions = createNewLabelObjects(
+        newTransitDays,
+        "ReceiverState"
+    );
+    const senderStateOptions = createNewLabelObjects(
+        newTransitDays,
+        "SenderState"
+    );
     const customers = getUniqueCustomers(newTransitDays);
     function getUniqueCustomers(data) {
         // Create a Set to store unique customer names
@@ -138,21 +145,23 @@ function NewTransitDays({
     const [isMessageVisible, setMessageVisible] = useState(false);
 
     function getUniqueCustomerTypes(data) {
-        // Create a Set to store unique type
-        const typeSet = new Set();
-
+        // Create a Map to store unique customer types with their corresponding IDs
+        const typeMap = new Map();
+    
         // Loop through each object in the data array
         data?.forEach((item) => {
-            // Add the type to the set
-            typeSet.add(item.CustomerType);
+            // Add the customer type to the map with the CustomerTypeId as the key
+            if (!typeMap.has(item.CustomerTypeId)) {
+                typeMap.set(item.CustomerTypeId, item.CustomerType);
+            }
         });
-
-        // Convert the set to an array of objects with id and label
-        const uniqueCustomers = Array.from(typeSet).map((type) => ({
-            id: type,
-            label: type,
+    
+        // Convert the map to an array of objects with id and label
+        const uniqueCustomers = Array.from(typeMap).map(([id, label]) => ({
+            id,
+            label,
         }));
-
+    
         return uniqueCustomers;
     }
     const columns = [
@@ -172,7 +181,7 @@ function NewTransitDays({
             },
         },
         {
-            name: "CustomerType",
+            name: "CustomerTypeId",
             header: "Customer Type",
             type: "string",
             headerAlign: "center",
@@ -184,6 +193,13 @@ function NewTransitDays({
                 multiple: false,
                 wrapMultiple: false,
                 dataSource: types,
+            },
+            render: ({ value, data }) => {
+                return (
+                    <div>
+                        {data.CustomerType}
+                    </div>
+                );
             },
         },
         {
@@ -855,7 +871,7 @@ function NewTransitDays({
                         <div className="sm:flex sm:items-center">
                             <div className="sm:flex w-full items-center justify-between mt-2 lg:mt-6">
                                 <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                                    New Transit Days
+                                    Transit Days
                                 </h1>
                                 <div className="flex gap-5">
                                     {canAddNewTransitDays(currentUser) ? (

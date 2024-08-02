@@ -1255,7 +1255,7 @@ function NewKPI({
                     <div className="sm:flex sm:items-center">
                         <div className="sm:flex w-full items-center justify-between mt-2 lg:mt-6">
                             <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                                New KPI Report
+                                KPI Report
                             </h1>
                             <div className="object-right flex gap-x-2 md:ml-auto">
                                 {statusMessage && (
