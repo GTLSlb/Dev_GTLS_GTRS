@@ -15,15 +15,16 @@ import KPIModalAddReason from "./KPI/KPImodal";
 import LottieComponent from "@/Components/lottie/LottieComponent";
 import Truck from "../../Components/lottie/Data/Truck.json";
 import Success from "../../Components/lottie/Data/Success.json";
-import { canCalculateKPI, canEditKPI } from "@/permissions";
+import { canCalculateNewKPI, canEditNewKPI } from "@/permissions";
 import axios from "axios";
 import swal from "sweetalert";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
+import NewKPIModalAddReason from "./KPI/NEWKPIModal";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
-export default function KPI({
+function NewKPI({
     url,
     userBody,
     currentUser,
@@ -56,22 +57,26 @@ export default function KPI({
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`${url}/KPI`, {
+            const response = await axios.get(`${url}/KPINew`, {
                 headers: {
                     UserId: currentUser.UserId,
                     Authorization: `Bearer ${AToken}`,
                 },
             });
-    
+
             // Convert TransitDays to string
             const modifiedData = response.data.map((item) => ({
                 ...item,
                 TransitDays: item.TransitDays.toString(),
             }));
-    
+
             setKPIData(modifiedData);
-            setSenderStateOptions(createNewLabelObjects(modifiedData, "SenderState"));
-            setReceiverStateOptions(createNewLabelObjects(modifiedData, "ReceiverState"));
+            setSenderStateOptions(
+                createNewLabelObjects(modifiedData, "SenderState")
+            );
+            setReceiverStateOptions(
+                createNewLabelObjects(modifiedData, "ReceiverState")
+            );
             setReasonOptions(
                 kpireasonsData.map((reason) => ({
                     id: reason.ReasonId,
@@ -88,7 +93,8 @@ export default function KPI({
                     icon: "info",
                     confirmButtonText: "OK",
                 }).then(() => {
-                    axios.post("/logoutAPI")
+                    axios
+                        .post("/logoutAPI")
                         .then((response) => {
                             if (response.status === 200) {
                                 window.location.href = "/";
@@ -103,10 +109,10 @@ export default function KPI({
             }
         }
     };
-    
+
     const handleClick = (coindex) => {
         setActiveIndexGTRS(3);
-        setLastIndex(2);
+        setLastIndex(17);
         setactiveCon(coindex);
     };
     const [filteredData, setFilteredData] = useState(
@@ -671,7 +677,7 @@ export default function KPI({
             });
 
             // Save the file using FileSaver.js or alternative method
-            saveAs(blob, "KPI-Report.xlsx");
+            saveAs(blob, "New-KPI-Report.xlsx");
         });
     }
 
@@ -1059,7 +1065,7 @@ export default function KPI({
             render: ({ value, data }) => {
                 return (
                     <div>
-                        {canEditKPI(currentUser) ? (
+                        {canEditNewKPI(currentUser) ? (
                             <button
                                 className={
                                     "rounded text-blue-500 justify-center items-center  "
@@ -1085,7 +1091,7 @@ export default function KPI({
     const [newColumns, setNewColumns] = useState([]);
 
     useEffect(() => {
-        if (canEditKPI(currentUser)) {
+        if (canEditNewKPI(currentUser)) {
             setNewColumns(columns);
         } else {
             setNewColumns(newArray);
@@ -1135,7 +1141,7 @@ export default function KPI({
     function CalculateKPI() {
         setLoading(true);
         axios
-            .get(`${url}KpiCalculation`, {
+            .get(`${url}KPIReportNew`, {
                 headers: {
                     UserId: currentUser.UserId,
                     Authorization: `Bearer ${AToken}`,
@@ -1178,53 +1184,52 @@ export default function KPI({
     }
 
     const customFilterTypes = Object.assign({}, ReactDataGrid.defaultProps.filterTypes, {
-        number: {
-          name: 'number',
-          operators: [
-            {
-              name: 'empty',
-              fn: ({ value }) => value == null || value === ''
-            },
-            {
-              name: 'notEmpty',
-              fn: ({ value }) => value != null && value !== ''
-            },
-            {
-              name: 'eq',
-              fn: ({ value, filterValue }) => value == null || filterValue == null ? true : value == filterValue
-            },
-            {
-              name: 'neq',
-              fn: ({ value, filterValue }) => value == null || filterValue == null ? true : value != filterValue
-            },
-            {
-              name: 'gt',
-              fn: ({ value, filterValue }) => value > filterValue
-            },
-            {
-              name: 'gte',
-              fn: ({ value, filterValue }) => value >= filterValue
-            },
-            {
-              name: 'lt',
-              fn: ({ value, filterValue }) => value < filterValue
-            },
-            {
-              name: 'lte',
-              fn: ({ value, filterValue }) => value <= filterValue
-            },
-            {
-              name: 'inRange',
-              fn: ({ value, filterValue }) => {
-                const [min, max] = filterValue.split(':').map(Number);
-                return value >= min && value <= max;
-              }
+      number: {
+        name: 'number',
+        operators: [
+          {
+            name: 'empty',
+            fn: ({ value }) => value == null || value === ''
+          },
+          {
+            name: 'notEmpty',
+            fn: ({ value }) => value != null && value !== ''
+          },
+          {
+            name: 'eq',
+            fn: ({ value, filterValue }) => value == null || filterValue == null ? true : value == filterValue
+          },
+          {
+            name: 'neq',
+            fn: ({ value, filterValue }) => value == null || filterValue == null ? true : value != filterValue
+          },
+          {
+            name: 'gt',
+            fn: ({ value, filterValue }) => value > filterValue
+          },
+          {
+            name: 'gte',
+            fn: ({ value, filterValue }) => value >= filterValue
+          },
+          {
+            name: 'lt',
+            fn: ({ value, filterValue }) => value < filterValue
+          },
+          {
+            name: 'lte',
+            fn: ({ value, filterValue }) => value <= filterValue
+          },
+          {
+            name: 'inRange',
+            fn: ({ value, filterValue }) => {
+              const [min, max] = filterValue.split(':').map(Number);
+              return value >= min && value <= max;
             }
-          ]
-        }
-      });
+          }
+        ]
+      }
+    });
 
-      
     return (
         <div>
             {/* <Sidebar /> */}
@@ -1250,7 +1255,7 @@ export default function KPI({
                     <div className="sm:flex sm:items-center">
                         <div className="sm:flex w-full items-center justify-between mt-2 lg:mt-6">
                             <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                                KPI Report
+                                New KPI Report
                             </h1>
                             <div className="object-right flex gap-x-2 md:ml-auto">
                                 {statusMessage && (
@@ -1270,16 +1275,16 @@ export default function KPI({
                                         width={35}
                                     />
                                 )}
-                                {canCalculateKPI(currentUser) ? (
+                                {canCalculateNewKPI(currentUser) ? (
                                     <button
-                                        className={`inline-flex items-center w-[9.1rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+                                        className={`inline-flex items-center w-[11rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
                                         disabled={
                                             filteredData?.length === 0 ||
                                             loading
                                         }
                                         onClick={() => CalculateKPI()}
                                     >
-                                        Calculate KPI Report
+                                        Calculate New KPI Report
                                     </button>
                                 ) : null}
                                 <Popover className="relative ">
@@ -1452,16 +1457,16 @@ export default function KPI({
                         id={"ConsignmentId"}
                         setSelected={setSelected}
                         selected={selected}
+                        filterTypesElements={customFilterTypes}
                         groupsElements={groups}
                         tableDataElements={filteredData}
-                        filterTypesElements={customFilterTypes}
                         filterValueElements={filterValue}
                         setFilterValueElements={setFilterValue}
                         columnsElements={newColumns}
                     />
                 </div>
             )}
-            <KPIModalAddReason
+            <NewKPIModalAddReason
                 AToken={AToken}
                 url={url}
                 isOpen={isModalOpen}
@@ -1475,3 +1480,5 @@ export default function KPI({
         </div>
     );
 }
+
+export default NewKPI;
