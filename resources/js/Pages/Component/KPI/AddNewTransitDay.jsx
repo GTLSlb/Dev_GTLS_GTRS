@@ -67,6 +67,11 @@ function AddNewTransitDay({
         { id: 3, label: "Food Solutions - QLD" },
         { id: 4, label: "METCASH" },
     ];
+
+    const freighPeople = [
+        { id: 5, label: "KERRY" },
+        { id: 99, label: "None" },
+    ];
     const [object, setObject] = useState(newtransitDay);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedRstate, setSelectedRstate] = useState(
@@ -139,15 +144,23 @@ function AddNewTransitDay({
         const inputValues = {
             TransitId: object ? object.TransitId : null,
             CustomerId: selectedCustomer,
-            CustomerTypeId: selectedCustomer == 1 ? selectedType : 0,
+            CustomerTypeId:
+                selectedCustomer == 1 || selectedCustomer == 3
+                    ? selectedType
+                    : 0,
             SenderState: selectedSstate,
-            SenderPostCode: document.getElementById("SenderPostCode").value,
+            SenderPostCode:
+                document.getElementById("SenderPostCode").value == ""
+                    ? null
+                    : document.getElementById("SenderPostCode").value,
             ReceiverName: document.getElementById("ReceiverName").value,
             ReceiverState: selectedRstate,
-            ReceiverPostCode: document.getElementById("ReceiverPostCode").value,
+            ReceiverPostCode:
+                document.getElementById("ReceiverPostCode").value == ""
+                    ? null
+                    : document.getElementById("ReceiverPostCode").value,
             TransitTime: document.getElementById("TransitTime").value,
         };
-        // setIsLoading(false);
         axios
             .post(`${url}Add/TransitNew`, inputValues, {
                 headers: {
@@ -267,6 +280,41 @@ function AddNewTransitDay({
                                     })}
                                 </select>
                             </div>
+                        ) : object?.CustomerId == 3 || selectedCustomer == 3 ? (
+                            <div className="col-span-2 flex items-center gap-x-2">
+                                <label
+                                    htmlFor="SafetyType"
+                                    className="block w-48"
+                                >
+                                    Customer Type:
+                                </label>
+                                <select
+                                    id="SafetyType"
+                                    name="SafetyType"
+                                    className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
+                                    // defaultValue={modalSafetyType}
+                                    // value={formValues.SafetyType || ""}
+                                    value={selectedType}
+                                    onChange={(e) => {
+                                        setSelectedType(e.target.value);
+                                    }}
+                                    required
+                                >
+                                    <option value="">
+                                        --Select a Customer Type--
+                                    </option>
+                                    {freighPeople?.map((type) => {
+                                        return (
+                                            <option
+                                                key={type.id}
+                                                value={type.id}
+                                            >
+                                                {type.label}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                            </div>
                         ) : (
                             <div className="col-span-2"></div>
                         )}
@@ -355,7 +403,7 @@ function AddNewTransitDay({
                                 name="name"
                                 id="SenderPostCode"
                                 defaultValue={
-                                    object ? object.SenderPostCode : ""
+                                    object ? object.SenderPostCode : null
                                 }
                                 className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
                             />

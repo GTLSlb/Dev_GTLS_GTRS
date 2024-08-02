@@ -112,7 +112,7 @@ function NewKPI({
 
     const handleClick = (coindex) => {
         setActiveIndexGTRS(3);
-        setLastIndex(2);
+        setLastIndex(17);
         setactiveCon(coindex);
     };
     const [filteredData, setFilteredData] = useState(

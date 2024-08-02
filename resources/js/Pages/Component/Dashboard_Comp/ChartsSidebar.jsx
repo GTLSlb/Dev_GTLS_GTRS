@@ -49,38 +49,38 @@ const navigation = [
         icon: ClipboardDocumentCheckIcon,
         current: false,
         options: [
+            // {
+            //     id: 2,
+            //     name: "KPI",
+            //     href: "#",
+            //     current: false,
+            //     icon: ClipboardDocumentCheckIcon,
+            //     feature: "KPI_view",
+            // },
+
+            // {
+            //     id: 12,
+            //     name: "Transit Days",
+            //     href: "#",
+            //     current: false,
+            //     icon: ClipboardDocumentCheckIcon,
+            //     feature: "View_TransitDays",
+            // },
             {
-                id: 2,
+                id: 17,
                 name: "KPI",
                 href: "#",
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
                 feature: "KPI_view",
             },
-
             {
-                id: 12,
+                id: 18,
                 name: "Transit Days",
                 href: "#",
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
                 feature: "View_TransitDays",
-            },
-            {
-                id: 17,
-                name: "New KPI",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "New_KPI_view",
-            },
-            {
-                id: 18,
-                name: "New Transit Days",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "View_NewTransitDays",
             },
             {
                 id: 13,
