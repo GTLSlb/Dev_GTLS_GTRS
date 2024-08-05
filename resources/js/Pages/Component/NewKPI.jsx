@@ -677,7 +677,7 @@ function NewKPI({
             });
 
             // Save the file using FileSaver.js or alternative method
-            saveAs(blob, "New-KPI-Report.xlsx");
+            saveAs(blob, "KPI-Report.xlsx");
         });
     }
 
@@ -1277,14 +1277,14 @@ function NewKPI({
                                 )}
                                 {canCalculateNewKPI(currentUser) ? (
                                     <button
-                                        className={`inline-flex items-center w-[11rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+                                        className={`inline-flex items-center justify-center w-[10rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
                                         disabled={
                                             filteredData?.length === 0 ||
                                             loading
                                         }
                                         onClick={() => CalculateKPI()}
                                     >
-                                        Calculate New KPI Report
+                                        Calculate KPI Report
                                     </button>
                                 ) : null}
                                 <Popover className="relative ">

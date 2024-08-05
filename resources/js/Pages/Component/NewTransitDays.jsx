@@ -834,7 +834,7 @@ function NewTransitDays({
             });
 
             // Save the file using FileSaver.js or alternative method
-            saveAs(blob, "New-TransitDays-Report.xlsx");
+            saveAs(blob, "TransitDays-Report.xlsx");
         });
     }
     const handleMouseEnter = () => {
@@ -847,7 +847,6 @@ function NewTransitDays({
         }
     };
 
-    console.log(types)
     return (
         <div>
             {isFetching ? (
