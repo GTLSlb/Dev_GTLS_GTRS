@@ -151,7 +151,8 @@ function NewTransitDays({
         // Loop through each object in the data array
         data?.forEach((item) => {
             // Add the customer type to the map with the CustomerTypeId as the key
-            if (!typeMap.has(item.CustomerTypeId)) {
+            // only if the CustomerType is not an empty string
+            if (item.CustomerType && item.CustomerType.trim() !== "" && !typeMap.has(item.CustomerTypeId)) {
                 typeMap.set(item.CustomerTypeId, item.CustomerType);
             }
         });
@@ -846,6 +847,7 @@ function NewTransitDays({
         }
     };
 
+    console.log(types)
     return (
         <div>
             {isFetching ? (

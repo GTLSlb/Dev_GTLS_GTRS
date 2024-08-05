@@ -172,6 +172,7 @@ export default function TransitDays({
 
         return uniqueCustomers;
     }
+   
     const filterIcon = (className) => {
         return (
             <svg
