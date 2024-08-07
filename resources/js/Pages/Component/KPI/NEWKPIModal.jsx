@@ -150,7 +150,7 @@ export default function NewKPIModalAddReason({
                     </button>
                 </div>
                 <h2 className="text-2xl font-bold mb-4">
-                    Set New KPI Reason
+                    Set KPI Reason
                     {/* <span>{id}</span> */}
                 </h2>
                 <form onSubmit={handleSubmit}>

@@ -56,23 +56,6 @@ export function canCalculateKPI(currentUser) {
 }
 
 /**
- * Checks if the user can calculate New KPI Report based on their permissions for a specific page.
- *
- * @param {Object} currentUser - The current user object with role, permissions, and pages.
- * @return {boolean} True if the user can calculate New KPI Report on the specific page, false otherwise.
- */
-export function canCalculateNewKPI(currentUser) {
-    // Define the specific permission to check for the KPI calculation
-    const targetPermissionName = "NewKpi_calculate";
-    const pageName = "New KPI";
-
-    // Find the specified page in the user's Pages array
-    const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
-    // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
-}
-
-/**
  * Checks if the user can edit KPI Report based on their permissions for a specific page.
  *
  * @param {Object} currentUser - The current user object with role, permissions, and pages.
@@ -82,24 +65,6 @@ export function canEditKPI(currentUser) {
     // Define the specific permission to check for editing KPI
     const targetPermissionName = "Kpi_edit";
     const pageName = "KPI"; // Adjust the page name as needed
-
-    // Find the specified page in the user's Pages array
-    const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
-
-    // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
-}
-
-/**
- * Checks if the user can edit New KPI Report based on their permissions for a specific page.
- *
- * @param {Object} currentUser - The current user object with role, permissions, and pages.
- * @return {boolean} True if the user can edit KPI Report on the specific page, false otherwise.
- */
-export function canEditNewKPI(currentUser) {
-    // Define the specific permission to check for editing KPI
-    const targetPermissionName = "NewKpi_edit";
-    const pageName = "New KPI"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);

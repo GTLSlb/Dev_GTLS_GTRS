@@ -212,7 +212,7 @@ function AddNewTransitDay({
         <div className="p-8">
             <div className="shadow bg-white p-6 rounded-lg ">
                 <form onSubmit={AddTransit}>
-                    <p className="font-bold text-lg">Add New Transit</p>
+                    <p className="font-bold text-lg">Add Transit</p>
                     <div className="border-b mt-2" />
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-5 items-center py-4">
                         <div className="col-span-2 flex items-center gap-x-2">

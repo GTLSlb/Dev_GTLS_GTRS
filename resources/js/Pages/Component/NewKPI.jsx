@@ -15,7 +15,7 @@ import KPIModalAddReason from "./KPI/KPImodal";
 import LottieComponent from "@/Components/lottie/LottieComponent";
 import Truck from "../../Components/lottie/Data/Truck.json";
 import Success from "../../Components/lottie/Data/Success.json";
-import { canCalculateNewKPI, canEditNewKPI } from "@/permissions";
+import { canCalculateKPI, canEditKPI } from "@/permissions";
 import axios from "axios";
 import swal from "sweetalert";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
@@ -677,7 +677,7 @@ function NewKPI({
             });
 
             // Save the file using FileSaver.js or alternative method
-            saveAs(blob, "New-KPI-Report.xlsx");
+            saveAs(blob, "KPI-Report.xlsx");
         });
     }
 
@@ -1065,7 +1065,7 @@ function NewKPI({
             render: ({ value, data }) => {
                 return (
                     <div>
-                        {canEditNewKPI(currentUser) ? (
+                        {canEditKPI(currentUser) ? (
                             <button
                                 className={
                                     "rounded text-blue-500 justify-center items-center  "
@@ -1091,7 +1091,7 @@ function NewKPI({
     const [newColumns, setNewColumns] = useState([]);
 
     useEffect(() => {
-        if (canEditNewKPI(currentUser)) {
+        if (canEditKPI(currentUser)) {
             setNewColumns(columns);
         } else {
             setNewColumns(newArray);
@@ -1255,7 +1255,7 @@ function NewKPI({
                     <div className="sm:flex sm:items-center">
                         <div className="sm:flex w-full items-center justify-between mt-2 lg:mt-6">
                             <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                                New KPI Report
+                                KPI Report
                             </h1>
                             <div className="object-right flex gap-x-2 md:ml-auto">
                                 {statusMessage && (
@@ -1275,16 +1275,16 @@ function NewKPI({
                                         width={35}
                                     />
                                 )}
-                                {canCalculateNewKPI(currentUser) ? (
+                                {canCalculateKPI(currentUser) ? (
                                     <button
-                                        className={`inline-flex items-center w-[11rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+                                        className={`inline-flex items-center justify-center w-[10rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
                                         disabled={
                                             filteredData?.length === 0 ||
                                             loading
                                         }
                                         onClick={() => CalculateKPI()}
                                     >
-                                        Calculate New KPI Report
+                                        Calculate KPI Report
                                     </button>
                                 ) : null}
                                 <Popover className="relative ">
