@@ -9,7 +9,8 @@ import {
     Legend,
     Tooltip,
     Title,
-} from "chart.js";
+    LineController,  // Import LineController
+} from 'chart.js';
 import { Bar } from "react-chartjs-2";
 import { useRef } from "react";
 import { useEffect } from "react";
@@ -24,7 +25,8 @@ ChartJS.register(
     PointElement,
     Legend,
     Tooltip,
-    Title
+    Title,
+    LineController  // Register LineController
 );
 function BarGraph({ colLabel, dataTotal, dataOnTime, dataKPI, dataPOD }) {
     const chartRef = useRef(null);
