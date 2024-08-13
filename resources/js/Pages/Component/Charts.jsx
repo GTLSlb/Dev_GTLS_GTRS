@@ -22,6 +22,7 @@ import TransportRep from "./TransportRep";
 import NewKPI from "./NewKPI";
 import NewTransitDays from "./NewTransitDays";
 import AddNewTransitDay from "./KPI/AddNewTransitDay";
+import GraphPresentation from "./Presentation/GraphPresentation";
 
 export default function charts({
     setCusomterAccounts,
@@ -2223,6 +2224,7 @@ export default function charts({
             setActiveIndexGTRS={setActiveIndexGTRS}
             newtransitDay={newtransitDay}
         />,
+        <GraphPresentation />
     ];
     return (
         <div className="">

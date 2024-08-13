@@ -13,6 +13,7 @@ import {
     ChevronDownIcon,
     ShieldCheckIcon,
     CameraIcon,
+    DocumentTextIcon,
 } from "@heroicons/react/24/solid";
 import "../../../../css/scroll.css";
 import TaskIcon from "@mui/icons-material/Task";
@@ -173,6 +174,14 @@ const navigation = [
         current: false,
         feature: "DriverLogin_view",
     },
+    {
+        id: 20,
+        name: "Unilever Report",
+        href: "#",
+        icon: DocumentTextIcon,
+        current: false,
+        feature: "UnileverReport_View",
+    },
 ];
 
 function classNames(...classes) {
@@ -189,7 +198,6 @@ export default function ChartsSidebar({
 }) {
     const [customerOptions, setCustomerOptions] = useState([]);
     const [showList, setShowList] = useState(false);
-    // const showSelect = true;
     const showSelect = customerOptions?.length > 0;
 
     const handleDivClick = () => {

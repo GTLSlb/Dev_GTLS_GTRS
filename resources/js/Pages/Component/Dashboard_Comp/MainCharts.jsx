@@ -419,6 +419,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                 )
         );
     };
+
     const customStyles = {
         control: (provided) => ({
             ...provided,
