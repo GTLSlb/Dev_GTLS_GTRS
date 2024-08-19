@@ -50,27 +50,27 @@ export default function ConsPerf({
             const chargeToMatch =
                 intArray?.length === 0 || intArray?.includes(item.ChargeTo);
             const itemDate = new Date(item.DESPATCHDATE); // Convert item's date string to Date object
-            const filterStartDate = new Date(startDate); // Convert start date string to Date object
-            const filterEndDate = new Date(endDate); // Convert end date string to Date object
-            filterStartDate.setHours(0);
-            filterEndDate.setSeconds(59);
-            filterEndDate.setMinutes(59);
-            filterEndDate.setHours(23);
+            let dateMatch = true;
+            if (startDate && endDate) {
+                const filterStartDate = new Date(startDate); // Convert start date string to Date object
+                const filterEndDate = new Date(endDate); // Convert end date string to Date object
+                filterStartDate.setHours(0);
+                filterEndDate.setSeconds(59);
+                filterEndDate.setMinutes(59);
+                filterEndDate.setHours(23);
+                dateMatch = itemDate >= filterStartDate && itemDate <= filterEndDate; // Compare the item date to the filter dates
+            }
             const ConsNbMatch = selectedConsignment
                 ? item.CONSIGNMENTNUMBER.toLowerCase().includes(
                       selectedConsignment.toLowerCase()
                   )
                 : true;
-            return (
-                itemDate >= filterStartDate &&
-                itemDate <= filterEndDate &&
-                ConsNbMatch &&
-                chargeToMatch
-            ); // Compare the item date to the filter dates
+            return dateMatch && ConsNbMatch && chargeToMatch;
         });
         setFilteredData(filtered);
         setCurrentPage(0);
     };
+    
     useEffect(() => {
         filterData(SDate, EDate, selectedConsignment);
     }, [accData]);
