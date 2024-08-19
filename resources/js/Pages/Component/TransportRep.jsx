@@ -27,7 +27,6 @@ function TransportRep({
     setLastIndex,
     accData,
 }) {
-    console.log(transportData);
     const RDDTimeFilter = ({ filterValue, onChange }) => {
         const [value, setValue] = useState(
             filterValue ? filterValue.value : ""
@@ -1039,11 +1038,15 @@ function TransportRep({
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
                         YES
                     </span>
-                ) : (
+                ) : value == "NO" ? (
                     <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
                         NO
                     </span>
-                );
+                ) : value == "PENDING" ? (
+                    <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-0.5 text-sm font-medium text-gray-800">
+                        PENDING
+                    </span>
+                ) : null;
             },
         },
         {
@@ -1063,26 +1066,31 @@ function TransportRep({
             filterEditor: StringFilter,
         },
     ];
+    const excludedDebtorIds = [1514, 364, 247, 246, 245, 244];
+
     const filterData = () => {
         const intArray = accData?.map((str) => {
             const intValue = parseInt(str);
             return isNaN(intValue) ? 0 : intValue;
         });
-
+        console.log(accData);
         // Filter the data based on the start and end date filters, selected receiver names, and chargeTo values
         const filtered = transportData.filter((item) => {
             const chargeToMatch =
-                intArray?.length === 0 || intArray?.includes(item.ChargeToID);
-
+                (intArray?.length === 0 || intArray?.includes(item.ChargeToID)) &&
+                !excludedDebtorIds.includes(item.ChargeToID); // Exclude specified ChargeToIDs
+    
             return chargeToMatch;
         });
-
+    
         return filtered;
     };
+    
     useEffect(() => {
         setFilteredData(filterData());
     }, [accData]);
 
+    console.log(filteredData);
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
             <div className="sm:flex sm:items-center">
