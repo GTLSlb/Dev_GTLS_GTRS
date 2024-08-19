@@ -17,6 +17,7 @@ import { useEffect } from "react";
 
 import { useState } from "react";
 import BarTable from "./BarTable";
+import InlineTable from "./InlineTable";
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -147,14 +148,15 @@ function BarGraph({ colLabel, dataTotal, dataOnTime, dataKPI, dataPOD }) {
     return (
         <div>
             <Bar ref={chartRef} data={data} options={options} />
-            <BarTable
+            {/* <BarTable
                 colKPI={dataKPI}
                 colLabel={addEmptyStringAtStart(colLabel)}
                 colTotal={dataTotal}
                 colOnTime={dataOnTime}
                 colPOD={dataPOD}
                 colWidth={colWidth}
-            />
+            /> */}
+            <InlineTable />
         </div>
     );
 }

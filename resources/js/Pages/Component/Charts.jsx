@@ -2224,7 +2224,11 @@ export default function charts({
             setActiveIndexGTRS={setActiveIndexGTRS}
             newtransitDay={newtransitDay}
         />,
-        <GraphPresentation />
+        <GraphPresentation
+            url={url}
+            currentUser={currentUser}
+            AToken={AToken}
+        />,
     ];
     return (
         <div className="">
