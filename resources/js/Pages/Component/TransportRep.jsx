@@ -1073,7 +1073,6 @@ function TransportRep({
             const intValue = parseInt(str);
             return isNaN(intValue) ? 0 : intValue;
         });
-        console.log(accData);
         // Filter the data based on the start and end date filters, selected receiver names, and chargeTo values
         const filtered = transportData.filter((item) => {
             const chargeToMatch =
@@ -1090,7 +1089,6 @@ function TransportRep({
         setFilteredData(filterData());
     }, [accData]);
 
-    console.log(filteredData);
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
             <div className="sm:flex sm:items-center">
