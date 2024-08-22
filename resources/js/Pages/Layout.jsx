@@ -178,6 +178,7 @@ export default function Sidebar(Boolean) {
         }
     }, [currentUser]);
 
+
     if (!currentUser) {
         return null; // Render nothing
     } else {
@@ -218,22 +219,24 @@ export default function Sidebar(Boolean) {
                         />
                         {components[activePage]}
                     </div>
-                ) :  <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
-                <div className="flex items-center justify-center">
-                    <div
-                        className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
-                    ></div>
-                    <div
-                        className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
-                    ></div>
-                    <div
-                        className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
-                    ></div>
-                </div>
-                <div className="text-dark mt-4 font-bold">
-                    Please wait while we get the data for you.
-                </div>
-            </div>}
+                ) : (
+                    <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
+                        <div className="flex items-center justify-center">
+                            <div
+                                className={`h-5 w-5 bg-red-500 rounded-full mr-5 animate-bounce`}
+                            ></div>
+                            <div
+                                className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
+                            ></div>
+                            <div
+                                className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
+                            ></div>
+                        </div>
+                        <div className="text-dark mt-4 font-bold">
+                            Please wait while we get the data for you.
+                        </div>
+                    </div>
+                )}
             </div>
         );
     }

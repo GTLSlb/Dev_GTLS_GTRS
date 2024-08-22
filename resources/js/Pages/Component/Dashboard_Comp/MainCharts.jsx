@@ -834,6 +834,12 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                 {/* <DashboardCard11 /> */}
             </div>
         );
+    } else if (chartsData.length === 0){
+        return (
+            <div className=" min-h-screen flex items-center justify-center h-full">
+                <p>No Data Found</p>
+            </div>
+        );
     } else {
         return (
             <div className=" min-h-screen md:pl-20 pt-16 h-full">
