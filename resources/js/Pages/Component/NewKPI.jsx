@@ -180,7 +180,10 @@ function NewKPI({
                 const cellValue = value;
                 let conditionMet = false;
                 // Skip the filter condition if no filter is set (cellValue is null or empty)
-                if (!cellValue || cellValue.length === 0) {
+                if (
+                    (!cellValue || cellValue.length === 0 ) &&
+                    !(type === "number" && (operator === "empty" || cellValue === 0))
+                ) {
                     conditionMet = true;
                     continue;
                 }
@@ -240,15 +243,20 @@ function NewKPI({
                     switch (operator) {
                         case "eq":
                             conditionMet =
-                                numericCellValue != "" &&
-                                numericValue != "" &&
-                                numericValue === numericCellValue;
+                            (numericCellValue !== "" || numericCellValue === 0) &&
+                            (numericValue !== "" || numericValue === 0) &&
+                            numericValue == numericCellValue;
                             break;
                         case "neq":
                             conditionMet =
                                 numericCellValue != "" &&
                                 numericValue != "" &&
                                 numericValue !== numericCellValue;
+                            break;
+                        case "empty":
+                            conditionMet =
+                                Number.isNaN(numericCellValue) &&
+                                Number.isNaN(numericValue);
                             break;
                         case "gt":
                             conditionMet =
@@ -1183,52 +1191,73 @@ function NewKPI({
             });
     }
 
-    const customFilterTypes = Object.assign({}, ReactDataGrid.defaultProps.filterTypes, {
-      number: {
-        name: 'number',
-        operators: [
-          {
-            name: 'empty',
-            fn: ({ value }) => value == null || value === ''
-          },
-          {
-            name: 'notEmpty',
-            fn: ({ value }) => value != null && value !== ''
-          },
-          {
-            name: 'eq',
-            fn: ({ value, filterValue }) => value == null || filterValue == null ? true : value == filterValue
-          },
-          {
-            name: 'neq',
-            fn: ({ value, filterValue }) => value == null || filterValue == null ? true : value != filterValue
-          },
-          {
-            name: 'gt',
-            fn: ({ value, filterValue }) => value > filterValue
-          },
-          {
-            name: 'gte',
-            fn: ({ value, filterValue }) => value >= filterValue
-          },
-          {
-            name: 'lt',
-            fn: ({ value, filterValue }) => value < filterValue
-          },
-          {
-            name: 'lte',
-            fn: ({ value, filterValue }) => value <= filterValue
-          },
-          {
-            name: 'inRange',
-            fn: ({ value, filterValue }) => {
-              const [min, max] = filterValue.split(':').map(Number);
-              return value >= min && value <= max;
-            }
-          }
-        ]
-      }
-    });
+    const customFilterTypes = Object.assign(
+        {},
+        ReactDataGrid.defaultProps.filterTypes,
+        {
+            number: {
+                name: "number",
+                operators: [
+                    {
+                        name: "empty",
+                        fn: ({ value }) => value == null || value === "",
+                    },
+                    {
+                        name: "notEmpty",
+                        fn: ({ value }) => value != null && value !== "",
+                    },
+                    {
+                        name: "eq",
+                        fn: ({ value, filterValue }) =>
+                            value == null || filterValue == null
+                                ? true
+                                : // Check if both values are NaN
+                                Number.isNaN(value) && Number.isNaN(filterValue)
+                                ? true
+                                : // Check if both values are numbers and are equal
+                                typeof value === "number" &&
+                                  typeof filterValue === "number" &&
+                                  value === filterValue
+                                ? true
+                                : // Return false for all other cases
+                                  false,
+                    },
+                    {
+                        name: "neq",
+                        fn: ({ value, filterValue }) =>
+                            value == null || filterValue == null
+                                ? true
+                                : value != filterValue,
+                    },
+                    {
+                        name: "gt",
+                        fn: ({ value, filterValue }) => value > filterValue,
+                    },
+                    {
+                        name: "gte",
+                        fn: ({ value, filterValue }) => value >= filterValue,
+                    },
+                    {
+                        name: "lt",
+                        fn: ({ value, filterValue }) => value < filterValue,
+                    },
+                    {
+                        name: "lte",
+                        fn: ({ value, filterValue }) => value <= filterValue,
+                    },
+                    {
+                        name: "inRange",
+                        fn: ({ value, filterValue }) => {
+                            const [min, max] = filterValue
+                                .split(":")
+                                .map(Number);
+                            return value >= min && value <= max;
+                        },
+                    },
+                ],
+            },
+        }
+    );
 
     return (
         <div>
