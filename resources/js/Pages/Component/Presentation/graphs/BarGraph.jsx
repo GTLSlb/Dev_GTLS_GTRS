@@ -9,8 +9,8 @@ import {
     Legend,
     Tooltip,
     Title,
-    LineController,  // Import LineController
-} from 'chart.js';
+    LineController, // Import LineController
+} from "chart.js";
 import { Bar } from "react-chartjs-2";
 import { useRef } from "react";
 import { useEffect } from "react";
@@ -27,11 +27,68 @@ ChartJS.register(
     Legend,
     Tooltip,
     Title,
-    LineController  // Register LineController
+    LineController // Register LineController
 );
-function BarGraph({ colLabel, dataTotal, dataOnTime, dataKPI, dataPOD }) {
+function BarGraph({
+    graphData,
+    url,
+    currentUser,
+    getReportData,
+    selectedReceiver,
+    setGraphData,
+    updateData,
+}) {
+    function generateMonthArrayFromJson(data) {
+        const monthNames = [
+            "JAN",
+            "FEB",
+            "MAR",
+            "APR",
+            "MAY",
+            "JUN",
+            "JUL",
+            "AUG",
+            "SEPT",
+            "OCT",
+            "NOV",
+            "DEC",
+        ];
+        let result = [];
+
+        data.forEach((item) => {
+            const date = new Date(item.MonthDate);
+            const month = monthNames[date.getMonth()];
+            const year = date.getFullYear();
+            result.push(`${month} ${year}`);
+        });
+
+        return result;
+    }
+
+    function getFieldArrayFromJson(data, fieldLabel) {
+        let result = [];
+
+        data.forEach((item) => {
+            if (item.Record && item.Record.length > 0) {
+                const record = item.Record[0];
+                result.push(
+                    record[fieldLabel] !== undefined ? record[fieldLabel] : 0
+                );
+            } else {
+                result.push(0);
+            }
+        });
+
+        return result;
+    }
+
+    let colLabel = generateMonthArrayFromJson(graphData);
+    let dataTotal = getFieldArrayFromJson(graphData, "TotalCons");
+    let dataKPI = getFieldArrayFromJson(graphData, "KpiBenchMark");
+    let dataOnTime = getFieldArrayFromJson(graphData, "onTimePercentage");
+    let dataPOD = getFieldArrayFromJson(graphData, "PODPercentage");
+
     const chartRef = useRef(null);
-    const [colWidth, setColWidth] = useState(0);
 
     const data = {
         labels: colLabel,
@@ -129,34 +186,20 @@ function BarGraph({ colLabel, dataTotal, dataOnTime, dataKPI, dataPOD }) {
         },
     };
 
-    useEffect(() => {
-        if (chartRef.current) {
-            const chart = chartRef.current;
-            const chartArea = chart.chartArea;
-            const barCount = chart.data.labels.length;
-            const categoryWidth = (chartArea.right - chartArea.left) / barCount;
-            setColWidth(categoryWidth);
-        }
-    }, []);
-
-    function addEmptyStringAtStart(arr) {
-        // Create a new array with an empty string at the start
-        const updatedArray = ['', ...arr];
-        return updatedArray;
-      }
-
     return (
         <div>
+            {/* Charts */}
             <Bar ref={chartRef} data={data} options={options} />
-            {/* <BarTable
-                colKPI={dataKPI}
-                colLabel={addEmptyStringAtStart(colLabel)}
-                colTotal={dataTotal}
-                colOnTime={dataOnTime}
-                colPOD={dataPOD}
-                colWidth={colWidth}
-            /> */}
-            <InlineTable />
+            {/* Table */}
+            <InlineTable
+                getReportData={getReportData}
+                graphData={graphData}
+                url={url}
+                currentUser={currentUser}
+                selectedReceiver={selectedReceiver}
+                setGraphData={setGraphData}
+                updateData={updateData}
+            />
         </div>
     );
 }

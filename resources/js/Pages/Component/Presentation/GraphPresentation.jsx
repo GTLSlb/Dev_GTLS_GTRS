@@ -1,16 +1,25 @@
 import React from "react";
+import { useEffect } from "react";
 import { useState } from "react";
-import BarGraph from "./graphs/BarGraph";
-import GroupedBar from "./graphs/GroupedBar";
+// import axios from "axios";
 import ConsignmentGraph from "./ReportTabs/ConsignmentGraph";
 import TotalFailPODGraph from "./ReportTabs/TotalFailPODGraph";
 
-const MultiChartLine = () => {
+const MultiChartLine = ({ url, currentUser, AToken }) => {
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     const handleItemClick = (index) => {
         setActiveComponentIndex(index);
     };
-    let components = [<ConsignmentGraph />, <TotalFailPODGraph />];
+
+    let components = [
+        <ConsignmentGraph
+            url={url}
+            currentUser={currentUser}
+            AToken={AToken}
+        />, // Graph and Table
+        <TotalFailPODGraph />, // The 3 charts
+    ];
+
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
             <div className="sm:flex sm:items-center">
