@@ -3,7 +3,7 @@ import { Fragment, useState, useEffect } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import ReactModal from "react-modal";
-import swal from 'sweetalert';
+import swal from "sweetalert";
 export default function KPIModalAddReason({
     isOpen,
     handleClose,
@@ -38,16 +38,16 @@ export default function KPIModalAddReason({
         },
     ];
     useEffect(() => {
-        // setAudit(kpi?.AuditId)
-        const filteredReasons = kpiReasons?.filter((reason) =>reason.ReasonStatus ===1)
+        const filteredReasons = kpiReasons?.filter(
+            (reason) => reason.ReasonStatus === 1
+        );
         setKPIRow(kpi);
         setReasonName(
-            kpiReasons?.find((i) => i.ReasonId === kpiRow?.Reason)
-                ?.ReasonName
+            kpiReasons?.find((i) => i.ReasonId === kpiRow?.ReasonId)?.ReasonName
         );
         if (kpi) {
             const x = kpiReasons?.find(
-                (i) => i.ReasonId === kpi?.Reason
+                (i) => i.ReasonId === kpi?.ReasonId
             )?.ReasonName;
             const index = kpiReasons?.findIndex((i) => x === i.ReasonName);
             if (kpiReasons) {
@@ -80,30 +80,30 @@ export default function KPIModalAddReason({
                 .then((res) => {})
                 .catch((err) => {
                     if (err.response && err.response.status === 401) {
-                      // Handle 401 error using SweetAlert
-                      swal({
-                        title: 'Session Expired!',
-                        text: "Please login again",
-                        type: 'success',
-                        icon: "info",
-                        confirmButtonText: 'OK'
-                      }).then(function() {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                              if (response.status == 200) {
-                                window.location.href = "/";
-                              }
-                            })
-                            .catch((error) => {
-                              console.log(error);
-                            });
-                      });
+                        // Handle 401 error using SweetAlert
+                        swal({
+                            title: "Session Expired!",
+                            text: "Please login again",
+                            type: "success",
+                            icon: "info",
+                            confirmButtonText: "OK",
+                        }).then(function () {
+                            axios
+                                .post("/logoutAPI")
+                                .then((response) => {
+                                    if (response.status == 200) {
+                                        window.location.href = "/";
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.log(error);
+                                });
+                        });
                     } else {
-                      // Handle other errors
-                      console.log(err);
+                        // Handle other errors
+                        console.log(err);
                     }
-                  });
+                });
             updateLocalData(kpi.ConsignmentId, selected?.ReasonId);
             setInputValue("");
             setSuccess(true);
@@ -115,7 +115,7 @@ export default function KPIModalAddReason({
         } catch (error) {
             SetIsLoading(false);
             // Handle error
-            console.log(error)
+            console.log(error);
             setError("Error occurred while saving the data. Please try again."); // Set the error message
         }
     };

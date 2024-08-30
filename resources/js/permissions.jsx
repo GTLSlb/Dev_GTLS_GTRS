@@ -1,127 +1,43 @@
-/** const superUser = {
-  role: "Super User",
-  role_id: 99, // Assuming 99 is an ID for a super user or similar high-level role
-  user_id: "user_12345", // Unique identifier for the user
-  state: "AnyState", // If state-specific actions are required, set an appropriate state
-  permissions: [
-    "Kpi_calculate",
-    "Kpi_edit",
-    "TransitDays_add",
-    "TransitDays_edit",
-    "Holidays_add",
-    "Holidays_edit",
-    "KpiReasons_add",
-    "KpiReasons_edit",
-    "FailedConsignments_edit",
-    "FailedReasons_view",
-    "FailedReasons_add",
-    "FailedReasons_edit",
-    "RDD_edit",
-    "RDDReasons_view",
-    "RDDReasons_add",
-    "RDDReasons_edit",
-    "SafetyReport_add",
-    "SafetyType_view",
-    "SafetyReport_edit",
-    "SafetyType_add",
-    "SafetyType_edit",
-    "NoDeliveryInfo_view",
-    "AdditionalCharges_view",
-    "DriverLogin_view",
-    // Add any additional permissions as needed
-  ],
-};
- */
+import { toast } from "react-toastify";
+import swal from "sweetalert";
 
-// const superUser = {
-//     AppId: 1,
-//     AppName: "Gold Tiger Account Manager",
-//     AppRoleId: 3,
-//     AppRoleName: "State Manager",
-//     Pages: [
-//       {
-//         PageId: 1,
-//         PageName: "Invoices",
-//         Features: [
-//           {
-//             FeatureId: 1,
-//             FunctionName: "test1123456",
-//           },
-//           {
-//             FeatureId: 6,
-//             FunctionName: "test123",
-//           },
-//           {
-//             FeatureId: 8,
-//             FunctionName: "Edit",
-//           },
-//           {
-//             FeatureId: 8,
-//             FunctionName: "Edit",
-//           },
-//         ],
-//       },
-//       {
-//         PageId: 2,
-//         PageName: "Employe",
-//         Features: [
-//           {
-//             FeatureId: 2,
-//             FunctionName: "test11",
-//           },
-//         ],
-//       },
-//       {
-//         PageId: 3,
-//         PageName: "Roles",
-//         Features: [
-//           {
-//             FeatureId: 5,
-//             FunctionName: "test1lkjn",
-//           },
-//           {
-//             FeatureId: 5,
-//             FunctionName: "test1lkjn",
-//           },
-//         ],
-//       },
-//       {
-//         PageId: 4,
-//         PageName: "Groups",
-   
-//         Features: [
-//           {
-//             FeatureId: 3,
-   
-//             FunctionName: "test12363",
-//           },
-//         ],
-//       },
-//       {
-//         PageId: 5,
-//         PageName: "Branches",
-//         Features: [
-//           {
-//             FeatureId: 4,
-//             FunctionName: "test1",
-//           },
-//         ],
-//       },
-//       {
-//         PageId: 6,
-//         PageName: "About",
-//       },
-//       {
-//         PageId: 15,
-//         PageName: "add user",
-//       },
-//       {
-//         PageId: 16,
-//         PageName: "dsa",
-//       },
-//     ],
-//   };
 
+export function AlertToast(msg, status) {
+    if (status == 1) {
+        toast.success(msg, {
+            position: "bottom-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    } else if (status == 2) {
+        toast.error(msg, {
+            position: "bottom-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    } else if (status == 3) {
+        toast.warning(msg, {
+            position: "bottom-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    }
+}
 /**
  * Checks if the user can calculate KPI Report based on their permissions for a specific page.
  *
@@ -157,7 +73,6 @@ export function canEditKPI(currentUser) {
     return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
-
 /**
  * Checks if the user can add transit days based on their permissions for a specific page.
  *
@@ -176,6 +91,23 @@ export function canAddTransitDays(currentUser) {
     return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
+/**
+ * Checks if the user can add Newtransit days based on their permissions for a specific page.
+ *
+ * @param {Object} currentUser - The current user object with role, permissions, and pages.
+ * @return {boolean} True if the user can add transit days on the specific page, false otherwise.
+ */
+export function canAddNewTransitDays(currentUser) {
+    // Define the specific permission to check for adding transit days
+    const targetPermissionName = "NewTransitDays_add";
+    const pageName = "New Transit Days"; // Adjust the page name as needed
+
+    // Find the specified page in the user's Pages array
+    const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
+
+    // Check if the page is found and if the specified permission is present in its Features array
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
+}
 
 /**
  * Checks if the user can edit transit days based on their permissions for a specific page.
@@ -637,3 +569,6 @@ export function canViewDriverLogin(currentUser) {
     // Check for 'DriverLogin_view' permission in the user's permissions array
     return currentUser.permissions.includes("DriverLogin_view");
 }
+
+
+

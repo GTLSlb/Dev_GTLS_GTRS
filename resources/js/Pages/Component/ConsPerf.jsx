@@ -10,7 +10,6 @@ import { saveAs } from "file-saver";
 
 export default function ConsPerf({
     PerfData,
-    IDfilter,
     EDate,
     accData,
     setEDate,
@@ -19,31 +18,22 @@ export default function ConsPerf({
     oldestDate,
     latestDate,
     currentUser,
+    setSharedStartDate,
+    setSharedEndDate,
 }) {
-
-    const tabs = [
-        { id: 0, name: "General Information", href: "", current: true },
-        { id: 1, name: "Details", href: "", current: false },
-        { id: 2, name: "Interview", href: "", current: false },
-        { id: 3, name: "Offer", href: "", current: false },
-    ];
- const [currentPage, setCurrentPage] = useState(0);
-    // const userstoredData = localStorage.getItem("userInfor");
-    // const userparsdeData = JSON.parse(userstoredData);
-    // const current_user_id = userparsdeData.user_id;
-    const [performance, setPerformance] = useState(PerfData);
+    const [currentPage, setCurrentPage] = useState(0);
     const [filteredData, setFilteredData] = useState(PerfData);
-
     const [selectedConsignment, setSelectedConsignment] = useState("");
     const handleStartDateChange = (event) => {
         const value = event.target.value;
         setSDate(value);
+        setSharedStartDate(value);
         filterData(value, EDate, selectedConsignment);
     };
     const handleEndDateChange = (event) => {
         const value = event.target.value;
         setEDate(value);
-        // filterData(SDate, value);
+        setSharedEndDate(value);
         filterData(SDate, value, selectedConsignment);
     };
     const handleConsignmentChange = (value) => {
@@ -60,31 +50,30 @@ export default function ConsPerf({
             const chargeToMatch =
                 intArray?.length === 0 || intArray?.includes(item.ChargeTo);
             const itemDate = new Date(item.DESPATCHDATE); // Convert item's date string to Date object
-            const filterStartDate = new Date(startDate); // Convert start date string to Date object
-            const filterEndDate = new Date(endDate); // Convert end date string to Date object
-            filterStartDate.setHours(0);
-            filterEndDate.setSeconds(59);
-            filterEndDate.setMinutes(59);
-            filterEndDate.setHours(23);
+            let dateMatch = true;
+            if (startDate && endDate) {
+                const filterStartDate = new Date(startDate); // Convert start date string to Date object
+                const filterEndDate = new Date(endDate); // Convert end date string to Date object
+                filterStartDate.setHours(0);
+                filterEndDate.setSeconds(59);
+                filterEndDate.setMinutes(59);
+                filterEndDate.setHours(23);
+                dateMatch = itemDate >= filterStartDate && itemDate <= filterEndDate; // Compare the item date to the filter dates
+            }
             const ConsNbMatch = selectedConsignment
-            ? item.CONSIGNMENTNUMBER.toLowerCase().includes(
-                  selectedConsignment.toLowerCase()
-              )
-            : true;
-            return (
-                itemDate >= filterStartDate &&
-                itemDate <= filterEndDate &&
-                ConsNbMatch &&
-                chargeToMatch
-            ); // Compare the item date to the filter dates
+                ? item.CONSIGNMENTNUMBER.toLowerCase().includes(
+                      selectedConsignment.toLowerCase()
+                  )
+                : true;
+            return dateMatch && ConsNbMatch && chargeToMatch;
         });
         setFilteredData(filtered);
-        setCurrentPage(0)
+        setCurrentPage(0);
     };
+    
     useEffect(() => {
         filterData(SDate, EDate, selectedConsignment);
     }, [accData]);
-   
 
     const PER_PAGE = 5;
     const OFFSET = currentPage * PER_PAGE;
@@ -92,10 +81,10 @@ export default function ConsPerf({
         setCurrentPage(selectedPage.selected);
     };
     const pageCount = Math.ceil(filteredData.length / PER_PAGE);
-
     const headers = [
+        "CONSIGNMENT NUMBER",
         "CONSIGNMENT STATUS",
-        "ACCOUNT NUMBER",
+        "ACCOUNT NAME",
         "POD",
         "KPI DATETIME",
         "POD DATETIME",
@@ -125,36 +114,71 @@ export default function ConsPerf({
 
     function handleDownloadExcel() {
         // Get the selected columns or use all columns if none are selected
-        
-          let  selectedColumns = headers; // Use all columns
-       
+
+        let selectedColumns = headers; // Use all columns
+
         // Extract the data for the selected columns  moment(consignment.DespatchDate, 'YYYY-MM-DD').format('DD-MM-YYYY')
         const data = filteredData.map((person) =>
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
                     if (column.replace(/\s+/g, "") === "RECEIVERREFERENCE") {
-                        acc["RECEIVER REFERENCE"]=person["RECEIVER REFERENCE"]
-                    } else if(column.replace(/\s+/g, "") === "KPIDATETIME"){
-                        acc[columnKey] =moment(
-                            person["KPI DATETIME"].replace("T", " "),
-                            "YYYY-MM-DD HH:mm:ss"
-                        ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
-                            ? ""
-                            : moment(
-                                  person["KPI DATETIME"].replace("T", " "),
-                                  "YYYY-MM-DD HH:mm:ss"
-                              ).format("DD-MM-YYYY HH:mm A");
-                    }else if(column.replace(/\s+/g, "") === "PODDATETIME"){
-                        acc[columnKey] =moment(
-                            person["POD DATETIME"]?.replace("T", " "),
-                            "YYYY-MM-DD HH:mm:ss"
-                        ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
-                            ? ""
-                            : moment(
-                                  person["POD DATETIME"]?.replace("T", " "),
-                                  "YYYY-MM-DD HH:mm:ss"
-                              ).format("DD-MM-YYYY HH:mm A");
+                        acc["RECEIVER REFERENCE"] =
+                            person["RECEIVER REFERENCE"];
+                    } else if (column.replace(/\s+/g, "") === "ACCOUNTNAME") {
+                        acc[columnKey] = person["ACCOUNTNUMBER"];
+                    } else if (column.replace(/\s+/g, "") === "KPIDATETIME") {
+                        acc[columnKey] =
+                            moment(
+                                person["KPI DATETIME"].replace("T", " "),
+                                "YYYY-MM-DD HH:mm:ss"
+                            ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
+                                ? ""
+                                : moment(
+                                      person["KPI DATETIME"].replace("T", " "),
+                                      "YYYY-MM-DD HH:mm:ss"
+                                  ).format("DD-MM-YYYY HH:mm A");
+                    } else if (column.replace(/\s+/g, "") === "PODDATETIME") {
+                        acc[columnKey] =
+                            moment(
+                                person["POD DATETIME"]?.replace("T", " "),
+                                "YYYY-MM-DD HH:mm:ss"
+                            ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
+                                ? ""
+                                : moment(
+                                      person["POD DATETIME"]?.replace("T", " "),
+                                      "YYYY-MM-DD HH:mm:ss"
+                                  ).format("DD-MM-YYYY HH:mm A");
+                    } else if (
+                        column.replace(/\s+/g, "") ===
+                        "DELIVERYREQUIREDDATETIME"
+                    ) {
+                        acc[columnKey] =
+                            moment(
+                                person["DELIVERYREQUIREDDATETIME"]?.replace(
+                                    "T",
+                                    " "
+                                ),
+                                "YYYY-MM-DD HH:mm:ss"
+                            ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
+                                ? ""
+                                : moment(
+                                      person[
+                                          "DELIVERYREQUIREDDATETIME"
+                                      ]?.replace("T", " "),
+                                      "YYYY-MM-DD HH:mm:ss"
+                                  ).format("DD-MM-YYYY HH:mm A");
+                    } else if (column.replace(/\s+/g, "") === "DESPATCHDATE") {
+                        acc[columnKey] =
+                            moment(
+                                person["DESPATCHDATE"]?.replace("T", " "),
+                                "YYYY-MM-DD HH:mm:ss"
+                            ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
+                                ? ""
+                                : moment(
+                                      person["DESPATCHDATE"]?.replace("T", " "),
+                                      "YYYY-MM-DD HH:mm:ss"
+                                  ).format("DD-MM-YYYY HH:mm A");
                     } else {
                         acc[column.replace(/\s+/g, "")] =
                             person[column.replace(/\s+/g, "")];
@@ -186,7 +210,7 @@ export default function ConsPerf({
         });
 
         // Set column widths
-        const columnWidths = selectedColumns.map(() => 15); // Set width of each column
+        const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
@@ -200,7 +224,7 @@ export default function ConsPerf({
             });
 
             // Save the file using FileSaver.js or alternative method
-            saveAs(blob, "Consignments.xlsx");
+            saveAs(blob, "Performance-Report.xlsx");
         });
     }
 
@@ -211,7 +235,10 @@ export default function ConsPerf({
                     <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
                         Consignments performance
                     </h1>
-                    <button onClick={handleDownloadExcel} className="text-white bg-dark hover:bg-dark  font-medium rounded-lg text-sm px-5 py-2 text-center mr-2 dark:bg-gray-800 dark:hover:bg-gray-600 dark:focus:ring-blue-800">
+                    <button
+                        onClick={handleDownloadExcel}
+                        className="text-white bg-dark hover:bg-dark  font-medium rounded-lg text-sm px-5 py-2 text-center mr-2 dark:bg-gray-800 dark:hover:bg-gray-600 dark:focus:ring-blue-800"
+                    >
                         Export
                     </button>
                 </div>

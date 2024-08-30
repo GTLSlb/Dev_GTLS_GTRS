@@ -83,13 +83,15 @@ export default function RDDreason({
             document.querySelectorAll('input[name="column"]:checked')
         ).map((checkbox) => checkbox.value);
 
-        let allHeaderColumns = gridRef?.current?.visibleColumns?.map((column) => ({
-            name: column.name,
-            value: column.computedFilterValue?.value,
-            label: column.computedHeader,
-            type: column.computedFilterValue?.type,
-            operator: column.computedFilterValue?.operator,
-        }));
+        let allHeaderColumns = gridRef?.current?.visibleColumns?.map(
+            (column) => ({
+                name: column.name,
+                value: column.computedFilterValue?.value,
+                label: column.computedHeader,
+                type: column.computedFilterValue?.type,
+                operator: column.computedFilterValue?.operator,
+            })
+        );
         let selectedColVal = allHeaderColumns?.filter(
             (col) => col?.label?.toString().toLowerCase() !== "edit"
         );
@@ -309,34 +311,102 @@ export default function RDDreason({
 
                     switch (operator) {
                         case "after":
+                            // Parse the cellValue date with the format you know it might have
+                            const afterd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+
+                            // Parse the dateValue as an ISO 8601 date string
+                            const afterdateToCompare = moment(dateValue);
+
+                            // Check if both dates are valid and if cellValue is after dateValue
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isAfter(dateValue);
+                                afterd.isValid() &&
+                                afterdateToCompare.isValid() &&
+                                afterdateToCompare.isAfter(afterd);
+
                             break;
                         case "afterOrOn":
+                            const afterOrOnd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const afterOrOnDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSameOrAfter(dateValue);
+                                afterOrOnd.isValid() &&
+                                afterOrOnDateToCompare.isValid() &&
+                                afterOrOnDateToCompare.isSameOrAfter(
+                                    afterOrOnd
+                                );
                             break;
+
                         case "before":
+                            const befored = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const beforeDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isBefore(dateValue);
+                                befored.isValid() &&
+                                beforeDateToCompare.isValid() &&
+                                beforeDateToCompare.isBefore(befored);
+
                             break;
+
                         case "beforeOrOn":
+                            const beforeOrOnd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const beforeOrOnDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSameOrBefore(dateValue);
+                                beforeOrOnd.isValid() &&
+                                beforeOrOnDateToCompare.isValid() &&
+                                beforeOrOnDateToCompare.isSameOrBefore(
+                                    beforeOrOnd
+                                );
+
                             break;
                         case "eq":
+                            // Parse the cellValue date with the format you know it might have
+                            const d = moment(
+                                cellValue,
+                                ["DD-MM-YYYY", moment.ISO_8601],
+                                true
+                            );
+
+                            // Parse the dateValue with the expected format or formats
+                            const dateToCompare = moment(
+                                dateValue,
+                                ["YYYY-MM-DD HH:mm:ss", moment.ISO_8601],
+                                true
+                            );
+
+                            // Check if both dates are valid and if they represent the same calendar day
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSame(dateValue);
+                                cellValue &&
+                                d.isValid() &&
+                                dateToCompare.isValid() &&
+                                d.isSame(dateToCompare, "day");
+
                             break;
                         case "neq":
+                            const neqd = moment(cellValue, "DD-MM-YYYY", true);
+                            const neqDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                !dateCellValueStart.isSame(dateValue);
+                                neqd.isValid() &&
+                                neqDateToCompare.isValid() &&
+                                !neqd.isSame(neqDateToCompare, "day");
+
                             break;
                         case "inrange":
                             conditionMet =
@@ -369,7 +439,7 @@ export default function RDDreason({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
-            selectedColVal  = allHeaderColumns?.filter(
+            selectedColVal = allHeaderColumns?.filter(
                 (col) => col?.label?.toString().toLowerCase() !== "edit"
             ); // Use all columns
         } else {
@@ -423,17 +493,20 @@ export default function RDDreason({
             ReceiverSuburb: "Receiver Suburb",
             ReceiverState: "Receiver State",
             DespatchDate: "Despatch Date",
+            ChangeAt: "Changed At",
+            ChangedBy: "Changed By",
             OldRdd: "Old Rdd",
             NewRdd: "New Rdd",
             ReasonDesc: "Reason Desc",
         };
-
+    
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
+    
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
@@ -444,48 +517,59 @@ export default function RDDreason({
                             (reason) => reason.ReasonId === person.Reason
                         );
                         acc[columnKey] = Reason?.ReasonName;
-                    } else if (column === "DespatchDate") {
-                        acc[columnKey] =
-                            moment(
-                                person["DespatchDate"],
-                                "YYYY-MM-DDTHH:mm:ss"
-                            ).format("DD-MM-YYYY h:mm A") || "";
+                    } else if (
+                        ["DespatchDate", "ChangeAt", "OldRdd", "NewRdd"].includes(columnKey)
+                    ) {
+                        const date = new Date(person[columnKey]);
+                        if (!isNaN(date)) {
+                            acc[columnKey] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[columnKey] = "";
+                        }
                     } else if (column === "Account Name") {
                         acc[columnKey] = person.AccountNumber;
                     } else if (column === "ChangedAt") {
-                        acc[columnKey] =
-                            moment(
-                                person["ChangedAt"],
-                                "YYYY-MM-DDTHH:mm:ss"
-                            ).format("DD-MM-YYYY h:mm A") || "";
-                    } else if (column === "OldRdd") {
-                        acc[columnKey] =
-                            moment(
-                                person["OldRdd"],
-                                "YYYY-MM-DDTHH:mm:ss"
-                            ).format("DD-MM-YYYY h:mm A") || "";
-                    } else if (column === "NewRdd") {
-                        acc[columnKey] =
-                            moment(
-                                person["NewRdd"],
-                                "YYYY-MM-DDTHH:mm:ss"
-                            ).format("DD-MM-YYYY h:mm A") || "";
+                        const date = new Date(person["ChangedAt"]);
+                        if (!isNaN(date)) {
+                            acc[columnKey] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[columnKey] = "";
+                        }
+                    } else if (column === "ChangeAt") {
+                        const date = new Date(person["ChangeAt"]);
+                        if (!isNaN(date)) {
+                            acc[columnKey] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[columnKey] = "";
+                        }
                     } else {
                         acc[columnKey] = person[columnKey];
                     }
                 } else {
-                    acc[columnKey] = person[columnKey.toUpperCase()];
+                    acc[columnKey] = person[columnKey?.toUpperCase()];
                 }
                 return acc;
             }, {})
         );
-
+    
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
-
+    
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
-
+    
         // Apply custom styles to the header row
         const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
@@ -495,26 +579,54 @@ export default function RDDreason({
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
         headerRow.alignment = { horizontal: "center" };
-
+    
         // Add the data to the worksheet
         data.forEach((rowData) => {
-            worksheet.addRow(Object.values(rowData));
+            const row = worksheet.addRow(Object.values(rowData));
+    
+            // Apply date format to the DespatchDate column
+            const despatchDateIndex = newSelectedColumns.indexOf("Despatch Date");
+            if (despatchDateIndex !== -1) {
+                const cell = row.getCell(despatchDateIndex + 1);
+                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+            }
+    
+            // Apply date format to the ChangedAt column
+            const changedAtDateIndex = newSelectedColumns.indexOf("Changed At");
+            if (changedAtDateIndex !== -1) {
+                const cell = row.getCell(changedAtDateIndex + 1);
+                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+            }
+    
+            // Apply date format to the OldRdd column
+            const oldRddDateIndex = newSelectedColumns.indexOf("Old Rdd");
+            if (oldRddDateIndex !== -1) {
+                const cell = row.getCell(oldRddDateIndex + 1);
+                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+            }
+    
+            // Apply date format to the NewRdd column
+            const newRddDateIndex = newSelectedColumns.indexOf("New Rdd");
+            if (newRddDateIndex !== -1) {
+                const cell = row.getCell(newRddDateIndex + 1);
+                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+            }
         });
-
+    
         // Set column widths
-        const columnWidths = selectedColumns.map(() => 15); // Set width of each column
+        const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
         }));
-
+    
         // Generate the Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
             // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-
+    
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "RDD-Report.xlsx");
         });
@@ -858,7 +970,7 @@ export default function RDDreason({
                 maxDate: maxNewRddDate,
             },
             render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                return moment(value).format("DD/MM/YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
                     : moment(value).format("DD-MM-YYYY hh:mm A");
@@ -910,7 +1022,7 @@ export default function RDDreason({
                 minDate: minChangeAtDate,
                 maxDate: maxChangeAtDate,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 {
                     return (
                         <p>
@@ -924,7 +1036,7 @@ export default function RDDreason({
                                       convertUtcToUserTimezone(value + "Z"),
 
                                       "MM/DD/YYYY, h:mm:ss A"
-                                  ).format("DD-MM-YYYY hh:mm A")}
+                                  ).format("DD-MM-YYYY")}
                         </p>
                     );
                 }

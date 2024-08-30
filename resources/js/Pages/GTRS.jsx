@@ -36,12 +36,14 @@ export default function Gtrs({
     const [chartsApi, setchartsApi] = useState(false);
     const [consApi, setConsApi] = useState(false);
     const [reportApi, setReportApi] = useState(false);
+    const [transportApi, setTransportApi] = useState(false);
     const [DebtorsApi, setDebtorsApi] = useState(false);
     const [KPIReasonsApi, setKPIReasonsApi] = useState(false);
     const [safetyTypes, setSafetyTypes] = useState([]);
     const [safetyCauses, setSafetyCauses] = useState([]);
     const [safetyData, setSafetyData] = useState([]);
     const [consData, setconsData] = useState([]);
+    const [transportData, setTransportData] = useState([]);
     const [KPIData, setKPIData] = useState([]);
     const [PerfData, setPerfData] = useState([]);
     const [NoDelData, setNoDelData] = useState([]);
@@ -57,15 +59,17 @@ export default function Gtrs({
     const debtorIdsArray = userdata?.Accounts?.map((account) => {
         return { UserId: account.DebtorId };
     });
-
     // Usage
-
     let debtorIds;
     if (userdata.TypeId == 1) {
         debtorIds = debtorIdsArray;
     } else {
         debtorIds = currentUser.UserId;
     }
+    useEffect(() => {
+        document.cookie =
+            "previous_page=" + encodeURIComponent(window.location.href);
+    }, []);
     useEffect(() => {
         setUserBody(debtorIds);
         setLoadingGtrs(false);
@@ -289,7 +293,6 @@ export default function Gtrs({
                     console.log(err);
                 }
             });
-
         axios
             .get(`${gtrsUrl}/PerformanceReport`, {
                 headers: {
@@ -373,6 +376,45 @@ export default function Gtrs({
                     console.log(err);
                 }
             });
+        axios
+            .get(`${gtrsUrl}/Transport`, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            })
+            .then((res) => {
+                const x = JSON.stringify(res.data);
+                const parsedData = JSON.parse(x);
+                setTransportData(parsedData || []);
+                setTransportApi(true);
+            })
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                    // Handle 401 error using SweetAlert
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then(function () {
+                        axios
+                            .post("/logoutAPI")
+                            .then((response) => {
+                                if (response.status == 200) {
+                                    window.location.href = "/";
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+                    });
+                } else {
+                    // Handle other errors
+                    console.log(err);
+                }
+            });
     }, []);
     function checkFeaturesInPages(jsonData) {
         // Iterate over the Pages array in the JSON data
@@ -401,7 +443,7 @@ export default function Gtrs({
             }
         }
     }, [user, loadingGtrs]);
-    if (consApi && reportApi && chartsApi && DebtorsApi && KPIReasonsApi) {
+    if (consApi && reportApi && chartsApi && DebtorsApi && KPIReasonsApi && transportApi) {
         setLoadingGtrs(true);
     }
 
@@ -411,6 +453,7 @@ export default function Gtrs({
                 <div className="bg-smooth">
                     <div className="md:pl-20 pt-16 ">
                         <Charts
+                            transportData={transportData}
                             setCusomterAccounts={setCusomterAccounts}
                             kpireasonsData={kpireasonsData}
                             setkpireasonsData={setkpireasonsData}

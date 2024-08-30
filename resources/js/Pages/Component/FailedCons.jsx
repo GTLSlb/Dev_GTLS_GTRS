@@ -44,6 +44,8 @@ export default function FailedCons({
     currentUser,
     accData,
 }) {
+
+    
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [reason, setReason] = useState();
     const handleEditClick = (reason) => {
@@ -56,8 +58,13 @@ export default function FailedCons({
         setLastIndex(5);
         setactiveCon(coindex);
     };
+    const excludedDebtorIds = [1514, 364, 247, 246, 245, 244];
     const [data, setData] = useState(
-        PerfData?.filter((obj) => obj.STATUS === "FAIL")
+        PerfData?.filter(
+            (obj) =>
+                obj.STATUS === "FAIL" &&
+                !excludedDebtorIds.includes(obj.ChargeTo)
+        )
     );
     const [filteredData, setFilteredData] = useState(data);
     const filterData = () => {
@@ -289,7 +296,7 @@ export default function FailedCons({
         },
         {
             name: "KPI DATETIME",
-            header: "KPI Time",
+            header: "KPI DateTime",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
@@ -313,11 +320,11 @@ export default function FailedCons({
             textAlign: "center",
             defaultWidth: 170,
             dateFormat: "DD-MM-YYYY",
+            filterEditor: DateFilter,
             filterEditorProps: {
                 minDate: minDespatchDate,
                 maxDate: maxDespatchDate,
             },
-            filterEditor: DateFilter,
             render: ({ value, cellProps }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
@@ -558,7 +565,7 @@ export default function FailedCons({
         let selectedColVal = allHeaderColumns.filter(
             (col) => col?.label?.toString().toLowerCase() !== "edit"
         );
-        
+
         const filterValue = [];
         filteredData?.map((val) => {
             let isMatch = true;
@@ -727,14 +734,14 @@ export default function FailedCons({
                         case "inlist":
                             const listValues = Array.isArray(value)
                                 ? value.map((v) => {
-                                    if (typeof v === 'string'){
-                                        return v.toLowerCase()
-                                    }else{
-                                        return v.toString()
-                                    }
-                                })
+                                      if (typeof v === "string") {
+                                          return v.toLowerCase();
+                                      } else {
+                                          return v.toString();
+                                      }
+                                  })
                                 : [value?.toLowerCase()];
-                                
+
                             conditionMet =
                                 cellValue?.length > 0 &&
                                 listValues.includes(valLowerCase);
@@ -767,35 +774,104 @@ export default function FailedCons({
 
                     switch (operator) {
                         case "after":
+                            // Parse the cellValue date with the format you know it might have
+                            const afterd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+
+                            // Parse the dateValue as an ISO 8601 date string
+                            const afterdateToCompare = moment(dateValue);
+
+                            // Check if both dates are valid and if cellValue is after dateValue
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isAfter(dateValue);
+                                afterd.isValid() &&
+                                afterdateToCompare.isValid() &&
+                                afterdateToCompare.isAfter(afterd);
+
                             break;
                         case "afterOrOn":
+                            const afterOrOnd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const afterOrOnDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSameOrAfter(dateValue);
+                                afterOrOnd.isValid() &&
+                                afterOrOnDateToCompare.isValid() &&
+                                afterOrOnDateToCompare.isSameOrAfter(
+                                    afterOrOnd
+                                );
                             break;
+
                         case "before":
+                            const befored = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const beforeDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isBefore(dateValue);
+                                befored.isValid() &&
+                                beforeDateToCompare.isValid() &&
+                                beforeDateToCompare.isBefore(befored);
+
                             break;
+
                         case "beforeOrOn":
+                            const beforeOrOnd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const beforeOrOnDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSameOrBefore(dateValue);
+                                beforeOrOnd.isValid() &&
+                                beforeOrOnDateToCompare.isValid() &&
+                                beforeOrOnDateToCompare.isSameOrBefore(
+                                    beforeOrOnd
+                                );
+
                             break;
                         case "eq":
+                            // Parse the cellValue date with the format you know it might have
+                            const d = moment(
+                                cellValue,
+                                ["DD-MM-YYYY", moment.ISO_8601],
+                                true
+                            );
+
+                            // Parse the dateValue with the expected format or formats
+                            const dateToCompare = moment(
+                                dateValue,
+                                ["YYYY-MM-DD HH:mm:ss", moment.ISO_8601],
+                                true
+                            );
+
+                            // Check if both dates are valid and if they represent the same calendar day
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSame(dateValue);
+                                cellValue &&
+                                d.isValid() &&
+                                dateToCompare.isValid() &&
+                                d.isSame(dateToCompare, "day");
+
                             break;
                         case "neq":
+                            const neqd = moment(cellValue, "DD-MM-YYYY", true);
+                            const neqDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                !dateCellValueStart.isSame(dateValue);
+                                neqd.isValid() &&
+                                neqDateToCompare.isValid() &&
+                                !neqd.isSame(neqDateToCompare, "day");
+
                             break;
+
                         case "inrange":
                             conditionMet =
                                 (!hasStartDate ||
@@ -827,51 +903,52 @@ export default function FailedCons({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
-        // Use all columns except edit
+            // Use all columns except edit
             selectedColVal = allHeaderColumns.filter(
                 (col) => col?.label?.toString().toLowerCase() !== "edit"
             );
-            selectedColVal.push(
-                {
-                    "name": "Resolution",
-                    "value": "",
-                    "type": "string",
-                    "label": "Resolution",
-                    "operator": "contains"
-                }
-            ) 
+            selectedColVal.push({
+                name: "Resolution",
+                value: "",
+                type: "string",
+                label: "Resolution",
+                operator: "contains",
+            });
         } else {
             allHeaderColumns.map((header) => {
                 selectedColumns.map((column) => {
                     const formattedColumn = column
                         .replace(/\s/g, "")
                         .toLowerCase();
-                    if (header?.name?.replace(/\s/g, "").toLowerCase() === formattedColumn) {
+                    if (
+                        header?.name?.replace(/\s/g, "").toLowerCase() ===
+                        formattedColumn
+                    ) {
                         selectedColVal.push(header);
                     }
                 });
             });
         }
-        selectedColumns.map((item)=>{
-            if(item == "Resolution"){
+        selectedColumns.map((item) => {
+            if (item == "Resolution") {
                 selectedColVal.push({
-                    "name": "Resolution",
-                    "value": "",
-                    "type": "string",
-                    "label": "Resolution",
-                    "operator": "contains"
+                    name: "Resolution",
+                    value: "",
+                    type: "string",
+                    label: "Resolution",
+                    operator: "contains",
                 });
             }
-            if(item == 'Explanation'){
+            if (item == "Explanation") {
                 selectedColVal.push({
-                    "name": "FailedNote",
-                    "operator": "contains",
-                    "type": "string",
-                    "value": "",
+                    name: "FailedNote",
+                    operator: "contains",
+                    type: "string",
+                    value: "",
                 });
             }
-        })
-        
+        });
+
         return { selectedColumns: selectedColVal, filterValue: filterValue };
     }
     function handleDownloadExcel() {
@@ -896,7 +973,7 @@ export default function FailedCons({
             OccuredAt: "Occured At",
             FailedNote: "Explanation",
         };
-        
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
@@ -913,96 +990,46 @@ export default function FailedCons({
                         acc[columnKey] = "true";
                     } else if (person[columnKey] === false) {
                         acc[columnKey] = "false";
-                    } else if (column.toUpperCase() === "KPI DATETIME") {
-                        acc[columnKey] =
-                            moment(
-                                person["KPI DATETIME"].replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY h:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["KPI DATETIME"].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY h:mm A");
-                    } else if (column.toUpperCase() === "ARRIVEDDATETIME") {
-                        acc[columnKey] =
-                            moment(
-                                person["ARRIVEDDATETIME"].replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY h:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["ARRIVEDDATETIME"].replace(
-                                          "T",
-                                          " "
-                                      ),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY h:mm A");
                     } else if (
-                        column.toUpperCase() === "DELIVERYREQUIREDDATETIME"
+                        [
+                            "DESPATCHDATE",
+                            "ARRIVEDDATETIME",
+                            "DELIVEREDDATETIME",
+                            "OccuredAt",
+                        ].includes(columnKey)
                     ) {
-                        acc[columnKey] =
-                            moment(
-                                person["DELIVERYREQUIREDDATETIME"].replace(
-                                    "T",
-                                    " "
-                                ),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY h:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person[
-                                          "DELIVERYREQUIREDDATETIME"
-                                      ].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY h:mm A");
-                    }else if (
-                        column.toUpperCase() === "DESPATCHDATE"
-                    ) {
-                        acc[columnKey] =
-                            moment(
-                                person["DESPATCHDATE"].replace(
-                                    "T",
-                                    " "
-                                ),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY h:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person[
-                                          "DESPATCHDATE"
-                                      ].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY h:mm A");
-                    } else if (column.toUpperCase() === "DELIVEREDDATETIME") {
-                        acc[columnKey] =
-                            moment(
-                                person["DELIVEREDDATETIME"].replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY h:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["DELIVEREDDATETIME"].replace(
-                                          "T",
-                                          " "
-                                      ),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY h:mm A");
-                                  
-                    } else if (column.toUpperCase() === "OCCUREDAT") {
-                        acc[columnKey] =
-                            moment(
-                                person["OccuredAt"]?.replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY h:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["OccuredAt"]?.replace(
-                                          "T",
-                                          " "
-                                      ),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY h:mm A");
+                        const date = new Date(person[columnKey]);
+                        if (!isNaN(date)) {
+                            acc[columnKey] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                    86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[columnKey] = "";
+                        }
+                    } else if ( columnKey === "DELIVERYREQUIREDDATETIME") {
+                        const date = new Date(person[columnKey]);
+                        if (!isNaN(date)) {
+                            acc[columnKey] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                    86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[columnKey] = "";
+                        }
+                    } else if (columnKey == "KPIDATETIME") {
+                        const date = new Date(person["KPI DATETIME"]);
+                        if (!isNaN(date)) {
+                            acc[columnKey] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                    86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[columnKey] = "";
+                        }
                     } else if (column === "Consignemnt Number") {
                         acc[columnKey] = person["CONSIGNMENTNUMBER"];
                     } else if (columnKey === "FailedReason") {
@@ -1061,11 +1088,55 @@ export default function FailedCons({
 
         // Add the data to the worksheet
         data.forEach((rowData) => {
-            worksheet.addRow(Object.values(rowData));
+            const row = worksheet.addRow(Object.values(rowData));
+            // Apply date format to the DESPATCHDATE column
+            const despatchDateIndex =
+                newSelectedColumns.indexOf("Despatch Date");
+            if (despatchDateIndex !== -1) {
+                const cell = row.getCell(despatchDateIndex + 1);
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+            }
+
+            // Apply date format to the ARRIVEDDATETIME column
+            const arrivedDateIndex =
+                newSelectedColumns.indexOf("Arrived Date Time");
+            if (arrivedDateIndex !== -1) {
+                const cell = row.getCell(arrivedDateIndex + 1);
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+            }
+
+            // Apply date format to the DELIVEREDDATETIME column
+            const deliveredDateIndex =
+                newSelectedColumns.indexOf("Delivered Datetime");
+            if (deliveredDateIndex !== -1) {
+                const cell = row.getCell(deliveredDateIndex + 1);
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+            }
+
+            // Apply date format to the OCCUREDAT column
+            const occuredAtDateIndex = newSelectedColumns.indexOf("Occured At");
+            if (occuredAtDateIndex !== -1) {
+                const cell = row.getCell(occuredAtDateIndex + 1);
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+            }
+
+            // Apply date format to the DELIVERYREQUIREDDATETIME column
+            const deliveryReqDateIndex = newSelectedColumns.indexOf("RDD");
+            if (deliveryReqDateIndex !== -1) {
+                const cell = row.getCell(deliveryReqDateIndex + 1);
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+            }
+
+            // Apply date format to the KPI_DATETIME column
+            const kpiDateTimeIndex = newSelectedColumns.indexOf("KPI DateTime");
+            if (kpiDateTimeIndex !== -1) {
+                const cell = row.getCell(kpiDateTimeIndex + 1);
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+            }
         });
 
         // Set column widths
-        const columnWidths = selectedColumns.map(() => 15); // Set width of each column
+        const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
@@ -1082,6 +1153,7 @@ export default function FailedCons({
             saveAs(blob, "Failed-Consignments.xlsx");
         });
     }
+
     const updateLocalData = (
         id,
         reasonid,

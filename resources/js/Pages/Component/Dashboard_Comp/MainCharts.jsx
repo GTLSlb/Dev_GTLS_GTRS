@@ -20,12 +20,15 @@ import { useEffect } from "react";
 import MultiChartLine from "./Dashboard_Charts/MultiLineChart";
 import DoubleBarChart from "./Dashboard_Charts/DoublBarChart";
 export default function MainCharts({ accData, safetyData, chartsData }) {
+    const [filteredSafety, setFilteredSafety] = useState(safetyData);
 
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
     const [EDate, setEDate] = useState(getLatestDespatchDate(chartsData));
     function getOldestDespatchDate(data) {
         // Filter out elements with invalid 'CreatedDate' values
-        const validData = data?.filter((item) => isValidDate(item?.DespatchDate));
+        const validData = data?.filter((item) =>
+            isValidDate(item?.DespatchDate)
+        );
         // Sort the validData array based on the 'CreatedDate' property
         const sortedData = validData.sort(
             (a, b) => new Date(a.DespatchDate) - new Date(b.DespatchDate)
@@ -95,6 +98,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
         };
     }, []);
     const [selectedReceiver, setselectedReceiver] = useState([]);
+
     const calculateStatistics = (data) => {
         let safetyCounter = 0;
         const uniqueReceivers = new Set();
@@ -108,8 +112,9 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
         let totalConsPending = 0;
         let podCounter = 0;
         let totalChep = 0;
-        if (safetyData) {
-            safetyCounter = Object.keys(safetyData).length;
+        let fuelLevy = 0;
+        if (filteredSafety) {
+            safetyCounter = Object.keys(filteredSafety).length;
         } else {
             safetyCounter = 0;
         }
@@ -123,6 +128,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
             NetAmount,
             ConsStatus,
             POD,
+            FuelLevy,
         } of data) {
             uniqueReceivers.add(ReceiverName);
             totalWeight += TottalWeight;
@@ -131,7 +137,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
             totalCustomerOwn += TotalCustomerOwn;
             totalChep += TotalChep;
             totalCost += NetAmount;
-
+            fuelLevy += FuelLevy;
             // Calculate other statistics
             if (ConsStatus === "PASS") {
                 totalNoConsPassed++;
@@ -164,6 +170,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
             podPercentage,
             totalChep,
             safetyCounter,
+            fuelLevy,
         };
     };
     const getConsStatusCounter = (data) => {
@@ -187,22 +194,25 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
     };
     const getKPIStatusCounter = (data) => {
         const counter = [];
-    
         for (const item of data) {
             // Convert the boolean KPIStatus to 'pass' or 'fail'
-            const KPIStatus = item.KPI ? 'Pass' : 'Fail';
-    
+            const KPIStatus =
+                item.MatchDel == 0
+                    ? "N/A"
+                    : item.MatchDel == 1
+                    ? "Pass"
+                    : "Fail";
             const existingStatus = counter.find(
                 (obj) => obj.label === KPIStatus
             );
-    
+
             if (existingStatus) {
                 existingStatus.value++;
             } else {
                 counter.push({ label: KPIStatus, value: 1 });
             }
         }
-    
+
         return counter;
     };
     // Information for the first charts
@@ -284,48 +294,47 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
     };
     const getMonthlyRecordCounts = (data) => {
         const monthlyCounts = {};
-
+    
         for (const item of data) {
             const despatchDate = new Date(item.DespatchDate);
             const month = despatchDate.getMonth() + 1;
             const year = despatchDate.getFullYear();
             const monthYear = `${year}-${month.toString().padStart(2, "0")}`;
-
+    
             if (monthlyCounts.hasOwnProperty(monthYear)) {
                 monthlyCounts[monthYear]++;
             } else {
                 monthlyCounts[monthYear] = 1;
             }
         }
-
+    
         const sortedCounts = Object.entries(monthlyCounts).sort(([a], [b]) => {
-            const [monthA, yearA] = a.split("-");
-            const [monthB, yearB] = b.split("-");
+            const [yearA, monthA] = a.split("-");
+            const [yearB, monthB] = b.split("-");
             return new Date(yearA, monthA - 1) - new Date(yearB, monthB - 1);
         });
-
+    
         const monthlyRecordCounts = sortedCounts.map(([monthYear, value]) => ({
             data: monthYear,
             value,
         }));
-
-        return monthlyRecordCounts;
+            return monthlyRecordCounts;
     };
     const getPODCounts = (data) => {
         const podCounts = {};
         const today = new Date(); // Get today's date
-
+    
         for (const item of data) {
             const despatchDate = new Date(item.DespatchDate);
             if (despatchDate > today) {
                 continue; // Skip data with a future despatch date
             }
-
+    
             const month = despatchDate.getMonth() + 1;
             const year = despatchDate.getFullYear();
             const monthYear = `${year}-${month.toString().padStart(2, "0")}`;
             const pod = item.POD;
-
+    
             if (podCounts.hasOwnProperty(monthYear)) {
                 if (pod) {
                     podCounts[monthYear].true++;
@@ -340,20 +349,20 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                 };
             }
         }
-
+    
         const formattedCounts = Object.entries(podCounts).flatMap(
             ([monthYear, counts]) => [
                 { pod: "true", monthYear, value: counts.true },
                 { pod: "false", monthYear, value: counts.false },
             ]
         );
-
+    
         formattedCounts.sort((a, b) => {
-            const [monthA, yearA] = a.monthYear.split("-");
-            const [monthB, yearB] = b.monthYear.split("-");
+            const [yearA, monthA] = a.monthYear.split("-");
+            const [yearB, monthB] = b.monthYear.split("-");
             return new Date(yearA, monthA - 1) - new Date(yearB, monthB - 1);
         });
-
+    
         return formattedCounts;
     };
     function getPODCountsByState(data) {
@@ -388,7 +397,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
     };
     const [hasData, setHasData] = useState(true);
     const uniqueReceiverNames = Array.from(
-        new Set(chartsData.map((item) => item.ReceiverName))
+        new Set(filteredData.map((item) => item.ReceiverName))
     );
     const handleReceiverSelectChange = (selectedOptions) => {
         setselectedReceiver(selectedOptions);
@@ -398,6 +407,9 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
         value: name,
         label: name,
     }));
+    function filterReportsByDebtorId(safetyData, debtorIds) {
+        return safetyData.filter((data) => debtorIds.includes(data.DebtorId));
+    }
     const getFilteredOptions = () => {
         // Filter the options based on the selected receivers
         return receiverOptions.filter(
@@ -407,6 +419,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                 )
         );
     };
+
     const customStyles = {
         control: (provided) => ({
             ...provided,
@@ -454,6 +467,18 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
             const intValue = parseInt(str);
             return isNaN(intValue) ? 0 : intValue;
         });
+        if (intArray) {
+            if (intArray && intArray?.length === 0) {
+                setFilteredSafety(safetyData);
+            } else {
+                setFilteredSafety(
+                    filterReportsByDebtorId(safetyData, intArray)
+                );
+            }
+        } else {
+            setFilteredSafety(safetyData);
+        }
+
         // Filter the data based on the start and end date filters, selected receiver names, and chargeTo values
         const filtered = chartsData.filter((item) => {
             const isIncluded =
@@ -481,7 +506,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
         const hasData = filtered?.length > 0;
         setFilteredData(filtered);
         setHasData(hasData);
-    }; 
+    };
     useEffect(() => {
         filterData(SDate, EDate);
     }, [accData, selectedReceiver]);
@@ -618,7 +643,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                                 </div>
                             </div>
 
-                            <Popover className="relative object-right flex-item md:ml-auto">
+                            <Popover className="relative object-right flex-item md:ml-auto hidden">
                                 <Popover.Button
                                     className={`inline-flex items-center w-[5.5rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
                                 >
@@ -679,32 +704,30 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                         </div>
                     </div>
                     <div className="lg:hidden px-2 py-3 w-full">
-                    <label
-                                htmlFor="last-name"
-                                className="block text-sm font-medium leading-6  text-gray-400 sm:pt-1.5 mr-5"
-                            >
-                                Receiver Name
-                            </label>
+                        <label
+                            htmlFor="last-name"
+                            className="block text-sm font-medium leading-6  text-gray-400 sm:pt-1.5 mr-5"
+                        >
+                            Receiver Name
+                        </label>
 
-                            <div className="inline-block w-full">
-                                <div className=" flex items-center">
-                                    <div className="mt-2 w-full sm:mt-0 ">
-                                        <Select
-                                            styles={customStyles}
-                                            isMulti
-                                            name="colors"
-                                            value={selectedReceiver}
-                                            options={getFilteredOptions()}
-                                            onChange={
-                                                handleReceiverSelectChange
-                                            }
-                                            className="basic-multi-select text-red "
-                                            classNamePrefix="select"
-                                        />
-                                    </div>
+                        <div className="inline-block w-full">
+                            <div className=" flex items-center">
+                                <div className="mt-2 w-full sm:mt-0 ">
+                                    <Select
+                                        styles={customStyles}
+                                        isMulti
+                                        name="colors"
+                                        value={selectedReceiver}
+                                        options={getFilteredOptions()}
+                                        onChange={handleReceiverSelectChange}
+                                        className="basic-multi-select text-red "
+                                        classNamePrefix="select"
+                                    />
                                 </div>
                             </div>
-                            </div>
+                        </div>
+                    </div>
                 </div>
                 {hasData ? (
                     <ReactGridLayout
@@ -809,6 +832,12 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                 )}
 
                 {/* <DashboardCard11 /> */}
+            </div>
+        );
+    } else if (chartsData.length === 0){
+        return (
+            <div className=" min-h-screen flex items-center justify-center h-full">
+                <p>No Data Found</p>
             </div>
         );
     } else {

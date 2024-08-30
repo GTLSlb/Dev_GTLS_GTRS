@@ -13,9 +13,11 @@ import {
     ChevronDownIcon,
     ShieldCheckIcon,
     CameraIcon,
+    DocumentTextIcon,
 } from "@heroicons/react/24/solid";
 import "../../../../css/scroll.css";
-import { Icon } from "@mui/material";
+import TaskIcon from "@mui/icons-material/Task";
+
 import { useEffect } from "react";
 import {
     Accordion,
@@ -48,8 +50,25 @@ const navigation = [
         icon: ClipboardDocumentCheckIcon,
         current: false,
         options: [
+            // {
+            //     id: 2,
+            //     name: "KPI",
+            //     href: "#",
+            //     current: false,
+            //     icon: ClipboardDocumentCheckIcon,
+            //     feature: "KPI_view",
+            // },
+
+            // {
+            //     id: 12,
+            //     name: "Transit Days",
+            //     href: "#",
+            //     current: false,
+            //     icon: ClipboardDocumentCheckIcon,
+            //     feature: "View_TransitDays",
+            // },
             {
-                id: 2,
+                id: 17,
                 name: "KPI",
                 href: "#",
                 current: false,
@@ -57,7 +76,7 @@ const navigation = [
                 feature: "KPI_view",
             },
             {
-                id: 12,
+                id: 18,
                 name: "Transit Days",
                 href: "#",
                 current: false,
@@ -99,7 +118,14 @@ const navigation = [
         current: false,
         feature: "View_failedConsignment",
     },
-
+    {
+        id: 16,
+        name: "Transport Report",
+        href: "#",
+        icon: TaskIcon,
+        current: false,
+        feature: "View_Transport",
+    },
     {
         id: 9,
         name: "RDD",
@@ -148,16 +174,21 @@ const navigation = [
         current: false,
         feature: "DriverLogin_view",
     },
+    {
+        id: 20,
+        name: "Unilever Report",
+        href: "#",
+        icon: DocumentTextIcon,
+        current: false,
+        feature: "UnileverReport_View",
+    },
 ];
 
-const admins = ["4", "1"];
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
 export default function ChartsSidebar({
-    sessionData,
-    activeIndexGTRS,
     setCusomterAccounts,
     customerAccounts,
     setActiveIndexGTRS,
@@ -167,7 +198,6 @@ export default function ChartsSidebar({
 }) {
     const [customerOptions, setCustomerOptions] = useState([]);
     const [showList, setShowList] = useState(false);
-    // const showSelect = true;
     const showSelect = customerOptions?.length > 0;
 
     const handleDivClick = () => {
@@ -201,12 +231,18 @@ export default function ChartsSidebar({
     useEffect(() => {
         onData(optionSelected);
     }, [optionSelected]);
-    const current_user_role = currentUser.role_id;
     const [sidebarElements, setSidebarElements] = useState(navigation);
     const handleClick = (index) => {
         setActiveIndexGTRS(index);
         const updatedElements = sidebarElements.map((element) => {
-            if (element.id === index || index == 12 || index == 13) {
+            if (
+                element.id === index ||
+                index == 12 ||
+                index == 13 ||
+                index == 14 ||
+                index == 17 ||
+                index == 18
+            ) {
                 if (element.options) {
                     return {
                         ...element,
@@ -295,8 +331,9 @@ export default function ChartsSidebar({
                         <div className="flex flex-shrink-0  p-4 ">
                             <div className="group block w-full flex-shrink-0">
                                 <div className="flex items-center">
-                                    <div>
-                                        {user.Picture ? (
+                                    <div className="hidden">
+                                        {!user.Picture ||
+                                        user.Picture.length == 0 ? (
                                             <img
                                                 className="inline-block h-14 w-14"
                                                 src={`/app/icons/blank-profile.jpg`}
@@ -305,14 +342,21 @@ export default function ChartsSidebar({
                                         ) : (
                                             <img
                                                 className="inline-block h-14 w-14 object-contain"
-                                                src={`/app/icons/${user.Picture}`}
+                                                src={`https://gtam-test.gtls.com.lb/${user.Picture}`}
                                                 alt=""
                                             />
                                         )}
                                     </div>
                                     <div className="ml-3">
                                         <p className="text-sm font-medium text-gray-800">
-                                            {user.TypeId == 1 ? <p>{user.CustomerName}</p> :<p>{user.FirstName}{" "}{user.LastName}</p>}
+                                            {user.TypeId == 1 ? (
+                                                <p>{user.CustomerName}</p>
+                                            ) : (
+                                                <p>
+                                                    {user.FirstName}{" "}
+                                                    {user.LastName}
+                                                </p>
+                                            )}
                                         </p>
                                         <p className=" text-[0.7rem] text-gray-500 ">
                                             {user.Email}
@@ -443,44 +487,33 @@ export default function ChartsSidebar({
                                                         </AccordionHeader>
 
                                                         <AccordionBody className="pl-10 flex gap-y-1 mt-1 flex-col">
-                                                            {item.options
-                                                                // .filter(
-                                                                //     (
-                                                                //         item
-                                                                //     ) =>
-                                                                //         item.role.includes(
-                                                                //             current_user_role
-                                                                //         )
-                                                                // )
-                                                                .map(
-                                                                    (
-                                                                        option
-                                                                    ) => (
-                                                                        <button
-                                                                            id={
-                                                                                option.name
-                                                                            }
-                                                                            key={
+                                                            {item.options.map(
+                                                                (option) => (
+                                                                    <button
+                                                                        id={
+                                                                            option.name
+                                                                        }
+                                                                        key={
+                                                                            option.id
+                                                                        }
+                                                                        onClick={() =>
+                                                                            handleClick(
                                                                                 option.id
-                                                                            }
-                                                                            onClick={() =>
-                                                                                handleClick(
-                                                                                    option.id
-                                                                                )
-                                                                            }
-                                                                            className={classNames(
-                                                                                option.current
-                                                                                    ? "bg-gray-300"
-                                                                                    : "",
-                                                                                "p-2 font-semibold hover:bg-gray-300 rounded text-left text-dark text-xs"
-                                                                            )}
-                                                                        >
-                                                                            {
-                                                                                option.name
-                                                                            }
-                                                                        </button>
-                                                                    )
-                                                                )}
+                                                                            )
+                                                                        }
+                                                                        className={classNames(
+                                                                            option.current
+                                                                                ? "bg-gray-300"
+                                                                                : "",
+                                                                            "p-2 font-semibold hover:bg-gray-300 rounded text-left text-dark text-xs"
+                                                                        )}
+                                                                    >
+                                                                        {
+                                                                            option.name
+                                                                        }
+                                                                    </button>
+                                                                )
+                                                            )}
                                                         </AccordionBody>
                                                     </>
                                                 )}

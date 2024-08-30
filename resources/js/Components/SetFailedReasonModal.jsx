@@ -28,7 +28,7 @@ export default function SetFailedReasonModal({
     const [isLoading, SetIsLoading] = useState(false);
     const [selected, setSelected] = useState();
     const [showDesc, setShowDesc] = useState();
-    const [occurredAt, setOccuredAt] = useState();
+    const [occurredAt, setOccuredAt] = useState(null);
     const reference = [
         { id: 1, name: "Internal", unavailable: false },
         { id: 2, name: "External", unavailable: false },

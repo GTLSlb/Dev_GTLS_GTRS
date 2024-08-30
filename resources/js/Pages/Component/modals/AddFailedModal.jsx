@@ -15,7 +15,6 @@ export default function AddFailedModal({
     AToken,
     reason,
     currentUser,
-    setReason,
     updateLocalData,
     failedReasons,
 }) {
@@ -28,7 +27,6 @@ export default function AddFailedModal({
 
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
-    const [inputValue, setInputValue] = useState("");
 
     useEffect(() => {
         if (reason) {
@@ -43,19 +41,11 @@ export default function AddFailedModal({
             setdescription("");
         }
     }, [reason]);
-    // if (reasonAuditId !== null && typeof reasonAuditId === "object") {
-    //     id = 0;
-    // } else if (typeof reasonAuditId === "number") {
-    //     id = reasonAuditId;
-    // }
     const data = [
         {
             ReasonId: reason ? reason.ReasonId : "",
-
             ReasonName: Name,
-
             ReasonDesc: Description,
-
             Status: Status,
         },
     ];
@@ -129,9 +119,9 @@ export default function AddFailedModal({
     };
 
     const handleNameChange = (event) => {
-        const newName = event.target.value;
+        const newName = event.target.value.toLowerCase();
         const isDuplicate = failedReasons.some(
-            (reason) => reason.ReasonName === newName
+            (reason) => reason.ReasonName.toLowerCase() === newName
         );
         if (isDuplicate) {
             setIsSaveEnabled(false);

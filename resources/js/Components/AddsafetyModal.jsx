@@ -5,7 +5,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
 import "../../css/scroll.css";
-import swal from 'sweetalert';
+import swal from "sweetalert";
 
 const placeholder = "test";
 
@@ -18,6 +18,7 @@ export default function SafetyModal({
     modalMainCause,
     modalState,
     AToken,
+    customerAccounts,
     modalConsNo,
     modalDebtorId,
     modalExpl,
@@ -29,7 +30,7 @@ export default function SafetyModal({
     safetyTypes,
 }) {
     const date = new Date(modalOccuredAt);
-    const formattedDate = date?.toLocaleDateString("en-CA");       
+    const formattedDate = date?.toLocaleDateString("en-CA");
     let id = 0;
     if (modalRepId !== null && typeof modalRepId === "object") {
         id = 0;
@@ -46,6 +47,7 @@ export default function SafetyModal({
         Explanation: modalExpl,
         Resolution: modalResol,
         Reference: modalRefer,
+        DebtorId: modalDebtorId,
         OccuredAt: formattedDate,
     });
     useEffect(() => {
@@ -100,7 +102,7 @@ export default function SafetyModal({
         event.preventDefault(); // Prevent the default form submission behavior
         try {
             SetIsLoading(true);
-            // Make the API request using Axios or any other library
+            
             const response = await axios.post(
                 `${url}Add/SafetyReport`,
                 formValues,
@@ -111,6 +113,7 @@ export default function SafetyModal({
                     },
                 }
             );
+
             updateLocalData(id, formValues);
             setSuccess(true);
             setTimeout(() => {
@@ -118,34 +121,33 @@ export default function SafetyModal({
                 SetIsLoading(false);
                 setSuccess(false);
             }, 1000);
-        } 
-        catch (error) {
+        } catch (error) {
             SetIsLoading(false);
             // Handle error
-            if(error.response && error.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
+            if (error.response && error.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
                     text: "Please login again",
-                    type: 'success',
+                    type: "success",
                     icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(function() {
+                    confirmButtonText: "OK",
+                }).then(function () {
                     axios
                         .post("/logoutAPI")
                         .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
+                            if (response.status == 200) {
+                                window.location.href = "/";
+                            }
                         })
                         .catch((error) => {
-                          console.log(error);
+                            console.log(error);
                         });
-                  });
-                } else {
-                  // Handle other errors
-                  console.log(err);
-                }
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+            }
             console.log(error);
             setError("Error occurred while saving the data. Please try again."); // Set the error message
         }
@@ -245,6 +247,36 @@ export default function SafetyModal({
                                 value={formValues.ConsNo}
                                 onChange={handleChange}
                             ></input>
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="SafetyType" className="block mb-2">
+                                Account Name:
+                            </label>
+                            <select
+                                id="DebtorId"
+                                name="DebtorId"
+                                className="w-full border border-gray-300 rounded px-3 py-2"
+                                defaultValue={modalDebtorId}
+                                value={formValues.DebtorId}
+                                onChange={handleChange}
+                                required
+                            >
+                                <option value="">
+                                    --Please choose an option--
+                                </option>
+
+                                {customerAccounts?.map((customer) => {
+                                    return (
+                                        <option
+                                            className="text-base"
+                                            key={customer.id}
+                                            value={customer.id}
+                                        >
+                                            {customer.label}
+                                        </option>
+                                    );
+                                })}
+                            </select>
                         </div>
                         <div className="mb-4">
                             <label htmlFor="MainCause" className="block mb-2">

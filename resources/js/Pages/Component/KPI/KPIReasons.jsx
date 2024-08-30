@@ -20,17 +20,19 @@ export default function KPIReasons({
     const [currentPage, setCurrentPage] = useState(0);
     const [filteredData, setFilteredData] = useState(kpireasonsData);
     const [showAddRow, setShowAddRow] = useState(false);
-    function handleShowHideAddButton() {
-        if (
-            currentUser.role_id == 8 ||
-            currentUser.role_id == 10 ||
-            currentUser.role_id == 1
-        ) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+    const [filterText, setFilterText] = useState("");
+
+    const handleFilterChange = (e) => {
+        const searchText = e.target.value;
+        setFilterText(searchText);
+
+        // Use the `filter` method to filter the array based on ReasonName
+        const filteredResults = kpireasonsData.filter((reason) =>
+            reason.ReasonName.toLowerCase().includes(searchText.toLowerCase())
+        );
+        setFilteredData(filteredResults);
+    };
+
     function getKPIReasons() {
         axios
             .get(`${url}KpiReasons`, {
@@ -118,7 +120,7 @@ export default function KPIReasons({
                                 type="text"
                                 placeholder="Search"
                                 onChange={(e) => {
-                                    onChangeFilter(e.target.value);
+                                    handleFilterChange(e);
                                 }}
                                 className="w-full py-0.5 h-[25px] pl-12 pr-4 text-gray-500 border-none rounded-md outline-none "
                             />

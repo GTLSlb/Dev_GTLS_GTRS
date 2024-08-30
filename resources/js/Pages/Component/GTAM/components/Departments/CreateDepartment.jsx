@@ -53,7 +53,7 @@ export default function CreateDepartment({
             PostalPostCode: document.getElementById("PostalPostcode").value,
             StatusId: isChecked ? 1 : 2,
         };
-        // console.log(inputValues);
+
         axios
             .post(`${url}api/GTAM/Add/department`, inputValues, {
                 headers: {

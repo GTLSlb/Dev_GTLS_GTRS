@@ -18,6 +18,11 @@ import TransitDays from "./KPI/TransitDays";
 import Holidays from "./KPI/Holidays";
 import KPIReasons from "./KPI/KPIReasons";
 import AddTransit from "./KPI/AddTransit";
+import TransportRep from "./TransportRep";
+import NewKPI from "./NewKPI";
+import NewTransitDays from "./NewTransitDays";
+import AddNewTransitDay from "./KPI/AddNewTransitDay";
+import GraphPresentation from "./Presentation/GraphPresentation";
 
 export default function charts({
     setCusomterAccounts,
@@ -38,6 +43,7 @@ export default function charts({
     IDfilter,
     rddReasons,
     setrddReasons,
+    transportData,
     url,
     user,
     AToken,
@@ -48,10 +54,10 @@ export default function charts({
     window.moment = moment;
     const current = new Date();
     const month = current.getMonth() + 1;
-    const formattedMonth = month < 10 ? `0${month}` : month;
-    const todate = `${current.getFullYear()}-${formattedMonth}-${current.getDate()}`;
     const [KPIData, setKPIData] = useState([]);
+    const [NewKPIData, setNewKPIData] = useState([]);
     const [transitDays, setTransitDays] = useState();
+    const [newTransitDays, setNewTransitDays] = useState();
     const [holidays, setHolidays] = useState();
     const [failedReasons, setFailedReasons] = useState();
     const [rddData, setrddData] = useState();
@@ -67,6 +73,14 @@ export default function charts({
     const latestDate = getLatestDespatchDate(consData);
     const [dataFromChild, setDataFromChild] = useState(null);
     const [transitDay, setTransitDay] = useState(null);
+    const [newtransitDay, setNewTransitDay] = useState(null);
+
+    const [sharedStartDate, setSharedStartDate] = useState(
+        getOldestDespatchDate(consData)
+    );
+    const [sharedEndDate, setSharedEndDate] = useState(
+        getLatestDespatchDate(consData)
+    );
 
     const minDate = getMinMaxValue(consData, "DespatchDate", 1);
     const maxDate = getMinMaxValue(consData, "DespatchDate", 2);
@@ -200,6 +214,144 @@ export default function charts({
             emptyValue: "",
         },
     ]);
+    const [filtersTransport, setFiltersTransport] = useState([
+        {
+            name: "CustomerName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "SenderName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "SenderState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "CustomerPO",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "DeliveryNo",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "RddDate",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "RddTime",
+            operator: "eq",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "LTLFTL",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "State",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "PostalCode",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "Carrier",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "PickupDate",
+            operator: "inrange",
+            type: "date",
+            value: {
+                start: "2023-07-01",
+                end: "2023-07-31",
+            },
+            emptyValue: "",
+        },
+        {
+            name: "PickupTime",
+            operator: "eq",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "Status",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ActualDeliveryDate",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "ActualDeliveryTime",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "OnTime",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "DelayReason",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "TransportComments",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+    ]);
 
     const [filtersKPI, setFiltersKPI] = useState([
         {
@@ -252,12 +404,19 @@ export default function charts({
             //emptyValue: "",
         },
         {
+            name: "ReceiverSuburb",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
             name: "DispatchDate",
             operator: "inrange",
             type: "date",
             value: {
-                start: "",
-                end: "",
+                start: minDispatchDate,
+                end: maxDispatchDate,
             },
         },
         {
@@ -265,7 +424,7 @@ export default function charts({
             operator: "contains",
             type: "string",
             value: "",
-            //emptyValue: "",
+            emptyValue: null,
         },
         {
             name: "RDD",
@@ -285,14 +444,21 @@ export default function charts({
             name: "TransitDays",
             operator: "eq",
             type: "number",
-            value: "",
-            //emptyValue: "",
+            value: null,
+            // emptyValue: null,
         },
         {
             name: "CalculatedDelDate",
             operator: "inrange",
             type: "date",
             value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "MatchDel",
+            operator: "eq",
+            type: "select",
+            value: null,
             //emptyValue: "",
         },
         {
@@ -303,7 +469,122 @@ export default function charts({
             //emptyValue: null,
         },
     ]);
-
+    const [filtersNewKPI, setFiltersNewKPI] = useState([
+        {
+            name: "ConsignmentNo",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderReference",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverReference",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverSuburb",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "DispatchDate",
+            operator: "inrange",
+            type: "date",
+            value: {
+                start: minDispatchDate,
+                end: maxDispatchDate,
+            },
+        },
+        {
+            name: "ReceiverPostCode",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: null,
+        },
+        {
+            name: "RDD",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "DeliveryDate",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "TransitDays",
+            operator: "eq",
+            type: "number",
+            value: null,
+            // emptyValue: null,
+        },
+        {
+            name: "CalculatedDelDate",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "MatchDel",
+            operator: "eq",
+            type: "select",
+            value: null,
+            //emptyValue: "",
+        },
+        {
+            name: "ReasonId",
+            operator: "eq",
+            type: "select",
+            value: null,
+            //emptyValue: null,
+        },
+    ]);
     const [filtersTransit, setFiltersTransit] = useState([
         {
             name: "CustomerName",
@@ -312,10 +593,11 @@ export default function charts({
             value: null,
         },
         {
-            name: "CustomerType",
+            name: "CustomerTypeId",
             operator: "inlist",
             type: "select",
             value: null,
+            emptyValue: null,
         },
         {
             name: "SenderState",
@@ -361,6 +643,57 @@ export default function charts({
         },
         {
             name: "ReceiverSuburb",
+            operator: "inlist",
+            type: "select",
+            value: null,
+        },
+        {
+            name: "ReceiverPostCode",
+            operator: "eq",
+            type: "number",
+            value: null,
+        },
+        {
+            name: "TransitTime",
+            operator: "eq",
+            type: "number",
+            value: null,
+        },
+    ]);
+    const [filtersNewTransit, setFiltersNewTransit] = useState([
+        {
+            name: "CustomerName",
+            operator: "inlist",
+            type: "select",
+            value: null,
+        },
+        {
+            name: "CustomerTypeId",
+            operator: "eq",
+            type: "select",
+            value: null,
+            // emptyValue: "",
+        },
+        {
+            name: "SenderState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+        },
+        {
+            name: "SenderPostCode",
+            operator: "eq",
+            type: "number",
+            value: null,
+        },
+        {
+            name: "ReceiverName",
+            operator: "contains",
+            type: "string",
+            value: null,
+        },
+        {
+            name: "ReceiverState",
             operator: "inlist",
             type: "select",
             value: null,
@@ -469,8 +802,10 @@ export default function charts({
             name: "DESPATCHDATE",
             operator: "inrange",
             type: "date",
-            emptyValue: "",
-            value: "",
+            value: {
+                start: minDispatchDate,
+                end: maxDispatchDate,
+            },
         },
         {
             name: "DELIVERYREQUIREDDATETIME",
@@ -779,6 +1114,12 @@ export default function charts({
             operator: "contains",
             type: "string",
             value: "",
+        },
+        {
+            name: "DebtorId",
+            operator: "eq",
+            type: "select",
+            value: null,
         },
         {
             name: "CAUSE",
@@ -1134,7 +1475,25 @@ export default function charts({
 
         return `${day}-${month}-${year}`;
     }
-
+    // Function to format the date
+    const formatDate = (dateString) => {
+        if (dateString) {
+            const [day, month, year] = dateString.split("-");
+            // Using template literals to format the date
+            return `${year}-${month}-${day}`;
+        } else {
+            return dateString;
+        }
+    };
+    // Function to format the date to "DD-MM-YYYY"
+    const formatDateToDDMMYYYY = (dateString) => {
+        if (dateString) {
+            const [year, month, day] = dateString.split("-");
+            return `${day}-${month}-${year}`;
+        } else {
+            return dateString;
+        }
+    };
     // Update filters if the change is in consignments
     useEffect(() => {
         let val = {};
@@ -1177,6 +1536,13 @@ export default function charts({
                 item.value = val;
             }
         });
+        filtersFailed?.map((item) => {
+            if (item?.name == "DESPATCHDATE") {
+                item.value = val;
+            }
+        });
+        setSDate(formatDate(val.start));
+        setEDate(formatDate(val.end));
     }, [filtersCons]);
 
     // Update filters if the change is in add charges
@@ -1221,6 +1587,13 @@ export default function charts({
                 item.value = val;
             }
         });
+        filtersFailed?.map((item) => {
+            if (item?.name == "DESPATCHDATE") {
+                item.value = val;
+            }
+        });
+        setSDate(formatDate(val.start));
+        setEDate(formatDate(val.end));
     }, [filtersAddCharges]);
 
     // Update filters if the change is in no delivery info
@@ -1265,6 +1638,13 @@ export default function charts({
                 item.value = val;
             }
         });
+        filtersFailed?.map((item) => {
+            if (item?.name == "DESPATCHDATE") {
+                item.value = val;
+            }
+        });
+        setSDate(formatDate(val.start));
+        setEDate(formatDate(val.end));
     }, [filtersNoDelInfo]);
 
     // Update filters if the change is in RDD
@@ -1309,6 +1689,13 @@ export default function charts({
                 item.value = val;
             }
         });
+        filtersFailed?.map((item) => {
+            if (item?.name == "DESPATCHDATE") {
+                item.value = val;
+            }
+        });
+        setSDate(formatDate(val.start));
+        setEDate(formatDate(val.end));
     }, [filtersRDD]);
 
     // Update filters if the change is in missing pod
@@ -1353,6 +1740,13 @@ export default function charts({
                 item.value = val;
             }
         });
+        filtersFailed?.map((item) => {
+            if (item?.name == "DESPATCHDATE") {
+                item.value = val;
+            }
+        });
+        setSDate(formatDate(val.start));
+        setEDate(formatDate(val.end));
     }, [filtersMissingPOD]);
 
     // Update filters if the change is in kpi
@@ -1397,8 +1791,108 @@ export default function charts({
                 item.value = val;
             }
         });
+        filtersFailed?.map((item) => {
+            if (item?.name == "DESPATCHDATE") {
+                item.value = val;
+            }
+        });
+        setSDate(formatDate(val.start));
+        setEDate(formatDate(val.end));
     }, [filtersKPI]);
+    // Update filters if the change is in failed cons
+    useEffect(() => {
+        let val = {};
+        filtersFailed?.map((item) => {
+            if (item?.name == "DESPATCHDATE") {
+                val = item?.value;
+            }
+        });
+        // Update filtersKPI
+        filtersKPI?.map((item) => {
+            if (item?.name === "DispatchDate") {
+                item.value = val;
+            }
+        });
+        // Update filtersAddCharges
+        filtersAddCharges?.map((item) => {
+            if (item?.name === "DespatchDateTime") {
+                item.value = val;
+            }
+        });
+        // Update filtersMissingPOD
+        filtersMissingPOD?.map((item) => {
+            if (item?.name === "DESPATCHDATE") {
+                item.value = val;
+            }
+        });
+        // Update filtersRDD
+        filtersRDD?.map((item) => {
+            if (item?.name === "DespatchDate") {
+                item.value = val;
+            }
+        });
+        // Update filtersNoDelInfo
+        filtersNoDelInfo?.map((item) => {
+            if (item?.name === "DespatchDateTime") {
+                item.value = val;
+            }
+        });
+        // Update filtersCons
+        filtersCons?.map((item) => {
+            if (item?.name === "DespatchDate") {
+                item.value = val;
+            }
+        });
+        setSDate(formatDate(val.start));
+        setEDate(formatDate(val.end));
+    }, [filtersFailed]);
+    //Update Filters if the change is in the Perfromance Report
+    useEffect(() => {
+        const val = {
+            start: formatDateToDDMMYYYY(sharedStartDate),
+            end: formatDateToDDMMYYYY(sharedEndDate),
+        };
+        // Update filtersAddCharges
+        filtersAddCharges?.map((item) => {
+            if (item?.name === "DespatchDateTime") {
+                item.value = val;
+            }
+        });
 
+        // Update filtersKPI
+        filtersKPI?.map((item) => {
+            if (item?.name === "DispatchDate") {
+                item.value = val;
+            }
+        });
+        // Update filtersMissingPOD
+        filtersMissingPOD?.map((item) => {
+            if (item?.name === "DESPATCHDATE") {
+                item.value = val;
+            }
+        });
+
+        // Update filtersRDD
+        filtersRDD?.map((item) => {
+            if (item?.name === "DespatchDate") {
+                item.value = val;
+            }
+        });
+
+        // Update filtersNoDelInfo
+        filtersNoDelInfo?.map((item) => {
+            if (item?.name === "DespatchDateTime") {
+                item.value = val;
+            }
+        });
+
+        // Update filtersCons
+        filtersCons?.map((item) => {
+            if (item?.name === "DespatchDate") {
+                item.value = val;
+            }
+        });
+    }, [sharedEndDate, sharedStartDate]);
     const components = [
         <MainCharts
             chartsData={chartsData}
@@ -1464,6 +1958,8 @@ export default function charts({
             currentUser={currentUser}
         />,
         <ConsPerf
+            setSharedStartDate={setSharedStartDate}
+            setSharedEndDate={setSharedEndDate}
             oldestDate={oldestDate}
             latestDate={latestDate}
             currentUser={currentUser}
@@ -1582,6 +2078,7 @@ export default function charts({
             latestDate={latestDate}
             url={url}
             AToken={AToken}
+            customerAccounts={customerAccounts}
             filterValue={filtersSafety}
             setFilterValue={setFiltersSafety}
             setSafetyTypes={setSafetyTypes}
@@ -1663,6 +2160,74 @@ export default function charts({
             AToken={AToken}
             setActiveIndexGTRS={setActiveIndexGTRS}
             transitDay={transitDay}
+        />,
+        <TransportRep
+            oldestDate={oldestDate}
+            latestDate={latestDate}
+            accData={dataFromChild}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            setactiveCon={setactiveCon}
+            transportData={transportData}
+            AToken={AToken}
+            filterValue={filtersTransport}
+            setFilterValue={setFiltersTransport}
+            minDate={minDate}
+            maxDate={maxDate}
+            setLastIndex={setLastIndex}
+            IDfilter={IDfilter}
+            EDate={EDate}
+            setEDate={setEDate}
+            SDate={SDate}
+            setSDate={setSDate}
+        />,
+        <NewKPI
+            kpireasonsData={kpireasonsData}
+            oldestDate={oldestDate}
+            latestDate={latestDate}
+            KPIData={NewKPIData}
+            filterValue={filtersNewKPI}
+            setFilterValue={setFiltersNewKPI}
+            setKPIData={setNewKPIData}
+            currentUser={currentUser}
+            userBody={userBody}
+            accData={dataFromChild}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            url={url}
+            AToken={AToken}
+            setactiveCon={setactiveCon}
+            setLastIndex={setLastIndex}
+            IDfilter={IDfilter}
+            EDate={EDate}
+            setEDate={setEDate}
+            SDate={SDate}
+            setSDate={setSDate}
+        />,
+        <NewTransitDays
+            setNewTransitDay={setNewTransitDay}
+            newTransitDay={newtransitDay}
+            setNewTransitDays={setNewTransitDays}
+            setFilterValue={setFiltersNewTransit}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            newTransitDays={newTransitDays}
+            filterValue={filtersNewTransit}
+            currentUser={currentUser}
+            accData={dataFromChild}
+            AToken={AToken}
+            url={url}
+        />,
+        <AddNewTransitDay
+            url={url}
+            currentUser={currentUser}
+            setNewTransitDay={setNewTransitDay}
+            setNewTransitDays={setNewTransitDays}
+            AToken={AToken}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            newtransitDay={newtransitDay}
+        />,
+        <GraphPresentation
+            url={url}
+            currentUser={currentUser}
+            AToken={AToken}
         />,
     ];
     return (
