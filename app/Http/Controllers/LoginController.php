@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Middleware\ApiAuth;
 use Illuminate\Http\Request;
 use App\Models\User;

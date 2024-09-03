@@ -15,7 +15,6 @@ export default function Sidebar(Boolean) {
     const [user, setUser] = useState({});
     const [allowedApplications, setAllowedApplications] = useState([]);
     const [Token, setToken] = useState(Cookies.get("access_token"));
-    const [RToken, setRToken] = useState(Cookies.get("gtrs_refresh_token"));
 
     const Invoicesurl = window.Laravel.invoiceUrl;
     const Gtamurl = window.Laravel.gtamUrl;

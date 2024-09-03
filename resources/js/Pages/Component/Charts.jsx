@@ -23,12 +23,14 @@ import NewKPI from "./NewKPI";
 import NewTransitDays from "./NewTransitDays";
 import AddNewTransitDay from "./KPI/AddNewTransitDay";
 import GraphPresentation from "./Presentation/GraphPresentation";
+import Incident from "./Incident";
 
 export default function charts({
     setCusomterAccounts,
     setPerfData,
     userBody,
     sessionData,
+    gtccrUrl,
     safetyData,
     debtorsData,
     customerAccounts,
@@ -74,6 +76,7 @@ export default function charts({
     const [dataFromChild, setDataFromChild] = useState(null);
     const [transitDay, setTransitDay] = useState(null);
     const [newtransitDay, setNewTransitDay] = useState(null);
+    const [incidentId, setIncidentId] = useState(null);
 
     const [sharedStartDate, setSharedStartDate] = useState(
         getOldestDespatchDate(consData)
@@ -1977,6 +1980,7 @@ export default function charts({
         <FailedConsMain
             oldestDate={oldestDate}
             latestDate={latestDate}
+            setIncidentId={setIncidentId}
             url={url}
             filterValue={filtersFailed}
             setFilterValue={setFiltersFailed}
@@ -1989,6 +1993,7 @@ export default function charts({
             setLastIndex={setLastIndex}
             IDfilter={IDfilter}
             EDate={EDate}
+            gtccrUrl={gtccrUrl}
             AToken={AToken}
             setEDate={setEDate}
             SDate={SDate}
@@ -2229,7 +2234,16 @@ export default function charts({
             currentUser={currentUser}
             AToken={AToken}
         />,
+        <Incident
+            AToken={AToken}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            gtccrUrl={gtccrUrl}
+            incidentId={incidentId}
+            currentUser={currentUser}
+            />
     ];
+
+    console.log(incidentId)
     return (
         <div className="">
             {/* <Sidebar /> */}

@@ -53,6 +53,7 @@ export default function Gtrs({
     const [dataFromChild, setDataFromChild] = useState(null);
     const gtrsUrl = window.Laravel.gtrsUrl;
     const gtamUrl = window.Laravel.gtamUrl;
+    const gtccrUrl = window.Laravel.gtccrUrl;
     const [customerAccounts, setCusomterAccounts] = useState();
     const userdata = currentUser;
     const [canAccess, setCanAccess] = useState(true);
@@ -459,6 +460,7 @@ export default function Gtrs({
                             setkpireasonsData={setkpireasonsData}
                             userBody={userBody}
                             url={gtrsUrl}
+                            gtccrUrl={gtccrUrl}
                             chartsData={chartsData}
                             safetyTypes={safetyTypes}
                             setSafetyTypes={setSafetyTypes}

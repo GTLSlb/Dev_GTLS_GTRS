@@ -35,6 +35,7 @@ export default function FailedCons({
     PerfData,
     failedReasons,
     url,
+    setIncidentId,
     AToken,
     filterValue,
     setFilterValue,
@@ -44,8 +45,6 @@ export default function FailedCons({
     currentUser,
     accData,
 }) {
-
-    
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [reason, setReason] = useState();
     const handleEditClick = (reason) => {
@@ -190,7 +189,7 @@ export default function FailedCons({
     const maxDeliveredDate = getMinMaxValue(data, "DELIVEREDDATETIME", 2);
 
     const Roles = ["1", "3", "4", "5"];
-
+    console.log(data);
     const columns = [
         {
             name: "CONSIGNMENTNUMBER",
@@ -210,6 +209,30 @@ export default function FailedCons({
                     </span>
                 );
             },
+        },
+        {
+            name: "IncidentNo",
+            defaultWidth: 170,
+            header: "Incident No",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            render: ({ value, data }) => {
+                return (
+                    <span
+                        className="underline text-blue-500 hover:cursor-pointer"
+                        onClick={() => {
+                            console.log(data.IncidentId);
+                            setIncidentId(data.IncidentId);
+                            setActiveIndexGTRS(21);
+                        }}
+                    >
+                        {" "}
+                        {value}
+                    </span>
+                );
+            },
+            filterEditor: StringFilter,
         },
         {
             name: "STATUS",
@@ -1008,7 +1031,7 @@ export default function FailedCons({
                         } else {
                             acc[columnKey] = "";
                         }
-                    } else if ( columnKey === "DELIVERYREQUIREDDATETIME") {
+                    } else if (columnKey === "DELIVERYREQUIREDDATETIME") {
                         const date = new Date(person[columnKey]);
                         if (!isNaN(date)) {
                             acc[columnKey] =
