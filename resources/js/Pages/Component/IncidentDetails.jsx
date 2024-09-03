@@ -3,7 +3,6 @@ import { Checkbox, Chip } from "@nextui-org/react";
 import moment from "moment/moment";
 
 export default function IncidentDetails({ incident, filters, mainCauses }) {
-    console.log(incident)
     return (
         <div>
             <div className="py-2">

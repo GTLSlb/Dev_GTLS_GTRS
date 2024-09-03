@@ -2243,7 +2243,6 @@ export default function charts({
             />
     ];
 
-    console.log(incidentId)
     return (
         <div className="">
             {/* <Sidebar /> */}

@@ -42,7 +42,6 @@ export default function Incident({
         getMainCauses();
     }, []);
 
-    console.log(currentUser);
     function getFilters() {
         axios
             .get(`${gtccrUrl}IncidentAssets`, {
@@ -279,7 +278,6 @@ export default function Incident({
     //             }
     //         });
     // }
-    console.log(incident);
     return (
         <div className="relative p-5">
             {/* {pdfLoading && canDownloadIncident(currentUser) && <Loading />} */}

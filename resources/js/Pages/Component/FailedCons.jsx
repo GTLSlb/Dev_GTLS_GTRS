@@ -189,7 +189,6 @@ export default function FailedCons({
     const maxDeliveredDate = getMinMaxValue(data, "DELIVEREDDATETIME", 2);
 
     const Roles = ["1", "3", "4", "5"];
-    console.log(data);
     const columns = [
         {
             name: "CONSIGNMENTNUMBER",
@@ -222,7 +221,6 @@ export default function FailedCons({
                     <span
                         className="underline text-blue-500 hover:cursor-pointer"
                         onClick={() => {
-                            console.log(data.IncidentId);
                             setIncidentId(data.IncidentId);
                             setActiveIndexGTRS(21);
                         }}

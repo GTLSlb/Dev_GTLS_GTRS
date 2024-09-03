@@ -50,7 +50,6 @@ export default function Notes({
 }) {
     const [file, setFile] = useState([]);
     const handleChange = (event) => {
-        console.log(event);
         // Assuming you receive a file list
         const newFile = {
             event,
