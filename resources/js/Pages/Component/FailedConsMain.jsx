@@ -2,18 +2,20 @@ import React, { useState, useEffect } from "react";
 import FailedCons from "./FailedCons";
 import AddFailedReason from "./AddFailedReason";
 import { canViewFailedReasons } from "@/permissions";
-import swal from 'sweetalert';
+import swal from "sweetalert";
 import axios from "axios";
 export default function FailedConsMain({
     url,
     PerfData,
     setPerfData,
     setActiveIndexGTRS,
+    gtccrUrl,
     setLastIndex,
     setactiveCon,
     filterValue,
     setFilterValue,
     IDfilter,
+    setIncidentId,
     currentUser,
     accData,
     EDate,
@@ -59,30 +61,30 @@ export default function FailedConsMain({
                 })
                 .catch((err) => {
                     if (err.response && err.response.status === 401) {
-                      // Handle 401 error using SweetAlert
-                      swal({
-                        title: 'Session Expired!',
-                        text: "Please login again",
-                        type: 'success',
-                        icon: "info",
-                        confirmButtonText: 'OK'
-                      }).then(function() {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                              if (response.status == 200) {
-                                window.location.href = "/";
-                              }
-                            })
-                            .catch((error) => {
-                              console.log(error);
-                            });
-                      });
+                        // Handle 401 error using SweetAlert
+                        swal({
+                            title: "Session Expired!",
+                            text: "Please login again",
+                            type: "success",
+                            icon: "info",
+                            confirmButtonText: "OK",
+                        }).then(function () {
+                            axios
+                                .post("/logoutAPI")
+                                .then((response) => {
+                                    if (response.status == 200) {
+                                        window.location.href = "/";
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.log(error);
+                                });
+                        });
                     } else {
-                      // Handle other errors
-                      console.log(err);
+                        // Handle other errors
+                        console.log(err);
                     }
-                  });
+                });
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -160,7 +162,7 @@ export default function FailedConsMain({
                             </h1>
                         </div>
                     </div>
-                    {canViewFailedReasons(currentUser) ? (
+                    {/* {canViewFailedReasons(currentUser) ? (
                         <ul className="flex space-x-0 mt-5">
                             {components.map((component, index) => (
                                 <li
@@ -183,9 +185,31 @@ export default function FailedConsMain({
                         </ul>
                     ) : (
                         <div></div>
-                    )}
+                    )} */}
                     <div className="mt-4">
-                        {components[activeComponentIndex]}
+                        <FailedCons
+                            url={url}
+                            failedReasons={failedReasons}
+                            currentUser={currentUser}
+                            accData={accData}
+                            gtccrUrl={gtccrUrl}
+                            setIncidentId={setIncidentId}
+                            setActiveIndexGTRS={setActiveIndexGTRS}
+                            PerfData={PerfData}
+                            setactiveCon={setactiveCon}
+                            setLastIndex={setLastIndex}
+                            IDfilter={IDfilter}
+                            filterValue={filterValue}
+                            setFilterValue={setFilterValue}
+                            EDate={EDate}
+                            AToken={AToken}
+                            setEDate={setEDate}
+                            SDate={SDate}
+                            setSDate={setSDate}
+                            setPerfData={setPerfData}
+                            oldestDate={oldestDate}
+                            latestDate={latestDate}
+                        />
                     </div>
                 </div>
             )}

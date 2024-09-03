@@ -3,21 +3,16 @@ import { useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import { useDownloadExcel, downloadExcel } from "react-export-table-to-excel";
 import { Fragment } from "react";
-import notFound from "../../../assets/pictures/NotFound.png";
 import ExcelJS from "exceljs";
 import moment from "moment";
 import { Popover, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
-import BoolFilter from "@inovua/reactdatagrid-community/BoolFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
-import Button from "@inovua/reactdatagrid-community/packages/Button";
 import TableStructure from "@/Components/TableStructure";
-import ReactDataGrid from "@inovua/reactdatagrid-community";
 import swal from "sweetalert";
 import axios from "axios";
 
@@ -314,24 +309,103 @@ export default function DriverLogin({
                 
                     switch (operator) {
                         case "after":
-                            conditionMet = hasStartDate && dateCellValueStart.isAfter(dateValue);
+                            // Parse the cellValue date with the format you know it might have
+                            const afterd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+
+                            // Parse the dateValue as an ISO 8601 date string
+                            const afterdateToCompare = moment(dateValue);
+
+                            // Check if both dates are valid and if cellValue is after dateValue
+                            conditionMet =
+                                afterd.isValid() &&
+                                afterdateToCompare.isValid() &&
+                                afterdateToCompare.isAfter(afterd);
+
                             break;
                         case "afterOrOn":
-                            conditionMet = hasStartDate && dateCellValueStart.isSameOrAfter(dateValue);
+                            const afterOrOnd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const afterOrOnDateToCompare = moment(dateValue);
+
+                            conditionMet =
+                                afterOrOnd.isValid() &&
+                                afterOrOnDateToCompare.isValid() &&
+                                afterOrOnDateToCompare.isSameOrAfter(
+                                    afterOrOnd
+                                );
                             break;
+
                         case "before":
-                            conditionMet = hasStartDate && dateCellValueStart.isBefore(dateValue);
+                            const befored = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const beforeDateToCompare = moment(dateValue);
+
+                            conditionMet =
+                                befored.isValid() &&
+                                beforeDateToCompare.isValid() &&
+                                beforeDateToCompare.isBefore(befored);
+
                             break;
+
                         case "beforeOrOn":
-                            conditionMet = hasStartDate && dateCellValueStart.isSameOrBefore(dateValue);
+                            const beforeOrOnd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const beforeOrOnDateToCompare = moment(dateValue);
+
+                            conditionMet =
+                                beforeOrOnd.isValid() &&
+                                beforeOrOnDateToCompare.isValid() &&
+                                beforeOrOnDateToCompare.isSameOrBefore(
+                                    beforeOrOnd
+                                );
+
                             break;
                         case "eq":
-                            conditionMet = hasStartDate && dateCellValueStart.isSame(dateValue);
+                            // Parse the cellValue date with the format you know it might have
+                            const d = moment(
+                                cellValue,
+                                ["DD-MM-YYYY", moment.ISO_8601],
+                                true
+                            );
+
+                            // Parse the dateValue with the expected format or formats
+                            const dateToCompare = moment(
+                                dateValue,
+                                ["YYYY-MM-DD HH:mm:ss", moment.ISO_8601],
+                                true
+                            );
+
+                            // Check if both dates are valid and if they represent the same calendar day
+                            conditionMet =
+                                cellValue &&
+                                d.isValid() &&
+                                dateToCompare.isValid() &&
+                                d.isSame(dateToCompare, "day");
+
                             break;
                         case "neq":
-                            conditionMet = hasStartDate && !dateCellValueStart.isSame(dateValue);
-                            break;
-                        case "inrange":
+                            const neqd = moment(cellValue, "DD-MM-YYYY", true);
+                            const neqDateToCompare = moment(dateValue);
+
+                            conditionMet =
+                                neqd.isValid() &&
+                                neqDateToCompare.isValid() &&
+                                !neqd.isSame(neqDateToCompare, "day");
+
+                            break;case "inrange":
                             conditionMet = (!hasStartDate || dateValue.isSameOrAfter(dateCellValueStart)) &&
                                            (!hasEndDate || dateValue.isSameOrBefore(dateCellValueEnd));
                             break;
@@ -373,7 +447,7 @@ export default function DriverLogin({
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-
+    
         const columnMapping = {
             "ConsignmentNo": "Consignment No",
             "SenderReference": "Sender Reference",
@@ -385,47 +459,57 @@ export default function DriverLogin({
             "FuelLevyAmountRef": "Fuel Levy Amount Ref",
             "DespatchDateTime": "Despatch DateTime",
         };
-
+    
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
-     
+    
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
                     if (columnKey === "DeviceSimType") {
-                        acc[columnKey] =
-                            person["MobilityDeviceSimTypes_Description"];
+                        acc[columnKey] = person["MobilityDeviceSimTypes_Description"];
                     } else if (columnKey === "SmartSCANVersion") {
                         acc[columnKey] = person["SmartSCANSoftwareVersion"];
                     } else if (columnKey === "DeviceModel") {
-                        acc[columnKey] =
-                            person["MobilityDeviceModels_Description"];
+                        acc[columnKey] = person["MobilityDeviceModels_Description"];
                     } else if (columnKey === "LastActiveUTC") {
-                        acc[columnKey] =
-                            person["LastActiveUTC"] == ""
-                                ? ""
-                                : moment(
-                                      person["LastActiveUTC"].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY h:mm A");
+                        const date = new Date(person[columnKey]);
+                        if (!isNaN(date)) {
+                            acc[columnKey] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[columnKey] = "";
+                        }
                     } else if (columnKey === "DeviceMakes") {
-                        acc[columnKey] =
-                            person["MobilityDeviceMakes_Description"];
+                        acc[columnKey] = person["MobilityDeviceMakes_Description"];
                     } else if (columnKey === "VLink") {
                         acc[columnKey] = person["UsedForVLink"];
                     } else if (columnKey === "SmartSCANFreight") {
                         acc[columnKey] = person["UsedForSmartSCANFreight"];
                     } else if (columnKey === "SmartSCAN") {
                         acc[columnKey] = person["UsedForSmartSCAN"];
+                    } else if (columnKey === "DespatchDateTime") {
+                        const date = new Date(person[columnKey]);
+                        if (!isNaN(date)) {
+                            acc[columnKey] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[columnKey] = "";
+                        }
                     } else {
-                        acc[column.replace(/\s+/g, "")] =
-                            person[column.replace(/\s+/g, "")];
+                        acc[column.replace(/\s+/g, "")] = person[column.replace(/\s+/g, "")];
                     }
                 } else {
                     acc[columnKey] = person[columnKey];
@@ -433,13 +517,13 @@ export default function DriverLogin({
                 return acc;
             }, {})
         );
-
+    
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
-
+    
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
-
+    
         // Apply custom styles to the header row
         const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
@@ -449,30 +533,39 @@ export default function DriverLogin({
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
         headerRow.alignment = { horizontal: "center" };
-
+    
         // Add the data to the worksheet
         data.forEach((rowData) => {
-            worksheet.addRow(Object.values(rowData));
+            const row = worksheet.addRow(Object.values(rowData));
+    
+            // Apply date format to the LastActiveUTC column
+            const lastActiveUtcIndex = newSelectedColumns.indexOf("LastActiveUTC");
+            if (lastActiveUtcIndex !== -1) {
+                const cell = row.getCell(lastActiveUtcIndex + 1);
+                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+            }
         });
-
+    
         // Set column widths
-        const columnWidths = selectedColumns.map(() => 15); // Set width of each column
+        const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
         }));
-
+    
         // Generate the Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
             // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-
+    
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "Driver-Login.xlsx");
         });
     }
+    
+    
     const [selected, setSelected] = useState([]);
 
     const filterIcon = (className) => {

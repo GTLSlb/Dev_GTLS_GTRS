@@ -254,35 +254,104 @@ export default function GtrsCons({
 
                     switch (operator) {
                         case "after":
+                            // Parse the cellValue date with the format you know it might have
+                            const afterd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+
+                            // Parse the dateValue as an ISO 8601 date string
+                            const afterdateToCompare = moment(dateValue);
+
+                            // Check if both dates are valid and if cellValue is after dateValue
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isAfter(dateValue);
+                                afterd.isValid() &&
+                                afterdateToCompare.isValid() &&
+                                afterdateToCompare.isAfter(afterd);
+
                             break;
                         case "afterOrOn":
+                            const afterOrOnd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const afterOrOnDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSameOrAfter(dateValue);
+                                afterOrOnd.isValid() &&
+                                afterOrOnDateToCompare.isValid() &&
+                                afterOrOnDateToCompare.isSameOrAfter(
+                                    afterOrOnd
+                                );
                             break;
+
                         case "before":
+                            const befored = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const beforeDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isBefore(dateValue);
+                                befored.isValid() &&
+                                beforeDateToCompare.isValid() &&
+                                beforeDateToCompare.isBefore(befored);
+
                             break;
+
                         case "beforeOrOn":
+                            const beforeOrOnd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const beforeOrOnDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSameOrBefore(dateValue);
+                                beforeOrOnd.isValid() &&
+                                beforeOrOnDateToCompare.isValid() &&
+                                beforeOrOnDateToCompare.isSameOrBefore(
+                                    beforeOrOnd
+                                );
+
                             break;
                         case "eq":
+                            // Parse the cellValue date with the format you know it might have
+                            const d = moment(
+                                cellValue,
+                                ["DD-MM-YYYY", moment.ISO_8601],
+                                true
+                            );
+
+                            // Parse the dateValue with the expected format or formats
+                            const dateToCompare = moment(
+                                dateValue,
+                                ["YYYY-MM-DD HH:mm:ss", moment.ISO_8601],
+                                true
+                            );
+
+                            // Check if both dates are valid and if they represent the same calendar day
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSame(dateValue);
+                                cellValue &&
+                                d.isValid() &&
+                                dateToCompare.isValid() &&
+                                d.isSame(dateToCompare, "day");
+
                             break;
                         case "neq":
+                            const neqd = moment(cellValue, "DD-MM-YYYY", true);
+                            const neqDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                !dateCellValueStart.isSame(dateValue);
+                                neqd.isValid() &&
+                                neqDateToCompare.isValid() &&
+                                !neqd.isSame(neqDateToCompare, "day");
+
                             break;
+
                         case "inrange":
                             conditionMet =
                                 (!hasStartDate ||
@@ -333,7 +402,7 @@ export default function GtrsCons({
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-
+    
         const columnMapping = {
             ConsignmentNo: "Consignment No",
             AccountName: "Account Name",
@@ -349,45 +418,48 @@ export default function GtrsCons({
             ReceiverReference: "Receiver Reference",
             ReceiverZone: "Receiver Zone",
         };
-
+    
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
+    
         // Apply the mapping to the selected columns
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
+    
         const filterValue = jsonData?.filterValue;
+    
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
-                    if (column.replace(/\s+/g, "") === "DespatchDate") {
-                        acc[column.replace(/\s+/g, "")] =
-                            moment(
-                                person["DespatchDate"].replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY hh:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["DespatchDate"].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY h:mm A");
+                    if (columnKey === "DespatchDate") {
+                        const date = new Date(person["DespatchDate"]);
+                        if (!isNaN(date)) {
+                            acc[column] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                    86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[column] = "";
+                        }
                     } else {
-                        acc[column.replace(/\s+/g, "")] =
-                            person[column.replace(/\s+/g, "")];
+                        acc[columnMapping[columnKey] || columnKey] =
+                            person[columnKey];
                     }
                 }
                 return acc;
             }, {})
         );
-
+    
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
-
+    
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
-
+    
         // Apply custom styles to the new header row
         const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
@@ -397,26 +469,33 @@ export default function GtrsCons({
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
         headerRow.alignment = { horizontal: "center" };
-
+    
         // Add the data to the worksheet
         data.forEach((rowData) => {
-            worksheet.addRow(Object.values(rowData));
+            const row = worksheet.addRow(Object.values(rowData));
+    
+            // Apply date format to the Despatch Date column
+            const despatchDateIndex = newSelectedColumns.indexOf("Despatch Date");
+            if (despatchDateIndex !== -1) {
+                const cell = row.getCell(despatchDateIndex + 1); // +1 because ExcelJS is 1-based indexing
+                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+            }
         });
-
+    
         // Set column widths
-        const columnWidths = selectedColumns.map(() => 15); // Set width of each column
+        const columnWidths = newSelectedColumns.map(() => 15); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
-            key: selectedColumns[index],
+            key: newSelectedColumns[index],
         }));
-
+    
         // Generate the Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
             // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-
+    
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "Consignments.xlsx");
         });
@@ -670,22 +749,6 @@ export default function GtrsCons({
                 );
             },
         },
-        // {
-        //     header: "Edit",
-        //     headerAlign: "center",
-        //     textAlign: "center",
-        //     render: ({ value, data }) => {
-        //         return (
-        //                 <Button
-        //                     onClick={() => {
-        //                         testButton(data);
-        //                     }}
-        //                 >
-        //                     Edit
-        //                 </Button>
-        //         );
-        //     },
-        // },
     ];
     const filterData = () => {
         const intArray = accData?.map((str) => {

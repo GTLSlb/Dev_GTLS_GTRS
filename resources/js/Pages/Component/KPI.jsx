@@ -18,6 +18,7 @@ import Success from "../../Components/lottie/Data/Success.json";
 import { canCalculateKPI, canEditKPI } from "@/permissions";
 import axios from "axios";
 import swal from "sweetalert";
+import ReactDataGrid from "@inovua/reactdatagrid-community";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -55,30 +56,29 @@ export default function KPI({
 
     const fetchData = async () => {
         try {
-            const response = await axios
-                .get(`${url}/KPI`, {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
-                    },
-                })
-                .then((res) => {
-                    const x = JSON.stringify(res.data);
-                    setKPIData(res.data);
-                    setSenderStateOptions(
-                        createNewLabelObjects(res.data, "SenderState")
-                    );
-                    setReceiverStateOptions(
-                        createNewLabelObjects(res.data, "ReceiverState")
-                    );
-                    setReasonOptions(
-                        kpireasonsData.map((reason) => ({
-                            id: reason.ReasonId,
-                            label: reason.ReasonName,
-                        }))
-                    );
-                    setIsFetching(false);
-                });
+            const response = await axios.get(`${url}/KPI`, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            });
+    
+            // Convert TransitDays to string
+            const modifiedData = response.data.map((item) => ({
+                ...item,
+                TransitDays: item.TransitDays.toString(),
+            }));
+    
+            setKPIData(modifiedData);
+            setSenderStateOptions(createNewLabelObjects(modifiedData, "SenderState"));
+            setReceiverStateOptions(createNewLabelObjects(modifiedData, "ReceiverState"));
+            setReasonOptions(
+                kpireasonsData.map((reason) => ({
+                    id: reason.ReasonId,
+                    label: reason.ReasonName,
+                }))
+            );
+            setIsFetching(false);
         } catch (error) {
             if (error.response && error.response.status === 401) {
                 swal({
@@ -88,8 +88,7 @@ export default function KPI({
                     icon: "info",
                     confirmButtonText: "OK",
                 }).then(() => {
-                    axios
-                        .post("/logoutAPI")
+                    axios.post("/logoutAPI")
                         .then((response) => {
                             if (response.status === 200) {
                                 window.location.href = "/";
@@ -104,13 +103,12 @@ export default function KPI({
             }
         }
     };
-
+    
     const handleClick = (coindex) => {
         setActiveIndexGTRS(3);
         setLastIndex(2);
         setactiveCon(coindex);
     };
-
     const [filteredData, setFilteredData] = useState(
         KPIData.map((item) => {
             if (item?.TransitDays) {
@@ -119,6 +117,7 @@ export default function KPI({
             return item;
         })
     );
+
     const filterData = () => {
         const intArray = accData?.map((str) => {
             const intValue = parseInt(str);
@@ -142,6 +141,12 @@ export default function KPI({
     };
     useEffect(() => {
         setFilteredData(filterData());
+        setReceiverStateOptions(
+            createNewLabelObjects(filterData(), "ReceiverState")
+        );
+        setSenderStateOptions(
+            createNewLabelObjects(filterData(), "SenderState")
+        );
     }, [accData, KPIData]);
     const [selected, setSelected] = useState([]);
     const gridRef = useRef(null);
@@ -361,35 +366,104 @@ export default function KPI({
 
                     switch (operator) {
                         case "after":
+                            // Parse the cellValue date with the format you know it might have
+                            const afterd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+
+                            // Parse the dateValue as an ISO 8601 date string
+                            const afterdateToCompare = moment(dateValue);
+
+                            // Check if both dates are valid and if cellValue is after dateValue
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isAfter(dateValue);
+                                afterd.isValid() &&
+                                afterdateToCompare.isValid() &&
+                                afterdateToCompare.isAfter(afterd);
+
                             break;
                         case "afterOrOn":
+                            const afterOrOnd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const afterOrOnDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSameOrAfter(dateValue);
+                                afterOrOnd.isValid() &&
+                                afterOrOnDateToCompare.isValid() &&
+                                afterOrOnDateToCompare.isSameOrAfter(
+                                    afterOrOnd
+                                );
                             break;
+
                         case "before":
+                            const befored = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const beforeDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isBefore(dateValue);
+                                befored.isValid() &&
+                                beforeDateToCompare.isValid() &&
+                                beforeDateToCompare.isBefore(befored);
+
                             break;
+
                         case "beforeOrOn":
+                            const beforeOrOnd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const beforeOrOnDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSameOrBefore(dateValue);
+                                beforeOrOnd.isValid() &&
+                                beforeOrOnDateToCompare.isValid() &&
+                                beforeOrOnDateToCompare.isSameOrBefore(
+                                    beforeOrOnd
+                                );
+
                             break;
                         case "eq":
+                            // Parse the cellValue date with the format you know it might have
+                            const d = moment(
+                                cellValue,
+                                ["DD-MM-YYYY", moment.ISO_8601],
+                                true
+                            );
+
+                            // Parse the dateValue with the expected format or formats
+                            const dateToCompare = moment(
+                                dateValue,
+                                ["YYYY-MM-DD HH:mm:ss", moment.ISO_8601],
+                                true
+                            );
+
+                            // Check if both dates are valid and if they represent the same calendar day
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSame(dateValue);
+                                cellValue &&
+                                d.isValid() &&
+                                dateToCompare.isValid() &&
+                                d.isSame(dateToCompare, "day");
+
                             break;
                         case "neq":
+                            const neqd = moment(cellValue, "DD-MM-YYYY", true);
+                            const neqDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                !dateCellValueStart.isSame(dateValue);
+                                neqd.isValid() &&
+                                neqDateToCompare.isValid() &&
+                                !neqd.isSame(neqDateToCompare, "day");
+
                             break;
+
                         case "inrange":
                             conditionMet =
                                 (!hasStartDate ||
@@ -449,6 +523,7 @@ export default function KPI({
             ReceiverName: "Receiver Name",
             ReceiverReference: "Receiver Reference",
             ReceiverState: "Receiver State",
+            ReceiverSuburb: "Receiver Suburb",
             ReceiverPostCode: "Receiver Postal Code",
             DispatchDate: "Dispatch Date",
             DeliveryDate: "Delivery Date",
@@ -474,18 +549,33 @@ export default function KPI({
                         acc[columnKey] = "true";
                     } else if (person[columnKey] === false) {
                         acc[columnKey] = "false";
-                    } else if (column.replace(/\s+/g, "") === "DispatchDate") {
-                        acc[columnKey] =
-                            moment(
-                                person["DispatchDate"].replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["DispatchDate"].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY");
-                    } else if (column.replace(/\s+/g, "") === "MatchRdd") {
+                    } else if (
+                        ["DispatchDate", "DeliveryDate", "RDD"].includes(
+                            columnKey
+                        )
+                    ) {
+                        const date = new Date(person[columnKey]);
+                        if (!isNaN(date)) {
+                            acc[column] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                    86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[column] = "";
+                        }
+                    } else if (columnKey == "CalculatedDelDate") {
+                        const date = new Date(person[columnKey]);
+                        if (!isNaN(date)) {
+                            acc[column] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                    86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[column] = "";
+                        }
+                    } else if (columnKey === "MatchRdd") {
                         if (person[columnKey] === 3) {
                             acc[columnKey] = "Pending";
                         } else if (person[columnKey] === 1) {
@@ -493,18 +583,7 @@ export default function KPI({
                         } else if (person[columnKey] === 2) {
                             acc[columnKey] = "False";
                         }
-                    } else if (column.replace(/\s+/g, "") === "DeliveryDate") {
-                        acc[columnKey] =
-                            moment(
-                                person["DeliveryDate"].replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["DeliveryDate"].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY");
-                    } else if (column.replace(/\s+/g, "") === "MatchDel") {
+                    } else if (columnKey === "MatchDel") {
                         if (person[columnKey] == 0) {
                             acc[columnKey] = "";
                         } else if (person[columnKey] == 1) {
@@ -512,29 +591,16 @@ export default function KPI({
                         } else if (person[columnKey] == 2) {
                             acc[columnKey] = "FAIL";
                         }
-                    } else if (column === "RDD") {
-                        acc[columnKey] =
-                            moment(
-                                person["RDD"].replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["RDD"].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY");
                     } else if (columnKey === "ReasonId") {
                         const Reason = kpireasonsData?.find(
                             (reason) => reason.ReasonId === person.ReasonId
                         );
                         acc[columnKey] = Reason?.ReasonName;
                     } else {
-                        acc[column.replace(/\s+/g, "")] =
-                            person[column.replace(/\s+/g, "")];
+                        acc[columnKey] = person[columnKey];
                     }
                 } else {
-                    acc[column.replace(/\s+/g, "")] =
-                        person[column.replace(/\s+/g, "")];
+                    acc[columnKey] = person[columnKey];
                 }
                 return acc;
             }, {})
@@ -556,13 +622,42 @@ export default function KPI({
         };
         headerRow.alignment = { horizontal: "center" };
 
-        // Add the data to the worksheet
         data.forEach((rowData) => {
-            worksheet.addRow(Object.values(rowData));
+            const row = worksheet.addRow(Object.values(rowData));
+            // Apply date format to the Dispatch Date column
+            const dispatchDateIndex =
+                newSelectedColumns.indexOf("Dispatch Date");
+            if (dispatchDateIndex !== -1) {
+                const cell = row.getCell(dispatchDateIndex + 1);
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+            }
+
+            // Apply date format to the Delivery Date column
+            const deliveryDateIndex =
+                newSelectedColumns.indexOf("Delivery Date");
+            if (deliveryDateIndex !== -1) {
+                const cell = row.getCell(deliveryDateIndex + 1);
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+            }
+
+            // Apply date format to the RDD column
+            const RDDDateIndex = newSelectedColumns.indexOf("RDD");
+            if (RDDDateIndex !== -1) {
+                const cell = row.getCell(RDDDateIndex + 1);
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+            }
+            // Apply date format to the RDD column
+            const CalculatedDateIndex = newSelectedColumns.indexOf(
+                "Calculated Delivery Date"
+            );
+            if (CalculatedDateIndex !== -1) {
+                const cell = row.getCell(CalculatedDateIndex + 1);
+                cell.numFmt = "dd-mm-yyyy";
+            }
         });
 
         // Set column widths
-        const columnWidths = selectedColumns.map(() => 15); // Set width of each column
+        const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
@@ -579,6 +674,7 @@ export default function KPI({
             saveAs(blob, "KPI-Report.xlsx");
         });
     }
+
     const createNewLabelObjects = (data, fieldName) => {
         let id = 1; // Initialize the ID
         const uniqueLabels = new Set(); // To keep track of unique labels
@@ -797,6 +893,16 @@ export default function KPI({
             defaultWidth: 200,
         },
         {
+            name: "ReceiverSuburb",
+            group: "receiverDetails",
+            header: "Suburb",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
+            defaultWidth: 200,
+        },
+        {
             name: "ReceiverPostCode",
             group: "receiverDetails",
             header: "Post Code",
@@ -804,11 +910,6 @@ export default function KPI({
             headerAlign: "center",
             textAlign: "center",
             filterEditor: StringFilter,
-            // filterEditorProps: {
-            //     multiple: true,
-            //     wrapMultiple: false,
-            //     dataSource: receiverStateOptions,
-            // },
             defaultWidth: 200,
         },
         {
@@ -874,11 +975,11 @@ export default function KPI({
         {
             name: "TransitDays",
             header: "Transit Days",
+            type: "string",
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 170,
-            type: "number",
             filterEditor: NumberFilter,
+            defaultWidth: 200,
         },
         {
             name: "CalculatedDelDate",
@@ -921,9 +1022,7 @@ export default function KPI({
                     <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
                         Fail
                     </span>
-                ): (
-                    null
-                )
+                ) : null;
             },
         },
         {
@@ -1038,7 +1137,7 @@ export default function KPI({
         axios
             .get(`${url}KpiCalculation`, {
                 headers: {
-                    UserId: currentUser.user_id,
+                    UserId: currentUser.UserId,
                     Authorization: `Bearer ${AToken}`,
                 },
             })
@@ -1077,6 +1176,55 @@ export default function KPI({
                 }
             });
     }
+
+    const customFilterTypes = Object.assign({}, ReactDataGrid.defaultProps.filterTypes, {
+        number: {
+          name: 'number',
+          operators: [
+            {
+              name: 'empty',
+              fn: ({ value }) => value == null || value === ''
+            },
+            {
+              name: 'notEmpty',
+              fn: ({ value }) => value != null && value !== ''
+            },
+            {
+              name: 'eq',
+              fn: ({ value, filterValue }) => value == null || filterValue == null ? true : value == filterValue
+            },
+            {
+              name: 'neq',
+              fn: ({ value, filterValue }) => value == null || filterValue == null ? true : value != filterValue
+            },
+            {
+              name: 'gt',
+              fn: ({ value, filterValue }) => value > filterValue
+            },
+            {
+              name: 'gte',
+              fn: ({ value, filterValue }) => value >= filterValue
+            },
+            {
+              name: 'lt',
+              fn: ({ value, filterValue }) => value < filterValue
+            },
+            {
+              name: 'lte',
+              fn: ({ value, filterValue }) => value <= filterValue
+            },
+            {
+              name: 'inRange',
+              fn: ({ value, filterValue }) => {
+                const [min, max] = filterValue.split(':').map(Number);
+                return value >= min && value <= max;
+              }
+            }
+          ]
+        }
+      });
+
+      
     return (
         <div>
             {/* <Sidebar /> */}
@@ -1239,6 +1387,15 @@ export default function KPI({
                                                             <input
                                                                 type="checkbox"
                                                                 name="column"
+                                                                value="Receiver Suburb"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Receiver Suburb
+                                                        </label>
+                                                        <label>
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
                                                                 value="DispatchDate"
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
@@ -1297,6 +1454,7 @@ export default function KPI({
                         selected={selected}
                         groupsElements={groups}
                         tableDataElements={filteredData}
+                        filterTypesElements={customFilterTypes}
                         filterValueElements={filterValue}
                         setFilterValueElements={setFilterValue}
                         columnsElements={newColumns}

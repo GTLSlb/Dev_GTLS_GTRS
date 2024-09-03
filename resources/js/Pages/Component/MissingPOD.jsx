@@ -288,34 +288,102 @@ export default function MissingPOD({
 
                     switch (operator) {
                         case "after":
+                            // Parse the cellValue date with the format you know it might have
+                            const afterd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+
+                            // Parse the dateValue as an ISO 8601 date string
+                            const afterdateToCompare = moment(dateValue);
+
+                            // Check if both dates are valid and if cellValue is after dateValue
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isAfter(dateValue);
+                                afterd.isValid() &&
+                                afterdateToCompare.isValid() &&
+                                afterdateToCompare.isAfter(afterd);
+
                             break;
                         case "afterOrOn":
+                            const afterOrOnd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const afterOrOnDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSameOrAfter(dateValue);
+                                afterOrOnd.isValid() &&
+                                afterOrOnDateToCompare.isValid() &&
+                                afterOrOnDateToCompare.isSameOrAfter(
+                                    afterOrOnd
+                                );
                             break;
+
                         case "before":
+                            const befored = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const beforeDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isBefore(dateValue);
+                                befored.isValid() &&
+                                beforeDateToCompare.isValid() &&
+                                beforeDateToCompare.isBefore(befored);
+
                             break;
+
                         case "beforeOrOn":
+                            const beforeOrOnd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const beforeOrOnDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSameOrBefore(dateValue);
+                                beforeOrOnd.isValid() &&
+                                beforeOrOnDateToCompare.isValid() &&
+                                beforeOrOnDateToCompare.isSameOrBefore(
+                                    beforeOrOnd
+                                );
+
                             break;
                         case "eq":
+                            // Parse the cellValue date with the format you know it might have
+                            const d = moment(
+                                cellValue,
+                                ["DD-MM-YYYY", moment.ISO_8601],
+                                true
+                            );
+
+                            // Parse the dateValue with the expected format or formats
+                            const dateToCompare = moment(
+                                dateValue,
+                                ["YYYY-MM-DD HH:mm:ss", moment.ISO_8601],
+                                true
+                            );
+
+                            // Check if both dates are valid and if they represent the same calendar day
                             conditionMet =
-                                hasStartDate &&
-                                dateCellValueStart.isSame(dateValue);
+                                cellValue &&
+                                d.isValid() &&
+                                dateToCompare.isValid() &&
+                                d.isSame(dateToCompare, "day");
+
                             break;
                         case "neq":
+                            const neqd = moment(cellValue, "DD-MM-YYYY", true);
+                            const neqDateToCompare = moment(dateValue);
+
                             conditionMet =
-                                hasStartDate &&
-                                !dateCellValueStart.isSame(dateValue);
+                                neqd.isValid() &&
+                                neqDateToCompare.isValid() &&
+                                !neqd.isSame(neqDateToCompare, "day");
+
                             break;
                         case "inrange":
                             conditionMet =
@@ -348,7 +416,7 @@ export default function MissingPOD({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
-            selectedColVal  = allHeaderColumns?.filter(
+            selectedColVal = allHeaderColumns?.filter(
                 (col) => col?.label?.toString().toLowerCase() !== "edit"
             ); // Use all columns
         } else {
@@ -357,7 +425,10 @@ export default function MissingPOD({
                     const formattedColumn = column
                         .replace(/\s/g, "")
                         .toLowerCase();
-                    if (header?.name?.replace(/\s/g, "")?.toLowerCase() == formattedColumn) {
+                    if (
+                        header?.name?.replace(/\s/g, "")?.toLowerCase() ==
+                        formattedColumn
+                    ) {
                         selectedColVal.push(header);
                     }
                 });
@@ -367,7 +438,7 @@ export default function MissingPOD({
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-
+    
         const columnMapping = {
             CONSIGNMENTNUMBER: "Consignemnt Number",
             SENDERNAME: "Sender Name",
@@ -383,13 +454,14 @@ export default function MissingPOD({
             DELIVEREDDATETIME: "Delivered Datetime",
             POD: "POD",
         };
-
+    
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
+    
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
@@ -401,57 +473,38 @@ export default function MissingPOD({
                         acc[columnKey] = "false";
                     } else if (column.replace(/\s+/g, "") === "SenderState") {
                         acc[columnKey] = person["SenderState"];
-                    } else if (column.toUpperCase() === "ARRIVEDDATETIME") {
-                        const ArrivedDateTime = person["ARRIVEDDATETIME"];
-                        acc[columnKey] = ArrivedDateTime
-                            ? moment(
-                                  ArrivedDateTime.replace("T", " "),
-                                  "YYYY-MM-DD HH:mm:ss"
-                              ).format("DD-MM-YYYY h:mm A")
-                            : null;
-                    } else if (column.toUpperCase() === "DELIVERYREQUIREDDATETIME") {
-                        const deliveryRequiredDateTime =
-                            person["DELIVERYREQUIREDDATETIME"];
-                        acc[columnKey] = deliveryRequiredDateTime
-                            ? moment(
-                                  deliveryRequiredDateTime.replace("T", " "),
-                                  "YYYY-MM-DD HH:mm:ss"
-                              ).format("DD-MM-YYYY h:mm A")
-                            : null;
-                    } else if (column.toUpperCase() === "DELIVEREDDATETIME") {
-                        const deliveredDateTime = person["DELIVEREDDATETIME"];
-                        acc[columnKey] = deliveredDateTime
-                            ? moment(
-                                  deliveredDateTime.replace("T", " "),
-                                  "YYYY-MM-DD HH:mm:ss"
-                              ).format("DD-MM-YYYY h:mm A")
-                            : null;
-                    } else if (column.toUpperCase() === "DESPATCHDATE") {
-                        const despatchDate = person["DESPATCHDATE"];
-                        acc[columnKey] = despatchDate
-                            ? moment(
-                                  despatchDate.replace("T", " "),
-                                  "YYYY-MM-DD HH:mm:ss"
-                              ).format("DD-MM-YYYY h:mm A")
-                            : null;
+                    } else if (
+                        ["ARRIVEDDATETIME", "DELIVERYREQUIREDDATETIME", "DELIVEREDDATETIME", "DESPATCHDATE"].includes(columnKey)
+                    ) {
+                        const date = new Date(person[columnKey]);
+                        if (!isNaN(date)) {
+                            acc[columnKey] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[columnKey] = "";
+                        }
                     } else if (column === "Consignemnt Number") {
                         acc[columnKey] = person["CONSIGNMENTNUMBER"];
-                    } 
-                else if (column.toUpperCase() === "RECEIVER REFERENCE") {
-                    acc[columnKey] = person["RECEIVER REFERENCE"];
-                } else {
-                    acc[columnKey] = person[columnKey.toUpperCase()];
+                    } else if (column.toUpperCase() === "RECEIVER REFERENCE") {
+                        acc[columnKey] = person["RECEIVER REFERENCE"];
+                    } else {
+                        acc[columnKey] = person[columnKey.toUpperCase()];
+                    }
+    
+                    return acc;
                 }
-
-                return acc;
-            }}, {})
+            }, {})
         );
+    
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
-
+    
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
-
+    
         // Apply custom styles to the header row
         const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
@@ -461,26 +514,54 @@ export default function MissingPOD({
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
         headerRow.alignment = { horizontal: "center" };
-
+    
         // Add the data to the worksheet
         data.forEach((rowData) => {
-            worksheet.addRow(Object.values(rowData));
+            const row = worksheet.addRow(Object.values(rowData));
+    
+            // Apply date format to the DESPATCHDATE column
+            const despatchDateIndex = newSelectedColumns.indexOf("Despatch DateTime");
+            if (despatchDateIndex !== -1) {
+                const cell = row.getCell(despatchDateIndex + 1);
+                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+            }
+    
+            // Apply date format to the ARRIVEDDATETIME column
+            const arrivedDateIndex = newSelectedColumns.indexOf("Arrived Date Time");
+            if (arrivedDateIndex !== -1) {
+                const cell = row.getCell(arrivedDateIndex + 1);
+                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+            }
+    
+            // Apply date format to the DELIVEREDDATETIME column
+            const deliveredDateIndex = newSelectedColumns.indexOf("Delivered Datetime");
+            if (deliveredDateIndex !== -1) {
+                const cell = row.getCell(deliveredDateIndex + 1);
+                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+            }
+    
+            // Apply date format to the DELIVERYREQUIREDDATETIME column
+            const deliveryReqDateIndex = newSelectedColumns.indexOf("RDD");
+            if (deliveryReqDateIndex !== -1) {
+                const cell = row.getCell(deliveryReqDateIndex + 1);
+                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+            }
         });
-
+    
         // Set column widths
-        const columnWidths = selectedColumns.map(() => 15); // Set width of each column
+        const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
         }));
-
+    
         // Generate the Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
             // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-
+    
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "Missing-POD.xlsx");
         });

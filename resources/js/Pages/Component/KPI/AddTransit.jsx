@@ -59,6 +59,8 @@ export default function AddTransit({
         { id: 1, label: "UNILEVER" },
         { id: 2, label: "GMI" },
         { id: 3, label: "FREIGHT PEOPLE" },
+        { id: 4, label: "KIMBERLY CLARK" },
+        { id: 5, label: "PET BRANDS" },
     ];
 
     const types = [
@@ -206,32 +208,26 @@ export default function AddTransit({
             <div className="shadow bg-white p-6 rounded-lg ">
                 <form onSubmit={AddTransit}>
                     <p className="font-bold text-lg">Add Transit</p>
+                    <div className="border-b mt-2" />
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-5 items-center py-4">
                         <div className="col-span-2 flex items-center gap-x-2">
-                            <div className="col-span-2 flex items-center gap-x-2">
-                                <label
-                                    htmlFor="CustomerId"
-                                    className="block w-48"
-                                >
-                                    Customer Name:
-                                </label>
-                                <select
-                                    id="CustomerId"
-                                    name="CustomerId"
-                                    className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
-                                    // defaultValue={modalSafetyType}
-                                    // value={formValues.SafetyType || ""}
-                                    value={selectedCustomer}
-                                    onChange={(e) => {
-                                        setSelectedCustomer(e.target.value);
-                                    }}
-                                    required
-                                >
-                                    <option value="">
-                                        --Select a Customer Type--
-                                    </option>
-
-                                    {customers?.map((customer) => {
+                            <label htmlFor="CustomerId" className="block w-48">
+                            Customer Name:
+                            </label>
+                            <select
+                                id="CustomerId"
+                                name="CustomerId"
+                                className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
+                                // defaultValue={modalSafetyType}
+                                // value={formValues.SafetyType || ""}
+                                value={selectedCustomer}
+                                onChange={(e) => {
+                                    setSelectedCustomer(e.target.value);
+                                }}
+                                required
+                            >
+                                <option value="">--Select a Customer--</option>
+                                {customers?.map((customer) => {
                                         return (
                                             <option
                                                 key={customer.id}
@@ -241,10 +237,8 @@ export default function AddTransit({
                                             </option>
                                         );
                                     })}
-                                </select>
-                            </div>
+                            </select>
                         </div>
-
                         {object?.CustomerId == 1 || selectedCustomer == 1 ? (
                             <div className="col-span-2 flex items-center gap-x-2">
                                 <label
@@ -282,9 +276,24 @@ export default function AddTransit({
                                 </select>
                             </div>
                         ) : (
-                            <div></div>
+                            <div className="col-span-2"></div>
                         )}
 
+                        {/* Sender Title Border  */}
+                        <div className="col-span-2 flex items-center gap-x-2">
+                            <div className="flex flex-col">
+                                <p className="font-bold text-lg">Sender</p>
+                            </div>
+                        </div>
+
+                        {/* Receiver Title Border  */}
+                        <div className="col-span-2 flex items-center gap-x-2">
+                            <div className="flex flex-col">
+                                <p className="font-bold text-lg">Receiver</p>
+                            </div>
+                        </div>
+
+                        {/* Sender State  */}
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label htmlFor="SenderState" className="block w-48">
                                 Sender State:
@@ -312,56 +321,8 @@ export default function AddTransit({
                                 })}
                             </select>
                         </div>
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="name" className="block w-48 ">
-                                Sender City:{" "}
-                            </label>
-                            <input
-                                type="text"
-                                name="name"
-                                id="SenderCity"
-                                defaultValue={object ? object.SenderCity : ""}
-                                className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
-                            />
-                        </div>
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="name" className="block w-48 ">
-                                Sender Suburb:{" "}
-                            </label>
-                            <input
-                                type="text"
-                                name="name"
-                                defaultValue={object ? object.SenderSuburb : ""}
-                                id="SenderSuburb"
-                                className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
-                            />
-                        </div>
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="name" className="block w-48 ">
-                                Sender PostCode:{" "}
-                            </label>
-                            <input
-                                type="number"
-                                name="name"
-                                id="SenderPostCode"
-                                defaultValue={
-                                    object ? object.SenderPostCode : ""
-                                }
-                                className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
-                            />
-                        </div>
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="name" className="block w-48 ">
-                                Receiver Name:{" "}
-                            </label>
-                            <input
-                                type="text"
-                                name="name"
-                                defaultValue={object ? object.ReceiverName : ""}
-                                id="ReceiverName"
-                                className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
-                            />
-                        </div>
+
+                        {/* Receiver State  */}
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label
                                 htmlFor="ReceiverState"
@@ -392,6 +353,22 @@ export default function AddTransit({
                                 })}
                             </select>
                         </div>
+
+                        {/* Sender City  */}
+                        <div className="col-span-2 flex items-center gap-x-2">
+                            <label htmlFor="name" className="block w-48 ">
+                                Sender City:{" "}
+                            </label>
+                            <input
+                                type="text"
+                                name="name"
+                                id="SenderCity"
+                                defaultValue={object ? object.SenderCity : ""}
+                                className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
+                            />
+                        </div>
+
+                        {/* Receiver City  */}
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label htmlFor="name" className="block w-48 ">
                                 Receiver City:{" "}
@@ -404,6 +381,22 @@ export default function AddTransit({
                                 className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
                             />
                         </div>
+
+                        {/* Sender Suburb  */}
+                        <div className="col-span-2 flex items-center gap-x-2">
+                            <label htmlFor="name" className="block w-48 ">
+                                Sender Suburb:{" "}
+                            </label>
+                            <input
+                                type="text"
+                                name="name"
+                                defaultValue={object ? object.SenderSuburb : ""}
+                                id="SenderSuburb"
+                                className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
+                            />
+                        </div>
+
+                        {/* Receiver Suburb  */}
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label htmlFor="name" className="block w-48">
                                 Receiver Suburb:{" "}
@@ -418,6 +411,24 @@ export default function AddTransit({
                                 className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
                             />
                         </div>
+
+                        {/* Sender PostCode  */}
+                        <div className="col-span-2 flex items-center gap-x-2">
+                            <label htmlFor="name" className="block w-48 ">
+                                Sender PostCode:{" "}
+                            </label>
+                            <input
+                                type="number"
+                                name="name"
+                                id="SenderPostCode"
+                                defaultValue={
+                                    object ? object.SenderPostCode : ""
+                                }
+                                className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
+                            />
+                        </div>
+
+                        {/* Receiver PostCode  */}
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label htmlFor="name" className="block w-48">
                                 Receiver PostCode:{" "}
@@ -432,6 +443,31 @@ export default function AddTransit({
                                 className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
                             />
                         </div>
+
+                        <div className="col-span-2 flex items-center gap-x-2">
+                        </div>
+
+                        {/* Receiver Name  */}
+                        <div className="col-span-2 flex items-center gap-x-2">
+                            <label htmlFor="name" className="block w-48 ">
+                                Receiver Name:{" "}
+                            </label>
+                            <input
+                                type="text"
+                                name="name"
+                                defaultValue={object ? object.ReceiverName : ""}
+                                id="ReceiverName"
+                                className="rounded sm:w-96 max-w-lg bg-gray-50 border border-gray-300 h-7"
+                            />
+                        </div>
+
+                       {/* Sender Title Border  */}
+                       <div className="col-span-4 flex items-center gap-x-2">
+                            <div className="flex flex-col">
+                                <p className="font-bold text-lg">Transit</p>
+                            </div>
+                        </div>
+                        {/* Transit Time  */}
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label htmlFor="name" className="block  w-48">
                                 Transit Time:{" "}
@@ -442,7 +478,7 @@ export default function AddTransit({
                                 name="TransitTime"
                                 id="TransitTime"
                                 required
-                                className="block sm:w-96 max-w-lg h-7 rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                                className="rounded sm:w-96 max-w-lg bg-gray-50 border border-gray-300 h-7"
                             />
                         </div>
                     </div>

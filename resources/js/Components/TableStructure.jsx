@@ -8,6 +8,7 @@ import { useState } from "react";
 
 export default function TableStructure({
     tableDataElements,
+    settableDataElements,
     filterValueElements,
     setFilterValueElements,
     groupsElements,

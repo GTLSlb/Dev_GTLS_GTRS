@@ -30,8 +30,9 @@
         window.Laravel = {
             appId: "{{ env('REACT_APP_ID') }}",
             gtrsUrl: "{{ env('GTRS_API_URL') }}",
+            gtccrUrl: "{{ env('GTCCR_API_URL') }}",
             gtamUrl: "{{ env('GTAM_API_URL') }}",
-
+            appDomain: "{{ env('SESSION_DOMAIN') }}",
         };
     </script>
     <!-- resources/views/layouts/app.blade.php -->
