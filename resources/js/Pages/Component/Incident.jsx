@@ -411,6 +411,7 @@ export default function Incident({
                     ) : (
                         <div className="">
                             <IncidentDetails
+                            currentUser={currentUser}
                                 mainCauses={mainCauses}
                                 filters={filters}
                                 incident={incident}

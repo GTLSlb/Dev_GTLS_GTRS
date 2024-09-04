@@ -24,6 +24,7 @@ export default function RDDreason({
     setactiveCon,
     rddData,
     url,
+    setIncidentId,
     AToken,
     setrddData,
     filterValue,
@@ -34,7 +35,6 @@ export default function RDDreason({
     accData,
 }) {
     window.moment = moment;
-
     const updateLocalData = (id, reason, note) => {
         // Find the item in the local data with the matching id
         const updatedData = rddData.map((item) => {
@@ -482,6 +482,9 @@ export default function RDDreason({
             ConsignmentNo: "ConsignmentNo",
             DebtorName: "Debtor Name",
             AccountNumber: "Account Name",
+            IncidentNo: "Incident No",
+            IncidentTypeName: "Incident Type",
+            IncidentStatusName: "Incident Status",
             SenderName: "Sender Name",
             SenderReference: "Sender Reference",
             SenderAddress: "Sender Address",
@@ -532,6 +535,12 @@ export default function RDDreason({
                         }
                     } else if (column === "Account Name") {
                         acc[columnKey] = person.AccountNumber;
+                    } else if (columnKey === "IncidentNo") {
+                        acc[columnKey] = person["IncidentNo"];
+                    } else if (columnKey === "IncidentStatusName") {
+                        acc[columnKey] = person["IncidentStatusName"];
+                    } else if (columnKey === "IncidentTypeName") {
+                        acc[columnKey] = person["IncidentTypeName"];
                     } else if (column === "ChangedAt") {
                         const date = new Date(person["ChangedAt"]);
                         if (!isNaN(date)) {
@@ -799,6 +808,65 @@ export default function RDDreason({
             },
         },
         {
+            name: "IncidentNo",
+            defaultWidth: 170,
+            header: "Incident No",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            render: ({ value, data }) => {
+                return (
+                    <span
+                        className="underline text-blue-500 hover:cursor-pointer"
+                        onClick={() => {
+                            setIncidentId(data.IncidentId);
+                            setActiveIndexGTRS(21);
+                        }}
+                    >
+                        {" "}
+                        {value}
+                    </span>
+                );
+            },
+            filterEditor: StringFilter,
+        },
+        {
+            name: "IncidentTypeName",
+            defaultWidth: 170,
+            header: "Incident Type",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            render: ({ value, data }) => {
+                return (
+                    <span
+                        className=""
+                    >
+                        {" "}
+                        {value}
+                    </span>
+                );
+            },
+            filterEditor: StringFilter,
+        },
+        {
+            name: "IncidentStatusName",
+            header: "Status",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            render: ({ value, data }) => {
+                return (
+                    <span
+                        className=""
+                    >
+                        {" "}
+                        {data.IncidentStatusName}
+                    </span>
+                );
+            },
+        },
+        {
             name: "SenderName",
             header: "Sender Name",
             type: "string",
@@ -974,107 +1042,6 @@ export default function RDDreason({
                     "Invalid date"
                     ? ""
                     : moment(value).format("DD-MM-YYYY hh:mm A");
-            },
-        },
-        {
-            name: "Reason",
-            header: "Reason",
-            headerAlign: "center",
-            textAlign: "start",
-            // defaultFlex: 1,
-            defaultWidth: 300,
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: false,
-                wrapMultiple: false,
-                dataSource: reasonOptions,
-            },
-            render: ({ value }) => {
-                return (
-                    <div>
-                        {/* {value} */}
-                        {
-                            rddReasons?.find(
-                                (reason) => reason.ReasonId === value
-                            )?.ReasonName
-                        }
-                    </div>
-                );
-            },
-        },
-        {
-            name: "ReasonDesc",
-            header: "Reason Description",
-            headerAlign: "center",
-            textAlign: "start",
-            defaultWidth: 300,
-            filterEditor: StringFilter,
-        },
-        {
-            name: "ChangeAt",
-            header: "Changed At",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            dateFormat: "DD-MM-YYYY",
-            filterEditor: DateFilter,
-            filterEditorProps: {
-                minDate: minChangeAtDate,
-                maxDate: maxChangeAtDate,
-            },
-            render: ({ value }) => {
-                {
-                    return (
-                        <p>
-                            {moment(
-                                convertUtcToUserTimezone(value + "Z"),
-
-                                "MM/DD/YYYY, h:mm:ss A"
-                            ).format("YYYY-MM-DD hh:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      convertUtcToUserTimezone(value + "Z"),
-
-                                      "MM/DD/YYYY, h:mm:ss A"
-                                  ).format("DD-MM-YYYY")}
-                        </p>
-                    );
-                }
-            },
-        },
-        {
-            name: "ChangedBy",
-            header: "Changed By",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: StringFilter,
-        },
-        {
-            name: "edit",
-            header: "edit",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 100,
-            render: ({ value, data }) => {
-                return (
-                    <div>
-                        {canEditRDD(currentUser) ? (
-                            <button
-                                className={
-                                    "rounded text-blue-500 justify-center items-center  "
-                                }
-                                onClick={() => {
-                                    handleEditClick(data);
-                                }}
-                            >
-                                <span className="flex gap-x-1">
-                                    <PencilIcon className="h-4" />
-                                    Edit
-                                </span>
-                            </button>
-                        ) : null}
-                    </div>
-                );
             },
         },
     ];

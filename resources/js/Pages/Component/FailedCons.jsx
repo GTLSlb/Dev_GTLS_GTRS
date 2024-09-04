@@ -189,6 +189,7 @@ export default function FailedCons({
     const maxDeliveredDate = getMinMaxValue(data, "DELIVEREDDATETIME", 2);
 
     const Roles = ["1", "3", "4", "5"];
+    console.log(data);
     const columns = [
         {
             name: "CONSIGNMENTNUMBER",
@@ -233,11 +234,40 @@ export default function FailedCons({
             filterEditor: StringFilter,
         },
         {
-            name: "STATUS",
+            name: "IncidentTypeName",
+            defaultWidth: 170,
+            header: "Incident Type",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            render: ({ value, data }) => {
+                return (
+                    <span
+                        className=""
+                    >
+                        {" "}
+                        {value}
+                    </span>
+                );
+            },
+            filterEditor: StringFilter,
+        },
+        {
+            name: "IncidentStatusName",
             header: "Status",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
+            render: ({ value, data }) => {
+                return (
+                    <span
+                        className=""
+                    >
+                        {" "}
+                        {data.IncidentStatusName}
+                    </span>
+                );
+            },
         },
         {
             name: "SENDERNAME",
@@ -976,7 +1006,9 @@ export default function FailedCons({
         const jsonData = handleFilterTable();
         const columnMapping = {
             CONSIGNMENTNUMBER: "Consignemnt Number",
-            STATUS: "Status",
+            IncidentNo: "Incident No",
+            IncidentTypeName: "Incident Type",
+            IncidentStatusName: "Incident Status",
             SENDERNAME: "Sender Name",
             SENDERREFERENCE: "Sender Reference",
             SenderState: "Sender State",
@@ -1060,6 +1092,12 @@ export default function FailedCons({
                         acc[columnKey] = failedReason?.ReasonName;
                     } else if (columnKey === "SenderState") {
                         acc[columnKey] = person["SenderState"];
+                    } else if (columnKey === "IncidentNo") {
+                        acc[columnKey] = person["IncidentNo"];
+                    } else if (columnKey === "IncidentStatusName") {
+                        acc[columnKey] = person["IncidentStatusName"];
+                    } else if (columnKey === "IncidentTypeName") {
+                        acc[columnKey] = person["IncidentTypeName"];
                     } else if (columnKey === "FailedReasonDesc") {
                         acc[columnKey] = person["FailedReasonDesc"];
                     } else if (columnKey === "FailedNote") {
