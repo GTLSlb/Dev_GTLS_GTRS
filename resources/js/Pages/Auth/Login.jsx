@@ -17,7 +17,7 @@ const msalConfig = {
         clientId: "05f70999-6ca7-4ee8-ac70-f2d136c50288",
         authority:
             "https://login.microsoftonline.com/647bf8f1-fc82-468e-b769-65fd9dacd442",
-        redirectUri: "http://localhost:8000/Main", // replace with your own redirect URI
+        redirectUri: "http://localhost:8000/auth/azure/callback", // replace with your own redirect URI
     },
 };
 
@@ -48,6 +48,30 @@ export default function Login({ status, canResetPassword }) {
     const handleRecaptchaExpired = () => {
         setRecaptchaValue(false);
     };
+
+    const loginRequest = {
+        scopes: ["openid", "profile", "User.Read"]
+    };
+    const handleLoginAzure= async (e) =>{
+        e.preventDefault();
+        setLoading(true);
+
+        const loginResponse = await pca.loginPopup(loginRequest);
+        // console.log("loginResponse", loginResponse);
+        const accessToken = loginResponse.accessToken; // Use this if returned in response
+            axios.post("/microsoftToken", {
+                socialiteUser: loginResponse
+            }).then((res) => {
+                //Cookies.set('gtam_access_token', res.data.access_token)
+                console.log("Access Token:", res.data.access_token);
+                setLoading(false);
+                window.location.href = '/main';
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        //pca.loginPopup({ scopes: ["user.read"] });
+    }
 
     const handleNextClick = async (e) => {
         // e.preventDefault();
@@ -149,7 +173,7 @@ export default function Login({ status, canResetPassword }) {
                 <Head title="Sign in" />
                 <div className="flex  flex-col justify-center items-center ">
                     <div className=" w-full shadow-md rounded px-8 pt-6 pb-8 mb-4 relative">
-                        <form onSubmit={submit} className="space-y-4">
+                        <div className="space-y-4">
                             <div className="mt-1">
                                 <a
                                     href="/"
@@ -262,9 +286,11 @@ export default function Login({ status, canResetPassword }) {
                                         className="mt-2"
                                     />
                                 </div>
-                                {/* <a className="text-white" href="/auth/azure">
+                                <button className="text-white" onClick={(e)=>{
+                                    handleLoginAzure(e)
+                                }}>
                                     Login with Microsoft Azure
-                                </a> */}
+                                </button>
                             </div>
                             <div className="flex items-center justify-between">
                                 <button
@@ -274,7 +300,8 @@ export default function Login({ status, canResetPassword }) {
                                             : "bg-goldd hover:bg-goldt text-dark"
                                     } font-bold rounded-md border border-transparent bg-goldd py-2 px-4 text-sm font-medium  shadow-sm  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
                                     disabled={loading}
-                                    type="submit"
+                                    type="button"
+                                    onClick={(e)=>submit(e)}
                                 >
                                     {loading ? (
                                         <AiOutlineLoading3Quarters className="animate-spin h-5 w-5" />
@@ -283,7 +310,7 @@ export default function Login({ status, canResetPassword }) {
                                     )}
                                 </button>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </GuestLayout>

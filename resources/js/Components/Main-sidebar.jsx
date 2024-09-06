@@ -44,6 +44,8 @@ export default function MainSidebar({
     setActiveIndexInv,
     currentUser,
     setActiveIndexGTRS,
+    setToken,
+    setCurrentUser,
     activePage,
 }) {
     const invoicesRoles = [6, 7, 8, 9, 10];
@@ -456,7 +458,9 @@ export default function MainSidebar({
             .post("/logoutAPI", isLoggingOut)
             .then((response) => {
                 if (response.status == 200) {
-                    window.location.href = "/";
+                    setToken(null);
+                    setCurrentUser(null);
+                    window.location.href = "/login";
                 }
             })
             .catch((error) => {

@@ -67,10 +67,10 @@ export default function Gtrs({
     } else {
         debtorIds = currentUser.UserId;
     }
-    useEffect(() => {
-        document.cookie =
-            "previous_page=" + encodeURIComponent(window.location.href);
-    }, []);
+    // useEffect(() => {
+    //     document.cookie =
+    //         "previous_page=" + encodeURIComponent(window.location.href);
+    // }, []);
     useEffect(() => {
         setUserBody(debtorIds);
         setLoadingGtrs(false);

@@ -108,14 +108,6 @@ Route::get('/download-docx', function () {
     );
     return response()->download($pathToFile, '20230630-Gold-Tiger-Logistics-Solutions-Trading-Terms-and-Conditions.pdf', $headers);
 });
-// Route::post('/auth/azure', function (Request $request) {
-//     $data = $request->json()->all();
-//     $email = $data['email'];
-//     $UserId = $data['UserId'];
-//     return Socialite::driver('azure')
-//     ->with(['login_hint' => $email]) // Pass the email address as a parameter to the Azure AD login page
-//     ->redirect();
-// });
 
 Route::get('/downloadGTLS-Pallets', function () {
     $pathToFile = public_path('docs/GTLS Pallet Trading Policy 2023_08_23.pdf');
@@ -152,11 +144,6 @@ Route::get('/downloadGTLS-docx', function () {
 });
 
 Route::get('/checkAuth', [AuthenticatedSessionController::class, 'checkAuth']);
-Route::get('/auth/azure', function () {
-    return Socialite::driver('azure')->redirect();
-});
-
-Route::get('/auth/azure/callback', [AzureAuthController::class, 'handleCallback']);
 Route::get('/checkEmail', [AzureAuthController::class, 'handleClickCallBack']);
 
 
@@ -164,6 +151,11 @@ Route::middleware('custom.auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/users', [RegisteredUserController::class, 'getCurrentUserName'])->name('/gtms');
+    Route::post('/auth/azure', function () {
+        return Socialite::driver('azure')->redirect();
+    })->name('azure.login');
+    Route::get('/auth/azure/callback', [AzureAuthController::class, 'handleCallback'])->name('azure.callback');
+    Route::post('/microsoftToken', [AzureAuthController::class, 'sendToken'])->name('azure.token');
     Route::get('/childrens/{id}', [RegisteredUserController::class, 'getChildrens'])->name('/gtms');
     Route::get('/childrenlist/{id}', [RegisteredUserController::class, 'getChildrensList'])->name('/gtms');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

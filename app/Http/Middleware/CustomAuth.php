@@ -42,7 +42,7 @@ class CustomAuth extends Middleware
         return false;
     }
 
-    public function handle($request, Closure $next, ...$guards)
+    public function handle($request, $next, ...$guards)
     {
         $hasSession = $request->hasSession();
         if ($hasSession) {
@@ -51,14 +51,14 @@ class CustomAuth extends Middleware
             $path = $request->path();
             $request->headers->set('X-CSRF-TOKEN', csrf_token());
             // Allow access to the login route
-            if ($path == 'login' || $path == 'loginapi') {
+            if ($path == 'login' || $path == 'loginapi' || $path == 'forgot-password' || $path == 'auth/azure' || $path == 'auth/azure/callback' || $path == 'microsoftToken') {
                 return $next($request);
             }
             if ($path !== 'login' && $path !== 'loginapi' && $path !== 'forgot-password' && !$request->session()->has('user')) {
                 return redirect()->route('login');
             }
         } else {
-            if ($request->path() == 'login' || $request->path() == 'loginapi') {
+            if ($request->path() == 'login' || $request->path() == 'loginapi' || $request->path() == '/auth/azure' || $request->path() == 'auth/azure/callback' || $request->path() == 'microsoftToken') {
                 return $next($request);
             }
 
