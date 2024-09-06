@@ -757,6 +757,24 @@ export default function charts({
             type: "string",
             value: "",
         },
+        {
+            name: "IncidentNo",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "IncidentTypeName",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "IncidentStatusName",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
         { name: "SENDERNAME", operator: "contains", type: "string", value: "" },
         {
             name: "SENDERREFERENCE",
@@ -890,6 +908,24 @@ export default function charts({
     const [filtersRDD, setFiltersRDD] = useState([
         {
             name: "ConsignmentNo",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "IncidentNo",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "IncidentTypeName",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "IncidentStatusName",
             operator: "contains",
             type: "string",
             value: "",
@@ -2057,6 +2093,7 @@ export default function charts({
         <RDDMain
             oldestDate={oldestDate}
             latestDate={latestDate}
+            setIncidentId={setIncidentId}
             currentUser={currentUser}
             userBody={userBody}
             url={url}

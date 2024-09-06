@@ -277,6 +277,23 @@ export function canEditFailedReasons(currentUser) {
     return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
 }
 
+/**
+ * Checks if the user can edit RDD report based on their permissions for a specific page.
+ *
+ * @param {Object} currentUser - The current user object with role, permissions, and pages.
+ * @return {boolean} True if the user can edit RDD report on the specific page, false otherwise.
+ */
+export function canViewInternal(currentUser) {
+    // Define the specific permission to check for editing RDD report
+    const targetPermissionName = "IR_Internal";
+    const pageName = "Incident Report"; // Adjust the page name as needed
+
+    // Find the specified page in the user's Pages array
+    const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
+
+    // Check if the page is found and if the specified permission is present in its Features array
+    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
+}
 
 /**
  * Checks if the user can edit RDD report based on their permissions for a specific page.
