@@ -16,7 +16,7 @@ use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
 use Psy\Readline\Hoa\Console;
-use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 
@@ -58,11 +58,11 @@ class RegisteredUserController extends Controller
     {
 
         if ($request->session()->get('user')!=null) {
-            
+
             //$user = $request->session()->get('user');
             //dd($request->session()->getId());
             $sessionId = $request->session()->getId();
-            
+
             // Query the database to get the user based on the session ID
             $user = DB::table('custom_sessions')
                 ->where('id', $sessionId)
@@ -76,7 +76,7 @@ class RegisteredUserController extends Controller
                 $TypeId = $user->TypeId;
                 $TypeName =$user->TypeName;
                 $OwnerId = $user->OwnerId;
-                $GroupId = $user->GroupId;
+                // $GroupId = $user->GroupId;
                 $GroupName = $user->GroupName;
                 $Username = $user->Username;
                 $Email = $user->Email;
@@ -86,7 +86,7 @@ class RegisteredUserController extends Controller
                     'TypeId' => $TypeId,
                     'TypeName' => $TypeName,
                     'OwnerId' => $OwnerId,
-                    'GroupId' => $GroupId,
+                    // 'GroupId' => $GroupId,
                     'GroupName' => $GroupName,
                     'Username' => $Username,
                     'Email' => $Email,
@@ -99,7 +99,7 @@ class RegisteredUserController extends Controller
                 $TypeId = $user->TypeId;
                 $TypeName =$user->TypeName;
                 $OwnerId = $user->OwnerId;
-                $GroupId = $user->GroupId;
+                // $GroupId = $user->GroupId;
                 $Username = $user->Username;
                 $FirstName = $user->FirstName;
                 $LastName = $user->LastName;
@@ -125,7 +125,7 @@ class RegisteredUserController extends Controller
                     'TypeId' => $TypeId,
                     'TypeName' => $TypeName,
                     'OwnerId' => $OwnerId,
-                    'GroupId' => $GroupId,
+                    // 'GroupId' => $GroupId,
                     'Username' => $Username,
                     'FirstName' => $FirstName,
                     'LastName' => $LastName,
@@ -168,8 +168,8 @@ class RegisteredUserController extends Controller
                     'phoneNbr' => $phoneNbr,
                 );
             }
-           
-            
+
+
 
 
             return response()->json($user);
@@ -343,18 +343,18 @@ class RegisteredUserController extends Controller
     public function deleteFile(Request $request)
     {
         $fileNames = $request->input('file_names');
-    
+
         if (!$fileNames || !is_array($fileNames)) {
             return response()->json(['message' => 'File names array not provided.'], 400);
         }
-    
+
         $publicPath = public_path();
         $deletedFiles = [];
         $notFoundFiles = [];
-    
+
         foreach ($fileNames as $fileName) {
             $filePath = $publicPath . '/'. "Invoices" . "/" . $fileName;
-    
+
             if (File::exists($filePath)) {
                 File::delete($filePath);
                 $deletedFiles[] = $fileName;
@@ -362,7 +362,7 @@ class RegisteredUserController extends Controller
                 $notFoundFiles[] = $fileName;
             }
         }
-    
+
         return response()->json([
             'message' => 'Files deleted successfully.',
             'deleted_files' => $deletedFiles,

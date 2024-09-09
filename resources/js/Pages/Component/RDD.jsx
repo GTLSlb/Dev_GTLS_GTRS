@@ -502,14 +502,14 @@ export default function RDDreason({
             NewRdd: "New Rdd",
             ReasonDesc: "Reason Desc",
         };
-    
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
-    
+
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
@@ -572,13 +572,13 @@ export default function RDDreason({
                 return acc;
             }, {})
         );
-    
+
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
-    
+
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
-    
+
         // Apply custom styles to the header row
         const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
@@ -588,32 +588,32 @@ export default function RDDreason({
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
         headerRow.alignment = { horizontal: "center" };
-    
+
         // Add the data to the worksheet
         data.forEach((rowData) => {
             const row = worksheet.addRow(Object.values(rowData));
-    
+
             // Apply date format to the DespatchDate column
             const despatchDateIndex = newSelectedColumns.indexOf("Despatch Date");
             if (despatchDateIndex !== -1) {
                 const cell = row.getCell(despatchDateIndex + 1);
                 cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
             }
-    
+
             // Apply date format to the ChangedAt column
             const changedAtDateIndex = newSelectedColumns.indexOf("Changed At");
             if (changedAtDateIndex !== -1) {
                 const cell = row.getCell(changedAtDateIndex + 1);
                 cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
             }
-    
+
             // Apply date format to the OldRdd column
             const oldRddDateIndex = newSelectedColumns.indexOf("Old Rdd");
             if (oldRddDateIndex !== -1) {
                 const cell = row.getCell(oldRddDateIndex + 1);
                 cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
             }
-    
+
             // Apply date format to the NewRdd column
             const newRddDateIndex = newSelectedColumns.indexOf("New Rdd");
             if (newRddDateIndex !== -1) {
@@ -621,21 +621,21 @@ export default function RDDreason({
                 cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
             }
         });
-    
+
         // Set column widths
         const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
         }));
-    
+
         // Generate the Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
             // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-    
+
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "RDD-Report.xlsx");
         });
@@ -1027,7 +1027,6 @@ export default function RDDreason({
         {
             name: "NewRdd",
             header: "New Rdd",
-            headerAlign: "center",
             textAlign: "center",
             headerAlign: "center",
             defaultWidth: 170,

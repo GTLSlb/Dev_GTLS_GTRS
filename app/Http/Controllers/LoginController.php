@@ -35,10 +35,13 @@ class LoginController extends Controller
             'Email' => $email,
             'Password' => $password,
         ];
-        $url = $_ENV['GTAM_API_URL']; //LOGIN API
-        $expiration = time() - (60 * 60 * 24);
+
+        $url = $_ENV['GTAM_API_URL'];
+        $appID = $_ENV['REACT_APP_ID'];
+        $expiration = time() - (60 * 60 * 24); // expiration time set to 24h before current time
         // Get an array of all the cookies
         $cookies = $_COOKIE;
+
         // Loop through each cookie and set it to expire
         foreach ($cookies as $name => $value) {
             setcookie($name, '', $expiration);
@@ -70,10 +73,12 @@ class LoginController extends Controller
                     $TokenBody = [
                         'grant_type' => "password",
                     ];
+
                     $tokenURL = $_ENV['GTAM_API_URL'];
                     $tokenRes = Http::withHeaders($TokenHeaders)
                     ->asForm()
-                    ->post("$tokenURL" . "/Token", $TokenBody);
+                    ->post("$tokenURL" . "Token", $TokenBody);
+
                     if($responseData[0]['TypeId'] == 1) // the user is a customer
                     {
                         $user = new Customer($responseData[0]);
@@ -89,14 +94,9 @@ class LoginController extends Controller
                         $token = $tokenRes->json();
                         $cookieName = 'access_token';
                         $cookieValue = $token['access_token'];
-                        $expiry = 60 * 60 * 24; // 24 hours
-                        $expirationTime = time() + $expiry;
-
-                        setcookie('previous_page', $_ENV['APP_URL'] . "/main", time() + $expirationTime, '/', '', true);
-
-                        // Set cookies for the domain .gtls.store
-                        setcookie($cookieName, $cookieValue, $expirationTime, '/', $_ENV['SESSION_DOMAIN'], true, false);
-                        setcookie('gtfm_refresh_token', $token['refresh_token'], $expirationTime, '/', $_ENV['SESSION_DOMAIN'], true, false);
+                        $expiry = $token['expires_in'];
+                        setcookie($cookieName, $cookieValue, time() + $expiry, '/', '', true);
+                        setcookie('gtis_refresh_token', $token['refresh_token'], time() + $expiry, '/', '', true);
 
                         $userId = $user['UserId'];
                         $request->session()->regenerate();
@@ -121,15 +121,20 @@ class LoginController extends Controller
                         ]);
 
                         $request->session()->save();
-
                         if ($request->session()->get('newRoute') && $request->session()->get('user')) {
-                            return response($request, 200);
+                            return response()->json([
+                                'status' => 200,
+                                'message' => 'Logged in successfully',
+                                'access_token' => $cookieValue,
+                                'expires_in' => $expiry,
+                            ]);
                         }
-                    } else {
-                        $errorMessage = 'Something went wrong, try again later';
-                        $statusCode = 500;
-                        return response(['error' => $response, 'Message' => $errorMessage], $statusCode);
-                    }
+                        }else{
+                            $errorMessage = 'Something went wrong, try again later';
+                            $statusCode = 500;
+                            return response(['error' => $response, 'Message' => $errorMessage], $statusCode);
+                        }
+
 
                 } else {
                     $errorMessage = 'Invalid Credentials';
@@ -147,64 +152,88 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
-        // Retrieve the 'access_token' cookie
-        $token = isset($_COOKIE['access_token']) ? $_COOKIE['access_token'] : null;
+        // Retrieve the 'gtam_access_token' cookie
+        $token = isset($_COOKIE['gtam_access_token']) ? $_COOKIE['gtam_access_token'] : null;
+
         // Create an instance of the RegisteredUserController and get the current user
         $userController = new RegisteredUserController();
         $user = $userController->getCurrentUserName($request);
         $userMsg = json_decode($user->content(), true);
-
+        //dd(gettype($userMsg) != "array" && gettype($userMsg) != "object" && gettype($userMsg) == "string");
         if(gettype($userMsg) != "array" && gettype($userMsg) != "object" && gettype($userMsg) == "string") {
-            if ($userMsg['message'] == 'User not found') {
+        if ($userMsg['message'] == 'User not found') {
 
-                    $request->session()->invalidate();
-                    $request->session()->flush();
-                    // Set the expiration time for the cookies to 24 hours before the current time
-                    $expiration = time() - (60 * 60 * 24);
-                    $cookies = $_COOKIE;
+                $request->session()->invalidate();
+                $request->session()->flush();
+                // Set the expiration time for the cookies to 24 hours before the current time
+                $expiration = time() - (60 * 60 * 24);
+                $cookies = $_COOKIE;
 
-                    // Loop through each cookie and set it to expire
-                    foreach ($cookies as $name => $value) {
-                        setcookie($name, '', $expiration);
-                    }
-                    $request->session()->regenerateToken();
-                    // return redirect('/login');
-            }} else {
-        // Extract the UserId from the response
-        $UserId = $user->original['UserId'];
-        // Set up headers for the logout request
+                // Loop through each cookie and set it to expire
+                foreach ($cookies as $name => $value) {
+                    setcookie($name, '', $expiration);
+                }
+                $request->session()->regenerateToken();
+                // return redirect('/login');
+        }} else {
+            // Extract the UserId from the response
+            $UserId = $user->original['UserId'];
 
-        $headers = [
-            'UserId' => $UserId,
-            'Authorization' => "Bearer " . "$token",
-        ];
-        // Define the URL for the logout request
-        $url = env('GTAM_API_URL') . "Logout";
-        // Send the logout request to the external API
-        $response = Http::withHeaders($headers)->get($url);
-        // Check if the logout request was successful
-        //  dd($response);
-        if ($response->successful()) {
-            // Invalidate and flush the session
-            $request->session()->invalidate();
-            $request->session()->flush();
-            // Set the expiration time for the cookies to 24 hours before the current time
-            $expiration = time() - (60 * 60 * 24);
-            // Get an array of all the cookies
-            $cookies = $_COOKIE;
-            // Loop through each cookie and set it to expire
-            foreach ($cookies as $name => $value) {
-                setcookie($name, '', $expiration);
+            // Set up headers for the logout request
+            $headers = [
+                'UserId' => $UserId,
+                'Authorization' => "Bearer " . "$token",
+            ];
+
+            // Define the URL for the logout request
+            $url = env('GTAM_API_URL') . "Logout";
+
+            // Send the logout request to the external API
+            $response = Http::withHeaders($headers)->get($url);
+
+            // Check if the logout request was successful
+            if ($response->successful()) {
+                // Invalidate and flush the session
+                $request->session()->forget('user');
+                $request->session()->invalidate();
+                $request->session()->flush();
+                // Set the expiration time for the cookies to 24 hours before the current time
+                $expiration = time() - (60 * 60 * 24);
+
+                // Get an array of all the cookies
+                $cookies = $_COOKIE;
+
+                // Loop through each cookie and set it to expire
+                foreach ($cookies as $name => $value) {
+                    setcookie($name, '', $expiration);
+                }
+
+                // Regenerate the session token
+                $request->session()->regenerateToken();
+
+                // logout from microsoft azure
+                // $socialiteUser = Socialite::driver('azure')->user();
+
+                // if ($socialiteUser) {
+                //      // Get the access token
+                //     $accessToken = $socialiteUser->token;
+
+                //     // Decode the token to access claims
+                //     $tokenClaims = json_decode(base64_decode(explode('.', $accessToken)[1]), true);
+
+                //     // Extract the tenant ID
+                //     // $userTenantId = $tokenClaims['tenantId'];
+                //     //$logoutUrl = 'https://login.microsoftonline.com/' . $userTenantId . '/oauth2/v2.0/logout?post_logout_redirect_uri=http://localhost:8000/auth/azure/callback';
+                // }
+
+                // Redirect to the login page
+                return redirect('/login');
+            } else {
+                // Handle the case where the logout request fails
+                // You can log an error or return a specific response
+                return redirect()->back()->withErrors(['error' => 'Logout failed. Please try again.']);
             }
-            // Regenerate the session token
-            $request->session()->regenerateToken();
-            // Redirect to the login page
-            return redirect('/login');
-        } else {
-            // Handle the case where the logout request fails
-            // You can log an error or return a specific response
-            return redirect()->back()->withErrors(['error' => 'Logout failed. Please try again.']);
-        }}
+        }
     }
 }
 ?>

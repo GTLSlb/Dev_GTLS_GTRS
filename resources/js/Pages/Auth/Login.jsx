@@ -1,23 +1,34 @@
 import { useEffect, useState } from "react";
+import Logo from "../../assets/pictures/Logo.png";
+import Checkbox from "@/Components/Checkbox";
 import GuestLayout from "@/Layouts/GuestLayout";
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
+import PrimaryButton from "@/Components/PrimaryButton";
 import TextInput from "@/Components/TextInput";
+import PasswordInput from "@/Components/PasswordInput";
 import { Head, Link, useForm } from "@inertiajs/react";
 import { PublicClientApplication } from "@azure/msal-browser";
 import ReCAPTCHA from "react-google-recaptcha";
+import { InertiaApp } from "@inertiajs/inertia-react";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import "../../../css/scroll.css";
-import axios from "axios";
-import CryptoJS from "crypto-js";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import axios from "axios";
+import CryptoJS from 'crypto-js';
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const msalConfig = {
     auth: {
         clientId: "05f70999-6ca7-4ee8-ac70-f2d136c50288",
         authority:
             "https://login.microsoftonline.com/647bf8f1-fc82-468e-b769-65fd9dacd442",
-        redirectUri: "http://localhost:8000/auth/azure/callback", // replace with your own redirect URI
+        redirectUri: "http://localhost:8000/auth/azure/callback",
+    },
+    cache: {
+        cacheLocation: "sessionStorage",
+        storeAuthStateInCookie: true, // Set this to true if dealing with IE11 or issues with sessionStorage
     },
 };
 
@@ -29,10 +40,12 @@ export default function Login({ status, canResetPassword }) {
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [recaptchaValue, setRecaptchaValue] = useState(true);
+    const [recaptchaValue, setRecaptchaValue] = useState(false);
     const [passwordType, setPasswordType] = useState("password");
     const [errorMessage, setErrorMessage] = useState("");
     const [loading, setLoading] = useState(false);
+    const gtamURl = window.Laravel.gtamUrl;
+
     const togglePassword = () => {
         if (passwordType === "password") {
             setPasswordType("text");
@@ -48,6 +61,48 @@ export default function Login({ status, canResetPassword }) {
     const handleRecaptchaExpired = () => {
         setRecaptchaValue(false);
     };
+
+    const handleNextClick = async (e) => {
+        // e.preventDefault();
+        setShowPassword(true);
+    };
+    const handleBackClick = async (e) => {
+        // e.preventDefault();
+        setShowPassword(false);
+    };
+
+    const { data, setData, post, processing, errors, reset } = useForm({
+        email: "",
+        password: "",
+        remember: "",
+    });
+
+    useEffect(() => {
+        return () => {
+            reset("password");
+        };
+    }, []);
+
+    const handleOnChange = (event) => {
+        setEmail(event.target.value);
+        setData(
+            event.target.name,
+            event.target.type === "checkbox"
+                ? event.target.checked
+                : event.target.value
+        );
+    };
+
+    const handleOnChangePassword = (event) => {
+
+        setData(
+            event.target.name,
+            event.target.type === "checkbox"
+                ? event.target.checked
+                : event.target.value
+        );
+    setPassword(event.target.value);
+    }
 
     const loginRequest = {
         scopes: ["openid", "profile", "User.Read"]
@@ -73,58 +128,13 @@ export default function Login({ status, canResetPassword }) {
         //pca.loginPopup({ scopes: ["user.read"] });
     }
 
-    const handleNextClick = async (e) => {
-        // e.preventDefault();
-        setShowPassword(true);
-    };
-    const handleBackClick = async (e) => {
-        // e.preventDefault();
-        setShowPassword(false);
-    };
-    useEffect(() => {
-        pca.handleRedirectPromise().then(() => {
-            // handle redirect response if any
-        });
-    }, []);
-    const { data, setData, post, processing, errors, reset } = useForm({
-        email: "",
-        password: "",
-        remember: "",
-    });
-
-    useEffect(() => {
-        return () => {
-            reset("password");
-        };
-    }, []);
-
-    const handleOnChange = (event) => {
-        setEmail(event.target.value);
-        setData(
-            event.target.name,
-            event.target.type === "checkbox"
-                ? event.target.checked
-                : event.target.value
-        );
-    };
-
-    const handleOnChangePassword = (event) => {
-        setData(
-            event.target.name,
-            event.target.type === "checkbox"
-                ? event.target.checked
-                : event.target.value
-        );
-        setPassword(event.target.value);
-    };
-    const gtamUrl = window.Laravel.gtamUrl;
     const submit = (e) => {
         setLoading(true);
         e.preventDefault();
-        setErrorMessage("");
+        setErrorMessage("")
         const hashedPassword = CryptoJS.SHA256(password).toString();
         axios
-            .get(`${gtamUrl}Login`, {
+            .get(`${gtamURl}Login`, {
                 headers: {
                     Email: email,
                     Password: hashedPassword,
@@ -142,23 +152,25 @@ export default function Login({ status, canResetPassword }) {
                     Password: hashedPassword,
                 };
                 axios
-                    .post("/loginapi", credentials)
-                    .then((response) => {
-                        if (response.status == 200) {
-                            window.location.href = "/main";
-                        }
-                    })
-                    .catch((error) => {
-                        setLoading(false);
-                        setErrorMessage(error.response.data.Message);
-                    });
+                .post("/loginapi", credentials)
+                .then((response)=>{
+                    if(response.status == 200) {
+                        console.log(response.data);
+                       window.location.href = '/main';
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    setLoading(false);
+                    setErrorMessage(error.response.data.Message)
+                });
             })
             .catch((err) => {
+                console.log(err);
                 setLoading(false);
-                setErrorMessage(
-                    err.response.data.Message ?? "Something went wrong"
-                );
+                setErrorMessage(err.response?.data?.Message)
             });
+
     };
     const handleKeyPress = (event) => {
         if (event.key === "Enter") {
@@ -262,20 +274,15 @@ export default function Login({ status, canResetPassword }) {
                                     <div className="flex items-center justify-end mt-0">
                                         {canResetPassword && (
                                             <Link
-                                                onClick={() =>
-                                                    (window.location.href =
-                                                        "/forgot-password")
-                                                }
-                                                className="underline text-sm text-goldd dark:text-smooth hover:text-gray-900 dark:hover:text-goldd rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
+                                                onClick={()=>window.location.href = '/forgot-password'}
+                                                className="underline text-sm text-goldd dark:text-smooth hover:text-goldd/80 dark:hover:text-goldd rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
                                             >
                                                 Forgot your password?
                                             </Link>
                                         )}
                                     </div>
                                     {errorMessage && (
-                                        <div className="py-2 text-red-600">
-                                            {errorMessage}
-                                        </div>
+                                        <div className="py-2 text-red-600">{errorMessage}</div>
                                     )}
                                     <InputError
                                         message={errors.email}
@@ -295,24 +302,36 @@ export default function Login({ status, canResetPassword }) {
                             <div className="flex items-center justify-between">
                                 <button
                                     className={`flex w-full justify-center ${
-                                        loading
+                                        loading || !recaptchaValue
                                             ? "bg-gray-600 cursor-not-allowed text-white"
                                             : "bg-goldd hover:bg-goldt text-dark"
                                     } font-bold rounded-md border border-transparent bg-goldd py-2 px-4 text-sm font-medium  shadow-sm  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
-                                    disabled={loading}
+                                    disabled={loading }
+                                        //|| !recaptchaValue}
                                     type="button"
                                     onClick={(e)=>submit(e)}
                                 >
                                     {loading ? (
-                                        <AiOutlineLoading3Quarters className="animate-spin h-5 w-5" />
+                                        <AiOutlineLoading3Quarters className="animate-spin" />
                                     ) : (
                                         "Sign In"
                                     )}
                                 </button>
                             </div>
                         </div>
+                        <ReCAPTCHA
+                            sitekey="6Lf30MEmAAAAAA4_iPf9gTM1VMNO9iSFKyaAC1P0"
+                            onChange={handleRecaptchaChange}
+                            onExpired={handleRecaptchaExpired}
+                            className="mt-4 flex justify-center "
+                            size="normal" // Set the desired size here: "compact", "normal", or "invisible"
+                            render="explicit" // Use "explicit" rendering
+                            theme="dark" // Set the desired theme: "light" or "dark"
+                            style={{ transform: "scale(0.8)" }} // Use CSS transform to adjust the size
+                        />
                     </div>
                 </div>
+
             </GuestLayout>
         </div>
     );

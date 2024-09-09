@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 use Inertia\Response;
 
 class AuthenticatedSessionController extends Controller
@@ -17,20 +18,12 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(Request $request)
+    public function create(): Response
     {
-
-        if ($request->session()->has('user')) {
-            // If the user is logged in, you can redirect them to a default page or dashboard.
-            return redirect('/main');
-        } else {
-            // If no user is logged in, render the login page.
-            return Inertia::render('Auth/Login', [
-                'canResetPassword' => Route::has('password.request'),
-                'status' => session('status'),
-            ]);
-        }
-        
+        return Inertia::render('Auth/Login', [
+            'canResetPassword' => Route::has('password.request'),
+            'status' => session('status'),
+        ]);
     }
 
     /**
