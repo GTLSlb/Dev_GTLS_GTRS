@@ -164,15 +164,16 @@ function InlineTable({
                     baseRecord.TotalNoPod != null) ||
                 baseRecord.TotalNoPod != ""
             ) {
-                baseRecord.onTimePercentage =
-                    ((baseRecord.TotalCons - baseRecord.TotalFails) /
-                        baseRecord.TotalCons) *
-                    100;
-                baseRecord.PODPercentage =
-                    ((baseRecord.TotalCons - baseRecord.TotalNoPod) /
-                        baseRecord.TotalCons) *
-                    100;
-
+                    if(baseRecord.TotalCons == 0 || baseRecord.TotalCons == null){
+                        baseRecord.onTimePercentage = 0
+                    }else {
+                        baseRecord.onTimePercentage = ((baseRecord.TotalCons - baseRecord.TotalFails) / baseRecord.TotalCons) * 100
+                    }
+                    if(baseRecord.TotalCons == 0 || baseRecord.TotalCons == null){
+                        baseRecord.PODPercentage = 0
+                    }else {
+                        baseRecord.PODPercentage = ((baseRecord.TotalCons - baseRecord.TotalFails) / baseRecord.TotalCons) * 100
+                    }
                 data[4][columnId] = `${(
                     baseRecord.onTimePercentage || 0
                 ).toFixed(2)}%`;
