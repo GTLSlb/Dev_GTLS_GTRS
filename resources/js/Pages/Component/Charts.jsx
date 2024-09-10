@@ -23,6 +23,7 @@ import NewKPI from "./NewKPI";
 import NewTransitDays from "./NewTransitDays";
 import AddNewTransitDay from "./KPI/AddNewTransitDay";
 import GraphPresentation from "./Presentation/GraphPresentation";
+import TrafficComp from "./TrafficPage/TrafficComp";
 
 export default function charts({
     setCusomterAccounts,
@@ -2229,6 +2230,7 @@ export default function charts({
             currentUser={currentUser}
             AToken={AToken}
         />,
+        <TrafficComp />
     ];
     return (
         <div className="">
