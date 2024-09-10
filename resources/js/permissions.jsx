@@ -3,6 +3,7 @@ import swal from "sweetalert";
 
 
 export function AlertToast(msg, status) {
+    console.log(status);
     if (status == 1) {
         toast.success(msg, {
             position: "bottom-right",

@@ -177,7 +177,7 @@ const navigation = [
     },
     {
         id: 20,
-        name: "Unilever Report",
+        name: "KPI Pack Report",
         href: "#",
         icon: DocumentTextIcon,
         current: false,

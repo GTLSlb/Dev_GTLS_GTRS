@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
 import axios from "axios";
@@ -56,12 +56,20 @@ function InlineTable({
             minWidth: 100,
             sortable: false,
             editor: NumericEditor,
-            editable: true, // Use the lookup function here
+
+            // Adjusted the editable function to properly log the row data
+            // Use closure to capture row data
+            editable: (editValue, cellProps) => {
+                return Promise.resolve(
+                    cellProps.data.metric !== "Ontime %" &&
+                        cellProps.data.metric !== "POD %"
+                );
+            },
+
             render: ({ value }) => {
                 return <div className="font-normal">{value}</div>; // Render value as text
             },
         });
-
         originalDataTemplate[columnName] = "";
     });
 
@@ -106,35 +114,27 @@ function InlineTable({
         }
     });
 
-    const [gridRef, setGridRef] = useState(null);
     const [dataSource, setDataSource] = useState(originalData);
     const [validationErrors, setValidationErrors] = useState({});
 
     // Lookup function to determine editability based on rowIndex and columnName
 
-    const percentageRows = dataSource.filter((row) => row.metric.includes("%"));
-    const nonPercentageRows = dataSource.filter(
-        (row) => !row.metric.includes("%")
-    );
-
     const onEditComplete = useCallback(
         ({ value, columnId, rowIndex }) => {
             const data = [...dataSource]; // Clone dataSource to prevent direct state mutation
-            // data[rowIndex][columnId] = value;
             let formattedValue = value;
-
+    
             // Format the KPI Benchmark row value as a percentage
             if (rowIndex === 3) {
-                // Assuming KPI Benchmark is at index 3
                 formattedValue =
                     value == null ? "" : `${parseFloat(value).toFixed(2)} %`;
             }
-
+    
             data[rowIndex][columnId] = formattedValue;
-
+    
             const baseRecord = recordMap[columnId];
             let updatedField = "";
-
+    
             // Determine which field has been updated based on the row index
             switch (rowIndex) {
                 case 0:
@@ -153,76 +153,82 @@ function InlineTable({
                 default:
                     break;
             }
-
+    
             baseRecord[updatedField] = value;
-
-            // Update percentages if necessary
-            if (
-                baseRecord.TotalCons != null ||
-                (baseRecord.TotalCons != "" && baseRecord.TotalFails != null) ||
-                (baseRecord.TotalFails != "" &&
-                    baseRecord.TotalNoPod != null) ||
-                baseRecord.TotalNoPod != ""
-            ) {
-                baseRecord.onTimePercentage =
-                    ((baseRecord.TotalCons - baseRecord.TotalFails) /
-                        baseRecord.TotalCons) *
-                    100;
-                baseRecord.PODPercentage =
-                    ((baseRecord.TotalCons - baseRecord.TotalNoPod) /
-                        baseRecord.TotalCons) *
-                    100;
-
-                data[4][columnId] = `${(
-                    baseRecord.onTimePercentage || 0
-                ).toFixed(2)}%`;
-                data[5][columnId] = `${(baseRecord.PODPercentage || 0).toFixed(
-                    2
-                )}%`;
+    
+            // Recalculate percentages
+            if (baseRecord.TotalCons && baseRecord.TotalCons !== 0) {
+                // Handle OnTime % calculation
+                if (baseRecord.TotalFails == null || baseRecord.TotalFails === "") {
+                    baseRecord.onTimePercentage = ""; // Clear OnTime % if TotalFails is empty
+                } else {
+                    baseRecord.onTimePercentage = (
+                        ((baseRecord.TotalCons - baseRecord.TotalFails) /
+                            baseRecord.TotalCons) *
+                        100
+                    ).toFixed(2);
+                }
+    
+                // Handle POD % calculation
+                if (baseRecord.TotalNoPod == null || baseRecord.TotalNoPod === "") {
+                    baseRecord.PODPercentage = ""; // Clear POD % if TotalNoPod is empty
+                } else {
+                    baseRecord.PODPercentage = (
+                        ((baseRecord.TotalCons - baseRecord.TotalNoPod) /
+                            baseRecord.TotalCons) *
+                        100
+                    ).toFixed(2);
+                }
+            } else {
+                baseRecord.onTimePercentage = ""; // Clear OnTime % if TotalCons is zero or null
+                baseRecord.PODPercentage = ""; // Clear POD % if TotalCons is zero or null
             }
-
-            // Validate if all necessary fields are provided before making an API request
-            if (baseRecord.TotalCons == null || baseRecord.TotalCons === "") {
+    
+            // Update the data in the dataSource
+            data[4][columnId] = baseRecord.onTimePercentage
+                ? `${baseRecord.onTimePercentage}%`
+                : "";
+            data[5][columnId] = baseRecord.PODPercentage
+                ? `${baseRecord.PODPercentage}%`
+                : "";
+    
+            // Validate fields before making an API request
+            if (!baseRecord.TotalCons) {
                 console.log("Validation failed: TotalCons is null or empty");
                 setValidationErrors((prev) => ({
                     ...prev,
                     [`${columnId}`]: true,
                 }));
-            } else if (
-                baseRecord.TotalFails == null ||
-                baseRecord.TotalFails === ""
-            ) {
+                return;
+            } else if (!baseRecord.TotalFails) {
                 console.log("Validation failed: TotalFails is null or empty");
                 setValidationErrors((prev) => ({
                     ...prev,
                     [`${columnId}`]: true,
                 }));
-            } else if (
-                baseRecord.TotalNoPod == null ||
-                baseRecord.TotalNoPod === ""
-            ) {
+                return;
+            } else if (!baseRecord.TotalNoPod) {
                 console.log("Validation failed: TotalNoPod is null or empty");
                 setValidationErrors((prev) => ({
                     ...prev,
                     [`${columnId}`]: true,
                 }));
-            } else if (
-                baseRecord.KpiBenchMark == null ||
-                baseRecord.KpiBenchMark === ""
-            ) {
+                return;
+            } else if (!baseRecord.KpiBenchMark) {
                 console.log("Validation failed: KpiBenchMark is null or empty");
                 setValidationErrors((prev) => ({
                     ...prev,
                     [`${columnId}`]: true,
                 }));
+                return;
             } else {
                 setValidationErrors((prev) => ({
                     ...prev,
                     [`${columnId}`]: false,
                 }));
             }
-
-            // API request to update the backend
+    
+            // API request to update the backend (Uncomment when ready)
             axios
                 .post(`${url}Add/KpiPackRecord`, baseRecord, {
                     headers: {
@@ -230,19 +236,18 @@ function InlineTable({
                     },
                 })
                 .then((res) => {
-                    // Update local state based on the backend confirmation/response
+                    console.log(res.data);
                     updateLocalData(baseRecord, columnId, rowIndex, data);
                 })
                 .catch((err) => {
                     console.log(err);
-                    alert("Failed to update record. Please try again.");
                 });
-
+    
             setDataSource(data);
         },
         [dataSource, jsonData]
     );
-
+    
     // Function to update local state
     const updateLocalData = (record, columnId, rowIndex, newData) => {
         const updatedJsonData = jsonData.map((item) => {
@@ -283,41 +288,19 @@ function InlineTable({
 
     const editableColumns = modifiedColumns.map((col) => ({
         ...col,
-        editable: col.name === "metric" ? false : true, // Make the 'metric' column non-editable
-    }));
-
-    const nonEditableColumns = modifiedColumns.map((col) => ({
-        ...col,
-        editable: false, // Make columns non-editable for the second table
     }));
 
     return (
         <div className="mt-10">
-
             <ReactDataGrid
-                onReady={setGridRef}
                 idProperty="metric"
-                style={{ minHeight: 203, fontWeight: "bold" }}
+                style={{ minHeight: 284, fontWeight: "bold" }}
                 onEditComplete={onEditComplete}
-                editable={true}
                 columns={editableColumns}
                 showZebraRows={false}
-                dataSource={nonPercentageRows}
+                dataSource={dataSource}
                 showColumnMenuTool={false}
             />
-
-            <ReactDataGrid
-                onReady={setGridRef}
-                idProperty="metric"
-                style={{ minHeight: 82, marginTop: -1, fontWeight: "bold"   }}
-                editable={false}
-                columns={nonEditableColumns}
-                showZebraRows={false}
-                dataSource={percentageRows}
-                defaultShowHeader={false}
-                showColumnMenuTool={false}
-            />
-
         </div>
     );
 }
