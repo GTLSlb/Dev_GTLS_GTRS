@@ -10,18 +10,16 @@ import {
 import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import { useEffect } from "react";
 import swal from "sweetalert";
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
+import { AlertToast } from "@/permissions";
 
-export default function AddTransit({
+function AddNewTransitDay({
     url,
-    AToken,
     currentUser,
-    setTransitDay,
-    setTransitDays,
+    setNewTransitDay,
+    setNewTransitDays,
+    AToken,
     setActiveIndexGTRS,
-    transitDay,
+    newtransitDay,
 }) {
     const states = [
         {
@@ -69,19 +67,24 @@ export default function AddTransit({
         { id: 3, label: "Food Solutions - QLD" },
         { id: 4, label: "METCASH" },
     ];
-    const [object, setObject] = useState(transitDay);
+
+    const freighPeople = [
+        { id: 5, label: "KERRY" },
+        { id: 99, label: "None" },
+    ];
+    const [object, setObject] = useState(newtransitDay);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedRstate, setSelectedRstate] = useState(
-        transitDay?.ReceiverState || null
+        newtransitDay?.ReceiverState || null
     );
     const [selectedSstate, setSelectedSstate] = useState(
-        transitDay?.SenderState || null
+        newtransitDay?.SenderState || null
     );
     const [selectedCustomer, setSelectedCustomer] = useState(
-        transitDay?.CustomerId || null
+        newtransitDay?.CustomerId || null
     );
     const [selectedType, setSelectedType] = useState(
-        transitDay?.CustomerTypeId || null
+        newtransitDay?.CustomerTypeId || null
     );
     const [isChecked, setIsChecked] = useState(false);
     const handleCheckboxChange = () => {
@@ -91,7 +94,7 @@ export default function AddTransit({
     const fetchData = async () => {
         try {
             axios
-                .get(`${url}Transits`, {
+                .get(`${url}TransitNew`, {
                     headers: {
                         UserId: currentUser.UserId,
                         Authorization: `Bearer ${AToken}`,
@@ -104,7 +107,7 @@ export default function AddTransit({
                         resolve(parsedData);
                     });
                     parsedDataPromise.then((parsedData) => {
-                        setTransitDays(parsedData);
+                        setNewTransitDays(parsedData);
                     });
                 });
         } catch (error) {
@@ -141,23 +144,25 @@ export default function AddTransit({
         const inputValues = {
             TransitId: object ? object.TransitId : null,
             CustomerId: selectedCustomer,
-            CustomerTypeId: selectedCustomer == 1 ? selectedType : 0,
+            CustomerTypeId:
+                selectedCustomer == 1 || selectedCustomer == 3
+                    ? selectedType
+                    : 0,
             SenderState: selectedSstate,
-            SenderCity: document.getElementById("SenderCity").value,
-            SenderSuburb: document.getElementById("SenderSuburb").value,
-            SenderPostCode: document.getElementById("SenderPostCode").value,
+            SenderPostCode:
+                document.getElementById("SenderPostCode").value == ""
+                    ? null
+                    : document.getElementById("SenderPostCode").value,
             ReceiverName: document.getElementById("ReceiverName").value,
             ReceiverState: selectedRstate,
-            ReceiverCity: document.getElementById("ReceiverCity").value,
-            ReceiverSuburb: document.getElementById("ReceiverSuburb").value,
-            ReceiverPostCode: document.getElementById("ReceiverPostCode").value,
+            ReceiverPostCode:
+                document.getElementById("ReceiverPostCode").value == ""
+                    ? null
+                    : document.getElementById("ReceiverPostCode").value,
             TransitTime: document.getElementById("TransitTime").value,
         };
-        setIsLoading(false);
-
-        // AlertToast("Saved successfully", 1);
         axios
-            .post(`${url}Add/Transit`, inputValues, {
+            .post(`${url}Add/TransitNew`, inputValues, {
                 headers: {
                     UserId: currentUser.UserId,
                     Authorization: `Bearer ${AToken}`,
@@ -165,8 +170,8 @@ export default function AddTransit({
             })
             .then((res) => {
                 fetchData();
-                setTransitDay(null);
-                setActiveIndexGTRS(12);
+                setNewTransitDay(null);
+                setActiveIndexGTRS(18);
                 setIsLoading(false);
                 AlertToast("Saved successfully", 1);
             })
@@ -200,8 +205,8 @@ export default function AddTransit({
     }
 
     function CancelHandle() {
-        setTransitDay(null);
-        setActiveIndexGTRS(12);
+        setNewTransitDay(null);
+        setActiveIndexGTRS(18);
     }
     return (
         <div className="p-8">
@@ -212,7 +217,7 @@ export default function AddTransit({
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-5 items-center py-4">
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label htmlFor="CustomerId" className="block w-48">
-                            Customer Name:
+                                Customer Name:
                             </label>
                             <select
                                 id="CustomerId"
@@ -228,15 +233,15 @@ export default function AddTransit({
                             >
                                 <option value="">--Select a Customer--</option>
                                 {customers?.map((customer) => {
-                                        return (
-                                            <option
-                                                key={customer.id}
-                                                value={customer.id}
-                                            >
-                                                {customer.label}
-                                            </option>
-                                        );
-                                    })}
+                                    return (
+                                        <option
+                                            key={customer.id}
+                                            value={customer.id}
+                                        >
+                                            {customer.label}
+                                        </option>
+                                    );
+                                })}
                             </select>
                         </div>
                         {object?.CustomerId == 1 || selectedCustomer == 1 ? (
@@ -264,6 +269,41 @@ export default function AddTransit({
                                     </option>
 
                                     {types?.map((type) => {
+                                        return (
+                                            <option
+                                                key={type.id}
+                                                value={type.id}
+                                            >
+                                                {type.label}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                            </div>
+                        ) : object?.CustomerId == 3 || selectedCustomer == 3 ? (
+                            <div className="col-span-2 flex items-center gap-x-2">
+                                <label
+                                    htmlFor="SafetyType"
+                                    className="block w-48"
+                                >
+                                    Customer Type:
+                                </label>
+                                <select
+                                    id="SafetyType"
+                                    name="SafetyType"
+                                    className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
+                                    // defaultValue={modalSafetyType}
+                                    // value={formValues.SafetyType || ""}
+                                    value={selectedType}
+                                    onChange={(e) => {
+                                        setSelectedType(e.target.value);
+                                    }}
+                                    required
+                                >
+                                    <option value="">
+                                        --Select a Customer Type--
+                                    </option>
+                                    {freighPeople?.map((type) => {
                                         return (
                                             <option
                                                 key={type.id}
@@ -353,65 +393,6 @@ export default function AddTransit({
                                 })}
                             </select>
                         </div>
-
-                        {/* Sender City  */}
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="name" className="block w-48 ">
-                                Sender City:{" "}
-                            </label>
-                            <input
-                                type="text"
-                                name="name"
-                                id="SenderCity"
-                                defaultValue={object ? object.SenderCity : ""}
-                                className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
-                            />
-                        </div>
-
-                        {/* Receiver City  */}
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="name" className="block w-48 ">
-                                Receiver City:{" "}
-                            </label>
-                            <input
-                                type="text"
-                                name="name"
-                                defaultValue={object ? object.ReceiverCity : ""}
-                                id="ReceiverCity"
-                                className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
-                            />
-                        </div>
-
-                        {/* Sender Suburb  */}
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="name" className="block w-48 ">
-                                Sender Suburb:{" "}
-                            </label>
-                            <input
-                                type="text"
-                                name="name"
-                                defaultValue={object ? object.SenderSuburb : ""}
-                                id="SenderSuburb"
-                                className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
-                            />
-                        </div>
-
-                        {/* Receiver Suburb  */}
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="name" className="block w-48">
-                                Receiver Suburb:{" "}
-                            </label>
-                            <input
-                                type="text"
-                                name="name"
-                                defaultValue={
-                                    object ? object.ReceiverSuburb : ""
-                                }
-                                id="ReceiverSuburb"
-                                className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
-                            />
-                        </div>
-
                         {/* Sender PostCode  */}
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label htmlFor="name" className="block w-48 ">
@@ -422,7 +403,7 @@ export default function AddTransit({
                                 name="name"
                                 id="SenderPostCode"
                                 defaultValue={
-                                    object ? object.SenderPostCode : ""
+                                    object ? object.SenderPostCode : null
                                 }
                                 className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
                             />
@@ -444,8 +425,7 @@ export default function AddTransit({
                             />
                         </div>
 
-                        <div className="col-span-2 flex items-center gap-x-2">
-                        </div>
+                        <div className="col-span-2 flex items-center gap-x-2"></div>
 
                         {/* Receiver Name  */}
                         <div className="col-span-2 flex items-center gap-x-2">
@@ -461,8 +441,8 @@ export default function AddTransit({
                             />
                         </div>
 
-                       {/* Sender Title Border  */}
-                       <div className="col-span-4 flex items-center gap-x-2">
+                        {/* Sender Title Border  */}
+                        <div className="col-span-4 flex items-center gap-x-2">
                             <div className="flex flex-col">
                                 <p className="font-bold text-lg">Transit</p>
                             </div>
@@ -500,3 +480,5 @@ export default function AddTransit({
         </div>
     );
 }
+
+export default AddNewTransitDay;

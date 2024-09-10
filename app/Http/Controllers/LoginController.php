@@ -133,8 +133,6 @@ class LoginController extends Controller
                             $statusCode = 500;
                             return response(['error' => $response, 'Message' => $errorMessage], $statusCode);
                         }
-                    
-
                 } else {
                     $errorMessage = 'Invalid Credentials';
                     $statusCode = 500;

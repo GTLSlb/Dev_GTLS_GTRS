@@ -21,44 +21,16 @@ class AuthenticatedSessionController extends Controller
     {
 
         if ($request->session()->has('user')) {
-            $url = $_COOKIE['previous_page'];
-            $delimiter = '/';
-            $position = 0;
-            $occurrence = 3;
-
-            for ($i = 0; $i < $occurrence; $i++) {
-                $position = strpos($url, $delimiter, $position + 1);
-
-                if ($position === false) {
-                    break;
-                }
-            }
-
-            if ($position !== false) {
-                $textAfterThirdSlash = substr($url, $position + 1);
-                $matchedRoute = $textAfterThirdSlash;
-            } else {
-                $matchedRoute = null;
-            }
-
-            if($matchedRoute == null){
-                return Inertia::render('Auth/Login');
-            }else if($matchedRoute == 'login'){
-                return Inertia::render('Auth/Login', [
-                    'canResetPassword' => Route::has('password.request'),
-                    'status' => session('status'),
-                ]);
-            }
-            else{
-                return redirect($matchedRoute);
-            }  
+            // If the user is logged in, you can redirect them to a default page or dashboard.
+            return redirect('/main');
         } else {
-            // 'user' value exists and is not null, don't do anything
+            // If no user is logged in, render the login page.
             return Inertia::render('Auth/Login', [
                 'canResetPassword' => Route::has('password.request'),
                 'status' => session('status'),
             ]);
         }
+        
     }
 
     /**

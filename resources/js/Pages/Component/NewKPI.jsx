@@ -19,11 +19,12 @@ import { canCalculateKPI, canEditKPI } from "@/permissions";
 import axios from "axios";
 import swal from "sweetalert";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
+import NewKPIModalAddReason from "./KPI/NEWKPIModal";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
-export default function KPI({
+function NewKPI({
     url,
     userBody,
     currentUser,
@@ -56,22 +57,26 @@ export default function KPI({
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`${url}/KPI`, {
+            const response = await axios.get(`${url}/KPINew`, {
                 headers: {
                     UserId: currentUser.UserId,
                     Authorization: `Bearer ${AToken}`,
                 },
             });
-    
+
             // Convert TransitDays to string
             const modifiedData = response.data.map((item) => ({
                 ...item,
                 TransitDays: item.TransitDays.toString(),
             }));
-    
+
             setKPIData(modifiedData);
-            setSenderStateOptions(createNewLabelObjects(modifiedData, "SenderState"));
-            setReceiverStateOptions(createNewLabelObjects(modifiedData, "ReceiverState"));
+            setSenderStateOptions(
+                createNewLabelObjects(modifiedData, "SenderState")
+            );
+            setReceiverStateOptions(
+                createNewLabelObjects(modifiedData, "ReceiverState")
+            );
             setReasonOptions(
                 kpireasonsData.map((reason) => ({
                     id: reason.ReasonId,
@@ -88,7 +93,8 @@ export default function KPI({
                     icon: "info",
                     confirmButtonText: "OK",
                 }).then(() => {
-                    axios.post("/logoutAPI")
+                    axios
+                        .post("/logoutAPI")
                         .then((response) => {
                             if (response.status === 200) {
                                 window.location.href = "/";
@@ -103,10 +109,10 @@ export default function KPI({
             }
         }
     };
-    
+
     const handleClick = (coindex) => {
         setActiveIndexGTRS(3);
-        setLastIndex(2);
+        setLastIndex(17);
         setactiveCon(coindex);
     };
     const [filteredData, setFilteredData] = useState(
@@ -174,7 +180,10 @@ export default function KPI({
                 const cellValue = value;
                 let conditionMet = false;
                 // Skip the filter condition if no filter is set (cellValue is null or empty)
-                if (!cellValue || cellValue.length === 0) {
+                if (
+                    (!cellValue || cellValue.length === 0 ) &&
+                    !(type === "number" && (operator === "empty" || cellValue === 0))
+                ) {
                     conditionMet = true;
                     continue;
                 }
@@ -234,15 +243,20 @@ export default function KPI({
                     switch (operator) {
                         case "eq":
                             conditionMet =
-                                numericCellValue != "" &&
-                                numericValue != "" &&
-                                numericValue === numericCellValue;
+                            (numericCellValue !== "" || numericCellValue === 0) &&
+                            (numericValue !== "" || numericValue === 0) &&
+                            numericValue == numericCellValue;
                             break;
                         case "neq":
                             conditionMet =
                                 numericCellValue != "" &&
                                 numericValue != "" &&
                                 numericValue !== numericCellValue;
+                            break;
+                        case "empty":
+                            conditionMet =
+                                Number.isNaN(numericCellValue) &&
+                                Number.isNaN(numericValue);
                             break;
                         case "gt":
                             conditionMet =
@@ -1135,7 +1149,7 @@ export default function KPI({
     function CalculateKPI() {
         setLoading(true);
         axios
-            .get(`${url}KpiCalculation`, {
+            .get(`${url}KPIReportNew`, {
                 headers: {
                     UserId: currentUser.UserId,
                     Authorization: `Bearer ${AToken}`,
@@ -1177,54 +1191,74 @@ export default function KPI({
             });
     }
 
-    const customFilterTypes = Object.assign({}, ReactDataGrid.defaultProps.filterTypes, {
-        number: {
-          name: 'number',
-          operators: [
-            {
-              name: 'empty',
-              fn: ({ value }) => value == null || value === ''
+    const customFilterTypes = Object.assign(
+        {},
+        ReactDataGrid.defaultProps.filterTypes,
+        {
+            number: {
+                name: "number",
+                operators: [
+                    {
+                        name: "empty",
+                        fn: ({ value }) => value == null || value === "",
+                    },
+                    {
+                        name: "notEmpty",
+                        fn: ({ value }) => value != null && value !== "",
+                    },
+                    {
+                        name: "eq",
+                        fn: ({ value, filterValue }) =>
+                            value == null || filterValue == null
+                                ? true
+                                : // Check if both values are NaN
+                                Number.isNaN(value) && Number.isNaN(filterValue)
+                                ? true
+                                : // Check if both values are numbers and are equal
+                                typeof value === "number" &&
+                                  typeof filterValue === "number" &&
+                                  value === filterValue
+                                ? true
+                                : // Return false for all other cases
+                                  false,
+                    },
+                    {
+                        name: "neq",
+                        fn: ({ value, filterValue }) =>
+                            value == null || filterValue == null
+                                ? true
+                                : value != filterValue,
+                    },
+                    {
+                        name: "gt",
+                        fn: ({ value, filterValue }) => value > filterValue,
+                    },
+                    {
+                        name: "gte",
+                        fn: ({ value, filterValue }) => value >= filterValue,
+                    },
+                    {
+                        name: "lt",
+                        fn: ({ value, filterValue }) => value < filterValue,
+                    },
+                    {
+                        name: "lte",
+                        fn: ({ value, filterValue }) => value <= filterValue,
+                    },
+                    {
+                        name: "inRange",
+                        fn: ({ value, filterValue }) => {
+                            const [min, max] = filterValue
+                                .split(":")
+                                .map(Number);
+                            return value >= min && value <= max;
+                        },
+                    },
+                ],
             },
-            {
-              name: 'notEmpty',
-              fn: ({ value }) => value != null && value !== ''
-            },
-            {
-              name: 'eq',
-              fn: ({ value, filterValue }) => value == null || filterValue == null ? true : value == filterValue
-            },
-            {
-              name: 'neq',
-              fn: ({ value, filterValue }) => value == null || filterValue == null ? true : value != filterValue
-            },
-            {
-              name: 'gt',
-              fn: ({ value, filterValue }) => value > filterValue
-            },
-            {
-              name: 'gte',
-              fn: ({ value, filterValue }) => value >= filterValue
-            },
-            {
-              name: 'lt',
-              fn: ({ value, filterValue }) => value < filterValue
-            },
-            {
-              name: 'lte',
-              fn: ({ value, filterValue }) => value <= filterValue
-            },
-            {
-              name: 'inRange',
-              fn: ({ value, filterValue }) => {
-                const [min, max] = filterValue.split(':').map(Number);
-                return value >= min && value <= max;
-              }
-            }
-          ]
         }
-      });
+    );
 
-      
     return (
         <div>
             {/* <Sidebar /> */}
@@ -1272,7 +1306,7 @@ export default function KPI({
                                 )}
                                 {canCalculateKPI(currentUser) ? (
                                     <button
-                                        className={`inline-flex items-center w-[9.1rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+                                        className={`inline-flex items-center justify-center w-[10rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
                                         disabled={
                                             filteredData?.length === 0 ||
                                             loading
@@ -1452,16 +1486,16 @@ export default function KPI({
                         id={"ConsignmentId"}
                         setSelected={setSelected}
                         selected={selected}
+                        filterTypesElements={customFilterTypes}
                         groupsElements={groups}
                         tableDataElements={filteredData}
-                        filterTypesElements={customFilterTypes}
                         filterValueElements={filterValue}
                         setFilterValueElements={setFilterValue}
                         columnsElements={newColumns}
                     />
                 </div>
             )}
-            <KPIModalAddReason
+            <NewKPIModalAddReason
                 AToken={AToken}
                 url={url}
                 isOpen={isModalOpen}
@@ -1475,3 +1509,5 @@ export default function KPI({
         </div>
     );
 }
+
+export default NewKPI;

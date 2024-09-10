@@ -16,10 +16,10 @@ import { useEffect, useRef } from "react";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
-export default function GtrsCons({
+function TransportRep({
     setActiveIndexGTRS,
     setactiveCon,
-    consData,
+    transportData,
     minDate,
     maxDate,
     filterValue,
@@ -27,16 +27,182 @@ export default function GtrsCons({
     setLastIndex,
     accData,
 }) {
-    window.moment = moment;
-    const [filteredData, setFilteredData] = useState(consData);
-    const handleClick = (coindex) => {
-        setActiveIndexGTRS(3);
-        setLastIndex(1);
-        setactiveCon(coindex);
-    };
-    const [selected, setSelected] = useState({});
+    const RDDTimeFilter = ({ filterValue, onChange }) => {
+        const [value, setValue] = useState(
+            filterValue ? filterValue.value : ""
+        );
 
+        const handleChange = (event) => {
+            const newValue = event.target.value + ":00";
+            setValue(newValue);
+            onChange({
+                name: "RddTime",
+                value: newValue,
+                operator: "eq",
+                emptyValue: "",
+                type: "string",
+            });
+        };
+
+        const handleClear = () => {
+            setValue("");
+            onChange({
+                name: "RddTime",
+                value: "",
+                operator: "eq",
+                emptyValue: "",
+                type: "string",
+            });
+        };
+
+        useEffect(() => {
+            setValue(filterValue ? filterValue.value : "");
+        }, [filterValue]);
+
+        return (
+            <div className="flex gap-2 mx-1">
+                <input
+                    type="time"
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm"
+                    value={value.slice(0, 5)}
+                    onChange={handleChange}
+                />
+                <button onClick={handleClear}>
+                    <svg
+                        tabindex="0"
+                        class="InovuaReactDataGrid__column-header__filter-settings-icon"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            d="M13.222 2H.778C.348 2 0 1.552 0 1s.348-1 .778-1h12.444c.43 0 .778.448.778 1s-.348 1-.778 1zM1.556 3.111l3.888 4.667v5.444c0 .43.349.778.778.778h1.556c.43 0 .778-.348.778-.778V7.778l3.888-4.667H1.556z"
+                        ></path>
+                    </svg>
+                </button>
+            </div>
+        );
+    };
+    const PickTimeFilter = ({ filterValue, onChange }) => {
+        const [value, setValue] = useState(
+            filterValue ? filterValue.value : ""
+        );
+
+        const handleChange = (event) => {
+            const newValue = event.target.value + ":00";
+            setValue(newValue);
+            onChange({
+                name: "PickupTime",
+                value: newValue,
+                operator: "eq",
+                emptyValue: "",
+                type: "string",
+            });
+        };
+
+        const handleClear = () => {
+            setValue("");
+            onChange({
+                name: "PickupTime",
+                value: "",
+                operator: "eq",
+                emptyValue: "",
+                type: "string",
+            });
+        };
+
+        useEffect(() => {
+            setValue(filterValue ? filterValue.value : "");
+        }, [filterValue]);
+
+        return (
+            <div className="flex gap-2 mx-1">
+                <input
+                    type="time"
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm"
+                    value={value.slice(0, 5)}
+                    onChange={handleChange}
+                />
+                <button onClick={handleClear}>
+                    <svg
+                        tabindex="0"
+                        class="InovuaReactDataGrid__column-header__filter-settings-icon"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            d="M13.222 2H.778C.348 2 0 1.552 0 1s.348-1 .778-1h12.444c.43 0 .778.448.778 1s-.348 1-.778 1zM1.556 3.111l3.888 4.667v5.444c0 .43.349.778.778.778h1.556c.43 0 .778-.348.778-.778V7.778l3.888-4.667H1.556z"
+                        ></path>
+                    </svg>
+                </button>
+            </div>
+        );
+    };
+    const DeliveryTimeFilter = ({ filterValue, onChange }) => {
+        const [value, setValue] = useState(
+            filterValue ? filterValue.value : ""
+        );
+
+        const handleChange = (event) => {
+            const newValue = event.target.value + ":00";
+            setValue(newValue);
+            onChange({
+                name: "ActualDeliveryTime",
+                value: newValue,
+                operator: "eq",
+                emptyValue: "",
+                type: "string",
+            });
+        };
+
+        const handleClear = () => {
+            setValue("");
+            onChange({
+                name: "ActualDeliveryTime",
+                value: "",
+                operator: "eq",
+                emptyValue: "",
+                type: "string",
+            });
+        };
+
+        useEffect(() => {
+            setValue(filterValue ? filterValue.value : "");
+        }, [filterValue]);
+
+        return (
+            <div className="flex gap-2 mx-1">
+                <input
+                    type="time"
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm"
+                    value={value.slice(0, 5)}
+                    onChange={handleChange}
+                />
+                <button onClick={handleClear}>
+                    <svg
+                        tabindex="0"
+                        class="InovuaReactDataGrid__column-header__filter-settings-icon"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            d="M13.222 2H.778C.348 2 0 1.552 0 1s.348-1 .778-1h12.444c.43 0 .778.448.778 1s-.348 1-.778 1zM1.556 3.111l3.888 4.667v5.444c0 .43.349.778.778.778h1.556c.43 0 .778-.348.778-.778V7.778l3.888-4.667H1.556z"
+                        ></path>
+                    </svg>
+                </button>
+            </div>
+        );
+    };
+    window.moment = moment;
+    const [filteredData, setFilteredData] = useState(transportData);
+    const [selected, setSelected] = useState({});
     const gridRef = useRef(null);
+
     function handleFilterTable() {
         // Get the selected columns or use all columns if none are selected
         let selectedColumns = Array.from(
@@ -49,6 +215,7 @@ export default function GtrsCons({
             type: column.computedFilterValue?.type,
             operator: column.computedFilterValue?.operator,
         }));
+
         let selectedColVal = allHeaderColumns.filter(
             (col) => col.name !== "edit"
         );
@@ -351,7 +518,6 @@ export default function GtrsCons({
                                 !neqd.isSame(neqDateToCompare, "day");
 
                             break;
-
                         case "inrange":
                             conditionMet =
                                 (!hasStartDate ||
@@ -398,53 +564,121 @@ export default function GtrsCons({
                 });
             });
         }
-        return { selectedColumns: selectedColVal, filterValue: filterValue };
+        return {
+            selectedColumns: selectedColVal,
+            filterValue: filterValue,
+            filteredData: filteredData,
+        };
+    }
+    function extractFormattedDate(datetime) {
+        if (!datetime) return null;
+
+        // Split the datetime string to get the date part
+        const datePart = datetime.split(" ")[0];
+
+        if (!datePart) return null;
+
+        // Split the date part into year, month, and day
+        const [year, month, day] = datePart.split("-");
+
+        if (!year || !month || !day) return null;
+
+        // Rearrange into DD-MM-YYYY format
+        const formattedDate = `${day}-${month}-${year}`;
+        return formattedDate;
+    }
+    function extractUTCFormattedDate(datetime) {
+        if (!datetime) return null;
+
+        // Split the datetime string to get the date part
+        const datePart = datetime.split("T")[0];
+
+        if (!datePart) return null;
+
+        // Split the date part into year, month, and day
+        const [year, month, day] = datePart.split("-");
+
+        if (!year || !month || !day) return null;
+
+        // Rearrange into DD-MM-YYYY format
+        const formattedDate = `${day}-${month}-${year}`;
+        return formattedDate;
+    }
+    function formatDate(date) {
+        // Check if the date is null, undefined, or invalid
+        if (!date || !moment(date, "YYYY-MM-DD", true).isValid()) {
+            return " ";
+        }
+
+        // Format the date to "DD-MM-YYYY"
+        return moment(date).format("DD-MM-YYYY");
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-    
         const columnMapping = {
-            ConsignmentNo: "Consignment No",
-            AccountName: "Account Name",
-            DespatchDate: "Despatch Date",
             SenderName: "Sender Name",
             SenderState: "Sender State",
-            SenderSuburb: "Sender Suburb",
-            SenderZone: "Sender Zone",
-            SenderReference: "Sender Reference",
-            ReceiverName: "Receiver Name",
-            ReceiverState: "Receiver State",
-            ReceiverSuburb: "Receiver Suburb",
-            ReceiverReference: "Receiver Reference",
-            ReceiverZone: "Receiver Zone",
+            CustomerName: "Customer Name",
+            CustomerPO: "Customer PO",
+            DeliveryNo: "Delivery No",
+            RddDate: "RDD Date",
+            RddTime: "RDD Time",
+            LTLFTL: "LTL/FTL",
+            State: "State",
+            PostalCode: "Postal Code",
+            Carrier: "Carrier",
+            PickupDate: "Pickup Date",
+            PickupTime: "Pickup Time",
+            Status: "Status",
+            ActualDeliveryDate: "Actual Delivery Date",
+            ActualDeliveryTime: "Actual Delivery Time",
+            OnTime: "On Time",
+            DelayReason: "Delay Reason",
+            TransportComments: "Transport Comments",
         };
-    
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
-    
+
         // Apply the mapping to the selected columns
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
-    
+
         const filterValue = jsonData?.filterValue;
-    
+
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
-                    if (columnKey === "DespatchDate") {
-                        const date = new Date(person["DespatchDate"]);
-                        if (!isNaN(date)) {
-                            acc[column] =
-                                (date.getTime() -
-                                    date.getTimezoneOffset() * 60000) /
-                                    86400000 +
-                                25569; // Convert to Excel date serial number
+                    if (columnKey === "RddDate") {
+                        if (person["RddDate"]) {
+                            acc["RDD Date"] = new Date(person["RddDate"]);
                         } else {
-                            acc[column] = "";
+                            acc["RDD Date"] = null;
                         }
+                    } else if (columnKey === "RddTime") {
+                        acc["RDD Time"] = person["RddTime"];
+                    } else if (columnKey === "PickupDate") {
+                        if (person["PickupDate"]) {
+                            acc["Pickup Date"] = new Date(person["PickupDate"]);
+                        } else {
+                            acc["Pickup Date"] = null;
+                        }
+                    } else if (columnKey === "PickupTime") {
+                        acc["Pickup Time"] = person["PickupTime"];
+                    } else if (columnKey === "ActualDeliveryDate") {
+                        if (person["ActualDeliveryDate"]) {
+                            acc["Actual Delivery Date"] = new Date(
+                                person["ActualDeliveryDate"]
+                            );
+                        } else {
+                            acc["Actual Delivery Date"] = null;
+                        }
+                    } else if (columnKey === "ActualDeliveryTime") {
+                        acc["Actual Delivery Time"] =
+                            person["ActualDeliveryTime"];
                     } else {
                         acc[columnMapping[columnKey] || columnKey] =
                             person[columnKey];
@@ -453,13 +687,13 @@ export default function GtrsCons({
                 return acc;
             }, {})
         );
-    
+
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
-    
+
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
-    
+
         // Apply custom styles to the new header row
         const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
@@ -469,35 +703,47 @@ export default function GtrsCons({
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
         headerRow.alignment = { horizontal: "center" };
-    
+
         // Add the data to the worksheet
         data.forEach((rowData) => {
             const row = worksheet.addRow(Object.values(rowData));
-    
-            // Apply date format to the Despatch Date column
-            const despatchDateIndex = newSelectedColumns.indexOf("Despatch Date");
-            if (despatchDateIndex !== -1) {
-                const cell = row.getCell(despatchDateIndex + 1); // +1 because ExcelJS is 1-based indexing
-                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+
+            // Apply date format to the RDD Date column
+            const rddDateIndex = newSelectedColumns.indexOf("RDD Date");
+            if (rddDateIndex !== -1) {
+                const cell = row.getCell(rddDateIndex + 1); // +1 because ExcelJS is 1-based indexing
+                cell.numFmt = "dd-mm-yy";
+            }
+            const PickDateIndex = newSelectedColumns.indexOf("Pickup Date");
+            if (PickDateIndex !== -1) {
+                const cell = row.getCell(PickDateIndex + 1); // +1 because ExcelJS is 1-based indexing
+                cell.numFmt = "dd-mm-yy";
+            }
+            const actualDateIndex = newSelectedColumns.indexOf(
+                "Actual Delivery Date"
+            );
+            if (actualDateIndex !== -1) {
+                const cell = row.getCell(actualDateIndex + 1); // +1 because ExcelJS is 1-based indexing
+                cell.numFmt = "dd-mm-yy";
             }
         });
-    
+
         // Set column widths
         const columnWidths = newSelectedColumns.map(() => 15); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: newSelectedColumns[index],
         }));
-    
+
         // Generate the Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
             // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-    
+
             // Save the file using FileSaver.js or alternative method
-            saveAs(blob, "Consignments.xlsx");
+            saveAs(blob, "Transport-Report.xlsx");
         });
     }
     const [hoverMessage, setHoverMessage] = useState("");
@@ -531,74 +777,188 @@ export default function GtrsCons({
         });
         return newData;
     };
-    const senderStateOptions = createNewLabelObjects(consData, "SenderState");
-    const senderZoneOptions = createNewLabelObjects(consData, "SenderZone");
-    const receiverStateOptions = createNewLabelObjects(
-        consData,
-        "ReceiverState"
-    );
-    const receiverZoneOptions = createNewLabelObjects(consData, "ReceiverZone");
-    const serviceOptions = createNewLabelObjects(consData, "Service");
-    const statusOptions = createNewLabelObjects(consData, "Status");
+    function getMinMaxValue(data, fieldName, identifier) {
+        // Check for null safety
+        if (!data || !Array.isArray(data) || data.length === 0) {
+            return null;
+        }
 
-    const groups = [
-        {
-            name: "senderDetails",
-            header: "Sender Details",
-            headerAlign: "center",
-        },
-        {
-            name: "receiverDetails",
-            header: "Receiver Details",
-            headerAlign: "center",
-        },
-    ];
+        // Filter out entries with empty or invalid dates
+        const validData = data.filter(
+            (item) => item[fieldName] && !isNaN(new Date(item[fieldName]))
+        );
+
+        // If no valid dates are found, return null
+        if (validData.length === 0) {
+            return null;
+        }
+
+        // Sort the valid data based on the fieldName
+        const sortedData = [...validData].sort((a, b) => {
+            return new Date(a[fieldName]) - new Date(b[fieldName]);
+        });
+
+        // Determine the result date based on the identifier
+        let resultDate;
+        if (identifier === 1) {
+            resultDate = new Date(sortedData[0][fieldName]);
+        } else if (identifier === 2) {
+            resultDate = new Date(sortedData[sortedData.length - 1][fieldName]);
+        } else {
+            return null;
+        }
+
+        // Convert the resultDate to the desired format "01-10-2023"
+        const day = String(resultDate.getDate()).padStart(2, "0");
+        const month = String(resultDate.getMonth() + 1).padStart(2, "0"); // +1 because months are 0-indexed
+        const year = resultDate.getFullYear();
+
+        return `${day}-${month}-${year}`;
+    }
+    const minRDDDate = getMinMaxValue(transportData, "RDD", 1);
+    const maxRDDDate = getMinMaxValue(transportData, "RDD", 2);
+    const minArrivedDate = getMinMaxValue(
+        transportData,
+        "ActualDeliveryDate",
+        1
+    );
+    const maxArrivedDate = getMinMaxValue(
+        transportData,
+        "ActualDeliveryDate",
+        2
+    );
+    const statusOptions = createNewLabelObjects(transportData, "Status");
+    const LTLFTLOptions = createNewLabelObjects(transportData, "LTLFTL");
+    const stateOptions = createNewLabelObjects(transportData, "State");
+    const SenderstateOptions = createNewLabelObjects(
+        transportData,
+        "SenderState"
+    );
+    const onTimeOptions = createNewLabelObjects(transportData, "OnTime");
     const columns = [
         {
-            name: "ConsignmentNo",
-            header: "Cons No",
+            name: "SenderName",
+            header: "Sender Name",
             group: "personalInfo",
+            defaultWidth: 200,
             filterEditor: StringFilter,
             headerAlign: "center",
             textAlign: "center",
-            render: ({ value, data }) => {
-                return (
-                    <span
-                        className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => handleClick(data.ConsignmentId)}
-                    >
-                        {" "}
-                        {value}
-                    </span>
-                );
-            },
         },
         {
-            name: "AccountName",
-            header: "Account Name",
+            name: "SenderState",
+            header: "Sender State",
             type: "string",
+            defaultWidth: 200,
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-        },
-        {
-            name: "Service",
-            header: "Service",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
             filterEditor: SelectFilter,
             filterEditorProps: {
                 multiple: true,
                 wrapMultiple: false,
-                dataSource: serviceOptions,
+                dataSource: SenderstateOptions,
             },
         },
         {
-            name: "DespatchDate",
-            header: "Despatch date",
+            name: "CustomerName",
+            header: "Customer Name",
+            group: "personalInfo",
+            defaultWidth: 200,
+            filterEditor: StringFilter,
+            headerAlign: "center",
+            textAlign: "center",
+        },
+        {
+            name: "CustomerPO",
+            header: "Customer PO",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
+        {
+            name: "DeliveryNo",
+            header: "Delivery #",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
+        {
+            name: "RddDate",
+            header: "Required Delivery Date",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultFlex: 1,
+            minWidth: 200,
+            dateFormat: "DD-MM-YYYY",
+            filterEditor: DateFilter,
+            filterEditorProps: {
+                minDate: minRDDDate,
+                maxDate: maxRDDDate,
+            },
+            render: ({ value }) => {
+                return extractFormattedDate(value);
+            },
+        },
+        {
+            name: "RddTime",
+            header: "Required Delivery Time",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: RDDTimeFilter,
+            // render: ({ value, data }) => {
+            //     return extractTime(data.RDD);
+            // },
+        },
+        {
+            name: "LTLFTL",
+            header: "LTL/FTL",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultFlex: 1,
+            minWidth: 200,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: LTLFTLOptions,
+            },
+        },
+        {
+            name: "State",
+            header: "State",
+            type: "string",
+            defaultWidth: 200,
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: stateOptions,
+            },
+        },
+        {
+            name: "PostalCode",
+            header: "Postal Code",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 200,
+            filterEditor: StringFilter,
+        },
+        {
+            name: "Carrier",
+            header: "Carrier",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
+        },
+        {
+            name: "PickupDate",
+            header: "Pickup Date",
             headerAlign: "center",
             textAlign: "center",
             defaultFlex: 1,
@@ -610,17 +970,21 @@ export default function GtrsCons({
                 maxDate: maxDate,
             },
             render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+                return extractUTCFormattedDate(value);
             },
+        },
+        {
+            name: "PickupTime",
+            header: "Pickup Time",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultFlex: 1,
+            minWidth: 200,
+            filterEditor: PickTimeFilter,
         },
         {
             name: "Status",
             header: "Status",
-            type: "string",
-            defaultWidth: 200,
             headerAlign: "center",
             textAlign: "center",
             filterEditor: SelectFilter,
@@ -631,139 +995,96 @@ export default function GtrsCons({
             },
         },
         {
-            name: "SenderName",
-            header: "Sender Name",
-            group: "senderDetails",
+            name: "ActualDeliveryDate",
+            header: "Actual Delivery Date",
             headerAlign: "center",
             textAlign: "center",
+            defaultFlex: 1,
+            minWidth: 200,
+            dateFormat: "DD-MM-YYYY",
+            filterEditor: DateFilter,
+            filterEditorProps: {
+                minDate: minArrivedDate,
+                maxDate: maxArrivedDate,
+            },
+            render: ({ value, cellProps }) => {
+                return extractFormattedDate(value);
+            },
+        },
+        {
+            name: "ActualDeliveryTime",
+            header: "Actual Delivery Time",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultFlex: 1,
+            minWidth: 200,
+            filterEditor: DeliveryTimeFilter,
+        },
+        {
+            name: "OnTime",
+            header: "ONTIME(YES/NO)",
+            type: "string",
             defaultWidth: 200,
-            filterEditor: StringFilter,
-        },
-        {
-            name: "SenderState",
-            header: "Sender State",
-            group: "senderDetails",
             headerAlign: "center",
             textAlign: "center",
             filterEditor: SelectFilter,
             filterEditorProps: {
                 multiple: true,
                 wrapMultiple: false,
-                dataSource: senderStateOptions,
+                dataSource: onTimeOptions,
             },
-        },
-        {
-            name: "SenderSuburb",
-            header: "Sender Suburb",
-            group: "senderDetails",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: StringFilter,
-        },
-        {
-            name: "SenderZone",
-            header: "Sender Zone",
-            group: "senderDetails",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: senderZoneOptions,
-            },
-        },
-        {
-            name: "SenderReference",
-            header: "Sender Reference",
-            group: "senderDetails",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: StringFilter,
-        },
-        {
-            name: "ReceiverName",
-            header: "Receiver Name",
-            group: "receiverDetails",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 200,
-            filterEditor: StringFilter,
-        },
-        {
-            name: "ReceiverState",
-            header: "Receiver State",
-            group: "receiverDetails",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: receiverStateOptions,
-            },
-        },
-        {
-            name: "ReceiverSuburb",
-            header: "Receiver Suburb",
-            group: "receiverDetails",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: StringFilter,
-        },
-        {
-            name: "ReceiverReference",
-            header: "Receiver Reference",
-            group: "receiverDetails",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: StringFilter,
-        },
-        {
-            name: "ReceiverZone",
-            header: "Receiver Zone",
-            group: "receiverDetails",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: receiverZoneOptions,
-            },
-        },
-        {
-            name: "POD",
-            header: "POD",
-            headerAlign: "center",
-            textAlign: "center",
             render: ({ value }) => {
-                return value ? (
+                return value == "YES" ? (
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                        True
+                        YES
                     </span>
-                ) : (
+                ) : value == "NO" ? (
                     <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        false
+                        NO
                     </span>
-                );
+                ) : value == "PENDING" ? (
+                    <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-0.5 text-sm font-medium text-gray-800">
+                        PENDING
+                    </span>
+                ) : null;
             },
+        },
+        {
+            name: "DelayReason",
+            header: "Delay Reason",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 200,
+            filterEditor: StringFilter,
+        },
+        {
+            name: "TransportComments",
+            header: "Transport Comments",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 200,
+            filterEditor: StringFilter,
         },
     ];
+    const excludedDebtorIds = [1514, 364, 247, 246, 245, 244];
+
     const filterData = () => {
         const intArray = accData?.map((str) => {
             const intValue = parseInt(str);
             return isNaN(intValue) ? 0 : intValue;
         });
         // Filter the data based on the start and end date filters, selected receiver names, and chargeTo values
-        const filtered = consData.filter((item) => {
+        const filtered = transportData.filter((item) => {
             const chargeToMatch =
-                intArray?.length === 0 || intArray?.includes(item.ChargeToID);
-
+                (intArray?.length === 0 || intArray?.includes(item.ChargeToID)) &&
+                !excludedDebtorIds.includes(item.ChargeToID); // Exclude specified ChargeToIDs
+    
             return chargeToMatch;
         });
+    
         return filtered;
     };
+    
     useEffect(() => {
         setFilteredData(filterData());
     }, [accData]);
@@ -773,7 +1094,7 @@ export default function GtrsCons({
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto mt-6">
                     <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                        Consignments
+                        Transport Report
                     </h1>
                 </div>
                 <Popover className="relative object-right flex-item md:ml-auto">
@@ -816,37 +1137,119 @@ export default function GtrsCons({
                                             <input
                                                 type="checkbox"
                                                 name="column"
-                                                value="Consignment No"
+                                                value="SenderName"
                                                 className="text-dark rounded focus:ring-goldd"
                                             />{" "}
-                                            Consignment Number
+                                            Sender Name
                                         </label>
                                         <label className="">
                                             <input
                                                 type="checkbox"
                                                 name="column"
-                                                value="AccountName"
+                                                value="SenderState"
                                                 className="text-dark rounded focus:ring-goldd"
                                             />{" "}
-                                            Account Name
+                                            Sender State
+                                        </label>
+                                        <label className="">
+                                            <input
+                                                type="checkbox"
+                                                name="column"
+                                                value="CustomerName"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            Customer Name
+                                        </label>
+
+                                        <label className="">
+                                            <input
+                                                type="checkbox"
+                                                name="column"
+                                                value="Customer PO"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            Customer PO
                                         </label>
                                         <label>
                                             <input
                                                 type="checkbox"
                                                 name="column"
-                                                value="Service"
+                                                value="DeliveryNo"
                                                 className="text-dark rounded focus:ring-goldd"
                                             />{" "}
-                                            Service
+                                            Delivery No
                                         </label>
                                         <label>
                                             <input
                                                 type="checkbox"
                                                 name="column"
-                                                value="DespatchDate"
+                                                value="RDDDate"
                                                 className="text-dark rounded focus:ring-goldd"
                                             />{" "}
-                                            Despatch Date
+                                            RDD Date
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
+                                                value="RDDTime"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            RDD Time
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
+                                                value="LTLFTL"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            LTL/FTL
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
+                                                value="State"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            State
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
+                                                value="Postal Code"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            Postal Code
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
+                                                value="Carrier"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            Carrier
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
+                                                value="PickupDate"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            Pickup Date
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
+                                                value="PickupTime"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            Pickup Time
                                         </label>
                                         <label>
                                             <input
@@ -861,100 +1264,46 @@ export default function GtrsCons({
                                             <input
                                                 type="checkbox"
                                                 name="column"
-                                                value="Sender Name"
+                                                value="ActualDeliveryDate"
                                                 className="text-dark rounded focus:ring-goldd"
                                             />{" "}
-                                            Sender Name
+                                            Actual Delivery Date
                                         </label>
                                         <label>
                                             <input
                                                 type="checkbox"
                                                 name="column"
-                                                value="Sender State"
+                                                value="ActualDeliveryTime"
                                                 className="text-dark rounded focus:ring-goldd"
                                             />{" "}
-                                            Sender State
+                                            Actual Delivery Time
                                         </label>
                                         <label>
                                             <input
                                                 type="checkbox"
                                                 name="column"
-                                                value="Sender Suburb"
+                                                value="OnTime"
                                                 className="text-dark rounded focus:ring-goldd"
                                             />{" "}
-                                            Sender Suburb
+                                            On Time
                                         </label>
                                         <label>
                                             <input
                                                 type="checkbox"
                                                 name="column"
-                                                value="Sender Zone"
+                                                value="DelayReason"
                                                 className="text-dark rounded focus:ring-goldd"
                                             />{" "}
-                                            Sender Zone
+                                            Delay Reason
                                         </label>
                                         <label>
                                             <input
                                                 type="checkbox"
                                                 name="column"
-                                                value="SenderReference"
+                                                value="TransportComments"
                                                 className="text-dark rounded focus:ring-goldd"
                                             />{" "}
-                                            Sender Reference
-                                        </label>
-                                        <label>
-                                            <input
-                                                type="checkbox"
-                                                name="column"
-                                                value="Receiver Name"
-                                                className="text-dark rounded focus:ring-goldd"
-                                            />{" "}
-                                            Receiver Name
-                                        </label>
-                                        <label>
-                                            <input
-                                                type="checkbox"
-                                                name="column"
-                                                value="Receiver State"
-                                                className="text-dark rounded focus:ring-goldd"
-                                            />{" "}
-                                            Receiver State
-                                        </label>
-                                        <label>
-                                            <input
-                                                type="checkbox"
-                                                name="column"
-                                                value="Receiver Suburb"
-                                                className="text-dark rounded focus:ring-goldd"
-                                            />{" "}
-                                            Receiver Suburb
-                                        </label>
-                                        <label>
-                                            <input
-                                                type="checkbox"
-                                                name="column"
-                                                value="ReceiverReference"
-                                                className="text-dark rounded focus:ring-goldd"
-                                            />{" "}
-                                            Receiver Reference
-                                        </label>
-                                        <label>
-                                            <input
-                                                type="checkbox"
-                                                name="column"
-                                                value="Receiver Zone"
-                                                className="text-dark rounded focus:ring-goldd"
-                                            />{" "}
-                                            Receiver Zone
-                                        </label>
-                                        <label>
-                                            <input
-                                                type="checkbox"
-                                                name="column"
-                                                value="POD"
-                                                className="text-dark rounded focus:ring-goldd"
-                                            />{" "}
-                                            POD
+                                            Transport Comments
                                         </label>
                                     </div>
                                 </div>
@@ -977,11 +1326,12 @@ export default function GtrsCons({
                 gridRef={gridRef}
                 selected={selected}
                 tableDataElements={filteredData}
+                settableDataElements={setFilteredData}
                 filterValueElements={filterValue}
                 setFilterValueElements={setFilterValue}
-                groupsElements={groups}
                 columnsElements={columns}
             />
         </div>
     );
 }
+export default TransportRep;
