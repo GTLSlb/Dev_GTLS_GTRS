@@ -62,6 +62,8 @@ export default function Incident({
                     }
                 });
                 parsedDataPromise.then((parsedData) => {
+                    console.log('parsed',parsedData);
+
                     setFilters(parsedData);
                     // setIsLoadingapps(false);
                 });

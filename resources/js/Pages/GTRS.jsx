@@ -432,14 +432,11 @@ export default function Gtrs({
     useEffect(() => {
         if (loadingGtrs && user != "") {
             if (user == {}) {
-                console.log('1');
                 setCanAccess(false);
             } else if (user) {
                 if (Object.keys(user)?.length > 0) {
-                    console.log('2');
                     setCanAccess(true);
                 } else {
-                    console.log('3');
                     setCanAccess(false);
                 }
             }

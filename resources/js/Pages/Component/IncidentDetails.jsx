@@ -88,7 +88,7 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                     </label>
                                     <label htmlFor="" className="">
                                         {
-                                            filters.States.find(
+                                            filters?.States?.find(
                                                 (item) =>
                                                     item.StateId ===
                                                     incident.StateCreatedId
@@ -99,7 +99,6 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                             </div>
                         </div>
                     </div>
-
                     <div className="flex flex-col gap-y-2">
                         <div>
                             <div className="items-center  px-3 py-1.5 my-3 rounded-md bg-zinc-600">
@@ -385,7 +384,7 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                             Original Pallet Qty
                                         </label>
                                         <label htmlFor="" className="">
-                                            {incident.Consignment[0].PalletQty}
+                                            {incident?.Consignment[0]?.PalletQty}
                                         </label>
                                     </div>
                                     <div className="flex  w-full">
@@ -396,7 +395,7 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                             Effected Pallet Qty
                                         </label>
                                         <label htmlFor="" className="">
-                                            {incident.EffPalletQty}
+                                            {incident?.EffPalletQty}
                                         </label>
                                     </div>
                                     <div className="hidden md:flex"></div>
@@ -408,7 +407,7 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                             Effected Carton Qty
                                         </label>
                                         <label htmlFor="" className="">
-                                            {incident.EffCartonQty}
+                                            {incident?.EffCartonQty}
                                         </label>
                                     </div>
                                     <div className="flex flex-col sm:col-span-2 w-full bg-gray-100 p-2 rounded-md">
@@ -419,7 +418,7 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                             Product Description:
                                         </label>
                                         <label htmlFor="" className="">
-                                            {incident.ProductDescription}
+                                            {incident?.ProductDescription}
                                         </label>
                                     </div>
                                 </div>
@@ -446,8 +445,8 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                             {
                                                 filters.IncidentTypes.find(
                                                     (incidentType) =>
-                                                        incidentType.TypeId ===
-                                                        incident.IncidentTypeId
+                                                        incidentType?.TypeId ===
+                                                        incident?.IncidentTypeId
                                                 )?.TypeName
                                             }
                                         </label>
@@ -463,8 +462,8 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                             {
                                                 mainCauses.find(
                                                     (item) =>
-                                                        item.CauseId ===
-                                                        incident.MainCauseId
+                                                        item?.CauseId ===
+                                                        incident?.MainCauseId
                                                 )?.CauseName
                                             }
                                         </label>
@@ -479,10 +478,10 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                         </label>
                                         <label htmlFor="" className="">
                                             {
-                                                filters.States.find(
+                                                filters?.States?.find(
                                                     (item) =>
-                                                        item.StateId ===
-                                                        incident.StateResponsibleId
+                                                        item?.StateId ===
+                                                        incident?.StateResponsibleId
                                                 )?.StateCode
                                             }
                                         </label>
@@ -500,8 +499,8 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                             {
                                                 filters.Departments.find(
                                                     (item) =>
-                                                        item.DepartmentId ===
-                                                        incident.DepartmentId
+                                                        item?.DepartmentId ===
+                                                        incident?.DepartmentId
                                                 )?.DepartmentName
                                             }
                                         </label>
@@ -549,7 +548,7 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                             Incident Explanation:
                                         </label>
                                         <label htmlFor="" className="">
-                                            {incident.Explanation}
+                                            {incident?.Explanation}
                                         </label>
                                     </div>
                                     <div className="flex flex-col sm:col-span-2 w-full bg-gray-100 p-2 rounded-md">
@@ -560,7 +559,7 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                             Incident Resolution
                                         </label>
                                         <label htmlFor="" className="">
-                                            {incident.Resolution}
+                                            {incident?.Resolution}
                                         </label>
                                     </div>
                                 </div>
@@ -577,7 +576,7 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                             <div className="px-1 sm:px-4 grid grid-cols-1  gap-x-10 gap-y-3">
                                 <div className="flex gap-x-10 w-full">
                                     <label htmlFor="" className="w-10">
-                                        {incident.PalletRequired ? "YES" : "NO"}
+                                        {incident?.PalletRequired ? "YES" : "NO"}
                                     </label>
                                     <label htmlFor="" className="font-bold ">
                                         Is pallet work required Y/N
@@ -585,7 +584,7 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                 </div>
                                 <div className="flex w-full gap-x-10">
                                     <label htmlFor="" className="w-10">
-                                        {incident.PalletCharegeable
+                                        {incident?.PalletCharegeable
                                             ? "YES"
                                             : "NO"}
                                     </label>{" "}
@@ -595,7 +594,7 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                 </div>
                                 <div className="flex w-full gap-x-10">
                                     <label htmlFor="" className="w-10">
-                                        {incident.SamePallet ? "YES" : "NO"}
+                                        {incident?.SamePallet ? "YES" : "NO"}
                                     </label>{" "}
                                     <label htmlFor="" className="font-bold ">
                                         Unwrapping, unstacking, moving,
@@ -605,7 +604,7 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                 </div>
                                 <div className="flex w-full gap-x-10">
                                     <label htmlFor="" className="w-10">
-                                        {incident.GtlsPallet ? "YES" : "NO"}
+                                        {incident?.GtlsPallet ? "YES" : "NO"}
                                     </label>{" "}
                                     <label htmlFor="" className="font-bold ">
                                         Unwrapping, unstacking, moving,
@@ -615,7 +614,7 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                 </div>
                                 <div className="flex w-full gap-x-10">
                                     <label htmlFor="" className="w-10">
-                                        {incident.Relabelling ? "YES" : "NO"}
+                                        {incident?.Relabelling ? "YES" : "NO"}
                                     </label>{" "}
                                     <label htmlFor="" className="font-bold ">
                                         Re-Labelling pallet only
@@ -623,7 +622,7 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                 </div>
                                 <div className="flex w-full gap-x-10">
                                     <label htmlFor="" className="w-10">
-                                        {incident.ShrinkPallet ? "YES" : "NO"}
+                                        {incident?.ShrinkPallet ? "YES" : "NO"}
                                     </label>{" "}
                                     <label htmlFor="" className="font-bold ">
                                         Shrink wrapping pallet only
@@ -648,7 +647,7 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                             Consignment Number
                                         </label>
                                         <label htmlFor="" className="">
-                                            {incident.ReConsNo}
+                                            {incident?.ReConsNo}
                                         </label>
                                     </div>
                                     <div className="flex flex-col gap-y-3 w-full">
