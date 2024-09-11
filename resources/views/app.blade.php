@@ -33,6 +33,7 @@
             gtccrUrl: "{{ env('GTCCR_API_URL') }}",
             gtamUrl: "{{ env('GTAM_API_URL') }}",
             appDomain: "{{ env('SESSION_DOMAIN') }}",
+            azureCallback: "{{ env('AZURE_CALLBACK_URL') }}",
         };
     </script>
     <!-- resources/views/layouts/app.blade.php -->

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Logo from "../../assets/pictures/Logo.png";
 import Checkbox from "@/Components/Checkbox";
 import GuestLayout from "@/Layouts/GuestLayout";
@@ -24,7 +24,7 @@ const msalConfig = {
         clientId: "05f70999-6ca7-4ee8-ac70-f2d136c50288",
         authority:
             "https://login.microsoftonline.com/647bf8f1-fc82-468e-b769-65fd9dacd442",
-        redirectUri: "http://localhost:8000/auth/azure/callback",
+        redirectUri: window.Laravel.azureCallback,
     },
     cache: {
         cacheLocation: "sessionStorage",

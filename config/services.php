@@ -16,7 +16,7 @@ return [
     'azure' => [
         'client_id' => '05f70999-6ca7-4ee8-ac70-f2d136c50288',
         'client_secret' => 'tS08Q~UCCylb2rLxlCemghefWbkbxt_AJVt2Hc6W',
-        'redirect' => 'http://localhost:8000/auth/azure/callback',
+        'redirect' => env('AZURE_CALLBACK_URL'),
         'use_pkce' => true,
     ],
     'mailgun' => [
