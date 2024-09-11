@@ -473,7 +473,6 @@ export default function MainSidebar({
         if (allowedApplications?.length > 0) {
             allowedApplications?.forEach((app) => {
                 if (!appsImgs[app.AppId]) {
-                    console.log('4');
                     // Check if the image URL is not already loaded
                     fetchAppsLogo(app?.AppIcon, app);
                 }
