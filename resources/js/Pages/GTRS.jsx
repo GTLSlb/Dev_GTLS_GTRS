@@ -428,17 +428,23 @@ export default function Gtrs({
         return false;
     }
 
+
     useEffect(() => {
-        if (loadingGtrs && user) {
+        if (loadingGtrs && user != "") {
             if (user == {}) {
+                console.log('1');
                 setCanAccess(false);
             } else if (user) {
                 if (Object.keys(user)?.length > 0) {
+                    console.log('2');
                     setCanAccess(true);
                 } else {
+                    console.log('3');
                     setCanAccess(false);
                 }
             }
+        }else if(loadingGtrs && user == ""){
+            setCanAccess(false);
         }
     }, [user, loadingGtrs]);
     if (consApi && reportApi && chartsApi && DebtorsApi && KPIReasonsApi && transportApi) {
