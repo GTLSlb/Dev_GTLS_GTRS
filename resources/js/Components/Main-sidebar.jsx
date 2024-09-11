@@ -468,7 +468,6 @@ export default function MainSidebar({
             }));
         }
     };
-console.log(appsImgs);
 
     useEffect(() => {
         if (allowedApplications?.length > 0) {
