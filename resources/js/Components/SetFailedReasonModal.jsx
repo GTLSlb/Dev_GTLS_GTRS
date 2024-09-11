@@ -18,6 +18,7 @@ export default function SetFailedReasonModal({
     setReason,
     failedReasons,
     currentUser,
+    userPermission,
     updateLocalData,
 }) {
     const [consignment, setConsignment] = useState();
@@ -194,7 +195,7 @@ export default function SetFailedReasonModal({
                 setError("Error occurred while saving the data. Please try again."); // Set the error message
                 console.log(err);
               }
-            
+
         }
     };
     const handlePopUpClose = () => {

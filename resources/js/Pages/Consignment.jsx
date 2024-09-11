@@ -11,6 +11,7 @@ export default function ConsignmentD({
     AToken,
     url,
     currentUser,
+    userPermission,
 }) {
     const handleClick = (i) => {
         setActiveIndexGTRS(lastIndex);

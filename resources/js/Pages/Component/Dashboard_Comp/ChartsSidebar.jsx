@@ -26,163 +26,6 @@ import {
     AccordionItem,
 } from "react-headless-accordion";
 
-const navigation = [
-    {
-        id: 0,
-        name: "Dashboard",
-        href: "#",
-        icon: ChartPieIcon,
-        current: true,
-        feature: "Dashboard_view",
-    },
-    {
-        id: 1,
-        name: "Consignments",
-        href: "#",
-        icon: TruckIcon,
-        current: false,
-        feature: "ConsignmetsReport_view",
-    },
-    {
-        id: 2,
-        name: "KPI Report",
-        href: "#",
-        icon: ClipboardDocumentCheckIcon,
-        current: false,
-        options: [
-            // {
-            //     id: 2,
-            //     name: "KPI",
-            //     href: "#",
-            //     current: false,
-            //     icon: ClipboardDocumentCheckIcon,
-            //     feature: "KPI_view",
-            // },
-
-            // {
-            //     id: 12,
-            //     name: "Transit Days",
-            //     href: "#",
-            //     current: false,
-            //     icon: ClipboardDocumentCheckIcon,
-            //     feature: "View_TransitDays",
-            // },
-            {
-                id: 17,
-                name: "KPI",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "KPI_view",
-            },
-            {
-                id: 18,
-                name: "Transit Days",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "View_TransitDays",
-            },
-            {
-                id: 13,
-                name: "Holidays",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "View_Holidays",
-            },
-            // {
-            //     id: 14,
-            //     name: "KPI Reasons",
-            //     href: "#",
-            //     current: false,
-            //     icon: ClipboardDocumentCheckIcon,
-            //     feature: "View_kpiReasons",
-            // },
-        ],
-        feature: "KPI",
-    },
-    {
-        id: 4,
-        name: "Performance Report",
-        href: "#",
-        icon: PresentationChartLineIcon,
-        current: false,
-        feature: "Performance_view",
-    },
-    {
-        id: 5,
-        name: "Failed Consignments",
-        href: "#",
-        icon: ExclamationTriangleIcon,
-        current: false,
-        feature: "View_failedConsignment",
-    },
-    {
-        id: 16,
-        name: "Transport Report",
-        href: "#",
-        icon: TaskIcon,
-        current: false,
-        feature: "View_Transport",
-    },
-    {
-        id: 9,
-        name: "RDD",
-        href: "#",
-        icon: ClockIcon,
-        current: false,
-        feature: "View_RDD",
-    },
-    {
-        id: 11,
-        name: "Missing POD",
-        href: "#",
-        icon: CameraIcon,
-        current: false,
-        feature: "MissingPOD_view",
-    },
-    {
-        id: 10,
-        name: "Safety",
-        href: "#",
-        icon: ShieldCheckIcon,
-        current: false,
-        feature: "View_safety",
-    },
-    {
-        id: 6,
-        name: "No Delivery info.",
-        href: "#",
-        icon: NoSymbolIcon,
-        current: false,
-        feature: "NoDeliveryInfo_view",
-    },
-    {
-        id: 7,
-        name: "Additional Charges",
-        href: "#",
-        icon: CurrencyDollarIcon,
-        current: false,
-        feature: "AdditionalCharges_view",
-    },
-    {
-        id: 8,
-        name: "Driver Login",
-        href: "#",
-        icon: UserIcon,
-        current: false,
-        feature: "DriverLogin_view",
-    },
-    {
-        id: 20,
-        name: "Unilever Report",
-        href: "#",
-        icon: DocumentTextIcon,
-        current: false,
-        feature: "UnileverReport_View",
-    },
-];
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -195,10 +38,169 @@ export default function ChartsSidebar({
     currentUser,
     user,
     onData,
+    userPermission,
 }) {
     const [customerOptions, setCustomerOptions] = useState([]);
     const [showList, setShowList] = useState(false);
     const showSelect = customerOptions?.length > 0;
+    const navigation = [
+        {
+            id: 0,
+            name: "Dashboard",
+            href: "#",
+            icon: ChartPieIcon,
+            current: true,
+            feature: "Dashboard_view",
+        },
+        {
+            id: 1,
+            name: "Consignments",
+            href: "#",
+            icon: TruckIcon,
+            current: false,
+            feature: "ConsignmetsReport_view",
+        },
+        {
+            id: 2,
+            name: "KPI Report",
+            href: "#",
+            icon: ClipboardDocumentCheckIcon,
+            current: false,
+            options: [
+                // {
+                //     id: 2,
+                //     name: "KPI",
+                //     href: "#",
+                //     current: false,
+                //     icon: ClipboardDocumentCheckIcon,
+                //     feature: "KPI_view",
+                // },
+
+                // {
+                //     id: 12,
+                //     name: "Transit Days",
+                //     href: "#",
+                //     current: false,
+                //     icon: ClipboardDocumentCheckIcon,
+                //     feature: "View_TransitDays",
+                // },
+                {
+                    id: 17,
+                    name: "KPI",
+                    href: "#",
+                    current: false,
+                    icon: ClipboardDocumentCheckIcon,
+                    feature: "KPI_view",
+                },
+                {
+                    id: 18,
+                    name: "Transit Days",
+                    href: "#",
+                    current: false,
+                    icon: ClipboardDocumentCheckIcon,
+                    feature: "View_TransitDays",
+                },
+                {
+                    id: 13,
+                    name: "Holidays",
+                    href: "#",
+                    current: false,
+                    icon: ClipboardDocumentCheckIcon,
+                    feature: "View_Holidays",
+                },
+                {
+                    id: 14,
+                    name: "KPI Reasons",
+                    href: "#",
+                    current: false,
+                    icon: ClipboardDocumentCheckIcon,
+                    feature: "View_kpiReasons",
+                },
+            ],
+            feature: "KPI",
+        },
+        {
+            id: 4,
+            name: "Performance Report",
+            href: "#",
+            icon: PresentationChartLineIcon,
+            current: false,
+            feature: "Performance_view",
+        },
+        {
+            id: 5,
+            name: "Failed Consignments",
+            href: "#",
+            icon: ExclamationTriangleIcon,
+            current: false,
+            feature: "View_failedConsignment",
+        },
+        {
+            id: 16,
+            name: "Transport Report",
+            href: "#",
+            icon: TaskIcon,
+            current: false,
+            feature: "View_Transport",
+        },
+        {
+            id: 9,
+            name: "RDD",
+            href: "#",
+            icon: ClockIcon,
+            current: false,
+            feature: "View_RDD",
+        },
+        {
+            id: 11,
+            name: "Missing POD",
+            href: "#",
+            icon: CameraIcon,
+            current: false,
+            feature: "MissingPOD_view",
+        },
+        {
+            id: 10,
+            name: "Safety",
+            href: "#",
+            icon: ShieldCheckIcon,
+            current: false,
+            feature: "View_safety",
+        },
+        {
+            id: 6,
+            name: "No Delivery info",
+            href: "#",
+            icon: NoSymbolIcon,
+            current: false,
+            feature: "NoDeliveryInfo_view",
+        },
+        {
+            id: 7,
+            name: "Additional Charges",
+            href: "#",
+            icon: CurrencyDollarIcon,
+            current: false,
+            feature: "AdditionalCharges_view",
+        },
+        {
+            id: 8,
+            name: "Driver Login",
+            href: "#",
+            icon: UserIcon,
+            current: false,
+            feature: "DriverLogin_view",
+        },
+        {
+            id: 20,
+            name: "KPI Pack Report",
+            href: "#",
+            icon: DocumentTextIcon,
+            current: false,
+            feature: "UnileverReport_View",
+        },
+    ];
+
 
     const handleDivClick = () => {
         setShowList(!showList);
@@ -231,7 +233,27 @@ export default function ChartsSidebar({
     useEffect(() => {
         onData(optionSelected);
     }, [optionSelected]);
-    const [sidebarElements, setSidebarElements] = useState(navigation);
+    const [sidebarElements, setSidebarElements] = useState([]);
+
+
+    useEffect(() => {
+        if (userPermission && Object.keys(userPermission).length !== 0) {
+          let gtrsElements = navigation;
+          gtrsElements = navigation?.filter((option) => {
+            return userPermission?.some((feature) => {
+              if (option.options && option.options.length > 0) {
+                return option.options.some((childOption) => {
+                  return feature.FunctionName === childOption.feature;
+                });
+              } else {
+                return feature.FunctionName === option.feature;
+              }
+            });
+          });
+          setSidebarElements(gtrsElements);
+        }
+      }, [userPermission]);
+
     const handleClick = (index) => {
         setActiveIndexGTRS(index);
         const updatedElements = sidebarElements.map((element) => {
@@ -286,41 +308,41 @@ export default function ChartsSidebar({
         });
         setSidebarElements(updatedElements);
     };
-    const filterNavigation = (navigation, user) => {
-        return navigation.filter((navItem) => {
-            // Check if the navigation item has sub-options
-            if (navItem.options) {
-                // Filter options based on user permissions
-                navItem.options = navItem.options.filter((option) =>
-                    user?.Pages?.some(
-                        (userPage) =>
-                            userPage?.PageName === option.name &&
-                            userPage?.Features?.some(
-                                (feature) =>
-                                    feature.FunctionName === option.feature
-                            )
-                    )
-                );
-                // Include the navigation item only if it has any permitted options
-                return navItem.options.length > 0;
-            } else {
-                // For navigation items without options, check the feature directly
-                return user?.Pages?.some(
-                    (userPage) =>
-                        userPage?.PageName === navItem.name &&
-                        userPage?.Features?.some(
-                            (feature) =>
-                                feature?.FunctionName === navItem?.feature
-                        )
-                );
-            }
-        });
-    };
-    const filteredNavigation = filterNavigation(navigation, currentUser);
-    useEffect(() => {
-        setSidebarElements(filteredNavigation);
-        setActiveIndexGTRS(filteredNavigation[0]?.id);
-    }, []);
+    // const filterNavigation = (navigation, user) => {
+    //     return navigation.filter((navItem) => {
+    //         // Check if the navigation item has sub-options
+    //         if (navItem.options) {
+    //             // Filter options based on user permissions
+    //             navItem.options = navItem.options.filter((option) =>
+    //                 user?.Pages?.some(
+    //                     (userPage) =>
+    //                         userPage?.PageName === option.name &&
+    //                         userPage?.Features?.some(
+    //                             (feature) =>
+    //                                 feature.FunctionName === option.feature
+    //                         )
+    //                 )
+    //             );
+    //             // Include the navigation item only if it has any permitted options
+    //             return navItem.options.length > 0;
+    //         } else {
+    //             // For navigation items without options, check the feature directly
+    //             return user?.Pages?.some(
+    //                 (userPage) =>
+    //                     userPage?.PageName === navItem.name &&
+    //                     userPage?.Features?.some(
+    //                         (feature) =>
+    //                             feature?.FunctionName === navItem?.feature
+    //                     )
+    //             );
+    //         }
+    //     });
+    // };
+    //const filteredNavigation = filterNavigation(navigation, currentUser);
+    // useEffect(() => {
+    //     setSidebarElements(filteredNavigation);
+    //     setActiveIndexGTRS(filteredNavigation[0]?.id);
+    // }, []);
     return (
         <div className="h-full xl:fixed xl:w-64 lg:h-full bg-gray-200 w-full ">
             {/* Static sidebar for desktop */}

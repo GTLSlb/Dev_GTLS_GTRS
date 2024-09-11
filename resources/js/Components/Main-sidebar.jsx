@@ -47,6 +47,7 @@ export default function MainSidebar({
     setToken,
     setCurrentUser,
     activePage,
+    user,
 }) {
     const invoicesRoles = [6, 7, 8, 9, 10];
     const [gtrsCurrent, setGtrsCurrent] = useState();
@@ -56,102 +57,102 @@ export default function MainSidebar({
 
     const current_user_role = currentUser?.role_id;
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const sidebarNavigation = [
-        {
-            id: 0,
-            name: "GTRS",
-            // href: "#",
-            icon: DocumentMagnifyingGlassIcon,
-            current: false,
-            options: [
-                {
-                    id: 0,
-                    name: "Dashboard",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 1,
-                    name: "Consignments",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 2,
-                    name: "Kpi Report",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 4,
-                    name: "Performance report",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 5,
-                    name: "Failed Consignments",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 6,
-                    name: "No Delivery info",
-                    current: false,
-                    role: ["1", "4"],
-                },
-                {
-                    id: 7,
-                    name: "Additional Charges",
-                    current: false,
-                    role: ["1", "4"],
-                },
-                {
-                    id: 8,
-                    name: "Driver Login",
-                    current: false,
-                    role: ["1", "4"],
-                },
-                {
-                    id: 9,
-                    name: "RDD",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 10,
-                    name: "Safety",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 11,
-                    name: "Missing POD",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 12,
-                    name: "Transit Days",
-                    current: false,
-                    role: ["1", "4"],
-                },
-                {
-                    id: 13,
-                    name: "Holidays",
-                    current: false,
-                    role: ["1", "4"],
-                },
-                {
-                    id: 14,
-                    name: "KPI Reasons",
-                    current: false,
-                    role: ["1", "4"],
-                },
-            ],
-            func: setActiveIndexGTRS,
-            role: ["1", "2", "3", "4", "5"],
-        },
+    const [sidebarNavigation, setSidebarNavigation] = useState([
+        // {
+        //     id: 0,
+        //     name: "GTRS",
+        //     // href: "#",
+        //     icon: DocumentMagnifyingGlassIcon,
+        //     current: false,
+        //     options: [
+        //         {
+        //             id: 0,
+        //             name: "Dashboard",
+        //             current: false,
+        //             role: ["1", "2", "3", "4", "5"],
+        //         },
+        //         {
+        //             id: 1,
+        //             name: "Consignments",
+        //             current: false,
+        //             role: ["1", "2", "3", "4", "5"],
+        //         },
+        //         {
+        //             id: 2,
+        //             name: "Kpi Report",
+        //             current: false,
+        //             role: ["1", "2", "3", "4", "5"],
+        //         },
+        //         {
+        //             id: 4,
+        //             name: "Performance report",
+        //             current: false,
+        //             role: ["1", "2", "3", "4", "5"],
+        //         },
+        //         {
+        //             id: 5,
+        //             name: "Failed Consignments",
+        //             current: false,
+        //             role: ["1", "2", "3", "4", "5"],
+        //         },
+        //         {
+        //             id: 6,
+        //             name: "No Delivery info",
+        //             current: false,
+        //             role: ["1", "4"],
+        //         },
+        //         {
+        //             id: 7,
+        //             name: "Additional Charges",
+        //             current: false,
+        //             role: ["1", "4"],
+        //         },
+        //         {
+        //             id: 8,
+        //             name: "Driver Login",
+        //             current: false,
+        //             role: ["1", "4"],
+        //         },
+        //         {
+        //             id: 9,
+        //             name: "RDD",
+        //             current: false,
+        //             role: ["1", "2", "3", "4", "5"],
+        //         },
+        //         {
+        //             id: 10,
+        //             name: "Safety",
+        //             current: false,
+        //             role: ["1", "2", "3", "4", "5"],
+        //         },
+        //         {
+        //             id: 11,
+        //             name: "Missing POD",
+        //             current: false,
+        //             role: ["1", "2", "3", "4", "5"],
+        //         },
+        //         {
+        //             id: 12,
+        //             name: "Transit Days",
+        //             current: false,
+        //             role: ["1", "4"],
+        //         },
+        //         {
+        //             id: 13,
+        //             name: "Holidays",
+        //             current: false,
+        //             role: ["1", "4"],
+        //         },
+        //         {
+        //             id: 14,
+        //             name: "KPI Reasons",
+        //             current: false,
+        //             role: ["1", "4"],
+        //         },
+        //     ],
+        //     func: setActiveIndexGTRS,
+        //     role: ["1", "2", "3", "4", "5"],
+        // },
         {
             id: 2,
             name: "Invoices",
@@ -159,54 +160,6 @@ export default function MainSidebar({
             icon: DocumentChartBarIcon,
             current: gtrsCurrent,
             options: [
-                // {
-                //     id: 0,
-                //     name: "Dashboard",
-                //     current: false,
-                //     role: ["1"],
-                // },
-                // {
-                //     id: 1,
-                //     name: "Invoices",
-                //     current: false,
-                //     role: ["1", "6", "7", "8", "9", "10"],
-                // },
-                // {
-                //     id: 2,
-                //     name: "Purchase order",
-                //     current: false,
-                //     role: ["1", "6", "7", "8", "9", "10"],
-                // },
-                // {
-                //     id: 3,
-                //     name: "Suppliers",
-                //     current: false,
-                //     role: ["1", "6", "7", "8", "9", "10"],
-                // },
-                // {
-                //     id: 4,
-                //     name: "Services",
-                //     current: false,
-                //     role: ["1", "6", "7", "8", "9", "10"],
-                // },
-                // {
-                //     id: 5,
-                //     name: "Companies",
-                //     current: false,
-                //     role: ["1", "6", "7", "8", "9", "10"],
-                // },
-                // {
-                //     id: 11,
-                //     name: "Categories",
-                //     current: false,
-                //     role: ["1", "6", "7", "8", "9", "10"],
-                // },
-                // {
-                //     id: 12,
-                //     name: "Close reasons",
-                //     current: false,
-                //     role: ["1", "6", "7", "8", "9", "10"],
-                // },
             ],
             role: ["1", "6", "7", "8", "9", "10"],
         },
@@ -217,42 +170,6 @@ export default function MainSidebar({
             icon: UsersIcon,
             current: false,
             options: [
-                // {
-                //     id: 0,
-                //     name: "Dashboard",
-                //     current: false,
-                //     role: ["1", "2", "3", "4", "5"],
-                // },
-                // {
-                //     id: 1,
-                //     name: "Employees",
-                //     current: false,
-                //     role: ["1", "2", "3", "4", "5"],
-                // },
-                // {
-                //     id: 2,
-                //     name: "Roles",
-                //     current: false,
-                //     role: ["1", "2", "3", "4", "5"],
-                // },
-                // {
-                //     id: 3,
-                //     name: "Apps",
-                //     current: false,
-                //     role: ["1", "2", "3", "4", "5"],
-                // },
-                // {
-                //     id: 4,
-                //     name: "Groups",
-                //     current: false,
-                //     role: ["1", "2", "3", "4", "5"],
-                // },
-                // {
-                //     id: 5,
-                //     name: "Branches",
-                //     current: false,
-                //     role: ["1", "4"],
-                // },
             ],
             role: ["1"],
         },
@@ -268,84 +185,112 @@ export default function MainSidebar({
                     name: "Dashboard",
                     current: false,
                     role: ["1", "2", "3", "4", "5"],
+                    feature: "Dashboard_view",
                 },
                 {
                     id: 1,
                     name: "Consignments",
                     current: false,
                     role: ["1", "2", "3", "4", "5"],
+                    feature: "ConsignmetsReport_view",
                 },
                 {
                     id: 2,
-                    name: "Kpi Report",
+                    name: "KPI",
                     current: false,
                     role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 4,
-                    name: "Performance report",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 5,
-                    name: "Failed Consignments",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 6,
-                    name: "No Delivery info",
-                    current: false,
-                    role: ["1", "4"],
-                },
-                {
-                    id: 7,
-                    name: "Additional Charges",
-                    current: false,
-                    role: ["1", "4"],
-                },
-                {
-                    id: 8,
-                    name: "Driver Login",
-                    current: false,
-                    role: ["1", "4"],
-                },
-                {
-                    id: 9,
-                    name: "RDD",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 10,
-                    name: "Safety",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 11,
-                    name: "Missing POD",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
+                    feature: "KPI_view",
                 },
                 {
                     id: 12,
                     name: "Transit Days",
                     current: false,
                     role: ["1", "4"],
+                    feature: "View_TransitDays",
                 },
                 {
                     id: 13,
                     name: "Holidays",
                     current: false,
                     role: ["1", "4"],
+                    feature: "View_Holidays",
                 },
                 {
                     id: 14,
                     name: "KPI Reasons",
                     current: false,
                     role: ["1", "4"],
+                    feature: "View_kpiReasons",
+                },
+                {
+                    id: 4,
+                    name: "Performance report",
+                    current: false,
+                    role: ["1", "2", "3", "4", "5"],
+                    feature: "Performance_view",
+                },
+                {
+                    id: 5,
+                    name: "Failed Consignments",
+                    current: false,
+                    role: ["1", "2", "3", "4", "5"],
+                    feature: "View_failedConsignment",
+                },
+                {
+                    id: 16,
+                    name: "Transport Report",
+                    current: false,
+                    role: ["1", "4"],
+                    feature: "View_Transport",
+                },
+                {
+                    id: 9,
+                    name: "RDD",
+                    current: false,
+                    role: ["1", "2", "3", "4", "5"],
+                    feature: "View_RDD",
+                },
+                {
+                    id: 11,
+                    name: "Missing POD",
+                    current: false,
+                    role: ["1", "2", "3", "4", "5"],
+                    feature: "MissingPOD_view",
+                },
+                {
+                    id: 10,
+                    name: "Safety",
+                    current: false,
+                    role: ["1", "2", "3", "4", "5"],
+                    feature: "View_safety",
+                },
+                {
+                    id: 6,
+                    name: "No Delivery info",
+                    current: false,
+                    role: ["1", "4"],
+                    feature: "NoDeliveryInfo_view",
+                },
+                {
+                    id: 7,
+                    name: "Additional Charges",
+                    current: false,
+                    role: ["1", "4"],
+                    feature: "AdditionalCharges_view",
+                },
+                {
+                    id: 8,
+                    name: "Driver Login",
+                    current: false,
+                    role: ["1", "4"],
+                    feature: "DriverLogin_view",
+                },
+                {
+                    id: 20,
+                    name: "KPI Pack Report",
+                    current: false,
+                    role: ["1", "4"],
+                    feature: "UnileverReport_View",
                 },
             ],
             func: setActiveIndexGTRS,
@@ -378,7 +323,17 @@ export default function MainSidebar({
         },
 
         // { name: 'Settings', href: '#', icon: CogIcon, current: false },
-    ];
+    ]);
+    useEffect(() => {
+        if (user && Object.keys(user).length !== 0) {
+          let gtrsElements = sidebarNavigation;
+          gtrsElements[2].options = sidebarNavigation[2].options.filter((option) => {
+            return user.some((feature) => feature.FunctionName == option.feature);
+          });
+          setSidebarNavigation(gtrsElements);
+        }
+      }, [user]);
+
     const [sidebarElements, setSidebarElements] = useState([]);
     useEffect(() => {
         let elements = [];
@@ -391,7 +346,7 @@ export default function MainSidebar({
            })
        })
        setSidebarElements(elements.reverse())
-    },[allowedApplications])
+    },[allowedApplications, sidebarNavigation])
     const handleClick = (index) => {
         if (index == 5 || index == 6) {
             setMobileMenuOpen(false);
@@ -487,6 +442,46 @@ export default function MainSidebar({
     }
     moveToHead(allowedApplications, 3);
 
+    const [appsImgs, setAppsImgs] = useState([]);
+    const [isFetchingImg, setIsFetchingImg] = useState(true);
+    const fetchAppsLogo = async (picName, app) => {
+        try {
+            const response = await axios({
+                method: "post",
+                url: "/getAppLogo",
+                responseType: "blob", // Set the expected response type as 'blob'
+                data: {
+                    filename: picName,
+                },
+            });
+
+            const blobUrl = URL.createObjectURL(response.data); // Create a URL for the Blob
+            setAppsImgs((prev) => ({
+                ...prev,
+                [app.AppId]: blobUrl,
+            }));
+        } catch (error) {
+            console.log(error, app?.AppAbv);
+            setAppsImgs((prev) => ({
+                ...prev,
+                [app.AppId]: "/icons/NoPhoto.jpg",
+            }));
+        }
+    };
+console.log(appsImgs);
+
+    useEffect(() => {
+        if (allowedApplications?.length > 0) {
+            allowedApplications?.forEach((app) => {
+                if (!appsImgs[app.AppId]) {
+                    console.log('4');
+                    // Check if the image URL is not already loaded
+                    fetchAppsLogo(app?.AppIcon, app);
+                }
+            });
+        }
+    }, [allowedApplications]);
+
     return (
         <div>
             <div className="hidden md:flex md:flex-shrink-0 h-full fixed top-0 left-0 z-50 w-auto">
@@ -535,7 +530,7 @@ export default function MainSidebar({
                                                 />
                                             ) : (
                                                 <img
-                                                    src={`${item.AppIcon}`}
+                                                    src={appsImgs[item?.AppId]}
                                                     className={classNames(
                                                         item.AppId ==
                                                             currentAppId

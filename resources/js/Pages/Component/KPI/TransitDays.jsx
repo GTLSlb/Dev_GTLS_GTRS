@@ -20,6 +20,7 @@ export default function TransitDays({
     AToken,
     filterValue,
     setFilterValue,
+    userPermission,
     setActiveIndexGTRS,
     setTransitDay,
 }) {
@@ -172,7 +173,7 @@ export default function TransitDays({
 
         return uniqueCustomers;
     }
-   
+
     const filterIcon = (className) => {
         return (
             <svg
@@ -345,7 +346,7 @@ export default function TransitDays({
             render: ({ value, data }) => {
                 return (
                     <div>
-                        {canEditTransitDays(currentUser) ? (
+                        {canEditTransitDays(userPermission) ? (
                             <button
                                 className={
                                     "rounded text-blue-500 justify-center items-center  "
@@ -403,7 +404,7 @@ export default function TransitDays({
                                 <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
                                     Transit Days
                                 </h1>
-                                {canAddTransitDays(currentUser) ? (
+                                {canAddTransitDays(userPermission) ? (
                                     <GtamButton
                                         name={"Add +"}
                                         onClick={AddTransit}

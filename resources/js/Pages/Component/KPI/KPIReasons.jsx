@@ -9,6 +9,7 @@ export default function KPIReasons({
     url,
     currentUser,
     AToken,
+    userPermission,
     kpireasonsData,
     setkpireasonsData,
 }) {
@@ -126,7 +127,7 @@ export default function KPIReasons({
                             />
                         </div>
                     </div>
-                    {canAddKpiReasons(currentUser) ? (
+                    {canAddKpiReasons(userPermission) ? (
                         <div className="flex flex-col sm:flex-row gap-x-5 gap-y-3">
                             {editIndex != null ? (
                                 <div className="col-span-2">
@@ -137,7 +138,7 @@ export default function KPIReasons({
                                     />
                                 </div>
                             ) : null}
-                            {canAddKpiReasons(currentUser) ? (
+                            {canAddKpiReasons(userPermission) ? (
                                 <div className="col-span-2">
                                     <GtamButton
                                         name={
@@ -161,6 +162,7 @@ export default function KPIReasons({
                     setShowAddRow={setShowAddRow}
                     objects={filteredData}
                     currentUser={currentUser}
+                    userPermission={userPermission}
                     editIndex={editIndex}
                     setEditIndex={setEditIndex}
                     getfunction={getKPIReasons}

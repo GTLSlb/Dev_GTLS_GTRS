@@ -480,7 +480,7 @@ export default function NoDelivery({
         return { selectedColumns: selectedColVal, filterValue: filterValue };
     }function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-    
+
         const columnMapping = {
             ConsignmentNo: "Consignment No",
             DespatchDateTime: "Despatch DateTime",
@@ -497,14 +497,14 @@ export default function NoDelivery({
             POD: "POD",
             DeliveryRequiredDateTime: "Delivery Required DateTime",
         };
-        
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
-    
+
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
@@ -543,13 +543,13 @@ export default function NoDelivery({
                 return acc;
             }, {})
         );
-    
+
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
-    
+
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
-    
+
         // Apply custom styles to the header row
         const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
@@ -559,18 +559,18 @@ export default function NoDelivery({
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
         headerRow.alignment = { horizontal: "center" };
-    
+
         // Add the data to the worksheet
         data.forEach((rowData) => {
             const row = worksheet.addRow(Object.values(rowData));
-    
+
             // Apply date format to the DespatchDateTime column
             const despatchDateIndex = newSelectedColumns.indexOf("Despatch DateTime");
             if (despatchDateIndex !== -1) {
                 const cell = row.getCell(despatchDateIndex + 1);
                 cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
             }
-    
+
             // Apply date format to the DeliveryRequiredDateTime column
             const deliveryReqDateIndex = newSelectedColumns.indexOf("Delivery Required DateTime");
             if (deliveryReqDateIndex !== -1) {
@@ -578,45 +578,47 @@ export default function NoDelivery({
                 cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
             }
         });
-    
+
         // Set column widths
         const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
         }));
-    
+
         // Generate the Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
             // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-    
+
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "NoDeliveryinfo.xlsx");
         });
     }
-    
+
     const [selected, setSelected] = useState([]);
     const createNewLabelObjects = (data, fieldName) => {
         let id = 1; // Initialize the ID
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
 
-        // Map through the data and create new objects
-        data?.forEach((item) => {
-            const fieldValue = item[fieldName];
-            // Check if the label is not already included
-            if (!uniqueLabels.has(fieldValue)) {
-                uniqueLabels.add(fieldValue);
-                const newObject = {
-                    id: fieldValue,
-                    label: fieldValue,
-                };
-                newData.push(newObject);
-            }
-        });
+        if(data?.length > 0){
+             // Map through the data and create new objects
+            data?.forEach((item) => {
+                const fieldValue = item[fieldName];
+                // Check if the label is not already included
+                if (!uniqueLabels.has(fieldValue)) {
+                    uniqueLabels.add(fieldValue);
+                    const newObject = {
+                        id: fieldValue,
+                        label: fieldValue,
+                    };
+                    newData.push(newObject);
+                }
+            });
+        }
         return newData;
     };
     const senderSuburbs = createNewLabelObjects(NoDelData, "Send_Suburb");

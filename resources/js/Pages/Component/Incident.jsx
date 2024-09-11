@@ -29,6 +29,7 @@ export default function Incident({
     incidentId,
     currentUser,
     AToken,
+    userPermission,
 }) {
     const [selected, setSelected] = useState("details");
     const [pdfLoading, setPdfLoading] = useState(false);
@@ -396,6 +397,7 @@ export default function Incident({
                                     mainCauses={mainCauses}
                                     filters={filters}
                                     incident={incident}
+                                    userPermission={userPermission}
                                 />
                             </Tab>
                             <Tab key="notes" title="Notes">
@@ -405,6 +407,7 @@ export default function Incident({
                                     getIncident={getIncident}
                                     filters={filters}
                                     currentUser={currentUser}
+                                    userPermission={userPermission}
                                 />
                             </Tab>
                         </Tabs>

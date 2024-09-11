@@ -18,6 +18,7 @@ export default function ConsPerf({
     oldestDate,
     latestDate,
     currentUser,
+    userPermission,
     setSharedStartDate,
     setSharedEndDate,
 }) {
@@ -70,7 +71,7 @@ export default function ConsPerf({
         setFilteredData(filtered);
         setCurrentPage(0);
     };
-    
+
     useEffect(() => {
         filterData(SDate, EDate, selectedConsignment);
     }, [accData]);
@@ -335,6 +336,7 @@ export default function ConsPerf({
                             id={item.id}
                             item={item}
                             currentUser={currentUser}
+                            userPermission={userPermission}
                         />
                     </div>
                 ))

@@ -28,6 +28,7 @@ export default function SafetyRep({
     latestDate,
     DefaultSDate,
     DefaultEDate,
+    userPermission,
 }) {
     const [SDate, setSDate] = useState(DefaultSDate);
     const [EDate, setEDate] = useState(DefaultEDate);
@@ -279,7 +280,7 @@ export default function SafetyRep({
             return (
                 itemDate >= filterStartDate &&
                 itemDate <= filterEndDate &&
-                typeMatch && 
+                typeMatch &&
                 chargeToMatch
             ); // Compare the item date to the filter dates
         });
@@ -328,6 +329,7 @@ export default function SafetyRep({
             safetyData={filteredData}
             currentPageRep={currentPage}
             currentUser={currentUser}
+            userPermission={userPermission}
             setFilteredData={setFilteredData}
             setDataEdited={setDataEdited}
         />,
@@ -341,6 +343,7 @@ export default function SafetyRep({
             url={url}
             AToken={AToken}
             currentUser={currentUser}
+            userPermission={userPermission}
             safetyTypes={safetyTypes}
             setSafetyTypes={setSafetyTypes}
         />,
@@ -349,6 +352,12 @@ export default function SafetyRep({
     const handleItemClick = (index) => {
         setActiveComponentIndex(index);
     };
+    const [canView, setCanView] = useState(true);
+    useEffect(() => {
+        if(userPermission){
+            setCanView(!canViewSafetyType(userPermission))
+        }
+    },[userPermission])
     return (
         <div>
             {isFetching || isFetchingCauses || isFetchingTypes ? (
@@ -377,7 +386,7 @@ export default function SafetyRep({
                             </h1>
                         </div>
                     </div>
-                    {!canViewSafetyType(currentUser) ? (
+                    {canView ? (
                         <ul className="flex space-x-0 mt-5">
                             <li
                                 className={`cursor-pointer ${

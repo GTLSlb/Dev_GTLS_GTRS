@@ -494,11 +494,11 @@ const temp = [
     function SendDailyEmail(){
         axios.post("/sendemail", 1)
             .then((response) => {
-                // console.log(response);  
+                // console.log(response);
             })
             .catch((error) => {
                 console.log(error.response);
-                
+
             });
     };
 
@@ -518,7 +518,7 @@ const temp = [
                         <div>
                             {/* Start Date Filter */}
                             <div className="flex flex-col lg:flex-row 2xl:justify-between lg:flex-row 2xl:gap-x-2 gap-y-4 gap-x-10 lg:items-center">
-                               
+
                                 <div className="w-72 flex-item w-full sm:max-w-xs max-w-lg">
                                     <div className="relative border rounded">
                                         <svg
@@ -546,7 +546,7 @@ const temp = [
                                             className="w-full py-0.5  pl-12 pr-4 text-gray-500 border-none rounded-md outline-none "
                                         />
                                     </div>
-                                    
+
                                 </div>
                                 <button
                                         type="button"
@@ -935,7 +935,7 @@ const temp = [
                                             className="inline-flex items-center rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
                                         >
                                             Delete all
-                                        </button> 
+                                        </button>
                                     </div>
                                 )} */}
                                 <table

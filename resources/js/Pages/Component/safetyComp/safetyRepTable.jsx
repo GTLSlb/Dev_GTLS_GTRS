@@ -35,6 +35,7 @@ export default function SafetyRepTable({
     customerAccounts,
     setFilterValue,
     currentUser,
+    userPermission,
     setFilteredData,
     setDataEdited,
     safetyTypes,
@@ -474,7 +475,7 @@ export default function SafetyRepTable({
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-    
+
         const columnMapping = {
             SafetyType: "Safety Type",
             ConsNo: "Cons No",
@@ -484,14 +485,14 @@ export default function SafetyRepTable({
             OccuredAt: "Occured At",
             AddedBy: "Added By",
         };
-    
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
-    
+
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
@@ -538,13 +539,13 @@ export default function SafetyRepTable({
                 return acc;
             }, {})
         );
-    
+
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
-    
+
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
-    
+
         // Apply custom styles to the header row
         const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
@@ -554,11 +555,11 @@ export default function SafetyRepTable({
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
         headerRow.alignment = { horizontal: "center" };
-    
+
         // Add the data to the worksheet
         data.forEach((rowData) => {
             const row = worksheet.addRow(Object.values(rowData));
-    
+
             // Apply date format to the OccuredAt column
             const occuredAtIndex = newSelectedColumns.indexOf("Occured At");
             if (occuredAtIndex !== -1) {
@@ -566,21 +567,21 @@ export default function SafetyRepTable({
                 cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
             }
         });
-    
+
         // Set column widths
         const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
         }));
-    
+
         // Generate the Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
             // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-    
+
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "Safety-Report.xlsx");
         });
@@ -678,8 +679,8 @@ export default function SafetyRepTable({
         let id = 1; // Initialize the ID
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
-
-        // Map through the data and create new objects
+        if(data?.length > 0){
+            // Map through the data and create new objects
         data?.forEach((item) => {
             const fieldValue = item[fieldName];
             // Check if the label is not already included
@@ -692,6 +693,7 @@ export default function SafetyRepTable({
                 newData.push(newObject);
             }
         });
+        }
         return newData;
     };
     const stateOptions = createNewLabelObjects(safetyData, "State");
@@ -704,6 +706,13 @@ export default function SafetyRepTable({
         id: parseInt(reason.DebtorId.trim(), 10), // Convert id to integer and remove any whitespace
         label: reason.AccountNo,
     }));
+    const [canEdit, setCanEdit] = useState(true);
+
+    useEffect(() => {
+        if(userPermission){
+            setCanEdit(canEditSafetyReport(userPermission));
+        }
+    },[userPermission])
     const referenceOptions = [
         {
             id: 1,
@@ -868,7 +877,7 @@ export default function SafetyRepTable({
             render: ({ value, data }) => {
                 return (
                     <div>
-                        {canEditSafetyReport(currentUser) ? (
+                        {canEdit ? (
                             <button
                                 className={
                                     "rounded text-blue-500 justify-center items-center  "
@@ -903,12 +912,14 @@ export default function SafetyRepTable({
     const newArray = columns?.slice(0, -1);
     const [newColumns, setNewColumns] = useState();
     useEffect(() => {
-        if (canEditSafetyReport(currentUser)) {
-            setNewColumns(columns);
-        } else {
-            setNewColumns(newArray);
+        if(userPermission){
+            if (canEditSafetyReport(userPermission)) {
+                setNewColumns(columns);
+            } else {
+                setNewColumns(newArray);
+            }
         }
-    }, []);
+    }, [userPermission]);
     return (
         <div>
             <div className=" w-full bg-smooth pb-20">
@@ -934,7 +945,7 @@ export default function SafetyRepTable({
                         <div className="-mt-5">
                             <div className=" object-right flex md:justify-end gap-x-5 flex-item ">
                                 <div className="h-full">
-                                    {canAddSafetyReport(currentUser) ? (
+                                    {canAddSafetyReport(userPermission) ? (
                                         <button
                                             type="button"
                                             onClick={handleAddClick}
@@ -1131,6 +1142,7 @@ export default function SafetyRepTable({
                 modalRefer={modalRefer}
                 modalOccuredAt={modalOccuredAt}
                 currentUser={currentUser}
+                userPermission={userPermission}
                 buttonAction={buttonAction}
                 updateLocalData={updateLocalData}
             />

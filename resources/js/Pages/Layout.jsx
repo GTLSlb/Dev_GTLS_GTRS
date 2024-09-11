@@ -188,7 +188,7 @@ export default function Sidebar(Boolean) {
             <div>
                 {Token ? (
                     <div className="bg-smooth h-full ">
-                        {/* <NmainSidebar/> */}
+                        {/* <mainSidebar/> */}
                         <MainSidebar
                             allowedApplications={allowedApplications}
                             setMobileMenuOpen={setMobileMenuOpen}
@@ -198,6 +198,7 @@ export default function Sidebar(Boolean) {
                             activeIndexGtam={activeIndexGtam}
                             setactivePage={setactivePage}
                             setToken={setToken}
+                            user={user}
                             setCurrentUser={setcurrentUser}
                             setActiveIndexGTRS={setActiveIndexGTRS}
                             setActiveIndexInv={setActiveIndexInv}

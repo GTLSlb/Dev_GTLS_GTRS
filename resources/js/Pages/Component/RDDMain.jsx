@@ -21,6 +21,7 @@ export default function RDDMain({
     SDate,
     url,
     AToken,
+    userPermission,
     setSDate,
     currentUser,
     rddReasons,
@@ -229,6 +230,7 @@ export default function RDDMain({
             setrddData={setrddData}
             debtorsData={debtorsData}
             currentUser={currentUser}
+            userPermission={userPermission}
             setActiveIndexGTRS={setActiveIndexGTRS}
             setactiveCon={setactiveCon}
             setLastIndex={setLastIndex}
@@ -245,6 +247,7 @@ export default function RDDMain({
             rddReasons={rddReasons}
             setrddReasons={setrddReasons}
             currentUser={currentUser}
+            userPermission={userPermission}
             url={url}
             AToken={AToken}
         />,
@@ -313,6 +316,7 @@ export default function RDDMain({
                             setrddData={setrddData}
                             debtorsData={debtorsData}
                             currentUser={currentUser}
+                            userPermission={userPermission}
                             setActiveIndexGTRS={setActiveIndexGTRS}
                             setactiveCon={setactiveCon}
                             setLastIndex={setLastIndex}

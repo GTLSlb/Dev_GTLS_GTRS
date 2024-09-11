@@ -5,8 +5,7 @@ import Amount from "./Amount";
 import Sender from "./Sender";
 import Reciever from "./Reciever";
 
-export default function Navbar({ id, item,currentUser }) {
-    const current_user_role = currentUser.role_id;
+export default function Navbar({ id, item,currentUser,userPermission }) {
 
     const tabs = [
         {

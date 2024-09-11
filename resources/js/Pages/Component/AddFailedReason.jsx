@@ -13,6 +13,7 @@ export default function AddFailedReason({
     failedReasons,
     setFailedReasons,
     currentUser,
+    userPermission,
     AToken,
     url,
 }) {
@@ -79,7 +80,7 @@ export default function AddFailedReason({
         <div className=" w-full bg-smooth ">
             <div className="sm:flex sm:items-center relative">
                 <div className="inline-block sm:absolute left-auto right-0 -top10">
-                    {canAddFailedReasons(currentUser) ? (
+                    {canAddFailedReasons(userPermission) ? (
                         <button
                             type="button"
                             onClick={() => handleEditClick(reason)}
@@ -165,7 +166,7 @@ export default function AddFailedReason({
                                                     )}
                                                 </td>
                                                 <td className="relative whitespace-nowrap py-4 pl-3 sm:pr-4 pr-6 text-left text-sm font-medium">
-                                                    {canEditFailedReasons(currentUser)?
+                                                    {canEditFailedReasons(userPermission)?
                                                     <a
                                                         href="#"
                                                         onClick={() =>
@@ -215,6 +216,7 @@ export default function AddFailedReason({
                 handleClose={handleEditClick}
                 updateLocalData={updateLocalData}
                 currentUser={currentUser}
+                userPermission={userPermission}
                 failedReasons={failedReasons}
                 AToken={AToken}
                 // reasonAuditId={reasonAuditId}

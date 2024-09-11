@@ -5,7 +5,7 @@ import { useState } from "react";
 import Select from "react-select";
 import BarGraph from "../graphs/BarGraph";
 
-function ConsignmentGraph({ url, currentUser, AToken }) {
+function ConsignmentGraph({ url, currentUser, AToken, userPermission }) {
     const [graphData, setGraphData] = useState();
     const [loading, setLoading] = useState(true);
 
@@ -157,7 +157,7 @@ function ConsignmentGraph({ url, currentUser, AToken }) {
         }),
         // Add or adjust other style functions as needed
       };
-            
+
 
     const handleReceiverSelectChange = (selectedOptions) => {
         setselectedReceiver(selectedOptions);
@@ -204,6 +204,7 @@ function ConsignmentGraph({ url, currentUser, AToken }) {
                     graphData={graphData}
                     url={url}
                     currentUser={currentUser}
+                    userPermission={userPermission}
                     selectedReceiver={selectedReceiver}
                     getReportData={getReportData}
                     updateData={updateData}

@@ -10,6 +10,7 @@ export default function NewKPIModalAddReason({
     url,
     kpi,
     AToken,
+    userPermission,
     currentUser,
     updateLocalData,
     kpiReasons,

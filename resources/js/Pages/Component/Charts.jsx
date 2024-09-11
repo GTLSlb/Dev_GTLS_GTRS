@@ -52,6 +52,7 @@ export default function charts({
     chartsData,
     kpireasonsData,
     setkpireasonsData,
+    userPermission,
 }) {
     window.moment = moment;
     const current = new Date();
@@ -1945,6 +1946,7 @@ export default function charts({
             setEDate={setEDate}
             SDate={SDate}
             setSDate={setSDate}
+            userPermission={userPermission}
         />,
         <GtrsCons
             oldestDate={oldestDate}
@@ -1964,6 +1966,7 @@ export default function charts({
             setEDate={setEDate}
             SDate={SDate}
             setSDate={setSDate}
+            userPermission={userPermission}
         />,
         <KPI
             kpireasonsData={kpireasonsData}
@@ -1986,6 +1989,7 @@ export default function charts({
             setEDate={setEDate}
             SDate={SDate}
             setSDate={setSDate}
+            userPermission={userPermission}
         />,
         <ConsignmentD
             url={url}
@@ -1995,6 +1999,7 @@ export default function charts({
             AToken={AToken}
             lastIndex={lastIndex}
             currentUser={currentUser}
+            userPermission={userPermission}
         />,
         <ConsPerf
             setSharedStartDate={setSharedStartDate}
@@ -2012,6 +2017,7 @@ export default function charts({
             setEDate={setEDate}
             SDate={SDate}
             setSDate={setSDate}
+            userPermission={userPermission}
         />,
         <FailedConsMain
             oldestDate={oldestDate}
@@ -2036,6 +2042,7 @@ export default function charts({
             setSDate={setSDate}
             setPerfData={setPerfData}
             setFailedReasons={setFailedReasons}
+            userPermission={userPermission}
         />,
         <NoDelivery
             oldestDate={oldestDate}
@@ -2055,6 +2062,7 @@ export default function charts({
             AToken={AToken}
             setSDate={setSDate}
             accData={dataFromChild}
+            userPermission={userPermission}
         />,
         <AdditionalCharges
             oldestDate={oldestDate}
@@ -2073,6 +2081,7 @@ export default function charts({
             setEDate={setEDate}
             SDate={SDate}
             setSDate={setSDate}
+            userPermission={userPermission}
         />,
         <DriverLogin
             url={url}
@@ -2089,6 +2098,7 @@ export default function charts({
             setEDate={setEDate}
             SDate={SDate}
             setSDate={setSDate}
+            userPermission={userPermission}
         />,
         <RDDMain
             oldestDate={oldestDate}
@@ -2114,6 +2124,7 @@ export default function charts({
             setSDate={setSDate}
             rddReasons={rddReasons}
             setrddReasons={setrddReasons}
+            userPermission={userPermission}
         />,
         <SafetyRep
             oldestDate={oldestDate}
@@ -2142,6 +2153,7 @@ export default function charts({
             safetyDataState={safetyDataState}
             setsafetyDataState={setsafetyDataState}
             setSDate={setSDate}
+            userPermission={userPermission}
         />,
         <MissingPOD
             oldestDate={oldestDate}
@@ -2164,6 +2176,7 @@ export default function charts({
             setSDate={setSDate}
             setPerfData={setPerfData}
             setFailedReasons={setFailedReasons}
+            userPermission={userPermission}
         />,
         <TransitDays
             setTransitDay={setTransitDay}
@@ -2175,6 +2188,7 @@ export default function charts({
             setActiveIndexGTRS={setActiveIndexGTRS}
             setTransitDays={setTransitDays}
             url={url}
+            userPermission={userPermission}
         />,
         <Holidays
             holidays={holidays}
@@ -2184,6 +2198,7 @@ export default function charts({
             setHolidays={setHolidays}
             url={url}
             AToken={AToken}
+            userPermission={userPermission}
         />,
         <KPIReasons
             url={url}
@@ -2193,6 +2208,7 @@ export default function charts({
             kpireasonsData={kpireasonsData}
             AToken={AToken}
             setkpireasonsData={setkpireasonsData}
+            userPermission={userPermission}
         />,
         <AddTransit
             url={url}
@@ -2202,6 +2218,7 @@ export default function charts({
             AToken={AToken}
             setActiveIndexGTRS={setActiveIndexGTRS}
             transitDay={transitDay}
+            userPermission={userPermission}
         />,
         <TransportRep
             oldestDate={oldestDate}
@@ -2221,6 +2238,7 @@ export default function charts({
             setEDate={setEDate}
             SDate={SDate}
             setSDate={setSDate}
+            userPermission={userPermission}
         />,
         <NewKPI
             kpireasonsData={kpireasonsData}
@@ -2243,6 +2261,7 @@ export default function charts({
             setEDate={setEDate}
             SDate={SDate}
             setSDate={setSDate}
+            userPermission={userPermission}
         />,
         <NewTransitDays
             setNewTransitDay={setNewTransitDay}
@@ -2256,6 +2275,7 @@ export default function charts({
             accData={dataFromChild}
             AToken={AToken}
             url={url}
+            userPermission={userPermission}
         />,
         <AddNewTransitDay
             url={url}
@@ -2265,11 +2285,13 @@ export default function charts({
             AToken={AToken}
             setActiveIndexGTRS={setActiveIndexGTRS}
             newtransitDay={newtransitDay}
+            userPermission={userPermission}
         />,
         <GraphPresentation
             url={url}
             currentUser={currentUser}
             AToken={AToken}
+            userPermission={userPermission}
         />,
         <Incident
             AToken={AToken}
@@ -2277,6 +2299,7 @@ export default function charts({
             gtccrUrl={gtccrUrl}
             incidentId={incidentId}
             currentUser={currentUser}
+            userPermission={userPermission}
             />
     ];
 
@@ -2302,6 +2325,7 @@ export default function charts({
                                         activeIndexGTRS={activeIndexGTRS}
                                         sessionData={sessionData}
                                         user={user}
+                                        userPermission={userPermission}
                                         onData={handleDataFromChild}
                                         setActiveIndexGTRS={setActiveIndexGTRS}
                                         currentUser={currentUser}

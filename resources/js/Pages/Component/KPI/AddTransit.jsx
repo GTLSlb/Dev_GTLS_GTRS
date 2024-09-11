@@ -18,6 +18,7 @@ export default function AddTransit({
     url,
     AToken,
     currentUser,
+    userPermission,
     setTransitDay,
     setTransitDays,
     setActiveIndexGTRS,

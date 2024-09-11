@@ -43,6 +43,7 @@ export default function FailedCons({
     setLastIndex,
     setactiveCon,
     currentUser,
+    userPermission,
     accData,
 }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -189,7 +190,7 @@ export default function FailedCons({
     const maxDeliveredDate = getMinMaxValue(data, "DELIVEREDDATETIME", 2);
 
     const Roles = ["1", "3", "4", "5"];
-    console.log(data);
+
     const columns = [
         {
             name: "CONSIGNMENTNUMBER",
@@ -590,7 +591,7 @@ export default function FailedCons({
     const [newColumns, setNewColumns] = useState();
 
     useEffect(() => {
-        if (canEditFailedConsignments(currentUser)) {
+        if (canEditFailedConsignments(userPermission)) {
             setNewColumns(columns);
         } else {
             setNewColumns(newArray);
@@ -1570,6 +1571,7 @@ export default function FailedCons({
                 handleClose={handleEditClick}
                 failedReasons={failedReasons}
                 currentUser={currentUser}
+                userPermission={userPermission}
                 updateLocalData={updateLocalData}
             />
         </div>

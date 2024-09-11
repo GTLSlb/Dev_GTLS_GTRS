@@ -14,6 +14,7 @@ export default function AddRDDReason({
     rddReasons,
     setrddReasons,
     currentUser,
+    userPermission,
     AToken,
     url,
 }) {
@@ -108,7 +109,7 @@ export default function AddRDDReason({
         <div className=" w-full bg-smooth relative">
             <div className="sm:flex sm:items-center">
                 <div className="inline-block sm:absolute left-auto right-0 ">
-                    {canAddRDDReasons(currentUser) ? (
+                    {canAddRDDReasons(userPermission) ? (
                         <button
                             type="button"
                             onClick={() => handleEditClick(reason)}
@@ -198,7 +199,7 @@ export default function AddRDDReason({
                                                     </td>
                                                     <td className="relative whitespace-nowrap py-4 pl-3 sm:pr-4 pr-6 text-left text-sm font-medium">
                                                         {canEditRDDReasons(
-                                                            currentUser
+                                                            userPermission
                                                         ) ? (
                                                             <a
                                                                 href="#"
@@ -273,9 +274,9 @@ export default function AddRDDReason({
                 updateLocalData={updateLocalData}
                 rddReasons={rddReasons}
                 currentUser={currentUser}
+                userPermission={userPermission}
                 // reasonAuditId={reasonAuditId}
                 // rddReason={rddReason}
-                // currentUser={currentUser}
             />
         </div>
     );

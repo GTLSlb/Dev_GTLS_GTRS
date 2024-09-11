@@ -31,6 +31,7 @@ export default function Holidays({
     AToken,
     filterValue,
     setFilterValue,
+    userPermission,
     currentUser,
 }) {
     const [isFetching, setIsFetching] = useState();
@@ -268,7 +269,7 @@ export default function Holidays({
             render: ({ value, data }) => {
                 return (
                     <div>
-                        {canEditHolidays(currentUser) ? (
+                        {canEditHolidays(userPermission) ? (
                             <button
                                 className={
                                     "rounded text-blue-500 justify-center items-center  "
@@ -315,7 +316,7 @@ export default function Holidays({
                             <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
                                 Holidays
                             </h1>
-                            {canAddHolidays(currentUser) ? (
+                            {canAddHolidays(userPermission) ? (
                                 <div>
                                     {showAdd ? (
                                         <GtamButton
@@ -339,6 +340,7 @@ export default function Holidays({
                             url={url}
                             AToken={AToken}
                             currentUser={currentUser}
+                            userPermission={userPermission}
                             setHoliday={setHoliday}
                             setShowAdd={setShowAdd}
                             fetchData={fetchData}

@@ -15,6 +15,7 @@ export default function ModalRDD({
     AToken,
     consignment,
     currentUser,
+    userPermission,
     updateLocalData,
     rddReasons,
 }) {

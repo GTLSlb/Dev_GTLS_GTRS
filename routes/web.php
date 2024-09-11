@@ -18,6 +18,8 @@ use SocialiteProviders\Azure\AzureProvider;
 use Illuminate\Http\Request;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\ImageController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -165,6 +167,8 @@ Route::middleware('custom.auth')->group(function () {
     })->name('azure.login');
     Route::get('/auth/azure/callback', [AzureAuthController::class, 'handleCallback'])->name('azure.callback');
 });
+
+Route::post('/getAppLogo', [ImageController::class, 'showAppLogo'])->name('logo.show');
 
 Route::get('/session-data', function () {
     return response()->json(['userr' => session('userr')]);

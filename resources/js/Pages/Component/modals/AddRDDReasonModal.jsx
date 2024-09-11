@@ -17,7 +17,8 @@ export default function AddRDDReasonModal({
     AToken,
     updateLocalData,
     rddReasons,
-    currentUser
+    currentUser,
+    userPermission
 }) {
     const [Name, setName] = useState(null);
     const [Description, setdescription] = useState(null);
@@ -79,7 +80,7 @@ export default function AddRDDReasonModal({
                     UserId: currentUser.UserId,
                     Authorization: `Bearer ${AToken}`,
                 }},
-                
+
             );
             // Handle the response as needed
 

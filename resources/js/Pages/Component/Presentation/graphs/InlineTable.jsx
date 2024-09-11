@@ -11,6 +11,7 @@ function InlineTable({
     graphData,
     url,
     currentUser,
+    userPermission,
     getReportData,
     selectedReceiver,
     setGraphData,

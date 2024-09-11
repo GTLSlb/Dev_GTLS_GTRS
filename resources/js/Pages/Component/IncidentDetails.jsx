@@ -3,7 +3,7 @@ import logo from "../../assets/pictures/Logoblack.png";
 import { Checkbox, Chip } from "@nextui-org/react";
 import moment from "moment/moment";
 
-export default function IncidentDetails({ incident, filters, mainCauses,currentUser }) {
+export default function IncidentDetails({ incident, filters, mainCauses,currentUser, userPermission }) {
     return (
         <div>
             <div className="py-2">
@@ -469,7 +469,7 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                             }
                                         </label>
                                     </div>
-                                    {canViewInternal(currentUser) && (
+                                    {canViewInternal(userPermission) && (
                                         <div className="flex flex-col gap-y-3 w-full sm:flex-row">
                                         <label
                                             htmlFor=""
@@ -488,7 +488,7 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                         </label>
                                     </div>
                                     )}
-                                    {canViewInternal(currentUser) && (
+                                    {canViewInternal(userPermission) && (
                                         <div className="flex flex-col gap-y-3 w-full sm:flex-row">
                                         <label
                                             htmlFor=""

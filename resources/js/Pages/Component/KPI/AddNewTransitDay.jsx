@@ -15,6 +15,7 @@ import { AlertToast } from "@/permissions";
 function AddNewTransitDay({
     url,
     currentUser,
+    userPermission,
     setNewTransitDay,
     setNewTransitDays,
     AToken,

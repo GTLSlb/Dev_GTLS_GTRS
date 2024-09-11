@@ -429,11 +429,11 @@ export default function Gtrs({
     }
 
     useEffect(() => {
-        if (loadingGtrs) {
+        if (loadingGtrs && user) {
             if (user == {}) {
                 setCanAccess(false);
             } else if (user) {
-                if (checkFeaturesInPages(user[0])) {
+                if (Object.keys(user)?.length > 0) {
                     setCanAccess(true);
                 } else {
                     setCanAccess(false);
@@ -475,10 +475,11 @@ export default function Gtrs({
                             IDfilter={dataFromChild}
                             sessionData={sessionData}
                             currentUser={{
-                                ...user[0],
+                                ...user,
                                 UserId: currentUser.UserId,
                             }}
                             user={currentUser}
+                            userPermission={user}
                             dashData={PerfData}
                             setActiveIndexGTRS={setActiveIndexGTRS}
                             activeIndexGTRS={activeIndexGTRS}

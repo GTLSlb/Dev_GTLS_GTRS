@@ -37,6 +37,7 @@ function BarGraph({
     selectedReceiver,
     setGraphData,
     updateData,
+    userPermission,
 }) {
     function generateMonthArrayFromJson(data) {
         const monthNames = [
@@ -196,6 +197,7 @@ function BarGraph({
                 graphData={graphData}
                 url={url}
                 currentUser={currentUser}
+                userPermission={userPermission}
                 selectedReceiver={selectedReceiver}
                 setGraphData={setGraphData}
                 updateData={updateData}

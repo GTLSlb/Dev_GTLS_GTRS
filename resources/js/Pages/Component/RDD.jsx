@@ -31,6 +31,7 @@ export default function RDDreason({
     setFilterValue,
     setLastIndex,
     currentUser,
+    userPermission,
     rddReasons,
     accData,
 }) {
@@ -1047,7 +1048,7 @@ export default function RDDreason({
     const newArray = columns.slice(0, -1);
     const [newColumns, setNewColumns] = useState();
     useEffect(() => {
-        if (canEditRDD(currentUser)) {
+        if (canEditRDD(userPermission)) {
             setNewColumns(columns);
         } else {
             setNewColumns(newArray);
@@ -1334,6 +1335,7 @@ export default function RDDreason({
                 consignment={consignment}
                 rddReasons={rddReasons}
                 currentUser={currentUser}
+                userPermission={userPermission}
             />
         </div>
     );

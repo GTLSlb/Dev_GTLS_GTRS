@@ -17,6 +17,7 @@ export default function FailedConsMain({
     IDfilter,
     setIncidentId,
     currentUser,
+    userPermission,
     accData,
     EDate,
     setEDate,
@@ -102,6 +103,7 @@ export default function FailedConsMain({
             url={url}
             failedReasons={failedReasons}
             currentUser={currentUser}
+            userPermission={userPermission}
             accData={accData}
             setActiveIndexGTRS={setActiveIndexGTRS}
             PerfData={PerfData}
@@ -124,6 +126,7 @@ export default function FailedConsMain({
             failedReasons={failedReasons}
             setFailedReasons={setFailedReasons}
             currentUser={currentUser}
+            userPermission={userPermission}
             AToken={AToken}
         />,
     ];
@@ -191,6 +194,7 @@ export default function FailedConsMain({
                             url={url}
                             failedReasons={failedReasons}
                             currentUser={currentUser}
+                            userPermission={userPermission}
                             accData={accData}
                             gtccrUrl={gtccrUrl}
                             setIncidentId={setIncidentId}

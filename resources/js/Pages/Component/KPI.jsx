@@ -35,6 +35,7 @@ export default function KPI({
     setFilterValue,
     KPIData,
     setKPIData,
+    userPermission,
     accData,
     kpireasonsData,
 }) {
@@ -62,13 +63,13 @@ export default function KPI({
                     Authorization: `Bearer ${AToken}`,
                 },
             });
-    
+
             // Convert TransitDays to string
             const modifiedData = response.data.map((item) => ({
                 ...item,
                 TransitDays: item.TransitDays.toString(),
             }));
-    
+
             setKPIData(modifiedData);
             setSenderStateOptions(createNewLabelObjects(modifiedData, "SenderState"));
             setReceiverStateOptions(createNewLabelObjects(modifiedData, "ReceiverState"));
@@ -103,7 +104,7 @@ export default function KPI({
             }
         }
     };
-    
+
     const handleClick = (coindex) => {
         setActiveIndexGTRS(3);
         setLastIndex(2);
@@ -1059,7 +1060,7 @@ export default function KPI({
             render: ({ value, data }) => {
                 return (
                     <div>
-                        {canEditKPI(currentUser) ? (
+                        {canEditKPI(userPermission) ? (
                             <button
                                 className={
                                     "rounded text-blue-500 justify-center items-center  "
@@ -1085,7 +1086,7 @@ export default function KPI({
     const [newColumns, setNewColumns] = useState([]);
 
     useEffect(() => {
-        if (canEditKPI(currentUser)) {
+        if (canEditKPI(userPermission)) {
             setNewColumns(columns);
         } else {
             setNewColumns(newArray);
@@ -1224,7 +1225,7 @@ export default function KPI({
         }
       });
 
-      
+
     return (
         <div>
             {/* <Sidebar /> */}
@@ -1270,7 +1271,7 @@ export default function KPI({
                                         width={35}
                                     />
                                 )}
-                                {canCalculateKPI(currentUser) ? (
+                                {canCalculateKPI(userPermission) ? (
                                     <button
                                         className={`inline-flex items-center w-[9.1rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
                                         disabled={
@@ -1471,6 +1472,7 @@ export default function KPI({
                 updateLocalData={updateLocalData}
                 kpiReasons={kpireasonsData}
                 currentUser={currentUser}
+                userPermission={userPermission}
             />
         </div>
     );

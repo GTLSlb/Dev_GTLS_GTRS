@@ -16,6 +16,7 @@ export default function AddSafetyType({
     url,
     AToken,
     currentUser,
+    userPermission,
 }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [Data, setData] = useState(safetyTypes);
@@ -85,7 +86,7 @@ export default function AddSafetyType({
                     </h1>
                 </div>
                 <div className="inline-block  left-auto ">
-                    {canAddSafetyType(currentUser) ? (
+                    {canAddSafetyType(userPermission) ? (
                         <button
                             type="button"
                             onClick={() => handleEditClick(type)}
@@ -160,7 +161,7 @@ export default function AddSafetyType({
                                                     </td>
                                                     <td className="relative whitespace-nowrap py-4 pl-3 sm:pr-4 pr-6 text-left text-sm font-medium">
                                                         {canEditSafetyType(
-                                                            currentUser
+                                                            userPermission
                                                         ) ? (
                                                             <a
                                                                 href="#"
@@ -228,6 +229,7 @@ export default function AddSafetyType({
             <AddSafetyTypeModal
                 url={url}
                 currentUser={currentUser}
+                userPermission={userPermission}
                 ariaHideApp={false}
                 isOpen={isModalOpen}
                 type={type}

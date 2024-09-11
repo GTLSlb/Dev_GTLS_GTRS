@@ -36,6 +36,7 @@ function NewKPI({
     setFilterValue,
     KPIData,
     setKPIData,
+    userPermission,
     accData,
     kpireasonsData,
 }) {
@@ -65,10 +66,13 @@ function NewKPI({
             });
 
             // Convert TransitDays to string
-            const modifiedData = response.data.map((item) => ({
+            const modifiedData =
+            response?.data != ""
+            ? response?.data?.map((item) => ({
                 ...item,
                 TransitDays: item.TransitDays.toString(),
-            }));
+            }))
+            : [];
 
             setKPIData(modifiedData);
             setSenderStateOptions(
@@ -1099,7 +1103,7 @@ function NewKPI({
     const [newColumns, setNewColumns] = useState([]);
 
     useEffect(() => {
-        if (canEditKPI(currentUser)) {
+        if (canEditKPI(userPermission)) {
             setNewColumns(columns);
         } else {
             setNewColumns(newArray);
@@ -1304,7 +1308,7 @@ function NewKPI({
                                         width={35}
                                     />
                                 )}
-                                {canCalculateKPI(currentUser) ? (
+                                {canCalculateKPI(userPermission) ? (
                                     <button
                                         className={`inline-flex items-center justify-center w-[10rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
                                         disabled={
@@ -1505,6 +1509,7 @@ function NewKPI({
                 updateLocalData={updateLocalData}
                 kpiReasons={kpireasonsData}
                 currentUser={currentUser}
+                userPermission={userPermission}
             />
         </div>
     );

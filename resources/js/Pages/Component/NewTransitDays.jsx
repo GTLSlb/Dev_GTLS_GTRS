@@ -23,6 +23,7 @@ function NewTransitDays({
     newTransitDays,
     accData,
     currentUser,
+    userPermission,
     filterValue,
     setFilterValue,
     AToken,
@@ -147,7 +148,7 @@ function NewTransitDays({
     function getUniqueCustomerTypes(data) {
         // Create a Map to store unique customer types with their corresponding IDs
         const typeMap = new Map();
-    
+
         // Loop through each object in the data array
         data?.forEach((item) => {
             // Add the customer type to the map with the CustomerTypeId as the key
@@ -156,13 +157,13 @@ function NewTransitDays({
                 typeMap.set(item.CustomerTypeId, item.CustomerType);
             }
         });
-    
+
         // Convert the map to an array of objects with id and label
         const uniqueCustomers = Array.from(typeMap).map(([id, label]) => ({
             id,
             label,
         }));
-    
+
         return uniqueCustomers;
     }
     const columns = [
@@ -288,7 +289,7 @@ function NewTransitDays({
             render: ({ value, data }) => {
                 return (
                     <div>
-                        {canEditTransitDays(currentUser) ? (
+                        {canEditTransitDays(userPermission) ? (
                             <button
                                 className={
                                     "rounded text-blue-500 justify-center items-center  "
@@ -875,7 +876,7 @@ function NewTransitDays({
                                     Transit Days
                                 </h1>
                                 <div className="flex gap-5">
-                                    {canAddNewTransitDays(currentUser) ? (
+                                    {canAddNewTransitDays(userPermission) ? (
                                         <GtamButton
                                             name={"Add +"}
                                             onClick={AddTransit}
