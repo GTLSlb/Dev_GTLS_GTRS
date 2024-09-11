@@ -7,8 +7,13 @@ import BarGraph from "../graphs/BarGraph";
 
 function ConsignmentGraph({ url, currentUser, AToken }) {
     const [graphData, setGraphData] = useState();
+    const [originalgraphData, setGraphOriginalData] = useState();
     const [loading, setLoading] = useState(true);
 
+
+    useEffect(() => {
+       console.log("Orginal data changed") 
+    },[originalgraphData])
     const customers = [
         {
             value: 1,
@@ -27,6 +32,7 @@ function ConsignmentGraph({ url, currentUser, AToken }) {
     const [selectedReceiver, setselectedReceiver] = useState(customers[0]);
 
     function addCalculatedFields(data) {
+        console.log("here")
         data.forEach((item) => {
             if (item.Record && item.Record.length > 0) {
                 item.Record.forEach((record) => {
@@ -48,6 +54,7 @@ function ConsignmentGraph({ url, currentUser, AToken }) {
     }
 
     function getReportData() {
+        console.log("get function")
         setLoading(true);
         axios
             .get(`${url}KpiPackRecord`, {
@@ -61,6 +68,8 @@ function ConsignmentGraph({ url, currentUser, AToken }) {
             .then((res) => {
                 setLoading(false);
                 const calculatedData = addCalculatedFields(res.data);
+                console.log(res.data)
+                setGraphOriginalData(res.data)
                 setGraphData(res.data);
             })
             .catch((err) => {
@@ -68,43 +77,6 @@ function ConsignmentGraph({ url, currentUser, AToken }) {
             });
     }
 
-    function updateData(data, updatedRecord) {
-        return data.map((monthData) => {
-            if (monthData.MonthDate === updatedRecord.ReportMonth) {
-                return {
-                    ...monthData,
-                    Record: monthData.Record.map((record) => {
-                        if (record.RecordId === updatedRecord.RecordId) {
-                            // Update the record with new values
-                            const newRecord = {
-                                ...record,
-                                TotalCons: updatedRecord.TotalCons,
-                                TotalFails: updatedRecord.TotalFails,
-                                TotalNoPod: updatedRecord.TotalNoPod,
-                            };
-
-                            // Recalculate the percentages
-                            newRecord.onTimePercentage = (
-                                ((newRecord.TotalCons - newRecord.TotalFails) /
-                                    newRecord.TotalCons) *
-                                100
-                            ).toFixed(2);
-
-                            newRecord.PODPercentage = (
-                                ((newRecord.TotalCons - newRecord.TotalNoPod) /
-                                    newRecord.TotalCons) *
-                                100
-                            ).toFixed(2);
-
-                            return newRecord;
-                        }
-                        return record;
-                    }),
-                };
-            }
-            return monthData;
-        });
-    }
     useEffect(() => {
         getReportData();
     }, [selectedReceiver]);
@@ -206,7 +178,7 @@ function ConsignmentGraph({ url, currentUser, AToken }) {
                     currentUser={currentUser}
                     selectedReceiver={selectedReceiver}
                     getReportData={getReportData}
-                    updateData={updateData}
+                    originalgraphData={originalgraphData}
                     setGraphData={setGraphData}
                 />
             </div>
