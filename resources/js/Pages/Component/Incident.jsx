@@ -411,7 +411,7 @@ export default function Incident({
                     ) : (
                         <div className="">
                             <IncidentDetails
-                            currentUser={currentUser}
+                                currentUser={currentUser}
                                 mainCauses={mainCauses}
                                 filters={filters}
                                 incident={incident}
@@ -420,12 +420,17 @@ export default function Incident({
                     )}
                 </div>
             ) : (
-                <Progress
-                    size="md"
-                    isIndeterminate
-                    aria-label="Loading..."
-                    className="mt-10 w-10/12 "
-                />
+                <div className="w-full flex items-center justify-center">
+                    <Progress
+                        size="md"
+                        isIndeterminate
+                        classNames={{
+                            indicator: "bg-goldt",
+                          }}
+                        aria-label="Loading..."
+                        className="mt-10 w-10/12 "
+                    />
+                </div>
             )}
         </div>
     );

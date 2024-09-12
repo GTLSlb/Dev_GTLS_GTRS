@@ -124,7 +124,7 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                 )
                                 ?.map((contact) => (
                                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 bg-[#F2F2F2] rounded-xl p-4">
-                                    <div className="flex flex-col sm:flex-row w-full gap-5 lg:col-span-2">
+                                    <div className="flex flex-col sm:flex-row w-full gap-5">
                                         <label
                                             htmlFor=""
                                             className="font-bold "
@@ -142,16 +142,6 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                         <label htmlFor="" className="">
                                             {
                                                 contact.ContactEmailAddress
-                                            }
-                                        </label>
-                                    </div>
-                                    <div className="flex flex-col gap-5 sm:flex-row w-full">
-                                        <label htmlFor="" className="font-bold">
-                                            Contact Number
-                                        </label>
-                                        <label htmlFor="" className="">
-                                            {
-                                                contact.ContactPhoneNumber
                                             }
                                         </label>
                                     </div>
