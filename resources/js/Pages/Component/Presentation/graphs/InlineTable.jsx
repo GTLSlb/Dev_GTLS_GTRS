@@ -296,21 +296,21 @@ function InlineTable({
 
             // API request to update the backend (Uncomment when ready)
 
-            // axios
-            //     .post(`${url}Add/KpiPackRecord`, baseRecord, {
-            //         headers: {
-            //             UserId: currentUser.UserId,
-            //         },
-            //     })
-            //     .then((res) => {
-            //         console.log("baseRecord",baseRecord);
-            //         setGraphData(
-            //             updateLocalData(originalgraphData, baseRecord)
-            //         );
-            //     })
-            //     .catch((err) => {
-            //         console.log(err);
-            //     });
+             axios
+                 .post(`${url}Add/KpiPackRecord`, baseRecord, {
+                     headers: {
+                         UserId: currentUser.UserId,
+                     },
+                 })
+                 .then((res) => {
+                     console.log("baseRecord",baseRecord);
+                    setGraphData(
+                         updateLocalData(originalgraphData, baseRecord)
+                     );
+                 })
+               .catch((err) => {
+                   console.log(err);
+                 });
 
             setDataSource(data);
         },
@@ -320,18 +320,18 @@ function InlineTable({
     const updateLocalData = (records, newRecord) => {
         // console.log(records, newRecord);
         // Convert new record's report month to MonthDate format
-        // const newMonthDate = newRecord.ReportMonth;
+         const newMonthDate = newRecord.ReportMonth;
         // // Map over records to find and replace the matching month data
-        // const updatedRecords = records.map((monthData) => {
-        //     if (monthData.MonthDate === newMonthDate) {
-        //         return {
-        //             ...monthData,
-        //             Record: [newRecord], // Replace the existing record
-        //         };
-        //     }
-        //     return monthData;
-        // });
-        // return updatedRecords;
+         const updatedRecords = records.map((monthData) => {
+             if (monthData.MonthDate === newMonthDate) {
+                 return {
+                     ...monthData,
+                     Record: [newRecord], // Replace the existing record
+                 };
+             }
+             return monthData;
+         });
+         return updatedRecords;
     };
 
     const modifiedColumns = columns.map((col) => ({
