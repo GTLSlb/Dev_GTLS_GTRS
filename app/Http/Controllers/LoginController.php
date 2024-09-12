@@ -230,13 +230,35 @@ class LoginController extends Controller
                 // return redirect('/login');
 
                 // Redirect to Microsoft Azure logout URL
-                return redirect()->route('azure.logout');
+                $azureLogoutUrl = 'https://login.microsoftonline.com/common/oauth2/v2.0/logout';
+                // or https://login.microsoftonline.com/{tenant}/oauth2/v2.0/logout
+
+                // The URL to redirect back to after logout (your application's home or login page)
+                $postLogoutRedirectUri = urlencode('http://localhost:8000/login'); // Replace 'home' with your route name
+                //dd($azureLogoutUrl . '?post_logout_redirect_uri=' . $postLogoutRedirectUri);
+                // return redirect()->route('azure.logout');
+                // return redirect()->route('login');
+                // return request()
+                //return redirect()->away($azureLogoutUrl . '?post_logout_redirect_uri=' . $postLogoutRedirectUri);
             } else {
                 // Handle the case where the logout request fails
                 // You can log an error or return a specific response
                 return redirect()->back()->withErrors(['error' => 'Logout failed. Please try again.']);
             }
         }
+    }
+
+    public function azureLogout()
+    {
+        // Microsoft Azure AD Logout URL
+        $azureLogoutUrl = 'https://login.microsoftonline.com/common/oauth2/v2.0/logout';
+
+        // The URL to redirect back to after logout (your application's home or login page)
+        $postLogoutRedirectUri = urlencode(route('home')); // Replace 'home' with your route name
+        dd($azureLogoutUrl . '?post_logout_redirect_uri=' . $postLogoutRedirectUri);
+        // Redirect to Microsoft Azure logout endpoint with post-logout redirect URL
+        //return redirect()->away($azureLogoutUrl . '?post_logout_redirect_uri=' . $postLogoutRedirectUri);
+        // return redirect('/login');
     }
 }
 ?>

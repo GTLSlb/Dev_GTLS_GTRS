@@ -8,14 +8,14 @@ import PrimaryButton from "@/Components/PrimaryButton";
 import TextInput from "@/Components/TextInput";
 import PasswordInput from "@/Components/PasswordInput";
 import { Head, Link, useForm } from "@inertiajs/react";
-import { PublicClientApplication } from "@azure/msal-browser";
+import { PublicClientApplication, EventType } from "@azure/msal-browser";
 import ReCAPTCHA from "react-google-recaptcha";
 import { InertiaApp } from "@inertiajs/inertia-react";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import "../../../css/scroll.css";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import axios from "axios";
-import CryptoJS from 'crypto-js';
+import CryptoJS from "crypto-js";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import MicrosoftLogo from "@/assets/icons/microsoft-logo.png";
@@ -95,44 +95,82 @@ export default function Login({ status, canResetPassword }) {
     };
 
     const handleOnChangePassword = (event) => {
-
         setData(
             event.target.name,
             event.target.type === "checkbox"
                 ? event.target.checked
                 : event.target.value
         );
-    setPassword(event.target.value);
-    }
+        setPassword(event.target.value);
+    };
 
     const loginRequest = {
-        scopes: ["openid", "profile", "User.Read"]
+        scopes: ["openid", "profile", "User.Read"],
     };
-    const handleLoginAzure= async (e) =>{
+    const handleLoginAzure = async (e) => {
         e.preventDefault();
         setLoading(true);
 
-        const loginResponse = await pca.loginPopup(loginRequest);
-        // console.log("loginResponse", loginResponse);
-        const accessToken = loginResponse.accessToken; // Use this if returned in response
-            axios.post("/microsoftToken", {
-                socialiteUser: loginResponse
-            }).then((res) => {
-                //Cookies.set('gtam_access_token', res.data.access_token)
-                // console.log("Access Token:", res.data.access_token);
-                setLoading(false);
-                window.location.href = '/main';
+        // Set active account on page load
+        const accounts = pca.getAllAccounts();
+        if (accounts.length > 0) {
+            pca.setActiveAccount(accounts[0]);
+        }
+
+        pca.addEventCallback(
+            (event) => {
+                // set active account after redirect
+                if (
+                    event.eventType === EventType.LOGIN_SUCCESS &&
+                    event.payload.account
+                ) {
+                    const account = event.payload.account;
+                    pca.setActiveAccount(account);
+                }
+            },
+            (error) => {
+                console.log("error", error);
+            }
+        );
+
+        console.log("get active account", pca.getActiveAccount());
+
+        // handle auth redirect /do all initial setup for msal
+        pca.handleRedirectPromise()
+            .then(async (authResult) => {
+                // Check if user signed in
+                const account = pca.getActiveAccount();
+                if (!account) {
+                    // redirect anonymous user to login page
+                    const loginResponse = await pca.loginPopup(loginRequest);
+                    const accessToken = await loginResponse.accessToken; // Use this if returned in response
+                    axios
+                        .post("/microsoftToken", {
+                            socialiteUser: loginResponse,
+                        })
+                        .then((res) => {
+                            //Cookies.set('gtam_access_token', res.data.access_token)
+                            // console.log("Access Token:", res.data.access_token);
+                            setLoading(false);
+                            window.location.href = "/main";
+                        })
+                        .catch((error) => {
+                            setLoading(false);
+                            console.log(error);
+                        });
+                }
             })
-            .catch((error) => {
-                console.log(error);
+            .catch((err) => {
+                // TODO: Handle errors
+                setLoading(false);
+                console.log(err);
             });
-        //pca.loginPopup({ scopes: ["user.read"] });
-    }
+    };
 
     const submit = (e) => {
         setLoading(true);
         e.preventDefault();
-        setErrorMessage("")
+        setErrorMessage("");
         const hashedPassword = CryptoJS.SHA256(password).toString();
         axios
             .get(`${gtamURl}Login`, {
@@ -153,24 +191,23 @@ export default function Login({ status, canResetPassword }) {
                     Password: hashedPassword,
                 };
                 axios
-                .post("/loginapi", credentials)
-                .then((response)=>{
-                    if(response.status == 200) {
-                       window.location.href = '/main';
-                    }
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setLoading(false);
-                    setErrorMessage(error.response.data.Message)
-                });
+                    .post("/loginapi", credentials)
+                    .then((response) => {
+                        if (response.status == 200) {
+                            window.location.href = "/main";
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        setLoading(false);
+                        setErrorMessage(error.response.data.Message);
+                    });
             })
             .catch((err) => {
                 console.log(err);
                 setLoading(false);
-                setErrorMessage(err.response?.data?.Message)
+                setErrorMessage(err.response?.data?.Message);
             });
-
     };
     const handleKeyPress = (event) => {
         if (event.key === "Enter") {
@@ -274,7 +311,10 @@ export default function Login({ status, canResetPassword }) {
                                     <div className="flex items-center justify-end mt-0">
                                         {canResetPassword && (
                                             <Link
-                                                onClick={()=>window.location.href = '/forgot-password'}
+                                                onClick={() =>
+                                                    (window.location.href =
+                                                        "/forgot-password")
+                                                }
                                                 className="underline text-sm text-goldd dark:text-smooth hover:text-goldd/80 dark:hover:text-goldd rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
                                             >
                                                 Forgot your password?
@@ -282,7 +322,9 @@ export default function Login({ status, canResetPassword }) {
                                         )}
                                     </div>
                                     {errorMessage && (
-                                        <div className="py-2 text-red-600">{errorMessage}</div>
+                                        <div className="py-2 text-red-600">
+                                            {errorMessage}
+                                        </div>
                                     )}
                                     <InputError
                                         message={errors.email}
@@ -293,10 +335,16 @@ export default function Login({ status, canResetPassword }) {
                                         className="mt-2"
                                     />
                                 </div>
-                                <button className="bg-[#ECECEC] py-2 w-full rounded text-dark font-bold my-3 flex items-center justify-center gap-x-4 hover:bg-[#ECECEC]/95" onClick={(e)=>{
-                                    handleLoginAzure(e)
-                                }}>
-                                    <img src={MicrosoftLogo} className="w-5 h-5"/>
+                                <button
+                                    className="bg-[#ECECEC] py-2 w-full rounded text-dark font-bold my-3 flex items-center justify-center gap-x-4 hover:bg-[#ECECEC]/95"
+                                    onClick={(e) => {
+                                        handleLoginAzure(e);
+                                    }}
+                                >
+                                    <img
+                                        src={MicrosoftLogo}
+                                        className="w-5 h-5"
+                                    />
                                     Sign in with Microsoft
                                 </button>
                             </div>
@@ -307,9 +355,10 @@ export default function Login({ status, canResetPassword }) {
                                             ? "bg-gray-600 cursor-not-allowed text-white"
                                             : "bg-goldd hover:bg-goldt text-dark"
                                     } rounded-md border border-transparent bg-goldd py-2 px-4 text-sm font-medium  shadow-sm  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
-                                    disabled={loading || !recaptchaValue}
+                                    disabled={loading}
+                                    //|| !recaptchaValue}
                                     type="button"
-                                    onClick={(e)=>submit(e)}
+                                    onClick={(e) => submit(e)}
                                 >
                                     {loading ? (
                                         <AiOutlineLoading3Quarters className="animate-spin" />
@@ -331,7 +380,6 @@ export default function Login({ status, canResetPassword }) {
                         />
                     </div>
                 </div>
-
             </GuestLayout>
         </div>
     );

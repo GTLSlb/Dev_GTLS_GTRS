@@ -147,8 +147,8 @@ class AzureAuthController extends Controller
     $postLogoutRedirectUri = urlencode(route('home')); // Replace 'home' with your route name
 
     // Redirect to Microsoft Azure logout endpoint with post-logout redirect URL
-    // return redirect()->away($azureLogoutUrl . '?post_logout_redirect_uri=' . $postLogoutRedirectUri);
-    return redirect('/login');
+    return redirect()->away($azureLogoutUrl . '?post_logout_redirect_uri=' . $postLogoutRedirectUri);
+    // return redirect('/login');
 }
 
 }
