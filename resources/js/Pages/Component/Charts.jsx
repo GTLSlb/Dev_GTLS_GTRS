@@ -2272,14 +2272,14 @@ export default function charts({
             currentUser={currentUser}
             AToken={AToken}
         />,
+        <TrafficComp />,
         <Incident
             AToken={AToken}
             setActiveIndexGTRS={setActiveIndexGTRS}
             gtccrUrl={gtccrUrl}
             incidentId={incidentId}
             currentUser={currentUser}
-            />,
-        <TrafficComp />
+        />,
     ];
 
     return (
