@@ -31,7 +31,7 @@
             appId: "{{ env('REACT_APP_ID') }}",
             gtrsUrl: "{{ env('GTRS_API_URL') }}",
             gtamUrl: "{{ env('GTAM_API_URL') }}",
-
+            gtrsWeb: "{{ env('GTRS_WEB_URL') }}",
         };
     </script>
     <!-- resources/views/layouts/app.blade.php -->
