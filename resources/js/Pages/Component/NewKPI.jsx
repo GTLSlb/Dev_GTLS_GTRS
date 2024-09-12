@@ -1039,61 +1039,61 @@ function NewKPI({
                 ) : null;
             },
         },
-        {
-            name: "ReasonId",
-            header: "Reason",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: false,
-                wrapMultiple: false,
-                dataSource: reasonOptions,
-            },
-            render: ({ value }) => {
-                return (
-                    <div>
-                        {/* {value} */}
-                        {
-                            kpireasonsData?.find(
-                                (reason) => reason.ReasonId === value
-                            )?.ReasonName
-                        }
-                    </div>
-                );
-            },
-        },
-        {
-            name: "Edit",
-            header: "Edit",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 100,
-            render: ({ value, data }) => {
-                return (
-                    <div>
-                        {canEditKPI(currentUser) ? (
-                            <button
-                                className={
-                                    "rounded text-blue-500 justify-center items-center  "
-                                }
-                                onClick={() => {
-                                    handleEditClick(data);
-                                }}
-                            >
-                                <span className="flex gap-x-1">
-                                    <PencilIcon className="h-4" />
-                                    Edit
-                                </span>
-                            </button>
-                        ) : (
-                            <div></div>
-                        )}
-                    </div>
-                );
-            },
-        },
+        // {
+        //     name: "ReasonId",
+        //     header: "Reason",
+        //     headerAlign: "center",
+        //     textAlign: "center",
+        //     defaultWidth: 170,
+        //     filterEditor: SelectFilter,
+        //     filterEditorProps: {
+        //         multiple: false,
+        //         wrapMultiple: false,
+        //         dataSource: reasonOptions,
+        //     },
+        //     render: ({ value }) => {
+        //         return (
+        //             <div>
+        //                 {/* {value} */}
+        //                 {
+        //                     kpireasonsData?.find(
+        //                         (reason) => reason.ReasonId === value
+        //                     )?.ReasonName
+        //                 }
+        //             </div>
+        //         );
+        //     },
+        // },
+        // {
+        //     name: "Edit",
+        //     header: "Edit",
+        //     headerAlign: "center",
+        //     textAlign: "center",
+        //     defaultWidth: 100,
+        //     render: ({ value, data }) => {
+        //         return (
+        //             <div>
+        //                 {canEditKPI(currentUser) ? (
+        //                     <button
+        //                         className={
+        //                             "rounded text-blue-500 justify-center items-center  "
+        //                         }
+        //                         onClick={() => {
+        //                             handleEditClick(data);
+        //                         }}
+        //                     >
+        //                         <span className="flex gap-x-1">
+        //                             <PencilIcon className="h-4" />
+        //                             Edit
+        //                         </span>
+        //                     </button>
+        //                 ) : (
+        //                     <div></div>
+        //                 )}
+        //             </div>
+        //         );
+        //     },
+        // },
     ];
     const newArray = columns.slice(0, -1);
     const [newColumns, setNewColumns] = useState([]);

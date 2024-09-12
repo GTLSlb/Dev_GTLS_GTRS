@@ -3,7 +3,7 @@ import AddRDDReason from "./AddRDDReason";
 import RDDreason from "./RDD";
 import "../../../css/radio.css";
 import { canViewRDDReasons } from "@/permissions";
-import swal from 'sweetalert';
+import swal from "sweetalert";
 import axios from "axios";
 export default function RDDMain({
     setActiveIndexGTRS,
@@ -13,6 +13,7 @@ export default function RDDMain({
     filterValue,
     setFilterValue,
     setrddData,
+    setIncidentId,
     setLastIndex,
     accData,
     EDate,
@@ -28,7 +29,6 @@ export default function RDDMain({
     oldestDate,
     latestDate,
 }) {
-
     const [isFetching, setIsFetching] = useState();
     const [isFetchingReasons, setIsFetchingReasons] = useState();
     const parseDateString = (dateString) => {
@@ -56,22 +56,21 @@ export default function RDDMain({
         }
         return dateObject;
     };
-    
-    
+
     const formatDate = (date) => {
         if (!(date instanceof Date) || isNaN(date.getTime())) {
-          return ""; // or return any other default value as needed
+            return ""; // or return any other default value as needed
         }
         const options = {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          timeZone: "UTC",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            timeZone: "UTC",
         };
-      
+
         return date.toISOString().slice(0, 19); // UTC time
     };
     const updateFieldWithData = (data, fieldName) => {
@@ -114,38 +113,44 @@ export default function RDDMain({
                         resolve(parsedData);
                     });
                     parsedDataPromise.then((parsedData) => {
-                        const updatedOldRddData = updateFieldWithData(parsedData, "OldRdd");
-                        const updatedNewRddData = updateFieldWithData(updatedOldRddData, "NewRdd");
+                        const updatedOldRddData = updateFieldWithData(
+                            parsedData,
+                            "OldRdd"
+                        );
+                        const updatedNewRddData = updateFieldWithData(
+                            updatedOldRddData,
+                            "NewRdd"
+                        );
                         setrddData(updatedNewRddData || []);
                         setIsFetching(false);
                     });
                 })
                 .catch((err) => {
                     if (err.response && err.response.status === 401) {
-                      // Handle 401 error using SweetAlert
-                      swal({
-                        title: 'Session Expired!',
-                        text: "Please login again",
-                        type: 'success',
-                        icon: "info",
-                        confirmButtonText: 'OK'
-                      }).then(function() {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                              if (response.status == 200) {
-                                window.location.href = "/";
-                              }
-                            })
-                            .catch((error) => {
-                              console.log(error);
-                            });
-                      });
+                        // Handle 401 error using SweetAlert
+                        swal({
+                            title: "Session Expired!",
+                            text: "Please login again",
+                            type: "success",
+                            icon: "info",
+                            confirmButtonText: "OK",
+                        }).then(function () {
+                            axios
+                                .post("/logoutAPI")
+                                .then((response) => {
+                                    if (response.status == 200) {
+                                        window.location.href = "/";
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.log(error);
+                                });
+                        });
                     } else {
-                      // Handle other errors
-                      console.log(err);
+                        // Handle other errors
+                        console.log(err);
                     }
-                  });
+                });
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -172,30 +177,30 @@ export default function RDDMain({
                 })
                 .catch((err) => {
                     if (err.response && err.response.status === 401) {
-                      // Handle 401 error using SweetAlert
-                      swal({
-                        title: 'Session Expired!',
-                        text: "Please login again",
-                        type: 'success',
-                        icon: "info",
-                        confirmButtonText: 'OK'
-                      }).then(function() {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                              if (response.status == 200) {
-                                window.location.href = "/";
-                              }
-                            })
-                            .catch((error) => {
-                              console.log(error);
-                            });
-                      });
+                        // Handle 401 error using SweetAlert
+                        swal({
+                            title: "Session Expired!",
+                            text: "Please login again",
+                            type: "success",
+                            icon: "info",
+                            confirmButtonText: "OK",
+                        }).then(function () {
+                            axios
+                                .post("/logoutAPI")
+                                .then((response) => {
+                                    if (response.status == 200) {
+                                        window.location.href = "/";
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.log(error);
+                                });
+                        });
                     } else {
-                      // Handle other errors
-                      console.log(err);
+                        // Handle other errors
+                        console.log(err);
                     }
-                  });
+                });
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -273,13 +278,13 @@ export default function RDDMain({
             ) : (
                 <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
                     <div className="sm:flex sm:items-center">
-                <div className="sm:flex-auto mt-6">
-                    <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                        RDD Report
-                    </h1>
-                </div>
-            </div>
-                    {canViewRDDReasons(currentUser) ? (
+                        <div className="sm:flex-auto mt-6">
+                            <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
+                                RDD Report
+                            </h1>
+                        </div>
+                    </div>
+                    {/* {canViewRDDReasons(currentUser) ? (
                         <ul className="flex space-x-0 mt-5">
                             {components.map((component, index) => (
                                 <li
@@ -297,9 +302,30 @@ export default function RDDMain({
                         </ul>
                     ) : (
                         <div></div>
-                    )}
-                    <div className="mt-4">
-                        {components[activeComponentIndex]}
+                    )} */}
+                    <div className="mt-0">
+                        <RDDreason
+                            url={url}
+                            accData={accData}
+                            rddData={rddData}
+                            filterValue={filterValue}
+                            setFilterValue={setFilterValue}
+                            setrddData={setrddData}
+                            debtorsData={debtorsData}
+                            currentUser={currentUser}
+                            setActiveIndexGTRS={setActiveIndexGTRS}
+                            setactiveCon={setactiveCon}
+                            setLastIndex={setLastIndex}
+                            EDate={EDate}
+                            setIncidentId={setIncidentId}
+                            setEDate={setEDate}
+                            SDate={SDate}
+                            AToken={AToken}
+                            setSDate={setSDate}
+                            rddReasons={rddReasons}
+                            oldestDate={oldestDate}
+                            latestDate={latestDate}
+                        />
                     </div>
                 </div>
             )}

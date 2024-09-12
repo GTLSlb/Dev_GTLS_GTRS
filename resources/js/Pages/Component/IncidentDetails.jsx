@@ -1,8 +1,9 @@
+import { canViewInternal } from "@/permissions";
 import logo from "../../assets/pictures/Logoblack.png";
 import { Checkbox, Chip } from "@nextui-org/react";
 import moment from "moment/moment";
 
-export default function IncidentDetails({ incident, filters, mainCauses }) {
+export default function IncidentDetails({ incident, filters, mainCauses,currentUser }) {
     return (
         <div>
             <div className="py-2">
@@ -123,7 +124,7 @@ export default function IncidentDetails({ incident, filters, mainCauses }) {
                                 )
                                 ?.map((contact) => (
                                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 bg-[#F2F2F2] rounded-xl p-4">
-                                    <div className="flex flex-col sm:flex-row w-full gap-5 lg:col-span-2">
+                                    <div className="flex flex-col sm:flex-row w-full gap-5">
                                         <label
                                             htmlFor=""
                                             className="font-bold "
@@ -141,16 +142,6 @@ export default function IncidentDetails({ incident, filters, mainCauses }) {
                                         <label htmlFor="" className="">
                                             {
                                                 contact.ContactEmailAddress
-                                            }
-                                        </label>
-                                    </div>
-                                    <div className="flex flex-col gap-5 sm:flex-row w-full">
-                                        <label htmlFor="" className="font-bold">
-                                            Contact Number
-                                        </label>
-                                        <label htmlFor="" className="">
-                                            {
-                                                contact.ContactPhoneNumber
                                             }
                                         </label>
                                     </div>
@@ -468,7 +459,45 @@ export default function IncidentDetails({ incident, filters, mainCauses }) {
                                             }
                                         </label>
                                     </div>
-                                    <div className="flex flex-col gap-y-3 w-full sm:flex-row">
+                                    {canViewInternal(currentUser) && (
+                                        <div className="flex flex-col gap-y-3 w-full sm:flex-row">
+                                        <label
+                                            htmlFor=""
+                                            className="font-bold w-52"
+                                        >
+                                            State Responsible
+                                        </label>
+                                        <label htmlFor="" className="">
+                                            {
+                                                filters.States.find(
+                                                    (item) =>
+                                                        item.StateId ===
+                                                        incident.StateResponsibleId
+                                                )?.StateCode
+                                            }
+                                        </label>
+                                    </div>
+                                    )}
+                                    {canViewInternal(currentUser) && (
+                                        <div className="flex flex-col gap-y-3 w-full sm:flex-row">
+                                        <label
+                                            htmlFor=""
+                                            className="font-bold w-52"
+                                        >
+                                            Department Responsible
+                                        </label>
+                                        <label htmlFor="" className="">
+                                            {
+                                                filters.Departments.find(
+                                                    (item) =>
+                                                        item.DepartmentId ===
+                                                        incident.DepartmentId
+                                                )?.DepartmentName
+                                            }
+                                        </label>
+                                    </div>
+                                    )}
+                                    {/* <div className="flex flex-col gap-y-3 w-full sm:flex-row">
                                         <label
                                             htmlFor=""
                                             className="font-bold w-52"
@@ -501,7 +530,7 @@ export default function IncidentDetails({ incident, filters, mainCauses }) {
                                                 )?.DepartmentName
                                             }
                                         </label>
-                                    </div>
+                                    </div> */}
                                     <div className="flex flex-col sm:col-span-2 w-full bg-gray-100 p-2 rounded-md">
                                         <label
                                             htmlFor=""
