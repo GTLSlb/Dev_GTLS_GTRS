@@ -696,7 +696,6 @@ function NewTransitDays({
             SenderPostCode: "Sender PostCode",
             ReceiverName: "Receiver Name",
             ReceiverState: "Receiver State",
-            ReceiverState: "Receiver State",
             ReceiverPostCode: "Receiver Postal Code",
             TransitTime: "Transit Time",
         };
