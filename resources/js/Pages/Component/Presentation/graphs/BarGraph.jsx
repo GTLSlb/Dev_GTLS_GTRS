@@ -176,9 +176,9 @@ function BarGraph({
                         let yAxisID = tooltipItem.dataset.yAxisID;
 
                         if (yAxisID === "y-axis-bar") {
-                            return `${datasetLabel}: ${value}`;
+                            return `${datasetLabel}: ${parseFloat(value).toFixed(2)}`;
                         } else {
-                            return `${datasetLabel}: ${value}%`;
+                            return `${datasetLabel}: ${parseFloat(value).toFixed(2)}%`;
                         }
                     },
                 },

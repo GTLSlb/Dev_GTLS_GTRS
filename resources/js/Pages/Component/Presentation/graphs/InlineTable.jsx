@@ -53,7 +53,7 @@ function InlineTable({
 
         // Determine the maximum value dynamically based on your logic
         let max;
-        if (cellProps.rowIndex === 0) {
+        if (cellProps.rowIndex === 0 && cellProps.rowIndex === 3) {
             max = null;
         } else {
             max = dataSource[0][cellProps.id];
@@ -63,8 +63,10 @@ function InlineTable({
             let newValue = e.target.value;
 
             // Check if the new value exceeds the max limit
-            if (max !== null && parseFloat(newValue) > max) {
-                newValue = max; // Set to max if it exceeds
+            if (cellProps.rowIndex === 1 && cellProps.rowIndex === 2) {
+                if (max !== null && parseFloat(newValue) > max) {
+                    newValue = max; // Set to max if it exceeds
+                }
             }
 
             setInputValue(newValue); // Update the local state
@@ -85,7 +87,7 @@ function InlineTable({
             <input
                 type="number"
                 min={0} // Minimum value
-                max={max} // Maximum value
+                max={null} // Maximum value
                 step={1} // Step size
                 value={inputValue}
                 onChange={onValueChange}
@@ -165,12 +167,10 @@ function InlineTable({
 
     const [dataSource, setDataSource] = useState(originalData);
     const [validationErrors, setValidationErrors] = useState({});
-    console.log(dataSource);
     // Lookup function to determine editability based on rowIndex and columnName
 
     const onEditComplete = useCallback(
         ({ value, columnId, rowIndex }) => {
-            console.log("12");
             const data = [...dataSource]; // Clone dataSource to prevent direct state mutation
             let formattedValue = value;
 
@@ -292,25 +292,23 @@ function InlineTable({
                     [`${columnId}`]: false,
                 }));
             }
-            console.log("1", originalgraphData);
 
             // API request to update the backend (Uncomment when ready)
 
-             axios
-                 .post(`${url}Add/KpiPackRecord`, baseRecord, {
-                     headers: {
-                         UserId: currentUser.UserId,
-                     },
-                 })
-                 .then((res) => {
-                     console.log("baseRecord",baseRecord);
+            axios
+                .post(`${url}Add/KpiPackRecord`, baseRecord, {
+                    headers: {
+                        UserId: currentUser.UserId,
+                    },
+                })
+                .then((res) => {
                     setGraphData(
-                         updateLocalData(originalgraphData, baseRecord)
-                     );
-                 })
-               .catch((err) => {
-                   console.log(err);
-                 });
+                        updateLocalData(originalgraphData, baseRecord)
+                    );
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
 
             setDataSource(data);
         },
@@ -320,18 +318,18 @@ function InlineTable({
     const updateLocalData = (records, newRecord) => {
         // console.log(records, newRecord);
         // Convert new record's report month to MonthDate format
-         const newMonthDate = newRecord.ReportMonth;
+        const newMonthDate = newRecord.ReportMonth;
         // // Map over records to find and replace the matching month data
-         const updatedRecords = records.map((monthData) => {
-             if (monthData.MonthDate === newMonthDate) {
-                 return {
-                     ...monthData,
-                     Record: [newRecord], // Replace the existing record
-                 };
-             }
-             return monthData;
-         });
-         return updatedRecords;
+        const updatedRecords = records.map((monthData) => {
+            if (monthData.MonthDate === newMonthDate) {
+                return {
+                    ...monthData,
+                    Record: [newRecord], // Replace the existing record
+                };
+            }
+            return monthData;
+        });
+        return updatedRecords;
     };
 
     const modifiedColumns = columns.map((col) => ({
