@@ -24,6 +24,7 @@ import NewTransitDays from "./NewTransitDays";
 import AddNewTransitDay from "./KPI/AddNewTransitDay";
 import GraphPresentation from "./Presentation/GraphPresentation";
 import Incident from "./Incident";
+import TrafficComp from "./TrafficPage/TrafficComp";
 
 export default function charts({
     setCusomterAccounts,
@@ -2277,7 +2278,8 @@ export default function charts({
             gtccrUrl={gtccrUrl}
             incidentId={incidentId}
             currentUser={currentUser}
-            />
+            />,
+        <TrafficComp />
     ];
 
     return (

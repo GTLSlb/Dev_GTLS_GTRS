@@ -17,6 +17,7 @@ import {
 } from "@heroicons/react/24/solid";
 import "../../../../css/scroll.css";
 import TaskIcon from "@mui/icons-material/Task";
+import ReportIcon from '@mui/icons-material/Report';
 
 import { useEffect } from "react";
 import {
@@ -176,17 +177,26 @@ const navigation = [
     },
     {
         id: 20,
-        name: "Unilever Report",
+        name: "KPI Pack Report",
         href: "#",
         icon: DocumentTextIcon,
         current: false,
         feature: "UnileverReport_View",
+    },
+    {
+        id: 21,
+        name: "Traffic Report",
+        href: "#",
+        icon: ReportIcon,
+        current: false,
+        feature: "TrafficReport_View",
     },
 ];
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
+
 
 export default function ChartsSidebar({
     setCusomterAccounts,
