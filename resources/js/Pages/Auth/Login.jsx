@@ -133,8 +133,6 @@ export default function Login({ status, canResetPassword }) {
             }
         );
 
-        console.log("get active account", pca.getActiveAccount());
-
         // handle auth redirect /do all initial setup for msal
         pca.handleRedirectPromise()
             .then(async (authResult) => {
@@ -355,8 +353,7 @@ export default function Login({ status, canResetPassword }) {
                                             ? "bg-gray-600 cursor-not-allowed text-white"
                                             : "bg-goldd hover:bg-goldt text-dark"
                                     } rounded-md border border-transparent bg-goldd py-2 px-4 text-sm font-medium  shadow-sm  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
-                                    disabled={loading}
-                                    //|| !recaptchaValue}
+                                    disabled={loading|| !recaptchaValue}
                                     type="button"
                                     onClick={(e) => submit(e)}
                                 >
