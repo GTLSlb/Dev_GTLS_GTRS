@@ -227,7 +227,10 @@ class LoginController extends Controller
                 // }
 
                 // Redirect to the login page
-                return redirect('/login');
+                // return redirect('/login');
+
+                // Redirect to Microsoft Azure logout URL
+                return redirect()->route('azure.logout');
             } else {
                 // Handle the case where the logout request fails
                 // You can log an error or return a specific response

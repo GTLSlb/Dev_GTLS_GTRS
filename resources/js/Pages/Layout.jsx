@@ -71,6 +71,7 @@ export default function Sidebar(Boolean) {
                 console.log(err);
             });
     };
+
     useEffect(() => {
         if (currentUser) {
             getUserPermissions();
@@ -143,7 +144,6 @@ export default function Sidebar(Boolean) {
         if (currentUser && !Token) {
             const headers = {
                 UserId: currentUser.UserId,
-                // currentUser.UserId,
                 OwnerId: currentUser.OwnerId,
                 "Content-Type": "application/x-www-form-urlencoded",
             };

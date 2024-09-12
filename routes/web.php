@@ -43,6 +43,7 @@ Route::post('/loginapi', [LoginController::class, 'login'])->name('loginapi');
 
 Route::post('/logoutAPI', [LoginController::class, 'logout'])->middleware(['custom.auth'])->name('logoutAPI');
 
+
 Route::get('/main', function () {
     return Inertia::render('Layout');
 })->middleware(['custom.auth'])->name('layout');
@@ -166,6 +167,7 @@ Route::middleware('custom.auth')->group(function () {
         return Socialite::driver('azure')->redirect();
     })->name('azure.login');
     Route::get('/auth/azure/callback', [AzureAuthController::class, 'handleCallback'])->name('azure.callback');
+    Route::get('/azure/logout', [AzureAuthController::class, 'azureLogout'])->name('azure.logout');
 });
 
 Route::post('/getAppLogo', [ImageController::class, 'showAppLogo'])->name('logo.show');

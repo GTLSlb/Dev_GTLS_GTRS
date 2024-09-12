@@ -461,14 +461,13 @@ export default function MainSidebar({
                 [app.AppId]: blobUrl,
             }));
         } catch (error) {
-            console.log(error, app?.AppAbv);
+            console.log(error);
             setAppsImgs((prev) => ({
                 ...prev,
                 [app.AppId]: "/icons/NoPhoto.jpg",
             }));
         }
     };
-
     useEffect(() => {
         if (allowedApplications?.length > 0) {
             allowedApplications?.forEach((app) => {

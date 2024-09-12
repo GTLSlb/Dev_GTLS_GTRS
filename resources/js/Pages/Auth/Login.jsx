@@ -18,6 +18,7 @@ import axios from "axios";
 import CryptoJS from 'crypto-js';
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import MicrosoftLogo from "@/assets/icons/microsoft-logo.png";
 
 const msalConfig = {
     auth: {
@@ -253,7 +254,7 @@ export default function Login({ status, canResetPassword }) {
                                             value={data.password}
                                             autoComplete="current-password"
                                             onChange={handleOnChangePassword}
-                                            className={`appearance-none w-full border mb-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline transition-all duration-500`}
+                                            className={`appearance-none w-full border mb-2 rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline transition-all duration-500`}
                                         />
                                         <div
                                             className="absolute inset-y-0 right-0 top-3 flex items-center pr-3 cursor-pointer"
@@ -292,10 +293,11 @@ export default function Login({ status, canResetPassword }) {
                                         className="mt-2"
                                     />
                                 </div>
-                                <button className="text-white" onClick={(e)=>{
+                                <button className="bg-[#ECECEC] py-2 w-full rounded text-dark font-bold my-3 flex items-center justify-center gap-x-4 hover:bg-[#ECECEC]/95" onClick={(e)=>{
                                     handleLoginAzure(e)
                                 }}>
-                                    Login with Microsoft Azure
+                                    <img src={MicrosoftLogo} className="w-5 h-5"/>
+                                    Sign in with Microsoft
                                 </button>
                             </div>
                             <div className="flex items-center justify-between">
@@ -304,7 +306,7 @@ export default function Login({ status, canResetPassword }) {
                                         loading || !recaptchaValue
                                             ? "bg-gray-600 cursor-not-allowed text-white"
                                             : "bg-goldd hover:bg-goldt text-dark"
-                                    } font-bold rounded-md border border-transparent bg-goldd py-2 px-4 text-sm font-medium  shadow-sm  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+                                    } rounded-md border border-transparent bg-goldd py-2 px-4 text-sm font-medium  shadow-sm  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
                                     disabled={loading || !recaptchaValue}
                                     type="button"
                                     onClick={(e)=>submit(e)}
