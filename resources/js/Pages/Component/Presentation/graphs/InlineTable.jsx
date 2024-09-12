@@ -12,9 +12,9 @@ function InlineTable({
     url,
     currentUser,
     getReportData,
+    originalgraphData,
     selectedReceiver,
     setGraphData,
-    updateData,
 }) {
     const [jsonData, setJsonData] = useState(graphData);
     // Function to format date to column name
@@ -47,6 +47,57 @@ function InlineTable({
 
     // Create original data template and columns dynamically
 
+    function CustomNumericEditor(props) {
+        const { value, onChange, onComplete, cellProps } = props; // Destructure relevant props
+        const [inputValue, setInputValue] = useState(value);
+
+        // Determine the maximum value dynamically based on your logic
+        let max;
+        if (cellProps.rowIndex === 0 && cellProps.rowIndex === 3) {
+            max = null;
+        } else {
+            max = dataSource[0][cellProps.id];
+        }
+
+        const onValueChange = (e) => {
+            let newValue = e.target.value;
+
+            // Check if the new value exceeds the max limit
+            if (cellProps.rowIndex === 1 && cellProps.rowIndex === 2) {
+                if (max !== null && parseFloat(newValue) > max) {
+                    newValue = max; // Set to max if it exceeds
+                }
+            }
+
+            setInputValue(newValue); // Update the local state
+            onChange(newValue); // Call onChange to update the grid's internal state
+        };
+
+        const handleComplete = () => {
+            onComplete(inputValue); // Commit the final value and close the editor
+        };
+
+        const handleKeyDown = (event) => {
+            if (event.key === "Enter") {
+                handleComplete(); // Save and close editor when Enter is pressed
+            }
+        };
+
+        return (
+            <input
+                type="number"
+                min={0} // Minimum value
+                max={null} // Maximum value
+                step={1} // Step size
+                value={inputValue}
+                onChange={onValueChange}
+                onBlur={handleComplete} // Save and close editor when input loses focus
+                onKeyDown={handleKeyDown} // Save and close editor when Enter is pressed
+                style={{ width: "100%", height: "100%" }}
+            />
+        );
+    }
+
     jsonData.forEach((item) => {
         const columnName = formatDateToColumnName(item.MonthDate);
         columns.push({
@@ -55,7 +106,7 @@ function InlineTable({
             defaultFlex: 1,
             minWidth: 100,
             sortable: false,
-            editor: NumericEditor,
+            editor: CustomNumericEditor, // Use the NumericEditor
 
             // Adjusted the editable function to properly log the row data
             // Use closure to capture row data
@@ -116,25 +167,24 @@ function InlineTable({
 
     const [dataSource, setDataSource] = useState(originalData);
     const [validationErrors, setValidationErrors] = useState({});
-
     // Lookup function to determine editability based on rowIndex and columnName
 
     const onEditComplete = useCallback(
         ({ value, columnId, rowIndex }) => {
             const data = [...dataSource]; // Clone dataSource to prevent direct state mutation
             let formattedValue = value;
-    
+
             // Format the KPI Benchmark row value as a percentage
             if (rowIndex === 3) {
                 formattedValue =
                     value == null ? "" : `${parseFloat(value).toFixed(2)} %`;
             }
-    
+
             data[rowIndex][columnId] = formattedValue;
-    
+
             const baseRecord = recordMap[columnId];
             let updatedField = "";
-    
+
             // Determine which field has been updated based on the row index
             switch (rowIndex) {
                 case 0:
@@ -153,13 +203,16 @@ function InlineTable({
                 default:
                     break;
             }
-    
+
             baseRecord[updatedField] = value;
-    
+
             // Recalculate percentages
             if (baseRecord.TotalCons && baseRecord.TotalCons !== 0) {
                 // Handle OnTime % calculation
-                if (baseRecord.TotalFails == null || baseRecord.TotalFails === "") {
+                if (
+                    baseRecord.TotalFails == null ||
+                    baseRecord.TotalFails === ""
+                ) {
                     baseRecord.onTimePercentage = ""; // Clear OnTime % if TotalFails is empty
                 } else {
                     baseRecord.onTimePercentage = (
@@ -168,9 +221,12 @@ function InlineTable({
                         100
                     ).toFixed(2);
                 }
-    
+
                 // Handle POD % calculation
-                if (baseRecord.TotalNoPod == null || baseRecord.TotalNoPod === "") {
+                if (
+                    baseRecord.TotalNoPod == null ||
+                    baseRecord.TotalNoPod === ""
+                ) {
                     baseRecord.PODPercentage = ""; // Clear POD % if TotalNoPod is empty
                 } else {
                     baseRecord.PODPercentage = (
@@ -183,7 +239,7 @@ function InlineTable({
                 baseRecord.onTimePercentage = ""; // Clear OnTime % if TotalCons is zero or null
                 baseRecord.PODPercentage = ""; // Clear POD % if TotalCons is zero or null
             }
-    
+
             // Update the data in the dataSource
             data[4][columnId] = baseRecord.onTimePercentage
                 ? `${baseRecord.onTimePercentage}%`
@@ -191,30 +247,39 @@ function InlineTable({
             data[5][columnId] = baseRecord.PODPercentage
                 ? `${baseRecord.PODPercentage}%`
                 : "";
-    
+
             // Validate fields before making an API request
-            if (!baseRecord.TotalCons) {
+            if (baseRecord.TotalCons == null || baseRecord.TotalCons === "") {
                 console.log("Validation failed: TotalCons is null or empty");
                 setValidationErrors((prev) => ({
                     ...prev,
                     [`${columnId}`]: true,
                 }));
                 return;
-            } else if (!baseRecord.TotalFails) {
+            } else if (
+                baseRecord.TotalFails == null ||
+                baseRecord.TotalFails === ""
+            ) {
                 console.log("Validation failed: TotalFails is null or empty");
                 setValidationErrors((prev) => ({
                     ...prev,
                     [`${columnId}`]: true,
                 }));
                 return;
-            } else if (!baseRecord.TotalNoPod) {
+            } else if (
+                baseRecord.TotalNoPod == null ||
+                baseRecord.TotalNoPod === ""
+            ) {
                 console.log("Validation failed: TotalNoPod is null or empty");
                 setValidationErrors((prev) => ({
                     ...prev,
                     [`${columnId}`]: true,
                 }));
                 return;
-            } else if (!baseRecord.KpiBenchMark) {
+            } else if (
+                baseRecord.KpiBenchMark == null ||
+                baseRecord.KpiBenchMark === ""
+            ) {
                 console.log("Validation failed: KpiBenchMark is null or empty");
                 setValidationErrors((prev) => ({
                     ...prev,
@@ -227,8 +292,9 @@ function InlineTable({
                     [`${columnId}`]: false,
                 }));
             }
-    
+
             // API request to update the backend (Uncomment when ready)
+
             axios
                 .post(`${url}Add/KpiPackRecord`, baseRecord, {
                     headers: {
@@ -236,32 +302,34 @@ function InlineTable({
                     },
                 })
                 .then((res) => {
-                    console.log(res.data);
-                    updateLocalData(baseRecord, columnId, rowIndex, data);
+                    setGraphData(
+                        updateLocalData(originalgraphData, baseRecord)
+                    );
                 })
                 .catch((err) => {
                     console.log(err);
                 });
-    
+
             setDataSource(data);
         },
         [dataSource, jsonData]
     );
-    
-    // Function to update local state
-    const updateLocalData = (record, columnId, rowIndex, newData) => {
-        const updatedJsonData = jsonData.map((item) => {
-            if (formatDateToColumnName(item.MonthDate) === columnId) {
+
+    const updateLocalData = (records, newRecord) => {
+        // console.log(records, newRecord);
+        // Convert new record's report month to MonthDate format
+        const newMonthDate = newRecord.ReportMonth;
+        // // Map over records to find and replace the matching month data
+        const updatedRecords = records.map((monthData) => {
+            if (monthData.MonthDate === newMonthDate) {
                 return {
-                    ...item,
-                    Record: [{ ...item.Record[0], ...record }],
+                    ...monthData,
+                    Record: [newRecord], // Replace the existing record
                 };
             }
-            return item;
+            return monthData;
         });
-        setGraphData(updatedJsonData);
-        setJsonData(updatedJsonData);
-        setDataSource(newData);
+        return updatedRecords;
     };
 
     const modifiedColumns = columns.map((col) => ({

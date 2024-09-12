@@ -32,11 +32,11 @@ ChartJS.register(
 function BarGraph({
     graphData,
     url,
+    originalgraphData,
     currentUser,
     getReportData,
     selectedReceiver,
     setGraphData,
-    updateData,
 }) {
     function generateMonthArrayFromJson(data) {
         const monthNames = [
@@ -82,11 +82,11 @@ function BarGraph({
         return result;
     }
 
-    let colLabel = generateMonthArrayFromJson(graphData);
-    let dataTotal = getFieldArrayFromJson(graphData, "TotalCons");
-    let dataKPI = getFieldArrayFromJson(graphData, "KpiBenchMark");
-    let dataOnTime = getFieldArrayFromJson(graphData, "onTimePercentage");
-    let dataPOD = getFieldArrayFromJson(graphData, "PODPercentage");
+    let colLabel = generateMonthArrayFromJson(originalgraphData);
+    let dataTotal = getFieldArrayFromJson(originalgraphData, "TotalCons");
+    let dataKPI = getFieldArrayFromJson(originalgraphData, "KpiBenchMark");
+    let dataOnTime = getFieldArrayFromJson(originalgraphData, "onTimePercentage");
+    let dataPOD = getFieldArrayFromJson(originalgraphData, "PODPercentage");
 
     const chartRef = useRef(null);
 
@@ -176,9 +176,9 @@ function BarGraph({
                         let yAxisID = tooltipItem.dataset.yAxisID;
 
                         if (yAxisID === "y-axis-bar") {
-                            return `${datasetLabel}: ${value}`;
+                            return `${datasetLabel}: ${parseFloat(value).toFixed(2)}`;
                         } else {
-                            return `${datasetLabel}: ${value}%`;
+                            return `${datasetLabel}: ${parseFloat(value).toFixed(2)}%`;
                         }
                     },
                 },
@@ -194,11 +194,11 @@ function BarGraph({
             <InlineTable
                 getReportData={getReportData}
                 graphData={graphData}
+                originalgraphData={originalgraphData}
                 url={url}
                 currentUser={currentUser}
                 selectedReceiver={selectedReceiver}
                 setGraphData={setGraphData}
-                updateData={updateData}
             />
         </div>
     );
