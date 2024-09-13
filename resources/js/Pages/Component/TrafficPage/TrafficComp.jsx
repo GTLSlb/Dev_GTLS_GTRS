@@ -63,10 +63,62 @@ const defaultFilterValue = [
 ];
 
 function TraffiComp() {
+    function formatTime(hours) {
+        const years = Math.floor(hours / (24 * 30 * 12));
+        const months = Math.floor((hours % (24 * 30 * 12)) / (24 * 30));
+        const days = Math.floor((hours % (24 * 30)) / 24);
+        const remainingHours = hours % 24;
+
+        const parts = [];
+
+        if (years > 0) {
+            parts.push(`${years} year${years > 1 ? "s" : ""}`);
+        }
+        if (months > 0) {
+            parts.push(`${months} month${months > 1 ? "s" : ""}`);
+        }
+        if (days > 0) {
+            parts.push(`${days} day${days > 1 ? "s" : ""}`);
+        }
+        if (remainingHours > 0) {
+            parts.push(
+                `${remainingHours} hour${remainingHours > 1 ? "s" : ""}`
+            );
+        }
+
+        if (parts.length === 0) {
+            return null;
+        } else if (parts.length > 1) {
+            return parts[0];
+        }
+        // return parts.join(" and ");
+    }
+
     const gridStyle = { minHeight: 550, marginTop: 10 };
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [eventDetails, setEventDetails] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [categories, setCategories] = useState([]);
+    function getAllEvents() {
+        axios
+            .get(`${gtrsWebUrl}get-eventsCategories`)
+            .then((res) => {
+                setCategories(res.data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
+
+    useEffect(() => {
+        getAllEvents();
+    }, []);
+
+    function getEventCategoryById(id) {
+        const category = categories.find((event) => event.id === id);
+        return category ? category.event_category : "";
+    }
+
     function handleViewDetails(id) {
         setLoading(true);
         onOpen();
@@ -101,6 +153,9 @@ function TraffiComp() {
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
+            render: ({ data }) => {
+                return getEventCategoryById(data.event_category_id);
+            }, 
         },
         {
             name: "description",
@@ -165,7 +220,7 @@ function TraffiComp() {
             textAlign: "center",
             defaultWidth: 170,
             render: ({ value }) => {
-                return parseFloat(value).toFixed(2);
+                return formatTime(value);
             },
         },
         {
@@ -236,7 +291,6 @@ function TraffiComp() {
                 columns={columns}
                 className={"rounded-lg shadow-lg overflow-hidden"}
                 showColumnMenuTool={false}
-                // enableColumnFilterContextMenu={false}
                 enableColumnAutosize={false}
                 filterValue={filterValue}
                 onFilterValueChange={setFilterValue}
@@ -245,10 +299,10 @@ function TraffiComp() {
                 defaultLimit={15}
             />
             <EventModal
+                getEventCategoryById={getEventCategoryById}
                 eventDetails={eventDetails}
                 loading={loading}
                 isOpen={isOpen}
-                onOpen={onOpen}
                 onOpenChange={onOpenChange}
             />
         </div>
