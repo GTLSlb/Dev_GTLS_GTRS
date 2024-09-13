@@ -111,6 +111,7 @@ export default function Login({ status, canResetPassword }) {
         e.preventDefault();
         setLoading(true);
 
+        await pca.initialize();
         // Set active account on page load
         const accounts = pca.getAllAccounts();
         if (accounts.length > 0) {
