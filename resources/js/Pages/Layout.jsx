@@ -180,7 +180,6 @@ export default function Sidebar(Boolean) {
         }
     }, [currentUser]);
 
-
     if (!currentUser) {
         return null; // Render nothing
     } else {

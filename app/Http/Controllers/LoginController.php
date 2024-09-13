@@ -95,7 +95,7 @@ class LoginController extends Controller
                         $cookieName = 'access_token';
                         $cookieValue = $token['access_token'];
                         $expiry = $token['expires_in'];
-                        setcookie($cookieName, $cookieValue, time() + $expiry, '/', '', true);
+                        setcookie($cookieName, $cookieValue, time() + $expiry, '/', $_ENV['SESSION_DOMAIN'], true);
                         setcookie('gtis_refresh_token', $token['refresh_token'], time() + $expiry, '/', '', true);
 
                         $userId = $user['UserId'];
@@ -152,8 +152,8 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
-        // Retrieve the 'gtam_access_token' cookie
-        $token = isset($_COOKIE['gtam_access_token']) ? $_COOKIE['gtam_access_token'] : null;
+        // Retrieve the 'access_token' cookie
+        $token = isset($_COOKIE['access_token']) ? $_COOKIE['access_token'] : null;
 
         // Create an instance of the RegisteredUserController and get the current user
         $userController = new RegisteredUserController();
