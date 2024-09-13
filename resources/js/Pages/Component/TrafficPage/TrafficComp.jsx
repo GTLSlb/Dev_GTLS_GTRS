@@ -3,11 +3,13 @@ import React, { useState, useEffect, useCallback } from "react";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
-
+import { EyeIcon, PencilIcon } from "@heroicons/react/24/outline";
+import axios from "axios";
+import { useDisclosure } from "@nextui-org/react";
+import EventModal from "./EventModal";
 const gtrsWebUrl = window.Laravel.gtrsWeb;
 
 const loadData = ({ skip, limit, sortInfo, filterValue }) => {
-    console.log(skip, limit, sortInfo);
     const url =
         `${gtrsWebUrl}get-positions` +
         "?skip=" +
@@ -62,7 +64,22 @@ const defaultFilterValue = [
 
 function TraffiComp() {
     const gridStyle = { minHeight: 550, marginTop: 10 };
-
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [eventDetails, setEventDetails] = useState([]);
+    const [loading, setLoading] = useState(false);
+    function handleViewDetails(id) {
+        setLoading(true);
+        onOpen();
+        axios
+            .get(`${gtrsWebUrl}get-positions/${id}`)
+            .then((res) => {
+                setEventDetails(res.data);
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
     const columns = [
         {
             name: "api_source",
@@ -135,19 +152,30 @@ function TraffiComp() {
             },
         },
         {
-            name: "road_name",
-            header: "Road Name",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-        },
-        {
             name: "impact",
             header: "Event Impact",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
         },
+        {
+            name: "hours_difference",
+            header: "Duration Impact",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            render: ({ value }) => {
+                return parseFloat(value).toFixed(2);
+            },
+        },
+        {
+            name: "road_name",
+            header: "Road Name",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+        },
+
         {
             name: "advice",
             header: "Advice",
@@ -161,6 +189,32 @@ function TraffiComp() {
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
+        },
+        {
+            name: "actions",
+            header: "Actions",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            render: ({ value, data }) => {
+                return (
+                    <div>
+                        <button
+                            className={
+                                "rounded text-goldd justify-center items-center  "
+                            }
+                            onClick={() => {
+                                handleViewDetails(data.id);
+                            }}
+                        >
+                            <span className="flex gap-x-1">
+                                <EyeIcon className="h-4" />
+                                View
+                            </span>
+                        </button>
+                    </div>
+                );
+            },
         },
     ];
 
@@ -189,6 +243,13 @@ function TraffiComp() {
                 pagination
                 dataSource={dataSource}
                 defaultLimit={15}
+            />
+            <EventModal
+                eventDetails={eventDetails}
+                loading={loading}
+                isOpen={isOpen}
+                onOpen={onOpen}
+                onOpenChange={onOpenChange}
             />
         </div>
     );
