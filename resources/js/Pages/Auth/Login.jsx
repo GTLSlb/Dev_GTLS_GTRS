@@ -29,7 +29,7 @@ export default function Login({ status, canResetPassword }) {
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [recaptchaValue, setRecaptchaValue] = useState(true);
+    const [recaptchaValue, setRecaptchaValue] = useState(false);
     const [passwordType, setPasswordType] = useState("password");
     const [errorMessage, setErrorMessage] = useState("");
     const [loading, setLoading] = useState(false);
@@ -269,11 +269,11 @@ export default function Login({ status, canResetPassword }) {
                             <div className="flex items-center justify-between">
                                 <button
                                     className={`flex w-full justify-center ${
-                                        loading
+                                        loading || !recaptchaValue
                                             ? "bg-gray-600 cursor-not-allowed text-white"
                                             : "bg-goldd hover:bg-goldt text-dark"
                                     } font-bold rounded-md border border-transparent bg-goldd py-2 px-4 text-sm font-medium  shadow-sm  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
-                                    disabled={loading}
+                                    disabled={loading || !recaptchaValue}
                                     type="submit"
                                 >
                                     {loading ? (
@@ -284,6 +284,16 @@ export default function Login({ status, canResetPassword }) {
                                 </button>
                             </div>
                         </form>
+                        <ReCAPTCHA
+                            sitekey="6Lf30MEmAAAAAA4_iPf9gTM1VMNO9iSFKyaAC1P0"
+                            onChange={handleRecaptchaChange}
+                            onExpired={handleRecaptchaExpired}
+                            className="mt-4 flex justify-center "
+                            size="normal" // Set the desired size here: "compact", "normal", or "invisible"
+                            render="explicit" // Use "explicit" rendering
+                            theme="dark" // Set the desired theme: "light" or "dark"
+                            style={{ transform: "scale(0.8)" }} // Use CSS transform to adjust the size
+                        />
                     </div>
                 </div>
             </GuestLayout>
