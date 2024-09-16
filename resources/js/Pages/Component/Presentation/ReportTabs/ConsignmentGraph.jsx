@@ -1,4 +1,3 @@
-import { getDataDetail } from "@microsoft/signalr/dist/esm/Utils";
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
@@ -62,7 +61,7 @@ function ConsignmentGraph({ url, currentUser, AToken }) {
             .then((res) => {
                 setLoading(false);
                 const calculatedData = addCalculatedFields(res.data);
-                setGraphOriginalData(res.data)
+                setGraphOriginalData(res.data);
                 setGraphData(res.data);
             })
             .catch((err) => {
@@ -76,53 +75,54 @@ function ConsignmentGraph({ url, currentUser, AToken }) {
 
     const customStyles = {
         control: (provided) => ({
-          ...provided,
-          minHeight: 'unset', // Remove default minimum height
-          height: 'auto', // Set control height to auto
-          // Add other control-related styles as needed
+            ...provided,
+            minHeight: "unset", // Remove default minimum height
+            height: "auto", // Set control height to auto
+            // Add other control-related styles as needed
         }),
         option: (provided, state) => ({
-          ...provided,
-          color: state.isSelected ? 'black' : 'black', // Change color based on selection
-          backgroundColor: state.isSelected ? '#F3F3F3' : provided.backgroundColor, // Customize selected option background
-          // Add more styles for options as needed
+            ...provided,
+            color: state.isSelected ? "black" : "black", // Change color based on selection
+            backgroundColor: state.isSelected
+                ? "#F3F3F3"
+                : provided.backgroundColor, // Customize selected option background
+            // Add more styles for options as needed
         }),
         multiValue: (provided) => ({
-          ...provided,
-          width: '30%', // Set multi-value width
-          overflow: 'hidden', // Ensure content does not overflow
-          height: '20px', // Set height of multi-value tags
-          display: 'flex', // Align items horizontally
-          // Add more multi-value styles as needed
+            ...provided,
+            width: "30%", // Set multi-value width
+            overflow: "hidden", // Ensure content does not overflow
+            height: "20px", // Set height of multi-value tags
+            display: "flex", // Align items horizontally
+            // Add more multi-value styles as needed
         }),
         valueContainer: (provided) => ({
-          ...provided,
-          width: '400px', // Set fixed width for the value container
-          maxHeight: '37px', // Restrict max height of value container
-          overflowY: 'auto', // Enable vertical scrolling for overflow
-          // Add more styles for the value container as needed
+            ...provided,
+            width: "400px", // Set fixed width for the value container
+            maxHeight: "37px", // Restrict max height of value container
+            overflowY: "auto", // Enable vertical scrolling for overflow
+            // Add more styles for the value container as needed
         }),
         input: (provided) => ({
-          ...provided,
-          margin: 0, // Remove default margin for input
-          // Add more styles for input if necessary
+            ...provided,
+            margin: 0, // Remove default margin for input
+            // Add more styles for input if necessary
         }),
         multiValueLabel: (provided) => ({
-          ...provided,
-          whiteSpace: 'nowrap', // Prevent text from wrapping
-          overflow: 'hidden', // Hide overflow content
-          textOverflow: 'ellipsis', // Show ellipsis for overflow text
-          fontSize: '10px', // Set font size for multi-value labels
-          // Add more styles for multi-value labels as needed
+            ...provided,
+            whiteSpace: "nowrap", // Prevent text from wrapping
+            overflow: "hidden", // Hide overflow content
+            textOverflow: "ellipsis", // Show ellipsis for overflow text
+            fontSize: "10px", // Set font size for multi-value labels
+            // Add more styles for multi-value labels as needed
         }),
         indicatorsContainer: (provided) => ({
-          ...provided,
-          height: 'auto', // Set height to auto
-          // Add more styles for indicators container if necessary
+            ...provided,
+            height: "auto", // Set height to auto
+            // Add more styles for indicators container if necessary
         }),
         // Add or adjust other style functions as needed
-      };
-            
+    };
 
     const handleReceiverSelectChange = (selectedOptions) => {
         setselectedReceiver(selectedOptions);
@@ -170,9 +170,7 @@ function ConsignmentGraph({ url, currentUser, AToken }) {
                     url={url}
                     currentUser={currentUser}
                     selectedReceiver={selectedReceiver}
-                    getReportData={getReportData}
                     originalgraphData={originalgraphData}
-                    setGraphData={setGraphData}
                 />
             </div>
         </div>

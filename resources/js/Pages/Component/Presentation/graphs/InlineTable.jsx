@@ -4,17 +4,14 @@ import "@inovua/reactdatagrid-community/index.css";
 import axios from "axios";
 import { useCallback } from "react";
 import "../../../../../css/graphTable.css";
-import NumericEditor from "@inovua/reactdatagrid-community/NumericEditor";
 
 // Component
 function InlineTable({
     graphData,
     url,
     currentUser,
-    getReportData,
-    originalgraphData,
     selectedReceiver,
-    setGraphData,
+    updateLocalDataFromJson,
 }) {
     const [jsonData, setJsonData] = useState(graphData);
     // Function to format date to column name
@@ -302,9 +299,50 @@ function InlineTable({
                     },
                 })
                 .then((res) => {
-                    setGraphData(
-                        updateLocalData(originalgraphData, baseRecord)
-                    );
+                    const labelDate = formatDateToColumnName(baseRecord.ReportMonth);
+                    const graphNewData = {
+                        labels: [labelDate],
+                        datasets: [
+                            {
+                                type: "bar",
+                                label: "Total",
+                                backgroundColor: "rgba(219, 198, 119)",
+                                data: [baseRecord.TotalCons],
+                                yAxisID: "y-axis-bar"
+                            },
+                            {
+                                type: "line",
+                                label: "Ontime %",
+                                backgroundColor: "rgba(0, 196, 89)",
+                                borderColor: "rgba(0, 196, 89)",
+                                borderWidth: 2,
+                                fill: false,
+                                data: [baseRecord.onTimePercentage],
+                                yAxisID: "y-axis-line"
+                            },
+                            {
+                                type: "line",
+                                label: "KPI Bench Mark",
+                                backgroundColor: "rgb(255, 0, 0)",
+                                borderColor: "rgb(255, 0, 0)",
+                                borderWidth: 2,
+                                fill: false,
+                                data: [baseRecord.KpiBenchMark],
+                                yAxisID: "y-axis-line"
+                            },
+                            {
+                                type: "line",
+                                label: "POD %",
+                                backgroundColor: "rgb(61,123,199)",
+                                borderColor: "rgb(61,123,199)",
+                                borderWidth: 2,
+                                fill: false,
+                                data: [baseRecord.PODPercentage],
+                                yAxisID: "y-axis-line"
+                            }
+                        ]
+                    };
+                    updateLocalDataFromJson(graphNewData);
                 })
                 .catch((err) => {
                     console.log(err);
@@ -314,23 +352,6 @@ function InlineTable({
         },
         [dataSource, jsonData]
     );
-
-    const updateLocalData = (records, newRecord) => {
-        // console.log(records, newRecord);
-        // Convert new record's report month to MonthDate format
-        const newMonthDate = newRecord.ReportMonth;
-        // // Map over records to find and replace the matching month data
-        const updatedRecords = records.map((monthData) => {
-            if (monthData.MonthDate === newMonthDate) {
-                return {
-                    ...monthData,
-                    Record: [newRecord], // Replace the existing record
-                };
-            }
-            return monthData;
-        });
-        return updatedRecords;
-    };
 
     const modifiedColumns = columns.map((col) => ({
         ...col,

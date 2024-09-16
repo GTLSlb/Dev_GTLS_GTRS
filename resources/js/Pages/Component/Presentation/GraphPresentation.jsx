@@ -17,7 +17,7 @@ const MultiChartLine = ({ url, currentUser, AToken }) => {
             currentUser={currentUser}
             AToken={AToken}
         />, // Graph and Table
-        <TotalFailPODGraph />, // The 3 charts
+        // <TotalFailPODGraph />, // The 3 charts
     ];
 
     return (
