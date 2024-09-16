@@ -292,7 +292,7 @@ export function canViewInternal(currentUser) {
     const targetPage = currentUser.Pages.find(page => page.PageName === pageName);
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage.Features.some(feature => feature.FunctionName === targetPermissionName);
+    return targetPage && targetPage?.Features?.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 /**
