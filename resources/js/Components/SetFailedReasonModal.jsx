@@ -8,6 +8,7 @@ import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { People } from "@mui/icons-material";
 const placeholder = "test";
 import swal from 'sweetalert';
+import { handleSessionExpiration } from '@/CommonFunctions';
 
 export default function SetFailedReasonModal({
     isOpen,
@@ -178,17 +179,8 @@ export default function SetFailedReasonModal({
                   type: 'success',
                   icon: "info",
                   confirmButtonText: 'OK'
-                }).then(function() {
-                  axios
-                      .post("/logoutAPI")
-                      .then((response) => {
-                        if (response.status == 200) {
-                          window.location.href = "/";
-                        }
-                      })
-                      .catch((error) => {
-                        console.log(error);
-                      });
+                }).then(async function () {
+                    await handleSessionExpiration();
                 });
               } else {
                 // Handle other errors

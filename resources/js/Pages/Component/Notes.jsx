@@ -19,6 +19,7 @@ import {
 } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { handleSessionExpiration } from '@/CommonFunctions';
 // import { FileUploader } from "react-drag-drop-files";
 // import pdf from "../../../assets/pdf/test.pdf";
 import {
@@ -186,18 +187,9 @@ export default function Notes({
     //                         type: "success",
     //                         icon: "info",
     //                         confirmButtonText: "OK",
-    //                     }).then(function () {
-    //                         axios
-    //                             .post("/logoutAPI")
-    //                             .then((response) => {
-    //                                 if (response.status == 200) {
-    //                                     window.location.href = "/";
-    //                                 }
-    //                             })
-    //                             .catch((error) => {
-    //                                 console.log(error);
-    //                             });
-    //                     });
+    //                     }).then(async function () {
+                    //     await handleSessionExpiration();
+                    // });
     //                 } else {
     //                     // Handle other errors
     //                     console.log(err);
@@ -243,18 +235,9 @@ export default function Notes({
     //                         type: "success",
     //                         icon: "info",
     //                         confirmButtonText: "OK",
-    //                     }).then(function () {
-    //                         axios
-    //                             .post("/logoutAPI")
-    //                             .then((response) => {
-    //                                 if (response.status == 200) {
-    //                                     window.location.href = "/";
-    //                                 }
-    //                             })
-    //                             .catch((error) => {
-    //                                 console.log(error);
-    //                             });
-    //                     });
+    //                     }).then(async function () {
+                    //     await handleSessionExpiration();
+                    // });
     //                 } else {
     //                     // Handle other errors
     //                     console.log(err);

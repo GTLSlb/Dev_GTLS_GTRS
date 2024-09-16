@@ -14,6 +14,8 @@ import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import { canAddHolidays, canEditHolidays } from "@/permissions";
 import swal from 'sweetalert';
+import { handleSessionExpiration } from '@/CommonFunctions';
+
 const temp = [
     {
         HolidayId: 1,
@@ -87,18 +89,9 @@ export default function Holidays({
                     type: 'success',
                     icon: "info",
                     confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
+                  }).then(async function () {
+                    await handleSessionExpiration();
+                });
                 } else {
                   // Handle other errors
                   console.log(err);

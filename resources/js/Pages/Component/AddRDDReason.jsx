@@ -7,6 +7,8 @@ import notFound from "../../assets/pictures/NotFound.png";
 import AddRDDReasonModal from "./modals/AddRDDReasonModal";
 import { canAddRDDReasons, canEditRDDReasons } from "@/permissions";
 import swal from 'sweetalert';
+import { handleSessionExpiration } from '@/CommonFunctions';
+
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -82,18 +84,9 @@ export default function AddRDDReason({
                     type: 'success',
                     icon: "info",
                     confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
+                  }).then(async function () {
+                    await handleSessionExpiration();
+                });
                 } else {
                   // Handle other errors
                   console.log(err);

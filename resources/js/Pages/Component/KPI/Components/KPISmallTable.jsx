@@ -11,6 +11,8 @@ import { Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { useEffect } from "react";
 import { canEditKpiReasons } from "@/permissions";
+import { handleSessionExpiration } from '@/CommonFunctions';
+
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -96,17 +98,8 @@ export default function SmallTableKPI({
                           type: 'success',
                           icon: "info",
                           confirmButtonText: 'OK'
-                        }).then(function() {
-                          axios
-                              .post("/logoutAPI")
-                              .then((response) => {
-                                if (response.status == 200) {
-                                  window.location.href = "/";
-                                }
-                              })
-                              .catch((error) => {
-                                console.log(error);
-                              });
+                        }).then(async function () {
+                            await handleSessionExpiration();
                         });
                       } else {
                         // Handle other errors
@@ -171,17 +164,8 @@ export default function SmallTableKPI({
                           type: 'success',
                           icon: "info",
                           confirmButtonText: 'OK'
-                        }).then(function() {
-                          axios
-                              .post("/logoutAPI")
-                              .then((response) => {
-                                if (response.status == 200) {
-                                  window.location.href = "/";
-                                }
-                              })
-                              .catch((error) => {
-                                console.log(error);
-                              });
+                        }).then(async function () {
+                            await handleSessionExpiration();
                         });
                       } else {
                         // Handle other errors

@@ -6,6 +6,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import "../../css/scroll.css";
 import swal from "sweetalert";
+import { handleSessionExpiration } from '@/CommonFunctions';
 
 const placeholder = "test";
 
@@ -102,7 +103,7 @@ export default function SafetyModal({
         event.preventDefault(); // Prevent the default form submission behavior
         try {
             SetIsLoading(true);
-            
+
             const response = await axios.post(
                 `${url}Add/SafetyReport`,
                 formValues,
@@ -132,17 +133,8 @@ export default function SafetyModal({
                     type: "success",
                     icon: "info",
                     confirmButtonText: "OK",
-                }).then(function () {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                            if (response.status == 200) {
-                                window.location.href = "/";
-                            }
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                        });
+                }).then(async function () {
+                    await handleSessionExpiration();
                 });
             } else {
                 // Handle other errors

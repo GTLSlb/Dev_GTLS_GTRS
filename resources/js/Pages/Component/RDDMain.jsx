@@ -5,6 +5,8 @@ import "../../../css/radio.css";
 import { canViewRDDReasons } from "@/permissions";
 import swal from "sweetalert";
 import axios from "axios";
+import { handleSessionExpiration } from '@/CommonFunctions';
+
 export default function RDDMain({
     setActiveIndexGTRS,
     setactiveCon,
@@ -135,17 +137,8 @@ export default function RDDMain({
                             type: "success",
                             icon: "info",
                             confirmButtonText: "OK",
-                        }).then(function () {
-                            axios
-                                .post("/logoutAPI")
-                                .then((response) => {
-                                    if (response.status == 200) {
-                                        window.location.href = "/";
-                                    }
-                                })
-                                .catch((error) => {
-                                    console.log(error);
-                                });
+                        }).then(async function () {
+                            await handleSessionExpiration();
                         });
                     } else {
                         // Handle other errors
@@ -185,17 +178,8 @@ export default function RDDMain({
                             type: "success",
                             icon: "info",
                             confirmButtonText: "OK",
-                        }).then(function () {
-                            axios
-                                .post("/logoutAPI")
-                                .then((response) => {
-                                    if (response.status == 200) {
-                                        window.location.href = "/";
-                                    }
-                                })
-                                .catch((error) => {
-                                    console.log(error);
-                                });
+                        }).then(async function () {
+                            await handleSessionExpiration();
                         });
                     } else {
                         // Handle other errors

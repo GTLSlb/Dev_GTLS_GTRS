@@ -4,6 +4,8 @@ import AddFailedReason from "./AddFailedReason";
 import { canViewFailedReasons } from "@/permissions";
 import swal from "sweetalert";
 import axios from "axios";
+import { handleSessionExpiration } from '@/CommonFunctions';
+
 export default function FailedConsMain({
     url,
     PerfData,
@@ -69,17 +71,8 @@ export default function FailedConsMain({
                             type: "success",
                             icon: "info",
                             confirmButtonText: "OK",
-                        }).then(function () {
-                            axios
-                                .post("/logoutAPI")
-                                .then((response) => {
-                                    if (response.status == 200) {
-                                        window.location.href = "/";
-                                    }
-                                })
-                                .catch((error) => {
-                                    console.log(error);
-                                });
+                        }).then(async function () {
+                            await handleSessionExpiration();
                         });
                     } else {
                         // Handle other errors

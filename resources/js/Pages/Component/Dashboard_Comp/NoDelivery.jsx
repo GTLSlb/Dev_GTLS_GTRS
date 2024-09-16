@@ -24,6 +24,7 @@ import {
     PlayCircleIcon,
 } from "@heroicons/react/20/solid";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
+import { handleSessionExpiration } from '@/CommonFunctions';
 
 const report = [
     {
@@ -93,17 +94,8 @@ export default function NoDelivery({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    }).then(async function () {
+                        await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors

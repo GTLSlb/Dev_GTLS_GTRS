@@ -23,6 +23,7 @@ import { PrinterIcon } from "@heroicons/react/24/solid";
 import swal from "sweetalert";
 import Notes from "./Notes";
 // import NotesDocument from "./NotesDocument";
+import { handleSessionExpiration } from '@/CommonFunctions';
 
 export default function Incident({
     gtccrUrl,
@@ -77,17 +78,8 @@ export default function Incident({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    }).then(async function () {
+                        await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors
@@ -129,17 +121,8 @@ export default function Incident({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    }).then(async function () {
+                        await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors
@@ -256,18 +239,9 @@ export default function Incident({
     //                         type: "success",
     //                         icon: "info",
     //                         confirmButtonText: "OK",
-    //                     }).then(function () {
-    //                         axios
-    //                             .post("/logoutAPI")
-    //                             .then((response) => {
-    //                                 if (response.status == 200) {
-    //                                     window.location.href = "/";
-    //                                 }
-    //                             })
-    //                             .catch((error) => {
-    //                                 console.log(error);
-    //                             });
-    //                     });
+    //                     }).then(async function () {
+    //     await handleSessionExpiration();
+    // });;
     //                 } else {
     //                     // Handle other errors
     //                     console.log(err);

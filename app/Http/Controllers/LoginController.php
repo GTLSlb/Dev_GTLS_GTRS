@@ -211,21 +211,6 @@ class LoginController extends Controller
                 // Regenerate the session token
                 $request->session()->regenerateToken();
 
-                // logout from microsoft azure
-                // $socialiteUser = Socialite::driver('azure')->user();
-
-                // if ($socialiteUser) {
-                //      // Get the access token
-                //     $accessToken = $socialiteUser->token;
-
-                //     // Decode the token to access claims
-                //     $tokenClaims = json_decode(base64_decode(explode('.', $accessToken)[1]), true);
-
-                //     // Extract the tenant ID
-                //     // $userTenantId = $tokenClaims['tenantId'];
-                //     //$logoutUrl = 'https://login.microsoftonline.com/' . $userTenantId . '/oauth2/v2.0/logout?post_logout_redirect_uri=http://localhost:8000/auth/azure/callback';
-                // }
-
                 // Redirect to the login page
                 // return redirect('/login');
 
@@ -234,17 +219,63 @@ class LoginController extends Controller
                 // or https://login.microsoftonline.com/{tenant}/oauth2/v2.0/logout
 
                 // The URL to redirect back to after logout (your application's home or login page)
-                $postLogoutRedirectUri = urlencode('http://localhost:8000/login'); // Replace 'home' with your route name
-                //dd($azureLogoutUrl . '?post_logout_redirect_uri=' . $postLogoutRedirectUri);
+                $postLogoutRedirectUri = urlencode('http://localhost:8000/login');
                 // return redirect()->route('azure.logout');
-                // return redirect()->route('login');
-                // return request()
                 //return redirect()->away($azureLogoutUrl . '?post_logout_redirect_uri=' . $postLogoutRedirectUri);
             } else {
                 // Handle the case where the logout request fails
                 // You can log an error or return a specific response
                 return redirect()->back()->withErrors(['error' => 'Logout failed. Please try again.']);
             }
+        }
+    }
+
+    public function logoutWithoutRequest(Request $request)
+    {
+        // Retrieve the 'access_token' cookie
+        $token = isset($_COOKIE['access_token']) ? $_COOKIE['access_token'] : null;
+
+        // Create an instance of the RegisteredUserController and get the current user
+        $userController = new RegisteredUserController();
+        $user = $userController->getCurrentUserName($request);
+        $userMsg = json_decode($user->content(), true);
+        //dd(gettype($userMsg) != "array" && gettype($userMsg) != "object" && gettype($userMsg) == "string");
+        if(gettype($userMsg) != "array" && gettype($userMsg) != "object" && gettype($userMsg) == "string") {
+        if ($userMsg['message'] == 'User not found') {
+
+                $request->session()->invalidate();
+                $request->session()->flush();
+                // Set the expiration time for the cookies to 24 hours before the current time
+                $expiration = time() - (60 * 60 * 24);
+                $cookies = $_COOKIE;
+
+                // Loop through each cookie and set it to expire
+                foreach ($cookies as $name => $value) {
+                    setcookie($name, '', $expiration);
+                }
+                $request->session()->regenerateToken();
+                // return redirect('/login');
+        }} else {
+                // Invalidate and flush the session
+                $request->session()->forget('user');
+                $request->session()->invalidate();
+                $request->session()->flush();
+                // Set the expiration time for the cookies to 24 hours before the current time
+                $expiration = time() - (60 * 60 * 24);
+
+                // Get an array of all the cookies
+                $cookies = $_COOKIE;
+
+                // Loop through each cookie and set it to expire
+                foreach ($cookies as $name => $value) {
+                    setcookie($name, '', $expiration);
+                }
+
+                // Regenerate the session token
+                $request->session()->regenerateToken();
+
+                // Redirect to the login page
+                // return redirect('/login');
         }
     }
 

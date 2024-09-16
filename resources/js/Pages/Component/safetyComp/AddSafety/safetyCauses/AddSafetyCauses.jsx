@@ -6,6 +6,8 @@ import AddFailedModal from "../../../modals/AddFailedModal";
 import notFound from "../../../../../assets/pictures/NotFound.png"
 import AddSafetyCausesModal from "./AddSafetyCausesModel";
 import swal from 'sweetalert';
+import { handleSessionExpiration } from '@/CommonFunctions';
+
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -48,18 +50,9 @@ export default function AddSafetyCauses({ AToken, safetyCauses, setSafetyCauses 
                     type: 'success',
                     icon: "info",
                     confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
+                  }).then(async function () {
+                    await handleSessionExpiration();
+                });
                 } else {
                   // Handle other errors
                   console.log(err);

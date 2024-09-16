@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { Fragment } from "react";
 import notFound from "../assets/pictures/NotFound.png";
+import { handleSessionExpiration } from '@/CommonFunctions';
 
 const NotificationPanel = ({
     hubConnection,
@@ -117,17 +118,8 @@ const NotificationPanel = ({
                       type: 'success',
                       icon: "info",
                       confirmButtonText: 'OK'
-                    }).then(function() {
-                      axios
-                          .post("/logoutAPI")
-                          .then((response) => {
-                            if (response.status == 200) {
-                              window.location.href = "/";
-                            }
-                          })
-                          .catch((error) => {
-                            console.log(error);
-                          });
+                    }).then(async function () {
+                        await handleSessionExpiration();
                     });
                   } else {
                     // Handle other errors
@@ -187,14 +179,14 @@ const NotificationPanel = ({
             });
         }
         return filtered;
-    }  
+    }
     function convertUtcToUserTimezone(utcDateString) {
         // Create a Date object from the UTC date string
         const utcDate = new Date(utcDateString);
-        
+
         // Get the current user's timezone
         const targetTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    
+
         const formatter = new Intl.DateTimeFormat("en-US", {
             year: "numeric",
             month: "2-digit",
@@ -204,11 +196,11 @@ const NotificationPanel = ({
             second: "2-digit",
             timeZone: targetTimezone,
         });
-    
+
         const convertedDate = formatter.format(utcDate);
         return convertedDate;
     }
-    
+
     function handleClickNotifications(modelId, id, index) {
         if (modelId == 1) {
             getInvoicesbyId(id, index);

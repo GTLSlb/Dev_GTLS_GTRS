@@ -11,6 +11,7 @@ import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import { useEffect } from "react";
 import swal from "sweetalert";
 import { AlertToast } from "@/permissions";
+import { handleSessionExpiration } from '@/CommonFunctions';
 
 function AddNewTransitDay({
     url,
@@ -120,17 +121,8 @@ function AddNewTransitDay({
                     type: "success",
                     icon: "info",
                     confirmButtonText: "OK",
-                }).then(function () {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                            if (response.status == 200) {
-                                window.location.href = "/";
-                            }
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                        });
+                }).then(async function () {
+                    await handleSessionExpiration();
                 });
             } else {
                 // Handle other errors
@@ -185,17 +177,8 @@ function AddNewTransitDay({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    }).then(async function () {
+                        await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors

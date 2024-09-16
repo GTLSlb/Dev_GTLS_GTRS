@@ -20,6 +20,8 @@ import axios from "axios";
 import swal from "sweetalert";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import NewKPIModalAddReason from "./KPI/NEWKPIModal";
+import { handleSessionExpiration } from '@/CommonFunctions';
+
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -96,17 +98,8 @@ function NewKPI({
                     type: "error",
                     icon: "info",
                     confirmButtonText: "OK",
-                }).then(() => {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                            if (response.status === 200) {
-                                window.location.href = "/";
-                            }
-                        })
-                        .catch((error) => {
-                            console.error(error);
-                        });
+                }).then(async function () {
+                    await handleSessionExpiration();
                 });
             } else {
                 console.error(error);
@@ -1174,17 +1167,8 @@ function NewKPI({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    }).then(async function () {
+                        await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors

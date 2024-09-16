@@ -20,6 +20,7 @@ import TableStructure from "@/Components/TableStructure";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import swal from 'sweetalert';
 import axios from "axios";
+import { handleSessionExpiration } from '@/CommonFunctions';
 
 const report = [
     {
@@ -94,20 +95,9 @@ export default function AdditionalCharges({
                     type: 'success',
                     icon: "info",
                     confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                            console.log(err);
-                            setAdditionalData([]);
-                            setIsFetching(false);
-                        });
-                  });
+                  }).then(async function () {
+                    await handleSessionExpiration();
+                });
                 } else {
                   // Handle other errors
                   console.log(err);
@@ -136,7 +126,7 @@ export default function AdditionalCharges({
         let selectedColumns = Array.from(
             document.querySelectorAll('input[name="column"]:checked')
         ).map((checkbox) => checkbox.value);
-        
+
         let allHeaderColumns = gridRef.current.visibleColumns.map((column) => ({
             name: column.name,
             value: column.computedFilterValue?.value,
@@ -334,7 +324,7 @@ export default function AdditionalCharges({
                     const hasEndDate = cellValue?.end && cellValue.end.length > 0;
                     const dateCellValueStart = hasStartDate ? moment(cellValue.start, "DD-MM-YYYY") : null;
                     const dateCellValueEnd = hasEndDate ? moment(cellValue.end, "DD-MM-YYYY").endOf('day') : null;
-                
+
                     switch (operator) {
                         case "after":
                             // Parse the cellValue date with the format you know it might have
@@ -444,7 +434,7 @@ export default function AdditionalCharges({
                         // ... (add other date type conditions here if necessary)
                     }
                 }
-                
+
                 if (!conditionMet) {
                     isMatch = false;
                     break;
@@ -473,26 +463,26 @@ export default function AdditionalCharges({
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-        
+
         const columnMapping = {
             "ConsignmentNo": "Consignment No",
             "SenderReference": "Sender Reference",
             "ReceiverReference": "Receiver Reference",
             "Quantity": "Quantity",
             "TotalCharge": "Total Charge",
-            "CodeRef": "Code Ref", 
+            "CodeRef": "Code Ref",
             "DescriptionRef": "Description Ref",
             "FuelLevyAmountRef": "Fuel Levy Amount Ref",
             "DespatchDateTime": "Despatch DateTime",
         };
-    
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
-    
+
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
@@ -516,13 +506,13 @@ export default function AdditionalCharges({
                 return acc;
             }, {})
         );
-    
+
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
-    
+
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
-    
+
         // Apply custom styles to the header row
         const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
@@ -532,11 +522,11 @@ export default function AdditionalCharges({
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
         headerRow.alignment = { horizontal: "center" };
-    
+
         // Add the data to the worksheet
         data?.forEach((rowData) => {
             const row = worksheet.addRow(Object.values(rowData));
-    
+
             // Apply date format to the DespatchDateTime column
             const despatchDateIndex = newSelectedColumns.indexOf("Despatch DateTime");
             if (despatchDateIndex !== -1) {
@@ -544,26 +534,26 @@ export default function AdditionalCharges({
                 cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
             }
         });
-    
+
         // Set column widths
         const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
         }));
-    
+
         // Generate the Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
             // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-    
+
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "Additional-Charges.xlsx");
         });
     }
-    
+
     const [selected, setSelected] = useState([]);
 
     function getMinMaxValue(data, fieldName, identifier) {
@@ -599,7 +589,7 @@ export default function AdditionalCharges({
     // Usage example remains the same
     const minDate = getMinMaxValue(AdditionalData, "DespatchDateTime", 1);
     const maxDate = getMinMaxValue(AdditionalData, "DespatchDateTime", 2);
-    
+
     const createNewLabelObjects = (data, fieldName) => {
         let id = 1; // Initialize the ID
         const uniqueLabels = new Set(); // To keep track of unique labels

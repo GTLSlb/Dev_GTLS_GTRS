@@ -8,6 +8,7 @@ import debtors from "./Component/JsonData/debtors.json";
 import rddData from "./Component/JsonData/RddData.json";
 import { useStepContext } from "@mui/material";
 import NoAccess from "@/Components/NoAccess";
+import { handleSessionExpiration } from '@/CommonFunctions';
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -98,17 +99,8 @@ export default function Gtrs({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    }).then(async function () {
+                        await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors
@@ -141,17 +133,8 @@ export default function Gtrs({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    }).then(async function () {
+                        await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors
@@ -185,17 +168,8 @@ export default function Gtrs({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    }).then(async function () {
+                        await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors
@@ -229,17 +203,8 @@ export default function Gtrs({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    }).then(async function () {
+                        await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors
@@ -274,17 +239,8 @@ export default function Gtrs({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    }).then(async function () {
+                        await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors
@@ -313,17 +269,8 @@ export default function Gtrs({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    }).then(async function () {
+                        await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors
@@ -357,17 +304,8 @@ export default function Gtrs({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    }).then(async function () {
+                        await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors
@@ -396,17 +334,8 @@ export default function Gtrs({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    }).then(async function () {
+                        await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors

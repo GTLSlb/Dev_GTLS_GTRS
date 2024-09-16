@@ -9,7 +9,9 @@ import {
 } from "@heroicons/react/20/solid";
 import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import { useEffect } from "react";
+import { handleSessionExpiration } from '@/CommonFunctions';
 import swal from "sweetalert";
+
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -117,17 +119,8 @@ export default function AddTransit({
                     type: "success",
                     icon: "info",
                     confirmButtonText: "OK",
-                }).then(function () {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                            if (response.status == 200) {
-                                window.location.href = "/";
-                            }
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                        });
+                }).then(async function () {
+                    await handleSessionExpiration();
                 });
             } else {
                 // Handle other errors
@@ -180,17 +173,8 @@ export default function AddTransit({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    }).then(async function () {
+                        await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors

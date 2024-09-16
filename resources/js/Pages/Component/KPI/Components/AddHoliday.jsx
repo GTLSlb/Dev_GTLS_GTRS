@@ -10,6 +10,8 @@ import GtamButton from "../../GTAM/components/Buttons/GtamButton";
 import { useEffect } from "react";
 import swal from "sweetalert";
 import axios from "axios";
+import { handleSessionExpiration } from '@/CommonFunctions';
+
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -88,17 +90,8 @@ export default function AddHoliday({
                       type: 'success',
                       icon: "info",
                       confirmButtonText: 'OK'
-                    }).then(function() {
-                      axios
-                          .post("/logoutAPI")
-                          .then((response) => {
-                            if (response.status == 200) {
-                              window.location.href = "/";
-                            }
-                          })
-                          .catch((error) => {
-                            console.log(error);
-                          });
+                    }).then(async function () {
+                        await handleSessionExpiration();
                     });
                   } else {
                     // Handle other errors

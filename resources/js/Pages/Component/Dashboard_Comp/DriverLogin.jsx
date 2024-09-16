@@ -15,6 +15,7 @@ import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import TableStructure from "@/Components/TableStructure";
 import swal from "sweetalert";
 import axios from "axios";
+import { handleSessionExpiration } from '@/CommonFunctions';
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -67,17 +68,8 @@ export default function DriverLogin({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    }).then(async function () {
+                        await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors
@@ -306,7 +298,7 @@ export default function DriverLogin({
                     const hasEndDate = cellValue?.end && cellValue.end.length > 0;
                     const dateCellValueStart = hasStartDate ? moment(cellValue.start, "DD-MM-YYYY") : null;
                     const dateCellValueEnd = hasEndDate ? moment(cellValue.end, "DD-MM-YYYY").endOf('day') : null;
-                
+
                     switch (operator) {
                         case "after":
                             // Parse the cellValue date with the format you know it might have
@@ -416,7 +408,7 @@ export default function DriverLogin({
                         // ... (add other date type conditions here if necessary)
                     }
                 }
-                
+
                 if (!conditionMet) {
                     isMatch = false;
                     break;
@@ -447,26 +439,26 @@ export default function DriverLogin({
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-    
+
         const columnMapping = {
             "ConsignmentNo": "Consignment No",
             "SenderReference": "Sender Reference",
             "ReceiverReference": "Receiver Reference",
             "Quantity": "Quantity",
             "TotalCharge": "Total Charge",
-            "CodeRef": "Code Ref", 
+            "CodeRef": "Code Ref",
             "DescriptionRef": "Description Ref",
             "FuelLevyAmountRef": "Fuel Levy Amount Ref",
             "DespatchDateTime": "Despatch DateTime",
         };
-    
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
-    
+
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
@@ -517,13 +509,13 @@ export default function DriverLogin({
                 return acc;
             }, {})
         );
-    
+
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
-    
+
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
-    
+
         // Apply custom styles to the header row
         const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
@@ -533,11 +525,11 @@ export default function DriverLogin({
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
         headerRow.alignment = { horizontal: "center" };
-    
+
         // Add the data to the worksheet
         data.forEach((rowData) => {
             const row = worksheet.addRow(Object.values(rowData));
-    
+
             // Apply date format to the LastActiveUTC column
             const lastActiveUtcIndex = newSelectedColumns.indexOf("LastActiveUTC");
             if (lastActiveUtcIndex !== -1) {
@@ -545,27 +537,27 @@ export default function DriverLogin({
                 cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
             }
         });
-    
+
         // Set column widths
         const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
         }));
-    
+
         // Generate the Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
             // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-    
+
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "Driver-Login.xlsx");
         });
     }
-    
-    
+
+
     const [selected, setSelected] = useState([]);
 
     const filterIcon = (className) => {

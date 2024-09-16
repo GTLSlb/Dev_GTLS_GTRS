@@ -10,6 +10,8 @@ import AddSafetyCauses from "./safetyComp/AddSafety/safetyCauses/AddSafetyCauses
 import { canViewSafetyType } from "@/permissions";
 import swal from 'sweetalert';
 import axios from "axios";
+import { handleSessionExpiration } from '@/CommonFunctions';
+
 export default function SafetyRep({
     accData,
     currentUser,
@@ -127,17 +129,8 @@ export default function SafetyRep({
                     type: 'success',
                     icon: "info",
                     confirmButtonText: 'OK'
-                }).then(function () {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                            if (response.status == 200) {
-                                window.location.href = "/";
-                            }
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                        });
+                }).then(async function () {
+                    await handleSessionExpiration();
                 });
             } else {
                 // Handle other errors
@@ -173,18 +166,9 @@ export default function SafetyRep({
                     type: 'success',
                     icon: "info",
                     confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
+                  }).then(async function () {
+                    await handleSessionExpiration();
+                });
                 } else {
                   // Handle other errors
                   console.log(err);
@@ -219,18 +203,9 @@ export default function SafetyRep({
                     type: 'success',
                     icon: "info",
                     confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
+                  }).then(async function () {
+                    await handleSessionExpiration();
+                });
                 } else {
                   // Handle other errors
                   console.log(err);

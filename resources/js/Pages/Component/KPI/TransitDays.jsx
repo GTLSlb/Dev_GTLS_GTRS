@@ -11,6 +11,7 @@ import { PencilIcon } from "@heroicons/react/20/solid";
 import { canAddTransitDays, canEditTransitDays } from "@/permissions";
 import swal from "sweetalert";
 import axios from "axios";
+import { handleSessionExpiration } from '@/CommonFunctions';
 
 export default function TransitDays({
     transitDays,
@@ -61,17 +62,8 @@ export default function TransitDays({
                     type: "success",
                     icon: "info",
                     confirmButtonText: "OK",
-                }).then(function () {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                            if (response.status == 200) {
-                                window.location.href = "/";
-                            }
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                        });
+                }).then(async function () {
+                    await handleSessionExpiration();
                 });
             } else {
                 // Handle other errors

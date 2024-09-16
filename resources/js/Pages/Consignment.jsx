@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import "../../css/scroll.css";
 import moment from "moment";
 import swal from "sweetalert";
+import { handleSessionExpiration } from '@/CommonFunctions';
+
 export default function ConsignmentD({
     setActiveIndexGTRS,
     activeCon,
@@ -143,17 +145,8 @@ export default function ConsignmentD({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    }).then(async function () {
+                        await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors
