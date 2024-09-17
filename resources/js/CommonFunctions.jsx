@@ -28,6 +28,7 @@ export async function handleSessionExpiration() {
                 if (allAccounts.length > 0) {
                     await pca.logoutRedirect({
                         scopes: ["user.read"],
+                        postLogoutRedirectUri: "/login"
                     });
                 } else {
                     window.location.href = "/login";

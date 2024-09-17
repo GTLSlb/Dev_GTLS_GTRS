@@ -96,7 +96,7 @@ class LoginController extends Controller
                         $cookieValue = $token['access_token'];
                         $expiry = $token['expires_in'];
                         setcookie($cookieName, $cookieValue, time() + $expiry, '/', $_ENV['SESSION_DOMAIN'], true);
-                        setcookie('gtis_refresh_token', $token['refresh_token'], time() + $expiry, '/', '', true);
+                        setcookie('refresh_token', $token['refresh_token'], time() + $expiry, '/', '', true);
 
                         $userId = $user['UserId'];
                         $request->session()->regenerate();

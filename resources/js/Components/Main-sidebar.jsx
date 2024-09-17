@@ -431,7 +431,7 @@ export default function MainSidebar({
                     setCurrentUser(null);
                     const allAccounts = await pca.getAllAccounts();
                     if (allAccounts.length > 0) {
-                        await pca.logoutRedirect({ scopes: ["user.read"] });
+                        await pca.logoutRedirect({ scopes: ["user.read"], postLogoutRedirectUri: "/login" });
                     }else{
                         window.location.href = "/login";
                     }

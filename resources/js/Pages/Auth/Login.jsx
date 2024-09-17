@@ -148,8 +148,6 @@ export default function Login({ status, canResetPassword }) {
                             socialiteUser: loginResponse,
                         })
                         .then((res) => {
-                            //Cookies.set('gtam_access_token', res.data.access_token)
-                            // console.log("Access Token:", res.data.access_token);
                             setLoading(false);
                             window.location.href = "/main";
                         })
