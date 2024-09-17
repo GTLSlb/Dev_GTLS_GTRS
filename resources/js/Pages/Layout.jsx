@@ -33,7 +33,9 @@ export default function Sidebar(Boolean) {
                         },
                     })
                     .then((res) => {
-                        setUser(res.data);
+                        if(typeof res.data == "object"){
+                            setcurrentUser(res.data);
+                        }
                     })
                     .catch((err) => {
                         console.log(err);
