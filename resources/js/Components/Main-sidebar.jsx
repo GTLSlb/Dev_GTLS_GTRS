@@ -422,6 +422,7 @@ export default function MainSidebar({
     const pca = new PublicClientApplication(msalConfig);
     const handleLogout = async () => {
         const isLoggingOut = true;
+        await pca.initialize();
         axios
             .post("/logoutAPI", isLoggingOut)
             .then(async (response) => {
