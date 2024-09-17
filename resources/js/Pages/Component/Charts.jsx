@@ -25,6 +25,9 @@ import AddNewTransitDay from "./KPI/AddNewTransitDay";
 import GraphPresentation from "./Presentation/GraphPresentation";
 import Incident from "./Incident";
 import TrafficComp from "./TrafficPage/TrafficComp";
+import CollapseSidebar from "./CollapseSidebar";
+import { Button } from "@nextui-org/react";
+import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 
 export default function charts({
     setCusomterAccounts,
@@ -108,6 +111,13 @@ export default function charts({
 
     const minDateAdd = getMinMaxValue(AdditionalData, "DespatchDateTime", 1);
     const maxDateAdd = getMinMaxValue(AdditionalData, "DespatchDateTime", 2);
+
+    const [activeModel, setActiveModel] = useState(0);
+    const [activePage, setActivePage] = useState(0);
+    const [toggled, setToggled] = useState(false);
+    const [assets, setAssets] = useState([]);
+    const [broken, setBroken] = useState(false);
+    const [rtl, setRtl] = useState(false);
 
     const [filtersCons, setFiltersCons] = useState([
         {
@@ -2283,51 +2293,56 @@ export default function charts({
     ];
 
     return (
-        <div className="">
-            {/* <Sidebar /> */}
-            <div className=" h-full flex ">
+        <div className="h-full">
+            <div className="h-full">
                 {/* Left sidebar & main wrapper */}
-                <div className="min-w-0 flex-1 bg-gray-100 xl:flex">
-                    <div className=" xl:w-64 flex-shrink-0 w-full h-auto md:block mb-4">
-                        <div className="h-full  ">
-                            {/* Start left column area */}
-                            <div
-                                className="relative h-full"
-                                style={{ minHeight: "6rem" }}
-                            >
-                                <div className=" inset-0 rounded-lg border-dashed border-gray-200">
-                                    <ChartsSidebar
-                                        setCusomterAccounts={
-                                            setCusomterAccounts
-                                        }
-                                        customerAccounts={customerAccounts}
-                                        activeIndexGTRS={activeIndexGTRS}
-                                        sessionData={sessionData}
-                                        user={user}
-                                        onData={handleDataFromChild}
-                                        setActiveIndexGTRS={setActiveIndexGTRS}
-                                        currentUser={currentUser}
-                                    />
-                                </div>
-                            </div>
-                            {/* End left column area */}
-                        </div>
-                    </div>
+                <div className="bg-gray-100 h-full flex">
+                    {/* Start left column area with collapsing sidebar */}
+                    <CollapseSidebar
+                        activePage={activePage}
+                        setActivePage={setActivePage}
+                        activeModel={activeModel}
+                        setActiveModel={setActiveModel}
+                        broken={broken}
+                        setBroken={setBroken}
+                        rtl={rtl}
+                        setRtl={setRtl}
+                        toggled={toggled}
+                        setToggled={setToggled}
+                        setCusomterAccounts={setCusomterAccounts}
+                        customerAccounts={customerAccounts}
+                        activeIndexGTRS={activeIndexGTRS}
+                        sessionData={sessionData}
+                        user={user}
+                        onData={handleDataFromChild}
+                        setActiveIndexGTRS={setActiveIndexGTRS}
+                        currentUser={currentUser}
+                    />
 
-                    <div className="bg-smooth w-full lg:min-w-0 lg:flex-1">
-                        <div className="h-full">
-                            {/* Start main area*/}
-                            <div
-                                className="relative h-full"
-                                style={{ minHeight: "36rem" }}
-                            >
-                                <div className="absolute inset-0 rounded-lg">
-                                    {components[activeIndexGTRS]}
-                                </div>
-                            </div>
-                            {/* End main area */}
+                    <main className="w-full bg-gray-50 h-full overflow-y-auto">
+                        <div
+                            style={{ marginBottom: "16px" }}
+                            className="fixed left-0 top-20 z-50"
+                        >
+                            {broken && (
+                                <Button
+                                    aria-label="chevron right icon"
+                                    className="rounded-none rounded-r bg-dark"
+                                    onClick={() => setToggled(!toggled)}
+                                    isIconOnly
+                                >
+                                    <ChevronDoubleRightIcon className="w-5 text-white h-5" />
+                                </Button>
+                            )}
                         </div>
-                    </div>
+                        
+                        {/* Main content area, displaying dynamically selected components */}
+                        <div className="relative h-full" style={{ minHeight: "36rem" }}>
+                            <div className="absolute inset-0 rounded-lg">
+                                {components[activeIndexGTRS]}
+                            </div>
+                        </div>
+                    </main>
                 </div>
             </div>
         </div>
