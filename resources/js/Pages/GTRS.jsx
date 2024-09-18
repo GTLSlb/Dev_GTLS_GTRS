@@ -451,8 +451,8 @@ export default function Gtrs({
     if (loadingGtrs && AToken) {
         if (canAccess) {
             return (
-                <div className="bg-smooth">
-                    <div className="md:pl-20 pt-16 ">
+                <div className="bg-smooth h-full">
+                    <div className="md:pl-20 pt-16 h-full">
                         <Charts
                             transportData={transportData}
                             setCusomterAccounts={setCusomterAccounts}

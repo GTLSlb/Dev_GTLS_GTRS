@@ -183,7 +183,7 @@ export default function Sidebar(Boolean) {
         return null; // Render nothing
     } else {
         return (
-            <div>
+            <div className="h-screen">
                 {Token ? (
                     <div className="bg-smooth h-full ">
                         {/* <NmainSidebar/> */}
