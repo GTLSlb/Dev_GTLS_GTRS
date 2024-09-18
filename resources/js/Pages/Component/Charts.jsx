@@ -1933,6 +1933,7 @@ export default function charts({
             }
         });
     }, [sharedEndDate, sharedStartDate]);
+
     const components = [
         <MainCharts
             chartsData={chartsData}
@@ -2290,6 +2291,7 @@ export default function charts({
         <GraphPresentation
             url={url}
             currentUser={currentUser}
+            user={user}
             AToken={AToken}
             userPermission={userPermission}
         />,
@@ -2325,7 +2327,7 @@ export default function charts({
                                         activeIndexGTRS={activeIndexGTRS}
                                         sessionData={sessionData}
                                         user={user}
-                                        userPermission={userPermission}
+                                        userPermission={user}
                                         onData={handleDataFromChild}
                                         setActiveIndexGTRS={setActiveIndexGTRS}
                                         currentUser={currentUser}

@@ -359,20 +359,20 @@ export default function Gtrs({
 
 
     useEffect(() => {
-        if (loadingGtrs && user != "") {
-            if (user == {}) {
+        if (loadingGtrs && currentUser != "") {
+            if (currentUser == {}) {
                 setCanAccess(false);
-            } else if (user) {
-                if (Object.keys(user)?.length > 0) {
+            } else if (currentUser) {
+                if (Object.keys(currentUser)?.length > 0) {
                     setCanAccess(true);
                 } else {
                     setCanAccess(false);
                 }
             }
-        }else if(loadingGtrs && user == ""){
+        }else if(loadingGtrs && currentUser == ""){
             setCanAccess(false);
         }
-    }, [user, loadingGtrs]);
+    }, [currentUser, loadingGtrs]);
     if (consApi && reportApi && chartsApi && DebtorsApi && KPIReasonsApi && transportApi) {
         setLoadingGtrs(true);
     }
@@ -410,8 +410,8 @@ export default function Gtrs({
                                 ...user,
                                 UserId: currentUser.UserId,
                             }}
-                            user={currentUser}
-                            userPermission={user}
+                            user={user}
+                            userPermission={currentUser}
                             dashData={PerfData}
                             setActiveIndexGTRS={setActiveIndexGTRS}
                             activeIndexGTRS={activeIndexGTRS}

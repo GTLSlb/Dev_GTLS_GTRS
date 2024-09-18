@@ -235,12 +235,11 @@ export default function ChartsSidebar({
     }, [optionSelected]);
     const [sidebarElements, setSidebarElements] = useState([]);
 
-
     useEffect(() => {
-        if (userPermission && Object.keys(userPermission).length !== 0) {
+        if (user && Object.keys(user).length !== 0) {
           let gtrsElements = navigation;
           gtrsElements = navigation?.filter((option) => {
-            return userPermission?.some((feature) => {
+            return user?.some((feature) => {
               if (option.options && option.options.length > 0) {
                 return option.options.some((childOption) => {
                   return feature.FunctionName === childOption.feature;
@@ -252,7 +251,7 @@ export default function ChartsSidebar({
           });
           setSidebarElements(gtrsElements);
         }
-      }, [userPermission]);
+      }, [user]);
 
     const handleClick = (index) => {
         setActiveIndexGTRS(index);

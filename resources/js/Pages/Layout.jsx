@@ -12,7 +12,7 @@ import Cookies from "js-cookie";
 export default function Sidebar(Boolean) {
     const [currentUser, setcurrentUser] = useState(null);
     const [sessionData, setSessionData] = useState(null);
-    const [user, setUser] = useState({});
+    const [user, setUser] = useState(null);
     const [allowedApplications, setAllowedApplications] = useState([]);
     const [Token, setToken] = useState(Cookies.get('access_token'));
 
@@ -34,7 +34,7 @@ export default function Sidebar(Boolean) {
                     })
                     .then((res) => {
                         if(typeof res.data == "object"){
-                            setcurrentUser(res.data);
+                            setUser(res.data);
                         }
                     })
                     .catch((err) => {
