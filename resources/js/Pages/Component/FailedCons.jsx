@@ -1256,6 +1256,7 @@ export default function FailedCons({
             }, 1000);
         }
     };
+    console.log(filteredData);
     return (
         <div>
             {/* <Sidebar /> */}

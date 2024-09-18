@@ -9,6 +9,9 @@ import {
     Divider,
     useDisclosure,
     Spinner,
+    Accordion,
+    AccordionItem,
+    Avatar,
 } from "@nextui-org/react";
 
 function EventModal({
@@ -18,6 +21,7 @@ function EventModal({
     loading,
     getEventCategoryById,
 }) {
+    console.log(eventDetails);
     return (
         <Modal size="5xl" isOpen={isOpen} onOpenChange={onOpenChange}>
             <ModalContent>
@@ -31,160 +35,31 @@ function EventModal({
                             {loading ? (
                                 <Spinner color="primary" />
                             ) : (
-                                <>
-                                    {/* Location details */}
-                                    <div>
-                                        <p className=" text-lg font-bold ">
-                                            Location
-                                        </p>
-                                    </div>
-                                    <Divider />
-                                    <div className="grid lg:grid-cols-3 gap-y-3">
-                                        <div className="grid grid-cols-2 items-end">
-                                            <p className="text-[#252525BF]">
-                                                State
-                                            </p>
-                                            <p className="text-sm">
-                                                {eventDetails?.api_source}
-                                            </p>
-                                        </div>
-                                        <div className="grid grid-cols-2 items-end">
-                                            <p className="text-[#252525BF]">
-                                                Suburb
-                                            </p>
-                                            <p className="text-sm">
-                                                {eventDetails?.suburb}
-                                            </p>
-                                        </div>
-                                        <div className="grid grid-cols-2 items-end">
-                                            <p className="text-[#252525BF]">
-                                                Road Name
-                                            </p>
-                                            <p className="text-sm">
-                                                {eventDetails?.road_name}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    {/* Duration details */}
-                                    <div className="mt-5">
-                                        <p className=" text-lg font-bold">
-                                            Duration
-                                        </p>
-                                    </div>
-                                    <Divider />
-                                    <div className="grid lg:grid-cols-3 gap-y-3">
-                                        <div className="grid grid-cols-2 items-end">
-                                            <p className="text-[#252525BF]">
-                                                Start Date
-                                            </p>
-                                            <p className="text-sm">
-                                                {moment(
-                                                    eventDetails?.start_date
-                                                ).format(
-                                                    "DD-MM-YYYY hh:mm A"
-                                                ) == "Invalid date"
-                                                    ? ""
-                                                    : moment(
-                                                          eventDetails?.start_date
-                                                      ).format(
-                                                          "DD-MM-YYYY hh:mm A"
-                                                      )}
-                                            </p>
-                                        </div>
-                                        <div className="grid grid-cols-2 items-end">
-                                            <p className="text-[#252525BF]">
-                                                End Date
-                                            </p>
-                                            <p className="text-sm ">
-                                                {moment(
-                                                    eventDetails?.end_date
-                                                ).format(
-                                                    "DD-MM-YYYY hh:mm A"
-                                                ) == "Invalid date"
-                                                    ? ""
-                                                    : moment(
-                                                          eventDetails?.end_date
-                                                      ).format(
-                                                          "DD-MM-YYYY hh:mm A"
-                                                      )}
-                                            </p>
-                                        </div>
-                                        <div className="grid grid-cols-2 items-end">
-                                            <p className="text-[#252525BF]">
-                                                Duration Impact
-                                            </p>
-                                            <p className="text-sm">
-                                                {parseFloat(
-                                                    eventDetails?.hours_difference
-                                                ).toFixed(2)}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    {/* Event details */}
-                                    <div className="mt-5">
-                                        <p className=" text-lg font-bold">
-                                            Event Details
-                                        </p>
-                                    </div>
-                                    <Divider />
-                                    <div className="grid lg:grid-cols-3 gap-y-3">
-                                        <div className="grid grid-cols-2 items-end">
-                                            <p className="text-[#252525BF]">
-                                                Event type
-                                            </p>
-                                            <p className="text-sm">
-                                                {getEventCategoryById(
-                                                    eventDetails.event_category_id
-                                                )}
-                                            </p>
-                                        </div>
-                                        <div className="grid grid-cols-2 items-end">
-                                            <p className="text-[#252525BF]">
-                                                Impact
-                                            </p>
-                                            <p className="text-sm">
-                                                {eventDetails.impact}
-                                            </p>
-                                        </div>
-                                        <div className="grid grid-cols-2  items-end">
-                                            <p className="text-[#252525BF]">
-                                                Traffic Direction
-                                            </p>
-                                            <p className="text-sm">
-                                                {eventDetails.traffic_direction}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="mt-10">
-                                        <div className="">
-                                            <p className="text-[#252525BF]">Advice</p>
-                                            <p className="mt-2">{eventDetails.advice}</p>
-                                        </div>
-                                        <div className="mt-5">
-                                            <p className="text-[#252525BF]">
-                                                Information
-                                            </p>
-                                            <p className="mt-2">{eventDetails.information}</p>
-                                        </div>
-                                        <div className="mt-5">
-                                            <p className="text-[#252525BF]">
-                                                Other Advice
-                                            </p>
-                                            <p
-                                                className="mt-2 overflow-auto pr-2 containerscroll"
-                                                style={{
-                                                    wordBreak: "break-word",
-                                                    hyphens: "auto",
-                                                }}
-                                                dangerouslySetInnerHTML={{
-                                                    __html: eventDetails.otherAdvice,
-                                                }}
-                                            ></p>
-                                        </div>
-                                    </div>
-                                </>
+                                <Accordion variant="splitted">
+                                    {eventDetails?.map((event) => (
+                                        <AccordionItem
+                                            key={event.id}
+                                            title={`${event.event_type}`}
+                                            startContent={
+                                                <Avatar
+                                                    isBordered
+                                                    color="primary"
+                                                    radius="lg"
+                                                    src="https://i.pravatar.cc/150?u=a042581f4e29026024d"
+                                                />
+                                            }
+                                            subtitle={`${event.road_name}-${event.suburb}`}
+                                        >
+                                            <div className="flex flex-col gap-2 ">
+                                                <p className="text-gray-400 text-sm">{`${event.start_date} - ${event.end_date}`}</p>
+                                                <p className="text-gray-400 text-sm">Advice</p>
+                                                <p className="font-semibold text-sm">{event.advice}</p>
+                                                <p className="text-gray-400 text-sm">Other Advice</p>
+                                                <p className="font-semibold text-sm" dangerouslySetInnerHTML={{ __html: event.otherAdvice }}></p>
+                                            </div>
+                                        </AccordionItem>
+                                    ))}
+                                </Accordion>
                             )}
                         </ModalBody>
 

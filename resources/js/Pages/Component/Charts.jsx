@@ -575,8 +575,8 @@ export default function charts({
             name: "TransitDays",
             operator: "eq",
             type: "number",
-            value: null,
-            // emptyValue: null,
+            value: undefined,
+            emptyValue: null,
         },
         {
             name: "CalculatedDelDate",
@@ -1449,6 +1449,115 @@ export default function charts({
             value: "",
         },
     ]);
+    const [filtersConsTrack, setFiltersConsTrack] = useState([
+        {
+            name: "ConsignmentNo",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "DebtorName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderSuburb",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderPostcode",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverSuburb",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverPostcode",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverSuburb",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "DespatchDate",
+            operator: "inrange",
+            type: "date",
+            value: {
+                start: minDispatchDate,
+                end: maxDispatchDate,
+            },
+        },
+        {
+            name: "ReceiverPostCode",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: null,
+        },
+        {
+            name: "RDD",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "EventCount",
+            operator: "eq",
+            type: "number",
+            value: undefined,
+            emptyValue: null,
+        },
+    ]);
 
     function getOldestDespatchDate(data) {
         // Filter out elements with invalid 'CreatedDate' values
@@ -2291,7 +2400,10 @@ export default function charts({
             incidentId={incidentId}
             currentUser={currentUser}
         />,
-        <ConsTrack />,
+        <ConsTrack
+            setFilterValue={setFiltersConsTrack}
+            filterValue={filtersConsTrack}
+        />,
     ];
 
     return (
@@ -2337,9 +2449,12 @@ export default function charts({
                                 </Button>
                             )}
                         </div>
-                        
+
                         {/* Main content area, displaying dynamically selected components */}
-                        <div className="relative h-full" style={{ minHeight: "36rem" }}>
+                        <div
+                            className="relative h-full"
+                            style={{ minHeight: "36rem" }}
+                        >
                             <div className="absolute inset-0 rounded-lg">
                                 {components[activeIndexGTRS]}
                             </div>

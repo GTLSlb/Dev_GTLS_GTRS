@@ -15,6 +15,10 @@ import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { useRef } from "react";
 import EventModal from "../TrafficPage/EventModal";
+import TableStructure from "@/Components/TableStructure";
+import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
+import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
+import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
 const gtrsWebUrl = window.Laravel.gtrsWeb;
 
 const columnMapping = {
@@ -51,39 +55,123 @@ const loadData = ({ skip, limit, sortInfo, filterValue }) => {
     });
 };
 
-const defaultFilterValue = [
-    { name: "suburb", type: "string", operator: "contains", value: "" },
-    { name: "api_source", type: "string", operator: "contains", value: "" },
-    { name: "event_type", type: "string", operator: "contains", value: "" },
-    {
-        name: "start_date",
-        type: "date",
-        operator: "eq",
-        value: "",
-        emptyValue: "",
-    },
-    {
-        name: "end_date",
-        type: "date",
-        operator: "eq",
-        value: "",
-        emptyValue: "",
-    },
-    {
-        name: "road_name",
-        type: "string",
-        operator: "contains",
-        value: "",
-    },
-    {
-        name: "impact",
-        type: "string",
-        operator: "contains",
-        value: "",
-    },
-];
-
-function ConsTrack() {
+function ConsTrack({ setFilterValue, filterValue }) {
+    const [selected, setSelected] = useState([]);
+    const [filteredData, setFilteredData] = useState([
+        {
+            id: 1,
+            ConsignmentId: 296980,
+            ConsignmentNo: "2500918307",
+            DebtorId: 1507,
+            DebtorName: "UAL - NUTRITION (FOODS INCL WW)",
+            SenderName: "UNILEVER FOODS - MELB",
+            SenderState: "VIC",
+            SenderSuburb: "TULLAMARINE",
+            SenderPostcode: "3043",
+            SenderAddressName: "38-52 SKY ROAD",
+            ReceiverName: "Amazon Dandenong South VIC",
+            ReceiverState: "VIC",
+            ReceiverSuburb: "DANDENONG SOUTH",
+            ReceiverPostcode: "3175",
+            ReceiverAddressName: "29 National Drive",
+            DespatchDate: "2022-08-25 00:00:00",
+            RDD: "2030-10-26 13:00:00",
+            Coordinates: [
+                {
+                    SenderLatitude: -37.69,
+                    SenderLongitude: 144.88,
+                    ReceiverLatitude: -38.03,
+                    ReceiverLongitude: 145.18,
+                },
+            ],
+            created_at: "2024-09-18T09:10:39.000000Z",
+            updated_at: "2024-09-18T09:10:39.000000Z",
+            events: [
+                {
+                    id: 1057,
+                    api_source: "NSW",
+                    event_id: "206182",
+                    event_category_id: 2,
+                    geometry_type: "Point",
+                    geometry_coordinates: "[151.7423482,-32.7804517]",
+                    description: "ROADWORKS - CHANGED TRAFFIC CONDITIONS",
+                    information: null,
+                    advice: "Exercise caution / Check signage / Reduced speed limit",
+                    otherAdvice:
+                        "<p>As part of the Heatherbrae bypass, southbound traffic on the Pacific Highway has been moved onto a new temporary lane. 24/7 reduced speed limit of 80km/h is in place.</p>",
+                    start_date: "2024-08-28 04:17:52",
+                    end_date: "2024-12-31 03:14:00",
+                    lastUpdated_date: "2024-08-28 04:55:16",
+                    latitude: "-32.7804517",
+                    longitude: "151.7423482",
+                    suburb: "Heatherbrae",
+                    traffic_direction: "",
+                    road_name: "Pacific Highway",
+                    status: null,
+                    event_type: "Incident",
+                    impact: "",
+                    source_url: "",
+                    created_at: "2024-09-06T09:11:32.000000Z",
+                    updated_at: "2024-09-06T09:11:32.000000Z",
+                },
+                {
+                    id: 1261,
+                    api_source: "NSW",
+                    event_id: "159979",
+                    event_category_id: 1,
+                    geometry_type: "Point",
+                    geometry_coordinates: "[151.6347063,-32.8379928]",
+                    description: "SCHEDULED ROADWORK",
+                    information: null,
+                    advice: "Reduced speed limit / Check signage / Allow extra travel time",
+                    otherAdvice:
+                        "<p>Work as part of the M1 extension to Raymond Terrace project will require lane closures with intermittent stoppages and temporary speed reductions to 40km/h at the following locations and times:</p><p><strong>From 7pm to 5am, over five nights from Monday 9 September to Friday 13 September, to be completed by 5am on Saturday 14 September</strong></p><ul><li>M1 Pacific Motorway at Beresfield and Black Hill</li><li>John Renshaw Drive at Beresfield</li><li>New England Highway at Tarro</li><li>Pacific Highway at Tomago and Heatherbrae</li><li>Old Punt Road near Pacific Highway at Tomago</li></ul><p><strong>From 7am to 5pm, Monday 9 September to Friday 13 September</strong></p><ul><li>Lenaghans Drive at Black Hill,</li><li>Old Punt Road near Pacific Highway at Tomago.</li></ul><p><strong>Operators of over size over mass vehicles with a ground contact wider than 3.2 metres and/or overall width greater than 4.5 metres are advised to contact the project team </strong>at least one day ahead of movement on 0423 323 946. Significant delays can occur through failure to contact. Please note vehicles travelling under a permit must not travel off the approved route listed in the permit unless an updated permit is obtained from the NHVR.</p>",
+                    start_date: "2023-06-01 06:50:11",
+                    end_date: "2024-12-30 17:00:00",
+                    lastUpdated_date: "2024-09-04 04:35:38",
+                    latitude: "-32.8379928",
+                    longitude: "151.6347063",
+                    suburb: "Black Hill to Tomago",
+                    traffic_direction: "",
+                    road_name: "M1 Pacific Motorway/Pacific Highway",
+                    status: null,
+                    event_type: "Roadwork",
+                    impact: "",
+                    source_url: "",
+                    created_at: "2024-09-06T09:11:39.000000Z",
+                    updated_at: "2024-09-06T09:11:39.000000Z",
+                },
+                {
+                    id: 1312,
+                    api_source: "NSW",
+                    event_id: "203650",
+                    event_category_id: 1,
+                    geometry_type: "Point",
+                    geometry_coordinates: "[151.2230356,-33.4322064]",
+                    description: "SCHEDULED ROADWORK",
+                    information: null,
+                    advice: "Check signage / Exercise caution / Reduced speed limit",
+                    otherAdvice:
+                        "<p>Traffic controllers will be on site to direct motorists. Motorists are advised to allow approximately 5 minutes of additional travel time.</p><p>Drivers of OSOM are required to contact Works Supervisor Steve 0458 215 602 prior to travel.</p>",
+                    start_date: "2024-08-04 05:31:40",
+                    end_date: "2024-09-19 18:00:00",
+                    lastUpdated_date: "2024-09-06 06:11:57",
+                    latitude: "-33.4322064",
+                    longitude: "151.2230356",
+                    suburb: "Calga",
+                    traffic_direction: "",
+                    road_name: "Pacific Motorway",
+                    status: null,
+                    event_type: "Roadwork",
+                    impact: "",
+                    source_url: "",
+                    created_at: "2024-09-06T09:11:39.000000Z",
+                    updated_at: "2024-09-06T09:11:39.000000Z",
+                },
+            ],
+            EventCount: 3,
+        },
+    ]);
     function formatTime(hours) {
         const years = Math.floor(hours / (24 * 30 * 12));
         const months = Math.floor((hours % (24 * 30 * 12)) / (24 * 30));
@@ -114,6 +202,18 @@ function ConsTrack() {
         }
         // return parts.join(" and ");
     }
+    const groups = [
+        {
+            name: "senderDetails",
+            header: "Sender Details",
+            headerAlign: "center",
+        },
+        {
+            name: "receiverDetails",
+            header: "Receiver Details",
+            headerAlign: "center",
+        },
+    ];
     const gridRef = useRef(null);
     const gridStyle = { minHeight: 550, marginTop: 10 };
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -122,6 +222,78 @@ function ConsTrack() {
     const [datatoexport, setDatatoexport] = useState([]);
     const [exportLoading, setExportLoading] = useState(false);
     const [categories, setCategories] = useState([]);
+    const [newColumns, setNewColumns] = useState([]);
+
+    const createNewLabelObjects = (data, fieldName) => {
+        let id = 1; // Initialize the ID
+        const uniqueLabels = new Set(); // To keep track of unique labels
+        const newData = [];
+
+        // Map through the data and create new objects
+        data?.forEach((item) => {
+            const fieldValue = item[fieldName];
+            // Check if the label is not already included
+            if (!uniqueLabels.has(fieldValue)) {
+                uniqueLabels.add(fieldValue);
+                const newObject = {
+                    id: fieldValue,
+                    label: fieldValue,
+                };
+                newData.push(newObject);
+            }
+        });
+        return newData;
+    };
+    const [receiverStateOptions, setReceiverStateOptions] = useState(
+        createNewLabelObjects(filteredData, "SenderState") || []
+    );
+    const [senderStateOptions, setSenderStateOptions] = useState(
+        createNewLabelObjects(filteredData, "ReceiverState") || []
+    );
+    console.log(receiverStateOptions);
+    function getMinMaxValue(data, fieldName, identifier) {
+        // Check for null safety
+        if (!data || !Array.isArray(data) || data.length === 0) {
+            return null;
+        }
+
+        // Filter out entries with empty or invalid dates
+        const validData = data.filter(
+            (item) => item[fieldName] && !isNaN(new Date(item[fieldName]))
+        );
+
+        // If no valid dates are found, return null
+        if (validData.length === 0) {
+            return null;
+        }
+
+        // Sort the valid data based on the fieldName
+        const sortedData = [...validData].sort((a, b) => {
+            return new Date(a[fieldName]) - new Date(b[fieldName]);
+        });
+
+        // Determine the result date based on the identifier
+        let resultDate;
+        if (identifier === 1) {
+            resultDate = new Date(sortedData[0][fieldName]);
+        } else if (identifier === 2) {
+            resultDate = new Date(sortedData[sortedData.length - 1][fieldName]);
+        } else {
+            return null;
+        }
+
+        // Convert the resultDate to the desired format "01-10-2023"
+        const day = String(resultDate.getDate()).padStart(2, "0");
+        const month = String(resultDate.getMonth() + 1).padStart(2, "0"); // +1 because months are 0-indexed
+        const year = resultDate.getFullYear();
+
+        return `${day}-${month}-${year}`;
+    }
+    const minDispatchDate = getMinMaxValue(filteredData, "DispatchDate", 1);
+    const maxDispatchDate = getMinMaxValue(filteredData, "DispatchDate", 2);
+    const minRDDDate = getMinMaxValue(filteredData, "RDD", 1);
+    const maxRDDDate = getMinMaxValue(filteredData, "RDD", 2);
+
     function getAllEvents() {
         axios
             .get(`${gtrsWebUrl}get-eventsCategories`)
@@ -157,142 +329,195 @@ function ConsTrack() {
     }
     const columns = [
         {
-            name: "api_source",
-            header: "State",
+            name: "ConsignmentNo",
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 170,
-        },
-        {
-            name: "suburb",
-            header: "Suburb",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-        },
-        {
-            name: "event_type",
-            header: "Event Type",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            render: ({ data }) => {
-                return getEventCategoryById(data.event_category_id);
-            },
-        },
-        {
-            name: "description",
-            header: "Event Description",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-        },
-        {
-            name: "start_date",
-            header: "Start Date",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            dateFormat: "YYYY-MM-DD",
-            filterEditor: DateFilter,
-            filterEditorProps: (props, { index }) => {
-                // for range and notinrange operators, the index is 1 for the after field
-                return {
-                    dateFormat: "MM-DD-YYYY",
-                };
-            },
-            render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
-            },
-        },
-        {
-            name: "end_date",
-            header: "End Date",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            dateFormat: "YYYY-MM-DD",
-            filterEditor: DateFilter,
-            filterEditorProps: (props, { index }) => {
-                // for range and notinrange operators, the index is 1 for the after field
-                return {
-                    dateFormat: "MM-DD-YYYY",
-                };
-            },
-            render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
-            },
-        },
-        {
-            name: "impact",
-            header: "Event Impact",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-        },
-        {
-            name: "hours_difference",
-            header: "Duration Impact",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            render: ({ value }) => {
-                return formatTime(value);
-            },
-        },
-        {
-            name: "road_name",
-            header: "Road Name",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-        },
-
-        {
-            name: "advice",
-            header: "Advice",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-        },
-        {
-            name: "information",
-            header: "More information",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-        },
-        {
-            name: "actions",
-            header: "Actions",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
+            header: "Cons No",
+            group: "personalInfo",
+            filterEditor: StringFilter,
+            // filterEditorProps: {
+            //     placeholder: "Name",
+            //     renderSettings: ({ className }) => filterIcon(className),
+            // },
             render: ({ value, data }) => {
                 return (
-                    <div>
-                        <button
-                            className={
-                                "rounded text-goldd justify-center items-center  "
-                            }
-                            onClick={() => {
-                                handleViewDetails(data.id);
-                            }}
-                        >
-                            <span className="flex gap-x-1">
-                                <EyeIcon className="h-4" />
-                                View
-                            </span>
-                        </button>
-                    </div>
+                    <span
+                        className="underline text-blue-500 hover:cursor-pointer"
+                        onClick={() => handleClick(data.ConsignmentId)}
+                    >
+                        {" "}
+                        {value}
+                    </span>
                 );
             },
+        },
+        {
+            name: "DebtorName",
+            headerAlign: "center",
+            textAlign: "center",
+            header: "Account Name",
+            group: "personalInfo",
+            filterEditor: StringFilter,
+        },
+        {
+            name: "SenderName",
+            header: "Name",
+            group: "senderDetails",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
+            defaultWidth: 200,
+        },
+        {
+            name: "SenderState",
+            header: "Sender State",
+            group: "senderDetails",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: senderStateOptions,
+            },
+            defaultWidth: 200,
+        },
+        {
+            name: "SenderSuburb",
+            header: "Sender Suburb ",
+            group: "senderDetails",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
+            defaultWidth: 200,
+        },
+        {
+            name: "SenderPostcode",
+            group: "senderDetails",
+            header: "Sender Postcode ",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
+            defaultWidth: 200,
+        },
+        {
+            name: "ReceiverName",
+            group: "receiverDetails",
+            header: "Receiver Name",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
+            defaultWidth: 200,
+        },
+        {
+            name: "ReceiverState",
+            group: "receiverDetails",
+            header: "Receiver State",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: receiverStateOptions,
+            },
+            defaultWidth: 200,
+        },
+        {
+            name: "ReceiverSuburb",
+            group: "receiverDetails",
+            header: "Suburb",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
+            defaultWidth: 200,
+        },
+        {
+            name: "ReceiverPostcode",
+            group: "receiverDetails",
+            header: "Post Code",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
+            defaultWidth: 200,
+        },
+        {
+            name: "DespatchDate",
+            header: "Despatch Date",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: DateFilter,
+            filterEditorProps: {
+                minDate: minDispatchDate,
+                maxDate: maxDispatchDate,
+            },
+            render: ({ value, cellProps }) => {
+                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                    "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A");
+            },
+            defaultWidth: 200,
+        },
+        {
+            name: "RDD",
+            header: "RDD",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: DateFilter,
+            filterEditorProps: {
+                minDate: minRDDDate,
+                maxDate: maxRDDDate,
+            },
+            render: ({ value, cellProps }) => {
+                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                    "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A");
+            },
+            defaultWidth: 200,
+        },
+        {
+            name: "EventCount",
+            header: "Events Count",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: NumberFilter,
+            render: ({ value, data }) => {
+                return (
+                    <span
+                        className="underline text-blue-500 hover:cursor-pointer"
+                        onClick={() => {
+                            console.log(data);
+                            onOpen();
+                            setEventDetails(data.events);
+                        }}
+                    >
+                        {" "}
+                        {value}
+                    </span>
+                );
+            },
+            defaultWidth: 200,
+        },
+        {
+            name: "Map",
+            header: "Map",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 200,
         },
     ];
 
@@ -829,7 +1054,100 @@ function ConsTrack() {
         });
     };
 
-    const [filterValue, setFilterValue] = useState(defaultFilterValue);
+    // const [filterValue, setFilterValue] = useState(defaultFilterValue);
+
+    const customFilterTypes = Object.assign(
+        {},
+        ReactDataGrid.defaultProps.filterTypes,
+        {
+            number: {
+                name: "number",
+                operators: [
+                    {
+                        name: "empty",
+                        fn: ({ value }) => value == null || value === "",
+                    },
+                    {
+                        name: "notEmpty",
+                        fn: ({ value }) => value != null && value !== "",
+                    },
+                    {
+                        name: "eq",
+                        fn: ({ value, filterValue }) =>
+                            value == null || filterValue == null
+                                ? true
+                                : // Check if both values are NaN
+                                Number.isNaN(value) && Number.isNaN(filterValue)
+                                ? true
+                                : // Check if both values are numbers and are equal
+                                typeof value === "number" &&
+                                  typeof filterValue === "number" &&
+                                  value === filterValue
+                                ? true
+                                : // Return false for all other cases
+                                  false,
+                    },
+                    {
+                        name: "neq",
+                        fn: ({ value, filterValue }) =>
+                            value == null || filterValue == null
+                                ? true
+                                : value != filterValue,
+                    },
+                    {
+                        name: "gt",
+                        fn: ({ value, filterValue }) => value > filterValue,
+                    },
+                    {
+                        name: "gte",
+                        fn: ({ value, filterValue }) => value >= filterValue,
+                    },
+                    {
+                        name: "lt",
+                        fn: ({ value, filterValue }) => value < filterValue,
+                    },
+                    {
+                        name: "lte",
+                        fn: ({ value, filterValue }) => value <= filterValue,
+                    },
+                    {
+                        name: "inRange",
+                        fn: ({ value, filterValue }) => {
+                            const [min, max] = filterValue
+                                .split(":")
+                                .map(Number);
+                            return value >= min && value <= max;
+                        },
+                    },
+                ],
+            },
+        }
+    );
+
+    const updateLocalData = (id, reason) => {
+        // Find the item in the local data with the matching id
+        const updatedData = filteredData.map((item) => {
+            if (item.ConsignmentId === id) {
+                // Update the reason of the matching item
+                return { ...item, ReasonId: reason };
+            }
+            return item;
+        });
+        setKPIData(updatedData);
+
+        setSenderStateOptions(
+            createNewLabelObjects(updatedData, "SenderState")
+        );
+        setReceiverStateOptions(
+            createNewLabelObjects(updatedData, "ReceiverState")
+        );
+        setReasonOptions(
+            kpireasonsData.map((reason) => ({
+                id: reason.ReasonId,
+                label: reason.ReasonName,
+            }))
+        );
+    };
 
     const dataSource = useCallback(loadData, []);
     const [hoverMessage, setHoverMessage] = useState("");
@@ -908,7 +1226,7 @@ function ConsTrack() {
                     </Transition>
                 </Popover>
             </div>
-            <ReactDataGrid
+            {/* <ReactDataGrid
                 idProperty="id"
                 handle={(ref) => (gridRef.current = ref ? ref.current : [])}
                 style={gridStyle}
@@ -921,6 +1239,18 @@ function ConsTrack() {
                 pagination
                 dataSource={dataSource}
                 defaultLimit={15}
+            /> */}
+            <TableStructure
+                gridRef={gridRef}
+                id={"ConsignmentId"}
+                setSelected={setSelected}
+                selected={selected}
+                filterTypesElements={customFilterTypes}
+                groupsElements={groups}
+                tableDataElements={filteredData}
+                filterValueElements={filterValue}
+                setFilterValueElements={setFilterValue}
+                columnsElements={columns}
             />
             <EventModal
                 getEventCategoryById={getEventCategoryById}

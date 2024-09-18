@@ -35,6 +35,7 @@ import {
     AccordionItem,
 } from "react-headless-accordion";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
+import { MapPinIcon } from "@heroicons/react/20/solid";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -259,6 +260,14 @@ const menu = [
         current: false,
         feature: "TrafficReport_View",
     },
+    {
+        id: 23,
+        name: "Consignment Tracking",
+        href: "#",
+        icon: MapPinIcon,
+        current: false,
+        feature: "ConsignmentTracking_View",
+    },
 ];
 
 export default function CollapseSidebar({
@@ -288,7 +297,6 @@ export default function CollapseSidebar({
     const showSelect = customerOptions?.length > 0;
     const [sidebarElements, setSidebarElements] = useState(menu);
     const [optionSelected, setoptionSelected] = useState([]);
-    console.log(sidebarElements, "sidebarElements");
     useEffect(() => {
         setCustomerOptions(customerAccounts);
     }, []);
