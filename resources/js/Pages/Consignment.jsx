@@ -121,38 +121,40 @@ export default function ConsignmentD({
             // Add more options as needed
         ];
     };
-    function fetchData() {
-        return axios
-            .get(
-                `${url}ConsignmentById`,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
-                        Consignment_id: activeCon,
-                    },
-                }
-                // ?User_id=${currentUser.user_id}&Consignment_id=${activeCon}
-            )
-            .then((response) => setConsignment(response.data))
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(async function () {
-                        await handleSessionExpiration();
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
+
+    async function fetchData() {
+        try {
+            const response = await axios
+                .get(
+                    `${url}ConsignmentById`,
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                            UserId: currentUser.UserId,
+                            Authorization: `Bearer ${AToken}`,
+                            Consignment_id: activeCon,
+                        },
+                    }
+                    // ?User_id=${currentUser.user_id}&Consignment_id=${activeCon}
+                );
+            return setConsignment(response.data);
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again",
+                    type: "success",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                }).then(async function () {
+                    await handleSessionExpiration();
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+            }
+        }
     }
     useEffect(() => {
         fetchData();

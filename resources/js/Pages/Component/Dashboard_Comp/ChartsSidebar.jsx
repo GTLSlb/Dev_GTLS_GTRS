@@ -14,6 +14,7 @@ import {
     ShieldCheckIcon,
     CameraIcon,
     DocumentTextIcon,
+    ClipboardDocumentIcon
 } from "@heroicons/react/24/solid";
 import "../../../../css/scroll.css";
 import TaskIcon from "@mui/icons-material/Task";
@@ -198,6 +199,14 @@ export default function ChartsSidebar({
             icon: DocumentTextIcon,
             current: false,
             feature: "UnileverReport_View",
+        },
+        {
+            id: 21,
+            name: "Daily Report",
+            href: "#",
+            icon: ClipboardDocumentIcon,
+            current: false,
+            feature: "DailyReport_View",
         },
     ];
 

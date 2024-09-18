@@ -293,6 +293,13 @@ export default function MainSidebar({
                     role: ["1", "4"],
                     feature: "UnileverReport_View",
                 },
+                {
+                    id: 21,
+                    name: "Daily Report",
+                    current: false,
+                    role: ["1", "4"],
+                    feature: "DailyReport_View",
+                },
             ],
             func: setActiveIndexGTRS,
             role: ["1", "2", "3", "4", "5"],
