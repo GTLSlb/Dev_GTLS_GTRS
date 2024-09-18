@@ -18,10 +18,70 @@ export default function DailyReportPage({
     const [selected, setSelected] = useState([]);
     const [selectedUser, setSelectedUser] = useState([]);
     const [selectedRecords, setselectedRecords] = useState([]);
-    const [receiverZoneOptions, setReceiverZoneOptions] = useState([]);
-    const [consStateOptions, setConsStateOptions] = useState([]);
-    const [podAvlOptions, setPodAvlOptions] = useState([]);
-    const [senderZoneOptions, setSenderZoneOptions] = useState([]);
+    const [receiverZoneOptions, setReceiverZoneOptions] = useState([
+        {
+            "id": "NSW",
+            "label": "NSW"
+        },
+        {
+            "id": "SA",
+            "label": "SA"
+        },
+        {
+            "id": "VIC",
+            "label": "VIC"
+        },
+        {
+            "id": "QLD",
+            "label": "QLD"
+        }
+    ]);
+    const [consStateOptions, setConsStateOptions] = useState([
+        {
+            "id": "Delivered",
+            "label": "Delivered"
+        },
+        {
+            "id": "Depot",
+            "label": "Depot"
+        },
+        {
+            "id": "ON-FOR-DELIVERY",
+            "label": "ON-FOR-DELIVERY"
+        },
+        {
+            "id": "Loaded",
+            "label": "Loaded"
+        },
+    ]);
+    const [podAvlOptions, setPodAvlOptions] = useState([
+        {
+            "id": "YES",
+            "label": "YES"
+        },
+        {
+            "id": "NO",
+            "label": "NO"
+        },
+    ]);
+    const [senderZoneOptions, setSenderZoneOptions] = useState([
+        {
+            "id": "NSW",
+            "label": "NSW"
+        },
+        {
+            "id": "SA",
+            "label": "SA"
+        },
+        {
+            "id": "VIC",
+            "label": "VIC"
+        },
+        {
+            "id": "QLD",
+            "label": "QLD"
+        }
+    ]);
 
     const minDate = getMinMaxValue("2022-01-01", "DESPATCHDATE", 1);
     const maxDate = getMinMaxValue("2024-12-31", "DESPATCHDATE", 2);
@@ -276,6 +336,7 @@ export default function DailyReportPage({
             group: "senderDetails",
             headerAlign: "center",
             textAlign: "center",
+            defaultWidth: 180,
             filterEditor: StringFilter,
         },
         {
@@ -284,6 +345,7 @@ export default function DailyReportPage({
             group: "senderDetails",
             headerAlign: "center",
             textAlign: "center",
+            filterEditor: SelectFilter,
             filterEditorProps: {
                 multiple: true,
                 wrapMultiple: false,
@@ -305,6 +367,7 @@ export default function DailyReportPage({
             group: "receiverDetails",
             headerAlign: "center",
             textAlign: "center",
+            defaultWidth: 180,
             filterEditor: StringFilter,
         },
         {
