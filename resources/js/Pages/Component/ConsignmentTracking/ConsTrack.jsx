@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-3;
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
@@ -14,8 +13,8 @@ import axios from "axios";
 import { useDisclosure } from "@nextui-org/react";
 import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
-import EventModal from "./EventModal";
 import { useRef } from "react";
+import EventModal from "../TrafficPage/EventModal";
 const gtrsWebUrl = window.Laravel.gtrsWeb;
 
 const columnMapping = {
@@ -84,7 +83,7 @@ const defaultFilterValue = [
     },
 ];
 
-function TraffiComp() {
+function ConsTrack() {
     function formatTime(hours) {
         const years = Math.floor(hours / (24 * 30 * 12));
         const months = Math.floor((hours % (24 * 30 * 12)) / (24 * 30));
@@ -813,21 +812,19 @@ function TraffiComp() {
 
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "Traffic-report.xlsx");
-            setExportLoading(false)
+            setExportLoading(false);
         });
     }
     const getexceldata = ({ skip, limit, sortInfo, filterValue }) => {
-        setExportLoading(true)
-        const url =
-            `${gtrsWebUrl}get-positions`;
+        setExportLoading(true);
+        const url = `${gtrsWebUrl}get-positions`;
 
-        console.log(skip, limit, sortInfo, filterValue);
         return fetch(url).then((response) => {
             const totalCount = response.headers.get("X-Total-Count");
             return response.json().then((data) => {
                 // const totalCount = data.pagination.total;
-                setDatatoexport(data)
-                handleDownloadExcel()
+                setDatatoexport(data);
+                handleDownloadExcel();
             });
         });
     };
@@ -837,17 +834,16 @@ function TraffiComp() {
     const dataSource = useCallback(loadData, []);
     const [hoverMessage, setHoverMessage] = useState("");
     const [isMessageVisible, setMessageVisible] = useState(false);
-    
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto mt-6">
                     <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                        Traffic Report
+                        Consignment Tracking
                     </h1>
                 </div>
                 <Popover className="relative ">
-                    <button >
+                    <button>
                         <Popover.Button
                             className={`inline-flex items-center w-[5.5rem] h-[36px] rounded-md border ${
                                 // datatoexport?.length === 0
@@ -857,7 +853,7 @@ function TraffiComp() {
                             } px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
                             disabled={exportLoading}
                         >
-                            {exportLoading? "Exporting..." : "Export"}
+                            {exportLoading ? "Exporting..." : "Export"}
                             <ChevronDownIcon
                                 className="h-5 w-5"
                                 aria-hidden="true"
@@ -937,4 +933,4 @@ function TraffiComp() {
     );
 }
 
-export default TraffiComp;
+export default ConsTrack;

@@ -26,6 +26,7 @@ import {
     AccordionHeader,
     AccordionItem,
 } from "react-headless-accordion";
+import { MapPinIcon } from "@heroicons/react/20/solid";
 
 const navigation = [
     {
@@ -190,6 +191,14 @@ const navigation = [
         icon: ReportIcon,
         current: false,
         feature: "TrafficReport_View",
+    },
+    {
+        id: 23,
+        name: "Consignment Tracking",
+        href: "#",
+        icon: MapPinIcon,
+        current: false,
+        feature: "ConsignmentTracking_View",
     },
 ];
 

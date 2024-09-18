@@ -23,7 +23,7 @@ function EventModal({
             <ModalContent>
                 {(onClose) => (
                     <>
-                        <ModalHeader className="flex flex-col text-2xl gap-1">
+                        <ModalHeader className="flex flex-col text-[#252525BF] font-bold text-2xl gap-1">
                             Event Detail
                         </ModalHeader>
 
@@ -34,25 +34,35 @@ function EventModal({
                                 <>
                                     {/* Location details */}
                                     <div>
-                                        <p className=" text-lg font-bold">
+                                        <p className=" text-lg font-bold ">
                                             Location
                                         </p>
                                     </div>
                                     <Divider />
-                                    <div className="grid grid-cols-2 gap-y-3">
-                                        <div className="grid grid-cols-2">
-                                            <p className="font-bold">State</p>
-                                            <p>{eventDetails?.api_source}</p>
+                                    <div className="grid lg:grid-cols-3 gap-y-3">
+                                        <div className="grid grid-cols-2 items-end">
+                                            <p className="text-[#252525BF]">
+                                                State
+                                            </p>
+                                            <p className="text-sm">
+                                                {eventDetails?.api_source}
+                                            </p>
                                         </div>
-                                        <div className="grid grid-cols-2">
-                                            <p className="font-bold">Suburb</p>
-                                            <p>{eventDetails?.suburb}</p>
+                                        <div className="grid grid-cols-2 items-end">
+                                            <p className="text-[#252525BF]">
+                                                Suburb
+                                            </p>
+                                            <p className="text-sm">
+                                                {eventDetails?.suburb}
+                                            </p>
                                         </div>
-                                        <div className="grid grid-cols-2">
-                                            <p className="font-bold">
+                                        <div className="grid grid-cols-2 items-end">
+                                            <p className="text-[#252525BF]">
                                                 Road Name
                                             </p>
-                                            <p>{eventDetails?.road_name}</p>
+                                            <p className="text-sm">
+                                                {eventDetails?.road_name}
+                                            </p>
                                         </div>
                                     </div>
 
@@ -63,12 +73,12 @@ function EventModal({
                                         </p>
                                     </div>
                                     <Divider />
-                                    <div className="grid grid-cols-2 gap-y-3">
-                                        <div className="grid grid-cols-2">
-                                            <p className="font-bold">
+                                    <div className="grid lg:grid-cols-3 gap-y-3">
+                                        <div className="grid grid-cols-2 items-end">
+                                            <p className="text-[#252525BF]">
                                                 Start Date
                                             </p>
-                                            <p>
+                                            <p className="text-sm">
                                                 {moment(
                                                     eventDetails?.start_date
                                                 ).format(
@@ -82,11 +92,11 @@ function EventModal({
                                                       )}
                                             </p>
                                         </div>
-                                        <div className="grid grid-cols-2">
-                                            <p className="font-bold">
+                                        <div className="grid grid-cols-2 items-end">
+                                            <p className="text-[#252525BF]">
                                                 End Date
                                             </p>
-                                            <p>
+                                            <p className="text-sm ">
                                                 {moment(
                                                     eventDetails?.end_date
                                                 ).format(
@@ -100,11 +110,11 @@ function EventModal({
                                                       )}
                                             </p>
                                         </div>
-                                        <div className="grid grid-cols-2">
-                                            <p className="font-bold">
+                                        <div className="grid grid-cols-2 items-end">
+                                            <p className="text-[#252525BF]">
                                                 Duration Impact
                                             </p>
-                                            <p>
+                                            <p className="text-sm">
                                                 {parseFloat(
                                                     eventDetails?.hours_difference
                                                 ).toFixed(2)}
@@ -119,55 +129,51 @@ function EventModal({
                                         </p>
                                     </div>
                                     <Divider />
-                                    <div className="grid grid-cols-2 gap-y-3">
-                                        <div className="grid grid-cols-2">
-                                            <p className="font-bold">
+                                    <div className="grid lg:grid-cols-3 gap-y-3">
+                                        <div className="grid grid-cols-2 items-end">
+                                            <p className="text-[#252525BF]">
                                                 Event type
                                             </p>
-                                            <p>
+                                            <p className="text-sm">
                                                 {getEventCategoryById(
                                                     eventDetails.event_category_id
                                                 )}
                                             </p>
                                         </div>
-                                        <div className="grid grid-cols-2">
-                                            <p className="font-bold">Impact</p>
-                                            <p>{eventDetails.impact}</p>
+                                        <div className="grid grid-cols-2 items-end">
+                                            <p className="text-[#252525BF]">
+                                                Impact
+                                            </p>
+                                            <p className="text-sm">
+                                                {eventDetails.impact}
+                                            </p>
                                         </div>
-                                        <div className="grid grid-cols-2">
-                                            <p className="font-bold">
+                                        <div className="grid grid-cols-2  items-end">
+                                            <p className="text-[#252525BF]">
                                                 Traffic Direction
                                             </p>
-                                            <p>
+                                            <p className="text-sm">
                                                 {eventDetails.traffic_direction}
                                             </p>
                                         </div>
                                     </div>
-
-                                    {/* Other details */}
-                                    <div className="mt-5">
-                                        <p className=" text-lg font-bold">
-                                            Other Details
-                                        </p>
-                                    </div>
-                                    <Divider />
-                                    <div className="grid grid-cols-2 gap-y-3">
-                                        <div className="grid grid-cols-2">
-                                            <p className="font-bold">Advice</p>
-                                            <p>{eventDetails.advice}</p>
+                                    <div className="mt-10">
+                                        <div className="">
+                                            <p className="text-[#252525BF]">Advice</p>
+                                            <p className="mt-2">{eventDetails.advice}</p>
                                         </div>
-                                        <div className="grid grid-cols-2">
-                                            <p className="font-bold">
+                                        <div className="mt-5">
+                                            <p className="text-[#252525BF]">
                                                 Information
                                             </p>
-                                            <p>{eventDetails.information}</p>
+                                            <p className="mt-2">{eventDetails.information}</p>
                                         </div>
-                                        <div className="grid grid-cols-2">
-                                            <p className="font-bold">
+                                        <div className="mt-5">
+                                            <p className="text-[#252525BF]">
                                                 Other Advice
                                             </p>
                                             <p
-                                                className="font-thin max-w-60 max-h-[300px] overflow-auto pr-2 containerscroll"
+                                                className="mt-2 overflow-auto pr-2 containerscroll"
                                                 style={{
                                                     wordBreak: "break-word",
                                                     hyphens: "auto",

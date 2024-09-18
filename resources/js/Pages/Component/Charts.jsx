@@ -25,6 +25,7 @@ import AddNewTransitDay from "./KPI/AddNewTransitDay";
 import GraphPresentation from "./Presentation/GraphPresentation";
 import Incident from "./Incident";
 import TrafficComp from "./TrafficPage/TrafficComp";
+import ConsTrack from "./ConsignmentTracking/ConsTrack";
 
 export default function charts({
     setCusomterAccounts,
@@ -2280,6 +2281,7 @@ export default function charts({
             incidentId={incidentId}
             currentUser={currentUser}
         />,
+        <ConsTrack />,
     ];
 
     return (
