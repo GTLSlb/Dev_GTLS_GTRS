@@ -532,14 +532,6 @@ export default function DailyReportPage({
             defaultWidth: 170,
             filterEditor: StringFilter,
         },
-        {
-            name: "PastComments",
-            header: "Past Comments",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-        },
     ];
     let components = [
         <MetcashReports
