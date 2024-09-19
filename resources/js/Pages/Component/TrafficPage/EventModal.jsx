@@ -12,7 +12,47 @@ import {
     Accordion,
     AccordionItem,
     Avatar,
+    Image,
 } from "@nextui-org/react";
+import Roadworks from "@/assets/icons/RoadWork.png";
+import Alpine from "@/assets/icons/Alpine.png";
+import Flooding from "@/assets/icons/Flooding.png";
+import Congestion from "@/assets/icons/Congestion.png";
+import Hazard from "@/assets/icons/Hazard.png";
+import RegionalLGA from "@/assets/icons/RegionalLGA.png";
+import Incident from "@/assets/icons/Incident.png";
+import Major from "@/assets/icons/Major.png";
+import Other from "@/assets/icons/Other.png";
+
+const eventTypeMapping = {
+    Roadworks: ["ROADWORKS", "24HR ROADWORKS", "Roadwork", "Roadworks"],
+    Alpine: ["Alpine"],
+    Flooding: ["Flooding"],
+    Congestion: ["Congestion"],
+    Hazard: ["Hazard", "Vehicle fire", "Fire", "Vehicle rollover", "Landslip"],
+    "Regional LGA Incident": ["Regional LGA Incident", "Emergency Incident"],
+    "Major Event": ["Major Event", "Special event", "Demonstration"],
+    Incident: [
+        "INCIDENT",
+        "COLLISION",
+        "Incident",
+        "Crash",
+        "Emergency Incident",
+    ],
+    Other: ["Equipment damage", "Equipment fault"],
+};
+
+const iconMappings = {
+    Roadworks,
+    Alpine,
+    Flooding,
+    Congestion,
+    Hazard,
+    "Regional LGA Incident": RegionalLGA,
+    "Major Event": Major,
+    Incident,
+    Other,
+};
 
 function EventModal({
     onOpenChange,
@@ -21,9 +61,20 @@ function EventModal({
     loading,
     getEventCategoryById,
 }) {
-    console.log(eventDetails);
+     const getIcon = (eventType) => {
+       
+        const mainCategory = Object.keys(eventTypeMapping).find((category) =>
+            eventTypeMapping[category].includes(eventType)
+        );
+        const iconUrl =
+            iconMappings[mainCategory] ||
+            "https://qldtraffic.qld.gov.au/images/roadevents/SpecialEvents.png";
+        return {
+            url: iconUrl,
+        };
+    };
     return (
-        <Modal size="5xl" isOpen={isOpen} onOpenChange={onOpenChange}>
+        <Modal size="5xl" isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior="inside">
             <ModalContent>
                 {(onClose) => (
                     <>
@@ -41,11 +92,10 @@ function EventModal({
                                             key={event.id}
                                             title={`${event.event_type}`}
                                             startContent={
-                                                <Avatar
-                                                    isBordered
-                                                    color="primary"
+                                                <Image
                                                     radius="lg"
-                                                    src="https://i.pravatar.cc/150?u=a042581f4e29026024d"
+                                                    width={40}
+                                                    src={getIcon(event.event_type).url}
                                                 />
                                             }
                                             subtitle={`${event.road_name}-${event.suburb}`}

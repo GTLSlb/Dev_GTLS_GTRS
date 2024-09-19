@@ -29,6 +29,7 @@ import ConsTrack from "./ConsignmentTracking/ConsTrack";
 import CollapseSidebar from "./CollapseSidebar";
 import { Button } from "@nextui-org/react";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
+import ConsMap from "./TrafficPage/ConsMap";
 
 export default function charts({
     setCusomterAccounts,
@@ -62,6 +63,7 @@ export default function charts({
     const current = new Date();
     const month = current.getMonth() + 1;
     const [KPIData, setKPIData] = useState([]);
+    const [consignmentToTrack, setConsignmentToTrack] = useState();
     const [NewKPIData, setNewKPIData] = useState([]);
     const [transitDays, setTransitDays] = useState();
     const [newTransitDays, setNewTransitDays] = useState();
@@ -2403,6 +2405,12 @@ export default function charts({
         <ConsTrack
             setFilterValue={setFiltersConsTrack}
             filterValue={filtersConsTrack}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            setConsignmentToTrack={setConsignmentToTrack}
+        />,
+        <ConsMap
+            consignment={consignmentToTrack}
+            setActiveIndexGTRS={setActiveIndexGTRS}
         />,
     ];
 
