@@ -14,39 +14,46 @@ export default function Sidebar(Boolean) {
     const [sessionData, setSessionData] = useState(null);
     const [user, setUser] = useState(null);
     const [allowedApplications, setAllowedApplications] = useState([]);
-    const [Token, setToken] = useState(Cookies.get('access_token'));
+    const [Token, setToken] = useState(Cookies.get("access_token"));
 
     const Invoicesurl = window.Laravel.invoiceUrl;
     const Gtamurl = window.Laravel.gtamUrl;
     const gtrsUrl = window.Laravel.gtrsUrl;
     const appDomain = window.Laravel.appDomain;
     const getAppPermisions = () => {
+        console.log(currentUser?.UserId);
+
+        axios
+            .get(`${Gtamurl}User/AppPermissions`, {
+                headers: {
+                    UserId: currentUser?.UserId,
+                    AppId: window.Laravel.appId,
+                },
+            })
+            .then((res) => {
+                if (typeof res.data == "object") {
+                    setUser(res.data);
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+
+    useEffect(() => {
         axios
             .get("/users")
             .then((res) => {
                 setcurrentUser(res.data);
-                axios
-                    .get(`${Gtamurl}User/AppPermissions`, {
-                        headers: {
-                            UserId: res.data?.UserId,
-                            AppId: window.Laravel.appId,
-                        },
-                    })
-                    .then((res) => {
-                        if(typeof res.data == "object"){
-                            setUser(res.data);
-                        }
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
             })
             .catch((error) => console.log(error));
-    };
+    }, []);
 
     useEffect(() => {
-        getAppPermisions();
-    }, []);
+        if (currentUser) {
+            getAppPermisions();
+        }
+    }, [currentUser]);
 
     const getUserPermissions = () => {
         axios

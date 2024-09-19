@@ -6,6 +6,10 @@ import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import moment from "moment";
 import { getMinMaxValue } from "@/CommonFunctions";
 import { Spinner, Select, SelectItem } from "@nextui-org/react";
+import MetcashReports from "./MetcashReports";
+import WoolworthsReports from "./WoolworthsReports";
+import OtherReports from "./OtherReports";
+
 export default function DailyReportPage({
     url,
     AToken,
@@ -13,74 +17,82 @@ export default function DailyReportPage({
     user,
     currentUser,
     userPermission,
+    // setFilterValue,
+    // filterValue,
 }) {
     const gridRef = useRef(null);
     const [selected, setSelected] = useState([]);
     const [selectedUser, setSelectedUser] = useState([]);
     const [selectedRecords, setselectedRecords] = useState([]);
+
+    const handleClick = (coindex) => {
+        setActiveIndexGTRS(3);
+        setLastIndex(1);
+        setactiveCon(coindex);
+    };
     const [receiverZoneOptions, setReceiverZoneOptions] = useState([
         {
-            "id": "NSW",
-            "label": "NSW"
+            id: "NSW",
+            label: "NSW",
         },
         {
-            "id": "SA",
-            "label": "SA"
+            id: "SA",
+            label: "SA",
         },
         {
-            "id": "VIC",
-            "label": "VIC"
+            id: "VIC",
+            label: "VIC",
         },
         {
-            "id": "QLD",
-            "label": "QLD"
-        }
+            id: "QLD",
+            label: "QLD",
+        },
     ]);
     const [consStateOptions, setConsStateOptions] = useState([
         {
-            "id": "Delivered",
-            "label": "Delivered"
+            id: "Delivered",
+            label: "Delivered",
         },
         {
-            "id": "Depot",
-            "label": "Depot"
+            id: "Depot",
+            label: "Depot",
         },
         {
-            "id": "ON-FOR-DELIVERY",
-            "label": "ON-FOR-DELIVERY"
+            id: "ON-FOR-DELIVERY",
+            label: "ON-FOR-DELIVERY",
         },
         {
-            "id": "Loaded",
-            "label": "Loaded"
+            id: "Loaded",
+            label: "Loaded",
         },
     ]);
     const [podAvlOptions, setPodAvlOptions] = useState([
         {
-            "id": "YES",
-            "label": "YES"
+            id: "YES",
+            label: "YES",
         },
         {
-            "id": "NO",
-            "label": "NO"
+            id: "NO",
+            label: "NO",
         },
     ]);
     const [senderZoneOptions, setSenderZoneOptions] = useState([
         {
-            "id": "NSW",
-            "label": "NSW"
+            id: "NSW",
+            label: "NSW",
         },
         {
-            "id": "SA",
-            "label": "SA"
+            id: "SA",
+            label: "SA",
         },
         {
-            "id": "VIC",
-            "label": "VIC"
+            id: "VIC",
+            label: "VIC",
         },
         {
-            "id": "QLD",
-            "label": "QLD"
-        }
+            id: "QLD",
+            label: "QLD",
+        },
     ]);
 
     const minDate = getMinMaxValue("2022-01-01", "DESPATCHDATE", 1);
@@ -97,6 +109,12 @@ export default function DailyReportPage({
         },
     ]);
 
+    const [activeComponentIndex, setActiveComponentIndex] = useState(0);
+    let components = [
+        <MetcashReports />,
+        <WoolworthsReports />,
+        <OtherReports />,
+    ];
     const [filterValue, setFilterValue] = useState([
         {
             name: "AccountNo",
@@ -269,6 +287,7 @@ export default function DailyReportPage({
             headerAlign: "center",
         },
     ];
+
     const columns = [
         {
             name: "AccountNo",
@@ -308,15 +327,16 @@ export default function DailyReportPage({
             textAlign: "center",
             filterEditor: StringFilter,
             defaultWidth: 200,
-            render: ({ value }) => {
+            render: ({ value, data }) => {
                 return (
                     <div>
-                        {value}
-                        {/* {
-                            customerAccounts?.find(
-                                (customer) => customer.DebtorId == value
-                            )?.AccountNo
-                        } */}
+                        <span
+                            className="underline text-blue-500 hover:cursor-pointer"
+                            onClick={() => handleClick(data.ConsignmentId)}
+                        >
+                            {" "}
+                            {value}
+                        </span>
                     </div>
                 );
             },
@@ -535,25 +555,33 @@ export default function DailyReportPage({
     const filterDataBasedOnUser = (val) => {
         let newData = [];
 
-        if(val != ""){
-            const selectedUserName = unileverCustomers?.find((item) => item?.CustomerId == val)?.CustomerName;
-        dailyReportData?.map((item) => {
-            if(selectedUserName == "Woolworths"){
-                if(item?.ReceiverName == "AUST SAFEWAY - MULGRAVE" || item?.ReceiverName.toLowerCase().includes("woolworths")){
-                    newData.push(item);
+        if (val != "") {
+            const selectedUserName = unileverCustomers?.find(
+                (item) => item?.CustomerId == val
+            )?.CustomerName;
+            dailyReportData?.map((item) => {
+                if (selectedUserName == "Woolworths") {
+                    if (
+                        item?.ReceiverName == "AUST SAFEWAY - MULGRAVE" ||
+                        item?.ReceiverName.toLowerCase().includes("woolworths")
+                    ) {
+                        newData.push(item);
+                    }
+                } else {
+                    if (
+                        item?.ReceiverName != "AUST SAFEWAY - MULGRAVE" &&
+                        !item?.ReceiverName.toLowerCase().includes("woolworths")
+                    ) {
+                        newData.push(item);
+                    }
                 }
-            }else{
-                if(item?.ReceiverName != "AUST SAFEWAY - MULGRAVE" && !item?.ReceiverName.toLowerCase().includes("woolworths")){
-                    newData.push(item);
-                }
-            }
-        })
-        }else{
+            });
+        } else {
             newData = dailyReportData;
         }
 
         setFilteredData(newData);
-    }
+    };
 
     return (
         <div className="min-h-screen h-full px-8">
@@ -563,51 +591,54 @@ export default function DailyReportPage({
                 </h1>
             </div>
             <div className="w-full flex gap-4 items-center mt-4">
-                <p className="whitespace-nowrap text-[#787878]">Filter By</p>
-                <div className="w-full md:w-[18%]">
-                    <Select
-                        type="text"
-                        label=""
-                        labelPlacement="inside"
-                        value={selectedUser?.toString()}
-                        defaultSelectedKeys={[selectedUser?.toString()]}
-                        classNames={{
-                            mainWrapper: "bg-transparent",
-                            trigger: [
-                                "border border-default-300",
-                                "bg-gradient-to-b from-[#FFFFFF] to-{#F4F4F4}",
-                                "backdrop-blur-xl",
-                                "backdrop-saturate-200",
-                                "hover:bg-default-200/70",
-                                "group-data-[focused=true]:bg-default-200/50",
-                                "!cursor-text",
-                            ],
-                        }}
-                        onChange={(e) => filterDataBasedOnUser(e.target.value)}
+                <ul className="flex space-x-0 mt-5">
+                    <li
+                        className={`cursor-pointer ${
+                            activeComponentIndex === 0
+                                ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
+                                : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
+                        }`}
+                        onClick={() => setActiveComponentIndex(0)}
                     >
-                        {unileverCustomers?.map((user) => (
-                            <SelectItem
-                                key={user.CustomerId}
-                                value={user.CustomerId?.toString()}
-                            >
-                                {user.CustomerName}
-                            </SelectItem>
-                        ))}
-                    </Select>
-                </div>
+                        <div className="px-2">Woolworths</div>
+                    </li>
+                    <li
+                        className={`cursor-pointer ${
+                            activeComponentIndex === 1
+                                ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
+                                : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
+                        }`}
+                        onClick={() => setActiveComponentIndex(1)}
+                    >
+                        <div className="px-2"> Metcash</div>
+                    </li>
+                    <li
+                        className={`cursor-pointer ${
+                            activeComponentIndex === 2
+                                ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
+                                : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
+                        }`}
+                        onClick={() => setActiveComponentIndex(2)}
+                    >
+                        <div className="px-2"> Other</div>
+                    </li>
+                </ul>
             </div>
             <div>
-                <TableStructure
-                    id={"ReportId"}
-                    setSelected={setSelected}
-                    gridRef={gridRef}
-                    selected={selected}
-                    setFilterValueElements={setFilterValue}
-                    tableDataElements={filteredData}
-                    filterValueElements={filterValue}
-                    groupsElements={groups}
-                    columnsElements={columns}
-                />
+                {components[activeComponentIndex]}
+                {filterValue && filteredData && (
+                    <TableStructure
+                        id={"ReportId"}
+                        setSelected={setSelected}
+                        gridRef={gridRef}
+                        selected={selected}
+                        setFilterValueElements={setFilterValue}
+                        tableDataElements={filteredData}
+                        filterValueElements={filterValue}
+                        groupsElements={groups}
+                        columnsElements={columns}
+                    />
+                )}
             </div>
         </div>
     );

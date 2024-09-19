@@ -1797,6 +1797,7 @@ export default function charts({
             AccountNo: "UAPL - HPC",
             DespatchDate: '2024-08-02',
             ConsignmentNo: '2501030894A',
+            ConsignmentId: 2501030894,
             SenderName: 'UNILEVER - INGLEBURN',
             SenderReference: '2338690',
             SenderZone: 'SYD',
@@ -1823,6 +1824,7 @@ export default function charts({
             AccountNo: "UAPL - HPC",
             DespatchDate: '2024-08-02',
             ConsignmentNo: '2501031052',
+            ConsignmentId: 2501031052,
             SenderName: 'UNILEVER - INGLEBURN',
             SenderReference: '2338690',
             SenderZone: 'SYD',
@@ -1849,6 +1851,7 @@ export default function charts({
             AccountNo: "UAPL - HPC",
             DespatchDate: '2024-08-02',
             ConsignmentNo: '2501031051',
+            ConsignmentId: 2501031051,
             SenderName: 'UNILEVER - INGLEBURN',
             SenderReference: '788898',
             SenderZone: 'SYD',
@@ -1875,6 +1878,7 @@ export default function charts({
             AccountNo: "UATLF - FDS",
             DespatchDate: '2024-08-02',
             ConsignmentNo: '2501030933',
+            ConsignmentId: 2501030933,
             SenderName: 'UNILEVER FOODS - MELB',
             SenderReference: '2338683',
             SenderZone: 'MEL',
@@ -1902,6 +1906,7 @@ export default function charts({
             AccountNo: "UAPL - HPC",
             DespatchDate: '2024-05-08',
             ConsignmentNo: '2501031194A',
+            ConsignmentId: 2501031194,
             SenderName: 'UNILEVER - INGLEBURN',
             SenderReference: '2501031194',
             SenderZone: 'SYD',
@@ -1928,6 +1933,7 @@ export default function charts({
             AccountNo: "UATLF - FDS",
             DespatchDate: '2024-08-02',
             ConsignmentNo: '2501031066',
+            ConsignmentId: 2501031066,
             SenderName: 'UNILEVER FOODS - MELB',
             SenderReference: '108156304',
             SenderZone: 'SYD',
@@ -1954,6 +1960,7 @@ export default function charts({
             AccountNo: "UAPL - HPC",
             DespatchDate: '2024-08-06',
             ConsignmentNo: '2501030577A',
+            ConsignmentId: 2501030577,
             SenderName: 'UNILEVER - INGLEBURN',
             SenderReference: '2501030577',
             SenderZone: 'SYD',
@@ -1974,6 +1981,166 @@ export default function charts({
             GTLSComments: '',
             PastReasonCode: '',
             PastComments: '',
+        },
+    ]);
+
+    const [filtersDailyValue, setFiltersDailyReport] = useState([
+        {
+            name: "AccountNo",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "ConsignmentNo",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "SenderName",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "SenderReference",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "SenderZone",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ReceiverName",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ReceiverReference",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ReceiverZone",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "SpecialInstructions",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "Comments",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "CorrectiveAction",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "PastComments",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "Report",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "GTLSReasonCode",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "GTLSComments",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "PastReasonCode",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "PastCorrectiveAction",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "PODAvl",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ConsignmentStatus",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "DespatchDate",
+            operator: "inrange",
+            type: "date",
+            value: {
+                start: minDate,
+                end: maxDate,
+            },
+        },
+        {
+            name: "DeliveryRequiredDateTime",
+            operator: "inrange",
+            type: "date",
+            value: {
+                start: minDate,
+                end: maxDate,
+            },
+        },
+        {
+            name: "DeliveredDateTime",
+            operator: "inrange",
+            type: "date",
+            value: {
+                start: minDate,
+                end: maxDate,
+            },
         },
     ]);
 
@@ -2490,6 +2657,11 @@ export default function charts({
             userPermission={userPermission}
             user={user}
             dailyReportData={dailyReportData}
+            setLastIndex={setLastIndex}
+            setactiveCon={setactiveCon}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            setFilterValue={setFiltersDailyReport}
+            filterValue={filtersDailyValue}
         />,
         <Incident
             AToken={AToken}
