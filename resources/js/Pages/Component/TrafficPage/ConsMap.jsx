@@ -122,18 +122,23 @@ export default function ConsMap({ consignment, setActiveIndexGTRS }) {
         };
     };
     return (
-        <div className="w-full h-full flex">
+        <div className="w-full h-full min-w-[500px] flex">
             {event ? (
                 <div className="flex flex-col w-96 p-3">
-                    <Button
-                        size="sm"
-                        variant="light"
-                        startContent={<ChevronLeftIcon className="h-4 w-4" />}
-                        onClick={() => setEvent(null)}
-                        className="mt-2 w-20"
-                    >
-                        Back
-                    </Button>
+                    <div>
+                        <Button
+                            size="sm"
+                            variant="light"
+                            startContent={
+                                <ChevronLeftIcon className="h-4 w-4" />
+                            }
+                            onClick={() => setEvent(null)}
+                            className="mt-2 w-20"
+                        >
+                            Back
+                        </Button>
+                    </div>
+
                     <Divider className="my-2" />
                     <div className="flex flex-col gap-2">
                         <div className="flex gap-3 w-full items-center">
@@ -160,20 +165,21 @@ export default function ConsMap({ consignment, setActiveIndexGTRS }) {
                             </span>
                         </div>
                         {event.start_date && (
-                        <div className="flex gap-2 items-center">
-                            <div>
-                                <ScheduleSendIcon className="h-8 !w-8 text-gray-500" />
+                            <div className="flex gap-2 items-center">
+                                <div>
+                                    <ScheduleSendIcon className="h-8 !w-8 text-gray-500" />
+                                </div>
+                                <span className="text-[13px]">
+                                    {moment(event.start_date).format(
+                                        "DD-MM-YYYY hh:mm A"
+                                    ) == "Invalid date"
+                                        ? ""
+                                        : moment(event.start_date).format(
+                                              "DD-MM-YYYY hh:mm A"
+                                          )}
+                                </span>
                             </div>
-                            <span className="text-[13px]">
-                                {moment(event.start_date).format(
-                                    "DD-MM-YYYY hh:mm A"
-                                ) == "Invalid date"
-                                    ? ""
-                                    : moment(event.start_date).format(
-                                          "DD-MM-YYYY hh:mm A"
-                                      )}
-                            </span>
-                        </div>)}
+                        )}
                         {event.end_date && (
                             <div className="flex gap-2 items-center">
                                 <div>
@@ -205,6 +211,7 @@ export default function ConsMap({ consignment, setActiveIndexGTRS }) {
                 </div>
             ) : (
                 <div className="flex flex-col w-96 p-3">
+                    <div>
                     <Button
                         size="sm"
                         variant="light"
@@ -214,6 +221,8 @@ export default function ConsMap({ consignment, setActiveIndexGTRS }) {
                     >
                         Back
                     </Button>
+                    </div>
+                    
                     <Divider className="my-2" />
                     <div className="flex gap-2">
                         <span className="font-bold">Consignment No</span>
