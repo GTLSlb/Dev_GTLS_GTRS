@@ -23,8 +23,10 @@ import NewKPI from "./NewKPI";
 import NewTransitDays from "./NewTransitDays";
 import AddNewTransitDay from "./KPI/AddNewTransitDay";
 import GraphPresentation from "./Presentation/GraphPresentation";
-import DailyReportPage from "./ReportsPage/DailyReportPage";
+import DailyReportPage from "./ReportsPage/DeliveryReportPage";
 import Incident from "./Incident";
+import swal from "sweetalert";
+import { handleSessionExpiration } from '@/CommonFunctions';
 
 export default function charts({
     setCusomterAccounts,
@@ -1790,200 +1792,41 @@ export default function charts({
         setEDate(formatDate(val.end));
     }, [filtersMissingPOD]);
 
-    const [dailyReportData, setDailyReportData] = useState([
-        //Metcash
-        {
-            ReportId: 1,
-            AccountNo: "UAPL - HPC",
-            DespatchDate: '2024-08-02',
-            ConsignmentNo: '2501030894A',
-            ConsignmentId: 2501030894,
-            SenderName: 'UNILEVER - INGLEBURN',
-            SenderReference: '2338690',
-            SenderZone: 'SYD',
-            ReceiverName: 'IGA HUNTINGWOOD',
-            ReceiverReference: '4516425348',
-            ReceiverZone: 'SYD',
-            ConsignmentStatus: 'DELIVERED',
-            SpecialInstructions: 'DLVR 02 AUG 2024 @ 0001 DC 9377779193723 99',
-            Comments: '',
-            CorrectiveAction: '',
-            DeliveryRequiredDateTime: '',
-            DeliveredDateTime: '2024-08-02',
-            PODAvl: 'YES',
-            PastComments: '',
-            PastCorrectiveAction: '',
-            Report: 'Nothing Found',
-            GTLSReasonCode: '',
-            GTLSComments: '',
-            PastReasonCode: '',
-            PastComments: '',
-        },
-        {
-            ReportId: 2,
-            AccountNo: "UAPL - HPC",
-            DespatchDate: '2024-08-02',
-            ConsignmentNo: '2501031052',
-            ConsignmentId: 2501031052,
-            SenderName: 'UNILEVER - INGLEBURN',
-            SenderReference: '2338690',
-            SenderZone: 'SYD',
-            ReceiverName: 'METCASH LAVERTON NORTH DC',
-            ReceiverReference: '4516430036',
-            ReceiverZone: 'MEL',
-            ConsignmentStatus: 'DELIVERED',
-            SpecialInstructions: 'DLVR 06 AUG 2024 @ 0001 DC 9377779193754 99',
-            Comments: '',
-            CorrectiveAction: '',
-            DeliveryRequiredDateTime: '',
-            DeliveredDateTime: '2024-08-06',
-            PODAvl: 'YES',
-            PastComments: '',
-            PastCorrectiveAction: '',
-            Report: 'NA',
-            GTLSReasonCode: '',
-            GTLSComments: '',
-            PastReasonCode: '',
-            PastComments: '',
-        },
-        {
-            ReportId: 3,
-            AccountNo: "UAPL - HPC",
-            DespatchDate: '2024-08-02',
-            ConsignmentNo: '2501031051',
-            ConsignmentId: 2501031051,
-            SenderName: 'UNILEVER - INGLEBURN',
-            SenderReference: '788898',
-            SenderZone: 'SYD',
-            ReceiverName: 'METCASH NDN DC',
-            ReceiverReference: '4516430037',
-            ReceiverZone: 'MEL',
-            ConsignmentStatus: 'DELIVERED',
-            SpecialInstructions: 'DLVR 07 AUG 2024 @ 0001 DC 9377779193785 99',
-            Comments: '',
-            CorrectiveAction: '',
-            DeliveryRequiredDateTime: '2024-08-07',
-            DeliveredDateTime: '2024-08-07',
-            PODAvl: 'YES',
-            PastComments: '',
-            PastCorrectiveAction: '',
-            Report: 'Nothing Found',
-            GTLSReasonCode: '',
-            GTLSComments: '',
-            PastReasonCode: '',
-            PastComments: '',
-        },
-        {
-            ReportId: 4,
-            AccountNo: "UATLF - FDS",
-            DespatchDate: '2024-08-02',
-            ConsignmentNo: '2501030933',
-            ConsignmentId: 2501030933,
-            SenderName: 'UNILEVER FOODS - MELB',
-            SenderReference: '2338683',
-            SenderZone: 'MEL',
-            ReceiverName: 'IGA - HUNTINGWOOD',
-            ReceiverReference: '4516425649',
-            ReceiverZone: 'SYD',
-            ConsignmentStatus: 'DELIVERED',
-            SpecialInstructions: 'DLVR 07 AUG 2024 @ 0001 DC 9377779193723 99',
-            Comments: '',
-            CorrectiveAction: '',
-            DeliveryRequiredDateTime: '2024-08-07',
-            DeliveredDateTime: '2024-08-07',
-            PODAvl: 'YES',
-            PastComments: '',
-            PastCorrectiveAction: '',
-            Report: 'NA',
-            GTLSReasonCode: '',
-            GTLSComments: '',
-            PastReasonCode: '',
-            PastComments: '',
-        },
-        //Woolworth
-        {
-            ReportId: 5,
-            AccountNo: "UAPL - HPC",
-            DespatchDate: '2024-05-08',
-            ConsignmentNo: '2501031194A',
-            ConsignmentId: 2501031194,
-            SenderName: 'UNILEVER - INGLEBURN',
-            SenderReference: '2501031194',
-            SenderZone: 'SYD',
-            ReceiverName: 'WOOLWORTHS - DC ERSKINE PARK',
-            ReceiverReference: '4516435155',
-            ReceiverZone: 'SYD',
-            ConsignmentStatus: 'DELIVERED',
-            SpecialInstructions: 'DLVR 05 AUG 2024 @ 1600 DC 1953 PM001 PM001',
-            Comments: '',
-            CorrectiveAction: '',
-            DeliveryRequiredDateTime: '',
-            DeliveredDateTime: '2024-08-01',
-            PODAvl: 'YES',
-            PastComments: '',
-            PastCorrectiveAction: '',
-            Report: 'Nothing Found',
-            GTLSReasonCode: '',
-            GTLSComments: '',
-            PastReasonCode: '',
-            PastComments: '',
-        },
-        {
-            ReportId: 6,
-            AccountNo: "UATLF - FDS",
-            DespatchDate: '2024-08-02',
-            ConsignmentNo: '2501031066',
-            ConsignmentId: 2501031066,
-            SenderName: 'UNILEVER FOODS - MELB',
-            SenderReference: '108156304',
-            SenderZone: 'SYD',
-            ReceiverName: 'WOOLWORTHS SYD RDC',
-            ReceiverReference: '4516430120',
-            ReceiverZone: 'SYD',
-            ConsignmentStatus: 'DELIVERED',
-            SpecialInstructions: 'DLVR 05 AUG 2024 @ 0700 DC 1979 PM001 PM001',
-            Comments: '',
-            CorrectiveAction: '',
-            DeliveryRequiredDateTime: '2024-08-05',
-            DeliveredDateTime: '2024-08-03',
-            PODAvl: 'YES',
-            PastComments: '',
-            PastCorrectiveAction: '',
-            Report: 'Nothing Found',
-            GTLSReasonCode: '',
-            GTLSComments: '',
-            PastReasonCode: '',
-            PastComments: '',
-        },
-        {
-            ReportId: 7,
-            AccountNo: "UAPL - HPC",
-            DespatchDate: '2024-08-06',
-            ConsignmentNo: '2501030577A',
-            ConsignmentId: 2501030577,
-            SenderName: 'UNILEVER - INGLEBURN',
-            SenderReference: '2501030577',
-            SenderZone: 'SYD',
-            ReceiverName: 'AUST SAFEWAY - MULGRAVE',
-            ReceiverReference: '4516420318',
-            ReceiverZone: 'MEL',
-            ConsignmentStatus: 'DELIVERED',
-            SpecialInstructions: 'DLVR 05 AUG 2024 @ 1000 DC 3911 PM001 PM001',
-            Comments: '',
-            CorrectiveAction: '',
-            DeliveryRequiredDateTime: '2024-08-06',
-            DeliveredDateTime: '2024-08-06',
-            PODAvl: 'YES',
-            PastComments: 'On track',
-            PastCorrectiveAction: '',
-            Report: 'NA',
-            GTLSReasonCode: '',
-            GTLSComments: '',
-            PastReasonCode: '',
-            PastComments: '',
-        },
-    ]);
+    const [dailyReportData, setDailyReportData] = useState([]);
+    const fetchDeliveryReport = async () => {
+        try {
+            const res = await axios
+                .get(`${url}Delivery`, {
+                    headers: {
+                        UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`
+                    }
+                });
+            setDailyReportData(res.data || []);
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                }).then(async function () {
+                    await handleSessionExpiration();
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+            }
+        }
+    }
 
+    useEffect(() => {
+        if(currentUser){
+            fetchDeliveryReport();
+        }
+    },[currentUser])
     const [filtersDailyValue, setFiltersDailyReport] = useState([
         {
             name: "AccountNo",
@@ -2662,6 +2505,7 @@ export default function charts({
             setActiveIndexGTRS={setActiveIndexGTRS}
             setFilterValue={setFiltersDailyReport}
             filterValue={filtersDailyValue}
+            fetchDeliveryReport={fetchDeliveryReport}
         />,
         <Incident
             AToken={AToken}

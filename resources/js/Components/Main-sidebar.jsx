@@ -295,7 +295,7 @@ export default function MainSidebar({
                 },
                 {
                     id: 21,
-                    name: "Daily Report",
+                    name: "Delivery Report",
                     current: false,
                     role: ["1", "4"],
                     feature: "DailyReport_View",

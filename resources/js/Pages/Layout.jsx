@@ -21,8 +21,6 @@ export default function Sidebar(Boolean) {
     const gtrsUrl = window.Laravel.gtrsUrl;
     const appDomain = window.Laravel.appDomain;
     const getAppPermisions = () => {
-        console.log(currentUser?.UserId);
-
         axios
             .get(`${Gtamurl}User/AppPermissions`, {
                 headers: {

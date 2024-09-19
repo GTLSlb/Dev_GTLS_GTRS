@@ -5,10 +5,10 @@ import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import moment from "moment";
 import { getMinMaxValue } from "@/CommonFunctions";
-import { Spinner, Select, SelectItem } from "@nextui-org/react";
 import MetcashReports from "./MetcashReports";
 import WoolworthsReports from "./WoolworthsReports";
 import OtherReports from "./OtherReports";
+import { EyeIcon, PlusIcon } from "@heroicons/react/20/solid";
 
 export default function DailyReportPage({
     url,
@@ -17,10 +17,10 @@ export default function DailyReportPage({
     user,
     currentUser,
     userPermission,
+    fetchDeliveryReport,
     // setFilterValue,
     // filterValue,
 }) {
-
     const handleClick = (coindex) => {
         setActiveIndexGTRS(3);
         setLastIndex(1);
@@ -108,7 +108,7 @@ export default function DailyReportPage({
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     const [filterValue, setFilterValue] = useState([
         {
-            name: "AccountNo",
+            name: "AccountNumber",
             operator: "contains",
             type: "string",
             value: "",
@@ -133,7 +133,7 @@ export default function DailyReportPage({
             value: "",
         },
         {
-            name: "SenderZone",
+            name: "SenderState",
             operator: "inlist",
             type: "select",
             value: null,
@@ -161,7 +161,7 @@ export default function DailyReportPage({
             emptyValue: "",
         },
         {
-            name: "SpecialInstructions",
+            name: "DeliveryInstructions",
             operator: "contains",
             type: "string",
             value: "",
@@ -224,7 +224,7 @@ export default function DailyReportPage({
             emptyValue: "",
         },
         {
-            name: "PODAvl",
+            name: "POD",
             operator: "inlist",
             type: "select",
             value: null,
@@ -279,9 +279,28 @@ export default function DailyReportPage({
         },
     ];
 
+    const [consId, setConsId] = useState(null);
+    const [commentsData, setCommentsData] = useState(null);
+
+    const handleAddComment = (consId) => {
+        setConsId(consId);
+        setIsAddModalOpen(true);
+    };
+
+    useEffect(() => {
+        if(dailyReportData?.length > 0 && consId){
+            setCommentsData(dailyReportData.find((data) => data.ConsignmentID == consId)?.Comments);
+        }
+    },[dailyReportData, consId]);
+    const handleViewComments = (data) => {
+        setCommentsData(data?.Comments);
+        setConsId(data?.ConsignmentID);
+        setIsViewModalOpen(true);
+    };
+
     const columns = [
         {
-            name: "AccountNo",
+            name: "AccountNumber",
             header: "Account Number",
             headerAlign: "center",
             textAlign: "center",
@@ -323,7 +342,7 @@ export default function DailyReportPage({
                     <div>
                         <span
                             className="underline text-blue-500 hover:cursor-pointer"
-                            onClick={() => handleClick(data.ConsignmentId)}
+                            onClick={() => handleClick(data.ConsignmentID)}
                         >
                             {" "}
                             {value}
@@ -351,7 +370,7 @@ export default function DailyReportPage({
             filterEditor: StringFilter,
         },
         {
-            name: "SenderZone",
+            name: "SenderState",
             header: "Sender Zone",
             group: "senderDetails",
             headerAlign: "center",
@@ -408,21 +427,31 @@ export default function DailyReportPage({
             },
         },
         {
-            name: "SpecialInstructions",
+            name: "DeliveryInstructions",
             header: "Special Instructions",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
         },
-        {
-            name: "Comments",
-            header: "Comments",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-        },
+        // {
+        //     name: "Comments",
+        //     header: "Comments",
+        //     headerAlign: "center",
+        //     textAlign: "center",
+        //     defaultWidth: 170,
+        //     filterEditor: StringFilter,
+        //     render: ({ value }) => {
+        //         return (
+        //             <div className="flex flex-col justify-center gap-2 line-clamp-2 text-ellipsis">
+        //                 {value?.length > 0 && value?.map((item) =>
+        //                     <div key={item?.CommentId}>
+        //                         {item?.Name}
+        //                     </div>)}
+        //             </div>
+        //         );
+        //     },
+        // },
         {
             name: "CorrectiveAction",
             header: "Corrective Actions",
@@ -472,7 +501,7 @@ export default function DailyReportPage({
             },
         },
         {
-            name: "PODAvl",
+            name: "POD",
             header: "POD Avl",
             headerAlign: "center",
             textAlign: "center",
@@ -483,15 +512,22 @@ export default function DailyReportPage({
                 wrapMultiple: false,
                 dataSource: podAvlOptions,
             },
+            render: ({ value, data }) => {
+                return (
+                    <div>
+                        {data?.POD ? "True" : "False"}
+                    </div>
+                );
+            },
         },
-        {
-            name: "PastComments",
-            header: "Past Comments",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-        },
+        // {
+        //     name: "PastComments",
+        //     header: "Past Comments",
+        //     headerAlign: "center",
+        //     textAlign: "center",
+        //     defaultWidth: 170,
+        //     filterEditor: StringFilter,
+        // },
         {
             name: "PastCorrectiveAction",
             header: "Past Corrective Actions",
@@ -532,73 +568,124 @@ export default function DailyReportPage({
             defaultWidth: 170,
             filterEditor: StringFilter,
         },
+        {
+            name: "Actions",
+            header: (
+                <div className="h-full w-full whitespace-nowrap !flex gap-3 items-center justify-center mt-5">
+                    <span>Past Comments</span>
+                    <EyeIcon className="h-5 w-5 text-sky-500" />
+                    <PlusIcon className="h-5 w-5 text-green-500" />
+                </div>
+            ),
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 200,
+            render: ({ value, data }) => {
+                return (
+                    <div className="flex gap-4 items-center px-2">
+                        <span
+                            className="underline text-sky-500 hover:cursor-pointer"
+                            onClick={() => handleViewComments(data)}
+                        >
+                            View All Comments
+                        </span>
+                        <span
+                            className="underline text-green-500 hover:cursor-pointer"
+                            onClick={() => handleAddComment(data.ConsignmentID)}
+                        >
+                            <PlusIcon className="h-5 w-5" />
+                        </span>
+                    </div>
+                );
+            },
+        },
     ];
+
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const handleAddClose = () => {
+        setIsAddModalOpen(false);
+    };
+    const handleViewClose = () => {
+        setIsViewModalOpen(false);
+        setCommentsData(null);
+    };
+
+    const [filteredMetcashData, setFilteredMetcashData] = useState(dailyReportData?.filter((item) => item?.CustomerTypeId == 1));
+    const [filteredWoolworthData, setFilteredWoolworthData] = useState(dailyReportData?.filter((item) => item?.CustomerTypeId == 2));
+    const [filteredOtherData, setFilteredOtherData] = useState(dailyReportData?.filter((item) => item?.CustomerTypeId == 3));
+    useEffect(() => {
+        if(dailyReportData?.length > 0){
+            setFilteredMetcashData(dailyReportData?.filter((item) => item?.CustomerTypeId == 1));
+            setFilteredWoolworthData(dailyReportData?.filter((item) => item?.CustomerTypeId == 2));
+            setFilteredOtherData(dailyReportData?.filter((item) => item?.CustomerTypeId == 3));
+        }
+    },[dailyReportData])
+
     let components = [
         <MetcashReports
-        filterValue={filterValue}
-        setFilterValue={setFilterValue}
-        groups={groups}
-        columns={columns}
-        data={dailyReportData}
+            filterValue={filterValue}
+            setFilterValue={setFilterValue}
+            groups={groups}
+            columns={columns}
+            data={filteredMetcashData}
+            url={url}
+            AToken={AToken}
+            consId={consId}
+            fetchData={fetchDeliveryReport}
+            currentUser={currentUser}
+            isViewModalOpen={isViewModalOpen}
+            handleViewModalClose={handleViewClose}
+            isAddModalOpen={isAddModalOpen}
+            handleAddModalClose={handleAddClose}
+            commentsData={commentsData}
         />,
         <WoolworthsReports
-        filterValue={filterValue}
-        setFilterValue={setFilterValue}
-        groups={groups}
-        columns={columns}
-        data={dailyReportData}
+            filterValue={filterValue}
+            setFilterValue={setFilterValue}
+            groups={groups}
+            columns={columns}
+            data={filteredWoolworthData}
+            url={url}
+            AToken={AToken}
+            consId={consId}
+            fetchData={fetchDeliveryReport}
+            currentUser={currentUser}
+            isViewModalOpen={isViewModalOpen}
+            handleViewModalClose={handleViewClose}
+            isAddModalOpen={isAddModalOpen}
+            handleAddModalClose={handleAddClose}
+            commentsData={commentsData}
         />,
         <OtherReports
             filterValue={filterValue}
             setFilterValue={setFilterValue}
             groups={groups}
             columns={columns}
-            data={dailyReportData}
+            data={filteredOtherData}
+            url={url}
+            AToken={AToken}
+            consId={consId}
+            fetchData={fetchDeliveryReport}
+            currentUser={currentUser}
+            isViewModalOpen={isViewModalOpen}
+            handleViewModalClose={handleViewClose}
+            isAddModalOpen={isAddModalOpen}
+            handleAddModalClose={handleAddClose}
+            commentsData={commentsData}
         />,
     ];
 
-
-    const [filteredData, setFilteredData] = useState(dailyReportData);
-    const filterDataBasedOnUser = (val) => {
-        let newData = [];
-
-        if (val != "") {
-            const selectedUserName = unileverCustomers?.find(
-                (item) => item?.CustomerId == val
-            )?.CustomerName;
-            dailyReportData?.map((item) => {
-                if (selectedUserName == "Woolworths") {
-                    if (
-                        item?.ReceiverName == "AUST SAFEWAY - MULGRAVE" ||
-                        item?.ReceiverName.toLowerCase().includes("woolworths")
-                    ) {
-                        newData.push(item);
-                    }
-                } else {
-                    if (
-                        item?.ReceiverName != "AUST SAFEWAY - MULGRAVE" &&
-                        !item?.ReceiverName.toLowerCase().includes("woolworths")
-                    ) {
-                        newData.push(item);
-                    }
-                }
-            });
-        } else {
-            newData = dailyReportData;
-        }
-
-        setFilteredData(newData);
-    };
 
     return (
         <div className="min-h-screen h-full px-8">
             <div className="sm:flex-auto mt-6">
                 <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                    Unilever Daily Report
+                    Unilever Delivery Report
                 </h1>
             </div>
             <div className="w-full flex gap-4 items-center mt-4">
-                <ul className="flex space-x-0 mt-5">
+                <ul className="flex space-x-0">
                     <li
                         className={`cursor-pointer ${
                             activeComponentIndex === 0
@@ -607,7 +694,7 @@ export default function DailyReportPage({
                         }`}
                         onClick={() => setActiveComponentIndex(0)}
                     >
-                        <div className="px-2">Woolworths</div>
+                        <div className="px-2"> Metcash</div>
                     </li>
                     <li
                         className={`cursor-pointer ${
@@ -617,7 +704,7 @@ export default function DailyReportPage({
                         }`}
                         onClick={() => setActiveComponentIndex(1)}
                     >
-                        <div className="px-2"> Metcash</div>
+                        <div className="px-2">Woolworths</div>
                     </li>
                     <li
                         className={`cursor-pointer ${
@@ -631,9 +718,7 @@ export default function DailyReportPage({
                     </li>
                 </ul>
             </div>
-            <div>
-                {components[activeComponentIndex]}
-            </div>
+            <div>{components[activeComponentIndex]}</div>
         </div>
     );
 }

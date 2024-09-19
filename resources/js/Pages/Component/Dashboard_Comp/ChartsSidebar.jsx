@@ -202,7 +202,7 @@ export default function ChartsSidebar({
         },
         {
             id: 21,
-            name: "Daily Report",
+            name: "Delivery Report",
             href: "#",
             icon: ClipboardDocumentIcon,
             current: false,
