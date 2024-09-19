@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import TableStructure from "@/Components/TableStructure";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
@@ -20,10 +20,6 @@ export default function DailyReportPage({
     // setFilterValue,
     // filterValue,
 }) {
-    const gridRef = useRef(null);
-    const [selected, setSelected] = useState([]);
-    const [selectedUser, setSelectedUser] = useState([]);
-    const [selectedRecords, setselectedRecords] = useState([]);
 
     const handleClick = (coindex) => {
         setActiveIndexGTRS(3);
@@ -110,11 +106,6 @@ export default function DailyReportPage({
     ]);
 
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
-    let components = [
-        <MetcashReports />,
-        <WoolworthsReports />,
-        <OtherReports />,
-    ];
     const [filterValue, setFilterValue] = useState([
         {
             name: "AccountNo",
@@ -550,6 +541,30 @@ export default function DailyReportPage({
             filterEditor: StringFilter,
         },
     ];
+    let components = [
+        <MetcashReports
+        filterValue={filterValue}
+        setFilterValue={setFilterValue}
+        groups={groups}
+        columns={columns}
+        data={dailyReportData}
+        />,
+        <WoolworthsReports
+        filterValue={filterValue}
+        setFilterValue={setFilterValue}
+        groups={groups}
+        columns={columns}
+        data={dailyReportData}
+        />,
+        <OtherReports
+            filterValue={filterValue}
+            setFilterValue={setFilterValue}
+            groups={groups}
+            columns={columns}
+            data={dailyReportData}
+        />,
+    ];
+
 
     const [filteredData, setFilteredData] = useState(dailyReportData);
     const filterDataBasedOnUser = (val) => {
@@ -626,19 +641,6 @@ export default function DailyReportPage({
             </div>
             <div>
                 {components[activeComponentIndex]}
-                {filterValue && filteredData && (
-                    <TableStructure
-                        id={"ReportId"}
-                        setSelected={setSelected}
-                        gridRef={gridRef}
-                        selected={selected}
-                        setFilterValueElements={setFilterValue}
-                        tableDataElements={filteredData}
-                        filterValueElements={filterValue}
-                        groupsElements={groups}
-                        columnsElements={columns}
-                    />
-                )}
             </div>
         </div>
     );

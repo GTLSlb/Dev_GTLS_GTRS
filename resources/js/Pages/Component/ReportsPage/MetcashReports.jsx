@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import TableStructure from "@/Components/TableStructure";
 
-export default function MetcashReports() {
+export default function MetcashReports({ filterValue, setFilterValue, groups, columns, data }) {
+    const gridRef = useRef(null);
+    const [selected, setSelected] = useState([]);
     return(
         <div>
-                {filterValue && filteredData && (
+                {filterValue && data && (
                     <TableStructure
                         id={"ReportId"}
                         setSelected={setSelected}
                         gridRef={gridRef}
                         selected={selected}
                         setFilterValueElements={setFilterValue}
-                        tableDataElements={filteredData}
+                        tableDataElements={data}
                         filterValueElements={filterValue}
                         groupsElements={groups}
                         columnsElements={columns}
