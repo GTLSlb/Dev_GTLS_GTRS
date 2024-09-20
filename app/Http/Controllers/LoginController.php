@@ -37,14 +37,13 @@ class LoginController extends Controller
         ];
 
         $url = $_ENV['GTAM_API_URL'];
-        $appID = $_ENV['REACT_APP_ID'];
-        $expiration = time() - (60 * 60 * 24); // expiration time set to 24h before current time
+
         // Get an array of all the cookies
         $cookies = $_COOKIE;
 
         // Loop through each cookie and set it to expire
         foreach ($cookies as $name => $value) {
-            setcookie($name, '', $expiration);
+            setcookie($name, '', 1, '/', $_ENV['SESSION_DOMAIN'], true);
         }
         $response = Http::withHeaders($headers)->get("$url" . "Login");
         if ($response->successful()) {
@@ -94,7 +93,13 @@ class LoginController extends Controller
                         $token = $tokenRes->json();
                         $cookieName = 'access_token';
                         $cookieValue = $token['access_token'];
-                        $expiry = $token['expires_in'];
+                        $expiry = 60 * 60 * 24 * 2; //48h
+
+                        setcookie('previous_page', $_ENV['APP_URL'] . "/gtam/employees", time() + $expiry, '/', '', true);
+
+                        $cookieName = 'access_token';
+                        $cookieValue = $token['access_token'];
+
                         setcookie($cookieName, $cookieValue, time() + $expiry, '/', $_ENV['SESSION_DOMAIN'], true);
                         setcookie('refresh_token', $token['refresh_token'], time() + $expiry, '/', '', true);
 
@@ -159,19 +164,19 @@ class LoginController extends Controller
         $userController = new RegisteredUserController();
         $user = $userController->getCurrentUserName($request);
         $userMsg = json_decode($user->content(), true);
-        //dd(gettype($userMsg) != "array" && gettype($userMsg) != "object" && gettype($userMsg) == "string");
+
         if(gettype($userMsg) != "array" && gettype($userMsg) != "object" && gettype($userMsg) == "string") {
         if ($userMsg['message'] == 'User not found') {
 
                 $request->session()->invalidate();
                 $request->session()->flush();
-                // Set the expiration time for the cookies to 24 hours before the current time
-                $expiration = time() - (60 * 60 * 24);
+                // Set the expiration time for the cookies to 1/1/1970
+                $expiration = 1;
                 $cookies = $_COOKIE;
 
                 // Loop through each cookie and set it to expire
                 foreach ($cookies as $name => $value) {
-                    setcookie($name, '', $expiration);
+                    setcookie($name, '', $expiration, '/', $_ENV['SESSION_DOMAIN'], true);
                 }
                 $request->session()->regenerateToken();
                 // return redirect('/login');
@@ -197,34 +202,21 @@ class LoginController extends Controller
                 $request->session()->forget('user');
                 $request->session()->invalidate();
                 $request->session()->flush();
-                // Set the expiration time for the cookies to 24 hours before the current time
-                $expiration = time() - (60 * 60 * 24);
+                // Set the expiration time for the cookies to 1/1/1970
+                $expiration = 1;
 
                 // Get an array of all the cookies
                 $cookies = $_COOKIE;
 
                 // Loop through each cookie and set it to expire
                 foreach ($cookies as $name => $value) {
-                    setcookie($name, '', $expiration);
+                    setcookie($name, '', $expiration, '/', $_ENV['SESSION_DOMAIN'], true);
                 }
 
                 // Regenerate the session token
                 $request->session()->regenerateToken();
-
-                // Redirect to the login page
-                // return redirect('/login');
-
-                // Redirect to Microsoft Azure logout URL
-                $azureLogoutUrl = 'https://login.microsoftonline.com/common/oauth2/v2.0/logout';
-                // or https://login.microsoftonline.com/{tenant}/oauth2/v2.0/logout
-
-                // The URL to redirect back to after logout (your application's home or login page)
-                $postLogoutRedirectUri = urlencode('http://localhost:8000/login');
-                // return redirect()->route('azure.logout');
-                //return redirect()->away($azureLogoutUrl . '?post_logout_redirect_uri=' . $postLogoutRedirectUri);
             } else {
                 // Handle the case where the logout request fails
-                // You can log an error or return a specific response
                 return redirect()->back()->withErrors(['error' => 'Logout failed. Please try again.']);
             }
         }
@@ -239,19 +231,20 @@ class LoginController extends Controller
         $userController = new RegisteredUserController();
         $user = $userController->getCurrentUserName($request);
         $userMsg = json_decode($user->content(), true);
-        //dd(gettype($userMsg) != "array" && gettype($userMsg) != "object" && gettype($userMsg) == "string");
+
+        //check if user is not found
         if(gettype($userMsg) != "array" && gettype($userMsg) != "object" && gettype($userMsg) == "string") {
         if ($userMsg['message'] == 'User not found') {
 
                 $request->session()->invalidate();
                 $request->session()->flush();
-                // Set the expiration time for the cookies to 24 hours before the current time
-                $expiration = time() - (60 * 60 * 24);
+                // Set the expiration time for the cookies to 1/1/1970
+                $expiration = 1;
                 $cookies = $_COOKIE;
 
                 // Loop through each cookie and set it to expire
                 foreach ($cookies as $name => $value) {
-                    setcookie($name, '', $expiration);
+                    setcookie($name, '', $expiration, '/', $_ENV['SESSION_DOMAIN'], true);
                 }
                 $request->session()->regenerateToken();
                 // return redirect('/login');
@@ -260,22 +253,19 @@ class LoginController extends Controller
                 $request->session()->forget('user');
                 $request->session()->invalidate();
                 $request->session()->flush();
-                // Set the expiration time for the cookies to 24 hours before the current time
-                $expiration = time() - (60 * 60 * 24);
+                // Set the expiration time for the cookies to 1/1/1970
+                $expiration = 1;
 
                 // Get an array of all the cookies
                 $cookies = $_COOKIE;
 
                 // Loop through each cookie and set it to expire
                 foreach ($cookies as $name => $value) {
-                    setcookie($name, '', $expiration);
+                    setcookie($name, '', $expiration, '/', $_ENV['SESSION_DOMAIN'], true);
                 }
 
                 // Regenerate the session token
                 $request->session()->regenerateToken();
-
-                // Redirect to the login page
-                // return redirect('/login');
         }
     }
 
@@ -286,9 +276,9 @@ class LoginController extends Controller
 
         // The URL to redirect back to after logout (your application's home or login page)
         $postLogoutRedirectUri = urlencode(route('home')); // Replace 'home' with your route name
-        dd($azureLogoutUrl . '?post_logout_redirect_uri=' . $postLogoutRedirectUri);
+
         // Redirect to Microsoft Azure logout endpoint with post-logout redirect URL
-        //return redirect()->away($azureLogoutUrl . '?post_logout_redirect_uri=' . $postLogoutRedirectUri);
+        return redirect()->away($azureLogoutUrl . '?post_logout_redirect_uri=' . $postLogoutRedirectUri);
         // return redirect('/login');
     }
 }
