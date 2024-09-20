@@ -419,7 +419,7 @@ export default function CollapseSidebar({
     }
     function isItemActive(menuItemLabel) {
         let active = false;
-    
+
         // Helper function to recursively check if any item or its sub-options are active
         const checkActive = (items) => {
             for (const item of items) {
@@ -433,15 +433,17 @@ export default function CollapseSidebar({
             }
             return false;
         };
-    
+
         // Find the item by name and check if it or its sub-options are active
-        const menuItem = sidebarElements.find((item) => item.name.toLowerCase() === menuItemLabel.toLowerCase());
-    
+        const menuItem = sidebarElements.find(
+            (item) => item.name.toLowerCase() === menuItemLabel.toLowerCase()
+        );
+
         if (menuItem) {
             // Check if the current item or any of its sub-options is active
             active = checkActive([menuItem]);
         }
-    
+
         return active;
     }
 
@@ -536,77 +538,75 @@ export default function CollapseSidebar({
         setSidebarElements(updatedElements);
     };
     return (
-        <div className=" h-full relative ">
-            <div className=" overflow-y-auto h-full relative ">
-                <Sidebar
-                    collapsed={collapsed} // collapsed the menu
-                    toggled={toggled}
-                    width="240px"
-                    onBackdropClick={() => setToggled(false)}
-                    onBreakPoint={setBroken}
-                    image="https://user-images.githubusercontent.com/25878302/144499035-2911184c-76d3-4611-86e7-bc4e8ff84ff5.jpg"
-                    rtl={rtl}
-                    breakPoint="md"
-                    backgroundColor={hexToRgba(
-                        collapsed
-                            ? themescollapse[theme].sidebar.backgroundColor
-                            : themes[theme].sidebar.backgroundColor,
-                        hasImage ? 0.9 : 1
-                    )}
-                    rootStyles={{
-                        color: collapsed
-                            ? themescollapse[theme].sidebar.color
-                            : themes[theme].sidebar.color,
-                        height: "100%",
-                        // paddingBottom: "64px",
-                        position: "relative",
-                        backgroundColor: "#f6f6f6",
-                    }}
-                >
-                    <div className=" h-full ">
-                        {/* Arrow to close and open it  */}
-                        <div className="p-5 flex items-center justify-between">
+        <div className="h-full relative">
+            <Sidebar
+                collapsed={collapsed} // collapsed the menu
+                toggled={toggled}
+                width="240px"
+                onBackdropClick={() => setToggled(false)}
+                onBreakPoint={setBroken}
+                image="https://user-images.githubusercontent.com/25878302/144499035-2911184c-76d3-4611-86e7-bc4e8ff84ff5.jpg"
+                rtl={rtl}
+                breakPoint="md"
+                backgroundColor={hexToRgba(
+                    collapsed
+                        ? themescollapse[theme].sidebar.backgroundColor
+                        : themes[theme].sidebar.backgroundColor,
+                    hasImage ? 0.9 : 1
+                )}
+                rootStyles={{
+                    color: collapsed
+                        ? themescollapse[theme].sidebar.color
+                        : themes[theme].sidebar.color,
+                    height: "100%",
+                    // paddingBottom: "64px",
+                    position: "relative",
+                    backgroundColor: "#f6f6f6",
+                }}
+            >
+                <div className=" h-full ">
+                    {/* Arrow to close and open it  */}
+                    <div className="p-5 flex items-center justify-between">
+                        <div
+                            className={
+                                collapsed
+                                    ? " hidden transform transition"
+                                    : " block transform  transition"
+                            }
+                        >
+                            <p className="text-sm truncate w-24">
+                                {user.FirstName} {user.LastName}
+                            </p>
+                            <p className="text-xs truncate w-32">
+                                {user.Email}
+                            </p>
+                        </div>
+                        <Button
+                            isIconOnly
+                            className="bg-zinc-300 hover:bg-zinc-200"
+                            aria-label="Like"
+                            onClick={() => {
+                                setIsOpen(false);
+                                setCollapsed(!collapsed);
+                            }}
+                        >
                             <div
                                 className={
                                     collapsed
-                                        ? " hidden transform transition"
-                                        : " block transform  transition"
+                                        ? "rotate-0 transform transition"
+                                        : "rotate-180 transform  transition"
                                 }
                             >
-                                <p className="text-sm truncate w-24">
-                                    {user.FirstName}{" "}
-                                    {user.LastName}
-                                </p>
-                                <p className="text-xs truncate w-32">
-                                    {user.Email}
-                                </p>
-                            </div>
-                            <Button
-                                isIconOnly
-                                className="bg-zinc-300 hover:bg-zinc-200"
-                                aria-label="Like"
-                                onClick={() => {
-                                    setIsOpen(false);
-                                    setCollapsed(!collapsed);
-                                }}
-                            >
-                                <div
+                                <KeyboardDoubleArrowRightIcon
                                     className={
-                                        collapsed
-                                            ? "rotate-0 transform transition"
-                                            : "rotate-180 transform  transition"
+                                        collapsed ? "w-5 h-5" : "w-5 h-5"
                                     }
-                                >
-                                    <KeyboardDoubleArrowRightIcon
-                                        className={
-                                            collapsed ? "w-5 h-5" : "w-5 h-5"
-                                        }
-                                    />
-                                </div>
-                            </Button>
-                        </div>
-                        {!collapsed && (
-                            <div className="mt-5 mb-5 flex-1 xl:flex-col space-y-1 px-2 w-full md:flex-row md:flex md:mt-0 hover:cursor-pointer containerscroll">
+                                />
+                            </div>
+                        </Button>
+                    </div>
+                    {!collapsed && (
+                        <div className="mt-5 mb-5 flex-1 xl:flex-col space-y-1 px-2 w-full md:flex-row md:flex md:mt-0 hover:cursor-pointer containerscroll">
                             {showSelect && (
                                 <div className="group flex flex-col items-center px-2 py-2 text-gray-700 text-sm font-medium rounded-md w-full hover:bg-gray-100">
                                     <div
@@ -669,26 +669,26 @@ export default function CollapseSidebar({
                                 </div>
                             )}
                         </div>
-                        )}
-                        
-                        {/* The menu it self */}
-                        <div className="flex w-full max-w-xs items-center gap-2"></div>
-                        <div
-                            style={{
-                                flex: 1,
-                                marginBottom: "32px",
-                            }}
-                            className=""
+                    )}
+
+                    {/* The menu it self */}
+                    <div className="flex w-full max-w-xs items-center gap-2"></div>
+                    <div
+                        style={{
+                            flex: 1,
+                            marginBottom: "32px",
+                        }}
+                        className=""
+                    >
+                        <Menu
+                            rootStyles="w-1/2 overflow-auto bg-gray-100  mx-10"
+                            menuItemStyles={menuItemStyles}
                         >
-                            <Menu
-                                rootStyles="w-1/2 overflow-auto bg-gray-100 container mx-10"
-                                menuItemStyles={menuItemStyles}
-                            >
-                                {sidebarElements.map((menuItem, itemIndex) => (
-                                    <>
-                                        {menuItem?.options && !collapsed ? (
-                                            <div className="px-5 py-2">
-                                                <Accordion
+                            {sidebarElements.map((menuItem, itemIndex) => (
+                                <>
+                                    {menuItem?.options && !collapsed ? (
+                                        <div className="px-5 py-2">
+                                            <Accordion
                                                 key={menuItem.id}
                                                 transition={{
                                                     duration: "300ms",
@@ -777,10 +777,9 @@ export default function CollapseSidebar({
                                                     )}
                                                 </AccordionItem>
                                             </Accordion>
-                                            </div>
-                                            
-                                        ): (
-                                            <MenuItem
+                                        </div>
+                                    ) : (
+                                        <MenuItem
                                             className=""
                                             key={itemIndex}
                                             active={isItemActive(menuItem.name)}
@@ -824,15 +823,13 @@ export default function CollapseSidebar({
                                                 </div>
                                             </div>
                                         </MenuItem>
-                                        )}
-                                        
-                                    </>
-                                ))}
-                            </Menu>
-                        </div>
+                                    )}
+                                </>
+                            ))}
+                        </Menu>
                     </div>
-                </Sidebar>
-            </div>
+                </div>
+            </Sidebar>
         </div>
     );
 }

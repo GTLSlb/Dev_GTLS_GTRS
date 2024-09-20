@@ -4,6 +4,7 @@ import {
     LoadScript,
     Marker,
     DirectionsService,
+    TrafficLayer,
     DirectionsRenderer,
 } from "@react-google-maps/api";
 import { Button, Card, Divider, Image } from "@nextui-org/react";
@@ -110,7 +111,7 @@ export default function ConsMap({ consignment, setActiveIndexGTRS }) {
         if (window.google && window.google.maps) {
             return {
                 url: iconUrl,
-                scaledSize: new window.google.maps.Size(20, 20),
+                scaledSize: new window.google.maps.Size(30, 30),
                 origin: new window.google.maps.Point(0, 0),
                 anchor: new window.google.maps.Point(10, 10),
             };
@@ -212,17 +213,19 @@ export default function ConsMap({ consignment, setActiveIndexGTRS }) {
             ) : (
                 <div className="flex flex-col w-96 p-3">
                     <div>
-                    <Button
-                        size="sm"
-                        variant="light"
-                        startContent={<ChevronLeftIcon className="h-4 w-4" />}
-                        onClick={() => setActiveIndexGTRS(23)}
-                        className="mt-2 w-20"
-                    >
-                        Back
-                    </Button>
+                        <Button
+                            size="sm"
+                            variant="light"
+                            startContent={
+                                <ChevronLeftIcon className="h-4 w-4" />
+                            }
+                            onClick={() => setActiveIndexGTRS(23)}
+                            className="mt-2 w-20"
+                        >
+                            Back
+                        </Button>
                     </div>
-                    
+
                     <Divider className="my-2" />
                     <div className="flex gap-2">
                         <span className="font-bold">Consignment No</span>
@@ -294,6 +297,7 @@ export default function ConsMap({ consignment, setActiveIndexGTRS }) {
                     }}
                     center={mapCenter}
                 >
+                    <TrafficLayer />
                     {/* Marker for the Sender */}
                     {/* <Marker position={sender} /> */}
 
@@ -314,50 +318,51 @@ export default function ConsMap({ consignment, setActiveIndexGTRS }) {
 
                     {/* Render the route */}
                     {directionsResponse && (
-                        <DirectionsRenderer directions={directionsResponse} />
+                        <DirectionsRenderer
+                            directions={directionsResponse}
+                            options={{
+                                polylineOptions: {
+                                    strokeColor: "#8b5cf6", // Change to your desired color, e.g., red
+                                    strokeOpacity: 0.9, // Adjust opacity if needed
+                                    strokeWeight: 6, // Adjust the thickness of the line
+                                },
+                            }}
+                        />
                     )}
 
                     {/* Markers for the events */}
                     {events.map((event) => {
                         try {
-                            // Parse coordinates from string to array
-                            const coords = JSON.parse(
-                                event.geometry_coordinates
-                            );
+                            // Use latitude and longitude directly from the event object
+                            const lat = parseFloat(event.latitude);
+                            const lng = parseFloat(event.longitude);
 
-                            // Ensure coords is an array and contains valid longitude and latitude values
-                            if (Array.isArray(coords) && coords.length === 2) {
-                                const lat = parseFloat(coords[1]);
-                                const lng = parseFloat(coords[0]);
-
-                                // Check if lat and lng are valid numbers before rendering the marker
-                                if (!isNaN(lat) && !isNaN(lng)) {
-                                    // Check if the coordinates fall within the map bounds
-                                    if (
-                                        lat >= australiaBounds.south &&
-                                        lat <= australiaBounds.north &&
-                                        lng >= australiaBounds.west &&
-                                        lng <= australiaBounds.east
-                                    ) {
-                                        return (
-                                            <Marker
-                                                key={event.id}
-                                                position={{ lat, lng }}
-                                                icon={getIcon(event.event_type)}
-                                                onClick={() => setEvent(event)}
-                                            />
-                                        );
-                                    } else {
-                                        console.warn(
-                                            `Event ${event.id} is outside of Australia bounds: Lat: ${lat}, Lng: ${lng}`
-                                        );
-                                    }
+                            // Check if lat and lng are valid numbers before rendering the marker
+                            if (!isNaN(lat) && !isNaN(lng)) {
+                                // Check if the coordinates fall within the map bounds
+                                if (
+                                    lat >= australiaBounds.south &&
+                                    lat <= australiaBounds.north &&
+                                    lng >= australiaBounds.west &&
+                                    lng <= australiaBounds.east
+                                ) {
+                                    return (
+                                        <Marker
+                                            key={event.id}
+                                            position={{ lat, lng }}
+                                            icon={getIcon(event.event_type)}
+                                            onClick={() => setEvent(event)}
+                                        />
+                                    );
+                                } else {
+                                    console.warn(
+                                        `Event ${event.id} is outside of Australia bounds: Lat: ${lat}, Lng: ${lng}`
+                                    );
                                 }
                             }
                         } catch (error) {
                             console.error(
-                                "Error parsing event coordinates:",
-                                event.geometry_coordinates,
+                                "Error processing event coordinates:",
                                 error
                             );
                         }
