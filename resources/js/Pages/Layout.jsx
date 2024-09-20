@@ -7,7 +7,7 @@ import axios from "axios";
 import hubConnection from "./SignalR";
 import NoAccess from "@/Components/NoAccess";
 import Cookies from "js-cookie";
-// import AllRoutes from "./RoutesPage";
+import { Routes, Route } from "react-router-dom";
 
 export default function Sidebar(Boolean) {
     const [currentUser, setcurrentUser] = useState(null);
@@ -86,20 +86,11 @@ export default function Sidebar(Boolean) {
     }, [currentUser]);
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [activePage, setactivePage] = useState(0);
-    const [activeIndexGtam, setActiveIndexGtam] = useState(1);
     const [activeCon, setactiveCon] = useState(0);
     const [loadingGtrs, setLoadingGtrs] = useState(false);
-    const [activeIndexGTRS, setActiveIndexGTRS] = useState(0);
     const [activeHeader, setactiveHeader] = useState("null");
-    const [currentComponent, setcurrentComponent] = useState([]);
-    const [activeIndexInv, setActiveIndexInv] = useState(1);
     const [invoiceDetails, setInvoiceDetails] = useState();
     const [PODetails, setPODetails] = useState();
-
-    const handleGTAMIndexChange = (e) => {
-        setActiveIndexGtam(e);
-    };
 
     const components = [
         <Gtrs
@@ -228,7 +219,36 @@ export default function Sidebar(Boolean) {
                             setActiveIndexGTRS={setActiveIndexGTRS}
                             loadingGtrs={loadingGtrs}
                         />
-                        {components[activePage]}
+                        <Routes>
+                        <Route
+                            path="/gtrs/*"
+                            element={
+                                <Gtrs
+                                setToken={setToken}
+                                sessionData={sessionData}
+                                user={user}
+                                setUser={setUser}
+                                setactivePage={setactivePage}
+                                setactiveCon={setactiveCon}
+                                setMobileMenuOpen={setMobileMenuOpen}
+                                mobileMenuOpen={mobileMenuOpen}
+                                activeHeader={activeHeader}
+                                activeIndexGTRS={activeIndexGTRS}
+                                setActiveIndexGTRS={setActiveIndexGTRS}
+                                loadingGtrs={loadingGtrs}
+                                setLoadingGtrs={setLoadingGtrs}
+                                currentUser={currentUser}
+                                AToken={Token}
+                                setCurrentUser={setcurrentUser}
+                            />}
+                        />
+                            <Route
+                                path="/login"
+                                element={<Login />}
+                            />
+                            <Route path="/*" element={<NotFoundPage />} />
+                        </Routes>
+                        {/* {components[activePage]} */}
                     </div>
                 ) : (
                     <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">

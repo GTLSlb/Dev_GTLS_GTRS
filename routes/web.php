@@ -170,6 +170,9 @@ Route::middleware('custom.auth')->group(function () {
     })->name('azure.login');
     Route::get('/auth/azure/callback', [AzureAuthController::class, 'handleCallback'])->name('azure.callback');
     Route::get('/azure/logout', [LoginController::class, 'azureLogout'])->name('azure.logout');
+    Route::get('/{path?}', function (Request $request) {
+        return Inertia::render('Layout');
+    })->where('path', '.*');
 });
 
 Route::post('/getAppLogo', [ImageController::class, 'showAppLogo'])->name('logo.show');
