@@ -3,7 +3,7 @@ import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 
 // Utility function for exporting to Excel
-export const exportToExcel = (jsonData, columnMapping, fileName, customCellHandlers = {}) => {
+export const exportToExcel = (jsonData, columnMapping, fileName, customCellHandlers = {}, dateColumns = []) => {
     const selectedColumns = jsonData.selectedColumns.map((column) => column.name);
     const newSelectedColumns = selectedColumns.map(
         (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
@@ -44,13 +44,14 @@ export const exportToExcel = (jsonData, columnMapping, fileName, customCellHandl
     data.forEach((rowData) => {
         const row = worksheet.addRow(Object.values(rowData));
 
-        // Apply date formats or other custom formats (if needed)
-        const dateColumns = ["Dispatch Date", "Delivery Date", "RDD", "Calculated Delivery Date"];
+        // Apply date formats dynamically to date columns
         dateColumns.forEach((col) => {
-            const index = newSelectedColumns.indexOf(col);
+            const index = selectedColumns.indexOf(col);
+            console.log(selectedColumns)
             if (index !== -1) {
-                const cell = row.getCell(index + 1);
-                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+                console.log(col)
+                const cell = row.getCell(index + 1); // ExcelJS uses 1-based indexing
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM"; // You can adjust this format as needed
             }
         });
     });

@@ -4,11 +4,11 @@ import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import moment from "moment";
-import { getMinMaxValue } from "@/CommonFunctions";
 import MetcashReports from "./MetcashReports";
 import WoolworthsReports from "./WoolworthsReports";
 import OtherReports from "./OtherReports";
 import { EyeIcon, PlusIcon } from "@heroicons/react/20/solid";
+import { getMinMaxValue } from "@/Components/utils/dateUtils";
 
 export default function DailyReportPage({
     url,

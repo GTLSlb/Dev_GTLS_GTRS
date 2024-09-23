@@ -13,17 +13,16 @@ export const handleFilterTable = (gridRef, filteredData) => {
     let selectedColVal = allHeaderColumns.filter(
         (col) => col.name !== "edit"
     );
-console.log(filteredData)
     const filterValue = [];
     filteredData?.map((val) => {
         let isMatch = true;
         for (const col of selectedColVal) {
             const { name, value, type, operator } = col;
             const cellValue = value;
+            const typeValue = type;
             let conditionMet = false;
             // Skip the filter condition if no filter is set (cellValue is null or empty)
             if (!cellValue || cellValue.length === 0) {
-                console.log(!cellValue || cellValue.length === 0)
                 conditionMet = true;
                 continue;
             }
@@ -169,7 +168,6 @@ console.log(filteredData)
 
                 switch (operator) {
                     case "eq":
-                        console.log(cellValue);
                         conditionMet =
                             (cellValue?.length > 0 || cellValue >= 0)&&
                             cellValueLowerCase === valLowerCase;
@@ -360,6 +358,5 @@ console.log(filteredData)
             });
         });
     }
-    console.log(filterValue);
     return { selectedColumns: selectedColVal, filterValue: filterValue };
 }

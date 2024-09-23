@@ -26,7 +26,8 @@ import GraphPresentation from "./Presentation/GraphPresentation";
 import DailyReportPage from "./ReportsPage/DeliveryReportPage";
 import Incident from "./Incident";
 import swal from "sweetalert";
-import { handleSessionExpiration } from '@/CommonFunctions';
+import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
+import { getMinMaxValue } from "@/Components/utils/dateUtils";
 
 export default function charts({
     setCusomterAccounts,
@@ -1488,36 +1489,6 @@ export default function charts({
         setDataFromChild(data);
     };
     const [lastIndex, setLastIndex] = useState(0);
-    function getMinMaxValue(data, fieldName, identifier) {
-        // Check for null safety
-        if (!data || !Array.isArray(data) || data.length === 0) {
-            return null;
-        }
-
-        // Sort the data based on the fieldName
-        const sortedData = [...data].sort((a, b) => {
-            if (a[fieldName] < b[fieldName]) return -1;
-            if (a[fieldName] > b[fieldName]) return 1;
-            return 0;
-        });
-
-        // Return the minimum or maximum value based on the identifier
-        let resultDate;
-        if (identifier === 1) {
-            resultDate = new Date(sortedData[0][fieldName]);
-        } else if (identifier === 2) {
-            resultDate = new Date(sortedData[sortedData.length - 1][fieldName]);
-        } else {
-            return null;
-        }
-
-        // Convert the resultDate to the desired format "01-10-2023"
-        const day = String(resultDate.getDate()).padStart(2, "0");
-        const month = String(resultDate.getMonth() + 1).padStart(2, "0"); // +1 because months are 0-indexed
-        const year = resultDate.getFullYear();
-
-        return `${day}-${month}-${year}`;
-    }
     // Function to format the date
     const formatDate = (dateString) => {
         if (dateString) {
@@ -1793,32 +1764,14 @@ export default function charts({
     }, [filtersMissingPOD]);
 
     const [dailyReportData, setDailyReportData] = useState([]);
-    const fetchDeliveryReport = async () => {
-        try {
-            const res = await axios
-                .get(`${url}Delivery`, {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`
-                    }
-                });
-            setDailyReportData(res.data || []);
-        } catch (err) {
-            if (err.response && err.response.status === 401) {
-                // Handle 401 error using SweetAlert
-                swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                }).then(async function () {
-                    await handleSessionExpiration();
-                });
-            } else {
-                // Handle other errors
-                console.log(err);
-            }
+
+    async function fetchDeliveryReport() {
+        const data = await getApiRequest(`${url}Delivery`, {
+            UserId: currentUser?.UserId,
+        });
+
+        if (data) {
+            setDailyReportData(data || []);
         }
     }
 

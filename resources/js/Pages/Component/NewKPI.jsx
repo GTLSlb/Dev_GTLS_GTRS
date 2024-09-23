@@ -20,9 +20,12 @@ import axios from "axios";
 import swal from "sweetalert";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import NewKPIModalAddReason from "./KPI/NEWKPIModal";
-import { handleSessionExpiration } from '@/CommonFunctions';
+import { getApiRequest, handleSessionExpiration } from "@/CommonFunctions";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
+import { getMinMaxValue } from "@/Components/utils/dateUtils";
+import ExportPopover from "@/Components/ExportPopover";
+import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -60,23 +63,20 @@ function NewKPI({
     const [receiverStateOptions, setReceiverStateOptions] = useState([]);
     const [senderStateOptions, setSenderStateOptions] = useState([]);
 
-    const fetchData = async () => {
-        try {
-            const response = await axios.get(`${url}/KPINew`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            });
+    async function fetchData() {
+        const data = await getApiRequest(`${url}/KPINew`, {
+            UserId: currentUser?.UserId,
+            // Authorization: `Bearer ${Token}`,
+        });
 
-            // Convert TransitDays to string
+        if (data) {
             const modifiedData =
-            response?.data != ""
-            ? response?.data?.map((item) => ({
-                ...item,
-                TransitDays: item.TransitDays.toString(),
-            }))
-            : [];
+                data != ""
+                    ? data?.map((item) => ({
+                          ...item,
+                          TransitDays: item.TransitDays.toString(),
+                      }))
+                    : [];
 
             setKPIData(modifiedData);
             setSenderStateOptions(
@@ -92,22 +92,56 @@ function NewKPI({
                 }))
             );
             setIsFetching(false);
-        } catch (error) {
-            if (error.response && error.response.status === 401) {
-                swal({
-                    title: "Session Expired!",
-                    text: "Please login again",
-                    type: "error",
-                    icon: "info",
-                    confirmButtonText: "OK",
-                }).then(async function () {
-                    await handleSessionExpiration();
-                });
-            } else {
-                console.error(error);
-            }
         }
-    };
+    }
+    // const fetchData = async () => {
+    //     try {
+    //         const response = await axios.get(`${url}/KPINew`, {
+    //             headers: {
+    //                 UserId: currentUser.UserId,
+    //                 Authorization: `Bearer ${AToken}`,
+    //             },
+    //         });
+
+    //         // Convert TransitDays to string
+    //         const modifiedData =
+    //             response?.data != ""
+    //                 ? response?.data?.map((item) => ({
+    //                       ...item,
+    //                       TransitDays: item.TransitDays.toString(),
+    //                   }))
+    //                 : [];
+
+    //         setKPIData(modifiedData);
+    //         setSenderStateOptions(
+    //             createNewLabelObjects(modifiedData, "SenderState")
+    //         );
+    //         setReceiverStateOptions(
+    //             createNewLabelObjects(modifiedData, "ReceiverState")
+    //         );
+    //         setReasonOptions(
+    //             kpireasonsData.map((reason) => ({
+    //                 id: reason.ReasonId,
+    //                 label: reason.ReasonName,
+    //             }))
+    //         );
+    //         setIsFetching(false);
+    //     } catch (error) {
+    //         if (error.response && error.response.status === 401) {
+    //             swal({
+    //                 title: "Session Expired!",
+    //                 text: "Please login again",
+    //                 type: "error",
+    //                 icon: "info",
+    //                 confirmButtonText: "OK",
+    //             }).then(async function () {
+    //                 await handleSessionExpiration();
+    //             });
+    //         } else {
+    //             console.error(error);
+    //         }
+    //     }
+    // };
 
     const handleClick = (coindex) => {
         setActiveIndexGTRS(3);
@@ -157,25 +191,12 @@ function NewKPI({
     const gridRef = useRef(null);
     const handleDownloadExcel = () => {
         const jsonData = handleFilterTable(gridRef, filteredData);
-        console.log(jsonData )
-    
-        const columnMapping = {
-            ConsignmentNo: "Consignment No",
-            SenderName: "Sender Name",
-            SenderReference: "Sender Reference",
-            SenderState: "Sender State",
-            ReceiverName: "Receiver Name",
-            ReceiverReference: "Receiver Reference",
-            ReceiverState: "Receiver State",
-            ReceiverSuburb: "Receiver Suburb",
-            ReceiverPostCode: "Receiver Postal Code",
-            DispatchDate: "Dispatch Date",
-            DeliveryDate: "Delivery Date",
-            TransitDays: "Transit Days",
-            CalculatedDelDate: "Calculated Delivery Date",
-            MatchDel: "Pass/Fail",
-        };
-    
+
+        const columnMapping = columns.reduce((acc, column) => {
+            acc[column.name] = column.header;
+            return acc;
+        }, {});
+
         // Define custom cell handlers
         const customCellHandlers = {
             MatchRdd: (value) => {
@@ -185,7 +206,7 @@ function NewKPI({
                 return "";
             },
             MatchDel: (value) => {
-                if (value == 0) return "";
+                if (value == 3) return "";
                 if (value == 1) return "PASS";
                 if (value == 2) return "FAIL";
                 return "";
@@ -201,78 +222,28 @@ function NewKPI({
             RDD: (value) => formatDateToExcel(value),
             CalculatedDelDate: (value) => formatDateToExcel(value),
         };
-    
-        exportToExcel(jsonData, columnMapping, "KPI_Report.xlsx", customCellHandlers);
+
+        exportToExcel(
+            jsonData,
+            columnMapping,
+            "KPI_Report.xlsx",
+            customCellHandlers,
+            ["DispatchDate", "DeliveryDate", "RDD", "CalculatedDelDate"]
+        );
     };
-    
+
     // Helper function to format dates for Excel
     const formatDateToExcel = (dateValue) => {
         const date = new Date(dateValue);
         if (!isNaN(date)) {
-            return (date.getTime() - date.getTimezoneOffset() * 60000) / 86400000 + 25569;
+            return (
+                (date.getTime() - date.getTimezoneOffset() * 60000) / 86400000 +
+                25569
+            );
         }
         return "";
     };
 
-    const createNewLabelObjects = (data, fieldName) => {
-        let id = 1; // Initialize the ID
-        const uniqueLabels = new Set(); // To keep track of unique labels
-        const newData = [];
-
-        // Map through the data and create new objects
-        data?.forEach((item) => {
-            const fieldValue = item[fieldName];
-            // Check if the label is not already included
-            if (!uniqueLabels.has(fieldValue)) {
-                uniqueLabels.add(fieldValue);
-                const newObject = {
-                    id: fieldValue,
-                    label: fieldValue,
-                };
-                newData.push(newObject);
-            }
-        });
-        return newData;
-    };
-
-    function getMinMaxValue(data, fieldName, identifier) {
-        // Check for null safety
-        if (!data || !Array.isArray(data) || data.length === 0) {
-            return null;
-        }
-
-        // Filter out entries with empty or invalid dates
-        const validData = data.filter(
-            (item) => item[fieldName] && !isNaN(new Date(item[fieldName]))
-        );
-
-        // If no valid dates are found, return null
-        if (validData.length === 0) {
-            return null;
-        }
-
-        // Sort the valid data based on the fieldName
-        const sortedData = [...validData].sort((a, b) => {
-            return new Date(a[fieldName]) - new Date(b[fieldName]);
-        });
-
-        // Determine the result date based on the identifier
-        let resultDate;
-        if (identifier === 1) {
-            resultDate = new Date(sortedData[0][fieldName]);
-        } else if (identifier === 2) {
-            resultDate = new Date(sortedData[sortedData.length - 1][fieldName]);
-        } else {
-            return null;
-        }
-
-        // Convert the resultDate to the desired format "01-10-2023"
-        const day = String(resultDate.getDate()).padStart(2, "0");
-        const month = String(resultDate.getMonth() + 1).padStart(2, "0"); // +1 because months are 0-indexed
-        const year = resultDate.getFullYear();
-
-        return `${day}-${month}-${year}`;
-    }
     // Usage example remains the same
     const minDispatchDate = getMinMaxValue(KPIData, "DispatchDate", 1);
     const maxDispatchDate = getMinMaxValue(KPIData, "DispatchDate", 2);
@@ -325,7 +296,7 @@ function NewKPI({
 
     const kpiStatusOptions = [
         {
-            id: 0,
+            id: 3,
             label: "N/A",
         },
         {
@@ -654,18 +625,6 @@ function NewKPI({
             return item;
         });
     }, [reasonOptions, receiverStateOptions, senderStateOptions]);
-
-    const [hoverMessage, setHoverMessage] = useState("");
-    const [isMessageVisible, setMessageVisible] = useState(false);
-    const handleMouseEnter = () => {
-        if (filteredData.length === 0) {
-            setHoverMessage("No Data Found");
-            setMessageVisible(true);
-            setTimeout(() => {
-                setMessageVisible(false);
-            }, 1000);
-        }
-    };
     const [statusMessage, setStatusMessage] = useState("");
     const messageDisplayTime = 3000; // Time in milliseconds (3000ms = 3 seconds)
     const clearStatusMessage = () => {
@@ -832,168 +791,11 @@ function NewKPI({
                                         Calculate KPI Report
                                     </button>
                                 ) : null}
-                                <Popover className="relative ">
-                                    <button onMouseEnter={handleMouseEnter}>
-                                        <Popover.Button
-                                            className={`inline-flex items-center w-[5.5rem] h-[36px] rounded-md border ${
-                                                filteredData?.length === 0
-                                                    ? "bg-gray-300 cursor-not-allowed"
-                                                    : "bg-gray-800"
-                                            } px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
-                                            disabled={
-                                                filteredData?.length === 0
-                                            }
-                                        >
-                                            Export
-                                            <ChevronDownIcon
-                                                className="h-5 w-5"
-                                                aria-hidden="true"
-                                            />
-                                        </Popover.Button>
-                                    </button>
-                                    {isMessageVisible && (
-                                        <div className="absolute top-9.5 text-center left-0 md:-left-14 w-[9rem] right-0 bg-red-200 text-dark z-10 text-xs py-2 px-4 rounded-md opacity-100 transition-opacity duration-300">
-                                            {hoverMessage}
-                                        </div>
-                                    )}
-
-                                    <Transition
-                                        as={Fragment}
-                                        enter="transition ease-out duration-200"
-                                        enterFrom="opacity-0 translate-y-1"
-                                        enterTo="opacity-100 translate-y-0"
-                                        leave="transition ease-in duration-150"
-                                        leaveFrom="opacity-100 translate-y-0"
-                                        leaveTo="opacity-0 translate-y-1"
-                                    >
-                                        <Popover.Panel className="absolute left-20 lg:left-0 z-10 mt-5 flex w-screen max-w-max -translate-x-1/2 px-4">
-                                            <div className=" max-w-md flex-auto overflow-hidden rounded-lg bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
-                                                <div className="p-4">
-                                                    <div className="mt-2 flex flex-col">
-                                                        <label className="">
-                                                            <input
-                                                                type="checkbox"
-                                                                name="column"
-                                                                value="ConsignmentNo"
-                                                                className="text-dark focus:ring-goldd rounded "
-                                                            />{" "}
-                                                            Consignment Number
-                                                        </label>
-                                                        <label>
-                                                            <input
-                                                                type="checkbox"
-                                                                name="column"
-                                                                value="SenderName"
-                                                                className="text-dark rounded focus:ring-goldd"
-                                                            />{" "}
-                                                            Sender
-                                                        </label>
-                                                        <label>
-                                                            <input
-                                                                type="checkbox"
-                                                                name="column"
-                                                                value="SenderReference"
-                                                                className="text-dark rounded focus:ring-goldd"
-                                                            />{" "}
-                                                            Sender Reference
-                                                        </label>
-                                                        <label>
-                                                            <input
-                                                                type="checkbox"
-                                                                name="column"
-                                                                value="SenderState"
-                                                                className="text-dark rounded focus:ring-goldd"
-                                                            />{" "}
-                                                            Sender State
-                                                        </label>
-                                                        <label>
-                                                            <input
-                                                                type="checkbox"
-                                                                name="column"
-                                                                value="ReceiverName"
-                                                                className="text-dark rounded focus:ring-goldd"
-                                                            />{" "}
-                                                            Receiver
-                                                        </label>
-                                                        <label>
-                                                            <input
-                                                                type="checkbox"
-                                                                name="column"
-                                                                value="ReceiverReference"
-                                                                className="text-dark rounded focus:ring-goldd"
-                                                            />{" "}
-                                                            Receiver Reference
-                                                        </label>
-                                                        <label>
-                                                            <input
-                                                                type="checkbox"
-                                                                name="column"
-                                                                value="Receiver State"
-                                                                className="text-dark rounded focus:ring-goldd"
-                                                            />{" "}
-                                                            Receiver State
-                                                        </label>
-                                                        <label>
-                                                            <input
-                                                                type="checkbox"
-                                                                name="column"
-                                                                value="Receiver Suburb"
-                                                                className="text-dark rounded focus:ring-goldd"
-                                                            />{" "}
-                                                            Receiver Suburb
-                                                        </label>
-                                                        <label>
-                                                            <input
-                                                                type="checkbox"
-                                                                name="column"
-                                                                value="DispatchDate"
-                                                                className="text-dark rounded focus:ring-goldd"
-                                                            />{" "}
-                                                            Despatch Date
-                                                        </label>
-                                                        <label className="">
-                                                            <input
-                                                                type="checkbox"
-                                                                name="column"
-                                                                value="RDD"
-                                                                className="text-dark rounded focus:ring-goldd"
-                                                            />{" "}
-                                                            RDD
-                                                        </label>
-                                                        <label className="">
-                                                            <input
-                                                                type="checkbox"
-                                                                name="column"
-                                                                value="DeliveryDate"
-                                                                className="text-dark rounded focus:ring-goldd"
-                                                            />{" "}
-                                                            Delivery Date
-                                                        </label>
-                                                        <label className="">
-                                                            <input
-                                                                type="checkbox"
-                                                                name="column"
-                                                                value="MatchDel"
-                                                                className="text-dark rounded focus:ring-goldd"
-                                                            />{" "}
-                                                            Pass / Fail
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div className="grid grid-cols-1 divide-x divide-gray-900/5 bg-gray-50">
-                                                    <button
-                                                        onClick={
-                                                            handleDownloadExcel
-                                                        }
-                                                        className="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100"
-                                                    >
-                                                        Export XLS
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </Popover.Panel>
-                                    </Transition>
-                                </Popover>
+                                <ExportPopover
+                                    columns={columns}
+                                    handleDownloadExcel={handleDownloadExcel}
+                                    filteredData={filteredData}
+                                />
                             </div>
                         </div>
                     </div>

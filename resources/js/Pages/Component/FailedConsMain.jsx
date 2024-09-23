@@ -151,13 +151,6 @@ export default function FailedConsMain({
                 </div>
             ) : (
                 <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                    <div className="sm:flex sm:items-center">
-                        <div className="sm:flex-auto mt-6">
-                            <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                                Failed Consignments Report
-                            </h1>
-                        </div>
-                    </div>
                     {/* {canViewFailedReasons(currentUser) ? (
                         <ul className="flex space-x-0 mt-5">
                             {components.map((component, index) => (
@@ -182,7 +175,6 @@ export default function FailedConsMain({
                     ) : (
                         <div></div>
                     )} */}
-                    <div className="mt-4">
                         <FailedCons
                             url={url}
                             failedReasons={failedReasons}
@@ -208,7 +200,6 @@ export default function FailedConsMain({
                             latestDate={latestDate}
                         />
                     </div>
-                </div>
             )}
         </div>
     );

@@ -10,7 +10,7 @@ import AddSafetyCauses from "./safetyComp/AddSafety/safetyCauses/AddSafetyCauses
 import { canViewSafetyType } from "@/permissions";
 import swal from 'sweetalert';
 import axios from "axios";
-import { handleSessionExpiration } from '@/CommonFunctions';
+import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
 
 export default function SafetyRep({
     accData,
@@ -105,112 +105,44 @@ export default function SafetyRep({
             fetchDataCauses();
         }
     }, []);
+    
+
     async function fetchData() {
         setIsFetching(true);
-        try {
-            const res = await axios
-                .get(`${url}SafetyReport`, {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`
-                    }
-                });
-            getEarliestDate(res.data);
-            getLatestDate(res.data);
-            setsafetyDataState(res.data || []);
-            setFilteredData(res.data || []);
+        const data = await getApiRequest(`${url}SafetyReport`, {
+            UserId: currentUser?.UserId,
+        });
+
+        if (data) {
+            getEarliestDate(data);
+            getLatestDate(data);
+            setsafetyDataState(data || []);
+            setFilteredData(data || []);
             setIsFetching(false);
-        } catch (err) {
-            if (err.response && err.response.status === 401) {
-                // Handle 401 error using SweetAlert
-                swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                }).then(async function () {
-                    await handleSessionExpiration();
-                });
-            } else {
-                // Handle other errors
-                console.log(err);
-            }
         }
     }
-    function fetchDataTypes() {
-        axios
-            .get(`${url}SafetyTypes`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setSafetyTypes(parsedData);
-                    setIsFetchingTypes(false);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(async function () {
-                    await handleSessionExpiration();
-                });
-                } else {
-                  // Handle other errors
-                  console.log(err);
-                }
-              });
+  
+
+    async function fetchDataTypes() {
+        const data = await getApiRequest(`${url}SafetyTypes`, {
+            UserId: currentUser?.UserId,
+        });
+
+        if (data) {
+            setSafetyTypes(data);
+            setIsFetchingTypes(false);
+        }
     }
-    function fetchDataCauses() {
-        axios
-            .get(`${url}SafetyCauses`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setSafetyCauses(parsedData);
-                    setIsFetchingCauses(false);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(async function () {
-                    await handleSessionExpiration();
-                });
-                } else {
-                  // Handle other errors
-                  console.log(err);
-                }
-              });
+  
+    async function fetchDataCauses() {
+        const data = await getApiRequest(`${url}SafetyCauses`, {
+            UserId: currentUser?.UserId,
+        });
+
+        if (data) {
+            setSafetyCauses(data);
+            setIsFetchingCauses(false);
+        }
     }
     useEffect(() => {
         filterData(SDate, EDate);

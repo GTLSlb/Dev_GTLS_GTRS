@@ -5,7 +5,7 @@ import "../../../css/radio.css";
 import { canViewRDDReasons } from "@/permissions";
 import swal from "sweetalert";
 import axios from "axios";
-import { handleSessionExpiration } from '@/CommonFunctions';
+import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
 
 export default function RDDMain({
     setActiveIndexGTRS,
@@ -100,55 +100,24 @@ export default function RDDMain({
         }
     }, []); // Empty dependency array ensures the effect runs only once
 
-    const fetchData = async () => {
-        try {
-            axios
-                .get(`${url}RDD`, {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
-                    },
-                })
-                .then((res) => {
-                    const x = JSON.stringify(res.data);
-                    const parsedDataPromise = new Promise((resolve, reject) => {
-                        const parsedData = JSON.parse(x);
-                        resolve(parsedData);
-                    });
-                    parsedDataPromise.then((parsedData) => {
-                        const updatedOldRddData = updateFieldWithData(
-                            parsedData,
-                            "OldRdd"
-                        );
-                        const updatedNewRddData = updateFieldWithData(
-                            updatedOldRddData,
-                            "NewRdd"
-                        );
-                        setrddData(updatedNewRddData || []);
-                        setIsFetching(false);
-                    });
-                })
-                .catch((err) => {
-                    if (err.response && err.response.status === 401) {
-                        // Handle 401 error using SweetAlert
-                        swal({
-                            title: "Session Expired!",
-                            text: "Please login again",
-                            type: "success",
-                            icon: "info",
-                            confirmButtonText: "OK",
-                        }).then(async function () {
-                            await handleSessionExpiration();
-                        });
-                    } else {
-                        // Handle other errors
-                        console.log(err);
-                    }
-                });
-        } catch (error) {
-            console.error("Error fetching data:", error);
+    async function fetchData() {
+        const data = await getApiRequest(`${url}RDD`, {
+            UserId: currentUser?.UserId,
+        });
+
+        if (data) {
+            const updatedOldRddData = updateFieldWithData(
+                data,
+                "OldRdd"
+            );
+            const updatedNewRddData = updateFieldWithData(
+                updatedOldRddData,
+                "NewRdd"
+            );
+            setrddData(updatedNewRddData || []);
+            setIsFetching(false);
         }
-    };
+    }
     const fetchReasonData = async () => {
         try {
             axios
@@ -264,13 +233,7 @@ export default function RDDMain({
                 </div>
             ) : (
                 <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                    <div className="sm:flex sm:items-center">
-                        <div className="sm:flex-auto mt-6">
-                            <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                                RDD Report
-                            </h1>
-                        </div>
-                    </div>
+                   
                     {/* {canViewRDDReasons(currentUser) ? (
                         <ul className="flex space-x-0 mt-5">
                             {components.map((component, index) => (

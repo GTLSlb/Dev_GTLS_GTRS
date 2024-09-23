@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import "../../css/scroll.css";
 import moment from "moment";
 import swal from "sweetalert";
-import { handleSessionExpiration } from '@/CommonFunctions';
+import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
 
 export default function ConsignmentD({
     setActiveIndexGTRS,
@@ -122,38 +122,15 @@ export default function ConsignmentD({
         ];
     };
 
+    
     async function fetchData() {
-        try {
-            const response = await axios
-                .get(
-                    `${url}ConsignmentById`,
-                    {
-                        headers: {
-                            "Content-Type": "application/json",
-                            UserId: currentUser.UserId,
-                            Authorization: `Bearer ${AToken}`,
-                            Consignment_id: activeCon,
-                        },
-                    }
-                    // ?User_id=${currentUser.user_id}&Consignment_id=${activeCon}
-                );
-            return setConsignment(response.data);
-        } catch (err) {
-            if (err.response && err.response.status === 401) {
-                // Handle 401 error using SweetAlert
-                swal({
-                    title: "Session Expired!",
-                    text: "Please login again",
-                    type: "success",
-                    icon: "info",
-                    confirmButtonText: "OK",
-                }).then(async function () {
-                    await handleSessionExpiration();
-                });
-            } else {
-                // Handle other errors
-                console.log(err);
-            }
+        const data = await getApiRequest(`${url}ConsignmentById`, {
+            UserId: currentUser?.UserId,
+            Consignment_id: activeCon,
+        });
+
+        if (data) {
+            setConsignment(data);
         }
     }
     useEffect(() => {

@@ -80,3 +80,104 @@ export function getMinMaxValue(data, fieldName, identifier) {
 
     return `${day}-${month}-${year}`;
 }
+
+
+export const fetchApiData = async (url, setData, currentUser, AToken, setApiStatus) => {
+    try {
+        const response = await axios.get(url, {
+            headers: {
+                UserId: currentUser.UserId,
+                Authorization: `Bearer ${AToken}`,
+            },
+        });
+
+        const parsedData = await new Promise((resolve) => {
+            const dataString = JSON.stringify(response.data);
+            const parsedData = JSON.parse(dataString);
+            resolve(parsedData);
+        });
+
+        setData(parsedData || []);
+        if (setApiStatus) setApiStatus(true);
+    } catch (err) {
+        if (err.response && err.response.status === 401) {
+            swal({
+                title: "Session Expired!",
+                text: "Please login again",
+                type: "success",
+                icon: "info",
+                confirmButtonText: "OK",
+            }).then(async () => {
+                await handleSessionExpiration();
+            });
+        } else {
+            console.log(err);
+        }
+    }
+};
+
+/**
+ * Function to make an API GET request.
+ *
+ * @param {string} url - The URL to make the GET request to.
+ * @param {object} headers - Optional headers to include in the request.
+ * @return {Promise} A Promise that resolves with the data from the response or handles errors.
+ */
+export function getApiRequest(url, headers = {}) {
+    const Token = Cookies.get("access_token");
+    const tokenHeaders = { ...headers, Authorization: `Bearer ${Token}` };
+    return axios
+        .get(url, {
+            headers: tokenHeaders,
+        })
+        .then((res) => {
+            return res.data;
+        })
+        .catch((err) => {
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again",
+                    icon: "info",
+                    buttons: {
+                        confirm: {
+                            text: "OK",
+                            value: true,
+                            visible: true,
+                            className: "",
+                            closeModal: true,
+                        },
+                    },
+                }).then(function () {
+                    axios
+                        .post("/logoutAPI")
+                        .then((response) => {
+                            if (response.status === 200) {
+                                window.location.href = "/";
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                });
+            } else {
+                // Handle other errors
+                AlertToast("Something went wrong", 2);
+                console.log("url", url, err);
+            }
+        });
+}
+
+
+export const formatDateToExcel = (dateValue) => {
+    const date = new Date(dateValue);
+    
+    // Check if the date is valid
+    if (isNaN(date.getTime())) {
+        return ""; // Return empty string if invalid date
+    }
+
+    // Convert to Excel date serial number format
+    return (date.getTime() - date.getTimezoneOffset() * 60000) / 86400000 + 25569;
+};
