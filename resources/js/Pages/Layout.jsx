@@ -14,12 +14,12 @@ export default function Sidebar(Boolean) {
     const [sessionData, setSessionData] = useState(null);
     const [user, setUser] = useState(null);
     const [allowedApplications, setAllowedApplications] = useState([]);
-    const [Token, setToken] = useState(Cookies.get("access_token"));
+    const [Token, setToken] = useState(Cookies.get("gtrs_access_token"));
+    const [RToken, setRToken] = useState(Cookies.get("gtrs_refresh_token"));
 
     const Invoicesurl = window.Laravel.invoiceUrl;
     const Gtamurl = window.Laravel.gtamUrl;
     const gtrsUrl = window.Laravel.gtrsUrl;
-    const appDomain = window.Laravel.appDomain;
     const getAppPermisions = () => {
         axios
             .get(`${Gtamurl}User/AppPermissions`, {
@@ -158,7 +158,7 @@ export default function Sidebar(Boolean) {
                 grant_type: "password",
             };
             axios
-                .post(`${Gtamurl}/Token`, data, {
+                .post(`${gtrsUrl}/Token`, data, {
                     headers: headers,
                 })
                 .then((res) => {
@@ -173,12 +173,10 @@ export default function Sidebar(Boolean) {
                     });
                     parsedDataPromise.then((parsedData) => {
                         setToken(parsedData.access_token);
-                        Cookies.set("access_token", parsedData.access_token, {
-                            domain: appDomain,
-                            path: "/",
-                            secure: true, // Use this if your site is served over HTTPS
-                            sameSite: "Lax", // Optional, depending on your needs
-                        });
+                        Cookies.set(
+                            "gtrs_access_token",
+                            parsedData.access_token
+                        );
                     });
                 })
                 .catch((err) => {
@@ -191,7 +189,7 @@ export default function Sidebar(Boolean) {
         return null; // Render nothing
     } else {
         return (
-            <div>
+            <div className="h-screen">
                 {Token ? (
                     <div className="bg-smooth h-full ">
                         {/* <mainSidebar/> */}
@@ -234,7 +232,7 @@ export default function Sidebar(Boolean) {
                     <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
                         <div className="flex items-center justify-center">
                             <div
-                                className={`h-5 w-5 bg-red-500 rounded-full mr-5 animate-bounce`}
+                                className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
                             ></div>
                             <div
                                 className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}

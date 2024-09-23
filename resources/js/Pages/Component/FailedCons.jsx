@@ -224,7 +224,7 @@ export default function FailedCons({
                         className="underline text-blue-500 hover:cursor-pointer"
                         onClick={() => {
                             setIncidentId(data.IncidentId);
-                            setActiveIndexGTRS(21);
+                            setActiveIndexGTRS(22);
                         }}
                     >
                         {" "}
@@ -1258,6 +1258,7 @@ export default function FailedCons({
             }, 1000);
         }
     };
+    console.log(filteredData);
     return (
         <div>
             {/* <Sidebar /> */}
