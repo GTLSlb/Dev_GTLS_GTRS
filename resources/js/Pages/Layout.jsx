@@ -14,8 +14,8 @@ export default function Sidebar(Boolean) {
     const [sessionData, setSessionData] = useState(null);
     const [user, setUser] = useState(null);
     const [allowedApplications, setAllowedApplications] = useState([]);
-    const [Token, setToken] = useState(Cookies.get("gtrs_access_token"));
-    const [RToken, setRToken] = useState(Cookies.get("gtrs_refresh_token"));
+    const [Token, setToken] = useState(Cookies.get("access_token"));
+    const [RToken, setRToken] = useState(Cookies.get("refresh_token"));
 
     const Invoicesurl = window.Laravel.invoiceUrl;
     const Gtamurl = window.Laravel.gtamUrl;
@@ -174,7 +174,7 @@ export default function Sidebar(Boolean) {
                     parsedDataPromise.then((parsedData) => {
                         setToken(parsedData.access_token);
                         Cookies.set(
-                            "gtrs_access_token",
+                            "access_token",
                             parsedData.access_token
                         );
                     });

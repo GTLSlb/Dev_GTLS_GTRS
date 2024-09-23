@@ -673,7 +673,7 @@ function TraffiComp() {
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-        console.log(jsonData);
+        // console.log(jsonData);
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
@@ -837,7 +837,7 @@ function TraffiComp() {
     const dataSource = useCallback(loadData, []);
     const [hoverMessage, setHoverMessage] = useState("");
     const [isMessageVisible, setMessageVisible] = useState(false);
-    
+
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
             <div className="sm:flex sm:items-center">

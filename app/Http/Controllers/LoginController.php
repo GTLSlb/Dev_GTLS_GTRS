@@ -95,13 +95,13 @@ class LoginController extends Controller
                         $cookieValue = $token['access_token'];
                         $expiry = 60 * 60 * 24 * 2; //48h
 
-                        setcookie('previous_page', $_ENV['APP_URL'] . "/gtam/employees", time() + $expiry, '/', '', true);
+                        setcookie('previous_page', $_ENV['APP_URL'] . "/main", time() + $expiry, '/', $_ENV['SESSION_DOMAIN'], true);
 
                         $cookieName = 'access_token';
                         $cookieValue = $token['access_token'];
 
                         setcookie($cookieName, $cookieValue, time() + $expiry, '/', $_ENV['SESSION_DOMAIN'], true);
-                        setcookie('refresh_token', $token['refresh_token'], time() + $expiry, '/', '', true);
+                        setcookie('refresh_token', $token['refresh_token'], time() + $expiry, '/', $_ENV['SESSION_DOMAIN'], true);
 
                         $userId = $user['UserId'];
                         $request->session()->regenerate();

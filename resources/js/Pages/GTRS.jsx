@@ -69,9 +69,7 @@ export default function Gtrs({
         debtorIds = currentUser.UserId;
     }
 
-    useEffect(() => {
-        setUserBody(debtorIds);
-        setLoadingGtrs(false);
+    const fetchData = () => {
         axios
             .get(`${gtrsUrl}/Dashboard`, {
                 headers: {
@@ -342,7 +340,16 @@ export default function Gtrs({
                     console.log(err);
                 }
             });
-    }, []);
+    }
+
+    useEffect(() => {
+        if(AToken && currentUser){
+            setUserBody(debtorIds);
+            setLoadingGtrs(false);
+            fetchData();
+        }
+
+    }, [AToken, currentUser]);
     function checkFeaturesInPages(jsonData) {
         // Iterate over the Pages array in the JSON data
         for (let i = 0; i < jsonData?.Pages?.length; i++) {
@@ -406,10 +413,7 @@ export default function Gtrs({
                             setrddData={setrddData}
                             IDfilter={dataFromChild}
                             sessionData={sessionData}
-                            currentUser={{
-                                ...user,
-                                UserId: currentUser.UserId,
-                            }}
+                            currentUser={currentUser}
                             user={user}
                             userPermission={user}
                             dashData={PerfData}

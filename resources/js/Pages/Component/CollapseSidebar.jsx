@@ -27,6 +27,7 @@ import {
     ShieldCheckIcon,
     CameraIcon,
     DocumentTextIcon,
+    ClipboardDocumentIcon
 } from "@heroicons/react/24/solid";
 import {
     Accordion,
@@ -268,6 +269,22 @@ const menu = [
         current: false,
         feature: "ConsignmentTracking_View",
     },
+    {
+        id: 20,
+        name: "KPI Pack Report",
+        href: "#",
+        icon: DocumentTextIcon,
+        current: false,
+        feature: "UnileverReport_View",
+    },
+    {
+        id: 21,
+        name: "Delivery Report",
+        href: "#",
+        icon: ClipboardDocumentIcon,
+        current: false,
+        feature: "DailyReport_View",
+    },
 ];
 
 export default function CollapseSidebar({
@@ -448,39 +465,54 @@ export default function CollapseSidebar({
     }
 
     const filterNavigation = (navigation, user) => {
-        return navigation.filter((navItem) => {
-            // Check if the navigation item has sub-options
-            if (navItem.options) {
-                // Filter options based on user permissions
-                navItem.options = navItem.options.filter((option) =>
-                    user?.Pages?.some(
-                        (userPage) =>
-                            userPage?.PageName === option.name &&
-                            userPage?.Features?.some(
-                                (feature) =>
-                                    feature.FunctionName === option.feature
-                            )
-                    )
-                );
-                // Include the navigation item only if it has any permitted options
-                return navItem.options.length > 0;
-            } else {
-                // For navigation items without options, check the feature directly
-                return user?.Pages?.some(
-                    (userPage) =>
-                        userPage?.PageName === navItem.name &&
-                        userPage?.Features?.some(
-                            (feature) =>
-                                feature?.FunctionName === navItem?.feature
-                        )
-                );
-            }
-        });
+        // return navigation.filter((navItem) => {
+        //     // Check if the navigation item has sub-options
+        //     if (navItem.options) {
+        //         // Filter options based on user permissions
+        //         navItem.options = navItem.options.filter((option) =>
+        //             user?.Pages?.some(
+        //                 (userPage) =>
+        //                     userPage?.PageName === option.name &&
+        //                     userPage?.Features?.some(
+        //                         (feature) =>
+        //                             feature.FunctionName === option.feature
+        //                     )
+        //             )
+        //         );
+        //         // Include the navigation item only if it has any permitted options
+        //         return navItem.options.length > 0;
+        //     } else {
+        //         // For navigation items without options, check the feature directly
+        //         return user?.Pages?.some(
+        //             (userPage) =>
+        //                 userPage?.PageName === navItem.name &&
+        //                 userPage?.Features?.some(
+        //                     (feature) =>
+        //                         feature?.FunctionName === navItem?.feature
+        //                 )
+        //         );
+        //     }
+        // });
+        if (user && Object.keys(user).length !== 0) {
+            let gtrsElements = navigation;
+            gtrsElements = navigation?.filter((option) => {
+              return user?.some((feature) => {
+                if (option.options && option.options.length > 0) {
+                  return option.options.some((childOption) => {
+                    return feature.FunctionName === childOption.feature;
+                  });
+                } else {
+                  return feature.FunctionName === option.feature;
+                }
+              });
+            });
+            setSidebarElements(gtrsElements);
+          }
     };
-    const filteredNavigation = filterNavigation(menu, currentUser);
+    //const filteredNavigation = filterNavigation(menu, currentUser);
     useEffect(() => {
-        setSidebarElements(filteredNavigation);
-        setActiveIndexGTRS(filteredNavigation[0]?.id);
+        //setSidebarElements(filteredNavigation);
+        setActiveIndexGTRS(0);
     }, []);
 
     const handleClick = (index) => {
@@ -564,6 +596,8 @@ export default function CollapseSidebar({
                     backgroundColor: "#f6f6f6",
                 }}
             >
+
+                {/* Sidebar content */}
                 <div className=" h-full ">
                     {/* Arrow to close and open it  */}
                     <div className="p-5 flex items-center justify-between">
@@ -575,10 +609,10 @@ export default function CollapseSidebar({
                             }
                         >
                             <p className="text-sm truncate w-24">
-                                {user.FirstName} {user.LastName}
+                                {currentUser.FirstName} {currentUser.LastName}
                             </p>
                             <p className="text-xs truncate w-32">
-                                {user.Email}
+                                {currentUser.Email}
                             </p>
                         </div>
                         <Button

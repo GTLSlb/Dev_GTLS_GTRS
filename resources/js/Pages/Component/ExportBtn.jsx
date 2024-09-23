@@ -419,14 +419,13 @@ export default function ExportBtn({
         const newSelectedColumns = selectedColumns.map(
             (column) => columnsList[column] || column // Replace with new name, or keep original if not found in mapping
         );
-console.log(selectedColumns);
 
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column?.replace(/\s+/g, "");
+
                 if (columnKey) {
-                    console.log(columnKey, person[columnKey], acc, column);
                     if (person[columnKey] === true) {
                         acc[columnKey] = "true";
                     } else if (person[columnKey] === false) {
@@ -510,8 +509,6 @@ console.log(selectedColumns);
                     } else if (columnKey === "Comments") {
                         acc[columnKey] = person["Comments"]?.map((item) => item.Comment).join(", ");
                     }else {
-                        console.log('else', columnKey, person[columnKey]);
-
                         acc[columnKey] = person[columnKey];
                     }
                 } else {
