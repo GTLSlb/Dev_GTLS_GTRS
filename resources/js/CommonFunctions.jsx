@@ -41,6 +41,16 @@ export async function handleSessionExpiration() {
         });
 }
 
+export function clearMSALLocalStorage() {
+    const msalKeys = Object.keys(localStorage).filter(key => key.startsWith("msal"));
+    
+    // Loop through each MSAL-related key and remove it from localStorage
+    msalKeys.forEach(key => {
+        localStorage.removeItem(key);
+    });
+
+    Cookies.remove("msal.isMicrosoftLogin");
+}   
 
 export function getMinMaxValue(data, fieldName, identifier) {
     // Check for null safety
