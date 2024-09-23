@@ -139,17 +139,16 @@ class AzureAuthController extends Controller
     }
 
     public function azureLogout()
-{
-    // Microsoft Azure AD Logout URL
-    $azureLogoutUrl = 'https://login.microsoftonline.com/common/oauth2/v2.0/logout';
+    {
+        // Microsoft Azure AD Logout URL
+        $azureLogoutUrl = 'https://login.microsoftonline.com/common/oauth2/v2.0/logout';
 
-    // The URL to redirect back to after logout (your application's home or login page)
-    $postLogoutRedirectUri = urlencode(route('home')); // Replace 'home' with your route name
+        // The URL to redirect back to after logout (your application's home or login page)
+        $postLogoutRedirectUri = urlencode(route('home')); // Replace 'home' with your route name
 
-    // Redirect to Microsoft Azure logout endpoint with post-logout redirect URL
-    return redirect()->away($azureLogoutUrl . '?post_logout_redirect_uri=' . $postLogoutRedirectUri);
-    // return redirect('/login');
-}
-
+        // Redirect to Microsoft Azure logout endpoint with post-logout redirect URL
+        return redirect()->away($azureLogoutUrl . '?post_logout_redirect_uri=' . $postLogoutRedirectUri);
+        // return redirect('/login');
+    }
 }
 

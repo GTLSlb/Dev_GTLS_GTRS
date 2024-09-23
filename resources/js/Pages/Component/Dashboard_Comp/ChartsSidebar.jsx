@@ -18,6 +18,7 @@ import {
 } from "@heroicons/react/24/solid";
 import "../../../../css/scroll.css";
 import TaskIcon from "@mui/icons-material/Task";
+import ReportIcon from '@mui/icons-material/Report';
 
 import { useEffect } from "react";
 import {
@@ -26,11 +27,186 @@ import {
     AccordionHeader,
     AccordionItem,
 } from "react-headless-accordion";
+import { MapPinIcon } from "@heroicons/react/20/solid";
 
+const navigation = [
+    {
+        id: 0,
+        name: "Dashboard",
+        href: "#",
+        icon: ChartPieIcon,
+        current: true,
+        feature: "Dashboard_view",
+    },
+    {
+        id: 1,
+        name: "Consignments",
+        href: "#",
+        icon: TruckIcon,
+        current: false,
+        feature: "ConsignmetsReport_view",
+    },
+    {
+        id: 2,
+        name: "KPI Report",
+        href: "#",
+        icon: ClipboardDocumentCheckIcon,
+        current: false,
+        options: [
+            // {
+            //     id: 2,
+            //     name: "KPI",
+            //     href: "#",
+            //     current: false,
+            //     icon: ClipboardDocumentCheckIcon,
+            //     feature: "KPI_view",
+            // },
+
+            // {
+            //     id: 12,
+            //     name: "Transit Days",
+            //     href: "#",
+            //     current: false,
+            //     icon: ClipboardDocumentCheckIcon,
+            //     feature: "View_TransitDays",
+            // },
+            {
+                id: 17,
+                name: "KPI",
+                href: "#",
+                current: false,
+                icon: ClipboardDocumentCheckIcon,
+                feature: "KPI_view",
+            },
+            {
+                id: 18,
+                name: "Transit Days",
+                href: "#",
+                current: false,
+                icon: ClipboardDocumentCheckIcon,
+                feature: "View_TransitDays",
+            },
+            {
+                id: 13,
+                name: "Holidays",
+                href: "#",
+                current: false,
+                icon: ClipboardDocumentCheckIcon,
+                feature: "View_Holidays",
+            },
+            // {
+            //     id: 14,
+            //     name: "KPI Reasons",
+            //     href: "#",
+            //     current: false,
+            //     icon: ClipboardDocumentCheckIcon,
+            //     feature: "View_kpiReasons",
+            // },
+        ],
+        feature: "KPI",
+    },
+    {
+        id: 4,
+        name: "Performance Report",
+        href: "#",
+        icon: PresentationChartLineIcon,
+        current: false,
+        feature: "Performance_view",
+    },
+    {
+        id: 5,
+        name: "Failed Consignments",
+        href: "#",
+        icon: ExclamationTriangleIcon,
+        current: false,
+        feature: "View_failedConsignment",
+    },
+    {
+        id: 16,
+        name: "Transport Report",
+        href: "#",
+        icon: TaskIcon,
+        current: false,
+        feature: "View_Transport",
+    },
+    {
+        id: 9,
+        name: "RDD",
+        href: "#",
+        icon: ClockIcon,
+        current: false,
+        feature: "View_RDD",
+    },
+    {
+        id: 11,
+        name: "Missing POD",
+        href: "#",
+        icon: CameraIcon,
+        current: false,
+        feature: "MissingPOD_view",
+    },
+    {
+        id: 10,
+        name: "Safety",
+        href: "#",
+        icon: ShieldCheckIcon,
+        current: false,
+        feature: "View_safety",
+    },
+    {
+        id: 6,
+        name: "No Delivery info.",
+        href: "#",
+        icon: NoSymbolIcon,
+        current: false,
+        feature: "NoDeliveryInfo_view",
+    },
+    {
+        id: 7,
+        name: "Additional Charges",
+        href: "#",
+        icon: CurrencyDollarIcon,
+        current: false,
+        feature: "AdditionalCharges_view",
+    },
+    {
+        id: 8,
+        name: "Driver Login",
+        href: "#",
+        icon: UserIcon,
+        current: false,
+        feature: "DriverLogin_view",
+    },
+    {
+        id: 20,
+        name: "KPI Pack Report",
+        href: "#",
+        icon: DocumentTextIcon,
+        current: false,
+        feature: "UnileverReport_View",
+    },
+    {
+        id: 21,
+        name: "Traffic Report",
+        href: "#",
+        icon: ReportIcon,
+        current: false,
+        feature: "TrafficReport_View",
+    },
+    {
+        id: 23,
+        name: "Consignment Tracking",
+        href: "#",
+        icon: MapPinIcon,
+        current: false,
+        feature: "ConsignmentTracking_View",
+    },
+];
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
+
 
 export default function ChartsSidebar({
     setCusomterAccounts,
@@ -201,7 +377,7 @@ export default function ChartsSidebar({
             feature: "UnileverReport_View",
         },
         {
-            id: 21,
+            id: 24,
             name: "Delivery Report",
             href: "#",
             icon: ClipboardDocumentIcon,

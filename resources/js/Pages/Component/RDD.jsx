@@ -259,7 +259,7 @@ export default function RDDreason({
                         className="underline text-blue-500 hover:cursor-pointer"
                         onClick={() => {
                             setIncidentId(data.IncidentId);
-                            setActiveIndexGTRS(21);
+                            setActiveIndexGTRS(22);
                         }}
                     >
                         {" "}

@@ -60,8 +60,33 @@ export default function TableStructure({
     };
     const gridStyle = { minHeight: 600 };
     const onFilterValueChange = useCallback((filterValue) => {
-        setFilterValueElements(filterValue);
-    }, []);
+        // Check for "Empty" filter operator and handle it properly
+        const hasEmptyOperator = filterValue.some(
+            (filter) => filter.operator === "empty"
+        );
+
+        if (hasEmptyOperator) {
+            // Apply the "Empty" filter logic
+            const updatedFilters = filterValue.map((filter) =>
+                filter.operator === "empty"
+                    ? { ...filter, value: "" } // Ensure "Empty" has an empty string value
+                    : filter
+            );
+            setFilters(updatedFilters);
+            setFilterValueElements(updatedFilters); // Update external filter state
+        } else if (!filterValue || filterValue.length === 0) {
+            setFilters([]); // Clear filters state
+            setFilterValueElements([]); // Update external filter state
+        } else {
+            setFilters(filterValue); // Update filters based on user input
+            setFilterValueElements(filterValue); // Update external filter state
+        }
+    }, [setFilterValueElements]);
+
+    const handleClearAllFilters = () => {
+        setFilters([]); // Clear filters state
+        setFilterValueElements([]); // Reset external filter state
+    };
 
     return (
         <div className="">

@@ -85,7 +85,16 @@ export default function Gtrs({
             urls.forEach(({ url, setData, setApiStatus }) => {
                 fetchApiData(url, setData, currentUser, AToken, setApiStatus);
             });
-    }, []);
+    }
+
+    useEffect(() => {
+        if(AToken != null && currentUser){
+            setUserBody(debtorIds);
+            setLoadingGtrs(false);
+            fetchData();
+        }
+
+    }, [AToken, currentUser]);
     function checkFeaturesInPages(jsonData) {
         // Iterate over the Pages array in the JSON data
         for (let i = 0; i < jsonData?.Pages?.length; i++) {
@@ -123,8 +132,8 @@ export default function Gtrs({
     if (loadingGtrs && AToken) {
         if (canAccess) {
             return (
-                <div className="bg-smooth">
-                    <div className="md:pl-20 pt-16 ">
+                <div className="bg-smooth h-full">
+                    <div className="md:pl-20 pt-16 h-full">
                         <Charts
                             transportData={transportData}
                             setCusomterAccounts={setCusomterAccounts}
@@ -149,10 +158,7 @@ export default function Gtrs({
                             setrddData={setrddData}
                             IDfilter={dataFromChild}
                             sessionData={sessionData}
-                            currentUser={{
-                                ...user,
-                                UserId: currentUser.UserId,
-                            }}
+                            currentUser={currentUser}
                             user={user}
                             userPermission={user}
                             dashData={PerfData}

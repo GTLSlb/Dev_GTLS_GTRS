@@ -294,7 +294,7 @@ export default function MainSidebar({
                     feature: "UnileverReport_View",
                 },
                 {
-                    id: 21,
+                    id: 24,
                     name: "Delivery Report",
                     current: false,
                     role: ["1", "4"],
@@ -694,7 +694,7 @@ export default function MainSidebar({
                                                                 "cubic-bezier(0, 0, 0.2, 1)",
                                                         }}
                                                     >
-                                                        {item.options ? (
+                                                        {false ? (
                                                             <AccordionItem>
                                                                 {({ open }) => (
                                                                     <>
@@ -744,43 +744,6 @@ export default function MainSidebar({
                                                                         </AccordionHeader>
                                                                         {/* {sidebarElements.filter(item => item.role.includes(current_user_role)).map((item) => ( */}
                                                                         {/* Mobile view  */}
-                                                                        {item.options ? (
-                                                                            <AccordionBody className="pl-8 flex flex-col">
-                                                                                {item.options
-                                                                                    // .filter(
-                                                                                    //     (
-                                                                                    //         item
-                                                                                    //     ) =>
-                                                                                    //         item.role.includes(
-                                                                                    //             current_user_role
-                                                                                    //         )
-                                                                                    // )
-                                                                                    .map(
-                                                                                        (
-                                                                                            option
-                                                                                        ) => (
-                                                                                            <button
-                                                                                                id={
-                                                                                                    option.name
-                                                                                                }
-                                                                                                onClick={() =>
-                                                                                                    handleClickSide(
-                                                                                                        item.id,
-                                                                                                        option.id
-                                                                                                    )
-                                                                                                }
-                                                                                                className="p-5 font-light text-left text-white"
-                                                                                            >
-                                                                                                {
-                                                                                                    option.name
-                                                                                                }
-                                                                                            </button>
-                                                                                        )
-                                                                                    )}
-                                                                            </AccordionBody>
-                                                                        ) : (
-                                                                            ""
-                                                                        )}
                                                                     </>
                                                                 )}
                                                             </AccordionItem>

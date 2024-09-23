@@ -28,6 +28,12 @@ import Incident from "./Incident";
 import swal from "sweetalert";
 import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
+import TrafficComp from "./TrafficPage/TrafficComp";
+import ConsTrack from "./ConsignmentTracking/ConsTrack";
+import CollapseSidebar from "./CollapseSidebar";
+import { Button } from "@nextui-org/react";
+import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
+import ConsMap from "./TrafficPage/ConsMap";
 
 export default function charts({
     setCusomterAccounts,
@@ -62,6 +68,7 @@ export default function charts({
     const current = new Date();
     const month = current.getMonth() + 1;
     const [KPIData, setKPIData] = useState([]);
+    const [consignmentToTrack, setConsignmentToTrack] = useState();
     const [NewKPIData, setNewKPIData] = useState([]);
     const [transitDays, setTransitDays] = useState();
     const [newTransitDays, setNewTransitDays] = useState();
@@ -112,6 +119,13 @@ export default function charts({
 
     const minDateAdd = getMinMaxValue(AdditionalData, "DespatchDateTime", 1);
     const maxDateAdd = getMinMaxValue(AdditionalData, "DespatchDateTime", 2);
+
+    const [activeModel, setActiveModel] = useState(0);
+    const [activePage, setActivePage] = useState(0);
+    const [toggled, setToggled] = useState(false);
+    const [assets, setAssets] = useState([]);
+    const [broken, setBroken] = useState(false);
+    const [rtl, setRtl] = useState(false);
 
     const [filtersCons, setFiltersCons] = useState([
         {
@@ -568,8 +582,8 @@ export default function charts({
             name: "TransitDays",
             operator: "eq",
             type: "number",
-            value: null,
-            // emptyValue: null,
+            value: undefined,
+            emptyValue: null,
         },
         {
             name: "CalculatedDelDate",
@@ -1440,6 +1454,115 @@ export default function charts({
             operator: "inlist",
             type: "select",
             value: "",
+        },
+    ]);
+    const [filtersConsTrack, setFiltersConsTrack] = useState([
+        {
+            name: "ConsignmentNo",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "DebtorName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderSuburb",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderPostcode",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverSuburb",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverPostcode",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverSuburb",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "DespatchDate",
+            operator: "inrange",
+            type: "date",
+            value: {
+                start: minDispatchDate,
+                end: maxDispatchDate,
+            },
+        },
+        {
+            name: "ReceiverPostCode",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: null,
+        },
+        {
+            name: "RDD",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "EventCount",
+            operator: "eq",
+            type: "number",
+            value: undefined,
+            emptyValue: null,
         },
     ]);
 
@@ -2446,6 +2569,21 @@ export default function charts({
             AToken={AToken}
             userPermission={userPermission}
         />,
+        <TrafficComp />,
+        <Incident
+            AToken={AToken}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            gtccrUrl={gtccrUrl}
+            incidentId={incidentId}
+            currentUser={currentUser}
+            userPermission={userPermission}
+        />,
+        <ConsTrack
+            setFilterValue={setFiltersConsTrack}
+            filterValue={filtersConsTrack}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            setConsignmentToTrack={setConsignmentToTrack}
+        />,
         <DailyReportPage
             url={url}
             AToken={AToken}
@@ -2460,63 +2598,66 @@ export default function charts({
             filterValue={filtersDailyValue}
             fetchDeliveryReport={fetchDeliveryReport}
         />,
-        <Incident
-            AToken={AToken}
+        <ConsMap
+            consignment={consignmentToTrack}
             setActiveIndexGTRS={setActiveIndexGTRS}
-            gtccrUrl={gtccrUrl}
-            incidentId={incidentId}
-            currentUser={currentUser}
-            userPermission={userPermission}
-            />
+        />,
     ];
 
     return (
-        <div className="">
-            {/* <Sidebar /> */}
-            <div className=" h-full flex ">
+        <div className="h-full">
+            <div className="h-full">
                 {/* Left sidebar & main wrapper */}
-                <div className="min-w-0 flex-1 bg-gray-100 xl:flex">
-                    <div className=" xl:w-64 flex-shrink-0 w-full h-auto md:block mb-4">
-                        <div className="h-full  ">
-                            {/* Start left column area */}
-                            <div
-                                className="relative h-full"
-                                style={{ minHeight: "6rem" }}
-                            >
-                                <div className=" inset-0 rounded-lg border-dashed border-gray-200">
-                                    <ChartsSidebar
-                                        setCusomterAccounts={
-                                            setCusomterAccounts
-                                        }
-                                        customerAccounts={customerAccounts}
-                                        activeIndexGTRS={activeIndexGTRS}
-                                        sessionData={sessionData}
-                                        user={user}
-                                        userPermission={user}
-                                        onData={handleDataFromChild}
-                                        setActiveIndexGTRS={setActiveIndexGTRS}
-                                        currentUser={currentUser}
-                                    />
-                                </div>
-                            </div>
-                            {/* End left column area */}
-                        </div>
-                    </div>
+                <div className="bg-gray-100 h-full flex">
+                    {/* Start left column area with collapsing sidebar */}
+                    <CollapseSidebar
+                        activePage={activePage}
+                        setActivePage={setActivePage}
+                        activeModel={activeModel}
+                        setActiveModel={setActiveModel}
+                        broken={broken}
+                        setBroken={setBroken}
+                        rtl={rtl}
+                        setRtl={setRtl}
+                        toggled={toggled}
+                        setToggled={setToggled}
+                        setCusomterAccounts={setCusomterAccounts}
+                        customerAccounts={customerAccounts}
+                        activeIndexGTRS={activeIndexGTRS}
+                        sessionData={sessionData}
+                        user={user}
+                        onData={handleDataFromChild}
+                        setActiveIndexGTRS={setActiveIndexGTRS}
+                        currentUser={currentUser}
+                    />
 
-                    <div className="bg-smooth w-full lg:min-w-0 lg:flex-1">
-                        <div className="h-full">
-                            {/* Start main area*/}
-                            <div
-                                className="relative h-full"
-                                style={{ minHeight: "36rem" }}
-                            >
-                                <div className="absolute inset-0 rounded-lg">
-                                    {components[activeIndexGTRS]}
-                                </div>
-                            </div>
-                            {/* End main area */}
+                    <main className="w-full bg-gray-50 h-full overflow-y-auto">
+                        <div
+                            style={{ marginBottom: "16px" }}
+                            className="fixed left-0 top-20 z-50"
+                        >
+                            {broken && (
+                                <Button
+                                    aria-label="chevron right icon"
+                                    className="rounded-none rounded-r bg-dark"
+                                    onClick={() => setToggled(!toggled)}
+                                    isIconOnly
+                                >
+                                    <ChevronDoubleRightIcon className="w-5 text-white h-5" />
+                                </Button>
+                            )}
                         </div>
-                    </div>
+
+                        {/* Main content area, displaying dynamically selected components */}
+                        <div
+                            className="relative h-full"
+                            style={{ minHeight: "36rem" }}
+                        >
+                            <div className="absolute inset-0 rounded-lg">
+                                {components[activeIndexGTRS]}
+                            </div>
+                        </div>
+                    </main>
                 </div>
             </div>
         </div>

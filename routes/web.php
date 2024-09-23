@@ -149,9 +149,7 @@ Route::get('/downloadGTLS-docx', function () {
 });
 
 Route::get('/checkAuth', [AuthenticatedSessionController::class, 'checkAuth']);
-// Route::get('/checkEmail', [AzureAuthController::class, 'handleClickCallBack']);
-
-Route::post('/microsoftToken', [AzureAuthController::class, 'sendToken'])->name('azure.token')->middleware('custom.auth');
+Route::get('/checkEmail', [AzureAuthController::class, 'handleClickCallBack']);
 
 Route::middleware('custom.auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -169,6 +167,7 @@ Route::middleware('custom.auth')->group(function () {
         return Socialite::driver('azure')->redirect();
     })->name('azure.login');
     Route::get('/auth/azure/callback', [AzureAuthController::class, 'handleCallback'])->name('azure.callback');
+    Route::post('/microsoftToken', [AzureAuthController::class, 'sendToken'])->name('azure.token');
     Route::get('/azure/logout', [LoginController::class, 'azureLogout'])->name('azure.logout');
 });
 
