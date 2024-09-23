@@ -2616,20 +2616,6 @@ export default function charts({
             AToken={AToken}
             userPermission={userPermission}
         />,
-        <DailyReportPage
-            url={url}
-            AToken={AToken}
-            currentUser={currentUser}
-            userPermission={userPermission}
-            user={user}
-            dailyReportData={dailyReportData}
-            setLastIndex={setLastIndex}
-            setactiveCon={setactiveCon}
-            setActiveIndexGTRS={setActiveIndexGTRS}
-            setFilterValue={setFiltersDailyReport}
-            filterValue={filtersDailyValue}
-            fetchDeliveryReport={fetchDeliveryReport}
-        />,
         <TrafficComp />,
         <Incident
             AToken={AToken}
@@ -2644,6 +2630,20 @@ export default function charts({
             filterValue={filtersConsTrack}
             setActiveIndexGTRS={setActiveIndexGTRS}
             setConsignmentToTrack={setConsignmentToTrack}
+        />,
+        <DailyReportPage
+            url={url}
+            AToken={AToken}
+            currentUser={currentUser}
+            userPermission={userPermission}
+            user={user}
+            dailyReportData={dailyReportData}
+            setLastIndex={setLastIndex}
+            setactiveCon={setactiveCon}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            setFilterValue={setFiltersDailyReport}
+            filterValue={filtersDailyValue}
+            fetchDeliveryReport={fetchDeliveryReport}
         />,
         <ConsMap
             consignment={consignmentToTrack}

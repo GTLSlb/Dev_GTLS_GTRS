@@ -270,15 +270,7 @@ const menu = [
         feature: "ConsignmentTracking_View",
     },
     {
-        id: 20,
-        name: "KPI Pack Report",
-        href: "#",
-        icon: DocumentTextIcon,
-        current: false,
-        feature: "UnileverReport_View",
-    },
-    {
-        id: 21,
+        id: 24,
         name: "Delivery Report",
         href: "#",
         icon: ClipboardDocumentIcon,

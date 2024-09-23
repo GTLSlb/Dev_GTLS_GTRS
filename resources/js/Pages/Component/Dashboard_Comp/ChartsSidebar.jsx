@@ -377,7 +377,7 @@ export default function ChartsSidebar({
             feature: "UnileverReport_View",
         },
         {
-            id: 21,
+            id: 24,
             name: "Delivery Report",
             href: "#",
             icon: ClipboardDocumentIcon,

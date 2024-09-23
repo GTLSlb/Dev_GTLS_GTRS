@@ -21,6 +21,7 @@ export default function Sidebar(Boolean) {
     const Gtamurl = window.Laravel.gtamUrl;
     const gtrsUrl = window.Laravel.gtrsUrl;
     const getAppPermisions = () => {
+        //user permissions
         axios
             .get(`${Gtamurl}User/AppPermissions`, {
                 headers: {
@@ -42,7 +43,9 @@ export default function Sidebar(Boolean) {
         axios
             .get("/users")
             .then((res) => {
-                setcurrentUser(res.data);
+                if(typeof res.data == "object"){
+                    setcurrentUser(res.data);
+                }
             })
             .catch((error) => console.log(error));
     }, []);
@@ -54,6 +57,7 @@ export default function Sidebar(Boolean) {
     }, [currentUser]);
 
     const getUserPermissions = () => {
+        //apps user is allowed to access
         axios
             .get(`${Gtamurl}User/Permissions`, {
                 headers: {
@@ -158,7 +162,7 @@ export default function Sidebar(Boolean) {
                 grant_type: "password",
             };
             axios
-                .post(`${gtrsUrl}/Token`, data, {
+                .post(`${Gtamurl}/Token`, data, {
                     headers: headers,
                 })
                 .then((res) => {

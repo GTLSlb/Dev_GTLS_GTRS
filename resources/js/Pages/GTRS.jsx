@@ -343,7 +343,7 @@ export default function Gtrs({
     }
 
     useEffect(() => {
-        if(AToken && currentUser){
+        if(AToken != null && currentUser){
             setUserBody(debtorIds);
             setLoadingGtrs(false);
             fetchData();
