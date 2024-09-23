@@ -8,7 +8,7 @@ import debtors from "./Component/JsonData/debtors.json";
 import rddData from "./Component/JsonData/RddData.json";
 import { useStepContext } from "@mui/material";
 import NoAccess from "@/Components/NoAccess";
-import { fetchApiData, handleSessionExpiration } from '@/CommonFunctions';
+import { fetchApiData, handleSessionExpiration } from "@/CommonFunctions";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -69,31 +69,53 @@ export default function Gtrs({
         debtorIds = currentUser.UserId;
     }
 
+ 
+
     useEffect(() => {
-        setUserBody(debtorIds);
-        setLoadingGtrs(false);
+        if (AToken != null && currentUser) {
+            setUserBody(debtorIds);
+            setLoadingGtrs(false);
             const urls = [
-                { url: `${gtrsUrl}/Dashboard`, setData: setchartsData, setApiStatus: setchartsApi },
-                { url: `${gtamUrl}/Customer/Accounts`, setData: setCusomterAccounts },
+                {
+                    url: `${gtrsUrl}/Dashboard`,
+                    setData: setchartsData,
+                    setApiStatus: setchartsApi,
+                },
+                {
+                    url: `${gtamUrl}/Customer/Accounts`,
+                    setData: setCusomterAccounts,
+                },
                 { url: `${gtrsUrl}/SafetyReport`, setData: setSafetyData },
-                { url: `${gtrsUrl}/Debtors`, setData: setdebtorsData, setApiStatus: setDebtorsApi },
-                { url: `${gtrsUrl}/Consignments`, setData: setconsData, setApiStatus: setConsApi },
-                { url: `${gtrsUrl}/PerformanceReport`, setData: setPerfData, setApiStatus: setReportApi },
-                { url: `${gtrsUrl}/KpiReasons`, setData: setkpireasonsData, setApiStatus: setKPIReasonsApi },
-                { url: `${gtrsUrl}/Transport`, setData: setTransportData, setApiStatus: setTransportApi },
+                {
+                    url: `${gtrsUrl}/Debtors`,
+                    setData: setdebtorsData,
+                    setApiStatus: setDebtorsApi,
+                },
+                {
+                    url: `${gtrsUrl}/Consignments`,
+                    setData: setconsData,
+                    setApiStatus: setConsApi,
+                },
+                {
+                    url: `${gtrsUrl}/PerformanceReport`,
+                    setData: setPerfData,
+                    setApiStatus: setReportApi,
+                },
+                {
+                    url: `${gtrsUrl}/KpiReasons`,
+                    setData: setkpireasonsData,
+                    setApiStatus: setKPIReasonsApi,
+                },
+                {
+                    url: `${gtrsUrl}/Transport`,
+                    setData: setTransportData,
+                    setApiStatus: setTransportApi,
+                },
             ];
             urls.forEach(({ url, setData, setApiStatus }) => {
                 fetchApiData(url, setData, currentUser, AToken, setApiStatus);
             });
-    }
-
-    useEffect(() => {
-        if(AToken != null && currentUser){
-            setUserBody(debtorIds);
-            setLoadingGtrs(false);
-            fetchData();
         }
-
     }, [AToken, currentUser]);
     function checkFeaturesInPages(jsonData) {
         // Iterate over the Pages array in the JSON data
@@ -109,7 +131,6 @@ export default function Gtrs({
         return false;
     }
 
-
     useEffect(() => {
         if (loadingGtrs && currentUser != "") {
             if (currentUser == {}) {
@@ -121,11 +142,18 @@ export default function Gtrs({
                     setCanAccess(false);
                 }
             }
-        }else if(loadingGtrs && currentUser == ""){
+        } else if (loadingGtrs && currentUser == "") {
             setCanAccess(false);
         }
     }, [currentUser, loadingGtrs]);
-    if (consApi && reportApi && chartsApi && DebtorsApi && KPIReasonsApi && transportApi) {
+    if (
+        consApi &&
+        reportApi &&
+        chartsApi &&
+        DebtorsApi &&
+        KPIReasonsApi &&
+        transportApi
+    ) {
         setLoadingGtrs(true);
     }
 

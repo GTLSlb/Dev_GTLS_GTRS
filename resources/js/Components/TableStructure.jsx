@@ -91,7 +91,7 @@ export default function TableStructure({
     return (
         <div className="">
             {/* <Sidebar /> */}
-            <div className=" py-5 ">
+            <div className="py-5">
                 {tableData ? (
                     <ReactDataGrid
                         idProperty={id}
