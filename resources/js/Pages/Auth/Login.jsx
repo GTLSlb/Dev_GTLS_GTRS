@@ -18,6 +18,7 @@ import axios from "axios";
 import CryptoJS from 'crypto-js';
 import Cookies from "js-cookie";
 import MicrosoftLogo from "@/assets/icons/microsoft-logo.png";
+import { clearMSALLocalStorage } from "@/CommonFunctions";
 
 const msalConfig = {
     auth: {
@@ -226,6 +227,10 @@ export default function Login({ status, canResetPassword }) {
             handleNextClick();
         }
     };
+
+    useEffect(() => {
+        clearMSALLocalStorage();
+    }, []);
 
     return (
         <div className="bg-black">

@@ -36,6 +36,7 @@ import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import SupportModal from "@/Pages/Component/modals/SupportModal";
 import { PublicClientApplication } from "@azure/msal-browser";
 import { clearMSALLocalStorage } from "@/CommonFunctions";
+import Cookies from "js-cookie";
 
 export default function MainSidebar({
     allowedApplications,
@@ -52,13 +53,7 @@ export default function MainSidebar({
     user,
 }) {
     const appUrl = window.Laravel.appUrl;
-    const invoicesRoles = [6, 7, 8, 9, 10];
     const [gtrsCurrent, setGtrsCurrent] = useState();
-    // useEffect(() => {
-    //     handleSetActivePage(0);
-    // }, []);
-
-    const current_user_role = currentUser?.role_id;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [sidebarNavigation, setSidebarNavigation] = useState([
         // {
@@ -373,7 +368,6 @@ export default function MainSidebar({
             setSidebarElements(updatedElements);
         }
     };
-    const handleClickSupport = (index) => {};
 
     const handleClickSide = (index, tabind) => {
         setactivePage(0);
@@ -404,11 +398,6 @@ export default function MainSidebar({
     function classNames(...classes) {
         return classes.filter(Boolean).join(" ");
     }
-    const handleLinkClick = (event) => {
-        event.preventDefault();
-        // Call the `visit` method to navigate to the new page
-        Inertia.visit(event.target.href);
-    };
 
     const handleEditClick = () => {
         const isModalCurrentlyOpen = !isModalOpen;

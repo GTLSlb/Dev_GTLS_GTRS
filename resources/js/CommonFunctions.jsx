@@ -24,6 +24,7 @@ export async function handleSessionExpiration() {
         .post("/logoutWithoutRequest")
         .then(async (response) => {
             if (response.status === 200) {
+                clearMSALLocalStorage();
                 const allAccounts = await pca.getAllAccounts();
                 if (allAccounts.length > 0) {
                     await pca.logoutRedirect({
@@ -42,6 +43,7 @@ export async function handleSessionExpiration() {
 }
 
 export function clearMSALLocalStorage() {
+    const appDomain = window.Laravel.appDomain;
     const msalKeys = Object.keys(localStorage).filter(key => key.startsWith("msal"));
     
     // Loop through each MSAL-related key and remove it from localStorage
@@ -49,7 +51,7 @@ export function clearMSALLocalStorage() {
         localStorage.removeItem(key);
     });
 
-    Cookies.remove("msal.isMicrosoftLogin");
+    Cookies.set('msal.isMicrosoftLogin', '', { expires: -1, domain: appDomain });
 }   
 
 export function getMinMaxValue(data, fieldName, identifier) {
