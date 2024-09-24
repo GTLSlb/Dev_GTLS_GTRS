@@ -125,8 +125,8 @@ export default function ViewComments({
                                         }
                                         </div>
                                         {isEditing && editIndx === index
-                                            ? <div className="flex gap-4 ml-3 text-sm">
-                                                <button onClick={()=>{setIsEditing(false); setCommentId(null); setEditIndx(null)}} className="text-gray-500">Cancel</button>
+                                            ? <div className="flex mt-auto gap-4 ml-3 text-sm h-[1.6rem]">
+                                                <button onClick={()=>{setIsEditing(false); setCommentId(null); setEditIndx(null)}} disabled={isLoading} className="text-gray-500">Cancel</button>
                                                 {
                                                     isLoading
                                                     ? <div className=" inset-0 flex justify-center items-center bg-opacity-50">

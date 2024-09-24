@@ -19,52 +19,12 @@ import notFound from "../../../assets/pictures/NotFound.png";
 import { useEffect } from "react";
 import MultiChartLine from "./Dashboard_Charts/MultiLineChart";
 import DoubleBarChart from "./Dashboard_Charts/DoublBarChart";
+import { getLatestDespatchDate, getOldestDespatchDate } from "@/Components/utils/dateUtils";
 export default function MainCharts({ accData, safetyData, chartsData }) {
     const [filteredSafety, setFilteredSafety] = useState(safetyData);
 
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
     const [EDate, setEDate] = useState(getLatestDespatchDate(chartsData));
-    function getOldestDespatchDate(data) {
-        // Filter out elements with invalid 'CreatedDate' values
-        const validData = data?.filter((item) =>
-            isValidDate(item?.DespatchDate)
-        );
-        // Sort the validData array based on the 'CreatedDate' property
-        const sortedData = validData.sort(
-            (a, b) => new Date(a.DespatchDate) - new Date(b.DespatchDate)
-        );
-        // Check if the sortedData array is empty
-        if (sortedData.length === 0) {
-            return null; // No valid dates found
-        }
-        // Extract only the date part from the 'CreatedDate' of the first element (oldest date)
-        const oldestDate = new Date(
-            sortedData[0]?.DespatchDate
-        ).toLocaleDateString("en-CA");
-        // Return the oldest date in the 'YYYY-MM-DD' format
-        return oldestDate;
-    }
-    function isValidDate(dateString) {
-        const date = new Date(dateString);
-        return !isNaN(date);
-    }
-    function getLatestDespatchDate(data) {
-        const validData = data.filter((item) => isValidDate(item.DespatchDate));
-
-        // Sort the data array based on the 'DespatchDate' property in descending order
-        const sortedData = validData.sort(
-            (a, b) => new Date(b.DespatchDate) - new Date(a.DespatchDate)
-        );
-        if (sortedData.length === 0) {
-            return null; // No valid dates found
-        }
-        const latestDate = new Date(
-            sortedData[0]?.DespatchDate
-        ).toLocaleDateString("en-CA");
-
-        // Return the 'DespatchDate' of the first element (latest date)
-        return latestDate;
-    }
     const [filteredData, setFilteredData] = useState([chartsData]);
     useEffect(() => {
         setFilteredData(chartsData);

@@ -7,7 +7,7 @@ import notFound from "../../../../../assets/pictures/NotFound.png";
 import AddSafetyTypeModal from "./AddSafetyTypeModel";
 import { canAddSafetyType, canEditSafetyType } from "@/permissions";
 import swal from 'sweetalert';
-import { handleSessionExpiration } from '@/CommonFunctions';
+import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -30,42 +30,17 @@ export default function AddSafetyType({
         setIsModalOpen(isModalCurrentlyOpen);
     };
     const [currentPage, setCurrentPage] = useState(0);
-    function fetchData() {
-        axios
-            .get(`${url}SafetyTypes`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setSafetyTypes(parsedData);
-                    setData(parsedData);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(async function () {
-                    await handleSessionExpiration();
-                });
-                } else {
-                  // Handle other errors
-                  console.log(err);
-                }
-              });
+    
+
+    async function fetchData() {
+        const data = await getApiRequest(`${url}SafetyTypes`, {
+            UserId: currentUser?.UserId,
+        });
+
+        if (data) {
+            setSafetyTypes(data);
+            setData(data);
+        }
     }
     const updateLocalData = () => {
         fetchData();

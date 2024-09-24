@@ -8,7 +8,7 @@ import debtors from "./Component/JsonData/debtors.json";
 import rddData from "./Component/JsonData/RddData.json";
 import { useStepContext } from "@mui/material";
 import NoAccess from "@/Components/NoAccess";
-import { handleSessionExpiration } from '@/CommonFunctions';
+import { fetchApiData, handleSessionExpiration } from "@/CommonFunctions";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -69,280 +69,54 @@ export default function Gtrs({
         debtorIds = currentUser.UserId;
     }
 
+ 
+
     useEffect(() => {
-        setUserBody(debtorIds);
-        setLoadingGtrs(false);
-        axios
-            .get(`${gtrsUrl}/Dashboard`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+        if (AToken != null && currentUser) {
+            setUserBody(debtorIds);
+            setLoadingGtrs(false);
+            const urls = [
+                {
+                    url: `${gtrsUrl}/Dashboard`,
+                    setData: setchartsData,
+                    setApiStatus: setchartsApi,
                 },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setchartsData(parsedData || []);
-                    setchartsApi(true);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(async function () {
-                        await handleSessionExpiration();
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
-        axios
-            .get(`${gtamUrl}/Customer/Accounts`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                {
+                    url: `${gtamUrl}/Customer/Accounts`,
+                    setData: setCusomterAccounts,
                 },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setCusomterAccounts(parsedData || []);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(async function () {
-                        await handleSessionExpiration();
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
-        axios
-            .get(`${gtrsUrl}/SafetyReport`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                { url: `${gtrsUrl}/SafetyReport`, setData: setSafetyData },
+                {
+                    url: `${gtrsUrl}/Debtors`,
+                    setData: setdebtorsData,
+                    setApiStatus: setDebtorsApi,
                 },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-
-                parsedDataPromise.then((parsedData) => {
-                    setSafetyData(parsedData || []);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(async function () {
-                        await handleSessionExpiration();
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
-        axios
-            .get(`${gtrsUrl}/Debtors`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                {
+                    url: `${gtrsUrl}/Consignments`,
+                    setData: setconsData,
+                    setApiStatus: setConsApi,
                 },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setdebtorsData(parsedData || []);
-                    setDebtorsApi(true);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(async function () {
-                        await handleSessionExpiration();
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
-        axios
-            .get(`${gtrsUrl}/Consignments`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                {
+                    url: `${gtrsUrl}/PerformanceReport`,
+                    setData: setPerfData,
+                    setApiStatus: setReportApi,
                 },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-
-                parsedDataPromise.then((parsedData) => {
-                    setconsData(parsedData || []);
-                    setConsApi(true);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(async function () {
-                        await handleSessionExpiration();
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
-        axios
-            .get(`${gtrsUrl}/PerformanceReport`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                {
+                    url: `${gtrsUrl}/KpiReasons`,
+                    setData: setkpireasonsData,
+                    setApiStatus: setKPIReasonsApi,
                 },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedData = JSON.parse(x);
-                setPerfData(parsedData || []);
-                setReportApi(true);
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(async function () {
-                        await handleSessionExpiration();
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
-        axios
-            .get(`${gtrsUrl}/KpiReasons`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                {
+                    url: `${gtrsUrl}/Transport`,
+                    setData: setTransportData,
+                    setApiStatus: setTransportApi,
                 },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setkpireasonsData(parsedData || []);
-                    setKPIReasonsApi(true);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(async function () {
-                        await handleSessionExpiration();
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
+            ];
+            urls.forEach(({ url, setData, setApiStatus }) => {
+                fetchApiData(url, setData, currentUser, AToken, setApiStatus);
             });
-        axios
-            .get(`${gtrsUrl}/Transport`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedData = JSON.parse(x);
-                setTransportData(parsedData || []);
-                setTransportApi(true);
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(async function () {
-                        await handleSessionExpiration();
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
-    }, []);
+        }
+    }, [AToken, currentUser]);
     function checkFeaturesInPages(jsonData) {
         // Iterate over the Pages array in the JSON data
         for (let i = 0; i < jsonData?.Pages?.length; i++) {
@@ -357,7 +131,6 @@ export default function Gtrs({
         return false;
     }
 
-
     useEffect(() => {
         if (loadingGtrs && currentUser != "") {
             if (currentUser == {}) {
@@ -369,19 +142,26 @@ export default function Gtrs({
                     setCanAccess(false);
                 }
             }
-        }else if(loadingGtrs && currentUser == ""){
+        } else if (loadingGtrs && currentUser == "") {
             setCanAccess(false);
         }
     }, [currentUser, loadingGtrs]);
-    if (consApi && reportApi && chartsApi && DebtorsApi && KPIReasonsApi && transportApi) {
+    if (
+        consApi &&
+        reportApi &&
+        chartsApi &&
+        DebtorsApi &&
+        KPIReasonsApi &&
+        transportApi
+    ) {
         setLoadingGtrs(true);
     }
 
     if (loadingGtrs && AToken) {
         if (canAccess) {
             return (
-                <div className="bg-smooth">
-                    <div className="md:pl-20 pt-16 ">
+                <div className="bg-smooth h-full">
+                    <div className="md:pl-20 pt-16 h-full">
                         <Charts
                             transportData={transportData}
                             setCusomterAccounts={setCusomterAccounts}
@@ -406,10 +186,7 @@ export default function Gtrs({
                             setrddData={setrddData}
                             IDfilter={dataFromChild}
                             sessionData={sessionData}
-                            currentUser={{
-                                ...user,
-                                UserId: currentUser.UserId,
-                            }}
+                            currentUser={currentUser}
                             user={user}
                             userPermission={user}
                             dashData={PerfData}

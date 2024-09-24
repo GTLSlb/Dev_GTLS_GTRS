@@ -7,11 +7,11 @@ import {
     ChevronDoubleDownIcon,
     ChevronDownIcon,
 } from "@heroicons/react/20/solid";
-import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import { useEffect } from "react";
 import swal from "sweetalert";
 import { AlertToast } from "@/permissions";
-import { handleSessionExpiration } from '@/CommonFunctions';
+import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
+import GtamButton from "../GtamButton";
 
 function AddNewTransitDay({
     url,
@@ -93,43 +93,17 @@ function AddNewTransitDay({
         setIsChecked(!isChecked);
     };
 
-    const fetchData = async () => {
-        try {
-            axios
-                .get(`${url}TransitNew`, {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
-                    },
-                })
-                .then((res) => {
-                    const x = JSON.stringify(res.data);
-                    const parsedDataPromise = new Promise((resolve, reject) => {
-                        const parsedData = JSON.parse(x);
-                        resolve(parsedData);
-                    });
-                    parsedDataPromise.then((parsedData) => {
-                        setNewTransitDays(parsedData);
-                    });
-                });
-        } catch (error) {
-            if (error.response && error.response.status === 401) {
-                // Handle 401 error using SweetAlert
-                swal({
-                    title: "Session Expired!",
-                    text: "Please login again",
-                    type: "success",
-                    icon: "info",
-                    confirmButtonText: "OK",
-                }).then(async function () {
-                    await handleSessionExpiration();
-                });
-            } else {
-                // Handle other errors
-                console.log(err);
-            }
+
+
+    async function fetchData() {
+        const data = await getApiRequest(`${url}TransitNew`, {
+            UserId: currentUser?.UserId,
+        });
+
+        if (data) {
+            setNewTransitDays(data);
         }
-    };
+    }
 
     function AddTransit(e) {
         e.preventDefault();

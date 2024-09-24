@@ -6,12 +6,13 @@ import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import Button from "@inovua/reactdatagrid-community/packages/Button";
 import { useState, useEffect, useRef } from "react";
 import TableStructure from "@/Components/TableStructure";
-import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import { canAddTransitDays, canEditTransitDays } from "@/permissions";
 import swal from "sweetalert";
 import axios from "axios";
-import { handleSessionExpiration } from '@/CommonFunctions';
+import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
+import { createNewLabelObjects } from "@/Components/utils/dataUtils";
+import GtamButton from "../GtamButton";
 
 export default function TransitDays({
     transitDays,
@@ -33,44 +34,18 @@ export default function TransitDays({
         }
     }, []); // Empty dependency array ensures the effect runs only once
     const gridRef = useRef(null);
-    const fetchData = async () => {
-        try {
-            axios
-                .get(`${url}Transits`, {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
-                    },
-                })
-                .then((res) => {
-                    const x = JSON.stringify(res.data);
-                    const parsedDataPromise = new Promise((resolve, reject) => {
-                        const parsedData = JSON.parse(x);
-                        resolve(parsedData);
-                    });
-                    parsedDataPromise.then((parsedData) => {
-                        setTransitDays(parsedData);
-                        setIsFetching(false);
-                    });
-                });
-        } catch (error) {
-            if (error.response && error.response.status === 401) {
-                // Handle 401 error using SweetAlert
-                swal({
-                    title: "Session Expired!",
-                    text: "Please login again",
-                    type: "success",
-                    icon: "info",
-                    confirmButtonText: "OK",
-                }).then(async function () {
-                    await handleSessionExpiration();
-                });
-            } else {
-                // Handle other errors
-                console.log(err);
-            }
+   
+
+    async function fetchData() {
+        const data = await getApiRequest(`${url}Transits`, {
+            UserId: currentUser?.UserId,
+        });
+
+        if (data) {
+            setTransitDays(data);
+            setIsFetching(false);
         }
-    };
+    }
     const groups = [
         {
             name: "senderDetails",
@@ -83,27 +58,6 @@ export default function TransitDays({
             headerAlign: "center",
         },
     ];
-    const createNewLabelObjects = (data, fieldName) => {
-        const uniqueLabels = new Set(); // To keep track of unique labels
-        const newData = [];
-        // Map through the data and create new objects
-        data?.forEach((item) => {
-            const fieldValue = item[fieldName];
-            if (
-                fieldValue &&
-                fieldValue.trim() !== "" &&
-                !uniqueLabels.has(fieldValue)
-            ) {
-                uniqueLabels.add(fieldValue);
-                const newObject = {
-                    id: fieldValue,
-                    label: fieldValue,
-                };
-                newData.push(newObject);
-            }
-        });
-        return newData;
-    };
     const senderStateOptions = createNewLabelObjects(
         transitDays,
         "SenderState"

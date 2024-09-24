@@ -57,41 +57,46 @@ export default function AddComment({
 
     const handleSubmit = async (event) => {
         event.preventDefault(); // Prevent the default form submission behavior
-        try {
-            SetIsLoading(true);
+        if(formValues?.Comment === "" || formValues?.Comment === null){
+            setError("Comment cannot be empty");
+            return;
+        }else{
+            try {
+                SetIsLoading(true);
 
-            const response = await axios.post(`${url}Add/Delivery/Comment`, formValues, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            });
-
-            fetchData();
-            setTimeout(() => {
-                handleClose();
-                SetIsLoading(false);
-            }, 1000);
-        } catch (error) {
-            SetIsLoading(false);
-            // Handle error
-            if (error.response && error.response.status === 401) {
-                // Handle 401 error using SweetAlert
-                swal({
-                    title: "Session Expired!",
-                    text: "Please login again",
-                    type: "success",
-                    icon: "info",
-                    confirmButtonText: "OK",
-                }).then(async function () {
-                    await handleSessionExpiration();
+                const response = await axios.post(`${url}Add/Delivery/Comment`, formValues, {
+                    headers: {
+                        UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
+                    },
                 });
-            } else {
-                // Handle other errors
+
+                fetchData();
+                setTimeout(() => {
+                    handleClose();
+                    SetIsLoading(false);
+                }, 1000);
+            } catch (error) {
+                SetIsLoading(false);
+                // Handle error
+                if (error.response && error.response.status === 401) {
+                    // Handle 401 error using SweetAlert
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then(async function () {
+                        await handleSessionExpiration();
+                    });
+                } else {
+                    // Handle other errors
+                    console.log(error);
+                }
                 console.log(error);
+                setError("Error occurred while saving the data. Please try again."); // Set the error message
             }
-            console.log(error);
-            setError("Error occurred while saving the data. Please try again."); // Set the error message
         }
     };
 
@@ -105,7 +110,7 @@ export default function AddComment({
             <div className="bg-white w-[40%] rounded-lg shadow-lg py-6 px-8">
                 <div className="flex justify-between border-b-1 border-[#D5D5D5]">
                     <h2 className="text-2xl font-bold mb-4">
-                        {commentsData ? "Edit Comment" : "Add New Comment"}
+                        {"Add New Comment"}
                     </h2>
                     <button
                         className="text-gray-500 hover:text-gray-700"
@@ -145,7 +150,7 @@ export default function AddComment({
                             ></textarea>
                         </div>
 
-                        <div className="flex justify-end gap-10">
+                        <div className="flex justify-end gap-10 text-sm">
                             <button
                                 type="button"
                                 disabled={isLoading}
@@ -157,17 +162,13 @@ export default function AddComment({
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="bg-gray-800 w-32 text-white font-bold p-2 rounded"
+                                className="bg-gray-800 w-[6.5rem] text-white font-bold p-2 rounded"
                             >
                                 {isLoading ? (
                                     <div className=" inset-0 flex justify-center items-center bg-opacity-50">
                                         <Spinner color="default" size="sm" />
                                   </div>
-                                ) : commentsData ? (
-                                    "Edit"
-                                ) : (
-                                    "Add"
-                                )}
+                                ) : ("Add")}
                             </button>
                         </div>
                     </div>

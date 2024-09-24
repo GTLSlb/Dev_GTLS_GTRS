@@ -4,11 +4,11 @@ import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import moment from "moment";
-import { getMinMaxValue } from "@/CommonFunctions";
 import MetcashReports from "./MetcashReports";
 import WoolworthsReports from "./WoolworthsReports";
 import OtherReports from "./OtherReports";
 import { EyeIcon, PlusIcon } from "@heroicons/react/20/solid";
+import { getMinMaxValue } from "@/Components/utils/dateUtils";
 
 export default function DailyReportPage({
     url,
@@ -154,7 +154,7 @@ export default function DailyReportPage({
             emptyValue: "",
         },
         {
-            name: "ReceiverZone",
+            name: "ReceiverState",
             operator: "inlist",
             type: "select",
             value: null,
@@ -238,7 +238,7 @@ export default function DailyReportPage({
             emptyValue: "",
         },
         {
-            name: "DespatchDate",
+            name: "DespatchDateTime",
             operator: "inrange",
             type: "date",
             value: {
@@ -311,7 +311,7 @@ export default function DailyReportPage({
             },
         },
         {
-            name: "DespatchDate",
+            name: "DespatchDateTime",
             header: "Despatch date",
             headerAlign: "center",
             textAlign: "center",
@@ -401,7 +401,7 @@ export default function DailyReportPage({
             filterEditor: StringFilter,
         },
         {
-            name: "ReceiverZone",
+            name: "ReceiverState",
             header: "Receiver Zone",
             group: "receiverDetails",
             headerAlign: "center",
@@ -429,32 +429,6 @@ export default function DailyReportPage({
         {
             name: "DeliveryInstructions",
             header: "Special Instructions",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-        },
-        // {
-        //     name: "Comments",
-        //     header: "Comments",
-        //     headerAlign: "center",
-        //     textAlign: "center",
-        //     defaultWidth: 170,
-        //     filterEditor: StringFilter,
-        //     render: ({ value }) => {
-        //         return (
-        //             <div className="flex flex-col justify-center gap-2 line-clamp-2 text-ellipsis">
-        //                 {value?.length > 0 && value?.map((item) =>
-        //                     <div key={item?.CommentId}>
-        //                         {item?.Name}
-        //                     </div>)}
-        //             </div>
-        //         );
-        //     },
-        // },
-        {
-            name: "CorrectiveAction",
-            header: "Corrective Actions",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
@@ -494,10 +468,10 @@ export default function DailyReportPage({
                 maxDate: maxDate,
             },
             render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                return value?moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+                    : moment(value).format("DD-MM-YYYY hh:mm A"):""
             },
         },
         {
@@ -515,68 +489,19 @@ export default function DailyReportPage({
             render: ({ value, data }) => {
                 return (
                     <div>
-                        {data?.POD ? "True" : "False"}
+                        {data?.POD ?
+                        <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                        True
+                    </span> : <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                        false
+                    </span>}
                     </div>
                 );
             },
         },
-        // {
-        //     name: "PastComments",
-        //     header: "Past Comments",
-        //     headerAlign: "center",
-        //     textAlign: "center",
-        //     defaultWidth: 170,
-        //     filterEditor: StringFilter,
-        // },
         {
-            name: "PastCorrectiveAction",
-            header: "Past Corrective Actions",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-        },
-        {
-            name: "Report",
-            header: "Report",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-        },
-        {
-            name: "GTLSReasonCode",
-            header: "GTLS Reason Code",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-        },
-        {
-            name: "GTLSComments",
-            header: "GTLS Comments",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-        },
-        {
-            name: "PastReasonCode",
-            header: "Past Reason Code",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-        },
-        {
-            name: "Actions",
-            header: (
-                <div className="h-full w-full whitespace-nowrap !flex gap-3 items-center justify-center mt-5">
-                    <span>Past Comments</span>
-                    <EyeIcon className="h-5 w-5 text-sky-500" />
-                    <PlusIcon className="h-5 w-5 text-green-500" />
-                </div>
-            ),
+            name: "Comments",
+            header: "Past Comments",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 200,
@@ -584,10 +509,10 @@ export default function DailyReportPage({
                 return (
                     <div className="flex gap-4 items-center px-2">
                         <span
-                            className="underline text-sky-500 hover:cursor-pointer"
+                            className="underline text-blue-400 hover:cursor-pointer"
                             onClick={() => handleViewComments(data)}
                         >
-                            View All Comments
+                            <EyeIcon className="h-5 w-5" />
                         </span>
                         <span
                             className="underline text-green-500 hover:cursor-pointer"

@@ -5,7 +5,7 @@ import { useState } from "react";
 import ConsignmentGraph from "./ReportTabs/ConsignmentGraph";
 import TotalFailPODGraph from "./ReportTabs/TotalFailPODGraph";
 
-const MultiChartLine = ({ url, currentUser, AToken, userPermission, user }) => {
+const MultiChartLine = ({ url, currentUser, AToken }) => {
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     const handleItemClick = (index) => {
         setActiveComponentIndex(index);
@@ -15,8 +15,6 @@ const MultiChartLine = ({ url, currentUser, AToken, userPermission, user }) => {
         <ConsignmentGraph
             url={url}
             currentUser={currentUser}
-            userPermission={userPermission}
-            user={user}
             AToken={AToken}
         />, // Graph and Table
         <TotalFailPODGraph />, // The 3 charts

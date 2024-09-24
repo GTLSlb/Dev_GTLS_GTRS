@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Logo from "../../assets/pictures/Logo.png";
 import Checkbox from "@/Components/Checkbox";
 import GuestLayout from "@/Layouts/GuestLayout";
@@ -15,8 +15,7 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import "../../../css/scroll.css";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import axios from "axios";
-import CryptoJS from "crypto-js";
-import { useNavigate } from "react-router-dom";
+import CryptoJS from 'crypto-js';
 import Cookies from "js-cookie";
 import MicrosoftLogo from "@/assets/icons/microsoft-logo.png";
 
@@ -95,23 +94,23 @@ export default function Login({ status, canResetPassword }) {
     };
 
     const handleOnChangePassword = (event) => {
+
         setData(
             event.target.name,
             event.target.type === "checkbox"
                 ? event.target.checked
                 : event.target.value
         );
-        setPassword(event.target.value);
-    };
+    setPassword(event.target.value);
+    }
 
     const loginRequest = {
-        scopes: ["openid", "profile", "User.Read"],
+        scopes: ["openid", "profile", "User.Read"]
     };
     const handleLoginAzure = async (e) => {
         e.preventDefault();
         setLoading(true);
 
-        await pca.initialize();
         // Set active account on page load
         const accounts = pca.getAllAccounts();
         if (accounts.length > 0) {
@@ -148,6 +147,7 @@ export default function Login({ status, canResetPassword }) {
                             socialiteUser: loginResponse,
                         })
                         .then((res) => {
+                            //Cookies.set('access_token', res.data.access_token)
                             setLoading(false);
                             window.location.href = "/main";
                         })
@@ -167,7 +167,7 @@ export default function Login({ status, canResetPassword }) {
     const submit = (e) => {
         setLoading(true);
         e.preventDefault();
-        setErrorMessage("");
+        setErrorMessage("")
         const hashedPassword = CryptoJS.SHA256(password).toString();
         axios
             .get(`${gtamURl}Login`, {
@@ -188,23 +188,24 @@ export default function Login({ status, canResetPassword }) {
                     Password: hashedPassword,
                 };
                 axios
-                    .post("/loginapi", credentials)
-                    .then((response) => {
-                        if (response.status == 200) {
-                            window.location.href = "/main";
-                        }
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                        setLoading(false);
-                        setErrorMessage(error.response.data.Message);
-                    });
+                .post("/loginapi", credentials)
+                .then((response)=>{
+                    if(response.status == 200) {
+                       window.location.href = '/main';
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    setLoading(false);
+                    setErrorMessage(error.response.data.Message)
+                });
             })
             .catch((err) => {
                 console.log(err);
                 setLoading(false);
-                setErrorMessage(err.response?.data?.Message);
+                setErrorMessage(err.response?.data?.Message)
             });
+
     };
     const handleKeyPress = (event) => {
         if (event.key === "Enter") {
@@ -288,7 +289,7 @@ export default function Login({ status, canResetPassword }) {
                                             value={data.password}
                                             autoComplete="current-password"
                                             onChange={handleOnChangePassword}
-                                            className={`appearance-none w-full border mb-2 rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline transition-all duration-500`}
+                                            className={`appearance-none w-full border mb-2 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline transition-all duration-500`}
                                         />
                                         <div
                                             className="absolute inset-y-0 right-0 top-3 flex items-center pr-3 cursor-pointer"
@@ -308,10 +309,7 @@ export default function Login({ status, canResetPassword }) {
                                     <div className="flex items-center justify-end mt-0">
                                         {canResetPassword && (
                                             <Link
-                                                onClick={() =>
-                                                    (window.location.href =
-                                                        "/forgot-password")
-                                                }
+                                                onClick={()=>window.location.href = '/forgot-password'}
                                                 className="underline text-sm text-goldd dark:text-smooth hover:text-goldd/80 dark:hover:text-goldd rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
                                             >
                                                 Forgot your password?
@@ -319,9 +317,7 @@ export default function Login({ status, canResetPassword }) {
                                         )}
                                     </div>
                                     {errorMessage && (
-                                        <div className="py-2 text-red-600">
-                                            {errorMessage}
-                                        </div>
+                                        <div className="py-2 text-red-600">{errorMessage}</div>
                                     )}
                                     <InputError
                                         message={errors.email}
@@ -351,10 +347,10 @@ export default function Login({ status, canResetPassword }) {
                                         loading || !recaptchaValue
                                             ? "bg-gray-600 cursor-not-allowed text-white"
                                             : "bg-goldd hover:bg-goldt text-dark"
-                                    } rounded-md border border-transparent bg-goldd py-2 px-4 text-sm font-medium  shadow-sm  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+                                    } font-bold rounded-md border border-transparent bg-goldd py-2 px-4 text-sm font-medium  shadow-sm  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
                                     disabled={loading}
                                     type="button"
-                                    onClick={(e) => submit(e)}
+                                    onClick={(e)=>submit(e)}
                                 >
                                     {loading ? (
                                         <AiOutlineLoading3Quarters className="animate-spin" />
@@ -376,6 +372,7 @@ export default function Login({ status, canResetPassword }) {
                         />
                     </div>
                 </div>
+
             </GuestLayout>
         </div>
     );

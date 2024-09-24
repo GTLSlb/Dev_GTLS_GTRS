@@ -1,17 +1,14 @@
 import MainCharts from "./Dashboard_Comp/MainCharts";
 import React, { useState } from "react";
-import ChartsSidebar from "./Dashboard_Comp/ChartsSidebar";
 import GtrsCons from "./GtrsCons";
-import KPI from "./KPI";
 import ConsignmentD from "../Consignment";
 import ConsPerf from "./ConsPerf";
-import FailedCons from "./FailedCons";
-import NoDelivery from "./Dashboard_Comp/NoDelivery";
-import AdditionalCharges from "./Dashboard_Comp/AdditionalCharges";
-import DriverLogin from "./Dashboard_Comp/DriverLogin";
+import NoDelivery from "./NoDelivery";
+import AdditionalCharges from "./AdditionalCharges";
+import DriverLogin from "./DriverLogin";
 import SafetyRep from "./safetyRep";
-import RDDMain from "./RDDMain";
-import FailedConsMain from "./FailedConsMain";
+import RDDMain from "./RDD/RDDMain";
+import FailedConsMain from "./FailedConsignments/FailedConsMain";
 import MissingPOD from "./MissingPOD";
 import { useEffect } from "react";
 import TransitDays from "./KPI/TransitDays";
@@ -19,14 +16,20 @@ import Holidays from "./KPI/Holidays";
 import KPIReasons from "./KPI/KPIReasons";
 import AddTransit from "./KPI/AddTransit";
 import TransportRep from "./TransportRep";
-import NewKPI from "./NewKPI";
-import NewTransitDays from "./NewTransitDays";
+import NewKPI from "./KPI/NewKPI";
+import NewTransitDays from "./KPI/NewTransitDays";
 import AddNewTransitDay from "./KPI/AddNewTransitDay";
 import GraphPresentation from "./Presentation/GraphPresentation";
 import DailyReportPage from "./ReportsPage/DeliveryReportPage";
-import Incident from "./Incident";
-import swal from "sweetalert";
-import { handleSessionExpiration } from '@/CommonFunctions';
+import Incident from "./Incident/Incident";
+import { getApiRequest } from "@/CommonFunctions";
+import { getLatestDespatchDate, getMinMaxValue, getOldestDespatchDate } from "@/Components/utils/dateUtils";
+import TrafficComp from "./TrafficPage/TrafficComp";
+import ConsTrack from "./ConsignmentTracking/ConsTrack";
+import CollapseSidebar from "./CollapseSidebar";
+import { Button } from "@nextui-org/react";
+import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
+import ConsMap from "./TrafficPage/ConsMap";
 
 export default function charts({
     setCusomterAccounts,
@@ -59,8 +62,8 @@ export default function charts({
 }) {
     window.moment = moment;
     const current = new Date();
-    const month = current.getMonth() + 1;
     const [KPIData, setKPIData] = useState([]);
+    const [consignmentToTrack, setConsignmentToTrack] = useState();
     const [NewKPIData, setNewKPIData] = useState([]);
     const [transitDays, setTransitDays] = useState();
     const [newTransitDays, setNewTransitDays] = useState();
@@ -111,6 +114,13 @@ export default function charts({
 
     const minDateAdd = getMinMaxValue(AdditionalData, "DespatchDateTime", 1);
     const maxDateAdd = getMinMaxValue(AdditionalData, "DespatchDateTime", 2);
+
+    const [activeModel, setActiveModel] = useState(0);
+    const [activePage, setActivePage] = useState(0);
+    const [toggled, setToggled] = useState(false);
+    const [assets, setAssets] = useState([]);
+    const [broken, setBroken] = useState(false);
+    const [rtl, setRtl] = useState(false);
 
     const [filtersCons, setFiltersCons] = useState([
         {
@@ -360,122 +370,6 @@ export default function charts({
         },
     ]);
 
-    const [filtersKPI, setFiltersKPI] = useState([
-        {
-            name: "ConsignmentNo",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "SenderName",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "SenderReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "SenderState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            //emptyValue: "",
-        },
-        {
-            name: "ReceiverName",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "ReceiverReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "ReceiverState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            //emptyValue: "",
-        },
-        {
-            name: "ReceiverSuburb",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "DispatchDate",
-            operator: "inrange",
-            type: "date",
-            value: {
-                start: minDispatchDate,
-                end: maxDispatchDate,
-            },
-        },
-        {
-            name: "ReceiverPostCode",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: null,
-        },
-        {
-            name: "RDD",
-            operator: "inrange",
-            type: "date",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "DeliveryDate",
-            operator: "inrange",
-            type: "date",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "TransitDays",
-            operator: "eq",
-            type: "number",
-            value: null,
-            // emptyValue: null,
-        },
-        {
-            name: "CalculatedDelDate",
-            operator: "inrange",
-            type: "date",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "MatchDel",
-            operator: "eq",
-            type: "select",
-            value: null,
-            //emptyValue: "",
-        },
-        {
-            name: "ReasonId",
-            operator: "eq",
-            type: "select",
-            value: null,
-            //emptyValue: null,
-        },
-    ]);
     const [filtersNewKPI, setFiltersNewKPI] = useState([
         {
             name: "ConsignmentNo",
@@ -567,8 +461,8 @@ export default function charts({
             name: "TransitDays",
             operator: "eq",
             type: "number",
-            value: null,
-            // emptyValue: null,
+            value: undefined,
+            emptyValue: null,
         },
         {
             name: "CalculatedDelDate",
@@ -590,81 +484,6 @@ export default function charts({
             type: "select",
             value: null,
             //emptyValue: null,
-        },
-    ]);
-    const [filtersTransit, setFiltersTransit] = useState([
-        {
-            name: "CustomerName",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "CustomerTypeId",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: null,
-        },
-        {
-            name: "SenderState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "SenderCity",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "SenderSuburb",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "SenderPostCode",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-        {
-            name: "ReceiverName",
-            operator: "contains",
-            type: "string",
-            value: null,
-        },
-        {
-            name: "ReceiverState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ReceiverCity",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ReceiverSuburb",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ReceiverPostCode",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-        {
-            name: "TransitTime",
-            operator: "eq",
-            type: "number",
-            value: null,
         },
     ]);
     const [filtersNewTransit, setFiltersNewTransit] = useState([
@@ -1441,83 +1260,120 @@ export default function charts({
             value: "",
         },
     ]);
+    const [filtersConsTrack, setFiltersConsTrack] = useState([
+        {
+            name: "ConsignmentNo",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "DebtorName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderSuburb",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderPostcode",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverSuburb",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverPostcode",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverSuburb",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "DespatchDate",
+            operator: "inrange",
+            type: "date",
+            value: {
+                start: minDispatchDate,
+                end: maxDispatchDate,
+            },
+        },
+        {
+            name: "ReceiverPostCode",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: null,
+        },
+        {
+            name: "RDD",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "EventCount",
+            operator: "eq",
+            type: "number",
+            value: undefined,
+            emptyValue: null,
+        },
+    ]);
 
-    function getOldestDespatchDate(data) {
-        // Filter out elements with invalid 'CreatedDate' values
-        const validData = data.filter((item) => isValidDate(item.DespatchDate));
-
-        // Sort the validData array based on the 'CreatedDate' property
-        const sortedData = validData.sort(
-            (a, b) => new Date(a.DespatchDate) - new Date(b.DespatchDate)
-        );
-
-        // Check if the sortedData array is empty
-        if (sortedData.length === 0) {
-            return null; // No valid dates found
-        }
-
-        // Extract only the date part from the 'CreatedDate' of the first element (oldest date)
-        const oldestDate = new Date(
-            sortedData[0]?.DespatchDate
-        ).toLocaleDateString("en-CA");
-        // Return the oldest date in the 'YYYY-MM-DD' format
-        return oldestDate;
-    }
-    function isValidDate(dateString) {
-        const date = new Date(dateString);
-        return !isNaN(date);
-    }
-    function getLatestDespatchDate(data) {
-        const validData = data.filter((item) => isValidDate(item.DespatchDate));
-
-        // Sort the data array based on the 'DespatchDate' property in descending order
-        const sortedData = validData.sort(
-            (a, b) => new Date(b.DespatchDate) - new Date(a.DespatchDate)
-        );
-        if (sortedData.length === 0) {
-            return null; // No valid dates found
-        }
-        const latestDate = new Date(
-            sortedData[0]?.DespatchDate
-        ).toLocaleDateString("en-CA");
-
-        // Return the 'DespatchDate' of the first element (latest date)
-        return latestDate;
-    }
     const handleDataFromChild = (data) => {
         setDataFromChild(data);
     };
     const [lastIndex, setLastIndex] = useState(0);
-    function getMinMaxValue(data, fieldName, identifier) {
-        // Check for null safety
-        if (!data || !Array.isArray(data) || data.length === 0) {
-            return null;
-        }
-
-        // Sort the data based on the fieldName
-        const sortedData = [...data].sort((a, b) => {
-            if (a[fieldName] < b[fieldName]) return -1;
-            if (a[fieldName] > b[fieldName]) return 1;
-            return 0;
-        });
-
-        // Return the minimum or maximum value based on the identifier
-        let resultDate;
-        if (identifier === 1) {
-            resultDate = new Date(sortedData[0][fieldName]);
-        } else if (identifier === 2) {
-            resultDate = new Date(sortedData[sortedData.length - 1][fieldName]);
-        } else {
-            return null;
-        }
-
-        // Convert the resultDate to the desired format "01-10-2023"
-        const day = String(resultDate.getDate()).padStart(2, "0");
-        const month = String(resultDate.getMonth() + 1).padStart(2, "0"); // +1 because months are 0-indexed
-        const year = resultDate.getFullYear();
-
-        return `${day}-${month}-${year}`;
-    }
     // Function to format the date
     const formatDate = (dateString) => {
         if (dateString) {
@@ -1553,7 +1409,7 @@ export default function charts({
         });
 
         // Update filtersKPI
-        filtersKPI?.map((item) => {
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -1604,7 +1460,7 @@ export default function charts({
         });
 
         // Update filtersKPI
-        filtersKPI?.map((item) => {
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -1655,7 +1511,7 @@ export default function charts({
         });
 
         // Update filtersKPI
-        filtersKPI?.map((item) => {
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -1706,7 +1562,7 @@ export default function charts({
         });
 
         // Update filtersKPI
-        filtersKPI?.map((item) => {
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -1757,7 +1613,7 @@ export default function charts({
         });
 
         // Update filtersKPI
-        filtersKPI?.map((item) => {
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -1793,40 +1649,22 @@ export default function charts({
     }, [filtersMissingPOD]);
 
     const [dailyReportData, setDailyReportData] = useState([]);
-    const fetchDeliveryReport = async () => {
-        try {
-            const res = await axios
-                .get(`${url}Delivery`, {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`
-                    }
-                });
-            setDailyReportData(res.data || []);
-        } catch (err) {
-            if (err.response && err.response.status === 401) {
-                // Handle 401 error using SweetAlert
-                swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                }).then(async function () {
-                    await handleSessionExpiration();
-                });
-            } else {
-                // Handle other errors
-                console.log(err);
-            }
+
+    async function fetchDeliveryReport() {
+        const data = await getApiRequest(`${url}Delivery`, {
+            UserId: currentUser?.UserId,
+        });
+
+        if (data) {
+            setDailyReportData(data || []);
         }
     }
 
     useEffect(() => {
-        if(currentUser){
+        if (currentUser) {
             fetchDeliveryReport();
         }
-    },[currentUser])
+    }, [currentUser]);
     const [filtersDailyValue, setFiltersDailyReport] = useState([
         {
             name: "AccountNo",
@@ -1990,7 +1828,7 @@ export default function charts({
     // Update filters if the change is in kpi
     useEffect(() => {
         let val = {};
-        filtersKPI?.map((item) => {
+        filtersNewKPI?.map((item) => {
             if (item?.name == "DispatchDate") {
                 val = item?.value;
             }
@@ -2036,7 +1874,7 @@ export default function charts({
         });
         setSDate(formatDate(val.start));
         setEDate(formatDate(val.end));
-    }, [filtersKPI]);
+    }, [filtersNewKPI]);
     // Update filters if the change is in failed cons
     useEffect(() => {
         let val = {};
@@ -2046,7 +1884,7 @@ export default function charts({
             }
         });
         // Update filtersKPI
-        filtersKPI?.map((item) => {
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -2098,7 +1936,7 @@ export default function charts({
         });
 
         // Update filtersKPI
-        filtersKPI?.map((item) => {
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -2167,29 +2005,7 @@ export default function charts({
             setSDate={setSDate}
             userPermission={userPermission}
         />,
-        <KPI
-            kpireasonsData={kpireasonsData}
-            oldestDate={oldestDate}
-            latestDate={latestDate}
-            KPIData={KPIData}
-            filterValue={filtersKPI}
-            setFilterValue={setFiltersKPI}
-            setKPIData={setKPIData}
-            currentUser={currentUser}
-            userBody={userBody}
-            accData={dataFromChild}
-            setActiveIndexGTRS={setActiveIndexGTRS}
-            url={url}
-            AToken={AToken}
-            setactiveCon={setactiveCon}
-            setLastIndex={setLastIndex}
-            IDfilter={IDfilter}
-            EDate={EDate}
-            setEDate={setEDate}
-            SDate={SDate}
-            setSDate={setSDate}
-            userPermission={userPermission}
-        />,
+        <div></div>,
         <ConsignmentD
             url={url}
             accData={dataFromChild}
@@ -2380,8 +2196,8 @@ export default function charts({
         <TransitDays
             setTransitDay={setTransitDay}
             transitDays={transitDays}
-            filterValue={filtersTransit}
-            setFilterValue={setFiltersTransit}
+            filterValue={filtersNewTransit}
+            setFilterValue={setFiltersNewTransit}
             currentUser={currentUser}
             AToken={AToken}
             setActiveIndexGTRS={setActiveIndexGTRS}
@@ -2493,6 +2309,21 @@ export default function charts({
             AToken={AToken}
             userPermission={userPermission}
         />,
+        <TrafficComp />,
+        <Incident
+            AToken={AToken}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            gtccrUrl={gtccrUrl}
+            incidentId={incidentId}
+            currentUser={currentUser}
+            userPermission={userPermission}
+        />,
+        <ConsTrack
+            setFilterValue={setFiltersConsTrack}
+            filterValue={filtersConsTrack}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            setConsignmentToTrack={setConsignmentToTrack}
+        />,
         <DailyReportPage
             url={url}
             AToken={AToken}
@@ -2507,63 +2338,66 @@ export default function charts({
             filterValue={filtersDailyValue}
             fetchDeliveryReport={fetchDeliveryReport}
         />,
-        <Incident
-            AToken={AToken}
+        <ConsMap
+            consignment={consignmentToTrack}
             setActiveIndexGTRS={setActiveIndexGTRS}
-            gtccrUrl={gtccrUrl}
-            incidentId={incidentId}
-            currentUser={currentUser}
-            userPermission={userPermission}
-            />
+        />,
     ];
 
     return (
-        <div className="">
-            {/* <Sidebar /> */}
-            <div className=" h-full flex ">
+        <div className="h-full">
+            <div className="h-full">
                 {/* Left sidebar & main wrapper */}
-                <div className="min-w-0 flex-1 bg-gray-100 xl:flex">
-                    <div className=" xl:w-64 flex-shrink-0 w-full h-auto md:block mb-4">
-                        <div className="h-full  ">
-                            {/* Start left column area */}
-                            <div
-                                className="relative h-full"
-                                style={{ minHeight: "6rem" }}
-                            >
-                                <div className=" inset-0 rounded-lg border-dashed border-gray-200">
-                                    <ChartsSidebar
-                                        setCusomterAccounts={
-                                            setCusomterAccounts
-                                        }
-                                        customerAccounts={customerAccounts}
-                                        activeIndexGTRS={activeIndexGTRS}
-                                        sessionData={sessionData}
-                                        user={user}
-                                        userPermission={user}
-                                        onData={handleDataFromChild}
-                                        setActiveIndexGTRS={setActiveIndexGTRS}
-                                        currentUser={currentUser}
-                                    />
-                                </div>
-                            </div>
-                            {/* End left column area */}
-                        </div>
-                    </div>
+                <div className="bg-gray-100 h-full flex">
+                    {/* Start left column area with collapsing sidebar */}
+                    <CollapseSidebar
+                        activePage={activePage}
+                        setActivePage={setActivePage}
+                        activeModel={activeModel}
+                        setActiveModel={setActiveModel}
+                        broken={broken}
+                        setBroken={setBroken}
+                        rtl={rtl}
+                        setRtl={setRtl}
+                        toggled={toggled}
+                        setToggled={setToggled}
+                        setCusomterAccounts={setCusomterAccounts}
+                        customerAccounts={customerAccounts}
+                        activeIndexGTRS={activeIndexGTRS}
+                        sessionData={sessionData}
+                        user={user}
+                        onData={handleDataFromChild}
+                        setActiveIndexGTRS={setActiveIndexGTRS}
+                        currentUser={currentUser}
+                    />
 
-                    <div className="bg-smooth w-full lg:min-w-0 lg:flex-1">
-                        <div className="h-full">
-                            {/* Start main area*/}
-                            <div
-                                className="relative h-full"
-                                style={{ minHeight: "36rem" }}
-                            >
-                                <div className="absolute inset-0 rounded-lg">
-                                    {components[activeIndexGTRS]}
-                                </div>
-                            </div>
-                            {/* End main area */}
+                    <main className="w-full bg-gray-50 h-full overflow-y-auto">
+                        <div
+                            style={{ marginBottom: "16px" }}
+                            className="fixed left-0 top-20 z-50"
+                        >
+                            {broken && (
+                                <Button
+                                    aria-label="chevron right icon"
+                                    className="rounded-none rounded-r bg-dark"
+                                    onClick={() => setToggled(!toggled)}
+                                    isIconOnly
+                                >
+                                    <ChevronDoubleRightIcon className="w-5 text-white h-5" />
+                                </Button>
+                            )}
                         </div>
-                    </div>
+
+                        {/* Main content area, displaying dynamically selected components */}
+                        <div
+                            className="relative h-full"
+                            style={{ minHeight: "36rem" }}
+                        >
+                            <div className="absolute inset-0 rounded-lg">
+                                {components[activeIndexGTRS]}
+                            </div>
+                        </div>
+                    </main>
                 </div>
             </div>
         </div>
