@@ -226,7 +226,7 @@ class LoginController extends Controller
         // Create an instance of the RegisteredUserController and get the current user
         $userController = new RegisteredUserController();
         $user = $userController->getCurrentUserName($request);
-        $userMsg = json_decode($user->content(), true);
+        $userMsg = json_decode($user->getContent(), true);
 
         //check if user is not found
         if(gettype($userMsg) != "array" && gettype($userMsg) != "object" && gettype($userMsg) == "string") {

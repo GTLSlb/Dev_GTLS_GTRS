@@ -24,13 +24,12 @@ export async function handleSessionExpiration() {
     
     // Ensure CSRF token is set in Axios for the logout request
     axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
     axios
         .post("/logoutWithoutRequest")
         .then(async (response) => {
-            if (response.status === 200 && response.data.status === 'success') {
+            if (response.status === 200) {
                 const isMicrosoftLogin = Cookies.get('msal.isMicrosoftLogin');
-                
+
                 // Clear MSAL-related data from localStorage
                 clearMSALLocalStorage();
 
@@ -49,6 +48,7 @@ export async function handleSessionExpiration() {
             console.log(error);
         });
 }
+
 
 export function clearMSALLocalStorage() {
     const appDomain = window.Laravel.appDomain;
