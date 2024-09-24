@@ -1,11 +1,11 @@
 import { canAddKpiReasons } from "@/permissions";
 import React from "react";
 import { useEffect, useState } from "react";
-import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import SmallTableKPI from "./Components/KPISmallTable";
 import swal from "sweetalert";
 import axios from "axios";
 import { handleSessionExpiration } from '@/CommonFunctions';
+import GtamButton from "../GtamButton";
 
 export default function KPIReasons({
     url,

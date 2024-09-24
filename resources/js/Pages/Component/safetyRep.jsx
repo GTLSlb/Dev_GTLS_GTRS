@@ -1,16 +1,10 @@
-import { useLayoutEffect, useRef, useState } from "react";
-import ReactPaginate from "react-paginate";
-import { useDownloadExcel, downloadExcel } from "react-export-table-to-excel";
+import { useState } from "react";
 import { useEffect } from "react";
 import SafetyRepTable from "./safetyComp/safetyRepTable";
 import SafetyRepChart from "./safetyComp/safetyRepChart";
-import Select from "react-select";
 import AddSafetyType from "./safetyComp/AddSafety/safetyTypes/AddSafetyType";
-import AddSafetyCauses from "./safetyComp/AddSafety/safetyCauses/AddSafetyCauses";
 import { canViewSafetyType } from "@/permissions";
-import swal from 'sweetalert';
-import axios from "axios";
-import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
+import { getApiRequest } from "@/CommonFunctions";
 
 export default function SafetyRep({
     accData,
@@ -105,7 +99,6 @@ export default function SafetyRep({
             fetchDataCauses();
         }
     }, []);
-    
 
     async function fetchData() {
         setIsFetching(true);
@@ -121,7 +114,6 @@ export default function SafetyRep({
             setIsFetching(false);
         }
     }
-  
 
     async function fetchDataTypes() {
         const data = await getApiRequest(`${url}SafetyTypes`, {
@@ -133,7 +125,7 @@ export default function SafetyRep({
             setIsFetchingTypes(false);
         }
     }
-  
+
     async function fetchDataCauses() {
         const data = await getApiRequest(`${url}SafetyCauses`, {
             UserId: currentUser?.UserId,
@@ -261,10 +253,10 @@ export default function SafetyRep({
     };
     const [canView, setCanView] = useState(true);
     useEffect(() => {
-        if(userPermission){
-            setCanView(!canViewSafetyType(userPermission))
+        if (userPermission) {
+            setCanView(!canViewSafetyType(userPermission));
         }
-    },[userPermission])
+    }, [userPermission]);
     return (
         <div>
             {isFetching || isFetchingCauses || isFetchingTypes ? (

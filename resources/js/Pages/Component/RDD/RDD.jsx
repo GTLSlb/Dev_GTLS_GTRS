@@ -1,23 +1,13 @@
 import { useRef, useState } from "react";
 import { useEffect } from "react";
-import { useDownloadExcel, downloadExcel } from "react-export-table-to-excel";
 import ModalRDD from "@/Components/modalRDD";
 import moment from "moment";
-import ExcelJS from "exceljs";
-import { saveAs } from "file-saver";
 import React from "react";
-import { Fragment } from "react";
-import { Popover, Transition } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import TableStructure from "@/Components/TableStructure";
-import Button from "@inovua/reactdatagrid-community/packages/Button";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
-import ReactDataGrid from "@inovua/reactdatagrid-community";
-import { PencilIcon } from "@heroicons/react/24/outline";
 import { canEditRDD } from "@/permissions";
-import { DataObject } from "@mui/icons-material";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import ExportPopover from "@/Components/ExportPopover";
@@ -84,26 +74,6 @@ export default function RDDreason({
     const [consignment, SetConsignment] = useState();
     const gridRef = useRef(null);
 
-    const headers = [
-        "ConsignmentNo",
-        "Debtor Name",
-        "Account Name",
-        "Sender Name",
-        "Sender Address",
-        "Sender Suburb",
-        "Sender State",
-        "Receiver Name",
-        "Receiver Address",
-        "Receiver Suburb",
-        "Receiver State",
-        "Despatch Date",
-        "Old Rdd",
-        "New Rdd",
-        "Reason",
-        "Reason Desc",
-        "ChangeAt",
-        "ChangedBy",
-    ];
     const handleDownloadExcel = () => {
         const jsonData = handleFilterTable(gridRef, filteredData); // Fetch filtered data
 
@@ -142,17 +112,6 @@ export default function RDDreason({
         document.body.style.overflow = isModalCurrentlyOpen ? "hidden" : "auto";
         setIsModalOpen(isModalCurrentlyOpen);
     };
-    const [hoverMessage, setHoverMessage] = useState("");
-    const [isMessageVisible, setMessageVisible] = useState(false);
-    const handleMouseEnter = () => {
-        if (filteredData.length === 0) {
-            setHoverMessage("No Data Found");
-            setMessageVisible(true);
-            setTimeout(() => {
-                setMessageVisible(false);
-            }, 1000);
-        }
-    };
     const [selected, setSelected] = useState([]);
     const groups = [
         {
@@ -166,10 +125,6 @@ export default function RDDreason({
             headerAlign: "center",
         },
     ];
-    const reasonOptions = rddReasons.map((reason) => ({
-        id: reason.ReasonId,
-        label: reason.ReasonName,
-    }));
     const accountOptions = createNewLabelObjects(rddData, "AccountNumber");
     const senderSuburbs = createNewLabelObjects(rddData, "SenderSuburb");
     const senderStates = createNewLabelObjects(rddData, "SenderState");
@@ -182,27 +137,6 @@ export default function RDDreason({
     const maxOldRddDate = getMinMaxValue(rddData, "OldRdd", 2);
     const minNewRddDate = getMinMaxValue(rddData, "NewRdd", 1);
     const maxNewRddDate = getMinMaxValue(rddData, "NewRdd", 2);
-    const minChangeAtDate = getMinMaxValue(rddData, "ChangeAt", 1);
-    const maxChangeAtDate = getMinMaxValue(rddData, "ChangeAt", 2);
-    function convertUtcToUserTimezone(utcDateString) {
-        // Create a Date object from the UTC date string
-        const utcDate = new Date(utcDateString);
-
-        // Get the current user's timezone
-        const targetTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-        const formatter = new Intl.DateTimeFormat("en-US", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            timeZone: targetTimezone,
-        });
-        const convertedDate = formatter.format(utcDate);
-        return convertedDate;
-    }
     const columns = [
         {
             name: "ConsignmentNo",

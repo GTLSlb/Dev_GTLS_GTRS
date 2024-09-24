@@ -1,35 +1,26 @@
 import { useState } from "react";
 import { useEffect, useRef } from "react";
 import moment from "moment";
-import { saveAs } from "file-saver";
-import ExcelJS from "exceljs";
-import { Fragment } from "react";
-import { Popover, Transition } from "@headlessui/react";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
-import { ChevronDownIcon, PencilIcon } from "@heroicons/react/20/solid";
 import TableStructure from "@/Components/TableStructure";
 import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
-import KPIModalAddReason from "./KPI/KPImodal";
 import LottieComponent from "@/Components/lottie/LottieComponent";
-import Truck from "../../Components/lottie/Data/Truck.json";
-import Success from "../../Components/lottie/Data/Success.json";
+import Truck from "@/Components/lottie/Data/Truck.json";
+import Success from "@/Components/lottie/Data/Success.json";
 import { canCalculateKPI, canEditKPI } from "@/permissions";
 import axios from "axios";
 import swal from "sweetalert";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
-import NewKPIModalAddReason from "./KPI/NEWKPIModal";
-import { getApiRequest, handleSessionExpiration } from "@/CommonFunctions";
+import NewKPIModalAddReason from "./NEWKPIModal";
+import { formatDateToExcel, getApiRequest, handleSessionExpiration } from "@/CommonFunctions";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import ExportPopover from "@/Components/ExportPopover";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
 
 function NewKPI({
     url,
@@ -232,17 +223,6 @@ function NewKPI({
         );
     };
 
-    // Helper function to format dates for Excel
-    const formatDateToExcel = (dateValue) => {
-        const date = new Date(dateValue);
-        if (!isNaN(date)) {
-            return (
-                (date.getTime() - date.getTimezoneOffset() * 60000) / 86400000 +
-                25569
-            );
-        }
-        return "";
-    };
 
     // Usage example remains the same
     const minDispatchDate = getMinMaxValue(KPIData, "DispatchDate", 1);

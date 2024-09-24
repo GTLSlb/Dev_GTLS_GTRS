@@ -6,13 +6,13 @@ import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import Button from "@inovua/reactdatagrid-community/packages/Button";
 import { useState, useEffect, useRef } from "react";
 import TableStructure from "@/Components/TableStructure";
-import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import { canAddTransitDays, canEditTransitDays } from "@/permissions";
 import swal from "sweetalert";
 import axios from "axios";
 import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
+import GtamButton from "../GtamButton";
 
 export default function TransitDays({
     transitDays,

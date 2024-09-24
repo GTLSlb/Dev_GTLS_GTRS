@@ -1,127 +1,51 @@
 import React, { useState, useEffect } from "react";
-import AddRDDReason from "./AddRDDReason";
-import RDDreason from "./RDD";
-import "../../../css/radio.css";
-import { canViewRDDReasons } from "@/permissions";
+import FailedCons from "./FailedCons";
+import AddFailedReason from "../AddFailedReason";
+import { canViewFailedReasons } from "@/permissions";
 import swal from "sweetalert";
 import axios from "axios";
-import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
+import { handleSessionExpiration } from '@/CommonFunctions';
 
-export default function RDDMain({
+export default function FailedConsMain({
+    url,
+    PerfData,
+    setPerfData,
     setActiveIndexGTRS,
+    gtccrUrl,
+    setLastIndex,
     setactiveCon,
-    debtorsData,
-    rddData,
     filterValue,
     setFilterValue,
-    setrddData,
+    IDfilter,
     setIncidentId,
-    setLastIndex,
+    currentUser,
+    userPermission,
     accData,
     EDate,
     setEDate,
-    SDate,
-    url,
     AToken,
-    userPermission,
+    SDate,
     setSDate,
-    currentUser,
-    rddReasons,
-    setrddReasons,
-    userBody,
+    failedReasons,
+    setFailedReasons,
     oldestDate,
     latestDate,
 }) {
-    const [isFetching, setIsFetching] = useState();
-    const [isFetchingReasons, setIsFetchingReasons] = useState();
-    const parseDateString = (dateString) => {
-        // Check if dateString is undefined, null, or empty
-        if (!dateString || !dateString.trim()) {
-            return null; // or return any other default value as needed
-        }
-        const parts = dateString.split(/[\s/:]/);
-        let dateObject;
-        if (parts.length === 7) {
-            // If there is a time component
-            dateObject = new Date(
-                Date.UTC(
-                    parts[2],
-                    parts[1] - 1,
-                    parts[0],
-                    parts[3],
-                    parts[4],
-                    parts[5]
-                )
-            );
-        } else {
-            // If there is no time component
-            dateObject = new Date(Date.UTC(parts[2], parts[1] - 1, parts[0]));
-        }
-        return dateObject;
-    };
-
-    const formatDate = (date) => {
-        if (!(date instanceof Date) || isNaN(date.getTime())) {
-            return ""; // or return any other default value as needed
-        }
-        const options = {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            timeZone: "UTC",
-        };
-
-        return date.toISOString().slice(0, 19); // UTC time
-    };
-    const updateFieldWithData = (data, fieldName) => {
-        if (!data || data.length === 0) {
-            return []; // or return any other default value as needed
-        }
-
-        const updatedData = data.map((item) => {
-            const fieldValue = item[fieldName];
-            const parsedDate = parseDateString(fieldValue);
-            const formattedDate = formatDate(parsedDate);
-            // Return a new object with the updated field
-            return { ...item, [fieldName]: formattedDate };
-        });
-        setrddData(updatedData);
-        return updatedData;
-    };
+    const [activeComponentIndex, setActiveComponentIndex] = useState(0);
+    const [isFetching, setIsfetching] = useState();
+    const [roleId, setRoleId] = useState(null);
+    const [shouldShowList, setShouldShowList] = useState(false);
+    const Roles = ["1", "3", "4"];
     useEffect(() => {
-        if (!rddData) {
-            setIsFetching(true);
-            setIsFetchingReasons(true);
-            fetchData();
+        if (!failedReasons) {
+            setIsfetching(true);
             fetchReasonData();
         }
-    }, []); // Empty dependency array ensures the effect runs only once
-
-    async function fetchData() {
-        const data = await getApiRequest(`${url}RDD`, {
-            UserId: currentUser?.UserId,
-        });
-
-        if (data) {
-            const updatedOldRddData = updateFieldWithData(
-                data,
-                "OldRdd"
-            );
-            const updatedNewRddData = updateFieldWithData(
-                updatedOldRddData,
-                "NewRdd"
-            );
-            setrddData(updatedNewRddData || []);
-            setIsFetching(false);
-        }
-    }
+    }, []);
     const fetchReasonData = async () => {
         try {
             axios
-                .get(`${url}RddChangeReason`, {
+                .get(`${url}FailureReasons`, {
                     headers: {
                         UserId: currentUser.UserId,
                         Authorization: `Bearer ${AToken}`,
@@ -134,8 +58,8 @@ export default function RDDMain({
                         resolve(parsedData);
                     });
                     parsedDataPromise.then((parsedData) => {
-                        setrddReasons(parsedData || []);
-                        setIsFetchingReasons(false);
+                        setFailedReasons(parsedData || []);
+                        setIsfetching(false);
                     });
                 })
                 .catch((err) => {
@@ -159,12 +83,6 @@ export default function RDDMain({
             console.error("Error fetching data:", error);
         }
     };
-    const [activeComponentIndex, setActiveComponentIndex] = useState(0);
-    const [roleId, setRoleId] = useState(null);
-    const [shouldShowList, setShouldShowList] = useState(false);
-
-    const Roles = ["1", "3", "4", "5"];
-
     useEffect(() => {
         if (currentUser && currentUser.role_id) {
             setRoleId(currentUser.role_id);
@@ -174,34 +92,34 @@ export default function RDDMain({
         );
     }, [currentUser]);
     const components = [
-        <RDDreason
+        <FailedCons
             url={url}
-            accData={accData}
-            rddData={rddData}
-            filterValue={filterValue}
-            setFilterValue={setFilterValue}
-            setrddData={setrddData}
-            debtorsData={debtorsData}
+            failedReasons={failedReasons}
             currentUser={currentUser}
             userPermission={userPermission}
+            accData={accData}
             setActiveIndexGTRS={setActiveIndexGTRS}
+            PerfData={PerfData}
             setactiveCon={setactiveCon}
             setLastIndex={setLastIndex}
+            IDfilter={IDfilter}
+            filterValue={filterValue}
+            setFilterValue={setFilterValue}
             EDate={EDate}
+            AToken={AToken}
             setEDate={setEDate}
             SDate={SDate}
-            AToken={AToken}
             setSDate={setSDate}
-            rddReasons={rddReasons}
+            setPerfData={setPerfData}
             oldestDate={oldestDate}
             latestDate={latestDate}
         />,
-        <AddRDDReason
-            rddReasons={rddReasons}
-            setrddReasons={setrddReasons}
+        <AddFailedReason
+            url={url}
+            failedReasons={failedReasons}
+            setFailedReasons={setFailedReasons}
             currentUser={currentUser}
             userPermission={userPermission}
-            url={url}
             AToken={AToken}
         />,
     ];
@@ -214,7 +132,7 @@ export default function RDDMain({
     //   const shouldShowList = currentUser?.role_id === 1 || currentUser?.role_id === 3;
     return (
         <div>
-            {isFetching || isFetchingReasons ? (
+            {isFetching ? (
                 <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
                     <div className="flex items-center justify-center">
                         <div
@@ -233,52 +151,55 @@ export default function RDDMain({
                 </div>
             ) : (
                 <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                   
-                    {/* {canViewRDDReasons(currentUser) ? (
+                    {/* {canViewFailedReasons(currentUser) ? (
                         <ul className="flex space-x-0 mt-5">
                             {components.map((component, index) => (
                                 <li
                                     key={index}
                                     className={`cursor-pointer ${
                                         activeComponentIndex === index
-                                        ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
-                                        : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
+                                            ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
+                                            : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
                                     }`}
                                     onClick={() => handleItemClick(index)}
                                 >
-                                   <div className="px-2"> {index === 0 ? "RDD Report" : "RDD Reasons"}</div>
+                                    <div className="px-2">
+                                        {" "}
+                                        {index === 0
+                                            ? "Failed Consignments"
+                                            : "Failed Reasons"}
+                                    </div>
                                 </li>
                             ))}
                         </ul>
                     ) : (
                         <div></div>
                     )} */}
-                    <div className="mt-0">
-                        <RDDreason
+                        <FailedCons
                             url={url}
-                            accData={accData}
-                            rddData={rddData}
-                            filterValue={filterValue}
-                            setFilterValue={setFilterValue}
-                            setrddData={setrddData}
-                            debtorsData={debtorsData}
+                            failedReasons={failedReasons}
                             currentUser={currentUser}
                             userPermission={userPermission}
+                            accData={accData}
+                            gtccrUrl={gtccrUrl}
+                            setIncidentId={setIncidentId}
                             setActiveIndexGTRS={setActiveIndexGTRS}
+                            PerfData={PerfData}
                             setactiveCon={setactiveCon}
                             setLastIndex={setLastIndex}
+                            IDfilter={IDfilter}
+                            filterValue={filterValue}
+                            setFilterValue={setFilterValue}
                             EDate={EDate}
-                            setIncidentId={setIncidentId}
+                            AToken={AToken}
                             setEDate={setEDate}
                             SDate={SDate}
-                            AToken={AToken}
                             setSDate={setSDate}
-                            rddReasons={rddReasons}
+                            setPerfData={setPerfData}
                             oldestDate={oldestDate}
                             latestDate={latestDate}
                         />
                     </div>
-                </div>
             )}
         </div>
     );

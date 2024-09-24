@@ -468,10 +468,10 @@ export default function DailyReportPage({
                 maxDate: maxDate,
             },
             render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                return value?moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+                    : moment(value).format("DD-MM-YYYY hh:mm A"):""
             },
         },
         {

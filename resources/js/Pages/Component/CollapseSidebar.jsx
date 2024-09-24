@@ -827,7 +827,7 @@ export default function CollapseSidebar({
                                                 className={`flex items-center px-2 gap-2 ${
                                                     isItemActive(menuItem.name)
                                                         ? "bg-gray-300 text-gray-900 py-2 rounded-lg"
-                                                        : "bg-transparent text-gray-600 hover:bg-gray-500 hover:text-white py-2 rounded-lg focus:ring-2 outline-0"
+                                                        : "bg-transparent text-gray-600 py-2 rounded-lg focus:ring-2 outline-0"
                                                 }
                                                                 ${
                                                                     collapsed

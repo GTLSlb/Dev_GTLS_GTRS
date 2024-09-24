@@ -7,10 +7,10 @@ import {
     ChevronDoubleDownIcon,
     ChevronDownIcon,
 } from "@heroicons/react/20/solid";
-import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import { useEffect } from "react";
 import { handleSessionExpiration } from '@/CommonFunctions';
 import swal from "sweetalert";
+import GtamButton from "../GtamButton";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");

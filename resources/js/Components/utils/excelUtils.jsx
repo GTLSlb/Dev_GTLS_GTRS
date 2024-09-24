@@ -47,9 +47,7 @@ export const exportToExcel = (jsonData, columnMapping, fileName, customCellHandl
         // Apply date formats dynamically to date columns
         dateColumns.forEach((col) => {
             const index = selectedColumns.indexOf(col);
-            console.log(selectedColumns)
             if (index !== -1) {
-                console.log(col)
                 const cell = row.getCell(index + 1); // ExcelJS uses 1-based indexing
                 cell.numFmt = "dd-mm-yyyy hh:mm AM/PM"; // You can adjust this format as needed
             }

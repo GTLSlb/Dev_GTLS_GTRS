@@ -10,12 +10,12 @@ import { useEffect, useRef } from "react";
 import moment from "moment";
 import axios from "axios";
 import AddHoliday from "./Components/AddHoliday";
-import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import { canAddHolidays, canEditHolidays } from "@/permissions";
 import swal from "sweetalert";
 import { getApiRequest, handleSessionExpiration } from "@/CommonFunctions";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
+import GtamButton from "../GtamButton";
 
 const temp = [
     {

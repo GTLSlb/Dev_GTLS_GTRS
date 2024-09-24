@@ -1,17 +1,14 @@
 import MainCharts from "./Dashboard_Comp/MainCharts";
 import React, { useState } from "react";
-import ChartsSidebar from "./Dashboard_Comp/ChartsSidebar";
 import GtrsCons from "./GtrsCons";
-import KPI from "./KPI";
 import ConsignmentD from "../Consignment";
 import ConsPerf from "./ConsPerf";
-import FailedCons from "./FailedCons";
-import NoDelivery from "./Dashboard_Comp/NoDelivery";
-import AdditionalCharges from "./Dashboard_Comp/AdditionalCharges";
-import DriverLogin from "./Dashboard_Comp/DriverLogin";
+import NoDelivery from "./NoDelivery";
+import AdditionalCharges from "./AdditionalCharges";
+import DriverLogin from "./DriverLogin";
 import SafetyRep from "./safetyRep";
-import RDDMain from "./RDDMain";
-import FailedConsMain from "./FailedConsMain";
+import RDDMain from "./RDD/RDDMain";
+import FailedConsMain from "./FailedConsignments/FailedConsMain";
 import MissingPOD from "./MissingPOD";
 import { useEffect } from "react";
 import TransitDays from "./KPI/TransitDays";
@@ -19,15 +16,14 @@ import Holidays from "./KPI/Holidays";
 import KPIReasons from "./KPI/KPIReasons";
 import AddTransit from "./KPI/AddTransit";
 import TransportRep from "./TransportRep";
-import NewKPI from "./NewKPI";
-import NewTransitDays from "./NewTransitDays";
+import NewKPI from "./KPI/NewKPI";
+import NewTransitDays from "./KPI/NewTransitDays";
 import AddNewTransitDay from "./KPI/AddNewTransitDay";
 import GraphPresentation from "./Presentation/GraphPresentation";
 import DailyReportPage from "./ReportsPage/DeliveryReportPage";
-import Incident from "./Incident";
-import swal from "sweetalert";
-import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
-import { getMinMaxValue } from "@/Components/utils/dateUtils";
+import Incident from "./Incident/Incident";
+import { getApiRequest } from "@/CommonFunctions";
+import { getLatestDespatchDate, getMinMaxValue, getOldestDespatchDate } from "@/Components/utils/dateUtils";
 import TrafficComp from "./TrafficPage/TrafficComp";
 import ConsTrack from "./ConsignmentTracking/ConsTrack";
 import CollapseSidebar from "./CollapseSidebar";
@@ -66,7 +62,6 @@ export default function charts({
 }) {
     window.moment = moment;
     const current = new Date();
-    const month = current.getMonth() + 1;
     const [KPIData, setKPIData] = useState([]);
     const [consignmentToTrack, setConsignmentToTrack] = useState();
     const [NewKPIData, setNewKPIData] = useState([]);
@@ -375,122 +370,6 @@ export default function charts({
         },
     ]);
 
-    const [filtersKPI, setFiltersKPI] = useState([
-        {
-            name: "ConsignmentNo",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "SenderName",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "SenderReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "SenderState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            //emptyValue: "",
-        },
-        {
-            name: "ReceiverName",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "ReceiverReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "ReceiverState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            //emptyValue: "",
-        },
-        {
-            name: "ReceiverSuburb",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "DispatchDate",
-            operator: "inrange",
-            type: "date",
-            value: {
-                start: minDispatchDate,
-                end: maxDispatchDate,
-            },
-        },
-        {
-            name: "ReceiverPostCode",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: null,
-        },
-        {
-            name: "RDD",
-            operator: "inrange",
-            type: "date",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "DeliveryDate",
-            operator: "inrange",
-            type: "date",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "TransitDays",
-            operator: "eq",
-            type: "number",
-            value: null,
-            // emptyValue: null,
-        },
-        {
-            name: "CalculatedDelDate",
-            operator: "inrange",
-            type: "date",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "MatchDel",
-            operator: "eq",
-            type: "select",
-            value: null,
-            //emptyValue: "",
-        },
-        {
-            name: "ReasonId",
-            operator: "eq",
-            type: "select",
-            value: null,
-            //emptyValue: null,
-        },
-    ]);
     const [filtersNewKPI, setFiltersNewKPI] = useState([
         {
             name: "ConsignmentNo",
@@ -605,81 +484,6 @@ export default function charts({
             type: "select",
             value: null,
             //emptyValue: null,
-        },
-    ]);
-    const [filtersTransit, setFiltersTransit] = useState([
-        {
-            name: "CustomerName",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "CustomerTypeId",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: null,
-        },
-        {
-            name: "SenderState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "SenderCity",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "SenderSuburb",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "SenderPostCode",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-        {
-            name: "ReceiverName",
-            operator: "contains",
-            type: "string",
-            value: null,
-        },
-        {
-            name: "ReceiverState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ReceiverCity",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ReceiverSuburb",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ReceiverPostCode",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-        {
-            name: "TransitTime",
-            operator: "eq",
-            type: "number",
-            value: null,
         },
     ]);
     const [filtersNewTransit, setFiltersNewTransit] = useState([
@@ -1566,48 +1370,6 @@ export default function charts({
         },
     ]);
 
-    function getOldestDespatchDate(data) {
-        // Filter out elements with invalid 'CreatedDate' values
-        const validData = data.filter((item) => isValidDate(item.DespatchDate));
-
-        // Sort the validData array based on the 'CreatedDate' property
-        const sortedData = validData.sort(
-            (a, b) => new Date(a.DespatchDate) - new Date(b.DespatchDate)
-        );
-
-        // Check if the sortedData array is empty
-        if (sortedData.length === 0) {
-            return null; // No valid dates found
-        }
-
-        // Extract only the date part from the 'CreatedDate' of the first element (oldest date)
-        const oldestDate = new Date(
-            sortedData[0]?.DespatchDate
-        ).toLocaleDateString("en-CA");
-        // Return the oldest date in the 'YYYY-MM-DD' format
-        return oldestDate;
-    }
-    function isValidDate(dateString) {
-        const date = new Date(dateString);
-        return !isNaN(date);
-    }
-    function getLatestDespatchDate(data) {
-        const validData = data.filter((item) => isValidDate(item.DespatchDate));
-
-        // Sort the data array based on the 'DespatchDate' property in descending order
-        const sortedData = validData.sort(
-            (a, b) => new Date(b.DespatchDate) - new Date(a.DespatchDate)
-        );
-        if (sortedData.length === 0) {
-            return null; // No valid dates found
-        }
-        const latestDate = new Date(
-            sortedData[0]?.DespatchDate
-        ).toLocaleDateString("en-CA");
-
-        // Return the 'DespatchDate' of the first element (latest date)
-        return latestDate;
-    }
     const handleDataFromChild = (data) => {
         setDataFromChild(data);
     };
@@ -1647,7 +1409,7 @@ export default function charts({
         });
 
         // Update filtersKPI
-        filtersKPI?.map((item) => {
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -1698,7 +1460,7 @@ export default function charts({
         });
 
         // Update filtersKPI
-        filtersKPI?.map((item) => {
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -1749,7 +1511,7 @@ export default function charts({
         });
 
         // Update filtersKPI
-        filtersKPI?.map((item) => {
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -1800,7 +1562,7 @@ export default function charts({
         });
 
         // Update filtersKPI
-        filtersKPI?.map((item) => {
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -1851,7 +1613,7 @@ export default function charts({
         });
 
         // Update filtersKPI
-        filtersKPI?.map((item) => {
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -1899,10 +1661,10 @@ export default function charts({
     }
 
     useEffect(() => {
-        if(currentUser){
+        if (currentUser) {
             fetchDeliveryReport();
         }
-    },[currentUser])
+    }, [currentUser]);
     const [filtersDailyValue, setFiltersDailyReport] = useState([
         {
             name: "AccountNo",
@@ -2066,7 +1828,7 @@ export default function charts({
     // Update filters if the change is in kpi
     useEffect(() => {
         let val = {};
-        filtersKPI?.map((item) => {
+        filtersNewKPI?.map((item) => {
             if (item?.name == "DispatchDate") {
                 val = item?.value;
             }
@@ -2112,7 +1874,7 @@ export default function charts({
         });
         setSDate(formatDate(val.start));
         setEDate(formatDate(val.end));
-    }, [filtersKPI]);
+    }, [filtersNewKPI]);
     // Update filters if the change is in failed cons
     useEffect(() => {
         let val = {};
@@ -2122,7 +1884,7 @@ export default function charts({
             }
         });
         // Update filtersKPI
-        filtersKPI?.map((item) => {
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -2174,7 +1936,7 @@ export default function charts({
         });
 
         // Update filtersKPI
-        filtersKPI?.map((item) => {
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -2243,29 +2005,7 @@ export default function charts({
             setSDate={setSDate}
             userPermission={userPermission}
         />,
-        <KPI
-            kpireasonsData={kpireasonsData}
-            oldestDate={oldestDate}
-            latestDate={latestDate}
-            KPIData={KPIData}
-            filterValue={filtersKPI}
-            setFilterValue={setFiltersKPI}
-            setKPIData={setKPIData}
-            currentUser={currentUser}
-            userBody={userBody}
-            accData={dataFromChild}
-            setActiveIndexGTRS={setActiveIndexGTRS}
-            url={url}
-            AToken={AToken}
-            setactiveCon={setactiveCon}
-            setLastIndex={setLastIndex}
-            IDfilter={IDfilter}
-            EDate={EDate}
-            setEDate={setEDate}
-            SDate={SDate}
-            setSDate={setSDate}
-            userPermission={userPermission}
-        />,
+        <div></div>,
         <ConsignmentD
             url={url}
             accData={dataFromChild}
@@ -2456,8 +2196,8 @@ export default function charts({
         <TransitDays
             setTransitDay={setTransitDay}
             transitDays={transitDays}
-            filterValue={filtersTransit}
-            setFilterValue={setFiltersTransit}
+            filterValue={filtersNewTransit}
+            setFilterValue={setFiltersNewTransit}
             currentUser={currentUser}
             AToken={AToken}
             setActiveIndexGTRS={setActiveIndexGTRS}

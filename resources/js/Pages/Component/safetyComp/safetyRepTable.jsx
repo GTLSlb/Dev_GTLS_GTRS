@@ -1,16 +1,7 @@
 import React from "react";
 import { useLayoutEffect, useRef, useState } from "react";
-import ReactPaginate from "react-paginate";
-import { useDownloadExcel, downloadExcel } from "react-export-table-to-excel";
 import { PencilIcon } from "@heroicons/react/24/outline";
-import notFound from "../../../assets/pictures/NotFound.png";
-import ExcelJS from "exceljs";
 import moment from "moment";
-import { Fragment } from "react";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
-import { Popover, Transition } from "@headlessui/react";
-import { ChevronDownIcon, EyeIcon } from "@heroicons/react/20/solid";
 
 import SafetyModal from "@/Components/AddsafetyModal";
 import { useEffect } from "react";
@@ -19,7 +10,6 @@ import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import TableStructure from "@/Components/TableStructure";
-import ReactDataGrid from "@inovua/reactdatagrid-community";
 import { canAddSafetyReport, canEditSafetyReport } from "@/permissions";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
@@ -28,9 +18,6 @@ import { formatDateToExcel } from "@/CommonFunctions";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import ExportPopover from "@/Components/ExportPopover";
 
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
 
 export default function SafetyRepTable({
     currentPageRep,
@@ -191,17 +178,6 @@ export default function SafetyRepTable({
         }
         setsafetyData(updatedData);
         setDataEdited(true);
-    };
-    const [hoverMessage, setHoverMessage] = useState("");
-    const [isMessageVisible, setMessageVisible] = useState(false);
-    const handleMouseEnter = () => {
-        if (safetyData.length === 0) {
-            setHoverMessage("No Data Found");
-            setMessageVisible(true);
-            setTimeout(() => {
-                setMessageVisible(false);
-            }, 1000);
-        }
     };
     const stateOptions = createNewLabelObjects(safetyData, "State");
 

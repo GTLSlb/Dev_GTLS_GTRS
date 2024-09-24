@@ -2,24 +2,18 @@ import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import { useState, useEffect, useRef } from "react";
-import ExcelJS from "exceljs";
 import TableStructure from "@/Components/TableStructure";
-import { ChevronDownIcon, PencilIcon } from "@heroicons/react/20/solid";
-import { Fragment } from "react";
-import { Popover, Transition } from "@headlessui/react";
+import { PencilIcon } from "@heroicons/react/20/solid";
 import {
     canAddNewTransitDays,
-    canAddTransitDays,
     canEditTransitDays,
 } from "@/permissions";
-import swal from "sweetalert";
-import axios from "axios";
-import GtamButton from "./GTAM/components/Buttons/GtamButton";
-import { getApiRequest, handleSessionExpiration } from "@/CommonFunctions";
+import { getApiRequest } from "@/CommonFunctions";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import ExportPopover from "@/Components/ExportPopover";
+import GtamButton from "../GtamButton";
 
 function NewTransitDays({
     setActiveIndexGTRS,
@@ -92,7 +86,6 @@ function NewTransitDays({
     }
 
     const types = getUniqueCustomerTypes(newTransitDays);
-    const [isMessageVisible, setMessageVisible] = useState(false);
 
     function getUniqueCustomerTypes(data) {
         // Create a Map to store unique customer types with their corresponding IDs
@@ -292,15 +285,6 @@ function NewTransitDays({
             "TransitDays_Report.xlsx",
             customCellHandlers
         );
-    };
-    const handleMouseEnter = () => {
-        if (filteredData.length === 0) {
-            setHoverMessage("No Data Found");
-            setMessageVisible(true);
-            setTimeout(() => {
-                setMessageVisible(false);
-            }, 1000);
-        }
     };
 
     return (

@@ -1,33 +1,13 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useEffect } from "react";
-import ReactPaginate from "react-paginate";
-import notFound from "../../../assets/pictures/NotFound.png";
-import { useDownloadExcel, downloadExcel } from "react-export-table-to-excel";
-import ExcelJS from "exceljs";
-import { Fragment } from "react";
 import moment from "moment";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
-import { Popover, Transition } from "@headlessui/react";
-import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
-import BoolFilter from "@inovua/reactdatagrid-community/BoolFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
-import Button from "@inovua/reactdatagrid-community/packages/Button";
-import swal from "sweetalert";
-import axios from "axios";
 import TableStructure from "@/Components/TableStructure";
-import {
-    ChevronDownIcon,
-    PhoneIcon,
-    PlayCircleIcon,
-} from "@heroicons/react/20/solid";
-import ReactDataGrid from "@inovua/reactdatagrid-community";
 import {
     formatDateToExcel,
     getApiRequest,
-    handleSessionExpiration,
 } from "@/CommonFunctions";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
@@ -35,23 +15,6 @@ import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import ExportPopover from "@/Components/ExportPopover";
 
-const report = [
-    {
-        ConsignmentId: 275576,
-        ConsignmentNo: "FOR100312",
-        SenderName: "INDUSTRIAL STEEL",
-        ReceiverName: "R AND A CONCRETING",
-        FromState: "QLD",
-        ToState: "VIC",
-        POD: true,
-        MatchTransit: false,
-        MatchRdd: false,
-    },
-    // More people...
-];
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
 
 export default function NoDelivery({
     NoDelData,

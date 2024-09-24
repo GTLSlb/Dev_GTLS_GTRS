@@ -198,7 +198,7 @@ export const handleFilterTable = (gridRef, filteredData) => {
                 }
             } else if (type === "date") {
                 const dateValue = moment(
-                    val[col.name].replace("T", " "),
+                    val[col.name]?.replace("T", " "),
                     "YYYY-MM-DD HH:mm:ss"
                 );
                 const hasStartDate =

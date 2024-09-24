@@ -1,33 +1,19 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useEffect } from "react";
-import ReactPaginate from "react-paginate";
-import { useDownloadExcel, downloadExcel } from "react-export-table-to-excel";
-import { Fragment } from "react";
-import ExcelJS from "exceljs";
 import moment from "moment";
-import { Popover, Transition } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import TableStructure from "@/Components/TableStructure";
-import swal from "sweetalert";
-import axios from "axios";
 import {
     formatDateToExcel,
     getApiRequest,
-    handleSessionExpiration,
 } from "@/CommonFunctions";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import ExportPopover from "@/Components/ExportPopover";
 
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
 
 export default function DriverLogin({
     DriverData,
@@ -57,21 +43,6 @@ export default function DriverLogin({
             setIsFetching(false);
         }
     }
-    const tableRef = useRef(null);
-    const headers = [
-        "Name",
-        "Device Code",
-        "Smart SCAN",
-        "Smart SCAN Freight",
-        "Smart SCAN Version",
-        "Description",
-        "Last Active UTC",
-        "VLink",
-        "Software Version",
-        "Device Sim Type",
-        "Device Model",
-        "Device Makes",
-    ];
     const gridRef = useRef(null);
     const handleDownloadExcel = () => {
         const jsonData = handleFilterTable(gridRef, DriverData); // Fetch the filtered data
@@ -333,17 +304,6 @@ export default function DriverLogin({
             },
         },
     ];
-    const [hoverMessage, setHoverMessage] = useState("");
-    const [isMessageVisible, setMessageVisible] = useState(false);
-    const handleMouseEnter = () => {
-        if (DriverData?.length === 0) {
-            setHoverMessage("No Data Found");
-            setMessageVisible(true);
-            setTimeout(() => {
-                setMessageVisible(false);
-            }, 1000);
-        }
-    };
 
     return (
         <div>

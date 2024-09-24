@@ -2,7 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import TableStructure from "@/Components/TableStructure";
 import AddComment from "./Modals/AddComment";
 import ViewComments from "./Modals/ViewComments";
-import ExportBtn from "../../Component/ExportBtn"
+import { handleFilterTable } from "@/Components/utils/filterUtils";
+import { exportToExcel } from "@/Components/utils/excelUtils";
+import { formatDateToExcel } from "@/CommonFunctions";
+import ExportPopover from "@/Components/ExportPopover";
 
 export default function MetcashReports({
     filterValue,
@@ -25,92 +28,42 @@ export default function MetcashReports({
 }) {
     const gridRef = useRef(null);
     const [selected, setSelected] = useState([]);
-    const [hoverMessage, setHoverMessage] = useState("");
-    const [isMessageVisible, setMessageVisible] = useState(false);
+    function handleDownloadExcel() {
+        const jsonData = handleFilterTable(gridRef, data);
 
-    const popoverData = [
-        {
-            label: "Account Number",
-            value: "AccountNumber",
-        },
-        {
-            label: "Despatch Date",
-            value: "DespatchDate",
-        },
-        {
-            label: "Consignment Number",
-            value: "ConsignmentNo",
-        },
-        {
-            label: "Sender Name",
-            value: "SenderName",
-        },
-        {
-            label: "Sender Reference",
-            value: "SenderReference",
-        },
-        {
-            label: "Sender State",
-            value: "SenderState",
-        },
-        {
-            label: "Receiver Name",
-            value: "ReceiverName",
-        },
-        {
-            label: "Receiver Reference",
-            value: "ReceiverReference",
-        },
-        {
-            label: "Receiver Zone",
-            value: "ReceiverState",
-        },
-        {
-            label: "Consignment Status",
-            value: "ConsignmentStatus",
-        },
-        {
-            label: "Special Instructions",
-            value: "DeliveryInstructions",
-        },
-        {
-            label: "Delivery Required Date",
-            value: "DeliveryRequiredDateTime",
-        },
-        {
-            label: "Delivered DateTime",
-            value: "DeliveredDateTime",
-        },
-        {
-            label: "POD Avl",
-            value: "POD",
-        },
-        {
-            label: "Past Comments",
-            value: "Comments",
-        },
-    ];
+        // Dynamically create column mapping from the `columns` array
+        const columnMapping = columns.reduce((acc, column) => {
+            acc[column.name] = column.header;
+            return acc;
+        }, {});
 
-    const handleMouseEnter = () => {
-        if (data?.length === 0) {
-            setHoverMessage("No Data Found");
-            setMessageVisible(true);
-            setTimeout(() => {
-                setMessageVisible(false);
-            }, 1000);
-        }
-    };
+        // Define custom cell handlers
+        const customCellHandlers = {
+            DespatchDateTime: (value) => formatDateToExcel(value),
+            DeliveryRequiredDateTime: (value) => formatDateToExcel(value),
+            DeliveredDateTime: (value) => formatDateToExcel(value),
+            Comments: (value) => value?.map((item) => item.Comment).join(", "),
+        };
+
+        // Call the `exportToExcel` function
+        exportToExcel(
+            jsonData, // Filtered data
+            columnMapping, // Dynamic column mapping from columns
+            "Unilever-Metcash-Reports.xlsx", // Export file name
+            customCellHandlers, // Custom handlers for formatting cells
+            ["DespatchDateTime", "DeliveryRequiredDateTime", "DeliveredDateTime"]
+        );
+    }
     return (
         <div>
-            <ExportBtn
-                 handleMouseEnter={handleMouseEnter}
-                 filteredData={data}
-                 isMessageVisible={isMessageVisible}
-                 hoverMessage={hoverMessage}
-                 popoverData={popoverData}
-                 gridRef={gridRef}
-                 workbookName={"Unilever-Metcash-Reports.xlsx"}
-            />
+            <div className="flex justify-end">
+                <ExportPopover
+                    columns={columns}
+                    handleDownloadExcel={handleDownloadExcel}
+                    filteredData={data}
+                />
+            </div>
+
             {filterValue && data && (
                 <TableStructure
                     id={"ReportId"}

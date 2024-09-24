@@ -1,25 +1,15 @@
 import { useState } from "react";
 import "../../../css/reactdatagrid.css";
-import { Fragment } from "react";
-import { Popover, Transition } from "@headlessui/react";
-import ExcelJS from "exceljs";
-import { saveAs } from "file-saver";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
-
 import TableStructure from "@/Components/TableStructure";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import moment from "moment";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
-import ReactDataGrid from "@inovua/reactdatagrid-community";
 import { useEffect, useRef } from "react";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import ExportPopover from "@/Components/ExportPopover";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
 export default function GtrsCons({
     setActiveIndexGTRS,
     setactiveCon,

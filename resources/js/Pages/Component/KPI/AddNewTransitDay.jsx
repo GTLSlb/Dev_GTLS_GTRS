@@ -7,11 +7,11 @@ import {
     ChevronDoubleDownIcon,
     ChevronDownIcon,
 } from "@heroicons/react/20/solid";
-import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import { useEffect } from "react";
 import swal from "sweetalert";
 import { AlertToast } from "@/permissions";
 import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
+import GtamButton from "../GtamButton";
 
 function AddNewTransitDay({
     url,

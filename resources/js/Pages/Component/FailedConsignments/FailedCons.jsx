@@ -1,32 +1,9 @@
-import { useLayoutEffect, useRef, useState } from "react";
-import ReactPaginate from "react-paginate";
-import { useDownloadExcel, downloadExcel } from "react-export-table-to-excel";
+import { useRef, useState } from "react";
 import { useEffect } from "react";
-import * as XLSX from "xlsx";
-import notFound from "../../assets/pictures/NotFound.png";
-import ExcelJS from "exceljs";
-import { saveAs } from "file-saver";
-import { Fragment } from "react";
-import { Popover, Transition } from "@headlessui/react";
-import { PencilIcon } from "@heroicons/react/24/outline";
-import Button from "@inovua/reactdatagrid-community/packages/Button";
 import moment from "moment";
-import {
-    ChevronDownIcon,
-    PhoneIcon,
-    PlayCircleIcon,
-} from "@heroicons/react/20/solid";
-import {
-    ArrowPathIcon,
-    ChartPieIcon,
-    CursorArrowRaysIcon,
-    FingerPrintIcon,
-    SquaresPlusIcon,
-} from "@heroicons/react/24/outline";
 import SetFailedReasonModal from "@/Components/SetFailedReasonModal";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import TableStructure from "@/Components/TableStructure";
-import ReactDataGrid from "@inovua/reactdatagrid-community";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import { canEditFailedConsignments } from "@/permissions";
