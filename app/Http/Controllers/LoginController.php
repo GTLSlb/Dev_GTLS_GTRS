@@ -238,12 +238,12 @@ class LoginController extends Controller
                 $expiration = 1;
                 $cookies = $_COOKIE;
 
-                $this->clearAllCookies();
-
+                // Loop through each cookie and set it to expire
+                foreach ($cookies as $name => $value) {
+                    setcookie($name, '', $expiration, '/', $_ENV['SESSION_DOMAIN'], true);
+                }
                 $request->session()->regenerateToken();
                 // return redirect('/login');
-                return response()->json(['status' => 'success', 'message' => 'Logged out locally. Handle Azure AD logout on frontend.']);
-
         }} else {
                 // Invalidate and flush the session
                 $request->session()->forget('user');
@@ -256,13 +256,12 @@ class LoginController extends Controller
                 $cookies = $_COOKIE;
 
                 // Loop through each cookie and set it to expire
-                $this->clearAllCookies();
+                foreach ($cookies as $name => $value) {
+                    setcookie($name, '', $expiration, '/', $_ENV['SESSION_DOMAIN'], true);
+                }
 
                 // Regenerate the session token
                 $request->session()->regenerateToken();
-
-                return response()->json(['status' => 'success', 'message' => 'Logged out locally. Handle Azure AD logout on frontend.']);
-              
         }
     }
 
