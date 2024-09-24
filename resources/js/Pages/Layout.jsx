@@ -179,7 +179,13 @@ export default function Sidebar(Boolean) {
                         setToken(parsedData.access_token);
                         Cookies.set(
                             "access_token",
-                            parsedData.access_token
+                            parsedData.access_token,
+                            {
+                                domain: appDomain,
+                                path: "/",
+                                secure: true, // Use this if your site is served over HTTPS
+                                sameSite: "Lax", // Optional, depending on your needs
+                            }
                         );
                     });
                 })
