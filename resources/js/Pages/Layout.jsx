@@ -20,6 +20,8 @@ export default function Sidebar(Boolean) {
     const Invoicesurl = window.Laravel.invoiceUrl;
     const Gtamurl = window.Laravel.gtamUrl;
     const gtrsUrl = window.Laravel.gtrsUrl;
+    const appDomain = window.Laravel.appDomain;
+
     const getAppPermisions = () => {
         //user permissions
         axios
