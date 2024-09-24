@@ -20,21 +20,21 @@ const msalConfig = {
 const pca = new PublicClientApplication(msalConfig);
 
 export async function handleSessionExpiration() {
+    const appUrl = window.Laravel.appUrl;
     axios
         .post("/logoutWithoutRequest")
         .then(async (response) => {
-            if (response.status === 200) {
+            if (response.status === 200 && response.data.status === 'success') {
+                const isMicrosoftLogin = Cookies.get('msal.isMicrosoftLogin');
                 clearMSALLocalStorage();
-                const allAccounts = await pca.getAllAccounts();
-                if (allAccounts.length > 0) {
-                    await pca.logoutRedirect({
-                        scopes: ["user.read"],
-                        postLogoutRedirectUri: "/login"
-                    });
+    
+                if (isMicrosoftLogin === 'true') {
+                    window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=${appUrl}/login`;
                 } else {
-                    window.location.href = "/login";
+                    window.location.href = `/login`;
                 }
-                window.location.href = "/login";
+            } else {
+                console.log("Logout error:", response);
             }
         })
         .catch((error) => {
