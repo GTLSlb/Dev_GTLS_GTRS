@@ -2,14 +2,40 @@ import { canViewInternal } from "@/permissions";
 import logo from "@/assets/pictures/Logoblack.png";
 import { Checkbox, Chip } from "@nextui-org/react";
 import moment from "moment/moment";
+import { useNavigate } from "react-router-dom";
 
 export default function IncidentDetails({ incident, filters, mainCauses,currentUser, userPermission }) {
+    const navigate = useNavigate();
     return (
         <div>
             <div className="py-2">
+            <div className="h-8 flex mb-4">
+                                <button
+                                    type="button"
+                                    className="mr-7 h-full inline-flex items-center rounded-md border border-transparent bg-gray-800 px-5 py-2 text-sm font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                    onClick={() => navigate(-1)}
+                                >
+                                    <svg
+                                        viewBox="0 0 64 64"
+                                        fill="currentColor"
+                                        height="1.25em"
+                                        width="1.25em"
+                                    >
+                                        <path
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeLinejoin="bevel"
+                                            strokeMiterlimit={10}
+                                            strokeWidth={5}
+                                            d="M37 15L20 32l17 17"
+                                        />
+                                    </svg>
+                                    <span> Back</span>
+                                </button>
+                            </div>
                 <div
                     id="CdirForm"
-                    className="p-4 sm:p-10 bg-white rounded-xl  shadow-md"
+                    className="p-4 sm:p-10 bg-white rounded-xl shadow-md border-1 border-gray-100"
                 >
                     <div className="flex flex-col gap-y-3 gap-x-5 w-full sm:flex-row">
                         <div className="">

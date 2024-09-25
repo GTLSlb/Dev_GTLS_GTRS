@@ -561,7 +561,7 @@ export default function CollapseSidebar({
     //     setSidebarElements(updatedElements);
     // };
     return (
-        <div className="h-full relative">
+        <div className="h-full relative z-0">
             <Sidebar
                 collapsed={collapsed} // collapsed the menu
                 toggled={toggled}

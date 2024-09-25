@@ -10,6 +10,8 @@ import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { formatDateToExcel } from "@/CommonFunctions";
 import ExportPopover from "@/Components/ExportPopover";
+import { useNavigate } from "react-router-dom";
+
 export default function MissingPOD({
     PerfData,
     setActiveIndexGTRS,
@@ -20,6 +22,7 @@ export default function MissingPOD({
     accData,
 }) {
     window.moment = moment;
+    const navigate = useNavigate();
     const minDateDespatch = getMinMaxValue(PerfData, "DespatchDate", 1);
     const maxDateDespatch = getMinMaxValue(PerfData, "DespatchDate", 2);
     const minDaterdd = getMinMaxValue(PerfData, "DeliveryRequiredDateTime", 1);
@@ -30,9 +33,7 @@ export default function MissingPOD({
     const maxDateDel = getMinMaxValue(PerfData, "DeliveredDate", 2);
     // const data = PerfData.filter((obj) => obj.STATUS === "FAIL");
     const handleClick = (coindex) => {
-        setActiveIndexGTRS(3);
-        setLastIndex(5);
-        setactiveCon(coindex);
+        navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
     };
     const falsePodOnly = PerfData.filter(function (entry) {
         return entry.POD === false;

@@ -2,7 +2,6 @@ import React from "react";
 import { useLayoutEffect, useRef, useState } from "react";
 import { PencilIcon } from "@heroicons/react/24/outline";
 import moment from "moment";
-
 import SafetyModal from "@/Components/AddsafetyModal";
 import { useEffect } from "react";
 import DescriptionModal from "@/Components/DescriptionModal";

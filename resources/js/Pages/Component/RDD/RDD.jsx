@@ -14,6 +14,7 @@ import ExportPopover from "@/Components/ExportPopover";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { formatDateToExcel } from "@/CommonFunctions";
+import { useNavigate } from "react-router-dom";
 
 export default function RDDreason({
     setActiveIndexGTRS,
@@ -32,6 +33,7 @@ export default function RDDreason({
     accData,
 }) {
     window.moment = moment;
+    const navigate = useNavigate();
     const updateLocalData = (id, reason, note) => {
         // Find the item in the local data with the matching id
         const updatedData = rddData.map((item) => {
@@ -45,9 +47,7 @@ export default function RDDreason({
         setrddData(updatedData);
     };
     const handleClick = (coindex) => {
-        setActiveIndexGTRS(3);
-        setLastIndex(9);
-        setactiveCon(coindex);
+        navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
     };
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [filteredData, setFilteredData] = useState(rddData);

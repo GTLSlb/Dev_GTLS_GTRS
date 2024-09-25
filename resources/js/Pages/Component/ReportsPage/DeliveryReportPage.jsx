@@ -9,6 +9,7 @@ import WoolworthsReports from "./WoolworthsReports";
 import OtherReports from "./OtherReports";
 import { EyeIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
+import { useNavigate } from "react-router-dom";
 
 export default function DailyReportPage({
     url,
@@ -21,10 +22,9 @@ export default function DailyReportPage({
     // setFilterValue,
     // filterValue,
 }) {
+    const navigate = useNavigate();
     const handleClick = (coindex) => {
-        setActiveIndexGTRS(3);
-        setLastIndex(1);
-        setactiveCon(coindex);
+        navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
     };
     const [receiverZoneOptions, setReceiverZoneOptions] = useState([
         {

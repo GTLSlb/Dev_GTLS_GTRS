@@ -25,6 +25,8 @@ import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { formatDateToExcel } from "@/CommonFunctions";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import ExportPopover from "@/Components/ExportPopover";
+import { useNavigate } from "react-router-dom";
+
 const gtrsWebUrl = window.Laravel.gtrsWeb;
 
 const columnMapping = {
@@ -64,8 +66,6 @@ const loadData = ({ skip, limit, sortInfo, filterValue }) => {
 function ConsTrack({
     setFilterValue,
     filterValue,
-    setActiveIndexGTRS,
-    setConsignmentToTrack,
 }) {
     const [selected, setSelected] = useState([]);
     const [filteredData, setFilteredData] = useState([
@@ -1380,6 +1380,7 @@ function ConsTrack({
     const [exportLoading, setExportLoading] = useState(false);
     const [categories, setCategories] = useState([]);
     const [newColumns, setNewColumns] = useState([]);
+    const navigate = useNavigate();
 
     const createNewLabelObjects = (data, fieldName) => {
         let id = 1; // Initialize the ID
@@ -1444,6 +1445,9 @@ function ConsTrack({
             .catch((err) => {
                 console.log(err);
             });
+    }
+    const handleClick = (coindex) => {
+        navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
     }
     const columns = [
         {
@@ -1643,8 +1647,7 @@ function ConsTrack({
                     <span
                         className="underline text-blue-500 flex justify-center hover:cursor-pointer"
                         onClick={() => {
-                            setConsignmentToTrack(data);
-                            setActiveIndexGTRS(24);
+                            navigate("/gtrs/consignment-map", { state: { consignmentToTrack: data } });
                         }}
                     >
                         <MapPinIcon className="h-5 w-5" />

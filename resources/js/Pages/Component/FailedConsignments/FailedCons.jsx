@@ -13,6 +13,7 @@ import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { formatDateToExcel } from "@/CommonFunctions";
 import ExportPopover from "@/Components/ExportPopover";
+import { useNavigate } from "react-router-dom";
 
 export default function FailedCons({
     PerfData,
@@ -30,6 +31,7 @@ export default function FailedCons({
     accData,
 }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const navigate = useNavigate();
     const [reason, setReason] = useState();
     const handleEditClick = (reason) => {
         setReason(reason);
@@ -37,9 +39,7 @@ export default function FailedCons({
     };
     // const data = PerfData.filter((obj) => obj.STATUS === "FAIL");
     const handleClick = (coindex) => {
-        setActiveIndexGTRS(3);
-        setLastIndex(5);
-        setactiveCon(coindex);
+        navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
     };
     const excludedDebtorIds = [1514, 364, 247, 246, 245, 244];
     const [data, setData] = useState(
@@ -148,8 +148,7 @@ export default function FailedCons({
                     <span
                         className="underline text-blue-500 hover:cursor-pointer"
                         onClick={() => {
-                            setIncidentId(data.IncidentId);
-                            setActiveIndexGTRS(22);
+                            navigate("/gtrs/incident", { state: { incidentId: data.IncidentId } });
                         }}
                     >
                         {" "}

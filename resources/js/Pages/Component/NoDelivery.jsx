@@ -14,7 +14,7 @@ import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import ExportPopover from "@/Components/ExportPopover";
-
+import { useNavigate } from "react-router-dom";
 
 export default function NoDelivery({
     NoDelData,
@@ -29,7 +29,7 @@ export default function NoDelivery({
     url,
 }) {
     window.moment = moment;
-
+    const navigate = useNavigate();
     const [isFetching, setIsFetching] = useState();
     useEffect(() => {
         if (NoDelData === null || NoDelData === undefined) {
@@ -49,9 +49,7 @@ export default function NoDelivery({
         }
     }
     const handleClick = (coindex) => {
-        setActiveIndexGTRS(3);
-        setLastIndex(6);
-        setactiveCon(coindex);
+        navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
     };
 
     const gridRef = useRef(null);

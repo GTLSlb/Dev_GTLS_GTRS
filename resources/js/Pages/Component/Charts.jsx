@@ -68,7 +68,6 @@ export default function charts({
     window.moment = moment;
     const current = new Date();
     const [KPIData, setKPIData] = useState([]);
-    const [consignmentToTrack, setConsignmentToTrack] = useState();
     const [NewKPIData, setNewKPIData] = useState([]);
     const [transitDays, setTransitDays] = useState();
     const [newTransitDays, setNewTransitDays] = useState();
@@ -2309,7 +2308,6 @@ export default function charts({
         <ConsTrack
             setFilterValue={setFiltersConsTrack}
             filterValue={filtersConsTrack}
-            setConsignmentToTrack={setConsignmentToTrack}
         />,
         <DailyReportPage
             url={url}
@@ -2324,9 +2322,7 @@ export default function charts({
             filterValue={filtersDailyValue}
             fetchDeliveryReport={fetchDeliveryReport}
         />,
-        <ConsMap
-            consignment={consignmentToTrack}
-        />,
+        <ConsMap />,
     ];
 
     return (
@@ -2418,7 +2414,7 @@ export default function charts({
                                         />}
                                     />
                                     <Route
-                                        path="/consignment-d"
+                                        path="/consignment-details"
                                         element={<ConsignmentD
                                             url={url}
                                             accData={dataFromChild}
@@ -2777,7 +2773,6 @@ export default function charts({
                                         element={<ConsTrack
                                             setFilterValue={setFiltersConsTrack}
                                             filterValue={filtersConsTrack}
-                                            setConsignmentToTrack={setConsignmentToTrack}
                                         />}
                                     />
                                     <Route
@@ -2797,10 +2792,8 @@ export default function charts({
                                         />}
                                     />
                                     <Route
-                                        path="/consMap"
-                                        element={<ConsMap
-                                            consignment={consignmentToTrack}
-                                        />}
+                                        path="/consignment-map"
+                                        element={<ConsMap />}
                                     />
 
 
