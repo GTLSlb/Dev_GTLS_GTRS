@@ -46,7 +46,7 @@ Route::post('/logoutAPI', [LoginController::class, 'logout'])->middleware(['cust
 Route::post('/logoutWithoutRequest', [LoginController::class, 'logoutWithoutRequest'])->middleware(['custom.auth'])->name('logoutWithoutRequest');
 
 
-Route::get('/main', function () {
+Route::get('/gtrs/dashboard', function () {
     return Inertia::render('Layout');
 })->middleware(['custom.auth'])->name('layout');
 

@@ -40,14 +40,9 @@ export default function MainSidebar({
     allowedApplications,
     setMobileMenuOpen,
     mobileMenuOpen,
-    setActiveIndexGtam,
-    setactivePage,
-    setActiveIndexInv,
     currentUser,
-    setActiveIndexGTRS,
     setToken,
     setCurrentUser,
-    activePage,
     user,
 }) {
     const invoicesRoles = [6, 7, 8, 9, 10];
@@ -59,101 +54,6 @@ export default function MainSidebar({
     const current_user_role = currentUser?.role_id;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [sidebarNavigation, setSidebarNavigation] = useState([
-        // {
-        //     id: 0,
-        //     name: "GTRS",
-        //     // href: "#",
-        //     icon: DocumentMagnifyingGlassIcon,
-        //     current: false,
-        //     options: [
-        //         {
-        //             id: 0,
-        //             name: "Dashboard",
-        //             current: false,
-        //             role: ["1", "2", "3", "4", "5"],
-        //         },
-        //         {
-        //             id: 1,
-        //             name: "Consignments",
-        //             current: false,
-        //             role: ["1", "2", "3", "4", "5"],
-        //         },
-        //         {
-        //             id: 2,
-        //             name: "Kpi Report",
-        //             current: false,
-        //             role: ["1", "2", "3", "4", "5"],
-        //         },
-        //         {
-        //             id: 4,
-        //             name: "Performance report",
-        //             current: false,
-        //             role: ["1", "2", "3", "4", "5"],
-        //         },
-        //         {
-        //             id: 5,
-        //             name: "Failed Consignments",
-        //             current: false,
-        //             role: ["1", "2", "3", "4", "5"],
-        //         },
-        //         {
-        //             id: 6,
-        //             name: "No Delivery info",
-        //             current: false,
-        //             role: ["1", "4"],
-        //         },
-        //         {
-        //             id: 7,
-        //             name: "Additional Charges",
-        //             current: false,
-        //             role: ["1", "4"],
-        //         },
-        //         {
-        //             id: 8,
-        //             name: "Driver Login",
-        //             current: false,
-        //             role: ["1", "4"],
-        //         },
-        //         {
-        //             id: 9,
-        //             name: "RDD",
-        //             current: false,
-        //             role: ["1", "2", "3", "4", "5"],
-        //         },
-        //         {
-        //             id: 10,
-        //             name: "Safety",
-        //             current: false,
-        //             role: ["1", "2", "3", "4", "5"],
-        //         },
-        //         {
-        //             id: 11,
-        //             name: "Missing POD",
-        //             current: false,
-        //             role: ["1", "2", "3", "4", "5"],
-        //         },
-        //         {
-        //             id: 12,
-        //             name: "Transit Days",
-        //             current: false,
-        //             role: ["1", "4"],
-        //         },
-        //         {
-        //             id: 13,
-        //             name: "Holidays",
-        //             current: false,
-        //             role: ["1", "4"],
-        //         },
-        //         {
-        //             id: 14,
-        //             name: "KPI Reasons",
-        //             current: false,
-        //             role: ["1", "4"],
-        //         },
-        //     ],
-        //     func: setActiveIndexGTRS,
-        //     role: ["1", "2", "3", "4", "5"],
-        // },
         {
             id: 2,
             name: "Invoices",
@@ -301,7 +201,6 @@ export default function MainSidebar({
                     feature: "DailyReport_View",
                 },
             ],
-            func: setActiveIndexGTRS,
             role: ["1", "2", "3", "4", "5"],
         },
         {
@@ -355,49 +254,49 @@ export default function MainSidebar({
        })
        setSidebarElements(elements.reverse())
     },[allowedApplications, sidebarNavigation])
-    const handleClick = (index) => {
-        if (index == 5 || index == 6) {
-            setMobileMenuOpen(false);
-        } else {
-            setactivePage(index);
-            setMobileMenuOpen(false);
-            const updatedElements = sidebarNavigation.map((element) => {
-                if (element.id === index) {
-                    return { ...element, current: true };
-                } else {
-                    return { ...element, current: false };
-                }
-            });
-            setSidebarElements(updatedElements);
-        }
-    };
+    // const handleClick = (index) => {
+    //     if (index == 5 || index == 6) {
+    //         setMobileMenuOpen(false);
+    //     } else {
+    //         // setactivePage(index);
+    //         setMobileMenuOpen(false);
+    //         const updatedElements = sidebarNavigation.map((element) => {
+    //             if (element.id === index) {
+    //                 return { ...element, current: true };
+    //             } else {
+    //                 return { ...element, current: false };
+    //             }
+    //         });
+    //         setSidebarElements(updatedElements);
+    //     }
+    // };
     const handleClickSupport = (index) => {};
 
-    const handleClickSide = (index, tabind) => {
-        setactivePage(0);
-        if (index == 3) {
-            setActiveIndexGTRS(tabind);
-        } else if (index == 2) {
-            setActiveIndexInv(tabind);
-        } else if (index == 1) {
-            setActiveIndexGtam(tabind);
-        }
+    // const handleClickSide = (index, tabind) => {
+    //     // setactivePage(0);
+    //     if (index == 3) {
+    //         setActiveIndexGTRS(tabind);
+    //     } else if (index == 2) {
+    //         setActiveIndexInv(tabind);
+    //     } else if (index == 1) {
+    //         setActiveIndexGtam(tabind);
+    //     }
 
-        setMobileMenuOpen(false);
-        const updatedElements = sidebarElements.map((element) => {
-            if (element.id === index) {
-                element?.options.map((option)=>{
-                    if(option.id == tabind){
-                        option.current = true;
-                    }
-                })
-                return { ...element, current: true };
-            } else {
-                return { ...element, current: false };
-            }
-        });
-        setSidebarElements(updatedElements);
-    };
+    //     setMobileMenuOpen(false);
+    //     const updatedElements = sidebarElements.map((element) => {
+    //         if (element.id === index) {
+    //             element?.options.map((option)=>{
+    //                 if(option.id == tabind){
+    //                     option.current = true;
+    //                 }
+    //             })
+    //             return { ...element, current: true };
+    //         } else {
+    //             return { ...element, current: false };
+    //         }
+    //     });
+    //     setSidebarElements(updatedElements);
+    // };
 
     function classNames(...classes) {
         return classes.filter(Boolean).join(" ");

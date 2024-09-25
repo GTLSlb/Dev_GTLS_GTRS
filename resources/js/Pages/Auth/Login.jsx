@@ -149,7 +149,7 @@ export default function Login({ status, canResetPassword }) {
                         .then((res) => {
                             //Cookies.set('access_token', res.data.access_token)
                             setLoading(false);
-                            window.location.href = "/main";
+                            window.location.href = "/gtrs/dashboard";
                         })
                         .catch((error) => {
                             setLoading(false);
@@ -191,7 +191,7 @@ export default function Login({ status, canResetPassword }) {
                 .post("/loginapi", credentials)
                 .then((response)=>{
                     if(response.status == 200) {
-                       window.location.href = '/main';
+                       window.location.href = '/gtrs/dashboard';
                     }
                 })
                 .catch((error) => {

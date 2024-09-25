@@ -52,7 +52,7 @@ const iconMappings = {
     Other,
 };
 
-export default function ConsMap({ consignment, setActiveIndexGTRS }) {
+export default function ConsMap({ consignment }) {
     const [directionsResponse, setDirectionsResponse] = useState(null);
     const [directionsRequested, setDirectionsRequested] = useState(false);
     const [event, setEvent] = useState();
@@ -219,7 +219,7 @@ export default function ConsMap({ consignment, setActiveIndexGTRS }) {
                             startContent={
                                 <ChevronLeftIcon className="h-4 w-4" />
                             }
-                            onClick={() => setActiveIndexGTRS(23)}
+                            // onClick={() => setActiveIndexGTRS(23)}
                             className="mt-2 w-20"
                         >
                             Back

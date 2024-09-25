@@ -7,7 +7,6 @@ import swal from "sweetalert";
 import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
 
 export default function ConsignmentD({
-    setActiveIndexGTRS,
     activeCon,
     lastIndex,
     AToken,
@@ -16,7 +15,6 @@ export default function ConsignmentD({
     userPermission,
 }) {
     const handleClick = (i) => {
-        setActiveIndexGTRS(lastIndex);
     };
     useEffect(() => {
         const handleScrollToTop = () => {
@@ -122,7 +120,7 @@ export default function ConsignmentD({
         ];
     };
 
-    
+
     async function fetchData() {
         const data = await getApiRequest(`${url}ConsignmentById`, {
             UserId: currentUser?.UserId,

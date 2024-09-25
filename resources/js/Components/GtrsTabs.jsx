@@ -11,34 +11,34 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
-export default function GtrsTabs({ setActiveIndexGTRS ,activeIndexGTRS}) {
-    
+export default function GtrsTabs({ }) {
+
     const [sidebarElements, setSidebarElements] = useState(tabs);
 
-    useEffect(() =>{
-        const updatedElements = sidebarElements.map((element) => {
-            if (element.id === activeIndexGTRS) {
-                return { ...element, current: true };
-            } else {
-                return { ...element, current: false };
-            }
-        });
-        setSidebarElements(updatedElements);   ;
-    },[])
+    // useEffect(() =>{
+    //     const updatedElements = sidebarElements.map((element) => {
+    //         if (element.id === activeIndexGTRS) {
+    //             return { ...element, current: true };
+    //         } else {
+    //             return { ...element, current: false };
+    //         }
+    //     });
+    //     setSidebarElements(updatedElements);   ;
+    // },[])
 
-    const handleClick = (index) => {
-        setActiveIndexGTRS(index);
-        const updatedElements = sidebarElements.map((element) => {
-            if (element.id === index) {
-                return { ...element, current: true };
-            } else {
-                return { ...element, current: false };
-            }
-        });
-        setSidebarElements(updatedElements);
-        
-       
-    };
+    // const handleClick = (index) => {
+    //     setActiveIndexGTRS(index);
+    //     const updatedElements = sidebarElements.map((element) => {
+    //         if (element.id === index) {
+    //             return { ...element, current: true };
+    //         } else {
+    //             return { ...element, current: false };
+    //         }
+    //     });
+    //     setSidebarElements(updatedElements);
+
+
+    // };
     return (
         <div>
 

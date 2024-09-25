@@ -16,12 +16,10 @@ function classNames(...classes) {
 
 export default function Gtrs({
     sessionData,
-    activeIndexGTRS,
     user,
     setUser,
     setToken,
     AToken,
-    setActiveIndexGTRS,
     setLoadingGtrs,
     currentUser,
     loadingGtrs,
@@ -69,7 +67,7 @@ export default function Gtrs({
         debtorIds = currentUser.UserId;
     }
 
- 
+
 
     useEffect(() => {
         if (AToken != null && currentUser) {
@@ -190,8 +188,6 @@ export default function Gtrs({
                             user={user}
                             userPermission={user}
                             dashData={PerfData}
-                            setActiveIndexGTRS={setActiveIndexGTRS}
-                            activeIndexGTRS={activeIndexGTRS}
                             setactiveCon={setactiveCon}
                             consData={consData}
                             setLastIndex={setLastIndex}

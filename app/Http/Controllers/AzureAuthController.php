@@ -29,7 +29,7 @@ class AzureAuthController extends Controller
         // find the user in the database through API
         $url = env('GTAM_API_URL') . "validate/MicrosoftToken";
         if (session()->has('user')) {
-            return redirect()->route('/main');
+            return redirect()->route('/gtrs/dashboard');
         }
         $headers = [
             'Authorization' => $accessToken,

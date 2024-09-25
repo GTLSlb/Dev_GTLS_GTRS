@@ -11,7 +11,7 @@ import { MenuIcon } from "@/assets/svgs/MenuIcon.jsx";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import TaskIcon from "@mui/icons-material/Task";
 import ReportIcon from "@mui/icons-material/Report";
-// const location = useLocation();
+
 import {
     ChartPieIcon,
     TruckIcon,
@@ -27,7 +27,7 @@ import {
     ShieldCheckIcon,
     CameraIcon,
     DocumentTextIcon,
-    ClipboardDocumentIcon
+    ClipboardDocumentIcon,
 } from "@heroicons/react/24/solid";
 import {
     Accordion,
@@ -130,6 +130,7 @@ const menu = [
         icon: ChartPieIcon,
         current: true,
         feature: "Dashboard_view",
+        url: "/gtrs/dashboard",
     },
     {
         id: 1,
@@ -138,6 +139,7 @@ const menu = [
         icon: TruckIcon,
         current: false,
         feature: "ConsignmetsReport_view",
+        url: "/gtrs/consignments",
     },
     {
         id: 2,
@@ -153,6 +155,7 @@ const menu = [
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
                 feature: "KPI_view",
+                url: "/gtrs/kpi",
             },
             {
                 id: 18,
@@ -161,6 +164,7 @@ const menu = [
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
                 feature: "View_TransitDays",
+                url: "/gtrs/kpi/transit-days",
             },
             {
                 id: 13,
@@ -169,6 +173,7 @@ const menu = [
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
                 feature: "View_Holidays",
+                url: "/gtrs/kpi/holidays",
             },
         ],
         feature: "KPI",
@@ -180,6 +185,7 @@ const menu = [
         icon: PresentationChartLineIcon,
         current: false,
         feature: "Performance_view",
+        url: "/gtrs/performance",
     },
     {
         id: 5,
@@ -188,6 +194,7 @@ const menu = [
         icon: ExclamationTriangleIcon,
         current: false,
         feature: "View_failedConsignment",
+        url: "/gtrs/failed-consignments",
     },
     {
         id: 16,
@@ -196,6 +203,7 @@ const menu = [
         icon: TaskIcon,
         current: false,
         feature: "View_Transport",
+        url: "/gtrs/transport",
     },
     {
         id: 9,
@@ -204,6 +212,7 @@ const menu = [
         icon: ClockIcon,
         current: false,
         feature: "View_RDD",
+        url: "/gtrs/rdd",
     },
     {
         id: 11,
@@ -212,6 +221,7 @@ const menu = [
         icon: CameraIcon,
         current: false,
         feature: "MissingPOD_view",
+        url: "/gtrs/missing-pod",
     },
     {
         id: 10,
@@ -220,6 +230,7 @@ const menu = [
         icon: ShieldCheckIcon,
         current: false,
         feature: "View_safety",
+        url: "/gtrs/safety",
     },
     {
         id: 6,
@@ -228,6 +239,7 @@ const menu = [
         icon: NoSymbolIcon,
         current: false,
         feature: "NoDeliveryInfo_view",
+        url: "/gtrs/no-delivery",
     },
     {
         id: 7,
@@ -236,6 +248,7 @@ const menu = [
         icon: CurrencyDollarIcon,
         current: false,
         feature: "AdditionalCharges_view",
+        url: "/gtrs/additional-charges",
     },
     {
         id: 8,
@@ -244,6 +257,7 @@ const menu = [
         icon: UserIcon,
         current: false,
         feature: "DriverLogin_view",
+        url: "/gtrs/driver-login",
     },
     {
         id: 20,
@@ -252,6 +266,7 @@ const menu = [
         icon: DocumentTextIcon,
         current: false,
         feature: "UnileverReport_View",
+        url: "/gtrs/pack-report",
     },
     {
         id: 21,
@@ -260,6 +275,7 @@ const menu = [
         icon: ReportIcon,
         current: false,
         feature: "TrafficReport_View",
+        url: "/gtrs/traffic-report",
     },
     {
         id: 23,
@@ -268,6 +284,7 @@ const menu = [
         icon: MapPinIcon,
         current: false,
         feature: "ConsignmentTracking_View",
+        url: "/gtrs/consignment-tracking",
     },
     {
         id: 24,
@@ -276,11 +293,11 @@ const menu = [
         icon: ClipboardDocumentIcon,
         current: false,
         feature: "DailyReport_View",
+        url: "/gtrs/delivery-report",
     },
 ];
 
 export default function CollapseSidebar({
-    setActivePage,
     activePage,
     setActiveModel,
     setBroken,
@@ -291,11 +308,9 @@ export default function CollapseSidebar({
     currentUser,
     setCusomterAccounts,
     customerAccounts,
-    activeIndexGTRS,
     sessionData,
     user,
     onData,
-    setActiveIndexGTRS,
 }) {
     const [collapsed, setCollapsed] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -306,6 +321,8 @@ export default function CollapseSidebar({
     const showSelect = customerOptions?.length > 0;
     const [sidebarElements, setSidebarElements] = useState(menu);
     const [optionSelected, setoptionSelected] = useState([]);
+    const navigate = useNavigate();
+
     useEffect(() => {
         setCustomerOptions(customerAccounts);
     }, []);
@@ -379,42 +396,58 @@ export default function CollapseSidebar({
         }),
     };
 
-    function setPage(menuIndex, menuItem) {
-        setActivePage(menuItem.id);
-    }
-    const [value, setValue] = useState(0);
-    const [selectedItems, setSelectedItems] = useState(new Set(["0"]));
-    function removeTrailingSlash(url) {
-        return url.endsWith("/") ? url.slice(0, -1) : url;
-    }
-    // useEffect(() => {
-    //     // Find the index of the item whose URL is in the current path
-    //     const currentPath = location.pathname;
+    const handleClick = (id, item) => {
+        console.log("click", id, item);
 
-    //     const index = menu.findIndex((item) => currentPath.includes(item.url));
-    //     const match = menu.find(
-    //         (item) =>
-    //             removeTrailingSlash(item.url) ===
-    //             removeTrailingSlash(currentPath)
-    //     );
-    //     if (match && match.menuItems.length > 0) {
-    //         navigate(match.menuItems[0].Link);
-    //     }
-    //     if (index !== -1) {
-    //         setSelectedItems(`${index}`);
-    //         setValue(index);
-    //     }
-    // }, [location, menu]);
-
-    useEffect(() => {
-        setSelectedItems(new Set(["0"]));
-    }, []);
-
-    const handleChangeModule = (item) => {
-        if (!location.pathname.includes(item.url)) {
-            navigate(item.url);
-        }
+        const updatedElements = sidebarElements?.map((element) => {
+            if (id == 12 || id == 13 || id == 14 || id == 17 || id == 18) {
+                if (element.options) {
+                    return {
+                        ...element,
+                        current: true,
+                        options: element.options.map((option) => {
+                            if (option.id == id) {
+                                return { ...option, current: true };
+                            } else {
+                                return { ...option, current: false };
+                            }
+                        }),
+                    };
+                } else {
+                    if (element.id === id) {
+                        return { ...element, current: true };
+                    } else {
+                        return { ...element, current: false };
+                    }
+                }
+            } else {
+                if (element.options) {
+                return {
+                    ...element,
+                    current: false,
+                    ...(element.options
+                        ? {
+                              options: element.options.map((option) => {
+                                  return { ...option, current: false };
+                              }),
+                          }
+                        : {}),
+                };
+                } else {
+                    if (element.id === id) {
+                        return { ...element, current: true };
+                    } else {
+                        return { ...element, current: false };
+                    }
+                }
+            }
+        });
+        handleSelectOnClick();
+        setSidebarElements(updatedElements);
+        navigate(item.url);
     };
+    console.log(sidebarElements);
+
     function handleSelectOnClick() {
         if (collapsed) {
             setCollapsed(false);
@@ -424,7 +457,6 @@ export default function CollapseSidebar({
         } else {
             setIsOpen(!isOpen);
         }
-        // setIsOpen(!isOpen);
     }
     function isItemActive(menuItemLabel) {
         let active = false;
@@ -457,110 +489,77 @@ export default function CollapseSidebar({
     }
 
     const filterNavigation = (navigation, user) => {
-        // return navigation.filter((navItem) => {
-        //     // Check if the navigation item has sub-options
-        //     if (navItem.options) {
-        //         // Filter options based on user permissions
-        //         navItem.options = navItem.options.filter((option) =>
-        //             user?.Pages?.some(
-        //                 (userPage) =>
-        //                     userPage?.PageName === option.name &&
-        //                     userPage?.Features?.some(
-        //                         (feature) =>
-        //                             feature.FunctionName === option.feature
-        //                     )
-        //             )
-        //         );
-        //         // Include the navigation item only if it has any permitted options
-        //         return navItem.options.length > 0;
-        //     } else {
-        //         // For navigation items without options, check the feature directly
-        //         return user?.Pages?.some(
-        //             (userPage) =>
-        //                 userPage?.PageName === navItem.name &&
-        //                 userPage?.Features?.some(
-        //                     (feature) =>
-        //                         feature?.FunctionName === navItem?.feature
-        //                 )
-        //         );
-        //     }
-        // });
         if (user && Object.keys(user).length !== 0) {
             let gtrsElements = navigation;
             gtrsElements = navigation?.filter((option) => {
-              return user?.some((feature) => {
-                if (option.options && option.options.length > 0) {
-                  return option.options.some((childOption) => {
-                    return feature.FunctionName === childOption.feature;
-                  });
-                } else {
-                  return feature.FunctionName === option.feature;
-                }
-              });
+                return user?.some((feature) => {
+                    if (option.options && option.options.length > 0) {
+                        return option.options.some((childOption) => {
+                            return feature.FunctionName === childOption.feature;
+                        });
+                    } else {
+                        return feature.FunctionName === option.feature;
+                    }
+                });
             });
             setSidebarElements(gtrsElements);
-          }
+        }
     };
-    //const filteredNavigation = filterNavigation(menu, currentUser);
-    useEffect(() => {
-        //setSidebarElements(filteredNavigation);
-        setActiveIndexGTRS(0);
-    }, []);
 
-    const handleClick = (index) => {
-        setActiveIndexGTRS(index);
-        const updatedElements = sidebarElements.map((element) => {
-            if (
-                element.id === index ||
-                index == 12 ||
-                index == 13 ||
-                index == 14 ||
-                index == 17 ||
-                index == 18
-            ) {
-                if (element.options) {
-                    return {
-                        ...element,
-                        current: true,
-                        options: element.options.map((option) => {
-                            if (option.id == index) {
-                                return { ...option, current: true };
-                            } else {
-                                return { ...option, current: false };
-                            }
-                        }),
-                    };
-                } else {
-                    if (element.id === index) {
-                        return { ...element, current: true };
-                    } else {
-                        return {
-                            ...element,
-                            current: false,
-                            ...(element.options
-                                ? element.options.map((option) => {
-                                      return { ...option, current: false };
-                                  })
-                                : {}),
-                        };
-                    }
-                }
-            } else {
-                return {
-                    ...element,
-                    current: false,
-                    ...(element.options
-                        ? {
-                              options: element.options.map((option) => {
-                                  return { ...option, current: false };
-                              }),
-                          }
-                        : {}),
-                };
-            }
-        });
-        setSidebarElements(updatedElements);
-    };
+    // const handleClick = (index) => {
+    //     setActiveIndexGTRS(index);
+    //     const updatedElements = sidebarElements.map((element) => {
+    //         if (
+    //             element.id === index ||
+    //             index == 12 ||
+    //             index == 13 ||
+    //             index == 14 ||
+    //             index == 17 ||
+    //             index == 18
+    //         ) {
+    //             if (element.options) {
+    //                 return {
+    //                     ...element,
+    //                     current: true,
+    //                     options: element.options.map((option) => {
+    //                         if (option.id == index) {
+    //                             return { ...option, current: true };
+    //                         } else {
+    //                             return { ...option, current: false };
+    //                         }
+    //                     }),
+    //                 };
+    //             } else {
+    //                 if (element.id === index) {
+    //                     return { ...element, current: true };
+    //                 } else {
+    //                     return {
+    //                         ...element,
+    //                         current: false,
+    //                         ...(element.options
+    //                             ? element.options.map((option) => {
+    //                                   return { ...option, current: false };
+    //                               })
+    //                             : {}),
+    //                     };
+    //                 }
+    //             }
+    //         } else {
+    //             return {
+    //                 ...element,
+    //                 current: false,
+    //                 ...(element.options
+    //                     ? {
+    //                           options: element.options.map((option) => {
+    //                               return { ...option, current: false };
+    //                           }),
+    //                       }
+    //                     : {}),
+    //             };
+    //         }
+    //     });
+    //     setSidebarElements(updatedElements);
+    // };
     return (
         <div className="h-full relative">
             <Sidebar
@@ -588,7 +587,6 @@ export default function CollapseSidebar({
                     backgroundColor: "#f6f6f6",
                 }}
             >
-
                 {/* Sidebar content */}
                 <div className=" h-full ">
                     {/* Arrow to close and open it  */}
@@ -782,7 +780,8 @@ export default function CollapseSidebar({
                                                                             }
                                                                             onClick={() =>
                                                                                 handleClick(
-                                                                                    option.id
+                                                                                    option.id,
+                                                                                    option
                                                                                 )
                                                                             }
                                                                             className={classNames(
@@ -816,7 +815,8 @@ export default function CollapseSidebar({
                                                     onClick={() => {
                                                         setCollapsed(false);
                                                         handleClick(
-                                                            menuItem.id
+                                                            menuItem.id,
+                                                            menuItem
                                                         );
                                                     }}
                                                 ></div>

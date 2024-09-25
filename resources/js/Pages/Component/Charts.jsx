@@ -23,13 +23,20 @@ import GraphPresentation from "./Presentation/GraphPresentation";
 import DailyReportPage from "./ReportsPage/DeliveryReportPage";
 import Incident from "./Incident/Incident";
 import { getApiRequest } from "@/CommonFunctions";
-import { getLatestDespatchDate, getMinMaxValue, getOldestDespatchDate } from "@/Components/utils/dateUtils";
+import {
+    getLatestDespatchDate,
+    getMinMaxValue,
+    getOldestDespatchDate,
+} from "@/Components/utils/dateUtils";
 import TrafficComp from "./TrafficPage/TrafficComp";
 import ConsTrack from "./ConsignmentTracking/ConsTrack";
 import CollapseSidebar from "./CollapseSidebar";
 import { Button } from "@nextui-org/react";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import ConsMap from "./TrafficPage/ConsMap";
+import { Routes, Route } from "react-router-dom";
+import NoAccess from "@/Components/NoAccess";
+import NotFoundPage from "../NotFoundPage";
 
 export default function charts({
     setCusomterAccounts,
@@ -41,10 +48,8 @@ export default function charts({
     debtorsData,
     customerAccounts,
     dashData,
-    setActiveIndexGTRS,
     setactiveCon,
     consData,
-    activeIndexGTRS,
     currentUser,
     activeCon,
     PerfData,
@@ -1989,7 +1994,6 @@ export default function charts({
             oldestDate={oldestDate}
             latestDate={latestDate}
             accData={dataFromChild}
-            setActiveIndexGTRS={setActiveIndexGTRS}
             setactiveCon={setactiveCon}
             consData={consData}
             AToken={AToken}
@@ -2009,7 +2013,6 @@ export default function charts({
         <ConsignmentD
             url={url}
             accData={dataFromChild}
-            setActiveIndexGTRS={setActiveIndexGTRS}
             activeCon={activeCon}
             AToken={AToken}
             lastIndex={lastIndex}
@@ -2023,7 +2026,6 @@ export default function charts({
             latestDate={latestDate}
             currentUser={currentUser}
             accData={dataFromChild}
-            setActiveIndexGTRS={setActiveIndexGTRS}
             PerfData={PerfData}
             setLastIndex={setLastIndex}
             IDfilter={IDfilter}
@@ -2044,7 +2046,6 @@ export default function charts({
             failedReasons={failedReasons}
             currentUser={currentUser}
             accData={dataFromChild}
-            setActiveIndexGTRS={setActiveIndexGTRS}
             PerfData={PerfData}
             setactiveCon={setactiveCon}
             setLastIndex={setLastIndex}
@@ -2066,7 +2067,6 @@ export default function charts({
             filterValue={filtersNoDelInfo}
             setFilterValue={setFiltersNoDelInfo}
             currentUser={currentUser}
-            setActiveIndexGTRS={setActiveIndexGTRS}
             NoDelData={NoDelData}
             setNoDelData={setNoDelData}
             setactiveCon={setactiveCon}
@@ -2086,7 +2086,6 @@ export default function charts({
             filterValue={filtersAddCharges}
             setFilterValue={setFiltersAddCharges}
             currentUser={currentUser}
-            setActiveIndexGTRS={setActiveIndexGTRS}
             AdditionalData={AdditionalData}
             setAdditionalData={setAdditionalData}
             setactiveCon={setactiveCon}
@@ -2103,7 +2102,6 @@ export default function charts({
             currentUser={currentUser}
             DriverData={DriverData}
             setDriverData={setDriverData}
-            setActiveIndexGTRS={setActiveIndexGTRS}
             setactiveCon={setactiveCon}
             setLastIndex={setLastIndex}
             filterValue={filtersDriver}
@@ -2128,7 +2126,6 @@ export default function charts({
             rddData={rddData}
             setrddData={setrddData}
             debtorsData={debtorsData}
-            setActiveIndexGTRS={setActiveIndexGTRS}
             setactiveCon={setactiveCon}
             setLastIndex={setLastIndex}
             IDfilter={IDfilter}
@@ -2157,7 +2154,6 @@ export default function charts({
             currentUser={currentUser}
             safetyData={safetyData}
             accData={dataFromChild}
-            setActiveIndexGTRS={setActiveIndexGTRS}
             PerfData={PerfData}
             setactiveCon={setactiveCon}
             setLastIndex={setLastIndex}
@@ -2180,7 +2176,6 @@ export default function charts({
             failedReasons={failedReasons}
             currentUser={currentUser}
             accData={dataFromChild}
-            setActiveIndexGTRS={setActiveIndexGTRS}
             PerfData={PerfData}
             setactiveCon={setactiveCon}
             setLastIndex={setLastIndex}
@@ -2200,7 +2195,6 @@ export default function charts({
             setFilterValue={setFiltersNewTransit}
             currentUser={currentUser}
             AToken={AToken}
-            setActiveIndexGTRS={setActiveIndexGTRS}
             setTransitDays={setTransitDays}
             url={url}
             userPermission={userPermission}
@@ -2231,7 +2225,6 @@ export default function charts({
             setTransitDay={setTransitDay}
             setTransitDays={setTransitDays}
             AToken={AToken}
-            setActiveIndexGTRS={setActiveIndexGTRS}
             transitDay={transitDay}
             userPermission={userPermission}
         />,
@@ -2239,7 +2232,6 @@ export default function charts({
             oldestDate={oldestDate}
             latestDate={latestDate}
             accData={dataFromChild}
-            setActiveIndexGTRS={setActiveIndexGTRS}
             setactiveCon={setactiveCon}
             transportData={transportData}
             AToken={AToken}
@@ -2266,7 +2258,6 @@ export default function charts({
             currentUser={currentUser}
             userBody={userBody}
             accData={dataFromChild}
-            setActiveIndexGTRS={setActiveIndexGTRS}
             url={url}
             AToken={AToken}
             setactiveCon={setactiveCon}
@@ -2283,7 +2274,6 @@ export default function charts({
             newTransitDay={newtransitDay}
             setNewTransitDays={setNewTransitDays}
             setFilterValue={setFiltersNewTransit}
-            setActiveIndexGTRS={setActiveIndexGTRS}
             newTransitDays={newTransitDays}
             filterValue={filtersNewTransit}
             currentUser={currentUser}
@@ -2298,7 +2288,6 @@ export default function charts({
             setNewTransitDay={setNewTransitDay}
             setNewTransitDays={setNewTransitDays}
             AToken={AToken}
-            setActiveIndexGTRS={setActiveIndexGTRS}
             newtransitDay={newtransitDay}
             userPermission={userPermission}
         />,
@@ -2312,7 +2301,6 @@ export default function charts({
         <TrafficComp />,
         <Incident
             AToken={AToken}
-            setActiveIndexGTRS={setActiveIndexGTRS}
             gtccrUrl={gtccrUrl}
             incidentId={incidentId}
             currentUser={currentUser}
@@ -2321,7 +2309,6 @@ export default function charts({
         <ConsTrack
             setFilterValue={setFiltersConsTrack}
             filterValue={filtersConsTrack}
-            setActiveIndexGTRS={setActiveIndexGTRS}
             setConsignmentToTrack={setConsignmentToTrack}
         />,
         <DailyReportPage
@@ -2333,14 +2320,12 @@ export default function charts({
             dailyReportData={dailyReportData}
             setLastIndex={setLastIndex}
             setactiveCon={setactiveCon}
-            setActiveIndexGTRS={setActiveIndexGTRS}
             setFilterValue={setFiltersDailyReport}
             filterValue={filtersDailyValue}
             fetchDeliveryReport={fetchDeliveryReport}
         />,
         <ConsMap
             consignment={consignmentToTrack}
-            setActiveIndexGTRS={setActiveIndexGTRS}
         />,
     ];
 
@@ -2363,11 +2348,9 @@ export default function charts({
                         setToggled={setToggled}
                         setCusomterAccounts={setCusomterAccounts}
                         customerAccounts={customerAccounts}
-                        activeIndexGTRS={activeIndexGTRS}
                         sessionData={sessionData}
                         user={user}
                         onData={handleDataFromChild}
-                        setActiveIndexGTRS={setActiveIndexGTRS}
                         currentUser={currentUser}
                     />
 
@@ -2394,7 +2377,438 @@ export default function charts({
                             style={{ minHeight: "36rem" }}
                         >
                             <div className="absolute inset-0 rounded-lg">
-                                {components[activeIndexGTRS]}
+                                <Routes>
+                                    <Route
+                                        path="/dashboard"
+                                        element={<MainCharts
+                                            chartsData={chartsData}
+                                            safetyData={safetyData}
+                                            accData={dataFromChild}
+                                            dashData={dashData}
+                                            AToken={AToken}
+                                            currentUser={currentUser}
+                                            IDfilter={IDfilter}
+                                            EDate={EDate}
+                                            setEDate={setEDate}
+                                            SDate={SDate}
+                                            setSDate={setSDate}
+                                            userPermission={userPermission}
+                                        />}
+                                    />
+                                    <Route
+                                        path="/consignments"
+                                        element={ <GtrsCons
+                                            oldestDate={oldestDate}
+                                            latestDate={latestDate}
+                                            accData={dataFromChild}
+                                            setactiveCon={setactiveCon}
+                                            consData={consData}
+                                            AToken={AToken}
+                                            filterValue={filtersCons}
+                                            setFilterValue={setFiltersCons}
+                                            minDate={minDate}
+                                            maxDate={maxDate}
+                                            setLastIndex={setLastIndex}
+                                            IDfilter={IDfilter}
+                                            EDate={EDate}
+                                            setEDate={setEDate}
+                                            SDate={SDate}
+                                            setSDate={setSDate}
+                                            userPermission={userPermission}
+                                        />}
+                                    />
+                                    <Route
+                                        path="/consignment-d"
+                                        element={<ConsignmentD
+                                            url={url}
+                                            accData={dataFromChild}
+                                            activeCon={activeCon}
+                                            AToken={AToken}
+                                            lastIndex={lastIndex}
+                                            currentUser={currentUser}
+                                            userPermission={userPermission}
+                                        />}
+                                    />
+                                    <Route
+                                        path="/performance"
+                                        element={<ConsPerf
+                                            setSharedStartDate={setSharedStartDate}
+                                            setSharedEndDate={setSharedEndDate}
+                                            oldestDate={oldestDate}
+                                            latestDate={latestDate}
+                                            currentUser={currentUser}
+                                            accData={dataFromChild}
+                                            PerfData={PerfData}
+                                            setLastIndex={setLastIndex}
+                                            IDfilter={IDfilter}
+                                            EDate={EDate}
+                                            AToken={AToken}
+                                            setEDate={setEDate}
+                                            SDate={SDate}
+                                            setSDate={setSDate}
+                                            userPermission={userPermission}
+                                        />}
+                                    />
+                                    <Route
+                                        path="/failed-consignments"
+                                        element={<FailedConsMain
+                                            oldestDate={oldestDate}
+                                            latestDate={latestDate}
+                                            setIncidentId={setIncidentId}
+                                            url={url}
+                                            filterValue={filtersFailed}
+                                            setFilterValue={setFiltersFailed}
+                                            failedReasons={failedReasons}
+                                            currentUser={currentUser}
+                                            accData={dataFromChild}
+                                            PerfData={PerfData}
+                                            setactiveCon={setactiveCon}
+                                            setLastIndex={setLastIndex}
+                                            IDfilter={IDfilter}
+                                            EDate={EDate}
+                                            gtccrUrl={gtccrUrl}
+                                            AToken={AToken}
+                                            setEDate={setEDate}
+                                            SDate={SDate}
+                                            setSDate={setSDate}
+                                            setPerfData={setPerfData}
+                                            setFailedReasons={setFailedReasons}
+                                            userPermission={userPermission}
+                                        />}
+                                    />
+                                    <Route
+                                        path="/no-delivery"
+                                        element={<NoDelivery
+                                            oldestDate={oldestDate}
+                                            latestDate={latestDate}
+                                            url={url}
+                                            filterValue={filtersNoDelInfo}
+                                            setFilterValue={setFiltersNoDelInfo}
+                                            currentUser={currentUser}
+                                            NoDelData={NoDelData}
+                                            setNoDelData={setNoDelData}
+                                            setactiveCon={setactiveCon}
+                                            setLastIndex={setLastIndex}
+                                            EDate={EDate}
+                                            setEDate={setEDate}
+                                            SDate={SDate}
+                                            AToken={AToken}
+                                            setSDate={setSDate}
+                                            accData={dataFromChild}
+                                            userPermission={userPermission}
+                                        />}
+                                    />
+                                    <Route
+                                        path="/additional-charges"
+                                        element={ <AdditionalCharges
+                                            oldestDate={oldestDate}
+                                            latestDate={latestDate}
+                                            url={url}
+                                            filterValue={filtersAddCharges}
+                                            setFilterValue={setFiltersAddCharges}
+                                            currentUser={currentUser}
+                                            AdditionalData={AdditionalData}
+                                            setAdditionalData={setAdditionalData}
+                                            setactiveCon={setactiveCon}
+                                            setLastIndex={setLastIndex}
+                                            EDate={EDate}
+                                            AToken={AToken}
+                                            setEDate={setEDate}
+                                            SDate={SDate}
+                                            setSDate={setSDate}
+                                            userPermission={userPermission}
+                                        />}
+                                    />
+                                    <Route
+                                        path="/driver-login"
+                                        element={<DriverLogin
+                                            url={url}
+                                            currentUser={currentUser}
+                                            DriverData={DriverData}
+                                            setDriverData={setDriverData}
+                                            setactiveCon={setactiveCon}
+                                            setLastIndex={setLastIndex}
+                                            filterValue={filtersDriver}
+                                            setFilterValue={setFiltersDriver}
+                                            EDate={EDate}
+                                            AToken={AToken}
+                                            setEDate={setEDate}
+                                            SDate={SDate}
+                                            setSDate={setSDate}
+                                            userPermission={userPermission}
+                                        />}
+                                    />
+                                    <Route
+                                        path="/rdd"
+                                        element={<RDDMain
+                                            oldestDate={oldestDate}
+                                            latestDate={latestDate}
+                                            setIncidentId={setIncidentId}
+                                            currentUser={currentUser}
+                                            userBody={userBody}
+                                            url={url}
+                                            filterValue={filtersRDD}
+                                            setFilterValue={setFiltersRDD}
+                                            accData={dataFromChild}
+                                            rddData={rddData}
+                                            setrddData={setrddData}
+                                            debtorsData={debtorsData}
+                                            setactiveCon={setactiveCon}
+                                            setLastIndex={setLastIndex}
+                                            IDfilter={IDfilter}
+                                            EDate={EDate}
+                                            setEDate={setEDate}
+                                            SDate={SDate}
+                                            AToken={AToken}
+                                            setSDate={setSDate}
+                                            rddReasons={rddReasons}
+                                            setrddReasons={setrddReasons}
+                                            userPermission={userPermission}
+                                        />}
+                                    />
+                                    <Route
+                                        path="/safety"
+                                        element={<SafetyRep
+                                            oldestDate={oldestDate}
+                                            latestDate={latestDate}
+                                            url={url}
+                                            AToken={AToken}
+                                            customerAccounts={customerAccounts}
+                                            filterValue={filtersSafety}
+                                            setFilterValue={setFiltersSafety}
+                                            setSafetyTypes={setSafetyTypes}
+                                            safetyTypes={safetyTypes}
+                                            safetyCauses={safetyCauses}
+                                            setSafetyCauses={setSafetyCauses}
+                                            failedReasons={failedReasons}
+                                            currentUser={currentUser}
+                                            safetyData={safetyData}
+                                            accData={dataFromChild}
+                                            PerfData={PerfData}
+                                            setactiveCon={setactiveCon}
+                                            setLastIndex={setLastIndex}
+                                            IDfilter={IDfilter}
+                                            DefaultEDate={EDate}
+                                            setEDate={setEDate}
+                                            DefaultSDate={SDate}
+                                            safetyDataState={safetyDataState}
+                                            setsafetyDataState={setsafetyDataState}
+                                            setSDate={setSDate}
+                                            userPermission={userPermission}
+                                        />}
+                                    /><Route
+                                        path="/missing-pod"
+                                        element={<MissingPOD
+                                            oldestDate={oldestDate}
+                                            latestDate={latestDate}
+                                            url={url}
+                                            AToken={AToken}
+                                            filterValue={filtersMissingPOD}
+                                            setFilterValue={setFiltersMissingPOD}
+                                            failedReasons={failedReasons}
+                                            currentUser={currentUser}
+                                            accData={dataFromChild}
+                                            PerfData={PerfData}
+                                            setactiveCon={setactiveCon}
+                                            setLastIndex={setLastIndex}
+                                            IDfilter={IDfilter}
+                                            EDate={EDate}
+                                            setEDate={setEDate}
+                                            SDate={SDate}
+                                            setSDate={setSDate}
+                                            setPerfData={setPerfData}
+                                            setFailedReasons={setFailedReasons}
+                                            userPermission={userPermission}
+                                        />}
+                                    />
+                                    {/* <Route
+                                        path="/transit-dayss"
+                                        element={<TransitDays
+                                            setTransitDay={setTransitDay}
+                                            transitDays={transitDays}
+                                            filterValue={filtersNewTransit}
+                                            setFilterValue={setFiltersNewTransit}
+                                            currentUser={currentUser}
+                                            AToken={AToken}
+                                            setTransitDays={setTransitDays}
+                                            url={url}
+                                            userPermission={userPermission}
+                                        />}
+                                    /> */}
+                                    <Route
+                                        path="/kpi/holidays"
+                                        element={<Holidays
+                                            holidays={holidays}
+                                            filterValue={filtersHolidays}
+                                            setFilterValue={setFiltersHolidays}
+                                            currentUser={currentUser}
+                                            setHolidays={setHolidays}
+                                            url={url}
+                                            AToken={AToken}
+                                            userPermission={userPermission}
+                                        />}
+                                    />
+                                    <Route
+                                        path="/kpi-reasons"
+                                        element={<KPIReasons
+                                            url={url}
+                                            currentUser={currentUser}
+                                            filterValue={filtersReasons}
+                                            setFilterValue={setFiltersReasons}
+                                            kpireasonsData={kpireasonsData}
+                                            AToken={AToken}
+                                            setkpireasonsData={setkpireasonsData}
+                                            userPermission={userPermission}
+                                        />}
+                                    />
+                                    {/* <Route
+                                        path="/add-transit"
+                                        element={ <AddTransit
+                                            url={url}
+                                            currentUser={currentUser}
+                                            setTransitDay={setTransitDay}
+                                            setTransitDays={setTransitDays}
+                                            AToken={AToken}
+                                            transitDay={transitDay}
+                                            userPermission={userPermission}
+                                        />}
+                                    /> */}
+                                    <Route
+                                        path="/transport"
+                                        element={<TransportRep
+                                            oldestDate={oldestDate}
+                                            latestDate={latestDate}
+                                            accData={dataFromChild}
+                                            setactiveCon={setactiveCon}
+                                            transportData={transportData}
+                                            AToken={AToken}
+                                            filterValue={filtersTransport}
+                                            setFilterValue={setFiltersTransport}
+                                            minDate={minDate}
+                                            maxDate={maxDate}
+                                            setLastIndex={setLastIndex}
+                                            IDfilter={IDfilter}
+                                            EDate={EDate}
+                                            setEDate={setEDate}
+                                            SDate={SDate}
+                                            setSDate={setSDate}
+                                            userPermission={userPermission}
+                                        />}
+                                    />
+                                    <Route
+                                        path="/kpi"
+                                        element={<NewKPI
+                                            kpireasonsData={kpireasonsData}
+                                            oldestDate={oldestDate}
+                                            latestDate={latestDate}
+                                            KPIData={NewKPIData}
+                                            filterValue={filtersNewKPI}
+                                            setFilterValue={setFiltersNewKPI}
+                                            setKPIData={setNewKPIData}
+                                            currentUser={currentUser}
+                                            userBody={userBody}
+                                            accData={dataFromChild}
+                                            url={url}
+                                            AToken={AToken}
+                                            setactiveCon={setactiveCon}
+                                            setLastIndex={setLastIndex}
+                                            IDfilter={IDfilter}
+                                            EDate={EDate}
+                                            setEDate={setEDate}
+                                            SDate={SDate}
+                                            setSDate={setSDate}
+                                            userPermission={userPermission}
+                                        />}
+                                    />
+                                    <Route
+                                        path="/kpi/transit-days"
+                                        element={<NewTransitDays
+                                            setNewTransitDay={setNewTransitDay}
+                                            newTransitDay={newtransitDay}
+                                            setNewTransitDays={setNewTransitDays}
+                                            setFilterValue={setFiltersNewTransit}
+                                            newTransitDays={newTransitDays}
+                                            filterValue={filtersNewTransit}
+                                            currentUser={currentUser}
+                                            accData={dataFromChild}
+                                            AToken={AToken}
+                                            url={url}
+                                            userPermission={userPermission}
+                                        />}
+                                    />
+                                    <Route
+                                        path="/add-transit"
+                                        element={<AddNewTransitDay
+                                            url={url}
+                                            currentUser={currentUser}
+                                            setNewTransitDay={setNewTransitDay}
+                                            setNewTransitDays={setNewTransitDays}
+                                            AToken={AToken}
+                                            newtransitDay={newtransitDay}
+                                            userPermission={userPermission}
+                                        />}
+                                    />
+                                    <Route
+                                        path="/pack-report"
+                                        element={<GraphPresentation
+                                            url={url}
+                                            currentUser={currentUser}
+                                            user={user}
+                                            AToken={AToken}
+                                            userPermission={userPermission}
+                                        />}
+                                    />
+                                    <Route
+                                        path="/traffic-report"
+                                        element={<TrafficComp />}
+                                    />
+                                    <Route
+                                        path="/incident"
+                                        element={<Incident
+                                            AToken={AToken}
+                                            gtccrUrl={gtccrUrl}
+                                            incidentId={incidentId}
+                                            currentUser={currentUser}
+                                            userPermission={userPermission}
+                                        />}
+                                    />
+                                    <Route
+                                        path="/consignment-tracking"
+                                        element={<ConsTrack
+                                            setFilterValue={setFiltersConsTrack}
+                                            filterValue={filtersConsTrack}
+                                            setConsignmentToTrack={setConsignmentToTrack}
+                                        />}
+                                    />
+                                    <Route
+                                        path="/delivery-report"
+                                        element={<DailyReportPage
+                                            url={url}
+                                            AToken={AToken}
+                                            currentUser={currentUser}
+                                            userPermission={userPermission}
+                                            user={user}
+                                            dailyReportData={dailyReportData}
+                                            setLastIndex={setLastIndex}
+                                            setactiveCon={setactiveCon}
+                                            setFilterValue={setFiltersDailyReport}
+                                            filterValue={filtersDailyValue}
+                                            fetchDeliveryReport={fetchDeliveryReport}
+                                        />}
+                                    />
+                                    <Route
+                                        path="/consMap"
+                                        element={<ConsMap
+                                            consignment={consignmentToTrack}
+                                        />}
+                                    />
+
+
+                                    <Route
+                                        path="/*"
+                                        element={<NotFoundPage />}
+                                    />
+                                </Routes>
                             </div>
                         </div>
                     </main>
