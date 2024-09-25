@@ -49,8 +49,8 @@ export default function ConsPerf({
         // Filter the data based on the start and end date filters
         const filtered = PerfData.filter((item) => {
             const chargeToMatch =
-                intArray?.length === 0 || intArray?.includes(item.ChargeTo);
-            const itemDate = new Date(item.DESPATCHDATE); // Convert item's date string to Date object
+                intArray?.length === 0 || intArray?.includes(item.ChargeToID);
+            const itemDate = new Date(item.DespatchDate); // Convert item's date string to Date object
             let dateMatch = true;
             if (startDate && endDate) {
                 const filterStartDate = new Date(startDate); // Convert start date string to Date object
@@ -62,7 +62,7 @@ export default function ConsPerf({
                 dateMatch = itemDate >= filterStartDate && itemDate <= filterEndDate; // Compare the item date to the filter dates
             }
             const ConsNbMatch = selectedConsignment
-                ? item.CONSIGNMENTNUMBER.toLowerCase().includes(
+                ? item.ConsignmentNo.toLowerCase().includes(
                       selectedConsignment.toLowerCase()
                   )
                 : true;
@@ -83,34 +83,34 @@ export default function ConsPerf({
     };
     const pageCount = Math.ceil(filteredData.length / PER_PAGE);
     const headers = [
-        "CONSIGNMENT NUMBER",
-        "CONSIGNMENT STATUS",
-        "ACCOUNT NAME",
+        "Consignment No",
+        "Consignment Status",
+        "Account Name",
         "POD",
-        "KPI DATETIME",
-        "POD DATETIME",
-        "STATUS",
-        "LOADING TIME",
-        "DELIVERY REQUIRED DATETIME",
-        "SERVICE",
-        "TOTAL QUANTITY",
-        "DELIVERED DATE TIME",
-        "MANIFEST NO",
-        "TOTAL WEIGHT",
-        "DESPATCHDATE",
-        "FUELLEVY",
-        "NETT AMOUNT",
-        "RATED AMOUNT",
-        "SENDER NAME",
-        "SENDER SUBURB",
-        "SENDER REFERENCE",
-        "SENDER ZONE",
-        "SENDER POSTCODE",
-        "RECEIVER NAME",
-        "RECEIVER SUBURB",
-        "RECEIVER REFERENCE",
-        "RECEIVER ZONE",
-        "RECEIVER POSTCODE",
+        "KPI Datetime",
+        "POD Datetime",
+        "Status",
+        "Loading Time",
+        "Delivery Required Date",
+        "Service",
+        "Total Quantity",
+        "Delivered Date",
+        "Manifest No",
+        "Total Weight",
+        "Despatch Date",
+        "Fuel levy",
+        "Nett Amount",
+        "Rate Amount",
+        "Sender Name",
+        "Sender Suburb",
+        "Sender Reference",
+        "Sender Zone",
+        "Sender Postcode",
+        "Receiver Name",
+        "Receiver Suburb",
+        "Receiver Reference",
+        "Receiver Zone",
+        "Receiver Postcode",
     ];
 
     function handleDownloadExcel() {
@@ -123,40 +123,40 @@ export default function ConsPerf({
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
-                    if (column.replace(/\s+/g, "") === "RECEIVERREFERENCE") {
-                        acc["RECEIVER REFERENCE"] =
-                            person["RECEIVER REFERENCE"];
-                    } else if (column.replace(/\s+/g, "") === "ACCOUNTNAME") {
-                        acc[columnKey] = person["ACCOUNTNUMBER"];
-                    } else if (column.replace(/\s+/g, "") === "KPIDATETIME") {
+                    if (column.replace(/\s+/g, "") === "ReceiverReference") {
+                        acc["ReceiverReference"] =
+                            person["ReceiverReference"];
+                    } else if (column.replace(/\s+/g, "") === "AccountName") {
+                        acc[columnKey] = person["AccountNumber"];
+                    } else if (column.replace(/\s+/g, "") === "KPIDatetime") {
                         acc[columnKey] =
                             moment(
-                                person["KPI DATETIME"].replace("T", " "),
+                                person["KpiDatetime"].replace("T", " "),
                                 "YYYY-MM-DD HH:mm:ss"
                             ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
                                 ? ""
                                 : moment(
-                                      person["KPI DATETIME"].replace("T", " "),
+                                      person["KpiDatetime"].replace("T", " "),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY HH:mm A");
-                    } else if (column.replace(/\s+/g, "") === "PODDATETIME") {
+                    } else if (column.replace(/\s+/g, "") === "PODDatetime") {
                         acc[columnKey] =
                             moment(
-                                person["POD DATETIME"]?.replace("T", " "),
+                                person["PodDateTime"]?.replace("T", " "),
                                 "YYYY-MM-DD HH:mm:ss"
                             ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
                                 ? ""
                                 : moment(
-                                      person["POD DATETIME"]?.replace("T", " "),
+                                      person["PodDateTime"]?.replace("T", " "),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY HH:mm A");
                     } else if (
                         column.replace(/\s+/g, "") ===
-                        "DELIVERYREQUIREDDATETIME"
+                        "DeliveryRequiredDate"
                     ) {
                         acc[columnKey] =
                             moment(
-                                person["DELIVERYREQUIREDDATETIME"]?.replace(
+                                person["DeliveryRequiredDateTime"]?.replace(
                                     "T",
                                     " "
                                 ),
@@ -165,19 +165,19 @@ export default function ConsPerf({
                                 ? ""
                                 : moment(
                                       person[
-                                          "DELIVERYREQUIREDDATETIME"
+                                          "DeliveryRequiredDateTime"
                                       ]?.replace("T", " "),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY HH:mm A");
-                    } else if (column.replace(/\s+/g, "") === "DESPATCHDATE") {
+                    } else if (column.replace(/\s+/g, "") === "DespatchDate") {
                         acc[columnKey] =
                             moment(
-                                person["DESPATCHDATE"]?.replace("T", " "),
+                                person["DespatchDate"]?.replace("T", " "),
                                 "YYYY-MM-DD HH:mm:ss"
                             ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
                                 ? ""
                                 : moment(
-                                      person["DESPATCHDATE"]?.replace("T", " "),
+                                      person["DespatchDate"]?.replace("T", " "),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY HH:mm A");
                     } else {
@@ -228,7 +228,6 @@ export default function ConsPerf({
             saveAs(blob, "Performance-Report.xlsx");
         });
     }
-
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
             <div className="sm:flex sm:items-center">
@@ -327,7 +326,7 @@ export default function ConsPerf({
                             <h3 className="text-base font-semibold leading-6 text-gray-900">
                                 CONSIGNMENT NO. :{" "}
                                 <span className="text-goldd">
-                                    {item.CONSIGNMENTNUMBER}
+                                    {item.ConsignmentNo}
                                 </span>
                             </h3>
                         </div>

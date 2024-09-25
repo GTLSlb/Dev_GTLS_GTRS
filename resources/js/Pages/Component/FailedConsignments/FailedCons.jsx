@@ -45,8 +45,8 @@ export default function FailedCons({
     const [data, setData] = useState(
         PerfData?.filter(
             (obj) =>
-                obj.STATUS === "FAIL" &&
-                !excludedDebtorIds.includes(obj.ChargeTo)
+                obj.Status === "FAIL" &&
+                !excludedDebtorIds.includes(obj.ChargeToID)
         )
     );
     const [filteredData, setFilteredData] = useState(data);
@@ -58,7 +58,7 @@ export default function FailedCons({
         // Filter the data based on the start and end date filters, selected receiver names, and chargeTo values
         const filtered = data?.filter((item) => {
             const chargeToMatch =
-                intArray?.length === 0 || intArray?.includes(item.ChargeTo);
+                intArray?.length === 0 || intArray?.includes(item.ChargeToID);
 
             return chargeToMatch;
         });
@@ -95,30 +95,30 @@ export default function FailedCons({
         },
     ];
     const senderZoneOptions = createNewLabelObjects(data, "SenderState");
-    const receiverZoneOptions = createNewLabelObjects(data, "RECEIVERSTATE");
+    const receiverZoneOptions = createNewLabelObjects(data, "ReceiverState");
     const states = createNewLabelObjects(data, "State");
     const departments = createNewLabelObjects(data, "Department");
     // Usage example remains the same
-    const minKPIDate = getMinMaxValue(data, "KPI DATETIME", 1);
-    const maxKPIDate = getMinMaxValue(data, "KPI DATETIME", 2);
+    const minKPIDate = getMinMaxValue(data, "KpiDatetime", 1);
+    const maxKPIDate = getMinMaxValue(data, "KpiDatetime", 2);
 
-    const minDespatchDate = getMinMaxValue(data, "DESPATCHDATE", 1);
-    const maxDespatchDate = getMinMaxValue(data, "DESPATCHDATE", 2);
+    const minDespatchDate = getMinMaxValue(data, "DespatchDate", 1);
+    const maxDespatchDate = getMinMaxValue(data, "DespatchDate", 2);
 
-    const minRddDate = getMinMaxValue(data, "DELIVERYREQUIREDDATETIME", 1);
-    const maxRddDate = getMinMaxValue(data, "DELIVERYREQUIREDDATETIME", 2);
+    const minRddDate = getMinMaxValue(data, "DeliveryRequiredDateTime", 1);
+    const maxRddDate = getMinMaxValue(data, "DeliveryRequiredDateTime", 2);
 
-    const minArrivedDate = getMinMaxValue(data, "ARRIVEDDATETIME", 1);
-    const maxArrivedDate = getMinMaxValue(data, "ARRIVEDDATETIME", 2);
+    const minArrivedDate = getMinMaxValue(data, "ArrivedDatetime", 1);
+    const maxArrivedDate = getMinMaxValue(data, "ArrivedDatetime", 2);
 
-    const minDeliveredDate = getMinMaxValue(data, "DELIVEREDDATETIME", 1);
-    const maxDeliveredDate = getMinMaxValue(data, "DELIVEREDDATETIME", 2);
+    const minDeliveredDate = getMinMaxValue(data, "DeliveredDate", 1);
+    const maxDeliveredDate = getMinMaxValue(data, "DeliveredDate", 2);
 
     const Roles = ["1", "3", "4", "5"];
 
     const columns = [
         {
-            name: "CONSIGNMENTNUMBER",
+            name: "ConsignmentNo",
             header: "Cons No",
             headerAlign: "center",
             textAlign: "center",
@@ -128,7 +128,7 @@ export default function FailedCons({
                 return (
                     <span
                         className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => handleClick(data.CONSIGNMNENTID)}
+                        onClick={() => handleClick(data.ConsignmentID)}
                     >
                         {" "}
                         {value}
@@ -182,7 +182,7 @@ export default function FailedCons({
             },
         },
         {
-            name: "SENDERNAME",
+            name: "SenderName",
             defaultWidth: 170,
             header: "Sender Name",
             type: "string",
@@ -193,7 +193,7 @@ export default function FailedCons({
             filterEditor: StringFilter,
         },
         {
-            name: "SENDERREFERENCE",
+            name: "SenderReference",
             defaultWidth: 170,
             header: "Sender Reference",
             type: "string",
@@ -217,7 +217,7 @@ export default function FailedCons({
             },
         },
         {
-            name: "RECEIVERNAME",
+            name: "ReceiverName",
             header: "Receiver Name",
             type: "string",
             defaultWidth: 170,
@@ -227,7 +227,7 @@ export default function FailedCons({
             filterEditor: StringFilter,
         },
         {
-            name: "RECEIVER REFERENCE",
+            name: "ReceiverReference",
             header: "Receiver Reference",
             type: "string",
             defaultWidth: 170,
@@ -237,7 +237,7 @@ export default function FailedCons({
             filterEditor: StringFilter,
         },
         {
-            name: "RECEIVERSTATE",
+            name: "ReceiverState",
             header: "Receiver State",
             headerAlign: "center",
             textAlign: "center",
@@ -250,7 +250,7 @@ export default function FailedCons({
             },
         },
         {
-            name: "SERVICE",
+            name: "Service",
             header: "Service",
             headerAlign: "center",
             textAlign: "center",
@@ -258,7 +258,7 @@ export default function FailedCons({
             filterEditor: StringFilter,
         },
         {
-            name: "KPI DATETIME",
+            name: "KpiDatetime",
             header: "KPI DateTime",
             headerAlign: "center",
             textAlign: "center",
@@ -277,7 +277,7 @@ export default function FailedCons({
             },
         },
         {
-            name: "DESPATCHDATE",
+            name: "DespatchDate",
             header: "Despatch Date",
             headerAlign: "center",
             textAlign: "center",
@@ -296,7 +296,7 @@ export default function FailedCons({
             },
         },
         {
-            name: "DELIVERYREQUIREDDATETIME",
+            name: "DeliveryRequiredDateTime",
             header: "RDD",
             headerAlign: "center",
             textAlign: "center",
@@ -315,7 +315,7 @@ export default function FailedCons({
             },
         },
         {
-            name: "ARRIVEDDATETIME",
+            name: "ArrivedDatetime",
             header: "Arrived time",
             headerAlign: "center",
             textAlign: "center",
@@ -334,7 +334,7 @@ export default function FailedCons({
             },
         },
         {
-            name: "DELIVEREDDATETIME",
+            name: "DeliveredDate",
             header: "Delivered time",
             headerAlign: "center",
             textAlign: "center",
@@ -522,11 +522,11 @@ export default function FailedCons({
 
         // Define custom cell handlers (e.g., for formatting dates, failed reasons, etc.)
         const customCellHandlers = {
-            DESPATCHDATE: (value) => formatDateToExcel(value),
-            ARRIVEDDATETIME: (value) => formatDateToExcel(value),
-            DELIVEREDDATETIME: (value) => formatDateToExcel(value),
-            DELIVERYREQUIREDDATETIME: (value) => formatDateToExcel(value),
-            KPIDATETIME: (value) => formatDateToExcel(value),
+            DespatchDate: (value) => formatDateToExcel(value),
+            ArrivedDatetime: (value) => formatDateToExcel(value),
+            DeliveredDate: (value) => formatDateToExcel(value),
+            DeliveryRequiredDateTime: (value) => formatDateToExcel(value),
+            KpiDatetime: (value) => formatDateToExcel(value),
             FailedReason: (value, item) => {
                 const failedReason = failedReasons?.find(
                     (reason) => reason.ReasonId === item.FailedReason
@@ -543,7 +543,7 @@ export default function FailedCons({
             columnMapping,
             "Failed-Consignments.xlsx",
             customCellHandlers,
-            ["DESPATCH DATE", "ARRIVEDDATETIME", "DELIVEREDDATETIME", "DELIVERYREQUIREDDATETIME", "KPIDATETIME"]
+            ["DespatchDate", "ArrivedDatetime", "DeliveredDate", "DeliveryRequiredDateTime", "KpiDatetime"]
         );
     };
 
@@ -579,19 +579,8 @@ export default function FailedCons({
         setData(updatedData);
         setFilteredData(updatedData);
     };
-    const [hoverMessage, setHoverMessage] = useState("");
-    const [isMessageVisible, setMessageVisible] = useState(false);
     const [selected, setSelected] = useState([]);
-    const handleMouseEnter = () => {
-        if (filteredData.length === 0) {
-            setHoverMessage("No Data Found");
-            setMessageVisible(true);
-            setTimeout(() => {
-                setMessageVisible(false);
-            }, 1000);
-        }
-    };
-    // console.log(filteredData);
+    console.log(filteredData);
     return (
         <div className="mt-4">
             {/* <Sidebar /> */}
@@ -633,7 +622,7 @@ export default function FailedCons({
                         </div>
                     </div>
                     <TableStructure
-                        id={"CONSIGNMNENTID"}
+                        id={"ConsignmentID"}
                         gridRef={gridRef}
                         setSelected={setSelected}
                         selected={selected}

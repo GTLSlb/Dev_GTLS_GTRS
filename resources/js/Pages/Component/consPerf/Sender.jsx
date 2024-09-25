@@ -6,23 +6,23 @@ export default function Sender(item) {
                     <dt className="text-sm font-medium text-gray-900">
                     SENDER NAME
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['SENDERNAME']}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['SenderName']}</dd>
                     <dt className="text-sm font-medium text-gray-900">
                     SENDER SUBURB
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['SENDERSUBURB']}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['SenderSuburb']}</dd>
                     <dt className="text-sm font-medium text-gray-900">
                     SENDER REFERENCE
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['SENDERREFERENCE']}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['SenderReference']}</dd>
                     <dt className="text-sm font-medium text-gray-900">
                     SENDER ZONE
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['SENDERZONE']}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['SenderZone']}</dd>
                     <dt className="text-sm font-medium text-gray-900">
                     SENDER POSTCODE
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['SENDERPOSTCODE']}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['SenderPostcode']}</dd>
                     
                 </div>
             </dl>

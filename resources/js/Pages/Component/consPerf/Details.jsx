@@ -8,39 +8,39 @@ export default function Details(item){
                     <dt className="text-sm font-medium text-gray-900">
                     CONSIGNMENT STATUS
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item.CONSIGNMENTSTATUS}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item.ConsignmentStatus}</dd>
                     <dt className="text-sm font-medium text-gray-900">
                     LOADING TIME
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['LOADINGTIME']}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['LoadingTime']}</dd>
                     <dt className="text-sm font-medium text-gray-900">
                     DELIVERY REQUIRED DATETIME
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item?.item['DELIVERYREQUIREDDATETIME'] === ""?"":moment(item.item['DELIVERYREQUIREDDATETIME']?.replace("T"," "), 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY h:mm A')}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item?.item['DeliveryRequiredDateTime'] === ""?"":moment(item.item['DeliveryRequiredDateTime']?.replace("T"," "), 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY h:mm A')}</dd>
                     <dt className="text-sm font-medium text-gray-900">
                     SERVICE
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['SERVICE']}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['Service']}</dd>
                     <dt className="text-sm font-medium text-gray-900">
                     TOTAL QUANTITY
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['TOTALQUANTITY']}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['TotalQuantity']}</dd>
                     <dt className="text-sm font-medium text-gray-900">
                     DELIVERED DATE TIME
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item?.item['DELIVEREDDATETIME'] === ""?"":moment(item.item['DELIVEREDDATETIME']?.replace("T"," "), 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY h:mm A')}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item?.item['DeliveredDate'] === ""?"":moment(item.item['DeliveredDate']?.replace("T"," "), 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY h:mm A')}</dd>
                     <dt className="text-sm font-medium text-gray-900">
                     MANIFEST NO
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['MANIFESTNO']}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['ManifestNo']}</dd>
                     <dt className="text-sm font-medium text-gray-900">
                     TOTAL WEIGHT
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['TOTALWEIGHT']}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['TotalWeight']}</dd>
                     <dt className="text-sm font-medium text-gray-900">
                     DESPATCHDATE
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{moment(item.item['DESPATCHDATE']?.replace("T"," "), 'YYYY-MM-DD ').format('DD-MM-YYYY ')}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{moment(item.item['DespatchDate']?.replace("T"," "), 'YYYY-MM-DD ').format('DD-MM-YYYY ')}</dd>
                 </div>
             </dl>
         </div>
