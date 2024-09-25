@@ -179,14 +179,6 @@ export default function ScrollNav() {
                                                     </a>
                                                 </div>
                                             </div>
-                                            {/* <div className="grid grid-cols-1 divide-x divide-gray-900/5 bg-gray-50">
-                                                <button
-                                                    // onClick={handleDownloadExcel}
-                                                    className="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100"
-                                                >
-                                                    Export XLS
-                                                </button>
-                                            </div> */}
                                         </div>
                                     </Popover.Panel>
                                 </Transition>
@@ -212,8 +204,6 @@ export default function ScrollNav() {
                                     <Link
                                         key={item.name}
                                         href={item.href}
-                                        // data={item.ref}
-                                        // smooth={true}
                                         className="hover:cursor-pointer hover:border-b hover:border-goldt p-1   text-[1rem] font-semibold leading-6 text-goldt hover:text-white"
                                     >
                                         {item.name}
@@ -280,14 +270,6 @@ export default function ScrollNav() {
                                                     </a>
                                                 </div>
                                             </div>
-                                            {/* <div className="grid grid-cols-1 divide-x divide-gray-900/5 bg-gray-50">
-                                                <button
-                                                    // onClick={handleDownloadExcel}
-                                                    className="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100"
-                                                >
-                                                    Export XLS
-                                                </button>
-                                            </div> */}
                                         </div>
                                     </Popover.Panel>
                                 </Transition>
@@ -329,8 +311,6 @@ export default function ScrollNav() {
                                      <Link
                                          key={item.name}
                                          href={item.href}
-                                         // data={item.ref}
-                                         // smooth={true}
                                          className="hover:cursor-pointer  -mx-3 block rounded-lg py-2 px-3 text-base font-semibold leading-7 text-goldt hover:bg-gray-400/10"
                                          >
                                          {item.name}
@@ -347,39 +327,6 @@ export default function ScrollNav() {
                                  )}
                              </div>
                             ))}
-                            {/* {props.auth.user ? (
-                                        <Link
-                                            href={route("dashboard")}
-                                            className="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-                                        >
-                                            Dashboard
-                                        </Link>
-                                    ) : (
-                                        <>
-                                            <Link
-                                                href={route("login")}
-                                                // className="border-2 w-10 bg-goldt text-gray-600 hover:text-gray-900 dark:text-gray-900 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-                                            >
-                                                <button className="border rounded bg-goldt text-white h-10 w-20 hover:bg-black"> Log in</button>
-                                                
-                                            </Link>
-
-                                            <Link
-                                                href={route("register")}
-                                                className="ml-4 font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-                                            >
-                                                Register
-                                            </Link>
-                                        </>
-                                    )} */}
-                            {/* <a
-                                            href="https://jaixwebapps.gtls.com.au/Portal/Account/Login.aspx"
-                                            className="border-2 w-10 bg-goldt text-gray-600 hover:text-gray-900 dark:text-gray-900 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-                                        >
-                                            <button className="border  rounded bg-goldt text-white font-bold h-10 w-20 hover:bg-black">
-                                                Log In
-                                            </button>
-                                        </a> */}
                         </div>
                     </Dialog.Panel>
                 </Dialog>

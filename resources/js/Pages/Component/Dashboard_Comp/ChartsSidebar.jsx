@@ -53,23 +53,6 @@ const navigation = [
         icon: ClipboardDocumentCheckIcon,
         current: false,
         options: [
-            // {
-            //     id: 2,
-            //     name: "KPI",
-            //     href: "#",
-            //     current: false,
-            //     icon: ClipboardDocumentCheckIcon,
-            //     feature: "KPI_view",
-            // },
-
-            // {
-            //     id: 12,
-            //     name: "Transit Days",
-            //     href: "#",
-            //     current: false,
-            //     icon: ClipboardDocumentCheckIcon,
-            //     feature: "View_TransitDays",
-            // },
             {
                 id: 17,
                 name: "KPI",
@@ -94,14 +77,6 @@ const navigation = [
                 icon: ClipboardDocumentCheckIcon,
                 feature: "View_Holidays",
             },
-            // {
-            //     id: 14,
-            //     name: "KPI Reasons",
-            //     href: "#",
-            //     current: false,
-            //     icon: ClipboardDocumentCheckIcon,
-            //     feature: "View_kpiReasons",
-            // },
         ],
         feature: "KPI",
     },
@@ -244,23 +219,6 @@ export default function ChartsSidebar({
             icon: ClipboardDocumentCheckIcon,
             current: false,
             options: [
-                // {
-                //     id: 2,
-                //     name: "KPI",
-                //     href: "#",
-                //     current: false,
-                //     icon: ClipboardDocumentCheckIcon,
-                //     feature: "KPI_view",
-                // },
-
-                // {
-                //     id: 12,
-                //     name: "Transit Days",
-                //     href: "#",
-                //     current: false,
-                //     icon: ClipboardDocumentCheckIcon,
-                //     feature: "View_TransitDays",
-                // },
                 {
                     id: 17,
                     name: "KPI",
@@ -492,41 +450,7 @@ export default function ChartsSidebar({
         });
         setSidebarElements(updatedElements);
     };
-    // const filterNavigation = (navigation, user) => {
-    //     return navigation.filter((navItem) => {
-    //         // Check if the navigation item has sub-options
-    //         if (navItem.options) {
-    //             // Filter options based on user permissions
-    //             navItem.options = navItem.options.filter((option) =>
-    //                 user?.Pages?.some(
-    //                     (userPage) =>
-    //                         userPage?.PageName === option.name &&
-    //                         userPage?.Features?.some(
-    //                             (feature) =>
-    //                                 feature.FunctionName === option.feature
-    //                         )
-    //                 )
-    //             );
-    //             // Include the navigation item only if it has any permitted options
-    //             return navItem.options.length > 0;
-    //         } else {
-    //             // For navigation items without options, check the feature directly
-    //             return user?.Pages?.some(
-    //                 (userPage) =>
-    //                     userPage?.PageName === navItem.name &&
-    //                     userPage?.Features?.some(
-    //                         (feature) =>
-    //                             feature?.FunctionName === navItem?.feature
-    //                     )
-    //             );
-    //         }
-    //     });
-    // };
-    //const filteredNavigation = filterNavigation(navigation, currentUser);
-    // useEffect(() => {
-    //     setSidebarElements(filteredNavigation);
-    //     setActiveIndexGTRS(filteredNavigation[0]?.id);
-    // }, []);
+   
     return (
         <div className="h-full xl:fixed xl:w-64 lg:h-full bg-gray-200 w-full ">
             {/* Static sidebar for desktop */}
@@ -652,7 +576,6 @@ export default function ChartsSidebar({
                                                 {({ open }) => (
                                                     <>
                                                         <AccordionHeader
-                                                            // className=" "
                                                             className={classNames(
                                                                 item.current
                                                                     ? "bg-gray-300 text-gray-900"

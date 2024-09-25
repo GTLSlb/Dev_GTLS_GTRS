@@ -84,11 +84,9 @@ export default function SmallTableKPI({
                 .then((res) => {
                     getfunction();
                     setEditIndex(null);
-                    // AlertToast("Saved Successfully", 1);
                     setEditObject({});
                 })
                 .catch((err) => {
-                    // AlertToast("Error please try again.", 2);
 
                     if (err.response && err.response.status === 401) {
                         // Handle 401 error using SweetAlert
@@ -149,8 +147,6 @@ export default function SmallTableKPI({
                         resolve(parsedData);
                     });
                     parsedDataPromise.then((parsedData) => {
-                        // setObjects(parsedData);
-                        // AlertToast("Saved Successfully", 1);
                         setNewObject({});
                     });
                 })

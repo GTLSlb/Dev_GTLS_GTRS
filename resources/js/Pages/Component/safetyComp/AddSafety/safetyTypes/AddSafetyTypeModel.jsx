@@ -34,12 +34,10 @@ export default function AddSafetyTypeModal({
             setStatus(type?.SafetyStatus);
             setTypeStatus(type?.SafetyStatus);
             setName(type?.SafetyTypeName);
-            // setdescription(type?.ReasonDesc);
         } else {
             setTypeStatus(true);
             setStatus(true);
             setName("");
-            // setdescription("");
         }
     }, [type]);
     const data = [
@@ -52,9 +50,7 @@ export default function AddSafetyTypeModal({
 
     const handlePopUpClose = () => {
         setError(null); // Clear the error message
-        // setInputValue("");
         setName("");
-        // setdescription("");
         handleClose(); // Clear the input value
     };
     const handleSubmit = async (event) => {

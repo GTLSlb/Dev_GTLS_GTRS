@@ -387,24 +387,7 @@ export default function CollapseSidebar({
     function removeTrailingSlash(url) {
         return url.endsWith("/") ? url.slice(0, -1) : url;
     }
-    // useEffect(() => {
-    //     // Find the index of the item whose URL is in the current path
-    //     const currentPath = location.pathname;
-
-    //     const index = menu.findIndex((item) => currentPath.includes(item.url));
-    //     const match = menu.find(
-    //         (item) =>
-    //             removeTrailingSlash(item.url) ===
-    //             removeTrailingSlash(currentPath)
-    //     );
-    //     if (match && match.menuItems.length > 0) {
-    //         navigate(match.menuItems[0].Link);
-    //     }
-    //     if (index !== -1) {
-    //         setSelectedItems(`${index}`);
-    //         setValue(index);
-    //     }
-    // }, [location, menu]);
+   
 
     useEffect(() => {
         setSelectedItems(new Set(["0"]));
@@ -424,7 +407,6 @@ export default function CollapseSidebar({
         } else {
             setIsOpen(!isOpen);
         }
-        // setIsOpen(!isOpen);
     }
     function isItemActive(menuItemLabel) {
         let active = false;
@@ -457,34 +439,7 @@ export default function CollapseSidebar({
     }
 
     const filterNavigation = (navigation, user) => {
-        // return navigation.filter((navItem) => {
-        //     // Check if the navigation item has sub-options
-        //     if (navItem.options) {
-        //         // Filter options based on user permissions
-        //         navItem.options = navItem.options.filter((option) =>
-        //             user?.Pages?.some(
-        //                 (userPage) =>
-        //                     userPage?.PageName === option.name &&
-        //                     userPage?.Features?.some(
-        //                         (feature) =>
-        //                             feature.FunctionName === option.feature
-        //                     )
-        //             )
-        //         );
-        //         // Include the navigation item only if it has any permitted options
-        //         return navItem.options.length > 0;
-        //     } else {
-        //         // For navigation items without options, check the feature directly
-        //         return user?.Pages?.some(
-        //             (userPage) =>
-        //                 userPage?.PageName === navItem.name &&
-        //                 userPage?.Features?.some(
-        //                     (feature) =>
-        //                         feature?.FunctionName === navItem?.feature
-        //                 )
-        //         );
-        //     }
-        // });
+       
         if (user && Object.keys(user).length !== 0) {
             let gtrsElements = navigation;
             gtrsElements = navigation?.filter((option) => {
@@ -501,9 +456,7 @@ export default function CollapseSidebar({
             setSidebarElements(gtrsElements);
           }
     };
-    //const filteredNavigation = filterNavigation(menu, currentUser);
     useEffect(() => {
-        //setSidebarElements(filteredNavigation);
         setActiveIndexGTRS(0);
     }, []);
 
@@ -583,7 +536,6 @@ export default function CollapseSidebar({
                         ? themescollapse[theme].sidebar.color
                         : themes[theme].sidebar.color,
                     height: "100%",
-                    // paddingBottom: "64px",
                     position: "relative",
                     backgroundColor: "#f6f6f6",
                 }}
@@ -726,7 +678,6 @@ export default function CollapseSidebar({
                                                     {({ open }) => (
                                                         <>
                                                             <AccordionHeader
-                                                                // className=" "
                                                                 className={classNames(
                                                                     menuItem.current
                                                                         ? "bg-gray-300 text-gray-900"
@@ -810,7 +761,6 @@ export default function CollapseSidebar({
                                             key={itemIndex}
                                             active={isItemActive(menuItem.name)}
                                             component={
-                                                // <Link to={item.Link}>
                                                 <div
                                                     className=""
                                                     onClick={() => {
@@ -820,7 +770,6 @@ export default function CollapseSidebar({
                                                         );
                                                     }}
                                                 ></div>
-                                                // </Link>
                                             }
                                         >
                                             <div

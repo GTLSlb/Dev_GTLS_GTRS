@@ -383,9 +383,6 @@ function TransportRep({
             headerAlign: "center",
             textAlign: "center",
             filterEditor: RDDTimeFilter,
-            // render: ({ value, data }) => {
-            //     return extractTime(data.RDD);
-            // },
         },
         {
             name: "LTLFTL",

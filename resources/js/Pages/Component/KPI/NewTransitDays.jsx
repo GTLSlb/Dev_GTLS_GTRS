@@ -56,7 +56,6 @@ function NewTransitDays({
         },
     ];
 
-    // const [receiverStateOptions, setReceiverStateOptions] = useState([]);
     const receiverStateOptions = createNewLabelObjects(
         newTransitDays,
         "ReceiverState"

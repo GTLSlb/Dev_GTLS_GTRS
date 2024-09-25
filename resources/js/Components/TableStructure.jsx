@@ -83,10 +83,6 @@ export default function TableStructure({
         }
     }, [setFilterValueElements]);
 
-    const handleClearAllFilters = () => {
-        setFilters([]); // Clear filters state
-        setFilterValueElements([]); // Reset external filter state
-    };
 
     return (
         <div className="">
@@ -109,7 +105,6 @@ export default function TableStructure({
                         showColumnMenuGroupOptions={false}
                         selected={selectedRows}
                         style={gridStyle}
-                        // onSelectionChange={onSelectionChange}
                         onFilterValueChange={onFilterValueChange}
                         defaultFilterValue={filters}
                         columns={columns}

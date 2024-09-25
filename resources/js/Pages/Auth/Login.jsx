@@ -63,11 +63,9 @@ export default function Login({ status, canResetPassword }) {
     };
 
     const handleNextClick = async (e) => {
-        // e.preventDefault();
         setShowPassword(true);
     };
     const handleBackClick = async (e) => {
-        // e.preventDefault();
         setShowPassword(false);
     };
 

@@ -50,110 +50,9 @@ export default function MainSidebar({
     activePage,
     user,
 }) {
-    const invoicesRoles = [6, 7, 8, 9, 10];
     const [gtrsCurrent, setGtrsCurrent] = useState();
-    // useEffect(() => {
-    //     handleSetActivePage(0);
-    // }, []);
-
-    const current_user_role = currentUser?.role_id;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [sidebarNavigation, setSidebarNavigation] = useState([
-        // {
-        //     id: 0,
-        //     name: "GTRS",
-        //     // href: "#",
-        //     icon: DocumentMagnifyingGlassIcon,
-        //     current: false,
-        //     options: [
-        //         {
-        //             id: 0,
-        //             name: "Dashboard",
-        //             current: false,
-        //             role: ["1", "2", "3", "4", "5"],
-        //         },
-        //         {
-        //             id: 1,
-        //             name: "Consignments",
-        //             current: false,
-        //             role: ["1", "2", "3", "4", "5"],
-        //         },
-        //         {
-        //             id: 2,
-        //             name: "Kpi Report",
-        //             current: false,
-        //             role: ["1", "2", "3", "4", "5"],
-        //         },
-        //         {
-        //             id: 4,
-        //             name: "Performance report",
-        //             current: false,
-        //             role: ["1", "2", "3", "4", "5"],
-        //         },
-        //         {
-        //             id: 5,
-        //             name: "Failed Consignments",
-        //             current: false,
-        //             role: ["1", "2", "3", "4", "5"],
-        //         },
-        //         {
-        //             id: 6,
-        //             name: "No Delivery info",
-        //             current: false,
-        //             role: ["1", "4"],
-        //         },
-        //         {
-        //             id: 7,
-        //             name: "Additional Charges",
-        //             current: false,
-        //             role: ["1", "4"],
-        //         },
-        //         {
-        //             id: 8,
-        //             name: "Driver Login",
-        //             current: false,
-        //             role: ["1", "4"],
-        //         },
-        //         {
-        //             id: 9,
-        //             name: "RDD",
-        //             current: false,
-        //             role: ["1", "2", "3", "4", "5"],
-        //         },
-        //         {
-        //             id: 10,
-        //             name: "Safety",
-        //             current: false,
-        //             role: ["1", "2", "3", "4", "5"],
-        //         },
-        //         {
-        //             id: 11,
-        //             name: "Missing POD",
-        //             current: false,
-        //             role: ["1", "2", "3", "4", "5"],
-        //         },
-        //         {
-        //             id: 12,
-        //             name: "Transit Days",
-        //             current: false,
-        //             role: ["1", "4"],
-        //         },
-        //         {
-        //             id: 13,
-        //             name: "Holidays",
-        //             current: false,
-        //             role: ["1", "4"],
-        //         },
-        //         {
-        //             id: 14,
-        //             name: "KPI Reasons",
-        //             current: false,
-        //             role: ["1", "4"],
-        //         },
-        //     ],
-        //     func: setActiveIndexGTRS,
-        //     role: ["1", "2", "3", "4", "5"],
-        // },
         {
             id: 2,
             name: "Invoices",
@@ -330,7 +229,6 @@ export default function MainSidebar({
             role: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
         },
 
-        // { name: 'Settings', href: '#', icon: CogIcon, current: false },
     ]);
     useEffect(() => {
         if (user && Object.keys(user).length !== 0) {
@@ -521,7 +419,6 @@ export default function MainSidebar({
                                 className="flex flex-col items-center space-y-3 pt-6"
                             >
                                 {allowedApplications?.map((item) => (
-                                    //{sidebarElements.map((item) => (
 
                                     <a
                                         href={item.AppURL}
@@ -539,7 +436,6 @@ export default function MainSidebar({
                                                     : "text-gray-400 hover:bg-gray-900 hover:text-white",
                                                 "group w-auto p-3 rounded-md flex flex-col items-center text-xs font-medium"
                                             )}
-                                            // aria-current={item.current ? 'page' : undefined}
                                         >
                                             {item.icon ? (
                                                 <item.icon
@@ -567,7 +463,6 @@ export default function MainSidebar({
                                             <span>{item.AppAbv}</span>
                                         </button>
                                     </a>
-                                    // </Link>
                                 ))}
                             </nav>
                         </div>
@@ -597,7 +492,6 @@ export default function MainSidebar({
                             </a>
                             <button onClick={handleLogout}>
                                 <ResponsiveNavLink
-                                    // href={route("logout")}
                                     as="button"
                                     className="flex flex-col hover:bg-gray-900 hover:text-white"
                                 >
@@ -678,13 +572,7 @@ export default function MainSidebar({
                                     <nav className="flex h-full flex-col">
                                         <div className="space-y-1 ">
                                             {sidebarElements
-                                                // .filter((item) =>
-                                                //     item.role.includes(
-                                                //         current_user_role
-                                                //     )
-                                                // )
                                                 .map((item) => (
-                                                    // {sidebarElements.map((item) => (
                                                     <Accordion
                                                         name={item.name}
                                                         key={item.id}
@@ -766,7 +654,6 @@ export default function MainSidebar({
                                                                     }) => (
                                                                         <>
                                                                             <AccordionHeader
-                                                                                // className=" "
                                                                                 className={classNames(
                                                                                     item.current
                                                                                         ? "bg-gray-700 text-white"
@@ -835,7 +722,6 @@ export default function MainSidebar({
                                                             </a>
                                                         )}
                                                     </Accordion>
-                                                    // </Link>
                                                 ))}
                                         </div>
                                     </nav>
@@ -852,7 +738,6 @@ export default function MainSidebar({
                                             "text-gray-400 hover:bg-gray-700 hover:text-white",
                                             "group w-auto p-3 rounded-md flex flex-col items-center text-xs font-medium"
                                         )}
-                                        // aria-current={item.current ? 'page' : undefined}
                                     >
                                         <QuestionMarkCircleIcon
                                             className={classNames(
@@ -867,7 +752,6 @@ export default function MainSidebar({
                                 </a>
                                 <button  onClick={() => handleLogout()}>
                                     <ResponsiveNavLink
-                                        // href={route("logout")}
                                         as="button"
                                         className="flex flex-col hover:bg-gray-900 hover:text-white w-8 h-14"
                                     >

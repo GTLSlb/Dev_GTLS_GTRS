@@ -93,7 +93,6 @@ export default function AddFailedReason({
                                 <table
                                     id="details"
                                     className="min-w-full table-fixed divide-y divide-gray-300 "
-                                    // ref={tableRef}
                                 >
                                     <thead className="h-12">
                                         <tr className="py-2.5">
@@ -212,9 +211,6 @@ export default function AddFailedReason({
                 userPermission={userPermission}
                 failedReasons={failedReasons}
                 AToken={AToken}
-                // reasonAuditId={reasonAuditId}
-                // rddReason={rddReason}
-                // currentUser={currentUser}
             />
         </div>
     );

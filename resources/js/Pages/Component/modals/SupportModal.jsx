@@ -29,16 +29,10 @@ export default function SupportModal({
     const [inputValue, setInputValue] = useState("");
 
     
-    // if (reasonAuditId !== null && typeof reasonAuditId === "object") {
-    //     id = 0;
-    // } else if (typeof reasonAuditId === "number") {
-    //     id = reasonAuditId;
-    // }
     
 
     const handlePopUpClose = () => {
         setError(null); // Clear the error message
-        // setInputValue("");
         setName("");
         setdescription("");
         handleClose(); // Clear the input value
