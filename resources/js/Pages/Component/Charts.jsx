@@ -30,6 +30,7 @@ import CollapseSidebar from "./CollapseSidebar";
 import { Button } from "@nextui-org/react";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import ConsMap from "./TrafficPage/ConsMap";
+import DailyReportPage from "./ReportsPage/DeliveryReportPage";
 
 export default function charts({
     setCusomterAccounts,
@@ -56,6 +57,7 @@ export default function charts({
     user,
     AToken,
     chartsData,
+    userPermission,
     kpireasonsData,
     setkpireasonsData,
 }) {
@@ -2055,6 +2057,203 @@ export default function charts({
             }
         });
     }, [sharedEndDate, sharedStartDate]);
+
+    const [dailyReportData, setDailyReportData] = useState([]);
+    const fetchDeliveryReport = async () => {
+        try {
+            const res = await axios
+                .get(`${url}Delivery`, {
+                    headers: {
+                        UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`
+                    }
+                });
+            setDailyReportData(res.data || []);
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: 'Session Expired!',
+                    text: "Please login again",
+                    type: 'success',
+                    icon: "info",
+                    confirmButtonText: 'OK'
+                }).then(async function () {
+                    await handleSessionExpiration();
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+            }
+        }
+    }
+
+    useEffect(() => {
+        if(currentUser){
+            fetchDeliveryReport();
+        }
+    },[currentUser])
+
+    const [filtersDailyValue, setFiltersDailyReport] = useState([
+        {
+            name: "AccountNo",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "ConsignmentNo",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "SenderName",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "SenderReference",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "SenderZone",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ReceiverName",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ReceiverReference",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ReceiverZone",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "SpecialInstructions",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "Comments",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "CorrectiveAction",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "PastComments",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "Report",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "GTLSReasonCode",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "GTLSComments",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "PastReasonCode",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "PastCorrectiveAction",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "PODAvl",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ConsignmentStatus",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "DespatchDate",
+            operator: "inrange",
+            type: "date",
+            value: {
+                start: minDate,
+                end: maxDate,
+            },
+        },
+        {
+            name: "DeliveryRequiredDateTime",
+            operator: "inrange",
+            type: "date",
+            value: {
+                start: minDate,
+                end: maxDate,
+            },
+        },
+        {
+            name: "DeliveredDateTime",
+            operator: "inrange",
+            type: "date",
+            value: {
+                start: minDate,
+                end: maxDate,
+            },
+        },
+    ]);
+
     const components = [
         <MainCharts
             chartsData={chartsData}
@@ -2408,6 +2607,20 @@ export default function charts({
             setActiveIndexGTRS={setActiveIndexGTRS}
             setConsignmentToTrack={setConsignmentToTrack}
         />,
+        <DailyReportPage
+        url={url}
+        AToken={AToken}
+        currentUser={currentUser}
+        userPermission={user}
+        user={user}
+        dailyReportData={dailyReportData}
+        setLastIndex={setLastIndex}
+        setactiveCon={setactiveCon}
+        setActiveIndexGTRS={setActiveIndexGTRS}
+        setFilterValue={setFiltersDailyReport}
+        filterValue={filtersDailyValue}
+        fetchDeliveryReport={fetchDeliveryReport}
+        />,
         <ConsMap
             consignment={consignmentToTrack}
             setActiveIndexGTRS={setActiveIndexGTRS}
@@ -2436,6 +2649,7 @@ export default function charts({
                         activeIndexGTRS={activeIndexGTRS}
                         sessionData={sessionData}
                         user={user}
+                        userPermission={userPermission[0]}
                         onData={handleDataFromChild}
                         setActiveIndexGTRS={setActiveIndexGTRS}
                         currentUser={currentUser}

@@ -481,6 +481,7 @@ export default function Gtrs({
                                 ...user[0],
                                 UserId: currentUser.UserId,
                             }}
+                            userPermission={user}
                             user={currentUser}
                             dashData={PerfData}
                             setActiveIndexGTRS={setActiveIndexGTRS}

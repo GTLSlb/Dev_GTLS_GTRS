@@ -27,6 +27,7 @@ import {
     ShieldCheckIcon,
     CameraIcon,
     DocumentTextIcon,
+    ClipboardDocumentIcon,
 } from "@heroicons/react/24/solid";
 import {
     Accordion,
@@ -268,6 +269,15 @@ const menu = [
         current: false,
         feature: "ConsignmentTracking_View",
     },
+    {
+        id: 24,
+        name: "Delivery Report",
+        href: "#",
+        icon: ClipboardDocumentIcon,
+        current: false,
+        feature: "DeliveryReport_View",
+        url: "/gtrs/delivery-report",
+    },
 ];
 
 export default function CollapseSidebar({
@@ -286,6 +296,7 @@ export default function CollapseSidebar({
     sessionData,
     user,
     onData,
+    userPermission,
     setActiveIndexGTRS,
 }) {
     const [collapsed, setCollapsed] = useState(false);
@@ -447,13 +458,14 @@ export default function CollapseSidebar({
         return active;
     }
 
+
     const filterNavigation = (navigation, user) => {
         return navigation.filter((navItem) => {
             // Check if the navigation item has sub-options
             if (navItem.options) {
                 // Filter options based on user permissions
                 navItem.options = navItem.options.filter((option) =>
-                    user?.Pages?.some(
+                    userPermission?.Pages?.some(
                         (userPage) =>
                             userPage?.PageName === option.name &&
                             userPage?.Features?.some(
@@ -466,7 +478,7 @@ export default function CollapseSidebar({
                 return navItem.options.length > 0;
             } else {
                 // For navigation items without options, check the feature directly
-                return user?.Pages?.some(
+                return userPermission?.Pages?.some(
                     (userPage) =>
                         userPage?.PageName === navItem.name &&
                         userPage?.Features?.some(
@@ -477,6 +489,7 @@ export default function CollapseSidebar({
             }
         });
     };
+    console.log(filterNavigation(menu, currentUser));
     const filteredNavigation = filterNavigation(menu, currentUser);
     useEffect(() => {
         setSidebarElements(filteredNavigation);

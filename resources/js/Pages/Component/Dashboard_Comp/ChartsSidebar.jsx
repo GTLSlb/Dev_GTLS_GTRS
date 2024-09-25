@@ -14,6 +14,7 @@ import {
     ShieldCheckIcon,
     CameraIcon,
     DocumentTextIcon,
+    ClipboardDocumentIcon,
 } from "@heroicons/react/24/solid";
 import "../../../../css/scroll.css";
 import TaskIcon from "@mui/icons-material/Task";
@@ -199,6 +200,14 @@ const navigation = [
         icon: MapPinIcon,
         current: false,
         feature: "ConsignmentTracking_View",
+    },
+    {
+        id: 24,
+        name: "Delivery Report",
+        href: "#",
+        icon: ClipboardDocumentIcon,
+        current: false,
+        feature: "DailyReport_View",
     },
 ];
 
