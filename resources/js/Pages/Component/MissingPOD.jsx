@@ -20,14 +20,14 @@ export default function MissingPOD({
     accData,
 }) {
     window.moment = moment;
-    const minDateDespatch = getMinMaxValue(PerfData, "DESPATCHDATE", 1);
-    const maxDateDespatch = getMinMaxValue(PerfData, "DESPATCHDATE", 2);
-    const minDaterdd = getMinMaxValue(PerfData, "DELIVERYREQUIREDDATETIME", 1);
-    const maxDaterdd = getMinMaxValue(PerfData, "DELIVERYREQUIREDDATETIME", 2);
-    const minDateArrive = getMinMaxValue(PerfData, "ARRIVEDDATETIME", 1);
-    const maxDateArrive = getMinMaxValue(PerfData, "ARRIVEDDATETIME", 2);
-    const minDateDel = getMinMaxValue(PerfData, "DELIVEREDDATETIME", 1);
-    const maxDateDel = getMinMaxValue(PerfData, "DELIVEREDDATETIME", 2);
+    const minDateDespatch = getMinMaxValue(PerfData, "DespatchDate", 1);
+    const maxDateDespatch = getMinMaxValue(PerfData, "DespatchDate", 2);
+    const minDaterdd = getMinMaxValue(PerfData, "DeliveryRequiredDateTime", 1);
+    const maxDaterdd = getMinMaxValue(PerfData, "DeliveryRequiredDateTime", 2);
+    const minDateArrive = getMinMaxValue(PerfData, "ArrivedDatetime", 1);
+    const maxDateArrive = getMinMaxValue(PerfData, "ArrivedDatetime", 2);
+    const minDateDel = getMinMaxValue(PerfData, "DeliveredDate", 1);
+    const maxDateDel = getMinMaxValue(PerfData, "DeliveredDate", 2);
     // const data = PerfData.filter((obj) => obj.STATUS === "FAIL");
     const handleClick = (coindex) => {
         setActiveIndexGTRS(3);
@@ -47,7 +47,7 @@ export default function MissingPOD({
         // Filter the data based on the start and end date filters, selected receiver names, and chargeTo values
         const filtered = data?.filter((item) => {
             const chargeToMatch =
-                intArray?.length === 0 || intArray?.includes(item.ChargeTo);
+                intArray?.length === 0 || intArray?.includes(item.ChargeToID);
 
             return chargeToMatch;
         });
@@ -68,11 +68,10 @@ export default function MissingPOD({
 
         // Define custom cell handlers (e.g., formatting dates)
         const customCellHandlers = {
-            DESPATCHDATE: (value) => (value ? formatDateToExcel(value) : ""),
-            ARRIVEDDATETIME: (value) => (value ? formatDateToExcel(value) : ""),
-            DELIVEREDDATETIME: (value) =>
-                value ? formatDateToExcel(value) : "",
-            DELIVERYREQUIREDDATETIME: (value) =>
+            DespatchDate: (value) => (value ? formatDateToExcel(value) : ""),
+            ArrivedDatetime: (value) => (value ? formatDateToExcel(value) : ""),
+            DeliveredDate: (value) => (value ? formatDateToExcel(value) : ""),
+            DeliveryRequiredDateTime: (value) =>
                 value ? formatDateToExcel(value) : "",
             POD: (value) => (value ? value : "No POD"), // Example of custom handling for a non-date field
         };
@@ -84,10 +83,10 @@ export default function MissingPOD({
             "Missing-POD.xlsx", // Filename for the exported Excel file
             customCellHandlers,
             [
-                "DESPATCHDATE",
-                "ARRIVEDDATETIME",
-                "DELIVEREDDATETIME",
-                "DELIVERYREQUIREDDATETIME",
+                "DespatchDate",
+                "ArrivedDatetime",
+                "DeliveredDate",
+                "DeliveryRequiredDateTime",
                 "POD",
             ]
         );
@@ -108,12 +107,12 @@ export default function MissingPOD({
     ];
 
     const senderStates = createNewLabelObjects(falsePodOnly, "SenderState");
-    const receiverStates = createNewLabelObjects(falsePodOnly, "RECEIVERSTATE");
-    const services = createNewLabelObjects(falsePodOnly, "SERVICE");
+    const receiverStates = createNewLabelObjects(falsePodOnly, "ReceiverState");
+    const services = createNewLabelObjects(falsePodOnly, "Service");
 
     const columns = [
         {
-            name: "CONSIGNMENTNUMBER",
+            name: "ConsignmentNo",
             header: "Cons No",
             headerAlign: "center",
             textAlign: "center",
@@ -123,7 +122,7 @@ export default function MissingPOD({
                 return (
                     <span
                         className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => handleClick(data.CONSIGNMNENTID)}
+                        onClick={() => handleClick(data.ConsignmentID)}
                     >
                         {" "}
                         {value}
@@ -132,7 +131,7 @@ export default function MissingPOD({
             },
         },
         {
-            name: "SENDERNAME",
+            name: "SenderName",
             header: "Sender Name",
             type: "string",
             headerAlign: "center",
@@ -142,7 +141,7 @@ export default function MissingPOD({
             group: "senderInfo",
         },
         {
-            name: "SENDERREFERENCE",
+            name: "SenderReference",
             header: "Sender Reference",
             type: "string",
             headerAlign: "center",
@@ -167,7 +166,7 @@ export default function MissingPOD({
             group: "senderInfo",
         },
         {
-            name: "RECEIVERNAME",
+            name: "ReceiverName",
             header: "Receiver Name",
             type: "string",
             headerAlign: "center",
@@ -177,7 +176,7 @@ export default function MissingPOD({
             group: "receiverInfo",
         },
         {
-            name: "RECEIVER REFERENCE",
+            name: "ReceiverReference",
             header: "Receiver Reference",
             type: "string",
             headerAlign: "center",
@@ -187,7 +186,7 @@ export default function MissingPOD({
             filterEditor: StringFilter,
         },
         {
-            name: "RECEIVERSTATE",
+            name: "ReceiverState",
             header: "Receiver State",
             type: "string",
             headerAlign: "center",
@@ -202,7 +201,7 @@ export default function MissingPOD({
             group: "receiverInfo",
         },
         {
-            name: "SERVICE",
+            name: "Service",
             header: "Service",
             headerAlign: "center",
             textAlign: "center",
@@ -215,7 +214,7 @@ export default function MissingPOD({
             },
         },
         {
-            name: "DESPATCHDATE",
+            name: "DespatchDate",
             header: "Despatch Date",
             headerAlign: "center",
             textAlign: "center",
@@ -234,7 +233,7 @@ export default function MissingPOD({
             },
         },
         {
-            name: "DELIVERYREQUIREDDATETIME",
+            name: "DeliveryRequiredDateTime",
             header: "RDD",
             headerAlign: "center",
             textAlign: "center",
@@ -253,7 +252,7 @@ export default function MissingPOD({
             },
         },
         {
-            name: "ARRIVEDDATETIME",
+            name: "ArrivedDatetime",
             header: "Arrived Date Time",
             headerAlign: "center",
             textAlign: "center",
@@ -272,7 +271,7 @@ export default function MissingPOD({
             },
         },
         {
-            name: "DELIVEREDDATETIME",
+            name: "DeliveredDate",
             header: "Delivery Date Time",
             headerAlign: "center",
             textAlign: "center",
@@ -329,7 +328,7 @@ export default function MissingPOD({
                 <div className="mt-4">
                     <div className=" w-full bg-smooth ">
                         <TableStructure
-                            id={"CONSIGNMNENTID"}
+                            id={"ConsignmentID"}
                             setSelected={setSelected}
                             gridRef={gridRef}
                             selected={selected}

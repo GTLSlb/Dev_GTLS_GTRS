@@ -575,7 +575,7 @@ export default function charts({
     const [filtersReasons, setFiltersReasons] = useState();
     const [filtersFailed, setFiltersFailed] = useState([
         {
-            name: "CONSIGNMENTNUMBER",
+            name: "ConsignmentNo",
             operator: "contains",
             type: "string",
             value: "",
@@ -598,9 +598,9 @@ export default function charts({
             type: "string",
             value: "",
         },
-        { name: "SENDERNAME", operator: "contains", type: "string", value: "" },
+        { name: "SenderName", operator: "contains", type: "string", value: "" },
         {
-            name: "SENDERREFERENCE",
+            name: "SenderReference",
             operator: "contains",
             type: "string",
             value: "",
@@ -612,38 +612,38 @@ export default function charts({
             value: "",
         },
         {
-            name: "RECEIVERNAME",
+            name: "ReceiverName",
             operator: "contains",
             type: "string",
             value: "",
         },
         {
-            name: "RECEIVER REFERENCE",
+            name: "receiverReference",
             operator: "contains",
             type: "string",
             value: "",
         },
         {
-            name: "RECEIVERSTATE",
+            name: "ReceiverState",
             operator: "inlist",
             type: "select",
             value: "",
         },
         {
-            name: "SERVICE",
+            name: "Service",
             operator: "contains",
             type: "string",
             value: "",
         },
         {
-            name: "KPI DATETIME",
+            name: "KpiDatetime",
             operator: "inrange",
             type: "date",
             emptyValue: "",
             value: "",
         },
         {
-            name: "DESPATCHDATE",
+            name: "DespatchDate",
             operator: "inrange",
             type: "date",
             value: {
@@ -652,21 +652,21 @@ export default function charts({
             },
         },
         {
-            name: "DELIVERYREQUIREDDATETIME",
+            name: "DeliveryRequiredDateTime",
             operator: "inrange",
             type: "date",
             emptyValue: "",
             value: "",
         },
         {
-            name: "ARRIVEDDATETIME",
+            name: "ArrivedDatetime",
             operator: "inrange",
             type: "date",
             emptyValue: "",
             value: "",
         },
         {
-            name: "DELIVEREDDATETIME",
+            name: "DeliveredDate",
             operator: "inrange",
             type: "date",
             emptyValue: "",
@@ -869,19 +869,19 @@ export default function charts({
     ]);
     const [filtersMissingPOD, setFiltersMissingPOD] = useState([
         {
-            name: "CONSIGNMENTNUMBER",
+            name: "ConsignmentNo",
             operator: "contains",
             type: "string",
             value: "",
         },
         {
-            name: "SENDERNAME",
+            name: "SenderName",
             operator: "contains",
             type: "string",
             value: "",
         },
         {
-            name: "SENDERREFERENCE",
+            name: "SenderReference",
             operator: "contains",
             type: "string",
             value: "",
@@ -893,31 +893,31 @@ export default function charts({
             value: "",
         },
         {
-            name: "RECEIVERNAME",
+            name: "ReceiverName",
             operator: "contains",
             type: "string",
             value: "",
         },
         {
-            name: "RECEIVER REFERENCE",
+            name: "ReceiverReference",
             operator: "contains",
             type: "string",
             value: "",
         },
         {
-            name: "RECEIVERSTATE",
+            name: "ReceiverState",
             operator: "inlist",
             type: "select",
             value: "",
         },
         {
-            name: "SERVICE",
+            name: "Service",
             operator: "inlist",
             type: "select",
             value: "",
         },
         {
-            name: "DESPATCHDATE",
+            name: "DespatchDate",
             operator: "inrange",
             type: "date",
             emptyValue: "",
@@ -927,7 +927,7 @@ export default function charts({
             },
         },
         {
-            name: "DELIVERYREQUIREDDATETIME",
+            name: "DeliveryRequiredDateTime",
             operator: "inrange",
             type: "date",
             emptyValue: "",
@@ -938,7 +938,7 @@ export default function charts({
         },
 
         {
-            name: "ARRIVEDDATETIME",
+            name: "ArrivedDatetime",
             operator: "inrange",
             type: "date",
             emptyValue: "",
@@ -948,7 +948,7 @@ export default function charts({
             // },
         },
         {
-            name: "DELIVEREDDATETIME",
+            name: "DeliveredDate",
             operator: "inrange",
             type: "date",
             emptyValue: "",
