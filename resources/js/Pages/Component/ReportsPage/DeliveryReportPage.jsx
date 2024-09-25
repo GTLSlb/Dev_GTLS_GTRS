@@ -18,12 +18,15 @@ export default function DailyReportPage({
     currentUser,
     userPermission,
     fetchDeliveryReport,
+    setActiveIndexGTRS,
+    setLastIndex,
+    setactiveCon,
     // setFilterValue,
     // filterValue,
 }) {
     const handleClick = (coindex) => {
         setActiveIndexGTRS(3);
-        setLastIndex(1);
+        setLastIndex(24);
         setactiveCon(coindex);
     };
     const [receiverZoneOptions, setReceiverZoneOptions] = useState([
