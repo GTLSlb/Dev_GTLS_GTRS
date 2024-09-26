@@ -35,6 +35,8 @@ import JAIX from "../assets/partners/JAIX.webp";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import SupportModal from "@/Pages/Component/modals/SupportModal";
 import { PublicClientApplication } from "@azure/msal-browser";
+import { clearMSALLocalStorage } from "@/CommonFunctions";
+import Cookies from "js-cookie";
 
 export default function MainSidebar({
     allowedApplications,
@@ -45,13 +47,8 @@ export default function MainSidebar({
     setCurrentUser,
     user,
 }) {
-    const invoicesRoles = [6, 7, 8, 9, 10];
+    const appUrl = window.Laravel.appUrl;
     const [gtrsCurrent, setGtrsCurrent] = useState();
-    // useEffect(() => {
-    //     handleSetActivePage(0);
-    // }, []);
-
-    const current_user_role = currentUser?.role_id;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [sidebarNavigation, setSidebarNavigation] = useState([
         {
@@ -254,23 +251,22 @@ export default function MainSidebar({
        })
        setSidebarElements(elements.reverse())
     },[allowedApplications, sidebarNavigation])
-    // const handleClick = (index) => {
-    //     if (index == 5 || index == 6) {
-    //         setMobileMenuOpen(false);
-    //     } else {
-    //         // setactivePage(index);
-    //         setMobileMenuOpen(false);
-    //         const updatedElements = sidebarNavigation.map((element) => {
-    //             if (element.id === index) {
-    //                 return { ...element, current: true };
-    //             } else {
-    //                 return { ...element, current: false };
-    //             }
-    //         });
-    //         setSidebarElements(updatedElements);
-    //     }
-    // };
-    const handleClickSupport = (index) => {};
+    const handleClick = (index) => {
+        if (index == 5 || index == 6) {
+            setMobileMenuOpen(false);
+        } else {
+            setactivePage(index);
+            setMobileMenuOpen(false);
+            const updatedElements = sidebarNavigation.map((element) => {
+                if (element.id === index) {
+                    return { ...element, current: true };
+                } else {
+                    return { ...element, current: false };
+                }
+            });
+            setSidebarElements(updatedElements);
+        }
+    };
 
     // const handleClickSide = (index, tabind) => {
     //     // setactivePage(0);
@@ -301,11 +297,6 @@ export default function MainSidebar({
     function classNames(...classes) {
         return classes.filter(Boolean).join(" ");
     }
-    const handleLinkClick = (event) => {
-        event.preventDefault();
-        // Call the `visit` method to navigate to the new page
-        Inertia.visit(event.target.href);
-    };
 
     const handleEditClick = () => {
         const isModalCurrentlyOpen = !isModalOpen;
@@ -321,31 +312,32 @@ export default function MainSidebar({
             redirectUri: window.Laravel.azureCallback,
         },
         cache: {
-            cacheLocation: "sessionStorage",
+            cacheLocation: "localStorage",
             storeAuthStateInCookie: true, // Set this to true if dealing with IE11 or issues with sessionStorage
         },
     };
     const pca = new PublicClientApplication(msalConfig);
     const handleLogout = async () => {
-        const isLoggingOut = true;
-        await pca.initialize();
-        axios
-            .post("/logoutAPI", isLoggingOut)
-            .then(async (response) => {
-                if (response.status == 200) {
-                    setToken(null);
-                    setCurrentUser(null);
-                    const allAccounts = await pca.getAllAccounts();
-                    if (allAccounts.length > 0) {
-                        await pca.logoutRedirect({ scopes: ["user.read"], postLogoutRedirectUri: "/login" });
-                    }else{
-                        window.location.href = "/login";
-                    }
+        try {
+            const response = await axios.post("/logoutAPI");
+
+            if (response.status === 200 && response.data.status === 'success') {
+                setToken(null);
+                setCurrentUser(null);
+
+                const isMicrosoftLogin = Cookies.get('msal.isMicrosoftLogin');
+
+                clearMSALLocalStorage();
+
+                if (isMicrosoftLogin === 'true') {
+                    window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=${appUrl}/login`;
+                } else {
+                    window.location.href = `${appUrl}/login`;
                 }
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+            }
+        } catch (error) {
+            console.log("Logout error:", error);
+        }
     };
     const currentAppId = window.Laravel.appId;
     function moveToHead(array, id) {

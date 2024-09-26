@@ -22,6 +22,8 @@ export default function Sidebar(Boolean) {
     const Invoicesurl = window.Laravel.invoiceUrl;
     const Gtamurl = window.Laravel.gtamUrl;
     const gtrsUrl = window.Laravel.gtrsUrl;
+    const appDomain = window.Laravel.appDomain;
+
     const getAppPermisions = () => {
         //user permissions
         axios
@@ -144,7 +146,13 @@ export default function Sidebar(Boolean) {
                         setToken(parsedData.access_token);
                         Cookies.set(
                             "access_token",
-                            parsedData.access_token
+                            parsedData.access_token,
+                            {
+                                domain: appDomain,
+                                path: "/",
+                                secure: true, // Use this if your site is served over HTTPS
+                                sameSite: "Lax", // Optional, depending on your needs
+                            }
                         );
                     });
                 })
