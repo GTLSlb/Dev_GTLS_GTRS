@@ -87,7 +87,6 @@ export default function MissingPOD({
                 "ArrivedDatetime",
                 "DeliveredDate",
                 "DeliveryRequiredDateTime",
-                "POD",
             ]
         );
     };
