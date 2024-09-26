@@ -163,7 +163,7 @@ export default function Login({ status, canResetPassword }) {
                                     sameSite: "Lax", // Optional, depending on your needs
                                 }
                             );
-                            window.location.href = "/main";
+                            window.location.href = "/gtrs/dashboard";
                         })
                         .catch((error) => {
                             setLoading(false);
