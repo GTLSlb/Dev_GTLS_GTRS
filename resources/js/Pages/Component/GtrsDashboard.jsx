@@ -6,9 +6,6 @@ import { Bartest } from "@/Components/charts/bartest";
 
 export default function GtrsDashboard(dashData) {
 
-    // const userstoredData = localStorage.getItem("userInfor");
-    // const userparsdeData = JSON.parse(userstoredData);
-    // const current_user_id = userparsdeData.user_id;
     const createdDatesArray = [];
     const totalsByYear = {};
     let passCount = 0;
@@ -26,12 +23,7 @@ export default function GtrsDashboard(dashData) {
         const resultPODTrue = {};
         const resultPODFalse = {};
 
-        // localStorage.setItem("userData", JSON.stringify(res.data));
-
-        // const storedData = dashData;
         const parsdeData = dashData.dashData;
-        // setConst(parsdeData);
-        // setFilteredData(parsdeData);
         const totalAmount = parsdeData.reduce((total, parsdeData) => {
             return total + parsdeData.NETTAMOUNT;
         }, 0);

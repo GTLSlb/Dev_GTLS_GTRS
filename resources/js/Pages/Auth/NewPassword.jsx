@@ -32,10 +32,6 @@ const NewPassword = ({
             submitPassword();
         }
 
-        // Clear any previous error messages
-
-        // Continue with form submission if passwords match
-        // post(route('password.email'));
     };
     return (
         <div>

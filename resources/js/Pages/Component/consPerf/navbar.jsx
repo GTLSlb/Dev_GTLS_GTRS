@@ -45,11 +45,6 @@ export default function Navbar({ id, item,currentUser,userPermission }) {
         },
     ];
 
-    const [isActive, setIsActive] = useState(false);
-
-    //   const handleClick = () => {
-    //     setIsActive(!isActive);
-    //   };
 
     function classNames(...classes) {
         return classes.filter(Boolean).join(" ");

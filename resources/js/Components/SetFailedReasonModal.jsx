@@ -116,7 +116,6 @@ export default function SetFailedReasonModal({
     function classNames(...classes) {
         return classes.filter(Boolean).join(" ");
     }
-    // let id = 0;
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
     const data = [
@@ -205,7 +204,6 @@ export default function SetFailedReasonModal({
     return (
         <ReactModal
             isOpen={isOpen}
-            // onRequestClose={handlePopUpClose}
             className="fixed inset-0 flex items-center justify-center "
             overlayClassName="fixed inset-0 bg-black bg-opacity-60"
         >

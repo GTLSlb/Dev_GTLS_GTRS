@@ -149,11 +149,6 @@ export default function SafetyRep({
         }
     }, [isDataEdited]);
 
-    const handleTypeChange = (selectedOptions) => {
-        // const types = selectedOptions.map((option) => option.value);
-        setSelectedTypes(selectedOptions);
-        filterData(SDate, EDate);
-    };
     const filterData = (startDate, endDate) => {
         // Filter the data based on the start and end date filters
         const intArray = accData?.map((str) => {

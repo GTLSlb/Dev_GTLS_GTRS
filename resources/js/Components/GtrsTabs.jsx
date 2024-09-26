@@ -56,7 +56,6 @@ export default function GtrsTabs({ }) {
                                     : "text-gray-400 ",
                                 "  py-2 text-sm font-medium"
                             )}
-                            // aria-current={tab.current ? "page" : undefined}
                         >
                             {tab.name}
                         </a>

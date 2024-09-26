@@ -137,7 +137,6 @@ export default function SafetyModal({
                     await handleSessionExpiration();
                 });
             } else {
-                // Handle other errors
                 console.log(err);
             }
             console.log(error);
@@ -148,8 +147,7 @@ export default function SafetyModal({
         <ReactModal
             ariaHideApp={false}
             isOpen={isOpen}
-            // onRequestClose={handlePopUpClose}
-            className="fixed inset-0 flex items-center justify-center z-50"
+            className="fixed inset-0 flex items-center justify-center "
             overlayClassName="fixed inset-0 bg-black bg-opacity-60"
         >
             <div className="bg-white w-96 2xl:w-[28%] rounded-lg shadow-lg p-6 ">

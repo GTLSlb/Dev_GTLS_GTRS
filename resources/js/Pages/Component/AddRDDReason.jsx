@@ -32,7 +32,6 @@ export default function AddRDDReason({
     const [filteredData, setFilteredData] = useState([]);
 
     const [selectedConsignment, setSelectedConsignment] = useState("");
-    // accDataAsNumbers = accData.map((str) => parseInt(str));
 
     const checkbox = useRef();
     const [checked, setChecked] = useState(false);
@@ -122,7 +121,6 @@ export default function AddRDDReason({
                                 <table
                                     id="details"
                                     className="min-w-full table-fixed divide-y divide-gray-300 "
-                                    // ref={tableRef}
                                 >
                                     <thead className="h-12">
                                         <tr className="py-2.5">
@@ -268,8 +266,6 @@ export default function AddRDDReason({
                 rddReasons={rddReasons}
                 currentUser={currentUser}
                 userPermission={userPermission}
-                // reasonAuditId={reasonAuditId}
-                // rddReason={rddReason}
             />
         </div>
     );

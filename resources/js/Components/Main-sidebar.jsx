@@ -226,7 +226,6 @@ export default function MainSidebar({
             role: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
         },
 
-        // { name: 'Settings', href: '#', icon: CogIcon, current: false },
     ]);
     useEffect(() => {
         if (user && Object.keys(user).length !== 0) {
@@ -412,7 +411,6 @@ export default function MainSidebar({
                                 className="flex flex-col items-center space-y-3 pt-6"
                             >
                                 {allowedApplications?.map((item) => (
-                                    //{sidebarElements.map((item) => (
 
                                     <a
                                         href={item.AppURL}
@@ -430,7 +428,6 @@ export default function MainSidebar({
                                                     : "text-gray-400 hover:bg-gray-900 hover:text-white",
                                                 "group w-auto p-3 rounded-md flex flex-col items-center text-xs font-medium"
                                             )}
-                                            // aria-current={item.current ? 'page' : undefined}
                                         >
                                             {item.icon ? (
                                                 <item.icon
@@ -458,7 +455,6 @@ export default function MainSidebar({
                                             <span>{item.AppAbv}</span>
                                         </button>
                                     </a>
-                                    // </Link>
                                 ))}
                             </nav>
                         </div>
@@ -488,7 +484,6 @@ export default function MainSidebar({
                             </a>
                             <button onClick={handleLogout}>
                                 <ResponsiveNavLink
-                                    // href={route("logout")}
                                     as="button"
                                     className="flex flex-col hover:bg-gray-900 hover:text-white"
                                 >
@@ -569,13 +564,7 @@ export default function MainSidebar({
                                     <nav className="flex h-full flex-col">
                                         <div className="space-y-1 ">
                                             {sidebarElements
-                                                // .filter((item) =>
-                                                //     item.role.includes(
-                                                //         current_user_role
-                                                //     )
-                                                // )
                                                 .map((item) => (
-                                                    // {sidebarElements.map((item) => (
                                                     <Accordion
                                                         name={item.name}
                                                         key={item.id}
@@ -657,7 +646,6 @@ export default function MainSidebar({
                                                                     }) => (
                                                                         <>
                                                                             <AccordionHeader
-                                                                                // className=" "
                                                                                 className={classNames(
                                                                                     item.current
                                                                                         ? "bg-gray-700 text-white"
@@ -726,7 +714,6 @@ export default function MainSidebar({
                                                             </a>
                                                         )}
                                                     </Accordion>
-                                                    // </Link>
                                                 ))}
                                         </div>
                                     </nav>
@@ -743,7 +730,6 @@ export default function MainSidebar({
                                             "text-gray-400 hover:bg-gray-700 hover:text-white",
                                             "group w-auto p-3 rounded-md flex flex-col items-center text-xs font-medium"
                                         )}
-                                        // aria-current={item.current ? 'page' : undefined}
                                     >
                                         <QuestionMarkCircleIcon
                                             className={classNames(
@@ -758,7 +744,6 @@ export default function MainSidebar({
                                 </a>
                                 <button  onClick={() => handleLogout()}>
                                     <ResponsiveNavLink
-                                        // href={route("logout")}
                                         as="button"
                                         className="flex flex-col hover:bg-gray-900 hover:text-white w-8 h-14"
                                     >

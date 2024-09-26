@@ -176,8 +176,6 @@ function AddNewTransitDay({
                                 id="CustomerId"
                                 name="CustomerId"
                                 className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
-                                // defaultValue={modalSafetyType}
-                                // value={formValues.SafetyType || ""}
                                 value={selectedCustomer}
                                 onChange={(e) => {
                                     setSelectedCustomer(e.target.value);
@@ -209,8 +207,6 @@ function AddNewTransitDay({
                                     id="SafetyType"
                                     name="SafetyType"
                                     className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
-                                    // defaultValue={modalSafetyType}
-                                    // value={formValues.SafetyType || ""}
                                     value={selectedType}
                                     onChange={(e) => {
                                         setSelectedType(e.target.value);
@@ -245,8 +241,6 @@ function AddNewTransitDay({
                                     id="SafetyType"
                                     name="SafetyType"
                                     className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
-                                    // defaultValue={modalSafetyType}
-                                    // value={formValues.SafetyType || ""}
                                     value={selectedType}
                                     onChange={(e) => {
                                         setSelectedType(e.target.value);
@@ -295,8 +289,6 @@ function AddNewTransitDay({
                                 id="SenderState"
                                 name="SenderState"
                                 className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
-                                // defaultValue={modalSafetyType}
-                                // value={formValues.SafetyType || ""}
                                 value={selectedSstate}
                                 onChange={(e) => {
                                     setSelectedSstate(e.target.value);
@@ -327,8 +319,6 @@ function AddNewTransitDay({
                                 id="ReceiverState"
                                 name="ReceiverState"
                                 className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
-                                // defaultValue={modalSafetyType}
-                                // value={formValues.SafetyType || ""}
                                 value={selectedRstate}
                                 onChange={(e) => {
                                     setSelectedRstate(e.target.value);
@@ -417,13 +407,11 @@ function AddNewTransitDay({
                     </div>
                     <div className="flex w-full gap-x-2 justify-end">
                         <GtamButton
-                            // disabled={isLoading}
                             name={"Cancel"}
                             onClick={CancelHandle}
                             type={"button"}
                         />{" "}
                         <GtamButton
-                            // disabled={isLoading}
                             name={object ? "Edit" : "Create"}
                             type={"submit"}
                         />

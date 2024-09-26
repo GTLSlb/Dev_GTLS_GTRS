@@ -1,11 +1,5 @@
 import ReactModal from "react-modal";
-import TextInput from "./TextInput";
-import InputError from "./InputError";
-import { Fragment, useState, useEffect } from "react";
-import { Listbox, Transition } from "@headlessui/react";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import moment from "moment";
-const placeholder = "test";
 
 export default function DescriptionModal({
     isOpen,
@@ -18,7 +12,6 @@ export default function DescriptionModal({
         return classes.filter(Boolean).join(" ");
     }
 
-    // let id = 0;
 
     const handlePopUpClose = () => {
         setSafetyDesc(null);
@@ -27,7 +20,6 @@ export default function DescriptionModal({
     return (
         <ReactModal
             isOpen={isOpen}
-            // onRequestClose={handlePopUpClose}
             className="fixed inset-0 flex items-center justify-center"
             overlayClassName="fixed inset-0 bg-black bg-opacity-60"
         >

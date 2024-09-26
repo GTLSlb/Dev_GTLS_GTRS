@@ -56,23 +56,6 @@ const navigation = [
         icon: ClipboardDocumentCheckIcon,
         current: false,
         options: [
-            // {
-            //     id: 2,
-            //     name: "KPI",
-            //     href: "#",
-            //     current: false,
-            //     icon: ClipboardDocumentCheckIcon,
-            //     feature: "KPI_view",
-            // },
-
-            // {
-            //     id: 12,
-            //     name: "Transit Days",
-            //     href: "#",
-            //     current: false,
-            //     icon: ClipboardDocumentCheckIcon,
-            //     feature: "View_TransitDays",
-            // },
             {
                 id: 17,
                 name: "KPI",
@@ -99,7 +82,6 @@ const navigation = [
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
                 feature: "View_Holidays",
-                url: "/gtrs/kpi/holidays",
             },
             // {
             //     id: 14,
@@ -264,23 +246,6 @@ export default function ChartsSidebar({
             icon: ClipboardDocumentCheckIcon,
             current: false,
             options: [
-                // {
-                //     id: 2,
-                //     name: "KPI",
-                //     href: "#",
-                //     current: false,
-                //     icon: ClipboardDocumentCheckIcon,
-                //     feature: "KPI_view",
-                // },
-
-                // {
-                //     id: 12,
-                //     name: "Transit Days",
-                //     href: "#",
-                //     current: false,
-                //     icon: ClipboardDocumentCheckIcon,
-                //     feature: "View_TransitDays",
-                // },
                 {
                     id: 17,
                     name: "KPI",
@@ -482,97 +447,8 @@ export default function ChartsSidebar({
 
         });
         setSidebarElements(updatedElements);
-        navigate(item.url);
     };
 
-    // const handleClick = (index) => {
-    //     const updatedElements = sidebarElements.map((element) => {
-    //         if (
-    //             element.id === index ||
-    //             index == 12 ||
-    //             index == 13 ||
-    //             index == 14 ||
-    //             index == 17 ||
-    //             index == 18
-    //         ) {
-    //             if (element.options) {
-    //                 return {
-    //                     ...element,
-    //                     current: true,
-    //                     options: element.options.map((option) => {
-    //                         if (option.id == index) {
-    //                             return { ...option, current: true };
-    //                         } else {
-    //                             return { ...option, current: false };
-    //                         }
-    //                     }),
-    //                 };
-    //             } else {
-    //                 if (element.id === index) {
-    //                     return { ...element, current: true };
-    //                 } else {
-    //                     return {
-    //                         ...element,
-    //                         current: false,
-    //                         ...(element.options
-    //                             ? element.options.map((option) => {
-    //                                   return { ...option, current: false };
-    //                               })
-    //                             : {}),
-    //                     };
-    //                 }
-    //             }
-    //         } else {
-    //             return {
-    //                 ...element,
-    //                 current: false,
-    //                 ...(element.options
-    //                     ? {
-    //                           options: element.options.map((option) => {
-    //                               return { ...option, current: false };
-    //                           }),
-    //                       }
-    //                     : {}),
-    //             };
-    //         }
-    //     });
-    //     setSidebarElements(updatedElements);
-    // };
-    // const filterNavigation = (navigation, user) => {
-    //     return navigation.filter((navItem) => {
-    //         // Check if the navigation item has sub-options
-    //         if (navItem.options) {
-    //             // Filter options based on user permissions
-    //             navItem.options = navItem.options.filter((option) =>
-    //                 user?.Pages?.some(
-    //                     (userPage) =>
-    //                         userPage?.PageName === option.name &&
-    //                         userPage?.Features?.some(
-    //                             (feature) =>
-    //                                 feature.FunctionName === option.feature
-    //                         )
-    //                 )
-    //             );
-    //             // Include the navigation item only if it has any permitted options
-    //             return navItem.options.length > 0;
-    //         } else {
-    //             // For navigation items without options, check the feature directly
-    //             return user?.Pages?.some(
-    //                 (userPage) =>
-    //                     userPage?.PageName === navItem.name &&
-    //                     userPage?.Features?.some(
-    //                         (feature) =>
-    //                             feature?.FunctionName === navItem?.feature
-    //                     )
-    //             );
-    //         }
-    //     });
-    // };
-    //const filteredNavigation = filterNavigation(navigation, currentUser);
-    // useEffect(() => {
-    //     setSidebarElements(filteredNavigation);
-    //     setActiveIndexGTRS(filteredNavigation[0]?.id);
-    // }, []);
     return (
         <div className="h-full xl:fixed xl:w-64 lg:h-full bg-gray-200 w-full ">
             {/* Static sidebar for desktop */}
@@ -698,7 +574,6 @@ export default function ChartsSidebar({
                                                 {({ open }) => (
                                                     <>
                                                         <AccordionHeader
-                                                            // className=" "
                                                             className={classNames(
                                                                 item.current
                                                                     ? "bg-gray-300 text-gray-900"

@@ -57,7 +57,6 @@ function NewKPI({
     async function fetchData() {
         const data = await getApiRequest(`${url}/KPINew`, {
             UserId: currentUser?.UserId,
-            // Authorization: `Bearer ${Token}`,
         });
 
         if (data) {
@@ -85,54 +84,7 @@ function NewKPI({
             setIsFetching(false);
         }
     }
-    // const fetchData = async () => {
-    //     try {
-    //         const response = await axios.get(`${url}/KPINew`, {
-    //             headers: {
-    //                 UserId: currentUser.UserId,
-    //                 Authorization: `Bearer ${AToken}`,
-    //             },
-    //         });
 
-    //         // Convert TransitDays to string
-    //         const modifiedData =
-    //             response?.data != ""
-    //                 ? response?.data?.map((item) => ({
-    //                       ...item,
-    //                       TransitDays: item.TransitDays.toString(),
-    //                   }))
-    //                 : [];
-
-    //         setKPIData(modifiedData);
-    //         setSenderStateOptions(
-    //             createNewLabelObjects(modifiedData, "SenderState")
-    //         );
-    //         setReceiverStateOptions(
-    //             createNewLabelObjects(modifiedData, "ReceiverState")
-    //         );
-    //         setReasonOptions(
-    //             kpireasonsData.map((reason) => ({
-    //                 id: reason.ReasonId,
-    //                 label: reason.ReasonName,
-    //             }))
-    //         );
-    //         setIsFetching(false);
-    //     } catch (error) {
-    //         if (error.response && error.response.status === 401) {
-    //             swal({
-    //                 title: "Session Expired!",
-    //                 text: "Please login again",
-    //                 type: "error",
-    //                 icon: "info",
-    //                 confirmButtonText: "OK",
-    //             }).then(async function () {
-    //                 await handleSessionExpiration();
-    //             });
-    //         } else {
-    //             console.error(error);
-    //         }
-    //     }
-    // };
     const navigate = useNavigate();
     const handleClick = (coindex) => {
         navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
@@ -294,10 +246,6 @@ function NewKPI({
             header: "Cons No",
             group: "personalInfo",
             filterEditor: StringFilter,
-            // filterEditorProps: {
-            //     placeholder: "Name",
-            //     renderSettings: ({ className }) => filterIcon(className),
-            // },
             render: ({ value, data }) => {
                 return (
                     <span
@@ -513,61 +461,7 @@ function NewKPI({
                 ) : null;
             },
         },
-        // {
-        //     name: "ReasonId",
-        //     header: "Reason",
-        //     headerAlign: "center",
-        //     textAlign: "center",
-        //     defaultWidth: 170,
-        //     filterEditor: SelectFilter,
-        //     filterEditorProps: {
-        //         multiple: false,
-        //         wrapMultiple: false,
-        //         dataSource: reasonOptions,
-        //     },
-        //     render: ({ value }) => {
-        //         return (
-        //             <div>
-        //                 {/* {value} */}
-        //                 {
-        //                     kpireasonsData?.find(
-        //                         (reason) => reason.ReasonId === value
-        //                     )?.ReasonName
-        //                 }
-        //             </div>
-        //         );
-        //     },
-        // },
-        // {
-        //     name: "Edit",
-        //     header: "Edit",
-        //     headerAlign: "center",
-        //     textAlign: "center",
-        //     defaultWidth: 100,
-        //     render: ({ value, data }) => {
-        //         return (
-        //             <div>
-        //                 {canEditKPI(currentUser) ? (
-        //                     <button
-        //                         className={
-        //                             "rounded text-blue-500 justify-center items-center  "
-        //                         }
-        //                         onClick={() => {
-        //                             handleEditClick(data);
-        //                         }}
-        //                     >
-        //                         <span className="flex gap-x-1">
-        //                             <PencilIcon className="h-4" />
-        //                             Edit
-        //                         </span>
-        //                     </button>
-        //                 ) : (
-        //                     <div></div>
-        //                 )}
-        //             </div>
-        //         );
-        //     },
-        // },
+
     ];
     const newArray = columns.slice(0, -1);
     const [newColumns, setNewColumns] = useState([]);

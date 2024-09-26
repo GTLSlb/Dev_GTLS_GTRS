@@ -2,18 +2,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
-import {
-    ChevronDownIcon,
-    EyeIcon,
-    PencilIcon,
-} from "@heroicons/react/24/outline";
-import { saveAs } from "file-saver";
-import ExcelJS from "exceljs";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import axios from "axios";
 import { useDisclosure } from "@nextui-org/react";
-import { Fragment } from "react";
-import { Popover, Transition } from "@headlessui/react";
 import { useRef } from "react";
 import EventModal from "../TrafficPage/EventModal";
 import TableStructure from "@/Components/TableStructure";
@@ -29,19 +20,6 @@ import { useNavigate } from "react-router-dom";
 
 const gtrsWebUrl = window.Laravel.gtrsWeb;
 
-const columnMapping = {
-    api_source: "State",
-    suburb: "Suburb",
-    event_type: "Event Type",
-    description: "Event Description",
-    start_date: "Start Date",
-    end_date: "End Date",
-    impact: "Event Impact",
-    hours_difference: "Duration Impact",
-    road_name: "Road Name",
-    advice: "Advice",
-    information: "More information",
-};
 const loadData = ({ skip, limit, sortInfo, filterValue }) => {
     const url =
         `${gtrsWebUrl}get-positions` +
@@ -1329,36 +1307,7 @@ function ConsTrack({
             EventCount: 1,
         },
     ]);
-    function formatTime(hours) {
-        const years = Math.floor(hours / (24 * 30 * 12));
-        const months = Math.floor((hours % (24 * 30 * 12)) / (24 * 30));
-        const days = Math.floor((hours % (24 * 30)) / 24);
-        const remainingHours = hours % 24;
 
-        const parts = [];
-
-        if (years > 0) {
-            parts.push(`${years} year${years > 1 ? "s" : ""}`);
-        }
-        if (months > 0) {
-            parts.push(`${months} month${months > 1 ? "s" : ""}`);
-        }
-        if (days > 0) {
-            parts.push(`${days} day${days > 1 ? "s" : ""}`);
-        }
-        if (remainingHours > 0) {
-            parts.push(
-                `${remainingHours} hour${remainingHours > 1 ? "s" : ""}`
-            );
-        }
-
-        if (parts.length === 0) {
-            return null;
-        } else if (parts.length > 1) {
-            return parts[0];
-        }
-        // return parts.join(" and ");
-    }
     const groups = [
         {
             name: "senderDetails",
@@ -1372,7 +1321,6 @@ function ConsTrack({
         },
     ];
     const gridRef = useRef(null);
-    const gridStyle = { minHeight: 550, marginTop: 10 };
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [eventDetails, setEventDetails] = useState([]);
     const [loading, setLoading] = useState(false);

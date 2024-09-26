@@ -45,11 +45,6 @@ export default function AddRDDReasonModal({
             setdescription("");
         }
     }, [reason]);
-    // if (reasonAuditId !== null && typeof reasonAuditId === "object") {
-    //     id = 0;
-    // } else if (typeof reasonAuditId === "number") {
-    //     id = reasonAuditId;
-    // }
     const data = [
         {
             ReasonId: reason ? reason.ReasonId : "",

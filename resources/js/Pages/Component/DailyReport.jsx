@@ -899,7 +899,6 @@ const temp = [
                                                 {option.DebtorName}
                                             </li>
                                         )}
-                                        // style={{ width: 400 }}
                                         renderInput={(params) => (
                                             <TextField
                                                 {...params}
@@ -922,26 +921,9 @@ const temp = [
                     <div className="inline-block min-w-full  align-middle ">
                         {filteredData ? (
                             <div className="relative">
-                                {/* {selectedPeople.length > 0 && (
-                                    <div className="absolute top-0 left-14 flex h-12 items-center space-x-3 bg-white sm:left-12">
-                                        {/* <button
-                                            type="button"
-                                            className="inline-flex items-center rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
-                                        >
-                                            Bulk edit
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="inline-flex items-center rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
-                                        >
-                                            Delete all
-                                        </button>
-                                    </div>
-                                )} */}
                                 <table
                                     id="details"
                                     className="min-w-full table-fixed divide-y divide-gray-300 "
-                                    // ref={tableRef}
                                 >
                                     <thead className="h-12">
                                         <tr className="py-2.5">

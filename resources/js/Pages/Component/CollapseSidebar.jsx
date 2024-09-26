@@ -489,6 +489,34 @@ export default function CollapseSidebar({
     }
 
     const filterNavigation = (navigation, user) => {
+        // return navigation.filter((navItem) => {
+        //     // Check if the navigation item has sub-options
+        //     if (navItem.options) {
+        //         // Filter options based on user permissions
+        //         navItem.options = navItem.options.filter((option) =>
+        //             user?.Pages?.some(
+        //                 (userPage) =>
+        //                     userPage?.PageName === option.name &&
+        //                     userPage?.Features?.some(
+        //                         (feature) =>
+        //                             feature.FunctionName === option.feature
+        //                     )
+        //             )
+        //         );
+        //         // Include the navigation item only if it has any permitted options
+        //         return navItem.options.length > 0;
+        //     } else {
+        //         // For navigation items without options, check the feature directly
+        //         return user?.Pages?.some(
+        //             (userPage) =>
+        //                 userPage?.PageName === navItem.name &&
+        //                 userPage?.Features?.some(
+        //                     (feature) =>
+        //                         feature?.FunctionName === navItem?.feature
+        //                 )
+        //         );
+        //     }
+        // });
         if (user && Object.keys(user).length !== 0) {
             let gtrsElements = navigation;
             gtrsElements = navigation?.filter((option) => {
@@ -582,7 +610,6 @@ export default function CollapseSidebar({
                         ? themescollapse[theme].sidebar.color
                         : themes[theme].sidebar.color,
                     height: "100%",
-                    // paddingBottom: "64px",
                     position: "relative",
                     backgroundColor: "#f6f6f6",
                 }}
@@ -724,7 +751,6 @@ export default function CollapseSidebar({
                                                     {({ open }) => (
                                                         <>
                                                             <AccordionHeader
-                                                                // className=" "
                                                                 className={classNames(
                                                                     menuItem.current
                                                                         ? "bg-gray-300 text-gray-900"
@@ -809,7 +835,6 @@ export default function CollapseSidebar({
                                             key={itemIndex}
                                             active={isItemActive(menuItem.name)}
                                             component={
-                                                // <Link to={item.Link}>
                                                 <div
                                                     className=""
                                                     onClick={() => {
@@ -820,7 +845,6 @@ export default function CollapseSidebar({
                                                         );
                                                     }}
                                                 ></div>
-                                                // </Link>
                                             }
                                         >
                                             <div
