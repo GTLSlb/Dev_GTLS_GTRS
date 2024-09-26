@@ -123,7 +123,6 @@ class RegisteredUserController extends Controller
                         ]);
                     }
                 } else {
-                    // json_decode failed or returned invalid data
                     return response()->json(['error' => 'Invalid user data'], 400);
                 }
             } else {
