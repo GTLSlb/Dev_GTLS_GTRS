@@ -43,10 +43,10 @@ Route::post('/loginapi', [LoginController::class, 'login'])->name('loginapi');
 
 Route::post('/logoutAPI', [LoginController::class, 'logout'])->middleware(['custom.auth'])->name('logoutAPI');
 
-Route::post('/logoutWithoutRequest', [LoginController::class, 'logoutWithoutRequest'])->middleware(['custom.auth'])->name('logoutWithoutRequest');
+Route::post('/logoutWithoutRequest', [LoginController::class, 'logoutWithoutRequest'])->name('logoutWithoutRequest');
 
 
-Route::get('/main', function () {
+Route::get('/gtrs/dashboard', function () {
     return Inertia::render('Layout');
 })->middleware(['custom.auth'])->name('layout');
 
@@ -169,6 +169,9 @@ Route::middleware('custom.auth')->group(function () {
     Route::get('/auth/azure/callback', [AzureAuthController::class, 'handleCallback'])->name('azure.callback');
     Route::post('/microsoftToken', [AzureAuthController::class, 'sendToken'])->name('azure.token');
     Route::get('/azure/logout', [LoginController::class, 'azureLogout'])->name('azure.logout');
+    Route::get('/{path?}', function (Request $request) {
+        return Inertia::render('Layout');
+    })->where('path', '.*');
 });
 
 Route::post('/getAppLogo', [ImageController::class, 'showAppLogo'])->name('logo.show');

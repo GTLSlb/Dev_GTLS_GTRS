@@ -20,7 +20,7 @@ import { exportToExcel } from "@/Components/utils/excelUtils";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import ExportPopover from "@/Components/ExportPopover";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
-
+import { useNavigate } from "react-router-dom";
 
 function NewKPI({
     url,
@@ -84,12 +84,10 @@ function NewKPI({
             setIsFetching(false);
         }
     }
-  
 
+    const navigate = useNavigate();
     const handleClick = (coindex) => {
-        setActiveIndexGTRS(3);
-        setLastIndex(17);
-        setactiveCon(coindex);
+        navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
     };
     const [filteredData, setFilteredData] = useState(
         KPIData.map((item) => {
@@ -463,7 +461,7 @@ function NewKPI({
                 ) : null;
             },
         },
-       
+
     ];
     const newArray = columns.slice(0, -1);
     const [newColumns, setNewColumns] = useState([]);

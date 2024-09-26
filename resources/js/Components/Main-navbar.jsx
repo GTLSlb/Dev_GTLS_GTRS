@@ -10,9 +10,7 @@ import { Popover, Transition } from "@headlessui/react";
 export default function MainNavbar({
     setMobileMenuOpen,
     mobileMenuOpen,
-    setActiveIndexGTRS,
     setActiveIndexInv,
-    activePage,
     setInvoiceDetails,
     invoiceDetails,
     hubConnection,
@@ -22,13 +20,6 @@ export default function MainNavbar({
     setPODetails,
     url,
 }) {
-    const names = [
-        "Management System",
-        "Account Management",
-        "gtw",
-        "Report System",
-        "Invoice System",
-    ];
 
     return (
         <header className="w-full flex flex-1 flex-col  md:ml-20 fixed top-0 z-50 shadow-md">
@@ -49,7 +40,7 @@ export default function MainNavbar({
                         <span className="text-goldd">GOLD </span>TIGER{" "}
                         Report System
                     </div>
-                    <div className={activePage == 4 ? "" : "hidden"}>
+                    {/* <div className={activePage == 4 ? "" : "hidden"}> */}
                         <NotificationPanel
                             AToken={AToken}
                             url={url}
@@ -61,7 +52,7 @@ export default function MainNavbar({
                             invoiceDetails={invoiceDetails}
                             setInvoiceDetails={setInvoiceDetails}
                         />
-                    </div>
+                    {/* </div> */}
                 </div>
             </div>
         </header>

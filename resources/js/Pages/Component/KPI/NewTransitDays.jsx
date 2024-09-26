@@ -14,9 +14,9 @@ import { exportToExcel } from "@/Components/utils/excelUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import ExportPopover from "@/Components/ExportPopover";
 import GtamButton from "../GtamButton";
+import { useNavigate } from "react-router-dom";
 
 function NewTransitDays({
-    setActiveIndexGTRS,
     setNewTransitDays,
     setNewTransitDay,
     newTransitDays,
@@ -32,6 +32,7 @@ function NewTransitDays({
     const [selected, setSelected] = useState([]);
     const [filteredData, setFilteredData] = useState(newTransitDays);
     const gridRef = useRef(null);
+    const navigate = useNavigate();
 
     async function fetchData() {
         const data = await getApiRequest(`${url}TransitNew`, {
@@ -257,13 +258,13 @@ function NewTransitDays({
         setFilteredData(newTransitDays);
     }, [newTransitDays]);
     function handleEditClick(object) {
-        setNewTransitDay(object);
-        setActiveIndexGTRS(19);
+        // setNewTransitDay(object);
+        navigate("/gtrs/add-transit", { state: { newTransitDay: object } });
     }
 
     function AddTransit() {
-        setNewTransitDay(null);
-        setActiveIndexGTRS(19);
+        // setNewTransitDay(null);
+        navigate("/gtrs/add-transit", { state: { newTransitDay: null } });
     }
 
     const handleDownloadExcel = () => {

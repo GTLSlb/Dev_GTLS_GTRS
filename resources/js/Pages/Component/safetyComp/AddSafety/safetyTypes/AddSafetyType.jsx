@@ -30,7 +30,7 @@ export default function AddSafetyType({
         setIsModalOpen(isModalCurrentlyOpen);
     };
     const [currentPage, setCurrentPage] = useState(0);
-    
+
 
     async function fetchData() {
         const data = await getApiRequest(`${url}SafetyTypes`, {
@@ -130,8 +130,7 @@ export default function AddSafetyType({
                                                         {canEditSafetyType(
                                                             userPermission
                                                         ) ? (
-                                                            <a
-                                                                href="#"
+                                                            <button
                                                                 onClick={() =>
                                                                     handleEditClick(
                                                                         type
@@ -149,7 +148,7 @@ export default function AddSafetyType({
                                                                         type.SafetyTypeName
                                                                     }
                                                                 </span>
-                                                            </a>
+                                                            </button>
                                                         ) : null}
                                                     </td>
                                                     {/* </div> */}

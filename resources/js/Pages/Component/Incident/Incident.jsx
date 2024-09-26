@@ -8,14 +8,15 @@ import IncidentDetails from "./IncidentDetails";
 import swal from "sweetalert";
 import Notes from "../Notes";
 import { handleSessionExpiration } from '@/CommonFunctions';
+import { useLocation } from "react-router-dom";
 
 export default function Incident({
     gtccrUrl,
-    incidentId,
     currentUser,
     AToken,
     userPermission,
 }) {
+    const location = useLocation();
     const [selected, setSelected] = useState("details");
     const [filters, setFilters] = useState();
     const [mainCauses, setMainCauses] = useState();
@@ -119,7 +120,7 @@ export default function Incident({
                     // UserId: 1,
                     UserId: currentUser.UserId,
                     Authorization: `Bearer ${AToken}`,
-                    Incident_Id: incidentId,
+                    Incident_Id: location?.state?.incidentId,
                 },
             })
             .then((res) => {
@@ -136,7 +137,7 @@ export default function Incident({
 
     return (
         <div className="relative p-5">
-          
+
 
             {incident && filters && mainCauses ? (
                 <div>

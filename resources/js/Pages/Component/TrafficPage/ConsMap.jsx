@@ -21,6 +21,7 @@ import Other from "@/assets/icons/Other.png";
 import ScheduleSendIcon from "@mui/icons-material/ScheduleSend";
 import AlarmOnIcon from "@mui/icons-material/AlarmOn";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const eventTypeMapping = {
     Roadworks: ["ROADWORKS", "24HR ROADWORKS", "Roadwork", "Roadworks"],
@@ -52,23 +53,26 @@ const iconMappings = {
     Other,
 };
 
-export default function ConsMap({ consignment, setActiveIndexGTRS }) {
+export default function ConsMap({ }) {
+    const location = useLocation();
+    const navigate = useNavigate();
+
     const [directionsResponse, setDirectionsResponse] = useState(null);
     const [directionsRequested, setDirectionsRequested] = useState(false);
     const [event, setEvent] = useState();
     const [mapCenter, setMapCenter] = useState(null);
 
     const sender = {
-        lat: consignment.Coordinates[0].SenderLatitude,
-        lng: consignment.Coordinates[0].SenderLongitude,
+        lat: location?.state.consignmentToTrack.Coordinates[0].SenderLatitude,
+        lng: location?.state.consignmentToTrack.Coordinates[0].SenderLongitude,
     };
 
     const receiver = {
-        lat: consignment.Coordinates[0].ReceiverLatitude,
-        lng: consignment.Coordinates[0].ReceiverLongitude,
+        lat: location?.state.consignmentToTrack.Coordinates[0].ReceiverLatitude,
+        lng: location?.state.consignmentToTrack.Coordinates[0].ReceiverLongitude,
     };
 
-    const events = consignment.events;
+    const events = location?.state.consignmentToTrack.events;
     useEffect(() => {
         if (!mapCenter) {
             setMapCenter({
@@ -219,7 +223,7 @@ export default function ConsMap({ consignment, setActiveIndexGTRS }) {
                             startContent={
                                 <ChevronLeftIcon className="h-4 w-4" />
                             }
-                            onClick={() => setActiveIndexGTRS(23)}
+                            onClick={() => navigate(-1)}
                             className="mt-2 w-20"
                         >
                             Back
@@ -229,7 +233,7 @@ export default function ConsMap({ consignment, setActiveIndexGTRS }) {
                     <Divider className="my-2" />
                     <div className="flex gap-2">
                         <span className="font-bold">Consignment No</span>
-                        <span>{consignment?.ConsignmentNo}</span>
+                        <span>{location?.state.consignmentToTrack?.ConsignmentNo}</span>
                     </div>
                     <Divider className="my-2" />
                     <div className="flex flex-col gap-2">
@@ -237,7 +241,7 @@ export default function ConsMap({ consignment, setActiveIndexGTRS }) {
                         <div className="flex flex-col gap-2 text-sm">
                             <div className="flex gap-2 items-center">
                                 <MapPinIcon className="h-6 w-6" />
-                                <span>{consignment?.SenderAddressName}</span>
+                                <span>{location?.state.consignmentToTrack?.SenderAddressName}</span>
                             </div>
                             <Divider
                                 orientation="vertical"
@@ -245,16 +249,16 @@ export default function ConsMap({ consignment, setActiveIndexGTRS }) {
                             />
                             <div className="flex gap-2 items-center">
                                 <MapPinIcon className="h-6 w-6" />
-                                <span>{consignment?.ReceiverAddressName}</span>
+                                <span>{location?.state.consignmentToTrack?.ReceiverAddressName}</span>
                             </div>
                         </div>
                     </div>
                     <Divider className="my-2" />
                     <div className="flex flex-col gap-3">
                         <span className="font-bold">
-                            {consignment.EventCount} event(s) on your route:
+                            {location?.state.consignmentToTrack.EventCount} event(s) on your route:
                         </span>
-                        {consignment.events.map((event) => (
+                        {location?.state.consignmentToTrack.events.map((event) => (
                             <Card
                                 variant="light"
                                 className="w-full items-start p-2"

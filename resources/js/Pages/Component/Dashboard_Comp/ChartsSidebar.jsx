@@ -19,7 +19,7 @@ import {
 import "../../../../css/scroll.css";
 import TaskIcon from "@mui/icons-material/Task";
 import ReportIcon from '@mui/icons-material/Report';
-
+import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import {
     Accordion,
@@ -29,6 +29,7 @@ import {
 } from "react-headless-accordion";
 import { MapPinIcon } from "@heroicons/react/20/solid";
 
+const navigate = useNavigate();
 const navigation = [
     {
         id: 0,
@@ -37,6 +38,7 @@ const navigation = [
         icon: ChartPieIcon,
         current: true,
         feature: "Dashboard_view",
+        url: "/gtrs/dashboard",
     },
     {
         id: 1,
@@ -45,6 +47,7 @@ const navigation = [
         icon: TruckIcon,
         current: false,
         feature: "ConsignmetsReport_view",
+        url: "/gtrs/consignments",
     },
     {
         id: 2,
@@ -60,6 +63,7 @@ const navigation = [
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
                 feature: "KPI_view",
+                url: "/gtrs/kpi",
             },
             {
                 id: 18,
@@ -68,6 +72,8 @@ const navigation = [
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
                 feature: "View_TransitDays",
+                url: "/gtrs/kpi/transit-days",
+
             },
             {
                 id: 13,
@@ -78,6 +84,7 @@ const navigation = [
                 feature: "View_Holidays",
             },
         ],
+        url: "/gtrs/kpi",
         feature: "KPI",
     },
     {
@@ -87,6 +94,7 @@ const navigation = [
         icon: PresentationChartLineIcon,
         current: false,
         feature: "Performance_view",
+        url: "/gtrs/performance",
     },
     {
         id: 5,
@@ -95,6 +103,7 @@ const navigation = [
         icon: ExclamationTriangleIcon,
         current: false,
         feature: "View_failedConsignment",
+        url: "/gtrs/failed-consignments",
     },
     {
         id: 16,
@@ -103,6 +112,7 @@ const navigation = [
         icon: TaskIcon,
         current: false,
         feature: "View_Transport",
+        url: "/gtrs/transport",
     },
     {
         id: 9,
@@ -111,6 +121,7 @@ const navigation = [
         icon: ClockIcon,
         current: false,
         feature: "View_RDD",
+        url: "/gtrs/rdd",
     },
     {
         id: 11,
@@ -119,6 +130,7 @@ const navigation = [
         icon: CameraIcon,
         current: false,
         feature: "MissingPOD_view",
+        url: "/gtrs/missing-pod",
     },
     {
         id: 10,
@@ -127,6 +139,7 @@ const navigation = [
         icon: ShieldCheckIcon,
         current: false,
         feature: "View_safety",
+        url: "/gtrs/safety",
     },
     {
         id: 6,
@@ -135,6 +148,7 @@ const navigation = [
         icon: NoSymbolIcon,
         current: false,
         feature: "NoDeliveryInfo_view",
+        url: "/gtrs/no-delivery",
     },
     {
         id: 7,
@@ -143,6 +157,7 @@ const navigation = [
         icon: CurrencyDollarIcon,
         current: false,
         feature: "AdditionalCharges_view",
+        url: "/gtrs/additional-charges",
     },
     {
         id: 8,
@@ -151,6 +166,7 @@ const navigation = [
         icon: UserIcon,
         current: false,
         feature: "DriverLogin_view",
+        url: "/gtrs/driver-login",
     },
     {
         id: 20,
@@ -159,6 +175,7 @@ const navigation = [
         icon: DocumentTextIcon,
         current: false,
         feature: "UnileverReport_View",
+        url: "/gtrs/pack-report",
     },
     {
         id: 21,
@@ -167,6 +184,7 @@ const navigation = [
         icon: ReportIcon,
         current: false,
         feature: "TrafficReport_View",
+        url: "/gtrs/traffic-report",
     },
     {
         id: 23,
@@ -175,6 +193,7 @@ const navigation = [
         icon: MapPinIcon,
         current: false,
         feature: "ConsignmentTracking_View",
+        url: "/gtrs/consignment-tracking",
     },
 ];
 
@@ -396,61 +415,33 @@ export default function ChartsSidebar({
         }
       }, [user]);
 
-    const handleClick = (index) => {
-        setActiveIndexGTRS(index);
-        const updatedElements = sidebarElements.map((element) => {
-            if (
-                element.id === index ||
-                index == 12 ||
-                index == 13 ||
-                index == 14 ||
-                index == 17 ||
-                index == 18
-            ) {
-                if (element.options) {
-                    return {
-                        ...element,
-                        current: true,
-                        options: element.options.map((option) => {
-                            if (option.id == index) {
-                                return { ...option, current: true };
-                            } else {
-                                return { ...option, current: false };
-                            }
-                        }),
-                    };
-                } else {
-                    if (element.id === index) {
-                        return { ...element, current: true };
-                    } else {
-                        return {
-                            ...element,
-                            current: false,
-                            ...(element.options
-                                ? element.options.map((option) => {
-                                      return { ...option, current: false };
-                                  })
-                                : {}),
-                        };
-                    }
-                }
-            } else {
+      const handleClick = (index, item) => {
+        const updatedElements = sidebarElements?.map((element) => {
+            if (element.options) {
                 return {
                     ...element,
-                    current: false,
-                    ...(element.options
-                        ? {
-                              options: element.options.map((option) => {
-                                  return { ...option, current: false };
-                              }),
-                          }
-                        : {}),
+                    current: true,
+                    options: element.options.map((option) => {
+                        if (option.id == index) {
+                            return { ...option, current: true };
+                        } else {
+                            return { ...option, current: false };
+                        }
+                    }),
                 };
+            } else{
+                if (element.id === index) {
+                    return { ...element, current: true };
+                } else {
+                    return { ...element, current: false };
+                }
             }
+
         });
         setSidebarElements(updatedElements);
+        navigate(item.url);
     };
-   
+
     return (
         <div className="h-full xl:fixed xl:w-64 lg:h-full bg-gray-200 w-full ">
             {/* Static sidebar for desktop */}
@@ -583,7 +574,7 @@ export default function ChartsSidebar({
                                                                 "group flex flex-row justify-between items-center px-2 py-2 text-sm font-medium rounded-md w-full"
                                                             )}
                                                         >
-                                                            <div className="flex items-center">
+                                                            <div onClick={()=>handleClick(item.id, item)} className="flex items-center">
                                                                 {item.icon ? (
                                                                     <item.icon
                                                                         className={classNames(
@@ -627,7 +618,7 @@ export default function ChartsSidebar({
                                                                         }
                                                                         onClick={() =>
                                                                             handleClick(
-                                                                                option.id
+                                                                                option.id, option
                                                                             )
                                                                         }
                                                                         className={classNames(
@@ -650,7 +641,7 @@ export default function ChartsSidebar({
                                         </Accordion>
                                     ) : (
                                         <a
-                                            onClick={() => handleClick(item.id)}
+                                            onClick={() => handleClick(item.id, item)}
                                             key={item.name}
                                             href={item.href}
                                             className={classNames(

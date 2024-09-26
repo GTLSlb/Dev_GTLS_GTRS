@@ -104,7 +104,7 @@ export default function AddHoliday({
     return (
         <div className="shadow bg-white p-6 rounded-lg ">
             <form onSubmit={AddHoliday}>
-                <p className="font-bold text-lg">Add Holiday</p>
+                <p className="font-bold text-lg">{object ? "Edit " : "Add "} Holiday</p>
                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-5 gap-y-5 items-center py-4">
                     <div className="col-span-2 flex items-center gap-x-2">
                         <label htmlFor="name" className="block w-32 ">

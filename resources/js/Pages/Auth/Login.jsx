@@ -18,6 +18,7 @@ import axios from "axios";
 import CryptoJS from 'crypto-js';
 import Cookies from "js-cookie";
 import MicrosoftLogo from "@/assets/icons/microsoft-logo.png";
+import { clearMSALLocalStorage } from "@/CommonFunctions";
 
 const msalConfig = {
     auth: {
@@ -27,7 +28,7 @@ const msalConfig = {
         redirectUri: window.Laravel.azureCallback,
     },
     cache: {
-        cacheLocation: "sessionStorage",
+        cacheLocation: "localStorage",
         storeAuthStateInCookie: true, // Set this to true if dealing with IE11 or issues with sessionStorage
     },
 };
@@ -45,6 +46,7 @@ export default function Login({ status, canResetPassword }) {
     const [errorMessage, setErrorMessage] = useState("");
     const [loading, setLoading] = useState(false);
     const gtamURl = window.Laravel.gtamUrl;
+    const appDomain = window.Laravel.appDomain;
 
     const togglePassword = () => {
         if (passwordType === "password") {
@@ -109,6 +111,7 @@ export default function Login({ status, canResetPassword }) {
         e.preventDefault();
         setLoading(true);
 
+        await pca.initialize();
         // Set active account on page load
         const accounts = pca.getAllAccounts();
         if (accounts.length > 0) {
@@ -146,8 +149,19 @@ export default function Login({ status, canResetPassword }) {
                         })
                         .then((res) => {
                             //Cookies.set('access_token', res.data.access_token)
+                            // console.log("Access Token:", res.data.access_token);
                             setLoading(false);
-                            window.location.href = "/main";
+                            Cookies.set(
+                                "msal.isMicrosoftLogin",
+                                "true",
+                                {
+                                    domain: appDomain,
+                                    path: "/",
+                                    secure: true, // Use this if your site is served over HTTPS
+                                    sameSite: "Lax", // Optional, depending on your needs
+                                }
+                            );
+                            window.location.href = "/gtrs/dashboard";
                         })
                         .catch((error) => {
                             setLoading(false);
@@ -189,7 +203,7 @@ export default function Login({ status, canResetPassword }) {
                 .post("/loginapi", credentials)
                 .then((response)=>{
                     if(response.status == 200) {
-                       window.location.href = '/main';
+                       window.location.href = '/gtrs/dashboard';
                     }
                 })
                 .catch((error) => {
@@ -211,6 +225,10 @@ export default function Login({ status, canResetPassword }) {
             handleNextClick();
         }
     };
+
+    useEffect(() => {
+        clearMSALLocalStorage();
+    }, []);
 
     return (
         <div className="bg-black">

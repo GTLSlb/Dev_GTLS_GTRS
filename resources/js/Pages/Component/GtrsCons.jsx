@@ -10,6 +10,7 @@ import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import ExportPopover from "@/Components/ExportPopover";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
+import { useNavigate } from "react-router-dom";
 export default function GtrsCons({
     setActiveIndexGTRS,
     setactiveCon,
@@ -18,15 +19,13 @@ export default function GtrsCons({
     maxDate,
     filterValue,
     setFilterValue,
-    setLastIndex,
     accData,
 }) {
     window.moment = moment;
+    const navigate = useNavigate();
     const [filteredData, setFilteredData] = useState(consData);
     const handleClick = (coindex) => {
-        setActiveIndexGTRS(3);
-        setLastIndex(1);
-        setactiveCon(coindex);
+        navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
     };
     const [selected, setSelected] = useState({});
 
@@ -47,7 +46,6 @@ export default function GtrsCons({
                     : "";
             },
         };
-    console.log(columnMapping)
         // Call the exportToExcel function
         exportToExcel(jsonData, columnMapping, "Consignments.xlsx", customCellHandlers,["DespatchDate"]);
     }

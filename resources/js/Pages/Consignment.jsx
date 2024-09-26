@@ -5,19 +5,17 @@ import "../../css/scroll.css";
 import moment from "moment";
 import swal from "sweetalert";
 import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
-
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 export default function ConsignmentD({
-    setActiveIndexGTRS,
-    activeCon,
-    lastIndex,
     AToken,
     url,
     currentUser,
     userPermission,
 }) {
-    const handleClick = (i) => {
-        setActiveIndexGTRS(lastIndex);
-    };
+    const navigate = useNavigate();
+    const location = useLocation();
+
     useEffect(() => {
         const handleScrollToTop = () => {
             window.scrollTo({
@@ -122,11 +120,11 @@ export default function ConsignmentD({
         ];
     };
 
-    
+
     async function fetchData() {
         const data = await getApiRequest(`${url}ConsignmentById`, {
             UserId: currentUser?.UserId,
-            Consignment_id: activeCon,
+            Consignment_id: location?.state?.activeCons,
         });
 
         if (data) {
@@ -197,7 +195,7 @@ export default function ConsignmentD({
                                 <button
                                     type="button"
                                     className="mr-7 h-full inline-flex items-center rounded-md border border-transparent bg-gray-800 px-5 py-2 text-sm font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                    onClick={() => handleClick(3)}
+                                    onClick={() => navigate(-1)}
                                 >
                                     <svg
                                         viewBox="0 0 64 64"

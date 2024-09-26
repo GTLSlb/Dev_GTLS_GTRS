@@ -35,21 +35,19 @@ import JAIX from "../assets/partners/JAIX.webp";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import SupportModal from "@/Pages/Component/modals/SupportModal";
 import { PublicClientApplication } from "@azure/msal-browser";
+import { clearMSALLocalStorage } from "@/CommonFunctions";
+import Cookies from "js-cookie";
 
 export default function MainSidebar({
     allowedApplications,
     setMobileMenuOpen,
     mobileMenuOpen,
-    setActiveIndexGtam,
-    setactivePage,
-    setActiveIndexInv,
     currentUser,
-    setActiveIndexGTRS,
     setToken,
     setCurrentUser,
-    activePage,
     user,
 }) {
+    const appUrl = window.Laravel.appUrl;
     const [gtrsCurrent, setGtrsCurrent] = useState();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [sidebarNavigation, setSidebarNavigation] = useState([
@@ -200,7 +198,6 @@ export default function MainSidebar({
                     feature: "DailyReport_View",
                 },
             ],
-            func: setActiveIndexGTRS,
             role: ["1", "2", "3", "4", "5"],
         },
         {
@@ -269,42 +266,10 @@ export default function MainSidebar({
             setSidebarElements(updatedElements);
         }
     };
-    const handleClickSupport = (index) => {};
-
-    const handleClickSide = (index, tabind) => {
-        setactivePage(0);
-        if (index == 3) {
-            setActiveIndexGTRS(tabind);
-        } else if (index == 2) {
-            setActiveIndexInv(tabind);
-        } else if (index == 1) {
-            setActiveIndexGtam(tabind);
-        }
-
-        setMobileMenuOpen(false);
-        const updatedElements = sidebarElements.map((element) => {
-            if (element.id === index) {
-                element?.options.map((option)=>{
-                    if(option.id == tabind){
-                        option.current = true;
-                    }
-                })
-                return { ...element, current: true };
-            } else {
-                return { ...element, current: false };
-            }
-        });
-        setSidebarElements(updatedElements);
-    };
 
     function classNames(...classes) {
         return classes.filter(Boolean).join(" ");
     }
-    const handleLinkClick = (event) => {
-        event.preventDefault();
-        // Call the `visit` method to navigate to the new page
-        Inertia.visit(event.target.href);
-    };
 
     const handleEditClick = () => {
         const isModalCurrentlyOpen = !isModalOpen;
@@ -320,31 +285,32 @@ export default function MainSidebar({
             redirectUri: window.Laravel.azureCallback,
         },
         cache: {
-            cacheLocation: "sessionStorage",
+            cacheLocation: "localStorage",
             storeAuthStateInCookie: true, // Set this to true if dealing with IE11 or issues with sessionStorage
         },
     };
     const pca = new PublicClientApplication(msalConfig);
     const handleLogout = async () => {
-        const isLoggingOut = true;
-        await pca.initialize();
-        axios
-            .post("/logoutAPI", isLoggingOut)
-            .then(async (response) => {
-                if (response.status == 200) {
-                    setToken(null);
-                    setCurrentUser(null);
-                    const allAccounts = await pca.getAllAccounts();
-                    if (allAccounts.length > 0) {
-                        await pca.logoutRedirect({ scopes: ["user.read"], postLogoutRedirectUri: "/login" });
-                    }else{
-                        window.location.href = "/login";
-                    }
+        try {
+            const response = await axios.post("/logoutAPI");
+
+            if (response.status === 200 && response.data.status === 'success') {
+                setToken(null);
+                setCurrentUser(null);
+
+                const isMicrosoftLogin = Cookies.get('msal.isMicrosoftLogin');
+
+                clearMSALLocalStorage();
+
+                if (isMicrosoftLogin === 'true') {
+                    window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=${appUrl}/login`;
+                } else {
+                    window.location.href = `${appUrl}/login`;
                 }
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+            }
+        } catch (error) {
+            console.log("Logout error:", error);
+        }
     };
     const currentAppId = window.Laravel.appId;
     function moveToHead(array, id) {

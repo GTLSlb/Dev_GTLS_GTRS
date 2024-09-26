@@ -7,7 +7,9 @@ import axios from "axios";
 import hubConnection from "./SignalR";
 import NoAccess from "@/Components/NoAccess";
 import Cookies from "js-cookie";
-// import AllRoutes from "./RoutesPage";
+import { Routes, Route } from "react-router-dom";
+import NotFoundPage from "./NotFoundPage";
+import Login from "./Auth/Login";
 
 export default function Sidebar(Boolean) {
     const [currentUser, setcurrentUser] = useState(null);
@@ -20,6 +22,8 @@ export default function Sidebar(Boolean) {
     const Invoicesurl = window.Laravel.invoiceUrl;
     const Gtamurl = window.Laravel.gtamUrl;
     const gtrsUrl = window.Laravel.gtrsUrl;
+    const appDomain = window.Laravel.appDomain;
+
     const getAppPermisions = () => {
         //user permissions
         axios
@@ -90,20 +94,11 @@ export default function Sidebar(Boolean) {
     }, [currentUser]);
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [activePage, setactivePage] = useState(0);
-    const [activeIndexGtam, setActiveIndexGtam] = useState(1);
     const [activeCon, setactiveCon] = useState(0);
     const [loadingGtrs, setLoadingGtrs] = useState(false);
-    const [activeIndexGTRS, setActiveIndexGTRS] = useState(0);
     const [activeHeader, setactiveHeader] = useState("null");
-    const [currentComponent, setcurrentComponent] = useState([]);
-    const [activeIndexInv, setActiveIndexInv] = useState(1);
     const [invoiceDetails, setInvoiceDetails] = useState();
     const [PODetails, setPODetails] = useState();
-
-    const handleGTAMIndexChange = (e) => {
-        setActiveIndexGtam(e);
-    };
 
     const components = [
         <Gtrs
@@ -111,13 +106,10 @@ export default function Sidebar(Boolean) {
             sessionData={sessionData}
             user={user}
             setUser={setUser}
-            setactivePage={setactivePage}
             setactiveCon={setactiveCon}
             setMobileMenuOpen={setMobileMenuOpen}
             mobileMenuOpen={mobileMenuOpen}
             activeHeader={activeHeader}
-            activeIndexGTRS={activeIndexGTRS}
-            setActiveIndexGTRS={setActiveIndexGTRS}
             loadingGtrs={loadingGtrs}
             setLoadingGtrs={setLoadingGtrs}
             currentUser={currentUser}
@@ -125,31 +117,6 @@ export default function Sidebar(Boolean) {
             setCurrentUser={setcurrentUser}
         />,
     ];
-
-    useEffect(() => {
-        const components = [
-            <Gtrs
-                setToken={setToken}
-                sessionData={sessionData}
-                user={user}
-                setUser={setUser}
-                setactivePage={setactivePage}
-                setactiveCon={setactiveCon}
-                setMobileMenuOpen={setMobileMenuOpen}
-                mobileMenuOpen={mobileMenuOpen}
-                activeHeader={activeHeader}
-                activeIndexGTRS={activeIndexGTRS}
-                setActiveIndexGTRS={setActiveIndexGTRS}
-                loadingGtrs={loadingGtrs}
-                setLoadingGtrs={setLoadingGtrs}
-                currentUser={currentUser}
-                AToken={Token}
-                setCurrentUser={setcurrentUser}
-            />,
-        ];
-
-        setcurrentComponent(components[activePage]);
-    }, [activePage, currentUser]);
 
     useEffect(() => {
         if (currentUser && !Token) {
@@ -179,7 +146,13 @@ export default function Sidebar(Boolean) {
                         setToken(parsedData.access_token);
                         Cookies.set(
                             "access_token",
-                            parsedData.access_token
+                            parsedData.access_token,
+                            {
+                                domain: appDomain,
+                                path: "/",
+                                secure: true, // Use this if your site is served over HTTPS
+                                sameSite: "Lax", // Optional, depending on your needs
+                            }
                         );
                     });
                 })
@@ -200,16 +173,10 @@ export default function Sidebar(Boolean) {
                         <MainSidebar
                             allowedApplications={allowedApplications}
                             setMobileMenuOpen={setMobileMenuOpen}
-                            setActiveIndexGtam={handleGTAMIndexChange}
                             mobileMenuOpen={mobileMenuOpen}
-                            activePage={activePage}
-                            activeIndexGtam={activeIndexGtam}
-                            setactivePage={setactivePage}
                             setToken={setToken}
                             user={user}
                             setCurrentUser={setcurrentUser}
-                            setActiveIndexGTRS={setActiveIndexGTRS}
-                            setActiveIndexInv={setActiveIndexInv}
                             currentUser={currentUser}
                         />
                         <MainNavbar
@@ -220,17 +187,38 @@ export default function Sidebar(Boolean) {
                             setPODetails={setPODetails}
                             invoiceDetails={invoiceDetails}
                             setInvoiceDetails={setInvoiceDetails}
-                            setActiveIndexInv={setActiveIndexInv}
                             hubConnection={hubConnection}
-                            activePage={activePage}
                             setMobileMenuOpen={setMobileMenuOpen}
-                            activeIndexGTRS={activeIndexGTRS}
                             mobileMenuOpen={mobileMenuOpen}
                             activeHeader={activeHeader}
-                            setActiveIndexGTRS={setActiveIndexGTRS}
                             loadingGtrs={loadingGtrs}
                         />
-                        {components[activePage]}
+                        <Routes>
+                        <Route
+                            path="/gtrs/*"
+                            element={
+                                <Gtrs
+                                setToken={setToken}
+                                sessionData={sessionData}
+                                user={user}
+                                setUser={setUser}
+                                setactiveCon={setactiveCon}
+                                setMobileMenuOpen={setMobileMenuOpen}
+                                mobileMenuOpen={mobileMenuOpen}
+                                activeHeader={activeHeader}
+                                loadingGtrs={loadingGtrs}
+                                setLoadingGtrs={setLoadingGtrs}
+                                currentUser={currentUser}
+                                AToken={Token}
+                                setCurrentUser={setcurrentUser}
+                            />}
+                        />
+                            <Route
+                                path="/login"
+                                element={<Login />}
+                            />
+                            <Route path="/*" element={<NotFoundPage />} />
+                        </Routes>
                     </div>
                 ) : (
                     <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">

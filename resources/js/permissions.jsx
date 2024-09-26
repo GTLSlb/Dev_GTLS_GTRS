@@ -237,7 +237,7 @@ export function canViewInternal(currentUser) {
     const targetPermissionName = "IR_Internal";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return targetPage && targetPage?.Features?.some(feature => feature.FunctionName === targetPermissionName);
+    return currentUser?.some(feature => feature.FunctionName === targetPermissionName);
 }
 
 /**

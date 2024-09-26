@@ -15,7 +15,7 @@ import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import ExportPopover from "@/Components/ExportPopover";
-
+import { useNavigate } from "react-router-dom";
 
 export default function AdditionalCharges({
     AdditionalData,
@@ -30,12 +30,10 @@ export default function AdditionalCharges({
     url,
 }) {
     window.moment = moment;
-
+    const navigate = useNavigate();
     const [isFetching, setIsFetching] = useState();
     const handleClick = (coindex) => {
-        setActiveIndexGTRS(3);
-        setLastIndex(7);
-        setactiveCon(coindex);
+        navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
     };
     useEffect(() => {
         if (AdditionalData === null || AdditionalData === undefined) {
