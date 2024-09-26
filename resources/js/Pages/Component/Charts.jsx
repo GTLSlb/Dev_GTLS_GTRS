@@ -2617,20 +2617,6 @@ export default function charts({
                                             userPermission={userPermission}
                                         />}
                                     />
-                                    {/* <Route
-                                        path="/transit-dayss"
-                                        element={<TransitDays
-                                            setTransitDay={setTransitDay}
-                                            transitDays={transitDays}
-                                            filterValue={filtersNewTransit}
-                                            setFilterValue={setFiltersNewTransit}
-                                            currentUser={currentUser}
-                                            AToken={AToken}
-                                            setTransitDays={setTransitDays}
-                                            url={url}
-                                            userPermission={userPermission}
-                                        />}
-                                    /> */}
                                     <Route
                                         path="/kpi/holidays"
                                         element={<Holidays
@@ -2657,18 +2643,6 @@ export default function charts({
                                             userPermission={userPermission}
                                         />}
                                     />
-                                    {/* <Route
-                                        path="/add-transit"
-                                        element={ <AddTransit
-                                            url={url}
-                                            currentUser={currentUser}
-                                            setTransitDay={setTransitDay}
-                                            setTransitDays={setTransitDays}
-                                            AToken={AToken}
-                                            transitDay={transitDay}
-                                            userPermission={userPermission}
-                                        />}
-                                    /> */}
                                     <Route
                                         path="/transport"
                                         element={<TransportRep

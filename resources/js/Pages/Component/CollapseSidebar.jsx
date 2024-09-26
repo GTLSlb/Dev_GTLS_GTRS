@@ -534,60 +534,6 @@ export default function CollapseSidebar({
         }
     };
 
-    // const handleClick = (index) => {
-    //     setActiveIndexGTRS(index);
-    //     const updatedElements = sidebarElements.map((element) => {
-    //         if (
-    //             element.id === index ||
-    //             index == 12 ||
-    //             index == 13 ||
-    //             index == 14 ||
-    //             index == 17 ||
-    //             index == 18
-    //         ) {
-    //             if (element.options) {
-    //                 return {
-    //                     ...element,
-    //                     current: true,
-    //                     options: element.options.map((option) => {
-    //                         if (option.id == index) {
-    //                             return { ...option, current: true };
-    //                         } else {
-    //                             return { ...option, current: false };
-    //                         }
-    //                     }),
-    //                 };
-    //             } else {
-    //                 if (element.id === index) {
-    //                     return { ...element, current: true };
-    //                 } else {
-    //                     return {
-    //                         ...element,
-    //                         current: false,
-    //                         ...(element.options
-    //                             ? element.options.map((option) => {
-    //                                   return { ...option, current: false };
-    //                               })
-    //                             : {}),
-    //                     };
-    //                 }
-    //             }
-    //         } else {
-    //             return {
-    //                 ...element,
-    //                 current: false,
-    //                 ...(element.options
-    //                     ? {
-    //                           options: element.options.map((option) => {
-    //                               return { ...option, current: false };
-    //                           }),
-    //                       }
-    //                     : {}),
-    //             };
-    //         }
-    //     });
-    //     setSidebarElements(updatedElements);
-    // };
     return (
         <div className="h-full relative z-0">
             <Sidebar

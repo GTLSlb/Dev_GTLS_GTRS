@@ -83,14 +83,6 @@ const navigation = [
                 icon: ClipboardDocumentCheckIcon,
                 feature: "View_Holidays",
             },
-            // {
-            //     id: 14,
-            //     name: "KPI Reasons",
-            //     href: "#",
-            //     current: false,
-            //     icon: ClipboardDocumentCheckIcon,
-            //     feature: "View_kpiReasons",
-            // },
         ],
         url: "/gtrs/kpi",
         feature: "KPI",
@@ -447,6 +439,7 @@ export default function ChartsSidebar({
 
         });
         setSidebarElements(updatedElements);
+        navigate(item.url);
     };
 
     return (

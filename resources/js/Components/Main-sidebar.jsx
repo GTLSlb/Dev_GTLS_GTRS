@@ -267,32 +267,6 @@ export default function MainSidebar({
         }
     };
 
-    // const handleClickSide = (index, tabind) => {
-    //     // setactivePage(0);
-    //     if (index == 3) {
-    //         setActiveIndexGTRS(tabind);
-    //     } else if (index == 2) {
-    //         setActiveIndexInv(tabind);
-    //     } else if (index == 1) {
-    //         setActiveIndexGtam(tabind);
-    //     }
-
-    //     setMobileMenuOpen(false);
-    //     const updatedElements = sidebarElements.map((element) => {
-    //         if (element.id === index) {
-    //             element?.options.map((option)=>{
-    //                 if(option.id == tabind){
-    //                     option.current = true;
-    //                 }
-    //             })
-    //             return { ...element, current: true };
-    //         } else {
-    //             return { ...element, current: false };
-    //         }
-    //     });
-    //     setSidebarElements(updatedElements);
-    // };
-
     function classNames(...classes) {
         return classes.filter(Boolean).join(" ");
     }
