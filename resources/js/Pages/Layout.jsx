@@ -169,30 +169,6 @@ export default function Sidebar(Boolean) {
             <div className="h-screen">
                 {Token ? (
                     <div className="bg-smooth h-full ">
-                        {/* <mainSidebar/> */}
-                        <MainSidebar
-                            allowedApplications={allowedApplications}
-                            setMobileMenuOpen={setMobileMenuOpen}
-                            mobileMenuOpen={mobileMenuOpen}
-                            setToken={setToken}
-                            user={user}
-                            setCurrentUser={setcurrentUser}
-                            currentUser={currentUser}
-                        />
-                        <MainNavbar
-                            url={Invoicesurl}
-                            AToken={Token}
-                            currentUser={currentUser}
-                            PODetails={PODetails}
-                            setPODetails={setPODetails}
-                            invoiceDetails={invoiceDetails}
-                            setInvoiceDetails={setInvoiceDetails}
-                            hubConnection={hubConnection}
-                            setMobileMenuOpen={setMobileMenuOpen}
-                            mobileMenuOpen={mobileMenuOpen}
-                            activeHeader={activeHeader}
-                            loadingGtrs={loadingGtrs}
-                        />
                         <Routes>
                         <Route
                             path="/gtrs/*"
@@ -211,11 +187,22 @@ export default function Sidebar(Boolean) {
                                 currentUser={currentUser}
                                 AToken={Token}
                                 setCurrentUser={setcurrentUser}
+                                allowedApplications = {allowedApplications}
+                                setcurrentUser={setcurrentUser}
+                                PODetails={PODetails}
+                                setPODetails={setPODetails}
+                                invoiceDetails={invoiceDetails}
+                                setInvoiceDetails={setInvoiceDetails}
+                                hubConnection={hubConnection}
                             />}
                         />
                             <Route
                                 path="/login"
                                 element={<Login />}
+                            />
+                            <Route
+                                path="/notFound"
+                                element={<NotFoundPage />}
                             />
                             <Route path="/*" element={<NotFoundPage />} />
                         </Routes>

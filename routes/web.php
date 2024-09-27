@@ -148,6 +148,8 @@ Route::get('/downloadGTLS-docx', function () {
     return response()->download($pathToFile, 'Gold-Tiger-Capability-Statement-2020-12-24.pdf', $headers);
 });
 
+Route::redirect('/', '/gtrs/dashboard');
+
 Route::get('/checkAuth', [AuthenticatedSessionController::class, 'checkAuth']);
 Route::get('/checkEmail', [AzureAuthController::class, 'handleClickCallBack']);
 

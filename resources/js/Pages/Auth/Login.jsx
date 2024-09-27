@@ -364,7 +364,7 @@ export default function Login({ status, canResetPassword }) {
                                             ? "bg-gray-600 cursor-not-allowed text-white"
                                             : "bg-goldd hover:bg-goldt text-dark"
                                     } font-bold rounded-md border border-transparent bg-goldd py-2 px-4 text-sm font-medium  shadow-sm  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
-                                    disabled={loading}
+                                    disabled={loading || !recaptchaValue}
                                     type="button"
                                     onClick={(e)=>submit(e)}
                                 >

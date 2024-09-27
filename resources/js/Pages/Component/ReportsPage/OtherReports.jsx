@@ -28,6 +28,16 @@ export default function OtherReports({
 }) {
     const gridRef = useRef(null);
     const [selected, setSelected] = useState([]);
+    const formatDate = (dateString) => {
+        if (dateString) {
+            const [date, time] = dateString.split("T");
+            const [day, month, year] = date.split("-");
+            // Using template literals to format the date
+            return `${year}-${month}-${day}`;
+        } else {
+            return dateString;
+        }
+    };
     function handleDownloadExcel() {
         const jsonData = handleFilterTable(gridRef, data);
 
@@ -42,7 +52,8 @@ export default function OtherReports({
             DespatchDateTime: (value) => formatDateToExcel(value),
             DeliveryRequiredDateTime: (value) => formatDateToExcel(value),
             DeliveredDateTime: (value) => formatDateToExcel(value),
-            Comments: (value) => value?.map((item) => item.Comment).join(", "),
+            Comments: (value) =>
+                value?.map((item) => `${formatDate(item.AddedAt)}, ${item.Comment}`).join("\n")
         };
 
         // Call the `exportToExcel` function

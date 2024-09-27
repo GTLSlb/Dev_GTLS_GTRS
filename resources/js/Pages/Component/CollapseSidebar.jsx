@@ -397,8 +397,6 @@ export default function CollapseSidebar({
     };
 
     const handleClick = (id, item) => {
-        console.log("click", id, item);
-
         const updatedElements = sidebarElements?.map((element) => {
             if (id == 12 || id == 13 || id == 14 || id == 17 || id == 18) {
                 if (element.options) {
@@ -444,9 +442,9 @@ export default function CollapseSidebar({
         });
         handleSelectOnClick();
         setSidebarElements(updatedElements);
+        localStorage.setItem("current", JSON.stringify(id));
         navigate(item.url);
     };
-    console.log(sidebarElements);
 
     function handleSelectOnClick() {
         if (collapsed) {
@@ -488,51 +486,57 @@ export default function CollapseSidebar({
         return active;
     }
 
-    const filterNavigation = (navigation, user) => {
-        // return navigation.filter((navItem) => {
-        //     // Check if the navigation item has sub-options
-        //     if (navItem.options) {
-        //         // Filter options based on user permissions
-        //         navItem.options = navItem.options.filter((option) =>
-        //             user?.Pages?.some(
-        //                 (userPage) =>
-        //                     userPage?.PageName === option.name &&
-        //                     userPage?.Features?.some(
-        //                         (feature) =>
-        //                             feature.FunctionName === option.feature
-        //                     )
-        //             )
-        //         );
-        //         // Include the navigation item only if it has any permitted options
-        //         return navItem.options.length > 0;
-        //     } else {
-        //         // For navigation items without options, check the feature directly
-        //         return user?.Pages?.some(
-        //             (userPage) =>
-        //                 userPage?.PageName === navItem.name &&
-        //                 userPage?.Features?.some(
-        //                     (feature) =>
-        //                         feature?.FunctionName === navItem?.feature
-        //                 )
-        //         );
-        //     }
-        // });
+    useEffect(() => {
         if (user && Object.keys(user).length !== 0) {
-            let gtrsElements = navigation;
-            gtrsElements = navigation?.filter((option) => {
-                return user?.some((feature) => {
-                    if (option.options && option.options.length > 0) {
-                        return option.options.some((childOption) => {
-                            return feature.FunctionName === childOption.feature;
-                        });
+            const currentId = JSON.parse(localStorage.getItem("current"));
+            if (currentId) {
+            const updatedElements = sidebarElements?.map((element) => {
+                if (currentId == 12 || currentId == 13 || currentId == 14 || currentId == 17 || currentId == 18) {
+                    if (element.options) {
+                        return {
+                            ...element,
+                            current: true,
+                            options: element.options.map((option) => {
+                                if (option.id == currentId) {
+                                    return { ...option, current: true };
+                                } else {
+                                    return { ...option, current: false };
+                                }
+                            }),
+                        };
                     } else {
-                        return feature.FunctionName === option.feature;
+                        if (element.id === currentId) {
+                            return { ...element, current: true };
+                        } else {
+                            return { ...element, current: false };
+                        }
                     }
-                });
+                } else {
+                    if (element.options) {
+                    return {
+                        ...element,
+                        current: false,
+                        ...(element.options
+                            ? {
+                                  options: element.options.map((option) => {
+                                      return { ...option, current: false };
+                                  }),
+                              }
+                            : {}),
+                    };
+                    } else {
+                        if (element.id === currentId) {
+                            return { ...element, current: true };
+                        } else {
+                            return { ...element, current: false };
+                        }
+                    }
+                }
             });
-            setSidebarElements(gtrsElements);
+            setSidebarElements(updatedElements);
         }
-    };
+        }
+      }, [user]);
 
     return (
         <div className="h-full relative z-0">

@@ -116,7 +116,7 @@ html {
     margin: 15px 0;
     justify-content: flex-end;
   }
-  
+
   .react-chatbot-kit-user-avatar-container {
     width: 40px;
     height: 40px;
@@ -127,13 +127,13 @@ html {
     justify-content: center;
     align-items: center;
   }
-  
+
   .react-chatbot-kit-user-avatar-icon {
     fill: #fff;
     width: 15px;
     height: 15px;
   }
-  
+
   .react-chatbot-kit-user-chat-message {
     background-color: #f1f1f1;
     padding: 10px;
@@ -144,7 +144,7 @@ html {
     position: relative;
     text-align: left;
   }
-  
+
   .react-chatbot-kit-user-chat-message-arrow {
     width: 0;
     height: 0;
@@ -155,13 +155,13 @@ html {
     right: -7px;
     top: 13px;
   }
-  
+
   .react-chatbot-kit-chat-bot-message-container {
     display: flex;
     margin: 15px 0;
     justify-content: flex-start;
   }
-  
+
   .react-chatbot-kit-chat-bot-avatar-container {
     width: 40px;
     height: 40px;
@@ -173,19 +173,19 @@ html {
     justify-content: center;
     align-items: center;
   }
-  
+
   .react-chatbot-kit-chat-bot-avatar-icon {
     fill: #494646;
     width: 22.5px;
     height: 22.5px;
   }
-  
+
   .react-chatbot-kit-chat-bot-avatar-letter {
     color: #1d1d1d;
     margin: 0;
     padding: 0;
   }
-  
+
   .react-chatbot-kit-chat-bot-message {
     background-color: #2898ec;
     padding: 10px;
@@ -198,7 +198,7 @@ html {
     margin-left: auto;
     text-align: left;
   }
-  
+
   .react-chatbot-kit-chat-bot-message-arrow {
     width: 0;
     height: 0;
@@ -209,32 +209,32 @@ html {
     left: -7px;
     top: 13px;
   }
-  
+
   .react-chatbot-kit-chat-bot-loading-icon-container {
     height: 17px;
     width: 25px;
   }
-  
+
   .chatbot-loader-container {
     display: flex;
     width: 100%;
     justify-content: center;
   }
-  
+
   #chatbot-loader #chatbot-loader-dot1 {
     animation: load 1s infinite;
   }
-  
+
   #chatbot-loader #chatbot-loader-dot2 {
     animation: load 1s infinite;
     animation-delay: 0.2s;
   }
-  
+
   #chatbot-loader #chatbot-loader-dot3 {
     animation: load 1s infinite;
     animation-delay: 0.4s;
   }
-  
+
   @keyframes load {
     0% {
       opacity: 0;
@@ -246,19 +246,19 @@ html {
       opacity: 0;
     }
   }
-  
+
   .react-chatbot-kit-chat-container {
     position: relative;
     width: 275px;
   }
-  
+
   .react-chatbot-kit-chat-inner-container {
     height: 500px;
     background-color: #fff;
     border-radius: 3px;
     border-radius: 5px;
   }
-  
+
   .react-chatbot-kit-chat-header {
     border-top-right-radius: 5px;
     border-top-left-radius: 5px;
@@ -271,20 +271,20 @@ html {
     padding: 12.5px;
     font-weight: bold;
   }
-  
+
   .react-chatbot-kit-chat-input-container {
     position: absolute;
     bottom: 0;
     width: 100%;
     display: flex;
   }
-  
+
   .react-chatbot-kit-chat-message-container {
     padding: 0 17.5px 10px 17.5px;
     overflow: scroll;
     height: 424px;
   }
-  
+
   .react-chatbot-kit-chat-input {
     width: 100%;
     padding: 12.5px;
@@ -293,16 +293,16 @@ html {
     border-top: 1px solid #d8d8d8;
     border-bottom-left-radius: 5px;
   }
-  
+
   .react-chatbot-kit-chat-input-form {
     width: 100%;
     display: flex;
   }
-  
+
   .react-chatbot-kit-chat-input::placeholder {
     color: #585858;
   }
-  
+
   .react-chatbot-kit-chat-btn-send {
     background-color: #2898ec;
     width: 100px;
@@ -316,17 +316,17 @@ html {
     width: 15px;
     margin: 0 auto;
   }
-  
+
   .react-chatbot-kit-error {
     background-color: #fff;
     border-radius: 3px;
     padding: 15px;
   }
-  
+
   .react-chatbot-kit-error-container {
     width: 260px;
   }
-  
+
   .react-chatbot-kit-error-header {
     font-size: 1.3rem;
     color: #1d1d1d;
@@ -336,7 +336,7 @@ html {
   .mapy{
     filter:invert(100%) contrast(100%) sepia(100%);;
   }
-  
+
   .react-chatbot-kit-error-docs {
     display: block;
     margin: 25px auto;
@@ -350,17 +350,22 @@ html {
   }
 
 
-  
-
   .form-input:focus {
-    border:none ; 
+    border:none ;
     box-shadow: 0 0 0px #e2b540;
   }
 
   textarea:focus {
-    border:none ; 
+    border:none ;
     box-shadow: 0 0 0px #e2b540;
   }
+
+  .global-custom-row.InovuaReactDataGrid__row,
+.global-custom-row.InovuaReactDataGrid__row,
+  .InovuaReactDataGrid__cell {
+  min-height: min-content !important;
+  overflow: visible !important;
+}
 
   @layer utilities {
     .custom-dashed-border {

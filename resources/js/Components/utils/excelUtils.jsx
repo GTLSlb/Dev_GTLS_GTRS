@@ -38,7 +38,15 @@ export const exportToExcel = (jsonData, columnMapping, fileName, customCellHandl
         pattern: "solid",
         fgColor: { argb: "FFE2B540" }, // Yellow background color
     };
-    headerRow.alignment = { horizontal: "center" };
+    headerRow.alignment = { horizontal: "left", vertical: "left" };
+
+    // Function to calculate row height based on content length
+    const calculateRowHeight = (cellValue) => {
+        if (!cellValue) return 20; // Default row height
+        const lines = cellValue.split('\n').length;
+        console.log(lines, Math.max(20, lines * 25));
+        return Math.max(20, lines * 25); // Dynamic height, adjust 25px per line
+    };
 
     // Add data rows
     data.forEach((rowData) => {
@@ -52,6 +60,25 @@ export const exportToExcel = (jsonData, columnMapping, fileName, customCellHandl
                 cell.numFmt = "dd-mm-yyyy hh:mm AM/PM"; // You can adjust this format as needed
             }
         });
+
+        // Calculate the maximum height needed for each row based on multiline content
+        let maxHeight = 15; // Start with the default height
+
+        row.eachCell({ includeEmpty: true }, (cell) => {
+            const cellValue = cell.value?.toString() || '';
+
+            // Enable text wrapping for multiline content
+            cell.alignment = { wrapText: true, vertical: "top" };
+
+            // Calculate the height for this particular cell
+            const rowHeight = calculateRowHeight(cellValue);
+
+            // Keep track of the maximum height needed for this row
+            maxHeight = Math.max(maxHeight, rowHeight);
+        });
+
+        // Set the row height to the maximum calculated height for the row
+        row.height = maxHeight;
     });
 
     // Set column widths

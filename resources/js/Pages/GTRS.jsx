@@ -1,14 +1,11 @@
 import Sidebar from "./Layout";
 import { useLayoutEffect, useRef, useState } from "react";
-import axios from "axios";
 import { useEffect } from "react";
 import Charts from "./Component/Charts";
-import swal from "sweetalert";
-import debtors from "./Component/JsonData/debtors.json";
-import rddData from "./Component/JsonData/RddData.json";
-import { useStepContext } from "@mui/material";
 import NoAccess from "@/Components/NoAccess";
 import { fetchApiData, handleSessionExpiration } from "@/CommonFunctions";
+import MainSidebar from "@/Components/Main-sidebar";
+import MainNavbar from "@/Components/Main-navbar";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -23,6 +20,16 @@ export default function Gtrs({
     setLoadingGtrs,
     currentUser,
     loadingGtrs,
+    allowedApplications,
+    setMobileMenuOpen,
+    mobileMenuOpen,
+    setcurrentUser,
+    PODetails,
+    setPODetails,
+    setInvoiceDetails,
+    invoiceDetails,
+    hubConnection,
+    activeHeader,
 }) {
     const [rddData, setrddData] = useState([]);
     const [chartsData, setchartsData] = useState([]);
@@ -67,7 +74,9 @@ export default function Gtrs({
         debtorIds = currentUser.UserId;
     }
 
-
+    const Invoicesurl = window.Laravel.invoiceUrl;
+    const Gtamurl = window.Laravel.gtamUrl;
+    const appDomain = window.Laravel.appDomain;
 
     useEffect(() => {
         if (AToken != null && currentUser) {
@@ -158,6 +167,32 @@ export default function Gtrs({
     if (loadingGtrs && AToken) {
         if (canAccess) {
             return (
+                <div>
+                    {/* <mainSidebar/> */}
+                    <MainSidebar
+                            allowedApplications={allowedApplications}
+                            setMobileMenuOpen={setMobileMenuOpen}
+                            mobileMenuOpen={mobileMenuOpen}
+                            setToken={setToken}
+                            user={user}
+                            setCurrentUser={setcurrentUser}
+                            currentUser={currentUser}
+                        />
+                        <MainNavbar
+                            url={Invoicesurl}
+                            AToken={AToken}
+                            currentUser={currentUser}
+                            PODetails={PODetails}
+                            setPODetails={setPODetails}
+                            invoiceDetails={invoiceDetails}
+                            setInvoiceDetails={setInvoiceDetails}
+                            hubConnection={hubConnection}
+                            setMobileMenuOpen={setMobileMenuOpen}
+                            mobileMenuOpen={mobileMenuOpen}
+                            activeHeader={activeHeader}
+                            loadingGtrs={loadingGtrs}
+                        />
+
                 <div className="bg-smooth h-full">
                     <div className="md:pl-20 pt-16 h-full">
                         <Charts
@@ -202,6 +237,7 @@ export default function Gtrs({
                             setPerfData={setPerfData}
                         />
                     </div>
+                </div>
                 </div>
             );
         } else {

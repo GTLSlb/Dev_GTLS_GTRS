@@ -37,6 +37,7 @@ import ConsMap from "./TrafficPage/ConsMap";
 import { Routes, Route } from "react-router-dom";
 import NoAccess from "@/Components/NoAccess";
 import NotFoundPage from "../NotFoundPage";
+import NotFoundRedirect from "../NotFoundRedirect";
 
 export default function charts({
     setCusomterAccounts,
@@ -2326,7 +2327,7 @@ export default function charts({
     ];
 
     return (
-        <div className="h-full">
+        <div className="h-screen">
             <div className="h-full">
                 {/* Left sidebar & main wrapper */}
                 <div className="bg-gray-100 h-full flex">
@@ -2773,7 +2774,7 @@ export default function charts({
 
                                     <Route
                                         path="/*"
-                                        element={<NotFoundPage />}
+                                        element={<NotFoundRedirect />}
                                     />
                                 </Routes>
                             </div>
