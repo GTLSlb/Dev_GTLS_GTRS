@@ -14,18 +14,15 @@ import { exportToExcel } from "@/Components/utils/excelUtils";
 import { formatDateToExcel } from "@/CommonFunctions";
 import ExportPopover from "@/Components/ExportPopover";
 import { useNavigate } from "react-router-dom";
+import AnimatedLoading from "@/Components/AnimatedLoading";
 
 export default function FailedCons({
     PerfData,
     failedReasons,
     url,
-    setIncidentId,
     AToken,
     filterValue,
     setFilterValue,
-    setActiveIndexGTRS,
-    setLastIndex,
-    setactiveCon,
     currentUser,
     userPermission,
     accData,
@@ -39,7 +36,9 @@ export default function FailedCons({
     };
     // const data = PerfData.filter((obj) => obj.STATUS === "FAIL");
     const handleClick = (coindex) => {
-        navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
+        navigate("/gtrs/consignment-details", {
+            state: { activeCons: coindex },
+        });
     };
     const excludedDebtorIds = [1514, 364, 247, 246, 245, 244];
     const [data, setData] = useState(
@@ -68,20 +67,6 @@ export default function FailedCons({
         setFilteredData(filterData());
     }, [accData]);
 
-    const reasonOptions = failedReasons?.map((reason) => ({
-        id: reason.ReasonId,
-        label: reason.ReasonName,
-    }));
-    const referenceOptions = [
-        {
-            id: 1,
-            label: "Internal",
-        },
-        {
-            id: 2,
-            label: "External",
-        },
-    ];
     const groups = [
         {
             name: "senderInfo",
@@ -96,8 +81,6 @@ export default function FailedCons({
     ];
     const senderZoneOptions = createNewLabelObjects(data, "SenderState");
     const receiverZoneOptions = createNewLabelObjects(data, "ReceiverState");
-    const states = createNewLabelObjects(data, "State");
-    const departments = createNewLabelObjects(data, "Department");
     // Usage example remains the same
     const minKPIDate = getMinMaxValue(data, "KpiDatetime", 1);
     const maxKPIDate = getMinMaxValue(data, "KpiDatetime", 2);
@@ -113,8 +96,6 @@ export default function FailedCons({
 
     const minDeliveredDate = getMinMaxValue(data, "DeliveredDate", 1);
     const maxDeliveredDate = getMinMaxValue(data, "DeliveredDate", 2);
-
-    const Roles = ["1", "3", "4", "5"];
 
     const columns = [
         {
@@ -148,7 +129,9 @@ export default function FailedCons({
                     <span
                         className="underline text-blue-500 hover:cursor-pointer"
                         onClick={() => {
-                            navigate("/gtrs/incident", { state: { incidentId: data.IncidentId } });
+                            navigate("/gtrs/incident", {
+                                state: { incidentId: data.IncidentId },
+                            });
                         }}
                     >
                         {" "}
@@ -368,7 +351,6 @@ export default function FailedCons({
                 );
             },
         },
-       
     ];
     const newArray = columns.slice(0, -1);
     const [newColumns, setNewColumns] = useState();
@@ -415,7 +397,13 @@ export default function FailedCons({
             columnMapping,
             "Failed-Consignments.xlsx",
             customCellHandlers,
-            ["DespatchDate", "ArrivedDatetime", "DeliveredDate", "DeliveryRequiredDateTime", "KpiDatetime"]
+            [
+                "DespatchDate",
+                "ArrivedDatetime",
+                "DeliveredDate",
+                "DeliveryRequiredDateTime",
+                "KpiDatetime",
+            ]
         );
     };
 
@@ -452,27 +440,11 @@ export default function FailedCons({
         setFilteredData(updatedData);
     };
     const [selected, setSelected] = useState([]);
-    console.log(filteredData);
     return (
         <div className="mt-4">
             {/* <Sidebar /> */}
             {!newColumns ? (
-                <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
-                    <div className="flex items-center justify-center">
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
-                        ></div>
-                    </div>
-                    <div className="text-dark mt-4 font-bold">
-                        Please wait while we get the data for you.
-                    </div>
-                </div>
+                <AnimatedLoading />
             ) : (
                 <div className=" w-full bg-smooth ">
                     <div className="">

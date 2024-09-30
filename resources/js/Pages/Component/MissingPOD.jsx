@@ -14,11 +14,8 @@ import { useNavigate } from "react-router-dom";
 
 export default function MissingPOD({
     PerfData,
-    setActiveIndexGTRS,
     filterValue,
     setFilterValue,
-    setLastIndex,
-    setactiveCon,
     accData,
 }) {
     window.moment = moment;
@@ -311,7 +308,6 @@ export default function MissingPOD({
     ];
     return (
         <div>
-            {/* <Sidebar /> */}
             <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
                 <div className="sm:flex sm:items-center">
                     <div className="sm:flex  items-center w-full justify-between mt-6">
@@ -338,7 +334,7 @@ export default function MissingPOD({
                             setFilterValueElements={setFilterValue}
                             columnsElements={columns}
                         />
-                    </div>{" "}
+                    </div>
                 </div>
             </div>
         </div>

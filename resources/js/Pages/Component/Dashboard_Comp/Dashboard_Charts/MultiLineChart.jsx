@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import ReactDOM from "react-dom";
 import { Line } from "@ant-design/plots";
 
 const MultiChartLine = (props) => {
@@ -12,6 +11,7 @@ const MultiChartLine = (props) => {
         );
         setData(filteredData);
     }, [chartData]);
+    
     const config = {
         data,
         xField: "month",

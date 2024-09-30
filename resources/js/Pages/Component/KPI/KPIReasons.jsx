@@ -5,7 +5,7 @@ import SmallTableKPI from "./Components/KPISmallTable";
 import swal from "sweetalert";
 import axios from "axios";
 import { handleSessionExpiration } from '@/CommonFunctions';
-import GtamButton from "../GtamButton";
+import GtrsButton from "../GtrsButton";
 
 export default function KPIReasons({
     url,
@@ -124,7 +124,7 @@ export default function KPIReasons({
                         <div className="flex flex-col sm:flex-row gap-x-5 gap-y-3">
                             {editIndex != null ? (
                                 <div className="col-span-2">
-                                    <GtamButton
+                                    <GtrsButton
                                         name={"Cancel"}
                                         onClick={() => setEditIndex(null)}
                                         className="w-full "
@@ -133,7 +133,7 @@ export default function KPIReasons({
                             ) : null}
                             {canAddKpiReasons(userPermission) ? (
                                 <div className="col-span-2">
-                                    <GtamButton
+                                    <GtrsButton
                                         name={
                                             showAddRow ? "Cancel" : "Add Reason"
                                         }

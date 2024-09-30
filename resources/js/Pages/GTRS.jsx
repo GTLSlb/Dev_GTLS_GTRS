@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useEffect } from "react";
-import Charts from "./Component/Charts";
 import NoAccess from "@/Components/NoAccess";
 import { fetchApiData } from "@/CommonFunctions";
 import MainSidebar from "@/Components/Main-sidebar";
 import MainNavbar from "@/Components/Main-navbar";
+import AnimatedLoading from "@/Components/AnimatedLoading";
+import GtrsMain from "./Component/GtrsMain";
 
 export default function Gtrs({
     user,
@@ -141,7 +142,7 @@ export default function Gtrs({
 
                     <div className="bg-smooth h-full">
                         <div className="md:pl-20 pt-16 h-full">
-                            <Charts
+                            <GtrsMain
                                 transportData={transportData}
                                 setCusomterAccounts={setCusomterAccounts}
                                 kpireasonsData={kpireasonsData}
@@ -176,22 +177,7 @@ export default function Gtrs({
         }
     } else {
         return (
-            <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
-                <div className="flex items-center justify-center">
-                    <div
-                        className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
-                    ></div>
-                    <div
-                        className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
-                    ></div>
-                    <div
-                        className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
-                    ></div>
-                </div>
-                <div className="text-dark mt-4 font-bold">
-                    Please wait while we get the data for you.
-                </div>
-            </div>
+            <AnimatedLoading />
         );
     }
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
@@ -20,32 +20,13 @@ import { useNavigate } from "react-router-dom";
 
 const gtrsWebUrl = window.Laravel.gtrsWeb;
 
-const loadData = ({ skip, limit, sortInfo, filterValue }) => {
-    const url =
-        `${gtrsWebUrl}get-positions` +
-        "?skip=" +
-        skip +
-        "&limit=" +
-        limit +
-        "&sortInfo=" +
-        JSON.stringify(sortInfo) +
-        "&filterBy=" +
-        JSON.stringify(filterValue);
-
-    return fetch(url).then((response) => {
-        const totalCount = response.headers.get("X-Total-Count");
-        return response.json().then((data) => {
-            // const totalCount = data.pagination.total;
-            return Promise.resolve({ data, count: parseInt(totalCount) });
-        });
-    });
-};
-
 function ConsTrack({
     setFilterValue,
     filterValue,
 }) {
     const [selected, setSelected] = useState([]);
+
+    // Todo: Replace this with the actual request
     const [filteredData, setFilteredData] = useState([
         {
             id: 1,
@@ -1324,10 +1305,7 @@ function ConsTrack({
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [eventDetails, setEventDetails] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [datatoexport, setDatatoexport] = useState([]);
-    const [exportLoading, setExportLoading] = useState(false);
     const [categories, setCategories] = useState([]);
-    const [newColumns, setNewColumns] = useState([]);
     const navigate = useNavigate();
 
     const createNewLabelObjects = (data, fieldName) => {
@@ -1381,19 +1359,6 @@ function ConsTrack({
         return category ? category.event_category : "";
     }
 
-    function handleViewDetails(id) {
-        setLoading(true);
-        onOpen();
-        axios
-            .get(`${gtrsWebUrl}get-positions/${id}`)
-            .then((res) => {
-                setEventDetails(res.data);
-                setLoading(false);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }
     const handleClick = (coindex) => {
         navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
     }
@@ -1405,10 +1370,6 @@ function ConsTrack({
             header: "Cons No",
             group: "personalInfo",
             filterEditor: StringFilter,
-            // filterEditorProps: {
-            //     placeholder: "Name",
-            //     renderSettings: ({ className }) => filterIcon(className),
-            // },
             render: ({ value, data }) => {
                 return (
                     <span
@@ -1650,21 +1611,6 @@ function ConsTrack({
             ["DispatchDate", "DeliveryDate", "RDD", "CalculatedDelDate"]
         );
     }
-    const getexceldata = ({ skip, limit, sortInfo, filterValue }) => {
-        setExportLoading(true);
-        const url = `${gtrsWebUrl}get-positions`;
-
-        return fetch(url).then((response) => {
-            const totalCount = response.headers.get("X-Total-Count");
-            return response.json().then((data) => {
-                // const totalCount = data.pagination.total;
-                setDatatoexport(data);
-                handleDownloadExcel();
-            });
-        });
-    };
-
-    // const [filterValue, setFilterValue] = useState(defaultFilterValue);
 
     const customFilterTypes = Object.assign(
         {},
@@ -1734,34 +1680,6 @@ function ConsTrack({
         }
     );
 
-    const updateLocalData = (id, reason) => {
-        // Find the item in the local data with the matching id
-        const updatedData = filteredData.map((item) => {
-            if (item.ConsignmentId === id) {
-                // Update the reason of the matching item
-                return { ...item, ReasonId: reason };
-            }
-            return item;
-        });
-        setKPIData(updatedData);
-
-        setSenderStateOptions(
-            createNewLabelObjects(updatedData, "SenderState")
-        );
-        setReceiverStateOptions(
-            createNewLabelObjects(updatedData, "ReceiverState")
-        );
-        setReasonOptions(
-            kpireasonsData.map((reason) => ({
-                id: reason.ReasonId,
-                label: reason.ReasonName,
-            }))
-        );
-    };
-
-    const dataSource = useCallback(loadData, []);
-    const [hoverMessage, setHoverMessage] = useState("");
-    const [isMessageVisible, setMessageVisible] = useState(false);
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
             <div className="sm:flex sm:items-center">
@@ -1776,20 +1694,6 @@ function ConsTrack({
                     filteredData={filteredData}
                 />
             </div>
-            {/* <ReactDataGrid
-                idProperty="id"
-                handle={(ref) => (gridRef.current = ref ? ref.current : [])}
-                style={gridStyle}
-                columns={columns}
-                className={"rounded-lg shadow-lg overflow-hidden"}
-                showColumnMenuTool={false}
-                enableColumnAutosize={false}
-                filterValue={filterValue}
-                onFilterValueChange={setFilterValue}
-                pagination
-                dataSource={dataSource}
-                defaultLimit={15}
-            /> */}
             <TableStructure
                 gridRef={gridRef}
                 id={"ConsignmentId"}

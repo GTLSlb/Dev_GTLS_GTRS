@@ -9,18 +9,14 @@ import OtherReports from "./OtherReports";
 import { EyeIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { useNavigate } from "react-router-dom";
-import { formatDate } from "@canvasjs/charts";
+import { getFiltersDeliveryReport } from "@/Components/utils/filters";
 
 export default function DailyReportPage({
     url,
     AToken,
     dailyReportData,
-    user,
     currentUser,
-    userPermission,
     fetchDeliveryReport,
-    // setFilterValue,
-    // filterValue,
 }) {
     const navigate = useNavigate();
     const handleClick = (coindex) => {
@@ -94,177 +90,8 @@ export default function DailyReportPage({
     const minDate = getMinMaxValue("2022-01-01", "DESPATCHDATE", 1);
     const maxDate = getMinMaxValue("2024-12-31", "DESPATCHDATE", 2);
 
-    const [unileverCustomers, setUnileverCustomers] = useState([
-        {
-            CustomerId: 1,
-            CustomerName: "Woolworths",
-        },
-        {
-            CustomerId: 2,
-            CustomerName: "Metcash",
-        },
-    ]);
-
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
-    const [filterValue, setFilterValue] = useState([
-        {
-            name: "AccountNumber",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "ConsignmentNo",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "SenderName",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "SenderReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "SenderState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "ReceiverName",
-            operator: "contains",
-            type: "string",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "ReceiverReference",
-            operator: "contains",
-            type: "string",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "ReceiverState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "DeliveryInstructions",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "Comments",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "CorrectiveAction",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "PastComments",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "Report",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "GTLSReasonCode",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "GTLSComments",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "PastReasonCode",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "PastCorrectiveAction",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "POD",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "ConsignmentStatus",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "DespatchDateTime",
-            operator: "inrange",
-            type: "date",
-            value: {
-                start: minDate,
-                end: maxDate,
-            },
-        },
-        {
-            name: "DeliveryRequiredDateTime",
-            operator: "inrange",
-            type: "date",
-            value: {
-                start: minDate,
-                end: maxDate,
-            },
-        },
-        {
-            name: "DeliveredDateTime",
-            operator: "inrange",
-            type: "date",
-            value: {
-                start: minDate,
-                end: maxDate,
-            },
-        },
-    ]);
+    const [filterValue, setFilterValue] = useState(getFiltersDeliveryReport(minDate, maxDate));
 
     const groups = [
         {

@@ -1,18 +1,10 @@
 import { useState } from "react";
-import { Fragment } from "react";
-import { Listbox, Transition } from "@headlessui/react";
 import axios from "axios";
-import {
-    CheckIcon,
-    ChevronDoubleDownIcon,
-    ChevronDownIcon,
-} from "@heroicons/react/20/solid";
-import { useEffect } from "react";
 import swal from "sweetalert";
 import { AlertToast } from "@/permissions";
 import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
-import GtamButton from "../GtamButton";
 import { useLocation, useNavigate } from "react-router-dom";
+import GtrsButton from "../GtrsButton";
 
 function AddNewTransitDay({
     url,
@@ -406,12 +398,12 @@ function AddNewTransitDay({
                         </div>
                     </div>
                     <div className="flex w-full gap-x-2 justify-end">
-                        <GtamButton
+                        <GtrsButton
                             name={"Cancel"}
                             onClick={CancelHandle}
                             type={"button"}
                         />{" "}
-                        <GtamButton
+                        <GtrsButton
                             name={object ? "Edit" : "Create"}
                             type={"submit"}
                         />

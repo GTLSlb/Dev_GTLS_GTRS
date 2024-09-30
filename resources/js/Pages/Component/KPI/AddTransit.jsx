@@ -1,26 +1,13 @@
 import { useState } from "react";
-import { Fragment } from "react";
-import { Listbox, Transition } from "@headlessui/react";
 import axios from "axios";
-import {
-    CheckIcon,
-    ChevronDoubleDownIcon,
-    ChevronDownIcon,
-} from "@heroicons/react/20/solid";
-import { useEffect } from "react";
 import { handleSessionExpiration } from '@/CommonFunctions';
 import swal from "sweetalert";
-import GtamButton from "../GtamButton";
-
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
+import GtrsButton from "../GtrsButton";
 
 export default function AddTransit({
     url,
     AToken,
     currentUser,
-    userPermission,
     setTransitDay,
     setTransitDays,
     setActiveIndexGTRS,
@@ -460,12 +447,12 @@ export default function AddTransit({
                         </div>
                     </div>
                     <div className="flex w-full gap-x-2 justify-end">
-                        <GtamButton
+                        <GtrsButton
                             name={"Cancel"}
                             onClick={CancelHandle}
                             type={"submit"}
                         />{" "}
-                        <GtamButton
+                        <GtrsButton
                             name={object ? "Edit" : "Create"}
                             type={"submit"}
                         />

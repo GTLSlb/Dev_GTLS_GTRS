@@ -7,14 +7,14 @@ import { PencilIcon } from "@heroicons/react/20/solid";
 import { canAddTransitDays, canEditTransitDays } from "@/permissions";
 import { getApiRequest } from '@/CommonFunctions';
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
-import GtamButton from "../GtamButton";
+import AnimatedLoading from "@/Components/AnimatedLoading";
+import GtrsButton from "../GtrsButton";
 
 export default function TransitDays({
     transitDays,
     currentUser,
     setTransitDays,
     url,
-    AToken,
     filterValue,
     setFilterValue,
     userPermission,
@@ -321,22 +321,7 @@ export default function TransitDays({
     return (
         <div>
             {isFetching ? (
-                <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
-                    <div className="flex items-center justify-center">
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
-                        ></div>
-                    </div>
-                    <div className="text-dark mt-4 font-bold">
-                        Please wait while we get the data for you.
-                    </div>
-                </div>
+                <AnimatedLoading />
             ) : (
                 <div>
                     <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
@@ -346,7 +331,7 @@ export default function TransitDays({
                                     Transit Days
                                 </h1>
                                 {canAddTransitDays(userPermission) ? (
-                                    <GtamButton
+                                    <GtrsButton
                                         name={"Add +"}
                                         onClick={AddTransit}
                                     />

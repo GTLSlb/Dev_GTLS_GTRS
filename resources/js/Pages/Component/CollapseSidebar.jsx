@@ -296,17 +296,13 @@ const menu = [
 ];
 
 export default function CollapseSidebar({
-    activePage,
-    setActiveModel,
     setBroken,
     rtl,
-    activeModel,
     toggled,
     setToggled,
     currentUser,
     setCusomterAccounts,
     customerAccounts,
-    user,
     onData,
 }) {
     const [collapsed, setCollapsed] = useState(false);

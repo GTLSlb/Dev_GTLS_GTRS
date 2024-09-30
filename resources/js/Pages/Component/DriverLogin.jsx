@@ -5,15 +5,12 @@ import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import TableStructure from "@/Components/TableStructure";
-import {
-    formatDateToExcel,
-    getApiRequest,
-} from "@/CommonFunctions";
+import { formatDateToExcel, getApiRequest } from "@/CommonFunctions";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import ExportPopover from "@/Components/ExportPopover";
-
+import AnimatedLoading from "@/Components/AnimatedLoading";
 
 export default function DriverLogin({
     DriverData,
@@ -21,7 +18,6 @@ export default function DriverLogin({
     filterValue,
     setFilterValue,
     url,
-    AToken,
     currentUser,
 }) {
     window.moment = moment;
@@ -84,23 +80,6 @@ export default function DriverLogin({
 
     const [selected, setSelected] = useState([]);
 
-    const filterIcon = (className) => {
-        return (
-            <svg
-                className={className}
-                enable-background="new 0 0 24 24"
-                height="24px"
-                viewBox="0 0 24 24"
-                width="24px"
-            >
-                <g>
-                    <path d="M0,0h24 M24,24H0" fill="none" />
-                    <path d="M7,6h10l-5.01,6.3L7,6z M4.25,5.61C6.27,8.2,10,13,10,13v6c0,0.55,0.45,1,1,1h2c0.55,0,1-0.45,1-1v-6 c0,0,3.72-4.8,5.74-7.39C20.25,4.95,19.78,4,18.95,4H5.04C4.21,4,3.74,4.95,4.25,5.61z" />
-                    <path d="M0,0h24v24H0V0z" fill="none" />
-                </g>
-            </svg>
-        );
-    };
     const reference = createNewLabelObjects(DriverData, "DeviceCode");
     const version = createNewLabelObjects(
         DriverData,
@@ -308,24 +287,7 @@ export default function DriverLogin({
     return (
         <div>
             {/* <Sidebar /> */}
-            {isFetching && (
-                <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
-                    <div className="flex items-center justify-center">
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
-                        ></div>
-                    </div>
-                    <div className="text-dark mt-4 font-bold">
-                        Please wait while we get the data for you.
-                    </div>
-                </div>
-            )}
+            {isFetching && <AnimatedLoading />}
             {!isFetching && (
                 <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
                     <div className="sm:flex sm:items-center">

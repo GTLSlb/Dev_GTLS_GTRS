@@ -99,10 +99,6 @@ export default function ConsMap({ }) {
         east: 165.0,
         west: 105.0,
     };
-    const center = {
-        lat: (sender.lat + receiver.lat) / 2,
-        lng: (sender.lng + receiver.lng) / 2,
-    };
     const getIcon = (eventType) => {
         const mainCategory = Object.keys(eventTypeMapping).find((category) =>
             eventTypeMapping[category].includes(eventType)
@@ -301,14 +297,7 @@ export default function ConsMap({ }) {
                     }}
                     center={mapCenter}
                 >
-                    <TrafficLayer />
-                    {/* Marker for the Sender */}
-                    {/* <Marker position={sender} /> */}
-
-                    {/* Marker for the Receiver */}
-                    {/* <Marker position={receiver} label="Receiver" /> */}
-
-                    {/* Conditionally render DirectionsService to prevent repeated requests */}
+                    <TrafficLayer /> 
                     {!directionsRequested && (
                         <DirectionsService
                             options={{

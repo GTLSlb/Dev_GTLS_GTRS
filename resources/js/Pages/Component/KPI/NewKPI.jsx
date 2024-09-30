@@ -21,14 +21,11 @@ import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import ExportPopover from "@/Components/ExportPopover";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { useNavigate } from "react-router-dom";
+import AnimatedLoading from "@/Components/AnimatedLoading";
 
 function NewKPI({
     url,
-    userBody,
     currentUser,
-    setActiveIndexGTRS,
-    setLastIndex,
-    setactiveCon,
     filterValue,
     AToken,
     setFilterValue,
@@ -474,29 +471,7 @@ function NewKPI({
         }
     }, []);
 
-    useEffect(() => {
-        let arr = newColumns.map((item) => {
-            if (item?.name === "ReasonId") {
-                item.filterEditorProps = {
-                    ...item.filterEditorProps,
-                    dataSource: reasonOptions,
-                };
-            }
-            if (item?.name == "SenderState") {
-                item.filterEditorProps = {
-                    ...item.filterEditorProps,
-                    dataSource: senderStateOptions,
-                };
-            }
-            if (item?.name == "ReceiverState") {
-                item.filterEditorProps = {
-                    ...item.filterEditorProps,
-                    dataSource: receiverStateOptions,
-                };
-            }
-            return item;
-        });
-    }, [reasonOptions, receiverStateOptions, senderStateOptions]);
+
     const [statusMessage, setStatusMessage] = useState("");
     const messageDisplayTime = 3000; // Time in milliseconds (3000ms = 3 seconds)
     const clearStatusMessage = () => {
@@ -608,24 +583,8 @@ function NewKPI({
 
     return (
         <div>
-            {/* <Sidebar /> */}
             {isFetching && newColumns && columns ? (
-                <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
-                    <div className="flex items-center justify-center">
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
-                        ></div>
-                    </div>
-                    <div className="text-dark mt-4 font-bold">
-                        Please wait while we get the data for you.
-                    </div>
-                </div>
+                <AnimatedLoading />
             ) : (
                 <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
                     <div className="sm:flex sm:items-center">

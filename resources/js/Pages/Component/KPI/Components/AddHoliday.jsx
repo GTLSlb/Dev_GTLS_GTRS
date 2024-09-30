@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import swal from "sweetalert";
 import axios from "axios";
 import { handleSessionExpiration } from '@/CommonFunctions';
-import GtamButton from "../../GtamButton";
+import GtrsButton from "../../GtrsButton";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -255,7 +255,7 @@ export default function AddHoliday({
                     </div>
                 </div>
                 <div className="flex w-full justify-end">
-                    <GtamButton
+                    <GtrsButton
                         disabled={isLoading}
                         name={object ? "Edit" : "Create"}
                         type={"submit"}

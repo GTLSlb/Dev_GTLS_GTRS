@@ -16,6 +16,7 @@ import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import ExportPopover from "@/Components/ExportPopover";
 import { useNavigate } from "react-router-dom";
+import AnimatedLoading from "@/Components/AnimatedLoading";
 
 export default function AdditionalCharges({
     AdditionalData,
@@ -228,37 +229,11 @@ export default function AdditionalCharges({
             filterEditor: NumberFilter,
         },
     ];
-    const [hoverMessage, setHoverMessage] = useState("");
-    const [isMessageVisible, setMessageVisible] = useState(false);
-    const handleMouseEnter = () => {
-        if (AdditionalData.length === 0) {
-            setHoverMessage("No Data Found");
-            setMessageVisible(true);
-            setTimeout(() => {
-                setMessageVisible(false);
-            }, 1000);
-        }
-    };
     return (
         <div>
             {/* <Sidebar /> */}
             {isFetching && (
-                <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
-                    <div className="flex items-center justify-center">
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
-                        ></div>
-                    </div>
-                    <div className="text-dark mt-4 font-bold">
-                        Please wait while we get the data for you.
-                    </div>
-                </div>
+                <AnimatedLoading />
             )}
             {!isFetching && (
                 <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">

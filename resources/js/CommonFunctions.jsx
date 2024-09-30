@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
 import { PublicClientApplication } from "@azure/msal-browser";
+import { AlertToast } from "./permissions";
 
 
 const msalConfig = {

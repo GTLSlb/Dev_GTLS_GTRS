@@ -23,7 +23,6 @@ export default function KPIModalAddReason({
     const [kpiRow, setKPIRow] = useState(kpi);
     const [note, setNote] = useState("");
     const [isLoading, SetIsLoading] = useState(false);
-    const [audit, setAudit] = useState();
     const [reasonname, setReasonName] = useState();
     const [selected, setSelected] = useState();
     const [showDesc, setShowDesc] = useState();

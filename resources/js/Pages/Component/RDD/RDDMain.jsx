@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import AddRDDReason from "../AddRDDReason";
-import RDDreason from "./RDD";
 import swal from "sweetalert";
 import axios from "axios";
 import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
+import AnimatedLoading from "@/Components/AnimatedLoading";
+import RDDTable from "./RDDTable";
 
 export default function RDDMain({
     setActiveIndexGTRS,
@@ -26,7 +26,6 @@ export default function RDDMain({
     currentUser,
     rddReasons,
     setrddReasons,
-    userBody,
     oldestDate,
     latestDate,
 }) {
@@ -157,82 +156,15 @@ export default function RDDMain({
             console.error("Error fetching data:", error);
         }
     };
-    const [activeComponentIndex, setActiveComponentIndex] = useState(0);
-    const [roleId, setRoleId] = useState(null);
-    const [shouldShowList, setShouldShowList] = useState(false);
 
-    const Roles = ["1", "3", "4", "5"];
-
-    useEffect(() => {
-        if (currentUser && currentUser.role_id) {
-            setRoleId(currentUser.role_id);
-        }
-        setShouldShowList(
-            currentUser?.role_id === 1 || currentUser?.role_id === 3
-        );
-    }, [currentUser]);
-    const components = [
-        <RDDreason
-            url={url}
-            accData={accData}
-            rddData={rddData}
-            filterValue={filterValue}
-            setFilterValue={setFilterValue}
-            setrddData={setrddData}
-            debtorsData={debtorsData}
-            currentUser={currentUser}
-            userPermission={userPermission}
-            setActiveIndexGTRS={setActiveIndexGTRS}
-            setactiveCon={setactiveCon}
-            setLastIndex={setLastIndex}
-            EDate={EDate}
-            setEDate={setEDate}
-            SDate={SDate}
-            AToken={AToken}
-            setSDate={setSDate}
-            rddReasons={rddReasons}
-            oldestDate={oldestDate}
-            latestDate={latestDate}
-        />,
-        <AddRDDReason
-            rddReasons={rddReasons}
-            setrddReasons={setrddReasons}
-            currentUser={currentUser}
-            userPermission={userPermission}
-            url={url}
-            AToken={AToken}
-        />,
-    ];
-
-    const handleItemClick = (index) => {
-        setActiveComponentIndex(index);
-    };
-
-    // Determine whether to show the list or only the first component based on the role ID
-    //   const shouldShowList = currentUser?.role_id === 1 || currentUser?.role_id === 3;
     return (
         <div>
             {isFetching || isFetchingReasons ? (
-                <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
-                    <div className="flex items-center justify-center">
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
-                        ></div>
-                    </div>
-                    <div className="text-dark mt-4 font-bold">
-                        Please wait while we get the data for you.
-                    </div>
-                </div>
+                <AnimatedLoading />
             ) : (
                 <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
                     <div className="mt-0">
-                        <RDDreason
+                        <RDDTable
                             url={url}
                             accData={accData}
                             rddData={rddData}

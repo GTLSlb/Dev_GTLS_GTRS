@@ -5,6 +5,7 @@ import SafetyRepChart from "./safetyComp/safetyRepChart";
 import AddSafetyType from "./safetyComp/AddSafety/safetyTypes/AddSafetyType";
 import { canViewSafetyType } from "@/permissions";
 import { getApiRequest } from "@/CommonFunctions";
+import AnimatedLoading from "@/Components/AnimatedLoading";
 
 export default function SafetyRep({
     accData,
@@ -68,27 +69,12 @@ export default function SafetyRep({
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     const [filteredData, setFilteredData] = useState(null);
     const [selectedTypes, setSelectedTypes] = useState([]);
-    const [activeTab, setActiveTab] = useState("first");
     const [currentPage, setCurrentPage] = useState(0);
     const [isDataEdited, setDataEdited] = useState(false);
     const [isFetching, setIsFetching] = useState();
     const [isFetchingTypes, setIsFetchingTypes] = useState();
-    const [isFetchingCauses, setIsFetchingCauses] = useState();
+    const [isFetchingCauses, setIsFetchingCauses] = useState(); 
 
-    const getUniqueTypes = () => {
-        const filteredTypes = safetyTypes?.reduce((acc, data) => {
-            if (!acc.find((item) => item.value === data.SafetyTypeId)) {
-                acc.push({
-                    value: data.SafetyTypeId,
-                    label: data.SafetyTypeName,
-                });
-            }
-
-            return acc;
-        }, []);
-        return filteredTypes;
-    };
-    const uniqueTypes = getUniqueTypes();
     useEffect(() => {
         if (safetyDataState.length === 0) {
             setIsFetching(true);
@@ -181,34 +167,7 @@ export default function SafetyRep({
         setFilteredData(filtered);
         setCurrentPage(0);
     };
-    const customStyles = {
-        control: (provided) => ({
-            ...provided,
-
-            // Add more styles here as needed
-        }),
-        option: (provided, state) => ({
-            ...provided,
-            color: "black",
-            // Add more styles here as needed
-        }),
-        multiValue: (provided) => ({
-            ...provided,
-            width: "auto",
-            overflow: "hidden",
-        }),
-        valueContainer: (provided) => ({
-            ...provided,
-            width: "400px",
-            maxHeight: "75px", // Set the maximum height for the value container
-            overflow: "auto", // Enable scrolling if the content exceeds the maximum height
-            // fontSize: '10px',
-        }),
-        inputContainer: (provided) => ({
-            ...provided,
-        }),
-        // Add more style functions here as needed
-    };
+    
     let components = [
         <SafetyRepTable
             url={url}
@@ -255,22 +214,7 @@ export default function SafetyRep({
     return (
         <div>
             {isFetching || isFetchingCauses || isFetchingTypes ? (
-                <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
-                    <div className="flex items-center justify-center">
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
-                        ></div>
-                    </div>
-                    <div className="text-dark mt-4 font-bold">
-                        Please wait while we get the data for you.
-                    </div>
-                </div>
+                <AnimatedLoading />
             ) : (
                 <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
                     <div className="sm:flex sm:items-center">

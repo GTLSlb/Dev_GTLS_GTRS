@@ -820,7 +820,6 @@ function TraffiComp() {
         const url =
             `${gtrsWebUrl}get-positions`;
 
-        console.log(skip, limit, sortInfo, filterValue);
         return fetch(url).then((response) => {
             const totalCount = response.headers.get("X-Total-Count");
             return response.json().then((data) => {

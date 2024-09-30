@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import FailedCons from "./FailedCons";
 import swal from "sweetalert";
 import axios from "axios";
-import { handleSessionExpiration } from '@/CommonFunctions';
+import { handleSessionExpiration } from "@/CommonFunctions";
+import AnimatedLoading from "@/Components/AnimatedLoading";
 
 export default function FailedConsMain({
     url,
@@ -29,11 +30,8 @@ export default function FailedConsMain({
     oldestDate,
     latestDate,
 }) {
-    const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     const [isFetching, setIsfetching] = useState();
-    const [roleId, setRoleId] = useState(null);
-    const [shouldShowList, setShouldShowList] = useState(false);
-    const Roles = ["1", "3", "4"];
+
     useEffect(() => {
         if (!failedReasons) {
             setIsfetching(true);
@@ -81,68 +79,27 @@ export default function FailedConsMain({
             console.error("Error fetching data:", error);
         }
     };
-    useEffect(() => {
-        if (currentUser && currentUser.role_id) {
-            setRoleId(currentUser.role_id);
-        }
-        setShouldShowList(
-            currentUser?.role_id === 1 || currentUser?.role_id === 3
-        );
-    }, [currentUser]);
 
-    const handleItemClick = (index) => {
-        setActiveComponentIndex(index);
-    };
-
-    // Determine whether to show the list or only the first component based on the role ID
-    //   const shouldShowList = currentUser?.role_id === 1 || currentUser?.role_id === 3;
     return (
         <div>
             {isFetching ? (
-                <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
-                    <div className="flex items-center justify-center">
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
-                        ></div>
-                    </div>
-                    <div className="text-dark mt-4 font-bold">
-                        Please wait while we get the data for you.
-                    </div>
-                </div>
+                <AnimatedLoading />
             ) : (
                 <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                        <FailedCons
-                            url={url}
-                            failedReasons={failedReasons}
-                            currentUser={currentUser}
-                            userPermission={userPermission}
-                            accData={accData}
-                            gtccrUrl={gtccrUrl}
-                            setIncidentId={setIncidentId}
-                            setActiveIndexGTRS={setActiveIndexGTRS}
-                            PerfData={PerfData}
-                            setactiveCon={setactiveCon}
-                            setLastIndex={setLastIndex}
-                            IDfilter={IDfilter}
-                            filterValue={filterValue}
-                            setFilterValue={setFilterValue}
-                            EDate={EDate}
-                            AToken={AToken}
-                            setEDate={setEDate}
-                            SDate={SDate}
-                            setSDate={setSDate}
-                            setPerfData={setPerfData}
-                            oldestDate={oldestDate}
-                            latestDate={latestDate}
-                        />
-                    </div>
+                    <FailedCons
+                        url={url}
+                        failedReasons={failedReasons}
+                        currentUser={currentUser}
+                        userPermission={userPermission}
+                        accData={accData}
+                        PerfData={PerfData}
+                        filterValue={filterValue}
+                        setFilterValue={setFilterValue}
+                        AToken={AToken}
+                    />
+                </div>
             )}
         </div>
     );
+
 }

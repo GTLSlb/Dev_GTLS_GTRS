@@ -43,10 +43,7 @@ const BasicColumnCharts = (props) => {
             <header className="px-5 py-4 border-b border-slate-100">
                 <h2 className="font-semibold text-slate-800">{chartTitle}</h2>
             </header>
-            {/*  <div className="">
-                
-            </div> */}
-                <Column {...config} className="p-4"/>
+            <Column {...config} className="p-4" />
         </div>
     );
 };
