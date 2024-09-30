@@ -2352,7 +2352,7 @@ export default function charts({
                     <main className="w-full bg-gray-50 h-full overflow-y-auto">
                         <div
                             style={{ marginBottom: "16px" }}
-                            className="fixed left-0 top-20 z-50"
+                            className="fixed left-0 top-20 z-10"
                         >
                             {broken && (
                                 <Button

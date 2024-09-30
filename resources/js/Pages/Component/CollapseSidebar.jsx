@@ -486,54 +486,9 @@ export default function CollapseSidebar({
         return active;
     }
 
-    const filterNavigation = (navigation, user) => {
-        // return navigation.filter((navItem) => {
-        //     // Check if the navigation item has sub-options
-        //     if (navItem.options) {
-        //         // Filter options based on user permissions
-        //         navItem.options = navItem.options.filter((option) =>
-        //             user?.Pages?.some(
-        //                 (userPage) =>
-        //                     userPage?.PageName === option.name &&
-        //                     userPage?.Features?.some(
-        //                         (feature) =>
-        //                             feature.FunctionName === option.feature
-        //                     )
-        //             )
-        //         );
-        //         // Include the navigation item only if it has any permitted options
-        //         return navItem.options.length > 0;
-        //     } else {
-        //         // For navigation items without options, check the feature directly
-        //         return user?.Pages?.some(
-        //             (userPage) =>
-        //                 userPage?.PageName === navItem.name &&
-        //                 userPage?.Features?.some(
-        //                     (feature) =>
-        //                         feature?.FunctionName === navItem?.feature
-        //                 )
-        //         );
-        //     }
-        // });
-        if (user && Object.keys(user).length !== 0) {
-            let gtrsElements = navigation;
-            gtrsElements = navigation?.filter((option) => {
-                return user?.some((feature) => {
-                    if (option.options && option.options.length > 0) {
-                        return option.options.some((childOption) => {
-                            return feature.FunctionName === childOption.feature;
-                        });
-                    } else {
-                        return feature.FunctionName === option.feature;
-                    }
-                });
-            });
-            setSidebarElements(gtrsElements);
-        }
-    };
-
+    
     return (
-        <div className="h-full relative z-10">
+        <div className="h-full relative z-20">
             <Sidebar
                 collapsed={collapsed} // collapsed the menu
                 toggled={toggled}
