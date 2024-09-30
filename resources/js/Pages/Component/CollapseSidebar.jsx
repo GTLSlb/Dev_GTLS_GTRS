@@ -1,14 +1,12 @@
-import { Button, Divider, Select, SelectItem } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import {
     Sidebar,
     Menu,
     MenuItem,
     menuClasses,
-    SubMenu,
 } from "react-pro-sidebar";
-import { MenuIcon } from "@/assets/svgs/MenuIcon.jsx";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import TaskIcon from "@mui/icons-material/Task";
 import ReportIcon from "@mui/icons-material/Report";
 

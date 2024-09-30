@@ -3,7 +3,6 @@ import { Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import {
     CheckIcon,
-    ChevronDoubleDownIcon,
     ChevronDownIcon,
 } from "@heroicons/react/20/solid";
 import { useEffect } from "react";

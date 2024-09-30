@@ -1,7 +1,4 @@
 
-import { useLayoutEffect, useRef, useState } from "react";
-import { format, parse } from "date-fns";
-import { useEffect } from "react";
 import { Bartest } from "@/Components/charts/bartest";
 
 export default function GtrsDashboard(dashData) {

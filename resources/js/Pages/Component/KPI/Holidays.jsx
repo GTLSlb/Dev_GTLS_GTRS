@@ -1,19 +1,14 @@
-import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
-import BoolFilter from "@inovua/reactdatagrid-community/BoolFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
-import Button from "@inovua/reactdatagrid-community/packages/Button";
 import { useState } from "react";
 import TableStructure from "@/Components/TableStructure";
 import { useEffect, useRef } from "react";
 import moment from "moment";
-import axios from "axios";
 import AddHoliday from "./Components/AddHoliday";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import { canAddHolidays, canEditHolidays } from "@/permissions";
-import swal from "sweetalert";
-import { getApiRequest, handleSessionExpiration } from "@/CommonFunctions";
+import { getApiRequest } from "@/CommonFunctions";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import GtamButton from "../GtamButton";
 

@@ -20,12 +20,8 @@ import { useNavigate } from "react-router-dom";
 export default function AdditionalCharges({
     AdditionalData,
     setAdditionalData,
-    setActiveIndexGTRS,
-    setLastIndex,
     filterValue,
     setFilterValue,
-    setactiveCon,
-    AToken,
     currentUser,
     url,
 }) {

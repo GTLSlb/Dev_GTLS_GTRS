@@ -1,28 +1,22 @@
 import ReactDataGrid from "@inovua/reactdatagrid-community";
-import filter from "@inovua/reactdatagrid-community/filter";
 import "@inovua/reactdatagrid-community/index.css";
 import { useEffect } from "react";
 import { useCallback } from "react";
-import { useRef } from "react";
 import { useState } from "react";
 
 export default function TableStructure({
     tableDataElements,
-    settableDataElements,
     filterValueElements,
     setFilterValueElements,
     groupsElements,
     columnsElements,
     filterTypesElements,
-    setFilterTypesElements,
-    setSelected,
     gridRef,
     selected,
     id,
 }) {
 
     const [tableData, setTableData] = useState(tableDataElements);
-    const [currentPage, setCurrentPage] = useState(4);
     const [filters, setFilters] = useState(filterValueElements);
     const [selectedRows, setSelectedRows] = useState();
     const [groups, setGroups] = useState(groupsElements);

@@ -1,10 +1,8 @@
-import { useLayoutEffect, useRef, useState } from "react";
-import axios from "axios";
+import { useState } from "react";
 import { useEffect } from "react";
 import "../../css/scroll.css";
 import moment from "moment";
-import swal from "sweetalert";
-import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
+import { getApiRequest } from '@/CommonFunctions';
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 export default function ConsignmentD({
@@ -535,12 +533,6 @@ export default function ConsignmentD({
                                                     >
                                                         Description
                                                     </th>
-                                                    {/* <th
-                                                        scope="col"
-                                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                                    >
-                                                        Unit
-                                                    </th> */}
                                                     <th
                                                         scope="col"
                                                         className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
@@ -600,9 +592,6 @@ export default function ConsignmentD({
                                                                     item.Description
                                                                 }
                                                             </td>
-                                                            {/* <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-600 sm:pl-3">
-                                                                {item.Unit}
-                                                            </td> */}
                                                             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-600 sm:pl-3">
                                                                 {item.Quantity}
                                                             </td>
@@ -765,12 +754,6 @@ export default function ConsignmentD({
                                         <table className="min-w-full divide-y divide-gray-300 border-t mb-5">
                                             <thead>
                                                 <tr>
-                                                    {/* <th
-                                                        scope="col"
-                                                        className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"
-                                                    >
-                                                        Type
-                                                    </th> */}
                                                     <th
                                                         scope="col"
                                                         className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
@@ -789,9 +772,6 @@ export default function ConsignmentD({
                                                 {Consignment[0].PickupDelInfo?.map(
                                                     (item) => (
                                                         <tr className=" ">
-                                                            {/* <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-600 sm:pl-3">
-                                                                {item.Type}
-                                                            </td> */}
                                                             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-600 sm:pl-3">
                                                                 {item.PODdateTime.replace(
                                                                     "T",
@@ -823,30 +803,6 @@ export default function ConsignmentD({
                     ) : (
                         ""
                     )}
-                    {/* <div className="overflow-hidden mx-3 mt-8 bg-white shadow sm:rounded-xl shadow-lg  mx-auto">
-                            <div className="px-4 pb-3 sm:px-6">
-                                <div className="px-4 py-5 sm:px-6">
-                                    <h3 className="text-base font-semibold leading-6 text-gray-900">
-                                        POD Details
-                                    </h3>
-                                </div>
-                                <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
-                                    <dl className="sm:divide-y sm:divide-gray-200">
-                                        <div className="py-4 sm:grid sm:grid-cols-6 sm:gap-4 sm:py-5 sm:px-6">
-                                            <dt className="text-sm font-medium text-gray-500 col-span-3">
-                                                file.pdf
-                                            </dt>
-                                            <dd className="mt-1 text-sm text-gray-900  sm:mt-0 col-span-2">
-                                                Download
-                                            </dd>
-                                            <dt className="text-sm font-medium text-gray-500">
-                                                Click to enlarge
-                                            </dt>
-                                        </div>
-                                    </dl>
-                                </div>
-                                </div>
-                            </div> */}
                 </div>
             </div>
         );

@@ -1,6 +1,4 @@
 import { useState } from "react";
-import Details from "./consPerf/Details";
-import General from "./consPerf/General";
 import Navbar from "./consPerf/navbar";
 import notFound from "../../assets/pictures/NotFound.png";
 import { useEffect } from "react";

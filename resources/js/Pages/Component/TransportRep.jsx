@@ -2,8 +2,6 @@ import { useState } from "react";
 import "../../../css/reactdatagrid.css";
 import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
-import ExcelJS from "exceljs";
-import { saveAs } from "file-saver";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 import TableStructure from "@/Components/TableStructure";
@@ -11,24 +9,17 @@ import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import moment from "moment";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
-import ReactDataGrid from "@inovua/reactdatagrid-community";
 import { useEffect, useRef } from "react";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
 function TransportRep({
-    setActiveIndexGTRS,
-    setactiveCon,
     transportData,
     minDate,
     maxDate,
     filterValue,
     setFilterValue,
-    setLastIndex,
     accData,
 }) {
     const RDDTimeFilter = ({ filterValue, onChange }) => {
