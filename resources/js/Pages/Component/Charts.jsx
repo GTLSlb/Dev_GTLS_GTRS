@@ -35,7 +35,6 @@ import { Button } from "@nextui-org/react";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import ConsMap from "./TrafficPage/ConsMap";
 import { Routes, Route } from "react-router-dom";
-import NoAccess from "@/Components/NoAccess";
 import NotFoundPage from "../NotFoundPage";
 
 export default function charts({

@@ -12,8 +12,6 @@ import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { useNavigate } from "react-router-dom";
 export default function GtrsCons({
-    setActiveIndexGTRS,
-    setactiveCon,
     consData,
     minDate,
     maxDate,

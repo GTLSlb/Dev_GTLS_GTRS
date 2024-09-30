@@ -1,17 +1,10 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { PencilIcon } from "@heroicons/react/24/outline";
-import axios from "axios";
-import { useEffect } from "react";
-import AddFailedModal from "../../../modals/AddFailedModal";
 import notFound from "../../../../../assets/pictures/NotFound.png";
 import AddSafetyTypeModal from "./AddSafetyTypeModel";
 import { canAddSafetyType, canEditSafetyType } from "@/permissions";
-import swal from 'sweetalert';
-import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
+import { getApiRequest } from '@/CommonFunctions';
 
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
 export default function AddSafetyType({
     safetyTypes,
     setSafetyTypes,

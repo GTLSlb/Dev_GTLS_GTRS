@@ -1,6 +1,5 @@
 import { Head } from "@inertiajs/react";
 import jobs from "../assets/pictures/jobs.webp";
-import pallet from "../assets/pictures/pallet.webp";
 import { useState, useEffect } from "react";
 
 import Navbars from "./Component/navbars";

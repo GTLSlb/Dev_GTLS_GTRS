@@ -1,6 +1,4 @@
 import ReactModal from "react-modal";
-import TextInput from "./TextInput";
-import InputError from "./InputError";
 import { useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";

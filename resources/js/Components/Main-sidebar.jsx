@@ -1,24 +1,12 @@
 import {
     DocumentChartBarIcon,
-    CogIcon,
     HomeIcon,
-    PhotoIcon,
-    GlobeAltIcon,
-    ArrowDownIcon,
-    Squares2X2Icon,
-    UserGroupIcon,
     XMarkIcon,
-    HiLogout,
-    Bars3Icon,
-    BookmarkSquareIcon,
-    UserMinusIcon,
     DocumentMagnifyingGlassIcon,
-    PencilIcon,
     UsersIcon,
     ArrowRightOnRectangleIcon,
     PencilSquareIcon,
     QuestionMarkCircleIcon,
-    ArrowLeftOnRectangleIcon,
     ChevronDownIcon,
 } from "@heroicons/react/24/outline";
 import {
@@ -29,7 +17,7 @@ import {
 } from "react-headless-accordion";
 import { useEffect } from "react";
 import { Fragment, useState } from "react";
-import { Dialog, Menu, Transition } from "@headlessui/react";
+import { Dialog, Transition } from "@headlessui/react";
 import tiger from "../assets/pictures/tiger.png";
 import JAIX from "../assets/partners/JAIX.webp";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";

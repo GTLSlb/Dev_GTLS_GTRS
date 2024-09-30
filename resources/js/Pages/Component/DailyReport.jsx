@@ -2,9 +2,6 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import { useDownloadExcel, downloadExcel } from "react-export-table-to-excel";
-import { PencilIcon } from "@heroicons/react/24/outline";
-import ModalRDD from "@/Components/modalRDD";
-import Select from "react-select";
 import notFound from "../../assets/pictures/NotFound.png"
 import React from "react";
 import Checkbox from "@mui/material/Checkbox";
@@ -14,32 +11,20 @@ import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import {
     ChevronDownIcon,
-    PhoneIcon,
-    PlayCircleIcon,
 } from "@heroicons/react/20/solid";
-import {
-    ArrowPathIcon,
-    ChartPieIcon,
-    CursorArrowRaysIcon,
-    FingerPrintIcon,
-    SquaresPlusIcon,
-} from "@heroicons/react/24/outline";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 export default function DailyReport({
     setActiveIndexGTRS,
     setactiveCon,
-    consData,
     debtorsData,
-    PerfData,
     setLastIndex,
     accData,
     EDate,
     setEDate,
     SDate,
     setSDate,
-    currentUser,
 }) {
 
 const temp = [

@@ -1,8 +1,6 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { PencilIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
-import { useEffect } from "react";
-import AddFailedModal from "@/Pages/Component/modals/AddFailedModal";
 import notFound from "../../assets/pictures/NotFound.png";
 import AddRDDReasonModal from "./modals/AddRDDReasonModal";
 import { canAddRDDReasons, canEditRDDReasons } from "@/permissions";

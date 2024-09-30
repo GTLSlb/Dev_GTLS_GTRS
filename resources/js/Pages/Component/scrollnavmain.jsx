@@ -1,14 +1,13 @@
-import { useState, useEffect, useRef, useLayoutEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { Dialog } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { PhoneIcon } from "@heroicons/react/20/solid";
-import goldTigerLogo from "../../assets/pictures/goldTigerLogo.webp";
 import LogoWhite from "../../assets/pictures/LogoWhite.webp";
 import { Link as ScrollLink } from "react-scroll";
 import { Popover, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import { Link } from "@inertiajs/inertia-react";
-import { ChevronDownIcon, BellAlertIcon } from "@heroicons/react/20/solid";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 const navigation = [
     { id:1, name: "About Us", href: "aboutus", link: false },

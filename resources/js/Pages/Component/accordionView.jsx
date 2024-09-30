@@ -1,4 +1,3 @@
-import { useState } from "react";
 
 export default function Accordion({ id, title, children, openAccordionId, setOpenAccordionId }) {
   const isOpen = id === openAccordionId;
