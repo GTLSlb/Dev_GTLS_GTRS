@@ -368,7 +368,7 @@ export default function FailedCons({
                 );
             },
         },
-       
+
     ];
     const newArray = columns.slice(0, -1);
     const [newColumns, setNewColumns] = useState();
@@ -452,7 +452,7 @@ export default function FailedCons({
         setFilteredData(updatedData);
     };
     const [selected, setSelected] = useState([]);
-    console.log(filteredData);
+
     return (
         <div className="mt-4">
             {/* <Sidebar /> */}

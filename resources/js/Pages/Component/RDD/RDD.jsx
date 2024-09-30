@@ -192,8 +192,7 @@ export default function RDDreason({
                     <span
                         className="underline text-blue-500 hover:cursor-pointer"
                         onClick={() => {
-                            setIncidentId(data.IncidentId);
-                            setActiveIndexGTRS(22);
+                            navigate("/gtrs/incident", { state: { incidentId: data.IncidentId } });
                         }}
                     >
                         {" "}

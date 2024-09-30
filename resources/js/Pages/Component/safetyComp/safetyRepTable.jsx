@@ -37,7 +37,7 @@ export default function SafetyRepTable({
 }) {
     window.moment = moment;
     const minDate = getMinMaxValue(safetyData, "OccuredAt", 1);
-    const maxDate = getMinMaxValue(safetyData, "OccuredAt", 2);
+    const maxDate = getMinMaxValue(safetyData, "OccuredAt", 3);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpendesc, setIsModalOpendesc] = useState(false);

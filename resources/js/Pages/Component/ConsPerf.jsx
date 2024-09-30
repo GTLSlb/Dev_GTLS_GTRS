@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 export default function ConsPerf({
     PerfData,
@@ -228,6 +229,7 @@ export default function ConsPerf({
             saveAs(blob, "Performance-Report.xlsx");
         });
     }
+
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
             <div className="sm:flex sm:items-center">
@@ -237,9 +239,10 @@ export default function ConsPerf({
                     </h1>
                     <button
                         onClick={handleDownloadExcel}
-                        className="text-white bg-dark hover:bg-dark  font-medium rounded-lg text-sm px-5 py-2 text-center mr-2 dark:bg-gray-800 dark:hover:bg-gray-600 dark:focus:ring-blue-800"
+                        className="flex items-center h-[36px] text-white bg-dark hover:bg-dark rounded-md px-4 py-2 text-xs font-medium leading-4 text-center mr-2 dark:bg-gray-800 dark:hover:bg-gray-600 dark:focus:ring-blue-800"
                     >
                         Export
+                        <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
                     </button>
                 </div>
             </div>

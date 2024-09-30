@@ -34,6 +34,9 @@ export function getMinMaxValue(data, fieldName, identifier) {
         resultDate = new Date(sortedData[0][fieldName]);
     } else if (identifier === 2) {
         resultDate = new Date(sortedData[sortedData.length - 1][fieldName]);
+    }else if (identifier === 3) {
+        resultDate = new Date(sortedData[sortedData.length - 1][fieldName]);
+        resultDate.setDate(resultDate.getDate() + 1);
     } else {
         return null;
     }

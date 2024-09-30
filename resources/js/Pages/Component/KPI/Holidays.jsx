@@ -237,6 +237,7 @@ export default function Holidays({
                                     ) : (
                                         <GtamButton
                                             name={"Add holiday"}
+                                            className={"h-[36px]"}
                                             onClick={ToggleShow}
                                         />
                                     )}

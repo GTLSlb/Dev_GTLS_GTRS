@@ -46,8 +46,6 @@ export default function Incident({
                     }
                 });
                 parsedDataPromise.then((parsedData) => {
-                    console.log('parsed',parsedData);
-
                     setFilters(parsedData);
                     // setIsLoadingapps(false);
                 });
@@ -136,7 +134,7 @@ export default function Incident({
     }, []);
 
     return (
-        <div className="relative p-5">
+        <div className="relative px-4 sm:px-6 lg:px-8 py-3">
 
 
             {incident && filters && mainCauses ? (

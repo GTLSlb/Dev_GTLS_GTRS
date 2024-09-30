@@ -44,7 +44,6 @@ export const exportToExcel = (jsonData, columnMapping, fileName, customCellHandl
     const calculateRowHeight = (cellValue) => {
         if (!cellValue) return 20; // Default row height
         const lines = cellValue.split('\n').length;
-        console.log(lines, Math.max(20, lines * 25));
         return Math.max(20, lines * 25); // Dynamic height, adjust 25px per line
     };
 

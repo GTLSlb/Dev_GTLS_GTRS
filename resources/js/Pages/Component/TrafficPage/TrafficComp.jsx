@@ -833,6 +833,7 @@ function TraffiComp() {
     };
 
     const [filterValue, setFilterValue] = useState(defaultFilterValue);
+console.log(filterValue);
 
     const dataSource = useCallback(loadData, []);
     const [hoverMessage, setHoverMessage] = useState("");
@@ -847,7 +848,7 @@ function TraffiComp() {
                     </h1>
                 </div>
                 <Popover className="relative ">
-                    <button >
+                    <button disabled={exportLoading || filterValue.length === 0}>
                         <Popover.Button
                             className={`inline-flex items-center w-[5.5rem] h-[36px] rounded-md border ${
                                 // datatoexport?.length === 0
