@@ -35,6 +35,7 @@
             gtamUrl: "{{ env('GTAM_API_URL') }}",
             appDomain: "{{ env('SESSION_DOMAIN') }}",
             appUrl: "{{ env('APP_URL') }}",
+            gtrsWeb: "{{ env('GTRS_WEB_URL') }}",
             azureCallback: "{{ env('AZURE_CALLBACK_URL') }}",
         };
     </script>

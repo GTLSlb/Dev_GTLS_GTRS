@@ -287,6 +287,15 @@ const menu = [
         url: "/gtrs/consignment-tracking",
     },
     {
+        id: 25,
+        name: "Consignment Tracking 2",
+        href: "#",
+        icon: ClipboardDocumentIcon,
+        current: false,
+        feature: "View_Tracking2",
+        url: "/gtrs/consignment-tracking-2",
+    },
+    {
         id: 24,
         name: "Delivery Report",
         href: "#",
@@ -295,6 +304,7 @@ const menu = [
         feature: "DailyReport_View",
         url: "/gtrs/delivery-report",
     },
+
 ];
 
 export default function CollapseSidebar({

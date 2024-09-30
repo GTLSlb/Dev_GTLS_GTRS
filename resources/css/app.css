@@ -6,6 +6,10 @@
   height: 100%;
 }
 
+.input-field[type=email] {
+  border: 0px !important; 
+}
+
 .login-dropdown-option:hover{
   background-color: red !important;
 }
