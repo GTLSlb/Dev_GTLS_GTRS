@@ -483,60 +483,9 @@ export default function CollapseSidebar({
         return active;
     }
 
-    useEffect(() => {
-        if (user && Object.keys(user).length !== 0) {
-            const currentId = JSON.parse(localStorage.getItem("current"));
-            if (currentId) {
-            const updatedElements = sidebarElements?.map((element) => {
-                if (currentId == 12 || currentId == 13 || currentId == 14 || currentId == 17 || currentId == 18) {
-                    if (element.options) {
-                        return {
-                            ...element,
-                            current: true,
-                            options: element.options.map((option) => {
-                                if (option.id == currentId) {
-                                    return { ...option, current: true };
-                                } else {
-                                    return { ...option, current: false };
-                                }
-                            }),
-                        };
-                    } else {
-                        if (element.id === currentId) {
-                            return { ...element, current: true };
-                        } else {
-                            return { ...element, current: false };
-                        }
-                    }
-                } else {
-                    if (element.options) {
-                    return {
-                        ...element,
-                        current: false,
-                        ...(element.options
-                            ? {
-                                  options: element.options.map((option) => {
-                                      return { ...option, current: false };
-                                  }),
-                              }
-                            : {}),
-                    };
-                    } else {
-                        if (element.id === currentId) {
-                            return { ...element, current: true };
-                        } else {
-                            return { ...element, current: false };
-                        }
-                    }
-                }
-            });
-            setSidebarElements(updatedElements);
-        }
-        }
-      }, [user]);
-
+    
     return (
-        <div className="h-full relative z-0">
+        <div className="h-full relative z-20">
             <Sidebar
                 collapsed={collapsed} // collapsed the menu
                 toggled={toggled}

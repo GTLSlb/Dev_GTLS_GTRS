@@ -652,7 +652,7 @@ export default function charts({
                     <main className="w-full bg-gray-50 h-full overflow-y-auto">
                         <div
                             style={{ marginBottom: "16px" }}
-                            className="fixed left-0 top-20 z-50"
+                            className="fixed left-0 top-20 z-10"
                         >
                             {broken && (
                                 <Button
@@ -668,10 +668,10 @@ export default function charts({
 
                         {/* Main content area, displaying dynamically selected components */}
                         <div
-                            className="relative h-full"
+                            className=" h-full"
                             style={{ minHeight: "36rem" }}
                         >
-                            <div className="absolute inset-0 rounded-lg">
+                            <div className="rounded-lg">
                                 <Routes>
                                     <Route
                                         path="/dashboard"
