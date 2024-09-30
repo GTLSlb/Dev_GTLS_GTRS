@@ -1,24 +1,8 @@
-import NotificationPanel from "./NotificationPanel";
 import {
-    BellIcon,
-    XMarkIcon,
     Bars3BottomLeftIcon,
-    ChevronDownIcon,
-    ChevronUpIcon,
 } from "@heroicons/react/24/outline";
-import { Popover, Transition } from "@headlessui/react";
 export default function MainNavbar({
     setMobileMenuOpen,
-    mobileMenuOpen,
-    setActiveIndexInv,
-    setInvoiceDetails,
-    invoiceDetails,
-    hubConnection,
-    currentUser,
-    PODetails,
-    AToken,
-    setPODetails,
-    url,
 }) {
 
     return (
@@ -40,19 +24,6 @@ export default function MainNavbar({
                         <span className="text-goldd">GOLD </span>TIGER{" "}
                         Report System
                     </div>
-                    {/* <div className={activePage == 4 ? "" : "hidden"}> */}
-                        <NotificationPanel
-                            AToken={AToken}
-                            url={url}
-                            currentUser={currentUser}
-                            hubConnection={hubConnection}
-                            setActiveIndexInv={setActiveIndexInv}
-                            PODetails={PODetails}
-                            setPODetails={setPODetails}
-                            invoiceDetails={invoiceDetails}
-                            setInvoiceDetails={setInvoiceDetails}
-                        />
-                    {/* </div> */}
                 </div>
             </div>
         </header>

@@ -306,7 +306,6 @@ export default function CollapseSidebar({
     currentUser,
     setCusomterAccounts,
     customerAccounts,
-    sessionData,
     user,
     onData,
 }) {

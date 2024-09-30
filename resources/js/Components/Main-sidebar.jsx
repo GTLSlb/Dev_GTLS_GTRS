@@ -1,13 +1,7 @@
 import {
-    DocumentChartBarIcon,
-    HomeIcon,
     XMarkIcon,
-    DocumentMagnifyingGlassIcon,
-    UsersIcon,
     ArrowRightOnRectangleIcon,
-    PencilSquareIcon,
     QuestionMarkCircleIcon,
-    ChevronDownIcon,
 } from "@heroicons/react/24/outline";
 import {
     Accordion,
@@ -19,7 +13,6 @@ import { useEffect } from "react";
 import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import tiger from "../assets/pictures/tiger.png";
-import JAIX from "../assets/partners/JAIX.webp";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import SupportModal from "@/Pages/Component/modals/SupportModal";
 import { PublicClientApplication } from "@azure/msal-browser";
@@ -30,230 +23,19 @@ export default function MainSidebar({
     allowedApplications,
     setMobileMenuOpen,
     mobileMenuOpen,
-    currentUser,
     setToken,
     setCurrentUser,
     user,
 }) {
     const appUrl = window.Laravel.appUrl;
-    const [gtrsCurrent, setGtrsCurrent] = useState();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [sidebarNavigation, setSidebarNavigation] = useState([
-        {
-            id: 2,
-            name: "Invoices",
-            href: "https://gtis.gtls.au",
-            icon: DocumentChartBarIcon,
-            current: gtrsCurrent,
-            options: [
-            ],
-            role: ["1", "6", "7", "8", "9", "10"],
-        },
-        {
-            id: 1,
-            name: "GTAM",
-            href: "https://gtam.gtls.au",
-            icon: UsersIcon,
-            current: false,
-            options: [
-            ],
-            role: ["1"],
-        },
-        {
-            id: 3,
-            name: "GTRS",
-            href: "https://gtrs.gtls.au",
-            icon: DocumentMagnifyingGlassIcon,
-            current: false,
-            options: [
-                {
-                    id: 0,
-                    name: "Dashboard",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                    feature: "Dashboard_view",
-                },
-                {
-                    id: 1,
-                    name: "Consignments",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                    feature: "ConsignmetsReport_view",
-                },
-                {
-                    id: 2,
-                    name: "KPI",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                    feature: "KPI_view",
-                },
-                {
-                    id: 12,
-                    name: "Transit Days",
-                    current: false,
-                    role: ["1", "4"],
-                    feature: "View_TransitDays",
-                },
-                {
-                    id: 13,
-                    name: "Holidays",
-                    current: false,
-                    role: ["1", "4"],
-                    feature: "View_Holidays",
-                },
-                {
-                    id: 14,
-                    name: "KPI Reasons",
-                    current: false,
-                    role: ["1", "4"],
-                    feature: "View_kpiReasons",
-                },
-                {
-                    id: 4,
-                    name: "Performance report",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                    feature: "Performance_view",
-                },
-                {
-                    id: 5,
-                    name: "Failed Consignments",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                    feature: "View_failedConsignment",
-                },
-                {
-                    id: 16,
-                    name: "Transport Report",
-                    current: false,
-                    role: ["1", "4"],
-                    feature: "View_Transport",
-                },
-                {
-                    id: 9,
-                    name: "RDD",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                    feature: "View_RDD",
-                },
-                {
-                    id: 11,
-                    name: "Missing POD",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                    feature: "MissingPOD_view",
-                },
-                {
-                    id: 10,
-                    name: "Safety",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                    feature: "View_safety",
-                },
-                {
-                    id: 6,
-                    name: "No Delivery info",
-                    current: false,
-                    role: ["1", "4"],
-                    feature: "NoDeliveryInfo_view",
-                },
-                {
-                    id: 7,
-                    name: "Additional Charges",
-                    current: false,
-                    role: ["1", "4"],
-                    feature: "AdditionalCharges_view",
-                },
-                {
-                    id: 8,
-                    name: "Driver Login",
-                    current: false,
-                    role: ["1", "4"],
-                    feature: "DriverLogin_view",
-                },
-                {
-                    id: 20,
-                    name: "KPI Pack Report",
-                    current: false,
-                    role: ["1", "4"],
-                    feature: "UnileverReport_View",
-                },
-                {
-                    id: 24,
-                    name: "Delivery Report",
-                    current: false,
-                    role: ["1", "4"],
-                    feature: "DailyReport_View",
-                },
-            ],
-            role: ["1", "2", "3", "4", "5"],
-        },
-        {
-            id: 4,
-            name: "GTMS",
-            href: "https://gtms.gtls.au",
-            icon: HomeIcon,
-            current: false,
-            role: ["1"],
-        },
-        {
-            id: 5,
-            name: "Admin",
-            href: "/nova",
-            icon: PencilSquareIcon,
-            current: false,
-
-            role: ["1"],
-        },
-        {
-            id: 6,
-            name: "Jaix",
-            href: "https://jaixwebapps.gtls.com.au/Portal/Account/Login.aspx",
-            img: JAIX,
-            current: false,
-            role: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-        },
-
-    ]);
+    const [sidebarNavigation, setSidebarNavigation] = useState([]);
     useEffect(() => {
         if (user && Object.keys(user).length !== 0) {
-          let gtrsElements = sidebarNavigation;
-          gtrsElements[2].options = sidebarNavigation[2].options.filter((option) => {
-            return user.some((feature) => feature.FunctionName == option.feature);
-          });
-          setSidebarNavigation(gtrsElements);
+            let gtrsElements = sidebarNavigation;
+            setSidebarNavigation(gtrsElements);
         }
-      }, [user]);
-
-    const [sidebarElements, setSidebarElements] = useState([]);
-    useEffect(() => {
-        let elements = [];
-       sidebarNavigation?.map((item)=>{
-           allowedApplications?.map((element)=>{
-               if(item.id == element.AppId){
-                    item.href=element?.AppURL
-                    elements.push(item)
-               }
-           })
-       })
-       setSidebarElements(elements.reverse())
-    },[allowedApplications, sidebarNavigation])
-    const handleClick = (index) => {
-        if (index == 5 || index == 6) {
-            setMobileMenuOpen(false);
-        } else {
-            setactivePage(index);
-            setMobileMenuOpen(false);
-            const updatedElements = sidebarNavigation.map((element) => {
-                if (element.id === index) {
-                    return { ...element, current: true };
-                } else {
-                    return { ...element, current: false };
-                }
-            });
-            setSidebarElements(updatedElements);
-        }
-    };
+    }, [user]);
 
     function classNames(...classes) {
         return classes.filter(Boolean).join(" ");
@@ -282,15 +64,15 @@ export default function MainSidebar({
         try {
             const response = await axios.post("/logoutAPI");
 
-            if (response.status === 200 && response.data.status === 'success') {
+            if (response.status === 200 && response.data.status === "success") {
                 setToken(null);
                 setCurrentUser(null);
 
-                const isMicrosoftLogin = Cookies.get('msal.isMicrosoftLogin');
+                const isMicrosoftLogin = Cookies.get("msal.isMicrosoftLogin");
 
                 clearMSALLocalStorage();
 
-                if (isMicrosoftLogin === 'true') {
+                if (isMicrosoftLogin === "true") {
                     window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=${appUrl}/login`;
                 } else {
                     window.location.href = `${appUrl}/login`;
@@ -313,15 +95,10 @@ export default function MainSidebar({
         }
         return array;
     }
-    const handleMenuSide = (item) => {
-        if(item?.options?.length == 0){
-            window.location.href = item?.href;
-        }
-    }
+
     moveToHead(allowedApplications, 3);
 
     const [appsImgs, setAppsImgs] = useState([]);
-    const [isFetchingImg, setIsFetchingImg] = useState(true);
     const fetchAppsLogo = async (picName, app) => {
         try {
             const response = await axios({
@@ -359,6 +136,7 @@ export default function MainSidebar({
 
     return (
         <div>
+            {/* Desktop SideBar */}
             <div className="hidden md:flex md:flex-shrink-0 h-full fixed top-0 left-0 z-50 w-auto">
                 <div className="flex w-20 flex-col">
                     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-gray-800 containerscroll">
@@ -373,7 +151,6 @@ export default function MainSidebar({
                                 className="flex flex-col items-center space-y-3 pt-6"
                             >
                                 {allowedApplications?.map((item) => (
-
                                     <a
                                         href={item.AppURL}
                                         key={item.AppId}
@@ -459,6 +236,8 @@ export default function MainSidebar({
                     </div>
                 </div>
             </div>
+
+            {/* Mobile SideBar */}
             <Transition.Root show={mobileMenuOpen} as={Fragment}>
                 <Dialog
                     as="div"
@@ -525,196 +304,133 @@ export default function MainSidebar({
                                 <div className="mt-5 h-0 flex-1 overflow-y-auto px-2">
                                     <nav className="flex h-full flex-col">
                                         <div className="space-y-1 ">
-                                            {sidebarElements
-                                                .map((item) => (
-                                                    <Accordion
-                                                        name={item.name}
-                                                        key={item.id}
-                                                        transition={{
-                                                            duration: "300ms",
-                                                            timingFunction:
-                                                                "cubic-bezier(0, 0, 0.2, 1)",
-                                                        }}
+                                            {allowedApplications.map((item) => (
+                                                <Accordion
+                                                    name={item.AppName}
+                                                    key={item.AppId}
+                                                    transition={{
+                                                        duration: "300ms",
+                                                        timingFunction:
+                                                            "cubic-bezier(0, 0, 0.2, 1)",
+                                                    }}
+                                                >
+                                                    <a
+                                                        href={item.AppURL}
+                                                        onClick={() =>
+                                                            handleClick(
+                                                                item.AppId
+                                                            )
+                                                        }
                                                     >
-                                                        {false ? (
-                                                            <AccordionItem>
-                                                                {({ open }) => (
-                                                                    <>
-                                                                        <AccordionHeader
-                                                                            onClick={() => handleMenuSide(item)}
+                                                        <AccordionItem
+                                                            id={item.name}
+                                                        >
+                                                            {({ open }) => (
+                                                                <>
+                                                                    <AccordionHeader
+                                                                        className={classNames(
+                                                                            item.AppId ==
+                                                                                currentAppId
+                                                                                ? "bg-gray-700 text-white"
+                                                                                : "text-gray-400 hover:bg-gray-900 hover:text-white",
+                                                                            "group py-2 px-3 rounded-md flex gap-x-2 items-center text-sm font-medium w-full text-gray-600  p-4"
+                                                                        )}
+                                                                    >
+                                                                        <img
+                                                                            target="_blank"
+                                                                            src={
+                                                                                appsImgs[
+                                                                                    item
+                                                                                        ?.AppId
+                                                                                ]
+                                                                            }
                                                                             className={classNames(
-                                                                                item.current
-                                                                                    ? "bg-gray-700 text-white"
-                                                                                    : "text-gray-400 hover:bg-gray-900 hover:text-white",
-                                                                                "group py-2 px-3 rounded-md gap-x-2 text-sm font-medium w-full flex justify- items-center text-gray-600  p-4"
+                                                                                item.AppId ==
+                                                                                    currentAppId
+                                                                                    ? "text-yellow-400"
+                                                                                    : "text-gray-400 group-hover:text-white",
+                                                                                "h-8 w-8"
                                                                             )}
-                                                                        >
-                                                                            {item.icon ? (
-                                                                                <item.icon
-                                                                                    className={classNames(
-                                                                                        item.current
-                                                                                            ? "text-yellow-400"
-                                                                                            : "text-gray-400 group-hover:text-white",
-                                                                                        "h-6 w-6"
-                                                                                    )}
-                                                                                    aria-hidden="true"
-                                                                                />
-                                                                            ) : (
-                                                                                <img
-                                                                                    src={
-                                                                                        item.img
-                                                                                    }
-                                                                                    className={classNames(
-                                                                                        item.current
-                                                                                            ? "text-yellow-400"
-                                                                                            : "text-gray-400 group-hover:text-white",
-                                                                                        "h-6 w-6"
-                                                                                    )}
-                                                                                    aria-hidden="true"
-                                                                                />
-                                                                            )}
-                                                                            <span
-                                                                                id={
-                                                                                    item.name
-                                                                                }
-                                                                            >
-                                                                                {
-                                                                                    item.name
-                                                                                }
-                                                                            </span>
-                                                                            {item?.options.length > 0 ?<ChevronDownIcon className="h-3" /> : null}
-                                                                        </AccordionHeader>
-                                                                        {/* {sidebarElements.filter(item => item.role.includes(current_user_role)).map((item) => ( */}
-                                                                        {/* Mobile view  */}
-                                                                    </>
-                                                                )}
-                                                            </AccordionItem>
-                                                        ) : (
-                                                            <a
-                                                                href={item.href}
-                                                                onClick={() =>
-                                                                    handleClick(
-                                                                        item.id
-                                                                    )
-                                                                }
-                                                            >
-                                                                <AccordionItem
-                                                                    id={
-                                                                        item.name
-                                                                    }
-                                                                >
-                                                                    {({
-                                                                        open,
-                                                                    }) => (
-                                                                        <>
-                                                                            <AccordionHeader
-                                                                                className={classNames(
-                                                                                    item.current
-                                                                                        ? "bg-gray-700 text-white"
-                                                                                        : "text-gray-400 hover:bg-gray-900 hover:text-white",
-                                                                                    "group py-2 px-3 rounded-md flex gap-x-2 items-center text-sm font-medium w-full text-gray-600  p-4"
-                                                                                )}
-                                                                            >
-                                                                                {item.icon ? (
-                                                                                    <item.icon
-                                                                                        className={classNames(
-                                                                                            item.current
-                                                                                                ? "text-yellow-400"
-                                                                                                : "text-gray-400 group-hover:text-white",
-                                                                                            "h-6 w-6"
-                                                                                        )}
-                                                                                        aria-hidden="true"
-                                                                                    />
-                                                                                ) : (
-                                                                                    <img
-                                                                                        src={
-                                                                                            item.img
+                                                                            aria-hidden="true"
+                                                                        />
+
+                                                                        <span>
+                                                                            {
+                                                                                item.AppName
+                                                                            }
+                                                                        </span>
+                                                                    </AccordionHeader>
+                                                                    {item.options ? (
+                                                                        <AccordionBody className="pl-8 flex flex-col">
+                                                                            {item.options.map(
+                                                                                (
+                                                                                    option
+                                                                                ) => (
+                                                                                    <button
+                                                                                        onClick={() =>
+                                                                                            handleClickSide(
+                                                                                                item.id,
+                                                                                                option.id
+                                                                                            )
                                                                                         }
-                                                                                        className={classNames(
-                                                                                            item.current
-                                                                                                ? "text-yellow-400"
-                                                                                                : "text-gray-400 group-hover:text-white",
-                                                                                            "h-6 w-6"
-                                                                                        )}
-                                                                                        aria-hidden="true"
-                                                                                    />
-                                                                                )}
-                                                                                <span>
-                                                                                    {
-                                                                                        item.name
-                                                                                    }
-                                                                                </span>
-                                                                            </AccordionHeader>
-                                                                            {item.options ? (
-                                                                                <AccordionBody className="pl-8 flex flex-col">
-                                                                                    {item.options.map(
-                                                                                        (
-                                                                                            option
-                                                                                        ) => (
-                                                                                            <button
-                                                                                                onClick={() =>
-                                                                                                    handleClickSide(
-                                                                                                        item.id,
-                                                                                                        option.id
-                                                                                                    )
-                                                                                                }
-                                                                                                className="p-5 font-light text-left text-white"
-                                                                                            >
-                                                                                                {
-                                                                                                    option.name
-                                                                                                }
-                                                                                            </button>
-                                                                                        )
-                                                                                    )}
-                                                                                </AccordionBody>
-                                                                            ) : (
-                                                                                ""
+                                                                                        className="p-5 font-light text-left text-white"
+                                                                                    >
+                                                                                        {
+                                                                                            option.name
+                                                                                        }
+                                                                                    </button>
+                                                                                )
                                                                             )}
-                                                                        </>
+                                                                        </AccordionBody>
+                                                                    ) : (
+                                                                        ""
                                                                     )}
-                                                                </AccordionItem>
-                                                            </a>
-                                                        )}
-                                                    </Accordion>
-                                                ))}
+                                                                </>
+                                                            )}
+                                                        </AccordionItem>
+                                                    </a>
+                                                </Accordion>
+                                            ))}
                                         </div>
                                     </nav>
                                 </div>
                                 <div className="flex flex-col flex-shrink-0 pb-5">
-                                <a
-                                    href="https://support.gtls.com.au/help/2703577665"
-                                    target="_blank"
-                                    className="flex"
-                                >
-                                    {" "}
-                                    <button
-                                        className={classNames(
-                                            "text-gray-400 hover:bg-gray-700 hover:text-white",
-                                            "group w-auto p-3 rounded-md flex flex-col items-center text-xs font-medium"
-                                        )}
+                                    <a
+                                        href="https://support.gtls.com.au/help/2703577665"
+                                        target="_blank"
+                                        className="flex"
                                     >
-                                        <QuestionMarkCircleIcon
+                                        {" "}
+                                        <button
                                             className={classNames(
-                                                "text-gray-400 group-hover:text-white",
-                                                "h-6 w-6"
+                                                "text-gray-400 hover:bg-gray-700 hover:text-white",
+                                                "group w-auto p-3 rounded-md flex flex-col items-center text-xs font-medium"
                                             )}
-                                            aria-hidden="true"
-                                        />
+                                        >
+                                            <QuestionMarkCircleIcon
+                                                className={classNames(
+                                                    "text-gray-400 group-hover:text-white",
+                                                    "h-6 w-6"
+                                                )}
+                                                aria-hidden="true"
+                                            />
 
-                                        <span className="mt-2">Support</span>
+                                            <span className="mt-2">
+                                                Support
+                                            </span>
+                                        </button>
+                                    </a>
+                                    <button onClick={() => handleLogout()}>
+                                        <ResponsiveNavLink
+                                            as="button"
+                                            className="flex flex-col hover:bg-gray-900 hover:text-white w-8 h-14"
+                                        >
+                                            <ArrowRightOnRectangleIcon className="w-7 ml-2 text-gray-400" />
+                                            <span className="text-xs text-gray-400">
+                                                LOGOUT
+                                            </span>
+                                        </ResponsiveNavLink>
                                     </button>
-                                </a>
-                                <button  onClick={() => handleLogout()}>
-                                    <ResponsiveNavLink
-                                        as="button"
-                                        className="flex flex-col hover:bg-gray-900 hover:text-white w-8 h-14"
-                                    >
-                                        <ArrowRightOnRectangleIcon className="w-7 ml-2 text-gray-400" />
-                                        <span className="text-xs text-gray-400">
-                                            LOGOUT
-                                        </span>
-                                    </ResponsiveNavLink>
-                                </button>
                                 </div>
                             </Dialog.Panel>
                         </Transition.Child>
