@@ -2368,10 +2368,10 @@ export default function charts({
 
                         {/* Main content area, displaying dynamically selected components */}
                         <div
-                            className="relative h-full"
+                            className=" h-full"
                             style={{ minHeight: "36rem" }}
                         >
-                            <div className="absolute inset-0 rounded-lg">
+                            <div className="rounded-lg">
                                 <Routes>
                                     <Route
                                         path="/dashboard"
