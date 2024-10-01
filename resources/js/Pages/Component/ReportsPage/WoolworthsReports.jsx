@@ -5,7 +5,6 @@ import ViewComments from "./Modals/ViewComments";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { formatDateToExcel } from "@/CommonFunctions";
 import { exportToExcel } from "@/Components/utils/excelUtils";
-import ExportPopover from "@/Components/ExportPopover";
 
 export default function WoolworthsReports({
     filterValue,
@@ -72,17 +71,11 @@ export default function WoolworthsReports({
 
     return (
         <div>
-            <div className="flex justify-end">
-                <ExportPopover
-                    columns={columns}
-                    handleDownloadExcel={handleDownloadExcel}
-                    filteredData={data}
-                />
-            </div>
             {filterValue && data && (
                 <TableStructure
                     id={"ReportId"}
                     rowHeight={50}
+                    handleDownloadExcel={handleDownloadExcel}
                     setSelected={setSelected}
                     gridRef={gridRef}
                     selected={selected}

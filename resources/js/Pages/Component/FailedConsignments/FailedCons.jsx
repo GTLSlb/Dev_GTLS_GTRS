@@ -12,7 +12,6 @@ import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { formatDateToExcel } from "@/CommonFunctions";
-import ExportPopover from "@/Components/ExportPopover";
 import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 
@@ -447,26 +446,10 @@ export default function FailedCons({
                 <AnimatedLoading />
             ) : (
                 <div className=" w-full bg-smooth ">
-                    <div className="">
-                        <div className="w-full relative">
-                            <div className=" sm:border-gray-200 text-gray-400 flex flex-col justify-between md:flex-row gap-y-4 gap-x-2 md:items-center">
-                                <div className="sm:flex sm:items-center">
-                                    <div className="sm:flex-auto ">
-                                        <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                                            Failed Consignments Report
-                                        </h1>
-                                    </div>
-                                </div>
-                                <ExportPopover
-                                    columns={columns}
-                                    handleDownloadExcel={handleDownloadExcel}
-                                    filteredData={filteredData}
-                                />
-                            </div>
-                        </div>
-                    </div>
                     <TableStructure
                         id={"ConsignmentID"}
+                        handleDownloadExcel={handleDownloadExcel}
+                        title={"Failed Consignments"}
                         gridRef={gridRef}
                         setSelected={setSelected}
                         selected={selected}

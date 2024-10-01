@@ -2,7 +2,6 @@ import React, { useState, useRef } from "react";
 import TableStructure from "@/Components/TableStructure";
 import AddComment from "./Modals/AddComment";
 import ViewComments from "./Modals/ViewComments";
-import ExportPopover from "@/Components/ExportPopover";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { formatDateToExcel } from "@/CommonFunctions";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
@@ -68,16 +67,10 @@ export default function OtherReports({
 
     return (
         <div>
-            <div className="flex justify-end">
-                <ExportPopover
-                    columns={columns}
-                    handleDownloadExcel={handleDownloadExcel}
-                    filteredData={data}
-                />
-            </div>
             {filterValue && data && (
                 <TableStructure
                     id={"ReportId"}
+                    handleDownloadExcel={handleDownloadExcel}
                     setSelected={setSelected}
                     gridRef={gridRef}
                     rowHeight={50}

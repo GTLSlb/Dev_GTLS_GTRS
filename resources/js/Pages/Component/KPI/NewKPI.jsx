@@ -14,11 +14,14 @@ import axios from "axios";
 import swal from "sweetalert";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import NewKPIModalAddReason from "./NEWKPIModal";
-import { formatDateToExcel, getApiRequest, handleSessionExpiration } from "@/CommonFunctions";
+import {
+    formatDateToExcel,
+    getApiRequest,
+    handleSessionExpiration,
+} from "@/CommonFunctions";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
-import ExportPopover from "@/Components/ExportPopover";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
@@ -84,7 +87,9 @@ function NewKPI({
 
     const navigate = useNavigate();
     const handleClick = (coindex) => {
-        navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
+        navigate("/gtrs/consignment-details", {
+            state: { activeCons: coindex },
+        });
     };
     const [filteredData, setFilteredData] = useState(
         KPIData.map((item) => {
@@ -169,7 +174,6 @@ function NewKPI({
             ["DispatchDate", "DeliveryDate", "RDD", "CalculatedDelDate"]
         );
     };
-
 
     // Usage example remains the same
     const minDispatchDate = getMinMaxValue(KPIData, "DispatchDate", 1);
@@ -458,7 +462,6 @@ function NewKPI({
                 ) : null;
             },
         },
-
     ];
     const newArray = columns.slice(0, -1);
     const [newColumns, setNewColumns] = useState([]);
@@ -470,7 +473,6 @@ function NewKPI({
             setNewColumns(newArray);
         }
     }, []);
-
 
     const [statusMessage, setStatusMessage] = useState("");
     const messageDisplayTime = 3000; // Time in milliseconds (3000ms = 3 seconds)
@@ -581,57 +583,48 @@ function NewKPI({
         }
     );
 
+    const additionalButtons = (
+        <div>
+            {statusMessage && (
+                <LottieComponent
+                    animationData={Success}
+                    loop={false}
+                    autoplay={true}
+                    height={35}
+                    width={35}
+                />
+            )}
+            {loading && (
+                <LottieComponent
+                    animationData={Truck}
+                    autoplay={true}
+                    height={35}
+                    width={35}
+                />
+            )}
+            {canCalculateKPI(userPermission) ? (
+                <button
+                    className={`inline-flex items-center justify-center w-[10rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+                    disabled={filteredData?.length === 0 || loading}
+                    onClick={() => CalculateKPI()}
+                >
+                    Calculate KPI Report
+                </button>
+            ) : null}
+        </div>
+    );
+
     return (
         <div>
             {isFetching && newColumns && columns ? (
                 <AnimatedLoading />
             ) : (
                 <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                    <div className="sm:flex sm:items-center">
-                        <div className="sm:flex w-full items-center justify-between mt-2 lg:mt-6">
-                            <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                                KPI Report
-                            </h1>
-                            <div className="object-right flex gap-x-2 md:ml-auto">
-                                {statusMessage && (
-                                    <LottieComponent
-                                        animationData={Success}
-                                        loop={false}
-                                        autoplay={true}
-                                        height={35}
-                                        width={35}
-                                    />
-                                )}
-                                {loading && (
-                                    <LottieComponent
-                                        animationData={Truck}
-                                        autoplay={true}
-                                        height={35}
-                                        width={35}
-                                    />
-                                )}
-                                {canCalculateKPI(userPermission) ? (
-                                    <button
-                                        className={`inline-flex items-center justify-center w-[10rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
-                                        disabled={
-                                            filteredData?.length === 0 ||
-                                            loading
-                                        }
-                                        onClick={() => CalculateKPI()}
-                                    >
-                                        Calculate KPI Report
-                                    </button>
-                                ) : null}
-                                <ExportPopover
-                                    columns={columns}
-                                    handleDownloadExcel={handleDownloadExcel}
-                                    filteredData={filteredData}
-                                />
-                            </div>
-                        </div>
-                    </div>
                     <TableStructure
                         gridRef={gridRef}
+                        handleDownloadExcel={handleDownloadExcel}
+                        title={"KPI Report"}
+                        additionalButtons={additionalButtons}
                         id={"ConsignmentId"}
                         setSelected={setSelected}
                         selected={selected}

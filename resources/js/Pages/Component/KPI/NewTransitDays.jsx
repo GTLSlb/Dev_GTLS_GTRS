@@ -4,15 +4,11 @@ import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import { useState, useEffect, useRef } from "react";
 import TableStructure from "@/Components/TableStructure";
 import { PencilIcon } from "@heroicons/react/20/solid";
-import {
-    canAddNewTransitDays,
-    canEditTransitDays,
-} from "@/permissions";
+import { canAddNewTransitDays, canEditTransitDays } from "@/permissions";
 import { getApiRequest } from "@/CommonFunctions";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
-import ExportPopover from "@/Components/ExportPopover";
 import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import GtrsButton from "../GtrsButton";
@@ -285,6 +281,14 @@ function NewTransitDays({
         );
     };
 
+    const additionalButtons = canAddNewTransitDays(userPermission) ? (
+        <GtrsButton
+            name={"Add +"}
+            onClick={AddTransit}
+            className="w-[5.5rem] h-[36px]"
+        />
+    ) : null;
+
     return (
         <div>
             {isFetching ? (
@@ -292,34 +296,14 @@ function NewTransitDays({
             ) : (
                 <div>
                     <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                        <div className="sm:flex sm:items-center">
-                            <div className="sm:flex w-full items-center justify-between mt-2 lg:mt-6">
-                                <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                                    Transit Days
-                                </h1>
-                                <div className="flex gap-5">
-                                    {canAddNewTransitDays(userPermission) ? (
-                                        <GtrsButton
-                                            name={"Add +"}
-                                            onClick={AddTransit}
-                                            className="w-[5.5rem] h-[36px]"
-                                        />
-                                    ) : null}
-                                    <ExportPopover
-                                        columns={columns}
-                                        handleDownloadExcel={
-                                            handleDownloadExcel
-                                        }
-                                        filteredData={filteredData}
-                                    />
-                                </div>
-                            </div>
-                        </div>
                         <TableStructure
                             id={"TransitId"}
                             setSelected={setSelected}
                             gridRef={gridRef}
+                            handleDownloadExcel={handleDownloadExcel}
+                            title={"Transit Days"}
                             selected={selected}
+                            additionalButtons={additionalButtons}
                             groupsElements={groups}
                             tableDataElements={newTransitDays}
                             filterValueElements={filterValue}

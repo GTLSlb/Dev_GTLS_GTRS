@@ -9,7 +9,6 @@ import { formatDateToExcel, getApiRequest } from "@/CommonFunctions";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
-import ExportPopover from "@/Components/ExportPopover";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 
 export default function DriverLogin({
@@ -290,24 +289,12 @@ export default function DriverLogin({
             {isFetching && <AnimatedLoading />}
             {!isFetching && (
                 <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                    <div className="sm:flex sm:items-center">
-                        <div className="sm:flex-auto mt-6">
-                            <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                                Driver Login
-                            </h1>
-                        </div>
-                        <div className="absolute left-auto right-10 top-9">
-                            <ExportPopover
-                                columns={columns}
-                                handleDownloadExcel={handleDownloadExcel}
-                                filteredData={DriverData}
-                            />
-                        </div>
-                    </div>
                     <TableStructure
                         id={"MobilityDeviceID"}
                         gridRef={gridRef}
                         setSelected={setSelected}
+                        handleDownloadExcel={handleDownloadExcel}
+                        title={"Driver Login"}
                         selected={selected}
                         tableDataElements={DriverData}
                         filterValueElements={filterValue}

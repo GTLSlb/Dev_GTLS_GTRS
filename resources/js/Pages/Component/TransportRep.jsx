@@ -1,9 +1,5 @@
 import { useState } from "react";
 import "../../../css/reactdatagrid.css";
-import { Fragment } from "react";
-import { Popover, Transition } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
-
 import TableStructure from "@/Components/TableStructure";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
@@ -14,7 +10,6 @@ import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
-import ExportPopover from "@/Components/ExportPopover";
 function TransportRep({
     transportData,
     minDate,
@@ -535,20 +530,10 @@ function TransportRep({
 
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
-            <div className="sm:flex sm:items-center">
-                <div className="sm:flex-auto mt-6">
-                    <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                        Transport Report
-                    </h1>
-                </div>
-                <ExportPopover
-                    columns={columns}
-                    handleDownloadExcel={handleDownloadExcel}
-                    filteredData={filteredData}
-                />
-            </div>
             <TableStructure
                 id={"ConsignmentId"}
+                handleDownloadExcel={handleDownloadExcel}
+                title={"Transport Report"}
                 setSelected={setSelected}
                 gridRef={gridRef}
                 selected={selected}
