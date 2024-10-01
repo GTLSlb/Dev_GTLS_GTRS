@@ -82,6 +82,7 @@ export default function WoolworthsReports({
             {filterValue && data && (
                 <TableStructure
                     id={"ReportId"}
+                    rowHeight={50}
                     setSelected={setSelected}
                     gridRef={gridRef}
                     selected={selected}

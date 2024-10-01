@@ -12,6 +12,7 @@ export default function TableStructure({
     columnsElements,
     filterTypesElements,
     gridRef,
+    rowHeight,
     selected,
     id,
 }) {
@@ -76,14 +77,7 @@ export default function TableStructure({
             setFilterValueElements(filterValue); // Update external filter state
         }
     }, [setFilterValueElements]);
-
-    const getRowHeight = ({ row }) => {
-        const baseHeight = 30; // Base row height
-        const titleHeight = row.title.split('\n').length * 20; // Assuming each line is ~20px
-        const descriptionHeight = row.description.split('\n').length * 20; // Likewise for description
-        return baseHeight + Math.max(titleHeight, descriptionHeight); // Return the max height
-    };
-
+    
     return (
         <div className="">
             {/* <Sidebar /> */}
@@ -97,11 +91,11 @@ export default function TableStructure({
                         className={"rounded-lg shadow-lg overflow-hidden"}
                         pagination
                         rowStyle={rowStyle}
-                        rowHeight={getRowHeight}
+                        rowHeight={rowHeight ? rowHeight : 40}
                         filterTypes={filterTypes}
                         scrollProps={scrollProps}
                         showColumnMenuTool={false}
-                        enableColumnAutosize={false}
+                        enableColumnAutosize={false}                        
                         showColumnMenuLockOptions={false}
                         showColumnMenuGroupOptions={false}
                         selected={selectedRows}

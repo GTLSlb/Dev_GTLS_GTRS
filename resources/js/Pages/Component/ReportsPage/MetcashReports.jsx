@@ -78,6 +78,7 @@ export default function MetcashReports({
 
             {filterValue && data && (
                 <TableStructure
+                    rowHeight={50}
                     id={"ReportId"}
                     setSelected={setSelected}
                     gridRef={gridRef}

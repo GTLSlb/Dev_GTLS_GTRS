@@ -80,6 +80,7 @@ export default function OtherReports({
                     id={"ReportId"}
                     setSelected={setSelected}
                     gridRef={gridRef}
+                    rowHeight={50}
                     selected={selected}
                     setFilterValueElements={setFilterValue}
                     tableDataElements={data}
