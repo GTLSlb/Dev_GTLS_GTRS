@@ -142,7 +142,7 @@ export default function WoolworthsReports({
                  gridRef={gridRef}
                  workbookName={"Unilever-Woolworth-Reports.xlsx"}
             />
-            {filterValue && data && (
+            {filterValue && data && rowHeight && (
                 <TableStructure
                     id={"ReportId"}
                     setSelected={setSelected}

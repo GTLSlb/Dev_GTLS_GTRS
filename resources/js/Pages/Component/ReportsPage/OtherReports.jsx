@@ -142,7 +142,7 @@ export default function OtherReports({
                  gridRef={gridRef}
                  workbookName={"Unilever-Others-Reports.xlsx"}
             />
-            {filterValue && data && (
+            {filterValue && data && rowHeight && (
                 <TableStructure
                     id={"ReportId"}
                     setSelected={setSelected}
