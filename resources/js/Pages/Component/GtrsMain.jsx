@@ -616,7 +616,7 @@ export default function GtrsMain({
         <div className="h-full">
             <div className="h-full">
                 {/* Left sidebar & main wrapper */}
-                <div className="bg-gray-100 h-full flex">
+                <div className=" h-full flex">
                     {/* Start left column area with collapsing sidebar */}
                     <CollapseSidebar
                         setBroken={setBroken}
@@ -629,7 +629,7 @@ export default function GtrsMain({
                         currentUser={currentUser}
                     />
 
-                    <main className="w-full bg-gray-50 h-full overflow-y-auto">
+                    <main className="w-full  overflow-y-auto">
                         <div
                             style={{ marginBottom: "16px" }}
                             className="fixed left-0 top-20 z-10"
@@ -647,7 +647,7 @@ export default function GtrsMain({
                         </div>
 
                         {/* Main content area, displaying dynamically selected components */}
-                        <div className=" h-full" style={{ minHeight: "36rem" }}>
+                        <div >
                             <div className="rounded-lg">
                                 <Routes>
                                     <Route
