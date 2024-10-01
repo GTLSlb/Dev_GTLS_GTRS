@@ -3,19 +3,22 @@ import "@inovua/reactdatagrid-community/index.css";
 import { useEffect } from "react";
 import { useCallback } from "react";
 import { useState } from "react";
+import ExportPopover from "./ExportPopover";
 
 export default function TableStructure({
     tableDataElements,
     filterValueElements,
     setFilterValueElements,
     groupsElements,
+    additionalButtons,
+    title,
+    handleDownloadExcel,
     columnsElements,
     filterTypesElements,
     gridRef,
     selected,
     id,
 }) {
-
     const [tableData, setTableData] = useState(tableDataElements);
     const [filters, setFilters] = useState(filterValueElements);
     const [selectedRows, setSelectedRows] = useState();
@@ -53,39 +56,58 @@ export default function TableStructure({
         };
     };
     const gridStyle = { minHeight: 600 };
-    const onFilterValueChange = useCallback((filterValue) => {
-        // Check for "Empty" filter operator and handle it properly
-        const hasEmptyOperator = filterValue.some(
-            (filter) => filter.operator === "empty"
-        );
-
-        if (hasEmptyOperator) {
-            // Apply the "Empty" filter logic
-            const updatedFilters = filterValue.map((filter) =>
-                filter.operator === "empty"
-                    ? { ...filter, value: "" } // Ensure "Empty" has an empty string value
-                    : filter
+    const onFilterValueChange = useCallback(
+        (filterValue) => {
+            // Check for "Empty" filter operator and handle it properly
+            const hasEmptyOperator = filterValue.some(
+                (filter) => filter.operator === "empty"
             );
-            setFilters(updatedFilters);
-            setFilterValueElements(updatedFilters); // Update external filter state
-        } else if (!filterValue || filterValue.length === 0) {
-            setFilters([]); // Clear filters state
-            setFilterValueElements([]); // Update external filter state
-        } else {
-            setFilters(filterValue); // Update filters based on user input
-            setFilterValueElements(filterValue); // Update external filter state
-        }
-    }, [setFilterValueElements]);
+
+            if (hasEmptyOperator) {
+                // Apply the "Empty" filter logic
+                const updatedFilters = filterValue.map((filter) =>
+                    filter.operator === "empty"
+                        ? { ...filter, value: "" } // Ensure "Empty" has an empty string value
+                        : filter
+                );
+                setFilters(updatedFilters);
+                setFilterValueElements(updatedFilters); // Update external filter state
+            } else if (!filterValue || filterValue.length === 0) {
+                setFilters([]); // Clear filters state
+                setFilterValueElements([]); // Update external filter state
+            } else {
+                setFilters(filterValue); // Update filters based on user input
+                setFilterValueElements(filterValue); // Update external filter state
+            }
+        },
+        [setFilterValueElements]
+    );
 
     const getRowHeight = ({ row }) => {
         const baseHeight = 30; // Base row height
-        const titleHeight = row.title.split('\n').length * 20; // Assuming each line is ~20px
-        const descriptionHeight = row.description.split('\n').length * 20; // Likewise for description
+        const titleHeight = row.title.split("\n").length * 20; // Assuming each line is ~20px
+        const descriptionHeight = row.description.split("\n").length * 20; // Likewise for description
         return baseHeight + Math.max(titleHeight, descriptionHeight); // Return the max height
     };
 
     return (
         <div className="">
+            <div className="sm:flex sm:items-center mt-3">
+                <div className="sm:flex-auto">
+                    <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
+                        {title}
+                    </h1>
+                </div>
+                <div className="flex gap-2">
+                    {additionalButtons}
+                    <ExportPopover
+                        columns={columnsElements}
+                        handleDownloadExcel={handleDownloadExcel}
+                        filteredData={tableDataElements}
+                    />
+                </div>
+            </div>
+
             {/* <Sidebar /> */}
             <div className="py-5">
                 {tableData ? (

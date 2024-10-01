@@ -15,9 +15,7 @@ import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { formatDateToExcel } from "@/CommonFunctions";
 import { exportToExcel } from "@/Components/utils/excelUtils";
-import ExportPopover from "@/Components/ExportPopover";
 import AnimatedLoading from "@/Components/AnimatedLoading";
-
 
 export default function SafetyRepTable({
     currentPageRep,
@@ -403,6 +401,19 @@ export default function SafetyRepTable({
             }
         }
     }, [userPermission]);
+
+    const additionalButtons = canAddSafetyReport(userPermission) ? (
+        <button
+            type="button"
+            onClick={handleAddClick}
+            className="inline-flex items-center w-[5.5rem] h-[36px] rounded-md border border-transparent bg-gray-800 px-3 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        >
+            Add safety
+        </button>
+    ) : (
+        <div></div>
+    );
+
     return (
         <div>
             <div className=" w-full bg-smooth pb-20">
@@ -410,32 +421,13 @@ export default function SafetyRepTable({
                     <AnimatedLoading />
                 ) : (
                     <div>
-                        <div className="-mt-5">
-                            <div className=" object-right flex md:justify-end gap-x-5 flex-item ">
-                                <div className="h-full">
-                                    {canAddSafetyReport(userPermission) ? (
-                                        <button
-                                            type="button"
-                                            onClick={handleAddClick}
-                                            className="inline-flex items-center w-[5.5rem] h-[36px] rounded-md border border-transparent bg-gray-800 px-3 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                        >
-                                            Add safety
-                                        </button>
-                                    ) : (
-                                        <div></div>
-                                    )}
-                                </div>
-                                <ExportPopover
-                                    columns={columns}
-                                    handleDownloadExcel={handleDownloadExcel}
-                                    filteredData={safetyData}
-                                />
-                            </div>
-                        </div>
                         <TableStructure
                             id={"ReportId"}
+                            handleDownloadExcel={handleDownloadExcel}
+                            title={"Safety Reports"}
                             setSelected={setSelected}
                             gridRef={gridRef}
+                            additionalButtons={additionalButtons}
                             selected={selected}
                             setFilterValueElements={setFilterValue}
                             tableDataElements={safetyData}

@@ -15,7 +15,6 @@ import { MapPinIcon } from "@heroicons/react/20/solid";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { formatDateToExcel } from "@/CommonFunctions";
 import { exportToExcel } from "@/Components/utils/excelUtils";
-import ExportPopover from "@/Components/ExportPopover";
 import { useNavigate } from "react-router-dom";
 
 const gtrsWebUrl = window.Laravel.gtrsWeb;
@@ -1682,22 +1681,12 @@ function ConsTrack({
 
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
-            <div className="sm:flex sm:items-center">
-                <div className="sm:flex-auto mt-6">
-                    <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                        Consignment Tracking
-                    </h1>
-                </div>
-                <ExportPopover
-                    columns={columns}
-                    handleDownloadExcel={handleDownloadExcel}
-                    filteredData={filteredData}
-                />
-            </div>
             <TableStructure
                 gridRef={gridRef}
+                title={"Consignment Tracking"}
                 id={"ConsignmentId"}
                 setSelected={setSelected}
+                handleDownloadExcel={handleDownloadExcel}
                 selected={selected}
                 filterTypesElements={customFilterTypes}
                 groupsElements={groups}

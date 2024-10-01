@@ -7,7 +7,6 @@ import moment from "moment";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import { useEffect, useRef } from "react";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
-import ExportPopover from "@/Components/ExportPopover";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +22,9 @@ export default function GtrsCons({
     const navigate = useNavigate();
     const [filteredData, setFilteredData] = useState(consData);
     const handleClick = (coindex) => {
-        navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
+        navigate("/gtrs/consignment-details", {
+            state: { activeCons: coindex },
+        });
     };
     const [selected, setSelected] = useState({});
 
@@ -40,12 +41,20 @@ export default function GtrsCons({
             DespatchDate: (value) => {
                 const date = new Date(value);
                 return !isNaN(date)
-                    ? (date.getTime() - date.getTimezoneOffset() * 60000) / 86400000 + 25569 // Excel date serial number
+                    ? (date.getTime() - date.getTimezoneOffset() * 60000) /
+                          86400000 +
+                          25569 // Excel date serial number
                     : "";
             },
         };
         // Call the exportToExcel function
-        exportToExcel(jsonData, columnMapping, "Consignments.xlsx", customCellHandlers,["DespatchDate"]);
+        exportToExcel(
+            jsonData,
+            columnMapping,
+            "Consignments.xlsx",
+            customCellHandlers,
+            ["DespatchDate"]
+        );
     }
 
     const senderStateOptions = createNewLabelObjects(consData, "SenderState");
@@ -287,19 +296,9 @@ export default function GtrsCons({
 
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
-            <div className="sm:flex sm:items-center">
-                <div className="sm:flex-auto mt-6">
-                    <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                        Consignments
-                    </h1>
-                </div>
-                <ExportPopover
-                    columns={columns}
-                    handleDownloadExcel={handleDownloadExcel}
-                    filteredData={filteredData}
-                />
-            </div>
             <TableStructure
+                handleDownloadExcel={handleDownloadExcel}
+                title={"Consignments"}
                 id={"ConsignmentId"}
                 setSelected={setSelected}
                 gridRef={gridRef}

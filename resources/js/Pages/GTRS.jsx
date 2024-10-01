@@ -128,7 +128,7 @@ export default function Gtrs({
     if (loadingGtrs && AToken) {
         if (canAccess) {
             return (
-                <div>
+                <div className="h-full">
                     {/* <mainSidebar/> */}
                     <MainSidebar
                         allowedApplications={allowedApplications}

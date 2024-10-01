@@ -13,7 +13,6 @@ import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
-import ExportPopover from "@/Components/ExportPopover";
 import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 
@@ -347,23 +346,12 @@ export default function NoDelivery({
             )}
             {!isFetching && (
                 <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                    <div className="sm:flex sm:items-center">
-                        <div className="sm:flex justify-between w-full items-center mt-6">
-                            <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                                No Delivery information
-                            </h1>
-                            <ExportPopover
-                                columns={columns}
-                                handleDownloadExcel={handleDownloadExcel}
-                                filteredData={NoDelData}
-                            />
-                        </div>
-                    </div>
-
                     <TableStructure
                         id={"ConsignmentID"}
                         gridRef={gridRef}
                         groupsElements={groups}
+                        handleDownloadExcel={handleDownloadExcel}
+                        title={"No Delivery Information"}
                         setFilterValueElements={setFilterValue}
                         setSelected={setSelected}
                         selected={selected}

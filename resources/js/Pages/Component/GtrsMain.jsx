@@ -613,7 +613,7 @@ export default function GtrsMain({
     }, [sharedEndDate, sharedStartDate]);
 
     return (
-        <div className="h-screen">
+        <div className="h-full">
             <div className="h-full">
                 {/* Left sidebar & main wrapper */}
                 <div className="bg-gray-100 h-full flex">

@@ -10,7 +10,6 @@ import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import { canEditRDD } from "@/permissions";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
-import ExportPopover from "@/Components/ExportPopover";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { formatDateToExcel } from "@/CommonFunctions";
@@ -417,28 +416,12 @@ export default function RDDTable({
                 <AnimatedLoading />
             ) : (
                 <div className=" w-full bg-smooth ">
-                    <div className="mt-8">
-                        <div className="w-full relative">
-                            <div className=" sm:border-gray-200 text-gray-400 flex flex-col justify-between items-center  md:flex-row gap-y-6 gap-x-2  w-full">
-                                <div className="sm:flex sm:items-center">
-                                    <div className="sm:flex-auto">
-                                        <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                                            RDD Report
-                                        </h1>
-                                    </div>
-                                </div>
-                                <ExportPopover
-                                    columns={columns}
-                                    handleDownloadExcel={handleDownloadExcel}
-                                    filteredData={filteredData}
-                                />
-                            </div>
-                        </div>
-                    </div>
                     <TableStructure
                         id={"AuditId"}
                         gridRef={gridRef}
                         setSelected={setSelected}
+                        handleDownloadExcel={handleDownloadExcel}
+                        title={"RDD Report"}
                         groupsElements={groups}
                         selected={selected}
                         tableDataElements={filteredData}

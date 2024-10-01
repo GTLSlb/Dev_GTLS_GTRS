@@ -9,7 +9,6 @@ import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { formatDateToExcel } from "@/CommonFunctions";
-import ExportPopover from "@/Components/ExportPopover";
 import { useNavigate } from "react-router-dom";
 
 export default function MissingPOD({
@@ -309,22 +308,12 @@ export default function MissingPOD({
     return (
         <div>
             <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                <div className="sm:flex sm:items-center">
-                    <div className="sm:flex  items-center w-full justify-between mt-6">
-                        <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                            Missing POD Report
-                        </h1>
-                        <ExportPopover
-                            columns={columns}
-                            handleDownloadExcel={handleDownloadExcel}
-                            filteredData={filteredData}
-                        />
-                    </div>
-                </div>
                 <div className="mt-4">
                     <div className=" w-full bg-smooth ">
                         <TableStructure
                             id={"ConsignmentID"}
+                            handleDownloadExcel={handleDownloadExcel}
+                            title={"Missing POD Report"}
                             setSelected={setSelected}
                             gridRef={gridRef}
                             selected={selected}
