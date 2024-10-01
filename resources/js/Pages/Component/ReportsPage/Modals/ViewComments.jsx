@@ -24,69 +24,18 @@ export default function ViewComments({
     const [ data, setData] = useState([]);
     const [ comment, setComment] = useState(null);
     const [ commentId, setCommentId] = useState(null);
-    const [ isEditing, setIsEditing] = useState(false);
-    const [ editIndx, setEditIndx] = useState(null);
     const [ isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
        setData(commentsData);
     },[commentsData])
 
-    const handleSubmit = async () => {
-        let formValues = {
-            "CommentId": commentId,
-            "ConsId": consId,
-            "Comment": comment
-        };
-        console.log(formValues);
-
-        try {
-            setIsLoading(true);
-
-            const response = await axios.post(`${url}Add/Delivery/Comment`, formValues, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            }).then((response) => {
-                fetchData();
-                setTimeout(() => {
-                    setIsLoading(false);
-                    setCommentId(null);
-                    setComment(null);
-                    setIsEditing(false);
-                    setEditIndx(null);
-                }, 1000);
-            })
-        } catch (error) {
-            setIsLoading(false);
-            // Handle error
-            if (error.response && error.response.status === 401) {
-                // Handle 401 error using SweetAlert
-                swal({
-                    title: "Session Expired!",
-                    text: "Please login again",
-                    type: "success",
-                    icon: "info",
-                    confirmButtonText: "OK",
-                }).then(async function () {
-                    await handleSessionExpiration();
-                });
-            } else {
-                // Handle other errors
-                console.log(error);
-            }
-            console.log(error);
-            setError("Error occurred while saving the data. Please try again."); // Set the error message
-        }
-    };
-
 
     return (
         <ReactModal
             ariaHideApp={false}
             isOpen={isOpen}
-            className="fixed inset-0 flex items-center justify-center "
+            className="fixed inset-0 flex items-center justify-center"
             overlayClassName="fixed inset-0 bg-black bg-opacity-60"
         >
             <div className="bg-white w-[40%] rounded-lg shadow-lg py-6 px-8">
@@ -119,24 +68,8 @@ export default function ViewComments({
                                 <div className="flex flex-col gap-4 border-b-1 border-[#D5D5D5] py-3">
                                     <div className="flex pr-2">
                                         <div className="w-[95%]">
-                                        {isEditing && editIndx === index
-                                            ? <textarea type="text" className="border-[#D5D5D5] rounded-lg w-full" defaultValue={c?.Comment} value={comment} onChange={(e)=>{setComment(e.target.value)}} />
-                                            :<p>{c?.Comment}</p>
-                                        }
+                                        <p>{c?.Comment}</p>
                                         </div>
-                                        {isEditing && editIndx === index
-                                            ? <div className="flex mt-auto gap-4 ml-3 text-sm h-[1.6rem]">
-                                                <button onClick={()=>{setIsEditing(false); setCommentId(null); setEditIndx(null)}} disabled={isLoading} className="text-gray-500">Cancel</button>
-                                                {
-                                                    isLoading
-                                                    ? <div className=" inset-0 flex justify-center items-center bg-opacity-50">
-                                                        <Spinner color="secondary" size="sm" />
-                                                      </div>
-                                                    : <button className="bg-gray-800 w-16 text-white font-bold rounded" onClick={()=>handleSubmit()}>Save</button>
-                                                }
-                                            </div>
-                                            : <PencilIcon onClick={()=>{setIsEditing(true); setCommentId(c?.CommentId);setComment(c?.Comment); setEditIndx(index)}} className="w-5 h-5 text-sky-500 ml-auto hover:cursor-pointer hover:text-sky-500/70"/>
-                                        }
                                     </div>
                                     <p className="text-gray-400 text-sm font-light">{moment(c?.AddedAt).format("DD-MM-YYYY hh:mm A")}</p>
                                 </div>

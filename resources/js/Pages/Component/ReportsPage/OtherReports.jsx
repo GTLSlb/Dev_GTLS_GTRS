@@ -101,6 +101,36 @@ export default function OtherReports({
         }
     };
 
+    const getRowHeight = () => {
+        const baseHeight = 30; // Base row height
+
+        // Initialize a variable to track the maximum height
+        let maxHeight = baseHeight;
+        console.log(data);
+        // Iterate over each row in the data
+        data?.map((row) => {
+            // Calculate comments height based on the total length of the Comment property in Comments array
+            const commentsHeight = row?.hasOwnProperty("Comments") ? row?.Comments?.reduce((total, comment) => total + (comment.Comment.length || 0), 0) : 30;
+
+            // Assuming each character in Comments adds a height of ~1px
+            const commentsRowHeight = commentsHeight * 1; // Adjust multiplier as needed
+            console.log(commentsRowHeight);
+
+            // Update maxHeight if the current row's height is greater
+            maxHeight = Math.max(maxHeight, commentsRowHeight);
+        });
+
+        // Return the maximum height found
+        return maxHeight;
+    };
+
+    const [rowHeight, setRowHeight] = useState(null);
+    useEffect(() => {
+        if (data) {
+            setRowHeight(getRowHeight(data))
+        }
+    }, [data]);
+
     return (
         <div>
             <ExportBtn
@@ -123,6 +153,7 @@ export default function OtherReports({
                     filterValueElements={filterValue}
                     groupsElements={groups}
                     columnsElements={columns}
+                    rowHeight={rowHeight}
                 />
             )}
             <AddComment

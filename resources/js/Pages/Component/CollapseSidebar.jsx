@@ -489,7 +489,7 @@ export default function CollapseSidebar({
             }
         });
     };
-    console.log(filterNavigation(menu, currentUser));
+
     const filteredNavigation = filterNavigation(menu, currentUser);
     useEffect(() => {
         setSidebarElements(filteredNavigation);

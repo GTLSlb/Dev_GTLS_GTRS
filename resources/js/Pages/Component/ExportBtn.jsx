@@ -3,9 +3,7 @@ import { Popover, Transition } from "@headlessui/react";
 import moment from "moment";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
-import {
-    ChevronDownIcon,
-} from "@heroicons/react/20/solid";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 export default function ExportBtn({
     handleMouseEnter,
@@ -17,20 +15,18 @@ export default function ExportBtn({
     gridRef,
     workbookName,
 }) {
-
     const [columnsList, setColumnsList] = useState([]);
     function transformData() {
         return columns.reduce((acc, curr) => {
-          acc[curr.value] = curr.label;
-          return acc;
+            acc[curr.value] = curr.label;
+            return acc;
         }, {});
-      }
-      useEffect(() => {
-          if(columns){
-              setColumnsList(transformData(columns));
-          }
-      }, [columns]);
-
+    }
+    useEffect(() => {
+        if (columns) {
+            setColumnsList(transformData(columns));
+        }
+    }, [columns]);
 
     function handleFilterTable() {
         // Get the selected columns or use all columns if none are selected
@@ -410,6 +406,15 @@ export default function ExportBtn({
         return { selectedColumns: selectedColVal, filterValue: filterValue };
     }
 
+    const formatDate = (date) => {
+        const d = new Date(date);
+        const month = d.getMonth() + 1;
+        const day = d.getDate();
+        const year = d.getFullYear();
+        const formattedDate = `${year}-${month}-${day}`;
+        return formattedDate;
+    };
+
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
 
@@ -504,11 +509,23 @@ export default function ExportBtn({
                         acc[columnKey] = person["State"];
                     } else if (columnKey === "RECEIVERREFERENCE") {
                         acc[columnKey] = person["RECEIVER REFERENCE"];
-                    }else if (columnKey === "DespatchDateTime" || columnKey === "DeliveryRequiredDateTime") {
-                            acc[columnKey] = moment(person[columnKey]).format("DD-MM-YYYY hh:mm A");
+                    } else if (
+                        columnKey === "DespatchDateTime" ||
+                        columnKey === "DeliveryRequiredDateTime"
+                    ) {
+                        acc[columnKey] = moment(person[columnKey]).format(
+                            "DD-MM-YYYY hh:mm A"
+                        );
                     } else if (columnKey === "Comments") {
-                        acc[columnKey] = person["Comments"]?.map((item) => item.Comment).join(", ");
-                    }else {
+                        acc[columnKey] = person["Comments"]
+                            ?.map(
+                                (item) =>
+                                    `${formatDate(item.AddedAt)}, ${
+                                        item.Comment
+                                    }`
+                            )
+                            .join("\n");
+                    } else {
                         acc[columnKey] = person[columnKey];
                     }
                 } else {
@@ -534,6 +551,13 @@ export default function ExportBtn({
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
         headerRow.alignment = { horizontal: "center" };
+
+        // Function to calculate row height based on content length
+        const calculateRowHeight = (cellValue) => {
+            if (!cellValue) return 20; // Default row height
+            const lines = cellValue.split("\n").length;
+            return Math.max(20, lines * 25); // Dynamic height, adjust 25px per line
+        };
 
         // Add the data to the worksheet
         data.forEach((rowData) => {
@@ -582,6 +606,25 @@ export default function ExportBtn({
                 const cell = row.getCell(kpiDateTimeIndex + 1);
                 cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
+
+            // Calculate the maximum height needed for each row based on multiline content
+            let maxHeight = 15; // Start with the default height
+
+            row.eachCell({ includeEmpty: true }, (cell) => {
+                const cellValue = cell.value?.toString() || "";
+
+                // Enable text wrapping for multiline content
+                cell.alignment = { wrapText: true, vertical: "top" };
+
+                // Calculate the height for this particular cell
+                const rowHeight = calculateRowHeight(cellValue);
+
+                // Keep track of the maximum height needed for this row
+                maxHeight = Math.max(maxHeight, rowHeight);
+            });
+
+            // Set the row height to the maximum calculated height for the row
+            row.height = maxHeight;
         });
 
         // Set column widths
@@ -602,7 +645,6 @@ export default function ExportBtn({
             saveAs(blob, workbookName);
         });
     }
-
 
     return (
         <div className="">
@@ -645,7 +687,10 @@ export default function ExportBtn({
                                     <div className="p-4">
                                         <div className="mt-2 flex flex-col">
                                             {popoverData?.map((item, index) => (
-                                                <label key={item?.value} className="">
+                                                <label
+                                                    key={item?.value}
+                                                    className=""
+                                                >
                                                     <input
                                                         type="checkbox"
                                                         name="column"

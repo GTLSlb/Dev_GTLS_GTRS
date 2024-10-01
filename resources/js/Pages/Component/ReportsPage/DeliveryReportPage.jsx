@@ -267,6 +267,13 @@ export default function DailyReportPage({
                 end: maxDate,
             },
         },
+        {
+            name: "Comments",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
     ]);
 
     const groups = [
@@ -504,7 +511,35 @@ export default function DailyReportPage({
         },
         {
             name: "Comments",
-            header: "Past Comments",
+            header: "Comments",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 280,
+            filterEditor: StringFilter,
+            render: ({ value, data }) => {
+                return (
+                    <div className="flex gap-4 items-center px-2">
+                        <div className="flex flex-col">
+                            {
+                                data?.hasOwnProperty("Comments")
+                                && (
+                                    data?.Comments?.length > 0
+                                    && data?.Comments?.slice(0, 2)?.map((item) => (
+                                        <div key={item?.CommentId} className="flex gap-2">
+                                            <span>{moment(item?.AddedAt).format("DD-MM-YYYY")} {", "}</span>
+                                            <span>{item?.Comment}</span>
+                                        </div>
+                                    ))
+                                )
+                            }
+                        </div>
+                    </div>
+                );
+            },
+        },
+        {
+            name: "Actions",
+            header: "Actions",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 200,

@@ -18,6 +18,7 @@ export default function TableStructure({
     setSelected,
     gridRef,
     selected,
+    rowHeight,
     id,
 }) {
 
@@ -108,6 +109,7 @@ export default function TableStructure({
                         showColumnMenuLockOptions={false}
                         showColumnMenuGroupOptions={false}
                         selected={selectedRows}
+                        rowHeight={rowHeight == undefined || rowHeight == null ? 40 : rowHeight}
                         style={gridStyle}
                         // onSelectionChange={onSelectionChange}
                         onFilterValueChange={onFilterValueChange}
