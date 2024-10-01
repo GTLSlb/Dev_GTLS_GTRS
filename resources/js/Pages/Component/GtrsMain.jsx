@@ -637,7 +637,7 @@ export default function GtrsMain({
                             {broken && (
                                 <Button
                                     aria-label="chevron right icon"
-                                    className="rounded-none rounded-r bg-dark"
+                                    className="rounded-none rounded-r bg-dark bg-opacity-40 hover:bg-opacity-100"
                                     onClick={() => setToggled(!toggled)}
                                     isIconOnly
                                 >
