@@ -514,7 +514,7 @@ export default function DailyReportPage({
             header: "Comments",
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 280,
+            defaultWidth: 450,
             filterEditor: StringFilter,
             render: ({ value, data }) => {
                 return (
@@ -527,7 +527,7 @@ export default function DailyReportPage({
                                     && data?.Comments?.slice(0, 2)?.map((item) => (
                                         <div key={item?.CommentId} className="flex gap-2">
                                             <span>{moment(item?.AddedAt).format("DD-MM-YYYY")} {", "}</span>
-                                            <span>{item?.Comment}</span>
+                                            <span className="truncate max-w-xs">{item?.Comment}</span>
                                         </div>
                                     ))
                                 )
