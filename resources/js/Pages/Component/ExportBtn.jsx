@@ -518,13 +518,26 @@ export default function ExportBtn({
                         );
                     } else if (columnKey === "Comments") {
                         acc[columnKey] = person["Comments"]
-                            ?.map(
-                                (item) =>
-                                    `${formatDate(item.AddedAt)}, ${
-                                        item.Comment
-                                    }`
-                            )
-                            .join("\n");
+                            ?.map((item) => {
+                                const formattedComment = item.Comment.split(" ")
+                                    .reduce((acc, word, index) => {
+                                        const groupIndex = Math.floor(
+                                            index / 8
+                                        ); // Group every 5 words
+                                        if (!acc[groupIndex]) {
+                                            acc[groupIndex] = [];
+                                        }
+                                        acc[groupIndex].push(word);
+                                        return acc;
+                                    }, [])
+                                    .map((group) => group.join(" ")) // Join each group of 5 words
+                                    .join("\n"); // Join the groups with a new line
+
+                                return `${formatDate(
+                                    item.AddedAt
+                                )}, ${formattedComment}`;
+                            })
+                            .join("\n\n");
                     } else {
                         acc[columnKey] = person[columnKey];
                     }
