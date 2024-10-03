@@ -2061,23 +2061,22 @@ export default function charts({
     const [dailyReportData, setDailyReportData] = useState([]);
     const fetchDeliveryReport = async () => {
         try {
-            const res = await axios
-                .get(`${url}Delivery`, {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`
-                    }
-                });
+            const res = await axios.get(`${url}Delivery`, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            });
             setDailyReportData(res.data || []);
         } catch (err) {
             if (err.response && err.response.status === 401) {
                 // Handle 401 error using SweetAlert
                 swal({
-                    title: 'Session Expired!',
+                    title: "Session Expired!",
                     text: "Please login again",
-                    type: 'success',
+                    type: "success",
                     icon: "info",
-                    confirmButtonText: 'OK'
+                    confirmButtonText: "OK",
                 }).then(async function () {
                     await handleSessionExpiration();
                 });
@@ -2086,13 +2085,13 @@ export default function charts({
                 console.log(err);
             }
         }
-    }
+    };
 
     useEffect(() => {
-        if(currentUser){
+        if (currentUser) {
             fetchDeliveryReport();
         }
-    },[currentUser])
+    }, [currentUser]);
 
     const [filtersDailyValue, setFiltersDailyReport] = useState([
         {
@@ -2608,18 +2607,18 @@ export default function charts({
             setConsignmentToTrack={setConsignmentToTrack}
         />,
         <DailyReportPage
-        url={url}
-        AToken={AToken}
-        currentUser={currentUser}
-        userPermission={user}
-        user={user}
-        dailyReportData={dailyReportData}
-        setLastIndex={setLastIndex}
-        setactiveCon={setactiveCon}
-        setActiveIndexGTRS={setActiveIndexGTRS}
-        setFilterValue={setFiltersDailyReport}
-        filterValue={filtersDailyValue}
-        fetchDeliveryReport={fetchDeliveryReport}
+            url={url}
+            AToken={AToken}
+            currentUser={currentUser}
+            userPermission={user}
+            user={user}
+            dailyReportData={dailyReportData}
+            setLastIndex={setLastIndex}
+            setactiveCon={setactiveCon}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            setFilterValue={setFiltersDailyReport}
+            filterValue={filtersDailyValue}
+            fetchDeliveryReport={fetchDeliveryReport}
         />,
         <ConsMap
             consignment={consignmentToTrack}

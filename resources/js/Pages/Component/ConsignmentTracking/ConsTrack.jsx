@@ -1677,7 +1677,7 @@ function ConsTrack({
                         className="underline text-blue-500 flex justify-center hover:cursor-pointer"
                         onClick={() => {
                             setConsignmentToTrack(data);
-                            setActiveIndexGTRS(24);
+                            setActiveIndexGTRS(25);
                         }}
                     >
                         <MapPinIcon className="h-5 w-5" />
