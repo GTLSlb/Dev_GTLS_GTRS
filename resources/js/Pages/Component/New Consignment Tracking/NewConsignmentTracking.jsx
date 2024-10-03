@@ -19,7 +19,8 @@ import LocationOn from "@mui/icons-material/LocationOn";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import List from "@mui/icons-material/List";
 import HelpCenterRounded from "@mui/icons-material/HelpCenterRounded";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { SelectItem, Divider, Select, Input, Button } from "@nextui-org/react";
+import { ChevronLeftIcon, MapPinIcon } from "@heroicons/react/20/solid";
 
 const center = { lat: -25.2744, lng: 133.7751 };
 const australiaBounds = {
@@ -78,10 +79,10 @@ function NewConsignmentTracking() {
     const [markerDetails, setMarkerDetails] = useState(null);
     const mapRef = useRef(null); // Create a ref for the map instance
     const gtrsWebUrl = window.Laravel.gtrsWeb;
-
+    const [consignmentDetails, setConsignmentDetails] = useState(null);
     const getConsignmentRoute = (e) => {
-        e.preventDefault();
         setPolyline(null);
+        setEventsMarkers([]);
         setLoading(true);
         axios
             .get(`${gtrsWebUrl}getConsignmentRoute`, {
@@ -112,6 +113,7 @@ function NewConsignmentTracking() {
                 );
 
                 // Set the updated polyline and event markers
+                setConsignmentDetails(response.data.consignmentDetails);
                 setPolyline(response.data.vehicleRoad);
                 setEventsMarkers(updatedEventMarkers); // Set modified event markers
 
@@ -200,340 +202,513 @@ function NewConsignmentTracking() {
         });
     };
 
-    useEffect(() => {
-        console.log(typeId);
-    }, [typeId]);
+    function formatDate(dateString) {
+        const date = new Date(dateString);
 
+        // Get day, month, and year
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is zero-based
+        const year = date.getFullYear();
+
+        // Get hours and minutes
+        let hours = date.getHours();
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+
+        // Determine AM or PM
+        const ampm = hours >= 12 ? "PM" : "AM";
+
+        // Convert 24-hour format to 12-hour format
+        hours = hours % 12 || 12;
+
+        // Format hours
+        const formattedHours = String(hours).padStart(2, "0");
+
+        // Combine parts
+        return `${day}-${month}-${year} ${formattedHours}:${minutes} ${ampm}`;
+    }
     return (
-        <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-            <div className="sm:flex sm:items-center">
-                <div className="sm:flex w-full items-center justify-between mt-2 lg:mt-6">
-                    <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                        Consignment Tracking 2
-                    </h1>
-                </div>
-            </div>
-            {/* Input fields */}
-            <div className="mt-4 mb-4 grid grid-cols-5 gap-5">
-                <div className="grid grid-cols-2 items-center gap-2">
-                    {" "}
-                    <label
-                        htmlFor="last-name"
-                        className="inline-block text-sm font-medium leading-6  flex-item "
-                    >
-                        Consignment Number
-                    </label>
-                    <div className="sm:mt-0 ">
-                        <input
-                            type="text"
-                            rows={4}
-                            name="comment"
-                            id="comment"
-                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                            onChange={(event) => {
-                                setConsignmentNb(event.target.value);
-                            }}
-                        />
-                    </div>
-                </div>
-                <div className="grid grid-cols-2 items-center gap-2">
-                    {" "}
-                    <label
-                        htmlFor="last-name"
-                        className="inline-block text-sm font-medium leading-6  flex-item "
-                    >
-                        Consignment type
-                    </label>
-                    <div className="sm:mt-0 ">
-                        {/* <input
-                            type="number"
-                            onChange={(event) => {
-                                setTypeId(event.target.value);
-                            }}
-                            className="flex-item block w-full h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 md:max-w-xs sm:text-sm sm:leading-6"
-                        /> */}
-                        <select
-                            name="cars"
-                            id="cars"
-                            form="carform"
-                            value={typeId}
-                            onChange={(event) => {
-                                setTypeId(event.target.value);
-                            }}
-                            className="flex-item block w-full h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 md:max-w-xs sm:text-sm sm:leading-6"
+        <div className="w-full h-full min-w-[500px] flex">
+            {markerDetails ? (
+                <div className="flex flex-col w-[500px] p-3 bg-zinc-100">
+                    <div className="flex">
+                        <Button
+                            size="sm"
+                            variant="light"
+                            startContent={
+                                <ChevronLeftIcon className="h-4 w-4" />
+                            }
+                            onClick={() => handleClose()}
+                            className="mt-2 w-20"
                         >
-                            <option value="" disabled={typeId !== ""}>
-                                Select a type
-                            </option>
-                            <option value="1">Pickup</option>
-                            <option value="2">Delivery</option>
-                        </select>
+                            Back
+                        </Button>
                     </div>
-                </div>
-                <div className="flex items-center gap-5">
-                    {" "}
-                    <label
-                        htmlFor="last-name"
-                        className="inline-block text-sm font-medium leading-6  flex-item "
-                    >
-                        Date From
-                    </label>
-                    <div className="sm:mt-0 ">
-                        <input
-                            type="datetime-local"
-                            onChange={(e) => setFromdate(e.target.value)}
-                            className="flex-item block w-full h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 md:max-w-xs sm:text-sm sm:leading-6"
+                    <Divider className="my-2"/>
+                    <div className="flex gap-5 items-center">
+                        <img
+                            src={markerDetails.image}
+                            alt=""
+                            width={30}
+                            height={30}
                         />
+                        <div>
+                            <p className="font-bold text-lg text-[#2A3034]">
+                                {markerDetails.type}
+                            </p>
+                        </div>
                     </div>
-                </div>
-                <div className="flex items-center gap-5">
-                    {" "}
-                    <label
-                        htmlFor="last-name"
-                        className="inline-block text-sm font-medium leading-6  flex-item "
-                    >
-                        Date From
-                    </label>
-                    <div className="sm:mt-0 ">
-                        <input
-                            type="datetime-local"
-                            onChange={(e) => setTodate(e.target.value)}
-                            className="flex-item block w-full h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 md:max-w-xs sm:text-sm sm:leading-6"
-                        />
+                    <div className="mt-8 flex gap-7 items-start">
+                        <LocationOn sx={{ color: "#e0c981" }} />
+                        <div className="flex flex-col text-[#2A3034]">
+                            <p className="font-semibold">
+                                {markerDetails.subsurb}
+                            </p>
+                            <p className=" font-thin">
+                                {markerDetails.roadName}
+                            </p>
+                        </div>
                     </div>
-                </div>
-                <div className="flex items-end justify-end">
-                    <button
-                        onClick={(e) => getConsignmentRoute(e)}
-                        className="bg-dark text-white p-2 w-1/2 rounded-md"
-                    >
-                        {loading ? (
-                            <div className="w-full flex justify-center">
-                                <AiOutlineLoading3Quarters className="animate-spin" />
-                            </div>
-                        ) : (
-                            <>Check</>
-                        )}
-                    </button>
-                </div>
-            </div>
-
-            {/* Google Map and Sidebar*/}
-            <div className="flex flex-col h-[750px] mt-10">
-                <div className="flex-grow flex flex-row-reverse">
-                    <div className="flex-grow rounded-3xl">
-                        {/* Google Map */}
-                        <LoadScript
-                            googleMapsApiKey="AIzaSyCvQ-XLmR8QNAr25M30xEcqX-nD-yTQ0go"
-                            libraries={["geometry", "visualization"]}
-                        >
-                            <GoogleMap
-                                mapContainerStyle={{
-                                    width: "100%",
-                                    height: "100%",
-                                    borderTopRightRadius: "1rem",
-                                    borderBottomRightRadius: "1rem",
-                                }}
-                                center={center}
-                                zoom={5}
-                                onLoad={(map) => (mapRef.current = map)} // Save map instance to mapRef
-                                options={{
-                                    restriction: {
-                                        latLngBounds: australiaBounds,
-                                    },
-                                }}
-                            >
-                                {/* <TrafficLayer /> */}
-                                {/* Render Polyline */}
-                                {polyline && (
-                                    <Polyline
-                                        path={polyline}
-                                        options={polylineOptions}
-                                        onClick={zoomToPolyline(polyline)}
-                                    />
-                                )}
-                                {/* Render start marker */}
-                                {startPoint && (
-                                    <Marker
-                                        position={{
-                                            lat: startPoint.lat,
-                                            lng: startPoint.lng,
-                                        }}
-                                        label={{
-                                            text: "Start",
-                                            color: "green",
-                                            fontSize: "14px",
-                                        }}
-                                        icon={{
-                                            url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
-                                            scaledSize:
-                                                new window.google.maps.Size(
-                                                    40,
-                                                    40
-                                                ), // Increase marker size
-                                            labelOrigin:
-                                                new window.google.maps.Point(
-                                                    20,
-                                                    50
-                                                ), // Adjust label position
-                                        }}
-                                    />
-                                )}
-
-                                {/* Render end marker */}
-                                {endPoint && (
-                                    <Marker
-                                        position={{
-                                            lat: endPoint.lat,
-                                            lng: endPoint.lng,
-                                        }}
-                                        label={{
-                                            text: "End",
-                                            fontSize: "14px",
-                                            color: "red",
-                                        }}
-                                        icon={{
-                                            labelOrigin:
-                                                new window.google.maps.Point(
-                                                    15,
-                                                    -10
-                                                ), // Position label above the marker
-                                            url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
-                                            scaledSize:
-                                                new window.google.maps.Size(
-                                                    40,
-                                                    40
-                                                ), // Increase marker size
-                                            labelOrigin:
-                                                new window.google.maps.Point(
-                                                    20,
-                                                    50
-                                                ), // Adjust label position
-                                        }}
-                                    />
-                                )}
-
-                                {eventsMarkers.map((position, index) => {
-                                    return (
-                                        <Marker
-                                            key={index}
-                                            position={{
-                                                lat: parseFloat(
-                                                    position.latitude
-                                                ),
-                                                lng: parseFloat(
-                                                    position.longitude
-                                                ),
-                                            }}
-                                            icon={getIcon(position.event_type)}
-                                            onClick={() =>
-                                                handleMarkerClick(position)
-                                            }
-                                        />
-                                    );
-                                })}
-                            </GoogleMap>
-                        </LoadScript>
-                    </div>
-                    {/* Sidebar */}
-                    {markerDetails && (
-                        <div className="h-full w-80 bg-gray-100 border-1 rounded-l-2xl p-4 pr-2 overflow-y-auto ">
-                            <div className="flex justify-between">
-                                <div className="flex gap-5 items-center">
-                                    <img
-                                        src={markerDetails.image}
-                                        alt=""
-                                        width={30}
-                                        height={30}
-                                    />
-                                    <div>
-                                        <p className="font-bold text-lg text-[#2A3034]">
-                                            {markerDetails.type}
-                                        </p>
-                                    </div>
-                                </div>
-                                <button onClick={handleClose}>
-                                    <CloseIcon sx={{ color: "#e0c981" }} />
-                                </button>
-                            </div>
-                            <div className="mt-8 flex gap-7 items-start">
-                                <LocationOn sx={{ color: "#e0c981" }} />
-                                <div className="flex flex-col text-[#2A3034]">
-                                    <p className="font-semibold">
-                                        {markerDetails.subsurb}
-                                    </p>
-                                    <p className=" font-thin">
-                                        {markerDetails.roadName}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="mt-8 flex gap-7 items-start">
-                                <AccessTimeIcon sx={{ color: "#e0c981" }} />
-                                <div className="flex flex-col text-[#2A3034]">
-                                    <p className="font-thin">
-                                        Started At{" "}
-                                        {formatDateTime(
-                                            markerDetails.startDate
-                                        )}
-                                    </p>
-                                    {markerDetails.endDate && (
-                                        <p className="font-thin">
-                                            Ends At{" "}
-                                            {formatDateTime(
-                                                markerDetails.endDate
-                                            )}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-                            {markerDetails.advice && (
-                                <div className="mt-8 flex gap-7 items-start">
-                                    <List sx={{ color: "#e0c981" }} />
-                                    <div className="flex flex-col text-[#2A3034]">
-                                        <p className="font-semibold">Advice</p>
-                                        <p className=" font-thin">
-                                            {markerDetails.advice}
-                                        </p>
-                                    </div>
-                                </div>
+                    <div className="mt-8 flex gap-7 items-start">
+                        <AccessTimeIcon sx={{ color: "#e0c981" }} />
+                        <div className="flex flex-col text-[#2A3034]">
+                            <p className="font-thin">
+                                Started At{" "}
+                                {formatDateTime(markerDetails.startDate)}
+                            </p>
+                            {markerDetails.endDate && (
+                                <p className="font-thin">
+                                    Ends At{" "}
+                                    {formatDateTime(markerDetails.endDate)}
+                                </p>
                             )}
-                            {markerDetails.information ? (
-                                <div className="mt-8 flex gap-7 items-start">
-                                    <HelpCenterRounded
-                                        sx={{ color: "#e0c981" }}
-                                    />
-                                    <div className="flex flex-col text-[#2A3034]">
-                                        <p className="font-semibold">
-                                            Information
-                                        </p>
-                                        <p className=" font-thin max-h-[300px] overflow-y-auto pr-2 containerscroll">
-                                            {markerDetails.information}
-                                        </p>
-                                    </div>
-                                </div>
-                            ) : markerDetails.otherAdvice ? (
-                                <div className="mt-8 flex gap-7 items-start">
-                                    <HelpCenterRounded
-                                        sx={{ color: "#e0c981" }}
-                                    />
-                                    <div className="flex flex-col text-[#2A3034]">
-                                        <p className="font-semibold">
-                                            Information
-                                        </p>
+                        </div>
+                    </div>
+                    {markerDetails.advice && (
+                        <div className="mt-8 flex gap-7 items-start">
+                            <List sx={{ color: "#e0c981" }} />
+                            <div className="flex flex-col text-[#2A3034]">
+                                <p className="font-semibold">Advice</p>
+                                <p className=" font-thin">
+                                    {markerDetails.advice}
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                    {markerDetails.information ? (
+                        <div className="mt-8 flex gap-7 items-start">
+                            <HelpCenterRounded sx={{ color: "#e0c981" }} />
+                            <div className="flex flex-col text-[#2A3034]">
+                                <p className="font-semibold">Information</p>
+                                <p className=" font-thin max-h-[300px] overflow-y-auto pr-2 containerscroll">
+                                    {markerDetails.information}
+                                </p>
+                            </div>
+                        </div>
+                    ) : markerDetails.otherAdvice ? (
+                        <div className="mt-8 flex gap-7 items-start">
+                            <HelpCenterRounded sx={{ color: "#e0c981" }} />
+                            <div className="flex flex-col text-[#2A3034]">
+                                <p className="font-semibold">Information</p>
 
-                                        <p
-                                            className="font-thin max-w-60 max-h-[300px] overflow-y-auto pr-2 containerscroll"
-                                            dangerouslySetInnerHTML={{
-                                                __html: markerDetails.otherAdvice,
-                                            }}
-                                        ></p>
+                                <p
+                                    className="font-thin max-w-60 max-h-[300px] overflow-y-auto pr-2 containerscroll"
+                                    dangerouslySetInnerHTML={{
+                                        __html: markerDetails.otherAdvice,
+                                    }}
+                                ></p>
+                            </div>
+                        </div>
+                    ) : null}
+                </div>
+            ) : (
+                <div className="flex flex-col w-[500px] p-3 bg-zinc-100">
+                    <div className="font-bold text-lg mt-3">
+                        Consignment Tracking
+                    </div>
+                    <Divider className="my-2" />
+                    <div className="py-5 grid grid-cols-2 gap-5">
+                        <Input
+                            type="text"
+                            label="Consignment No"
+                            labelPlacement="outside"
+                            placeholder=" "
+                            radius="sm"
+                            variant="bordered"
+                            classNames={{
+                                input: "border-0 focus:ring-0 focus:border-0",
+                                inputWrapper: "bg-white shadow-none",
+                            }}
+                            value={consignmentNb}
+                            onValueChange={setConsignmentNb}
+                        />
+                        <Select
+                            label="Select Type"
+                            variant="bordered"
+                            placeholder=" "
+                            radius="sm"
+                            labelPlacement="outside"
+                            selectedKeys={typeId}
+                            className="max-w-xs"
+                            classNames={{
+                                mainWrapper: "bg-white shadow-none",
+                            }}
+                            onSelectionChange={(e) => setTypeId(e.currentKey)}
+                        >
+                            <SelectItem key={1}>Pickup</SelectItem>
+                            <SelectItem key={2}>Delivery</SelectItem>
+                        </Select>
+                        <div className="flex flex-col">
+                            {" "}
+                            <label
+                                htmlFor="last-name"
+                                className="inline-block text-sm font-medium leading-6  flex-item "
+                            >
+                                Date From
+                            </label>
+                            <div className="sm:mt-0 ">
+                                <input
+                                    type="datetime-local"
+                                    onChange={(e) =>
+                                        setFromdate(e.target.value)
+                                    }
+                                    className="flex-item block w-full h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 md:max-w-xs sm:text-sm sm:leading-6"
+                                />
+                            </div>
+                        </div>
+                        <div className="flex flex-col">
+                            {" "}
+                            <label
+                                htmlFor="last-name"
+                                className="inline-block text-sm font-medium leading-6  flex-item "
+                            >
+                                Date From
+                            </label>
+                            <div className="sm:mt-0 ">
+                                <input
+                                    type="datetime-local"
+                                    onChange={(e) => setTodate(e.target.value)}
+                                    className="flex-item block w-full h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 md:max-w-xs sm:text-sm sm:leading-6"
+                                />
+                            </div>
+                        </div>
+                        <Button
+                            size="sm"
+                            variant="solid"
+                            onClick={() => getConsignmentRoute()}
+                            isLoading={loading}
+                            className="mt-2 w-full bg-gray-800 text-white col-span-2"
+                        >
+                            Submit
+                        </Button>
+                    </div>
+                    <Divider className="my-2" />
+                    {consignmentDetails && (
+                        <div className=" border-2 bg-white h-full p-5 rounded-md overflow-auto">
+                            <span className=" font-bold">
+                                {
+                                    consignmentDetails.consignmentDetails
+                                        .ConsignmentNo
+                                }
+                            </span>
+                            <div className="text-sm  mt-5">
+                                <div className="flex gap-3">
+                                    <span className="text-zinc-500">
+                                        Charge Code
+                                    </span>
+                                    <span className="text-black">
+                                        {
+                                            consignmentDetails
+                                                .consignmentDetails.ChargeCode
+                                        }
+                                    </span>
+                                </div>
+                                <div className="flex gap-3">
+                                    <span className="text-zinc-500">
+                                        Service Type
+                                    </span>
+                                    <span className="text-black">
+                                        {
+                                            consignmentDetails
+                                                .consignmentDetails.ServiceType
+                                        }
+                                    </span>
+                                </div>
+                                <div className="flex gap-3">
+                                    <span className="text-zinc-500">
+                                        Pickup Date
+                                    </span>
+                                    <span className="text-black">
+                                        {formatDate(
+                                            consignmentDetails
+                                                .consignmentDetails.Pickdate
+                                        )}
+                                    </span>
+                                </div>
+                                <div className="flex gap-3">
+                                    <span className="text-zinc-500">RDD</span>
+                                    <span className="text-black">
+                                        {formatDate(
+                                            consignmentDetails
+                                                .consignmentDetails.Pickdate
+                                        )}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className=" mt-5">
+                                <div className="flex flex-col gap-5">
+                                    <div className="flex gap-3">
+                                        <div className="flex flex-col items-center">
+                                            <div className=" w-min p-2 h-min bg-teal-600 rounded-full bg-opacity-30">
+                                                <span className="">
+                                                    <MapPinIcon className="h-6 w-6 text-teal-600" />
+                                                </span>
+                                            </div>
+                                            {/* <div className="h-full border-l-2 border-dashed border-teal-600"></div> */}
+                                        </div>
+
+                                        <div className=" border-1 w-full p-2 rounded-md text-sm border-teal-600 border-opacity-30">
+                                            <span className="text-zinc-500">
+                                                Sender
+                                            </span>
+                                            <div>
+                                                <div className="flex gap-3">
+                                                    <span className="text-zinc-500">
+                                                        Name
+                                                    </span>
+                                                    <span className="text-black">
+                                                        {
+                                                            consignmentDetails
+                                                                .senderDetails
+                                                                .SenderName
+                                                        }
+                                                    </span>
+                                                </div>
+                                                <div className="flex gap-3">
+                                                    <span className="text-zinc-500">
+                                                        Address
+                                                    </span>
+                                                    <span className="text-black">
+                                                        {
+                                                            consignmentDetails
+                                                                .senderDetails
+                                                                .SenderAddress
+                                                        }
+                                                    </span>
+                                                </div>
+                                                <div className="flex gap-3">
+                                                    <span className="text-zinc-500">
+                                                        Suburb
+                                                    </span>
+                                                    <span className="text-black">
+                                                        {
+                                                            consignmentDetails
+                                                                .senderDetails
+                                                                .SenderSuburb
+                                                        }
+                                                    </span>
+                                                </div>
+                                                <div className="flex gap-3">
+                                                    <span className="text-zinc-500">
+                                                        State
+                                                    </span>
+                                                    <span className="text-black">
+                                                        {
+                                                            consignmentDetails
+                                                                .senderDetails
+                                                                .SenderState
+                                                        }
+                                                    </span>
+                                                </div>
+                                                <div className="flex gap-3">
+                                                    <span className="text-zinc-500">
+                                                        PostCode
+                                                    </span>
+                                                    <span className="text-black">
+                                                        {
+                                                            consignmentDetails
+                                                                .senderDetails
+                                                                .SenderPostCode
+                                                        }
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-3">
+                                        <div className=" w-min h-min p-2 bg-pink-600 rounded-full bg-opacity-30">
+                                            <span className="">
+                                                <MapPinIcon className="h-6 w-6 text-pink-600" />
+                                            </span>
+                                        </div>
+                                        <div className=" border-1 w-full p-2 rounded-md text-sm border-pink-600 border-opacity-30">
+                                            <span className="text-zinc-500">
+                                                Receiver
+                                            </span>
+                                            <div>
+                                                <div className="flex gap-3">
+                                                    <span className="text-zinc-500">
+                                                        Name
+                                                    </span>
+                                                    <span className="text-black">
+                                                        {
+                                                            consignmentDetails
+                                                                .receiverDetails
+                                                                .ReceiverName
+                                                        }
+                                                    </span>
+                                                </div>
+                                                <div className="flex gap-3">
+                                                    <span className="text-zinc-500">
+                                                        Address
+                                                    </span>
+                                                    <span className="text-black">
+                                                        {
+                                                            consignmentDetails
+                                                                .receiverDetails
+                                                                .ReceiverAddress
+                                                        }
+                                                    </span>
+                                                </div>
+                                                <div className="flex gap-3">
+                                                    <span className="text-zinc-500">
+                                                        Suburb
+                                                    </span>
+                                                    <span className="text-black">
+                                                        {
+                                                            consignmentDetails
+                                                                .receiverDetails
+                                                                .ReceiverSuburb
+                                                        }
+                                                    </span>
+                                                </div>
+                                                <div className="flex gap-3">
+                                                    <span className="text-zinc-500">
+                                                        State
+                                                    </span>
+                                                    <span className="text-black">
+                                                        {
+                                                            consignmentDetails
+                                                                .receiverDetails
+                                                                .ReceiverState
+                                                        }
+                                                    </span>
+                                                </div>
+                                                <div className="flex gap-3">
+                                                    <span className="text-zinc-500">
+                                                        PostCode
+                                                    </span>
+                                                    <span className="text-black">
+                                                        {
+                                                            consignmentDetails
+                                                                .receiverDetails
+                                                                .ReceiverPostcode
+                                                        }
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            ) : null}
+                            </div>
                         </div>
                     )}
                 </div>
-            </div>
+            )}
+
+            <LoadScript
+                googleMapsApiKey="AIzaSyCvQ-XLmR8QNAr25M30xEcqX-nD-yTQ0go"
+                libraries={["geometry", "visualization"]}
+            >
+                <GoogleMap
+                    mapContainerStyle={{
+                        width: "100%",
+                        height: "100%",
+                        borderTopRightRadius: "1rem",
+                        borderBottomRightRadius: "1rem",
+                    }}
+                    center={center}
+                    zoom={5}
+                    onLoad={(map) => (mapRef.current = map)} // Save map instance to mapRef
+                    options={{
+                        restriction: {
+                            latLngBounds: australiaBounds,
+                        },
+                    }}
+                >
+                    {/* <TrafficLayer /> */}
+                    {/* Render Polyline */}
+                    {polyline && (
+                        <Polyline
+                            path={polyline}
+                            options={polylineOptions}
+                            onClick={zoomToPolyline(polyline)}
+                        />
+                    )}
+                    {/* Render start marker */}
+                    {startPoint && (
+                        <Marker
+                            position={{
+                                lat: startPoint.lat,
+                                lng: startPoint.lng,
+                            }}
+                            label={{
+                                text: "Sender",
+                                color: "green",
+                                fontSize: "14px",
+                            }}
+                            icon={{
+                                url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+                                scaledSize: new window.google.maps.Size(40, 40), // Increase marker size
+                                labelOrigin: new window.google.maps.Point(
+                                    20,
+                                    50
+                                ), // Adjust label position
+                            }}
+                        />
+                    )}
+
+                    {/* Render end marker */}
+                    {endPoint && (
+                        <Marker
+                            position={{
+                                lat: endPoint.lat,
+                                lng: endPoint.lng,
+                            }}
+                            label={{
+                                text: "End",
+                                fontSize: "14px",
+                                color: "Receiver",
+                            }}
+                            icon={{
+                                labelOrigin: new window.google.maps.Point(
+                                    15,
+                                    -10
+                                ), // Position label above the marker
+                                url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+                                scaledSize: new window.google.maps.Size(40, 40), // Increase marker size
+                                labelOrigin: new window.google.maps.Point(
+                                    20,
+                                    50
+                                ), // Adjust label position
+                            }}
+                        />
+                    )}
+
+                    {eventsMarkers.map((position, index) => {
+                        return (
+                            <Marker
+                                key={index}
+                                position={{
+                                    lat: parseFloat(position.latitude),
+                                    lng: parseFloat(position.longitude),
+                                }}
+                                icon={getIcon(position.event_type)}
+                                onClick={() => handleMarkerClick(position)}
+                            />
+                        );
+                    })}
+                </GoogleMap>
+            </LoadScript>
         </div>
     );
 }
