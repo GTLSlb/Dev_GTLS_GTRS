@@ -49,6 +49,7 @@ import {
     getFiltersTransport,
 } from "@/Components/utils/filters";
 import ConsDetails from "../ConsDetails";
+import NewConsignmentTracking from "./New Consignment Tracking/NewConsignmentTracking";
 
 export default function GtrsMain({
     setCusomterAccounts,
@@ -647,7 +648,7 @@ export default function GtrsMain({
                         </div>
 
                         {/* Main content area, displaying dynamically selected components */}
-                        <div >
+                        <div>
                             <div className="rounded-lg">
                                 <Routes>
                                     <Route
@@ -1020,7 +1021,10 @@ export default function GtrsMain({
                                         path="/consignment-map"
                                         element={<ConsMap />}
                                     />
-
+                                    <Route
+                                        path="/consignment-tracking-2"
+                                        element={<NewConsignmentTracking />}
+                                    />
                                     <Route
                                         path="/*"
                                         element={<NotFoundRedirect />}
