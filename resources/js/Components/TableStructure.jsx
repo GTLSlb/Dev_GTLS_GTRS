@@ -84,12 +84,6 @@ export default function TableStructure({
         [setFilterValueElements]
     );
 
-    const getRowHeight = ({ row }) => {
-        const baseHeight = 30; // Base row height
-        const titleHeight = row.title.split("\n").length * 20; // Assuming each line is ~20px
-        const descriptionHeight = row.description.split("\n").length * 20; // Likewise for description
-        return baseHeight + Math.max(titleHeight, descriptionHeight); // Return the max height
-    };
 
     return (
         <div className="">
