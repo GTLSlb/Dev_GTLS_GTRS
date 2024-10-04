@@ -630,7 +630,7 @@ export default function GtrsMain({
                         currentUser={currentUser}
                     />
 
-                    <main className="w-full  overflow-y-auto">
+                    <main className="w-full overflow-y-auto">
                         <div
                             style={{ marginBottom: "16px" }}
                             className="fixed left-0 top-20 z-10"
@@ -648,8 +648,8 @@ export default function GtrsMain({
                         </div>
 
                         {/* Main content area, displaying dynamically selected components */}
-                        <div>
-                            <div className="rounded-lg">
+                        <div className="h-full">
+                            <div className="rounded-lg h-full">
                                 <Routes>
                                     <Route
                                         path="/dashboard"

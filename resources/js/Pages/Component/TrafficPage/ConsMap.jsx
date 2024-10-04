@@ -297,7 +297,7 @@ export default function ConsMap({ }) {
                     }}
                     center={mapCenter}
                 >
-                    <TrafficLayer /> 
+                    {/* <TrafficLayer />  */}
                     {!directionsRequested && (
                         <DirectionsService
                             options={{

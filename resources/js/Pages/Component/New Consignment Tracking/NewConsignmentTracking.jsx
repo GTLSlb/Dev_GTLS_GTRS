@@ -14,7 +14,6 @@ import RegionalLGA from "@/assets/icons/RegionalLGA.png";
 import Incident from "@/assets/icons/Incident.png";
 import Major from "@/assets/icons/Major.png";
 import Other from "@/assets/icons/Other.png";
-import CloseIcon from "@mui/icons-material/Close";
 import LocationOn from "@mui/icons-material/LocationOn";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import List from "@mui/icons-material/List";
@@ -227,7 +226,7 @@ function NewConsignmentTracking() {
         return `${day}-${month}-${year} ${formattedHours}:${minutes} ${ampm}`;
     }
     return (
-        <div className="w-full h-full min-w-[500px] flex">
+        <div className=" h-full min-w-[500px] flex">
             {markerDetails ? (
                 <div className="flex flex-col w-[500px] p-3 bg-zinc-100">
                     <div className="flex">
@@ -243,7 +242,7 @@ function NewConsignmentTracking() {
                             Back
                         </Button>
                     </div>
-                    <Divider className="my-2"/>
+                    <Divider className="my-2" />
                     <div className="flex gap-5 items-center">
                         <img
                             src={markerDetails.image}
@@ -615,100 +614,106 @@ function NewConsignmentTracking() {
                 </div>
             )}
 
-            <LoadScript
-                googleMapsApiKey="AIzaSyCvQ-XLmR8QNAr25M30xEcqX-nD-yTQ0go"
-                libraries={["geometry", "visualization"]}
-            >
-                <GoogleMap
-                    mapContainerStyle={{
-                        width: "100%",
-                        height: "100%",
-                        borderTopRightRadius: "1rem",
-                        borderBottomRightRadius: "1rem",
-                    }}
-                    center={center}
-                    zoom={5}
-                    onLoad={(map) => (mapRef.current = map)} // Save map instance to mapRef
-                    options={{
-                        restriction: {
-                            latLngBounds: australiaBounds,
-                        },
-                    }}
+            <div className=" h-full w-full">
+                <LoadScript
+                    googleMapsApiKey="AIzaSyCvQ-XLmR8QNAr25M30xEcqX-nD-yTQ0go"
+                    libraries={["geometry", "visualization"]}
                 >
-                    {/* <TrafficLayer /> */}
-                    {/* Render Polyline */}
-                    {polyline && (
-                        <Polyline
-                            path={polyline}
-                            options={polylineOptions}
-                            onClick={zoomToPolyline(polyline)}
-                        />
-                    )}
-                    {/* Render start marker */}
-                    {startPoint && (
-                        <Marker
-                            position={{
-                                lat: startPoint.lat,
-                                lng: startPoint.lng,
-                            }}
-                            label={{
-                                text: "Sender",
-                                color: "green",
-                                fontSize: "14px",
-                            }}
-                            icon={{
-                                url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
-                                scaledSize: new window.google.maps.Size(40, 40), // Increase marker size
-                                labelOrigin: new window.google.maps.Point(
-                                    20,
-                                    50
-                                ), // Adjust label position
-                            }}
-                        />
-                    )}
-
-                    {/* Render end marker */}
-                    {endPoint && (
-                        <Marker
-                            position={{
-                                lat: endPoint.lat,
-                                lng: endPoint.lng,
-                            }}
-                            label={{
-                                text: "End",
-                                fontSize: "14px",
-                                color: "Receiver",
-                            }}
-                            icon={{
-                                labelOrigin: new window.google.maps.Point(
-                                    15,
-                                    -10
-                                ), // Position label above the marker
-                                url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
-                                scaledSize: new window.google.maps.Size(40, 40), // Increase marker size
-                                labelOrigin: new window.google.maps.Point(
-                                    20,
-                                    50
-                                ), // Adjust label position
-                            }}
-                        />
-                    )}
-
-                    {eventsMarkers.map((position, index) => {
-                        return (
-                            <Marker
-                                key={index}
-                                position={{
-                                    lat: parseFloat(position.latitude),
-                                    lng: parseFloat(position.longitude),
-                                }}
-                                icon={getIcon(position.event_type)}
-                                onClick={() => handleMarkerClick(position)}
+                    <GoogleMap
+                        mapContainerStyle={{
+                            width: "100%",
+                            height: "100%",
+                        }}
+                        center={center}
+                        zoom={5}
+                        onLoad={(map) => (mapRef.current = map)} // Save map instance to mapRef
+                        options={{
+                            restriction: {
+                                latLngBounds: australiaBounds,
+                            },
+                        }}
+                    >
+                        {/* <TrafficLayer /> */}
+                        {/* Render Polyline */}
+                        {polyline && (
+                            <Polyline
+                                path={polyline}
+                                options={polylineOptions}
+                                onClick={zoomToPolyline(polyline)}
                             />
-                        );
-                    })}
-                </GoogleMap>
-            </LoadScript>
+                        )}
+                        {/* Render start marker */}
+                        {startPoint && (
+                            <Marker
+                                position={{
+                                    lat: startPoint.lat,
+                                    lng: startPoint.lng,
+                                }}
+                                label={{
+                                    text: "Sender",
+                                    color: "green",
+                                    fontSize: "14px",
+                                }}
+                                icon={{
+                                    url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+                                    scaledSize: new window.google.maps.Size(
+                                        40,
+                                        40
+                                    ), // Increase marker size
+                                    labelOrigin: new window.google.maps.Point(
+                                        20,
+                                        50
+                                    ), // Adjust label position
+                                }}
+                            />
+                        )}
+
+                        {/* Render end marker */}
+                        {endPoint && (
+                            <Marker
+                                position={{
+                                    lat: endPoint.lat,
+                                    lng: endPoint.lng,
+                                }}
+                                label={{
+                                    text: "End",
+                                    fontSize: "14px",
+                                    color: "Receiver",
+                                }}
+                                icon={{
+                                    labelOrigin: new window.google.maps.Point(
+                                        15,
+                                        -10
+                                    ), // Position label above the marker
+                                    url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+                                    scaledSize: new window.google.maps.Size(
+                                        40,
+                                        40
+                                    ), // Increase marker size
+                                    labelOrigin: new window.google.maps.Point(
+                                        20,
+                                        50
+                                    ), // Adjust label position
+                                }}
+                            />
+                        )}
+
+                        {eventsMarkers.map((position, index) => {
+                            return (
+                                <Marker
+                                    key={index}
+                                    position={{
+                                        lat: parseFloat(position.latitude),
+                                        lng: parseFloat(position.longitude),
+                                    }}
+                                    icon={getIcon(position.event_type)}
+                                    onClick={() => handleMarkerClick(position)}
+                                />
+                            );
+                        })}
+                    </GoogleMap>
+                </LoadScript>
+            </div>
         </div>
     );
 }
