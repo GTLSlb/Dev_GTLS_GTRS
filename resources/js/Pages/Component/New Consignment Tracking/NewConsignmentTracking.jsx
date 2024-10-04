@@ -15,10 +15,18 @@ import Incident from "@/assets/icons/Incident.png";
 import Major from "@/assets/icons/Major.png";
 import Other from "@/assets/icons/Other.png";
 import LocationOn from "@mui/icons-material/LocationOn";
+import ConsIcon from "@/assets/icons/ConsIcon.png";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import List from "@mui/icons-material/List";
 import HelpCenterRounded from "@mui/icons-material/HelpCenterRounded";
-import { SelectItem, Divider, Select, Input, Button } from "@nextui-org/react";
+import {
+    SelectItem,
+    Divider,
+    Select,
+    Input,
+    Button,
+    Image,
+} from "@nextui-org/react";
 import { ChevronLeftIcon, MapPinIcon } from "@heroicons/react/20/solid";
 
 const center = { lat: -25.2744, lng: 133.7751 };
@@ -231,10 +239,10 @@ function NewConsignmentTracking() {
                 <div className="flex flex-col w-[500px] p-3 bg-zinc-100">
                     <div className="flex">
                         <Button
-                            size="sm"
+                            size="md"
                             variant="light"
                             startContent={
-                                <ChevronLeftIcon className="h-4 w-4" />
+                                <ChevronLeftIcon className="h-6 w-6" />
                             }
                             onClick={() => handleClose()}
                             className="mt-2 w-20"
@@ -243,81 +251,98 @@ function NewConsignmentTracking() {
                         </Button>
                     </div>
                     <Divider className="my-2" />
-                    <div className="flex gap-5 items-center">
-                        <img
-                            src={markerDetails.image}
-                            alt=""
-                            width={30}
-                            height={30}
-                        />
-                        <div>
-                            <p className="font-bold text-lg text-[#2A3034]">
-                                {markerDetails.type}
-                            </p>
-                        </div>
-                    </div>
-                    <div className="mt-8 flex gap-7 items-start">
-                        <LocationOn sx={{ color: "#e0c981" }} />
-                        <div className="flex flex-col text-[#2A3034]">
-                            <p className="font-semibold">
-                                {markerDetails.subsurb}
-                            </p>
-                            <p className=" font-thin">
-                                {markerDetails.roadName}
-                            </p>
-                        </div>
-                    </div>
-                    <div className="mt-8 flex gap-7 items-start">
-                        <AccessTimeIcon sx={{ color: "#e0c981" }} />
-                        <div className="flex flex-col text-[#2A3034]">
-                            <p className="font-thin">
-                                Started At{" "}
-                                {formatDateTime(markerDetails.startDate)}
-                            </p>
-                            {markerDetails.endDate && (
-                                <p className="font-thin">
-                                    Ends At{" "}
-                                    {formatDateTime(markerDetails.endDate)}
+                    <div className="p-3">
+                        <div className="flex gap-5 items-center">
+                            <img
+                                src={markerDetails.image}
+                                alt=""
+                                width={30}
+                                height={30}
+                            />
+                            <div>
+                                <p className="font-bold text-xl text-[#2A3034]">
+                                    {markerDetails.type}
                                 </p>
-                            )}
+                            </div>
                         </div>
-                    </div>
-                    {markerDetails.advice && (
                         <div className="mt-8 flex gap-7 items-start">
-                            <List sx={{ color: "#e0c981" }} />
+                            <LocationOn
+                                sx={{ color: "#e2b540" }}
+                                className="!h-8 !w-8"
+                            />
                             <div className="flex flex-col text-[#2A3034]">
-                                <p className="font-semibold">Advice</p>
+                                <p className="font-semibold">
+                                    {markerDetails.subsurb}
+                                </p>
                                 <p className=" font-thin">
-                                    {markerDetails.advice}
+                                    {markerDetails.roadName}
                                 </p>
                             </div>
                         </div>
-                    )}
-                    {markerDetails.information ? (
                         <div className="mt-8 flex gap-7 items-start">
-                            <HelpCenterRounded sx={{ color: "#e0c981" }} />
+                            <AccessTimeIcon
+                                sx={{ color: "#e2b540" }}
+                                className="!h-8 !w-8"
+                            />
                             <div className="flex flex-col text-[#2A3034]">
-                                <p className="font-semibold">Information</p>
-                                <p className=" font-thin max-h-[300px] overflow-y-auto pr-2 containerscroll">
-                                    {markerDetails.information}
+                                <p className="font-thin">
+                                    Started At{" "}
+                                    {formatDateTime(markerDetails.startDate)}
                                 </p>
+                                {markerDetails.endDate && (
+                                    <p className="font-thin">
+                                        Ends At{" "}
+                                        {formatDateTime(markerDetails.endDate)}
+                                    </p>
+                                )}
                             </div>
                         </div>
-                    ) : markerDetails.otherAdvice ? (
-                        <div className="mt-8 flex gap-7 items-start">
-                            <HelpCenterRounded sx={{ color: "#e0c981" }} />
-                            <div className="flex flex-col text-[#2A3034]">
-                                <p className="font-semibold">Information</p>
+                        {markerDetails.advice && (
+                            <div className="mt-8 flex gap-7 items-start">
+                                <List
+                                    sx={{ color: "#e2b540" }}
+                                    className="!h-8 !w-8"
+                                />
+                                <div className="flex flex-col text-[#2A3034]">
+                                    <p className="font-semibold">Advice</p>
+                                    <p className=" font-thin">
+                                        {markerDetails.advice}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                        {markerDetails.information ? (
+                            <div className="mt-8 flex gap-7 items-start">
+                                <HelpCenterRounded
+                                    sx={{ color: "#e2b540" }}
+                                    className="!h-8 !w-8"
+                                />
+                                <div className="flex flex-col text-[#2A3034]">
+                                    <p className="font-semibold">Information</p>
+                                    <p className=" font-thin max-h-[300px] overflow-y-auto pr-2 containerscroll">
+                                        {markerDetails.information}
+                                    </p>
+                                </div>
+                            </div>
+                        ) : markerDetails.otherAdvice ? (
+                            <div className="mt-8 flex gap-7 items-start">
+                                <HelpCenterRounded
+                                    sx={{ color: "#e2b540" }}
+                                    className="!h-8 !w-8"
+                                />
+                                <div className="flex flex-col text-[#2A3034]">
+                                    <p className="font-semibold">Information</p>
 
-                                <p
-                                    className="font-thin max-w-60 max-h-[300px] overflow-y-auto pr-2 containerscroll"
-                                    dangerouslySetInnerHTML={{
-                                        __html: markerDetails.otherAdvice,
-                                    }}
-                                ></p>
+                                    <p
+                                        className="font-thin max-w-60 max-h-[300px] overflow-y-auto pr-2 containerscroll"
+                                        dangerouslySetInnerHTML={{
+                                            __html: markerDetails.otherAdvice,
+                                        }}
+                                    ></p>
+                                </div>
                             </div>
-                        </div>
-                    ) : null}
+                        ) : null}
+                    </div>
                 </div>
             ) : (
                 <div className="flex flex-col w-[500px] p-3 bg-zinc-100">
@@ -403,12 +428,19 @@ function NewConsignmentTracking() {
                     <Divider className="my-2" />
                     {consignmentDetails && (
                         <div className=" border-2 bg-white h-full p-5 rounded-md overflow-auto">
-                            <span className=" font-bold">
-                                {
-                                    consignmentDetails.consignmentDetails
-                                        .ConsignmentNo
-                                }
-                            </span>
+                            <div className=" font-bold flex justify-between items-center">
+                                <div>
+                                    <div className="text-xs text-zinc-500"> Consignment No</div>
+                                    <div>
+                                        {
+                                            consignmentDetails
+                                                .consignmentDetails
+                                                .ConsignmentNo
+                                        }
+                                    </div>
+                                </div>
+                                <Image src={ConsIcon} alt="" />
+                            </div>
                             <div className="text-sm  mt-5">
                                 <div className="flex gap-3">
                                     <span className="text-zinc-500">
@@ -456,13 +488,13 @@ function NewConsignmentTracking() {
                             <div className=" mt-5">
                                 <div className="flex flex-col gap-5">
                                     <div className="flex gap-3">
-                                        <div className="flex flex-col items-center">
+                                        <div className="flex flex-col items-center relative">
                                             <div className=" w-min p-2 h-min bg-teal-600 rounded-full bg-opacity-30">
                                                 <span className="">
                                                     <MapPinIcon className="h-6 w-6 text-teal-600" />
                                                 </span>
                                             </div>
-                                            {/* <div className="h-full border-l-2 border-dashed border-teal-600"></div> */}
+                                            <div className="absolute border-1 border-dashed top-10 h-[88%] border-blue-300"></div>
                                         </div>
 
                                         <div className=" border-1 w-full p-2 rounded-md text-sm border-teal-600 border-opacity-30">
