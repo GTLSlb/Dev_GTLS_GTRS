@@ -234,9 +234,9 @@ function NewConsignmentTracking() {
         return `${day}-${month}-${year} ${formattedHours}:${minutes} ${ampm}`;
     }
     return (
-        <div className=" h-full min-w-[500px] flex">
+        <div className=" h-full min-w-[550px] flex">
             {markerDetails ? (
-                <div className="flex flex-col w-[500px] p-3 bg-zinc-100">
+                <div className="flex flex-col w-[550px] p-3 bg-zinc-100">
                     <div className="flex">
                         <Button
                             size="md"
@@ -345,12 +345,12 @@ function NewConsignmentTracking() {
                     </div>
                 </div>
             ) : (
-                <div className="flex flex-col w-[500px] p-3 bg-zinc-100">
+                <div className="flex flex-col w-[550px] p-3 bg-zinc-100">
                     <div className="font-bold text-lg mt-3">
                         Consignment Tracking
                     </div>
                     <Divider className="my-2" />
-                    <div className="py-5 grid grid-cols-2 gap-5">
+                    <div className="py-5 grid grid-cols-2 gap-y-5 gap-x-2">
                         <Input
                             type="text"
                             label="Consignment No"
@@ -498,7 +498,7 @@ function NewConsignmentTracking() {
                                         </div>
 
                                         <div className=" border-1 w-full p-2 rounded-md text-sm border-teal-600 border-opacity-30">
-                                            <span className="text-zinc-500">
+                                            <span className="text-zinc-500 font-bold">
                                                 Sender
                                             </span>
                                             <div>
@@ -572,7 +572,7 @@ function NewConsignmentTracking() {
                                             </span>
                                         </div>
                                         <div className=" border-1 w-full p-2 rounded-md text-sm border-pink-600 border-opacity-30">
-                                            <span className="text-zinc-500">
+                                            <span className="text-zinc-500 font-bold">
                                                 Receiver
                                             </span>
                                             <div>
