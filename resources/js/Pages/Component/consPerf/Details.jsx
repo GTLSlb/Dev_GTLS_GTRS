@@ -10,10 +10,6 @@ export default function Details(item){
                     </dt>
                     <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item.CONSIGNMENTSTATUS}</dd>
                     <dt className="text-sm font-medium text-gray-900">
-                    LOADING TIME
-                    </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['LOADINGTIME']}</dd>
-                    <dt className="text-sm font-medium text-gray-900">
                     DELIVERY REQUIRED DATETIME
                     </dt>
                     <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item?.item['DELIVERYREQUIREDDATETIME'] === ""?"":moment(item.item['DELIVERYREQUIREDDATETIME']?.replace("T"," "), 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY h:mm A')}</dd>
@@ -22,17 +18,9 @@ export default function Details(item){
                     </dt>
                     <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['SERVICE']}</dd>
                     <dt className="text-sm font-medium text-gray-900">
-                    TOTAL QUANTITY
-                    </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['TOTALQUANTITY']}</dd>
-                    <dt className="text-sm font-medium text-gray-900">
                     DELIVERED DATE TIME
                     </dt>
                     <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item?.item['DELIVEREDDATETIME'] === ""?"":moment(item.item['DELIVEREDDATETIME']?.replace("T"," "), 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY h:mm A')}</dd>
-                    <dt className="text-sm font-medium text-gray-900">
-                    MANIFEST NO
-                    </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['MANIFESTNO']}</dd>
                     <dt className="text-sm font-medium text-gray-900">
                     TOTAL WEIGHT
                     </dt>

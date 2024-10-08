@@ -85,16 +85,11 @@ export default function ConsPerf({
         "CONSIGNMENT NUMBER",
         "CONSIGNMENT STATUS",
         "ACCOUNT NAME",
-        "POD",
         "KPI DATETIME",
-        "POD DATETIME",
         "STATUS",
-        "LOADING TIME",
         "DELIVERY REQUIRED DATETIME",
         "SERVICE",
-        "TOTAL QUANTITY",
         "DELIVERED DATE TIME",
-        "MANIFEST NO",
         "TOTAL WEIGHT",
         "DESPATCHDATE",
         "FUELLEVY",
@@ -136,17 +131,6 @@ export default function ConsPerf({
                                 ? ""
                                 : moment(
                                       person["KPI DATETIME"].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY HH:mm A");
-                    } else if (column.replace(/\s+/g, "") === "PODDATETIME") {
-                        acc[columnKey] =
-                            moment(
-                                person["POD DATETIME"]?.replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["POD DATETIME"]?.replace("T", " "),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY HH:mm A");
                     } else if (
