@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9b5ce7f5da047f64d193db0ae2fd53c8",
+    "content-hash": "03221c4ded27bd8a3a90c70f775024ed",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -1250,6 +1250,44 @@
                 }
             ],
             "time": "2023-11-12T22:16:48+00:00"
+        },
+        {
+            "name": "gtls/loginstory",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/MiraCh-gtls/loginStory.git",
+                "reference": "c698ad90b59153885ee385d80809c8329c7323e3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/MiraCh-gtls/loginStory/zipball/c698ad90b59153885ee385d80809c8329c7323e3",
+                "reference": "c698ad90b59153885ee385d80809c8329c7323e3",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "gtls\\loginstory\\": [
+                        "src"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "MiraCh"
+                }
+            ],
+            "description": "[]",
+            "support": {
+                "issues": "https://github.com/MiraCh-gtls/loginStory/issues",
+                "source": "https://github.com/MiraCh-gtls/loginStory/tree/v1.0.2"
+            },
+            "time": "2024-10-08T08:24:56+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",

@@ -136,6 +136,7 @@ export default function Gtrs({
                         mobileMenuOpen={mobileMenuOpen}
                         setToken={setToken}
                         user={user}
+                        currentUser={currentUser}
                         setCurrentUser={setcurrentUser}
                     />
                     <MainNavbar setMobileMenuOpen={setMobileMenuOpen} />

@@ -8,7 +8,6 @@ use App\Http\Controllers\ContactUsFormController;
 use App\Http\Controllers\SupportFormController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\FileController;
-use App\Http\Controllers\AzureAuthController;
 use App\Http\Controllers\SendDailyEmail;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -16,9 +15,9 @@ use Inertia\Inertia;
 use Laravel\Socialite\Facades\Socialite;
 use SocialiteProviders\Azure\AzureProvider;
 use Illuminate\Http\Request;
-use App\Http\Controllers\LoginController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\ImageController;
+use gtls\loginstory\LoginClass;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,11 +38,15 @@ Route::get('/', function () {
     return Inertia::render('Layout');
 })->middleware(['custom.auth'])->name('Main');
 
-Route::post('/loginapi', [LoginController::class, 'login'])->name('loginapi');
+Route::post('/loginComp', [ LoginClass::class, 'login'])->name('loginComp');
 
-Route::post('/logoutAPI', [LoginController::class, 'logout'])->middleware(['custom.auth'])->name('logoutAPI');
+Route::get('/auth/azure/callback', [LoginClass::class, 'handleCallback'])->name('azure.callback');
 
-Route::post('/logoutWithoutRequest', [LoginController::class, 'logoutWithoutRequest'])->name('logoutWithoutRequest');
+Route::post('/microsoftToken', [LoginClass::class, 'sendToken'])->name('azure.token');
+
+Route::post('/composerLogout', [ LoginClass::class, 'logout'])->middleware(['custom.auth'])->name('composerLogout');
+
+Route::post('/logoutWithoutReq', [ LoginClass::class, 'logoutWithoutRequest'])->middleware(['custom.auth'])->name('composerLogoutWithoutReq');
 
 
 Route::get('/gtrs/dashboard', function () {
@@ -54,9 +57,6 @@ Route::get('/LandingPage', function () {
     return Inertia::render('LandingPage');
 })->middleware(['custom.auth'])->name('landing.page');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['custom.auth'])->name('dashboard');
 
 Route::get('/gtms', function () {
     return Inertia::render('GTMS');
@@ -151,7 +151,6 @@ Route::get('/downloadGTLS-docx', function () {
 Route::redirect('/', '/gtrs/dashboard');
 
 Route::get('/checkAuth', [AuthenticatedSessionController::class, 'checkAuth']);
-Route::get('/checkEmail', [AzureAuthController::class, 'handleClickCallBack']);
 
 Route::middleware('custom.auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -168,9 +167,6 @@ Route::middleware('custom.auth')->group(function () {
     Route::post('/auth/azure', function () {
         return Socialite::driver('azure')->redirect();
     })->name('azure.login');
-    Route::get('/auth/azure/callback', [AzureAuthController::class, 'handleCallback'])->name('azure.callback');
-    Route::post('/microsoftToken', [AzureAuthController::class, 'sendToken'])->name('azure.token');
-    Route::get('/azure/logout', [LoginController::class, 'azureLogout'])->name('azure.logout');
     Route::get('/{path?}', function (Request $request) {
         return Inertia::render('Layout');
     })->where('path', '.*');

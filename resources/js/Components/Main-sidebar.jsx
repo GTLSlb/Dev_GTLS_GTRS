@@ -25,6 +25,7 @@ export default function MainSidebar({
     mobileMenuOpen,
     setToken,
     setCurrentUser,
+    currentUser,
     user,
 }) {
     const appUrl = window.Laravel.appUrl;
@@ -61,26 +62,36 @@ export default function MainSidebar({
     };
     const pca = new PublicClientApplication(msalConfig);
     const handleLogout = async () => {
-        try {
-            const response = await axios.post("/logoutAPI");
+        const credentials = {
+            URL: window.Laravel.gtamUrl,
+            CurrentUser: currentUser,
+            SessionDomain: window.Laravel.appDomain,
+        };
+        await pca.initialize();
+        axios
+            .post("/composerLogout", credentials)
+            .then((response) => {
+                if (response.status === 200 && response.data.status === 200) {
+                    const isMicrosoftLogin = Cookies.get(
+                        "msal.isMicrosoftLogin"
+                    );
 
-            if (response.status === 200 && response.data.status === "success") {
-                setToken(null);
-                setCurrentUser(null);
+                    clearMSALLocalStorage();
 
-                const isMicrosoftLogin = Cookies.get("msal.isMicrosoftLogin");
-
-                clearMSALLocalStorage();
-
-                if (isMicrosoftLogin === "true") {
-                    window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=${appUrl}/login`;
-                } else {
-                    window.location.href = `${appUrl}/login`;
+                    if (isMicrosoftLogin === "true") {
+                        window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=${window.Laravel.appUrl}/login`;
+                        setToken(null);
+                        setCurrentUser(null);
+                    } else {
+                        window.location.href = `${window.Laravel.appUrl}/login`;
+                        setToken(null);
+                        setCurrentUser(null);
+                    }
                 }
-            }
-        } catch (error) {
-            console.log("Logout error:", error);
-        }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     };
     const currentAppId = window.Laravel.appId;
     function moveToHead(array, id) {

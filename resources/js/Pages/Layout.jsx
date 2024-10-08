@@ -7,6 +7,7 @@ import { Routes, Route } from "react-router-dom";
 import NotFoundPage from "./NotFoundPage";
 import Login from "./Auth/Login";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import ForgotPassword from "./Auth/ForgotPassword";
 
 export default function Sidebar(Boolean) {
     const [currentUser, setcurrentUser] = useState(null);
@@ -87,7 +88,7 @@ export default function Sidebar(Boolean) {
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [loadingGtrs, setLoadingGtrs] = useState(false);
-    
+
     useEffect(() => {
         if (currentUser && !Token) {
             const headers = {
@@ -157,6 +158,7 @@ export default function Sidebar(Boolean) {
                                 }
                             />
                             <Route path="/login" element={<Login />} />
+                            <Route path="/forgot-password" element={<ForgotPassword />} />
                             <Route
                                 path="/notFound"
                                 element={<NotFoundPage />}

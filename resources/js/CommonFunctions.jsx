@@ -22,38 +22,54 @@ const pca = new PublicClientApplication(msalConfig);
 
 export async function handleSessionExpiration() {
     const appUrl = window.Laravel.appUrl;
-    
+
     // Ensure CSRF token is set in Axios for the logout request
     axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     axios
-        .post("/logoutWithoutRequest")
-        .then(async (response) => {
-            if (response.status === 200) {
-                const isMicrosoftLogin = Cookies.get('msal.isMicrosoftLogin');
+    .get("/users")
+    .then((res) => {
+        if (typeof res.data == "object") {
+            const credentials = {
+                CurrentUser: res.data,
+                SessionDomain: window.Laravel.appDomain,
+            };
+            axios
+                .post("/logoutWithoutRequest", credentials)
+                .then(async (response) => {
+                    if (response.status === 200) {
+                        const isMicrosoftLogin = Cookies.get(
+                            "msal.isMicrosoftLogin"
+                        );
 
-                // Clear MSAL-related data from localStorage
-                clearMSALLocalStorage();
+                        // Clear MSAL-related data from localStorage
+                        clearMSALLocalStorage();
 
-                if (isMicrosoftLogin === 'true') {
-                    // Redirect to Microsoft logout URL
-                    window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=${appUrl}/login`;
-                } else {
-                    // Redirect to the local login page
-                    window.location.href = `/login`;
-                }
-            } else {
-                console.log("Logout error:", response);
-            }
-        })
-        .catch((error) => {
-            console.log(error);
-        });
+                        if (isMicrosoftLogin === "true") {
+                            // Redirect to Microsoft logout URL
+                            window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=${appUrl}/login`;
+                        } else {
+                            // Clear any session cookies related to CSRF or session before redirect
+                            Cookies.remove("XSRF-TOKEN"); // If using js-cookie
+                            Cookies.remove("gtls_session"); // Adjust according to your session cookie name
+                            // Force a reload to ensure new CSRF token generation
+                            window.location.href = `/login`;
+                        }
+                    } else {
+                        console.log("Logout error:", response);
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+    })
+    .catch((error) => console.log(error));
 }
 
 
 export function clearMSALLocalStorage() {
     const appDomain = window.Laravel.appDomain;
-    
+
     // Find all keys in localStorage starting with 'msal' and remove them
     const msalKeys = Object.keys(localStorage).filter(key => key.startsWith("msal"));
     msalKeys.forEach(key => {
@@ -171,16 +187,7 @@ export function getApiRequest(url, headers = {}) {
                         },
                     },
                 }).then(function () {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                            if (response.status === 200) {
-                                window.location.href = "/";
-                            }
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                        });
+                    handleSessionExpiration();
                 });
             } else {
                 // Handle other errors
@@ -193,7 +200,7 @@ export function getApiRequest(url, headers = {}) {
 
 export const formatDateToExcel = (dateValue) => {
     const date = new Date(dateValue);
-    
+
     // Check if the date is valid
     if (isNaN(date.getTime())) {
         return ""; // Return empty string if invalid date
