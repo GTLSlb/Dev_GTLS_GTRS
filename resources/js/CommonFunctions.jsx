@@ -31,6 +31,7 @@ export async function handleSessionExpiration() {
         if (typeof res.data == "object") {
             const credentials = {
                 CurrentUser: res.data,
+                URL: window.Laravel.gtamUrl,
                 SessionDomain: window.Laravel.appDomain,
             };
             axios
