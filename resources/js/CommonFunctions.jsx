@@ -35,7 +35,7 @@ export async function handleSessionExpiration() {
                 SessionDomain: window.Laravel.appDomain,
             };
             axios
-                .post("/logoutWithoutRequest", credentials)
+                .post("/logoutWithoutReq", credentials)
                 .then(async (response) => {
                     if (response.status === 200) {
                         const isMicrosoftLogin = Cookies.get(
