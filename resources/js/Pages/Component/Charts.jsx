@@ -1,7 +1,6 @@
 import MainCharts from "./Dashboard_Comp/MainCharts";
 import React, { useState } from "react";
 import GtrsCons from "./GtrsCons";
-import ConsignmentD from "../Consignment";
 import ConsPerf from "./ConsPerf";
 import NoDelivery from "./NoDelivery";
 import AdditionalCharges from "./AdditionalCharges";
@@ -38,6 +37,7 @@ import { Routes, Route } from "react-router-dom";
 import NoAccess from "@/Components/NoAccess";
 import NotFoundPage from "../NotFoundPage";
 import NewConsignmentTracking from "./New Consignment Tracking/NewConsignmentTracking";
+import ConsDetails from "../ConsDetails";
 
 export default function charts({
     setCusomterAccounts,
@@ -2065,7 +2065,7 @@ export default function charts({
                                     />
                                     <Route
                                         path="/consignment-details"
-                                        element={<ConsignmentD
+                                        element={<ConsDetails
                                             url={url}
                                             accData={dataFromChild}
                                             activeCon={activeCon}

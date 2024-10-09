@@ -713,10 +713,6 @@ function NewConsignmentTracking() {
                                     color: "Receiver",
                                 }}
                                 icon={{
-                                    labelOrigin: new window.google.maps.Point(
-                                        15,
-                                        -10
-                                    ), // Position label above the marker
                                     url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
                                     scaledSize: new window.google.maps.Size(
                                         40,
