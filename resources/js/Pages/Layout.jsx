@@ -158,7 +158,6 @@ export default function Sidebar(Boolean) {
                                 }
                             />
                             <Route path="/login" element={<Login />} />
-                            <Route path="/forgot-password" element={<ForgotPassword />} />
                             <Route
                                 path="/notFound"
                                 element={<NotFoundPage />}
