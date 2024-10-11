@@ -8,6 +8,7 @@ import NotFoundPage from "./NotFoundPage";
 import Login from "./Auth/Login";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import ForgotPassword from "./Auth/ForgotPassword";
+import { handleSessionExpiration } from "@/CommonFunctions";
 
 export default function Sidebar(Boolean) {
     const [currentUser, setcurrentUser] = useState(null);
@@ -44,7 +45,12 @@ export default function Sidebar(Boolean) {
                     setcurrentUser(res.data);
                 }
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                if(error.status === 401) {
+                    window.location.href = `${window.Laravel.appUrl}/login`;
+             }
+            }
+        );
     }, []);
 
     useEffect(() => {

@@ -56,15 +56,14 @@ class CustomAuth extends Middleware
             if ($path == 'loginComp' || $path == 'login' || $path == 'loginapi' || $path == 'forgot-password' || $path == 'auth/azure' || $path == 'auth/azure/callback' || $path == 'microsoftToken' || $path == 'logoutWithoutRequest' || $path= 'gtrs/logoutWithoutReq'|| $path= 'logoutWithoutReq') {
                 return $next($request);
             }
-            if ($path !== 'login' && $path !== 'loginapi' && $path !== 'forgot-password' && !$request->session()->has('user')) {
+            if ($path !== 'loginComp' || $path !== 'login' && $path !== 'loginapi' && $path !== 'forgot-password' && !$request->session()->has('user')) {
                 return redirect()->route('login');
             }
         } else {
-            if ($request->path() == 'login' || $request->path() == 'loginapi' || $request->path() == '/auth/azure' || $request->path() == 'auth/azure/callback' || $request->path() == 'microsoftToken' || $request->path() == 'logoutWithoutRequest'|| $path= 'gtrs/logoutWithoutReq' || $path= 'logoutWithoutReq') {
+            $path = $request->path();
+            if ($request->path() == 'loginComp' || $request->path() == 'login' || $request->path() == 'loginapi' || $request->path() == '/auth/azure' || $request->path() == 'auth/azure/callback' || $request->path() == 'microsoftToken' || $request->path() == 'logoutWithoutRequest'|| $path= 'gtrs/logoutWithoutReq' || $path= 'logoutWithoutReq') {
                 return $next($request);
             }
-
-
         }
         return $next($request);
     }

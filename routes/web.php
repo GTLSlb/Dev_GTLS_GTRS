@@ -30,6 +30,8 @@ use gtls\loginstory\LoginClass;
 |
 */
 
+Route::redirect('/', '/gtrs/dashboard');
+
 Route::get('/login', function () {
     return Inertia::render('Auth/Login');
 })->name('login');
@@ -62,69 +64,11 @@ Route::get('/LandingPage', function () {
 })->middleware(['custom.auth'])->name('landing.page');
 
 
-Route::get('/gtms', function () {
-    return Inertia::render('GTMS');
-})->middleware(['custom.auth'])->name('gtms');
-
 Route::get('/gtam', function () {
     return Inertia::render('GTAM');
 })->middleware(['custom.auth'])->name('gtam');
 
-Route::get('/gtrs', function () {
-    return Inertia::render('GTRS');
-})->middleware(['custom.auth'])->name('gtrs');
-
-Route::get('/gtw', function () {
-    return Inertia::render('GTW');
-})->middleware(['custom.auth'])->name('gtw');
-
-Route::get('/opportunities', function () {
-    return Inertia::render('Opportunities');
-})->name('opportunities');
-
-Route::get('/goinggreen', function () {
-    return Inertia::render('GoingGreen');
-})->name('goinggreen');
-
-Route::get('/terms', function () {
-    return Inertia::render('Terms');
-})->name('terms');
-
-Route::get('/palletterms', function () {
-    return Inertia::render('PalletTerms');
-})->name('palletterms');
-
-Route::get('/capabilitystatement', function () {
-    return Inertia::render('Capability');
-})->name('capabilitystatement');
-
-// Route::get('/news', function () {
-//     return Inertia::render('NewsPage');
-// })-> name('news');
-
-Route::get('/news/{id}', function ($id) {
-    return Inertia::render('NewsPage', ['id' => $id]);
-})->name('news');
-
-Route::post('/contact', [ContactFormController::class, 'submitContactForm'])->name('contact.submit');
-Route::post('/contactus', [ContactUsFormController::class, 'submitContactUsForm'])->name('contactus.submit');
 Route::post('/support', [SupportFormController::class, 'submitSupportForm'])->name('support.submit');
-
-Route::get('/download-docx', function () {
-    $pathToFile = public_path('pdf/20230630-Gold-Tiger-Logistics-Solutions-Trading-Terms-and-Conditions.pdf');
-    $headers = array(
-        'Content-Type: application/pdf',
-    );
-    return response()->download($pathToFile, '20230630-Gold-Tiger-Logistics-Solutions-Trading-Terms-and-Conditions.pdf', $headers);
-});
-
-Route::get('/downloadGTLS-Pallets', function () {
-    $pathToFile = public_path('docs/GTLS Pallet Trading Policy 2023_08_23.pdf');
-    $headers = array(
-        'Content-Type: application/docx',
-    );
-    return response()->download($pathToFile, 'GTLS Pallet Trading Policy 2023_08_23.pdf', $headers);
-});
 
 Route::post('/sendemail', [SendDailyEmail::class, 'SendEmail']);
 
@@ -152,16 +96,14 @@ Route::get('/downloadGTLS-docx', function () {
     return response()->download($pathToFile, 'Gold-Tiger-Capability-Statement-2020-12-24.pdf', $headers);
 });
 
-Route::redirect('/', '/gtrs/dashboard');
-
 Route::get('/checkAuth', [AuthenticatedSessionController::class, 'checkAuth']);
 
 Route::middleware('custom.auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/users', [RegisteredUserController::class, 'getCurrentUserName'])->name('/gtms');
-    Route::get('/childrens/{id}', [RegisteredUserController::class, 'getChildrens'])->name('/gtms');
-    Route::get('/childrenlist/{id}', [RegisteredUserController::class, 'getChildrensList'])->name('/gtms');
+    Route::get('/childrens/{id}', [RegisteredUserController::class, 'getChildrens']);
+    Route::get('/childrenlist/{id}', [RegisteredUserController::class, 'getChildrensList']);
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/user/{id}', [RegisteredUserController::class, 'getUserName']);
     Route::get('/safety/{user_id}', [RegisteredUserController::class, 'getSafetyData']);
