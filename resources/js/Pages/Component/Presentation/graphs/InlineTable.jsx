@@ -12,6 +12,7 @@ function InlineTable({
     url,
     currentUser,
     getReportData,
+    AToken,
     originalgraphData,
     selectedReceiver,
     setGraphData,
@@ -299,6 +300,7 @@ function InlineTable({
                 .post(`${url}Add/KpiPackRecord`, baseRecord, {
                     headers: {
                         UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
                     },
                 })
                 .then((res) => {

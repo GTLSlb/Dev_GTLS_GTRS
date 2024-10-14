@@ -175,6 +175,7 @@ function ConsignmentGraph({ url, currentUser, AToken }) {
                 <BarGraph
                     graphData={graphData}
                     url={url}
+                    AToken={AToken}
                     currentUser={currentUser}
                     selectedReceiver={selectedReceiver}
                     getReportData={getReportData}

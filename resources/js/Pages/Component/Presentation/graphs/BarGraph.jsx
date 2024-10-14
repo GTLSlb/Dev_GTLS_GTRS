@@ -32,6 +32,7 @@ ChartJS.register(
 function BarGraph({
     graphData,
     url,
+    AToken,
     originalgraphData,
     currentUser,
     getReportData,
@@ -192,6 +193,7 @@ function BarGraph({
             <Bar ref={chartRef} data={data} options={options} />
             {/* Table */}
             <InlineTable
+                AToken={AToken}
                 getReportData={getReportData}
                 graphData={graphData}
                 originalgraphData={originalgraphData}
