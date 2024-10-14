@@ -67,6 +67,7 @@ export default function MainSidebar({
             CurrentUser: currentUser,
             SessionDomain: window.Laravel.appDomain,
         };
+
         await pca.initialize();
         axios
             .post("/composerLogout", credentials)
