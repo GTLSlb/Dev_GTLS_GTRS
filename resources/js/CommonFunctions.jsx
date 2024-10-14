@@ -44,6 +44,7 @@ export async function handleSessionExpiration() {
 
                         // Clear MSAL-related data from localStorage
                         clearMSALLocalStorage();
+                        Cookies.remove('access_token');
 
                         if (isMicrosoftLogin === "true") {
                             // Redirect to Microsoft logout URL
