@@ -55,7 +55,7 @@ Route::get('/dashboard', function () {
 
 Route::get('/gtms', function () {
     return Inertia::render('GTMS');
-})->middleware(['custom.auth'])->name('gtms');
+})->middleware(['custom.auth']);
 
 Route::get('/gtam', function () {
     return Inertia::render('GTAM');
@@ -163,9 +163,9 @@ Route::get('/checkEmail', [AzureAuthController::class, 'handleClickCallBack']);
 Route::middleware('custom.auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::get('/users', [RegisteredUserController::class, 'getCurrentUserName'])->name('/gtms');
-    Route::get('/childrens/{id}', [RegisteredUserController::class, 'getChildrens'])->name('/gtms');
-    Route::get('/childrenlist/{id}', [RegisteredUserController::class, 'getChildrensList'])->name('/gtms');
+    Route::get('/users', [RegisteredUserController::class, 'getCurrentUserName']);
+    Route::get('/childrens/{id}', [RegisteredUserController::class, 'getChildrens']);
+    Route::get('/childrenlist/{id}', [RegisteredUserController::class, 'getChildrensList']);
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/user/{id}', [RegisteredUserController::class, 'getUserName']);
     Route::get('/safety/{user_id}', [RegisteredUserController::class, 'getSafetyData']);

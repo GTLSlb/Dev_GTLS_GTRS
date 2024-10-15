@@ -1565,7 +1565,7 @@ export default function charts({
 
     function getOldestDespatchDate(data) {
         // Filter out elements with invalid 'CreatedDate' values
-        const validData = data.filter((item) => isValidDate(item.DespatchDate));
+        const validData = data?.filter((item) => isValidDate(item.DespatchDate));
 
         // Sort the validData array based on the 'CreatedDate' property
         const sortedData = validData.sort(
@@ -1589,7 +1589,7 @@ export default function charts({
         return !isNaN(date);
     }
     function getLatestDespatchDate(data) {
-        const validData = data.filter((item) => isValidDate(item.DespatchDate));
+        const validData = data?.filter((item) => isValidDate(item.DespatchDate));
 
         // Sort the data array based on the 'DespatchDate' property in descending order
         const sortedData = validData.sort(

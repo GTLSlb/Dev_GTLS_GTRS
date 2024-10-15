@@ -46,25 +46,25 @@ class LoginController extends Controller
         foreach ($cookies as $name => $value) {
             setcookie($name, '', $expiration);
         }
-        
+
         $response = Http::withHeaders($headers)->get("$url" . "Login");
 
         if ($response->successful()) {
             $responseData = $response->json();
             if (!empty($responseData)) {
                 $authProvider = new CustomAuth();
-                
+
                 $credentials = [
                     'EmailInput' => $request->input('Email'),
                     'EmailDb' => $responseData[0]['Email'],
                     'PasswordDb' => $responseData[0]['UserId'],
                     'PasswordInput' => $request->input('Password'),
                 ];
-                
+
                 $authenticatedUser = $authProvider->attempt($credentials, true);
-                
+
                 if ($authenticatedUser) {
-                    // Redirect to the intended page with the obtained user 
+                    // Redirect to the intended page with the obtained user
                     $user = null;
                     $TokenHeaders = [
                         'UserId'=> $responseData[0]['UserId'],
@@ -101,7 +101,7 @@ class LoginController extends Controller
                         setcookie($cookieName, $cookieValue, $expirationTime, '/', '', true);
                         //dd($expirationTime);
                         setcookie('gtrs_refresh_token', $token['refresh_token'], $expirationTime, '/', '', true);
-                            
+
                         $userId = $user['UserId'];
                         $request->session()->regenerate();
                         $request->session()->put('user', $user);
@@ -151,7 +151,7 @@ class LoginController extends Controller
     {
         $request->session()->invalidate();
         $request->session()->flush();
-        $expiration = time() - (60 * 60 * 24); // expiration time set to 24h before current time 
+        $expiration = time() - (60 * 60 * 24); // expiration time set to 24h before current time
         // Get an array of all the cookies
         $cookies = $_COOKIE;
 

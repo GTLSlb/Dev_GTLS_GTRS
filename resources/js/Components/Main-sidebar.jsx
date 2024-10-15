@@ -8,7 +8,6 @@ import {
     Squares2X2Icon,
     UserGroupIcon,
     XMarkIcon,
-    HiLogout,
     Bars3Icon,
     BookmarkSquareIcon,
     UserMinusIcon,
