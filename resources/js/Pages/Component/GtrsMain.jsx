@@ -50,6 +50,7 @@ import {
 } from "@/Components/utils/filters";
 import ConsDetails from "../ConsDetails";
 import NewConsignmentTracking from "./New Consignment Tracking/NewConsignmentTracking";
+import MainTracking from "./New Consignment Tracking/MainTracking";
 
 export default function GtrsMain({
     setCusomterAccounts,
@@ -1023,7 +1024,7 @@ export default function GtrsMain({
                                     />
                                     <Route
                                         path="/consignment-tracking-2"
-                                        element={<NewConsignmentTracking />}
+                                        element={<MainTracking />}
                                     />
                                     <Route
                                         path="/*"

@@ -1,19 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-import {
-    GoogleMap,
-    LoadScript,
-    Polyline,
-    Marker,
-} from "@react-google-maps/api";
-import Roadworks from "@/assets/icons/RoadWork.png";
-import Alpine from "@/assets/icons/Alpine.png";
-import Flooding from "@/assets/icons/Flooding.png";
-import Congestion from "@/assets/icons/Congestion.png";
-import Hazard from "@/assets/icons/Hazard.png";
-import RegionalLGA from "@/assets/icons/RegionalLGA.png";
-import Incident from "@/assets/icons/Incident.png";
-import Major from "@/assets/icons/Major.png";
-import Other from "@/assets/icons/Other.png";
 import LocationOn from "@mui/icons-material/LocationOn";
 import ConsIcon from "@/assets/icons/ConsIcon.png";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -29,61 +14,20 @@ import {
 } from "@nextui-org/react";
 import { ChevronLeftIcon, MapPinIcon } from "@heroicons/react/20/solid";
 
-const center = { lat: -25.2744, lng: 133.7751 };
-const australiaBounds = {
-    north: -15.0,
-    south: -39.0,
-    west: 112.0,
-    east: 154.0,
-};
-
-const polylineOptions = {
-    strokeColor: "#FF0000",
-    strokeOpacity: 1.0,
-    strokeWeight: 5,
-};
-
-const eventTypeMapping = {
-    Roadworks: ["ROADWORKS", "24HR ROADWORKS", "Roadwork", "Roadworks"],
-    Alpine: ["Alpine"],
-    Flooding: ["Flooding"],
-    Congestion: ["Congestion"],
-    Hazard: ["Hazard", "Vehicle fire", "Fire", "Vehicle rollover", "Landslip"],
-    "Regional LGA Incident": ["Regional LGA Incident", "Emergency Incident"],
-    "Major Event": ["Major Event", "Special event", "Demonstration"],
-    Incident: [
-        "INCIDENT",
-        "COLLISION",
-        "Incident",
-        "Crash",
-        "Emergency Incident",
-    ],
-    Other: ["Equipment damage", "Equipment fault"],
-};
-
-const iconMappings = {
-    Roadworks,
-    Alpine,
-    Flooding,
-    Congestion,
-    Hazard,
-    "Regional LGA Incident": RegionalLGA,
-    "Major Event": Major,
-    Incident,
-    Other,
-};
-
-function NewConsignmentTracking() {
+function NewConsignmentTracking({
+    setStartPoint,
+    setLoading,
+    loading,
+    setEndPoint,
+    markerDetails,
+    setPolyline,
+    setMarkerDetails,
+    setEventsMarkers,
+}) {
     const [consignmentNb, setConsignmentNb] = useState("");
     const [typeId, setTypeId] = useState("");
     const [fromdate, setFromdate] = useState("");
     const [todate, setTodate] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [startPoint, setStartPoint] = useState(null); // To store the start point of the route
-    const [endPoint, setEndPoint] = useState(null); // To store the end point of the route
-    const [polyline, setPolyline] = useState(null);
-    const [eventsMarkers, setEventsMarkers] = useState([]);
-    const [markerDetails, setMarkerDetails] = useState(null);
     const mapRef = useRef(null); // Create a ref for the map instance
     const gtrsWebUrl = window.Laravel.gtrsWeb;
     const [consignmentDetails, setConsignmentDetails] = useState(null);
@@ -151,65 +95,15 @@ function NewConsignmentTracking() {
             });
     };
 
-    useEffect(() => {
-        if (polyline && mapRef.current && loading) {
-            zoomToPolyline(polyline);
-        }
-    }, [polyline]);
 
-    const zoomToPolyline = (path) => {
-        if (!mapRef.current || !path || path.length === 0) return;
-
-        const bounds = new window.google.maps.LatLngBounds();
-
-        // Extend bounds for each point in the polyline
-        path.forEach((point) => {
-            bounds.extend(new window.google.maps.LatLng(point.lat, point.lng));
-        });
-
-        // Fit the map to the bounds of the polyline with animation options
-        mapRef.current.fitBounds(bounds, {
-            padding: 50, // Optional: Adds padding around the polyline
-        });
-    };
 
     const handleClose = () => {
         setMarkerDetails(null);
     };
 
-    const getIcon = (eventType) => {
-        const mainCategory = Object.keys(eventTypeMapping).find((category) =>
-            eventTypeMapping[category].includes(eventType)
-        );
-        const iconUrl =
-            iconMappings[mainCategory] ||
-            "https://qldtraffic.qld.gov.au/images/roadevents/SpecialEvents.png";
-        return {
-            url: iconUrl,
-            scaledSize: new window.google.maps.Size(20, 20),
-            origin: new window.google.maps.Point(0, 0),
-            anchor: new window.google.maps.Point(16, 16),
-        };
-    };
     const formatDateTime = (dateTimeString) => {
         const dateObj = new Date(dateTimeString);
         return dateObj.toLocaleString();
-    };
-
-    const handleMarkerClick = (position) => {
-        setMarkerDetails({
-            image: getIcon(position.event_type).url,
-            id: position.event_id,
-            type: position.event_type,
-            subsurb: position.suburb,
-            roadName: position.road_name,
-            startDate: position.start_date,
-            endDate: position.end_date,
-            advice: position.advice,
-            information: position.information,
-            reportedBy: position.api_source,
-            otherAdvice: position.otherAdvice,
-        });
     };
 
     function formatDate(dateString) {
@@ -237,9 +131,9 @@ function NewConsignmentTracking() {
         return `${day}-${month}-${year} ${formattedHours}:${minutes} ${ampm}`;
     }
     return (
-        <div className=" h-full min-w-[550px] flex">
+        <div className=" h-full flex">
             {markerDetails ? (
-                <div className="flex flex-col w-[550px] p-3 bg-zinc-100">
+                <div className="flex flex-col p-3">
                     <div className="flex">
                         <Button
                             size="md"
@@ -348,7 +242,7 @@ function NewConsignmentTracking() {
                     </div>
                 </div>
             ) : (
-                <div className="flex flex-col w-[550px] p-3 bg-zinc-100">
+                <div className="flex flex-col  px-3">
                     <div className="font-bold text-lg mt-3">
                         Consignment Tracking
                     </div>
@@ -435,7 +329,10 @@ function NewConsignmentTracking() {
                         <div className=" border-2 bg-white h-full p-5 rounded-md overflow-auto">
                             <div className=" font-bold flex justify-between items-center">
                                 <div>
-                                    <div className="text-xs text-zinc-500"> Consignment No</div>
+                                    <div className="text-xs text-zinc-500">
+                                        {" "}
+                                        Consignment No
+                                    </div>
                                     <div>
                                         {
                                             consignmentDetails
@@ -650,103 +547,6 @@ function NewConsignmentTracking() {
                     )}
                 </div>
             )}
-
-            <div className=" h-full w-full">
-                <LoadScript
-                    googleMapsApiKey="AIzaSyCvQ-XLmR8QNAr25M30xEcqX-nD-yTQ0go"
-                    libraries={["geometry", "visualization"]}
-                >
-                    <GoogleMap
-                        mapContainerStyle={{
-                            width: "100%",
-                            height: "100%",
-                        }}
-                        center={center}
-                        zoom={5}
-                        onLoad={(map) => (mapRef.current = map)} // Save map instance to mapRef
-                        options={{
-                            restriction: {
-                                latLngBounds: australiaBounds,
-                            },
-                        }}
-                    >
-                        {/* <TrafficLayer /> */}
-                        {/* Render Polyline */}
-                        {polyline && (
-                            <Polyline
-                                path={polyline}
-                                options={polylineOptions}
-                                onClick={zoomToPolyline(polyline)}
-                            />
-                        )}
-                        {/* Render start marker */}
-                        {startPoint && (
-                            <Marker
-                                position={{
-                                    lat: startPoint.lat,
-                                    lng: startPoint.lng,
-                                }}
-                                label={{
-                                    text: "Sender",
-                                    color: "green",
-                                    fontSize: "14px",
-                                }}
-                                icon={{
-                                    url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
-                                    scaledSize: new window.google.maps.Size(
-                                        40,
-                                        40
-                                    ), // Increase marker size
-                                    labelOrigin: new window.google.maps.Point(
-                                        20,
-                                        50
-                                    ), // Adjust label position
-                                }}
-                            />
-                        )}
-
-                        {/* Render end marker */}
-                        {endPoint && (
-                            <Marker
-                                position={{
-                                    lat: endPoint.lat,
-                                    lng: endPoint.lng,
-                                }}
-                                label={{
-                                    text: "End",
-                                    fontSize: "14px",
-                                    color: "Receiver",
-                                }}
-                                icon={{
-                                    url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
-                                    scaledSize: new window.google.maps.Size(
-                                        40,
-                                        40
-                                    ), // Increase marker size
-                                    labelOrigin: new window.google.maps.Point(
-                                        20,
-                                        50
-                                    ), // Adjust label position
-                                }}
-                            />
-                        )}
-
-                        {eventsMarkers.map((position, index) => {
-                            return (
-                                <Marker
-                                    key={index}
-                                    position={{
-                                        lat: parseFloat(position.latitude),
-                                        lng: parseFloat(position.longitude),
-                                    }}
-                                    icon={getIcon(position.event_type)}
-                                    onClick={() => handleMarkerClick(position)}
-                                />
-                            );
-                        })}
-                    </GoogleMap>
-                </LoadScript>
-            </div>
         </div>
     );
 }
