@@ -28,6 +28,17 @@ export default function ExportBtn({unileverClient, filteredData, gridRef }){
         }
     };
 
+    const formatDate = (dateString) => {
+        if (dateString) {
+            const [date, time] = dateString.split("T");
+            const [day, month, year] = date.split("-");
+            // Using template literals to format the date
+            return `${year}-${month}-${day}`;
+        } else {
+            return dateString;
+        }
+    };
+
     function handleFilterTable() {
         // Get the selected columns or use all columns if none are selected
         let selectedColumns = Array.from(
