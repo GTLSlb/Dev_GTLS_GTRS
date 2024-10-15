@@ -14,6 +14,7 @@ import {
     ShieldCheckIcon,
     CameraIcon,
     DocumentTextIcon,
+    DocumentDuplicateIcon
 } from "@heroicons/react/24/solid";
 import "../../../../css/scroll.css";
 import TaskIcon from "@mui/icons-material/Task";
@@ -182,6 +183,14 @@ const navigation = [
         current: false,
         feature: "UnileverReport_View",
     },
+    {
+        id: 21,
+        name: "Delivery Report",
+        href: "#",
+        icon: DocumentDuplicateIcon,
+        current: false,
+        feature: "DailyReport_View",
+    },
 ];
 
 function classNames(...classes) {
@@ -232,6 +241,7 @@ export default function ChartsSidebar({
         onData(optionSelected);
     }, [optionSelected]);
     const [sidebarElements, setSidebarElements] = useState(navigation);
+
     const handleClick = (index) => {
         setActiveIndexGTRS(index);
         const updatedElements = sidebarElements.map((element) => {
@@ -316,6 +326,7 @@ export default function ChartsSidebar({
             }
         });
     };
+
     const filteredNavigation = filterNavigation(navigation, currentUser);
     useEffect(() => {
         setSidebarElements(filteredNavigation);
