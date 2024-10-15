@@ -28,6 +28,7 @@ import {
     Image,
 } from "@nextui-org/react";
 import { ChevronLeftIcon, MapPinIcon } from "@heroicons/react/20/solid";
+import { AlertToast } from "@/permissions";
 
 const center = { lat: -25.2744, lng: 133.7751 };
 const australiaBounds = {
@@ -94,6 +95,8 @@ function NewConsignmentTracking() {
         setStartPoint(null);
         setEndPoint(null);
         setMarkerDetails(null);
+
+
         axios
             .get(`${gtrsWebUrl}getConsignmentRoute`, {
                 params: {
@@ -148,6 +151,7 @@ function NewConsignmentTracking() {
             .catch((error) => {
                 setLoading(false);
                 console.log(error);
+                AlertToast(error?.response?.data?.message, 2);
             });
     };
 

@@ -8,7 +8,11 @@ import {
     DirectionsRenderer,
 } from "@react-google-maps/api";
 import { Button, Card, Divider, Image } from "@nextui-org/react";
-import { ChevronLeftIcon, MapPinIcon } from "@heroicons/react/20/solid";
+import {
+    ChevronLeftIcon,
+    MapPinIcon,
+} from "@heroicons/react/20/solid";
+import ConsIcon from "@/assets/icons/ConsIcon.png";
 import Roadworks from "@/assets/icons/RoadWork.png";
 import Alpine from "@/assets/icons/Alpine.png";
 import Flooding from "@/assets/icons/Flooding.png";
@@ -22,7 +26,9 @@ import ScheduleSendIcon from "@mui/icons-material/ScheduleSend";
 import AlarmOnIcon from "@mui/icons-material/AlarmOn";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import axios from "axios";
+import moment from "moment";
+import { AlertToast } from "@/permissions";
 const eventTypeMapping = {
     Roadworks: ["ROADWORKS", "24HR ROADWORKS", "Roadwork", "Roadworks"],
     Alpine: ["Alpine"],
@@ -53,10 +59,11 @@ const iconMappings = {
     Other,
 };
 
-export default function ConsMap({ }) {
+export default function ConsMap({}) {
     const location = useLocation();
     const navigate = useNavigate();
 
+    const [currentLocation, setCurrentLocation] = useState(null);
     const [directionsResponse, setDirectionsResponse] = useState(null);
     const [directionsRequested, setDirectionsRequested] = useState(false);
     const [event, setEvent] = useState();
@@ -69,7 +76,8 @@ export default function ConsMap({ }) {
 
     const receiver = {
         lat: location?.state.consignmentToTrack.Coordinates[0].ReceiverLatitude,
-        lng: location?.state.consignmentToTrack.Coordinates[0].ReceiverLongitude,
+        lng: location?.state.consignmentToTrack.Coordinates[0]
+            .ReceiverLongitude,
     };
 
     const events = location?.state.consignmentToTrack.events;
@@ -81,6 +89,7 @@ export default function ConsMap({ }) {
             });
         }
     }, [sender, receiver, mapCenter]);
+
     const handleDirectionsCallback = useCallback((response) => {
         if (response !== null && response.status === "OK") {
             setDirectionsResponse(response);
@@ -92,6 +101,33 @@ export default function ConsMap({ }) {
         }
     }, []);
 
+    const gtrsWebUrl = window.Laravel.gtrsWeb;
+    const fetchLiveLocation = () => {
+        axios
+            .get(`${gtrsWebUrl}getConsignmentRoute`, {
+                params: {
+                    consignmentNo: "2500918307",
+                    //location?.state.consignmentToTrack?.ConsignmentNo,
+                    typeId: 2, //delivery
+                    fromDate: "2024-10-15T14:30",
+                    toDate: "2024-10-16T14:30",
+                    //new moment().format("YYYY-MM-DD HH:mm"),
+                },
+            })
+            .then((response) => {
+                setCurrentLocation(response?.data?.vehicleRoad);
+                console.log(response?.data);
+            })
+            .catch((error) => {
+                console.log(error);
+                AlertToast(error?.response?.data?.message, 2);
+            });
+    };
+    useEffect(() => {
+        if (location) {
+            fetchLiveLocation();
+        }
+    }, [location]);
     const mapContainerStyle = { width: "100%", height: "100%" };
     const australiaBounds = {
         north: -5.0,
@@ -229,7 +265,9 @@ export default function ConsMap({ }) {
                     <Divider className="my-2" />
                     <div className="flex gap-2">
                         <span className="font-bold">Consignment No</span>
-                        <span>{location?.state.consignmentToTrack?.ConsignmentNo}</span>
+                        <span>
+                            {location?.state.consignmentToTrack?.ConsignmentNo}
+                        </span>
                     </div>
                     <Divider className="my-2" />
                     <div className="flex flex-col gap-2">
@@ -237,7 +275,12 @@ export default function ConsMap({ }) {
                         <div className="flex flex-col gap-2 text-sm">
                             <div className="flex gap-2 items-center">
                                 <MapPinIcon className="h-6 w-6" />
-                                <span>{location?.state.consignmentToTrack?.SenderAddressName}</span>
+                                <span>
+                                    {
+                                        location?.state.consignmentToTrack
+                                            ?.SenderAddressName
+                                    }
+                                </span>
                             </div>
                             <Divider
                                 orientation="vertical"
@@ -245,42 +288,50 @@ export default function ConsMap({ }) {
                             />
                             <div className="flex gap-2 items-center">
                                 <MapPinIcon className="h-6 w-6" />
-                                <span>{location?.state.consignmentToTrack?.ReceiverAddressName}</span>
+                                <span>
+                                    {
+                                        location?.state.consignmentToTrack
+                                            ?.ReceiverAddressName
+                                    }
+                                </span>
                             </div>
                         </div>
                     </div>
                     <Divider className="my-2" />
                     <div className="flex flex-col gap-3">
                         <span className="font-bold">
-                            {location?.state.consignmentToTrack.EventCount} event(s) on your route:
+                            {location?.state.consignmentToTrack.EventCount}{" "}
+                            event(s) on your route:
                         </span>
-                        {location?.state.consignmentToTrack.events.map((event) => (
-                            <Card
-                                variant="light"
-                                className="w-full items-start p-2"
-                                isPressable
-                                onClick={() => setEvent(event)}
-                            >
-                                <div className="flex gap-2 w-full items-center">
-                                    <Image
-                                        className="w-8"
-                                        src={getIcon(event.event_type).url}
-                                    />
-                                    <div className="flex flex-col items-start gap-0">
-                                        <span>{event.event_type}</span>
-                                        <span className="text-[10px] truncate">
-                                            {" "}
-                                            {event.description.length > 30
-                                                ? `${event.description.slice(
-                                                      0,
-                                                      30
-                                                  )}...`
-                                                : event.description}
-                                        </span>
+                        {location?.state.consignmentToTrack.events.map(
+                            (event) => (
+                                <Card
+                                    variant="light"
+                                    className="w-full items-start p-2"
+                                    isPressable
+                                    onClick={() => setEvent(event)}
+                                >
+                                    <div className="flex gap-2 w-full items-center">
+                                        <Image
+                                            className="w-8"
+                                            src={getIcon(event.event_type).url}
+                                        />
+                                        <div className="flex flex-col items-start gap-0">
+                                            <span>{event.event_type}</span>
+                                            <span className="text-[10px] truncate">
+                                                {" "}
+                                                {event.description.length > 30
+                                                    ? `${event.description.slice(
+                                                          0,
+                                                          30
+                                                      )}...`
+                                                    : event.description}
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
-                            </Card>
-                        ))}
+                                </Card>
+                            )
+                        )}
                     </div>
                 </div>
             )}
@@ -320,6 +371,18 @@ export default function ConsMap({ }) {
                                     strokeWeight: 6, // Adjust the thickness of the line
                                 },
                             }}
+                        />
+                    )}
+
+                    {/* Render vehicle live location */}
+                    {currentLocation && (
+                        <Marker
+                            position={{
+                                lat: parseFloat(currentLocation[0].lat),
+                                lng: parseFloat(currentLocation[0].lng),
+                            }}
+                            icon={ConsIcon}
+                            key={`marker-${currentLocation[currentLocation?.length -1].lat}-${currentLocation[currentLocation?.length -1].lng}`}
                         />
                     )}
 
