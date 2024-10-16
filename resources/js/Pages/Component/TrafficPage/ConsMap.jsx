@@ -8,11 +8,8 @@ import {
     DirectionsRenderer,
 } from "@react-google-maps/api";
 import { Button, Card, Divider, Image } from "@nextui-org/react";
-import {
-    ChevronLeftIcon,
-    MapPinIcon,
-} from "@heroicons/react/20/solid";
-import ConsIcon from "@/assets/icons/ConsIcon.png";
+import { ChevronLeftIcon, MapPinIcon } from "@heroicons/react/20/solid";
+import TruckImg from "@/assets/icons/truckImg.png";
 import Roadworks from "@/assets/icons/RoadWork.png";
 import Alpine from "@/assets/icons/Alpine.png";
 import Flooding from "@/assets/icons/Flooding.png";
@@ -64,6 +61,7 @@ export default function ConsMap({}) {
     const navigate = useNavigate();
 
     const [currentLocation, setCurrentLocation] = useState(null);
+    const [currentDirection, setCurrentDirection] = useState(null);
     const [directionsResponse, setDirectionsResponse] = useState(null);
     const [directionsRequested, setDirectionsRequested] = useState(false);
     const [event, setEvent] = useState();
@@ -101,33 +99,63 @@ export default function ConsMap({}) {
         }
     }, []);
 
+    const [callNewDirections, setCallNewDirections] = useState(true);
+    const handleCurrentDirectionsCallback = (response) => {
+        if (response !== null && response.status === "OK") {
+            setCurrentDirection(response);
+            setCallNewDirections(false);
+        } else {
+            console.error(
+                "Directions request failed due to " + response?.status
+            );
+        }
+    };
+
     const gtrsWebUrl = window.Laravel.gtrsWeb;
     const fetchLiveLocation = () => {
+        let today = new moment().format("YYYY-MM-DDTHH:mm");
+        let todayTwoHoursBefore = new moment()
+            .subtract(2, "hours")
+            .format("YYYY-MM-DDTHH:mm");
         axios
             .get(`${gtrsWebUrl}getConsignmentRoute`, {
                 params: {
-                    consignmentNo: "2500918307",
-                    //location?.state.consignmentToTrack?.ConsignmentNo,
+                    consignmentNo:
+                        location?.state.consignmentToTrack?.ConsignmentNo,
                     typeId: 2, //delivery
-                    fromDate: "2024-10-15T14:30",
-                    toDate: "2024-10-16T14:30",
-                    //new moment().format("YYYY-MM-DD HH:mm"),
+                    fromDate: todayTwoHoursBefore,
+                    toDate: today,
                 },
             })
             .then((response) => {
                 setCurrentLocation(response?.data?.vehicleRoad);
-                console.log(response?.data);
+                const locations = response?.data?.vehicleRoad;
+                setCurrentLocation(locations);
+                setCallNewDirections(true);
             })
             .catch((error) => {
                 console.log(error);
                 AlertToast(error?.response?.data?.message, 2);
             });
     };
+
     useEffect(() => {
         if (location) {
             fetchLiveLocation();
         }
-    }, [location]);
+    }, []);
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            // Fetch live location
+            fetchLiveLocation();
+        }, 60000); // 1 minute
+
+        return () => {
+            clearInterval(intervalId);
+        };
+    }, []);
+
     const mapContainerStyle = { width: "100%", height: "100%" };
     const australiaBounds = {
         north: -5.0,
@@ -374,15 +402,57 @@ export default function ConsMap({}) {
                         />
                     )}
 
+                    {/* Render the route that the driver took*/}
+                    {callNewDirections && currentLocation?.length > 0 && (
+                        <DirectionsService
+                            options={{
+                                origin: currentLocation[0],
+                                destination:
+                                    currentLocation[
+                                        currentLocation?.length - 1
+                                    ],
+                                travelMode: "DRIVING",
+                            }}
+                            callback={handleCurrentDirectionsCallback}
+                        />
+                    )}
+                    {/* Render the route */}
+                    {currentDirection && (
+                        <DirectionsRenderer
+                            directions={currentDirection}
+                            options={{
+                                polylineOptions: {
+                                    strokeColor: "#F5D02FFF", // Change to your desired color, e.g., red
+                                    strokeOpacity: 0.9, // Adjust opacity if needed
+                                    strokeWeight: 6, // Adjust the thickness of the line
+                                },
+                            }}
+                        />
+                    )}
                     {/* Render vehicle live location */}
                     {currentLocation && (
                         <Marker
                             position={{
-                                lat: parseFloat(currentLocation[0].lat),
-                                lng: parseFloat(currentLocation[0].lng),
+                                lat: parseFloat(
+                                    currentLocation[currentLocation?.length - 1]
+                                        .lat
+                                ),
+                                lng: parseFloat(
+                                    currentLocation[currentLocation?.length - 1]
+                                        .lng
+                                ),
                             }}
-                            icon={ConsIcon}
-                            key={`marker-${currentLocation[currentLocation?.length -1].lat}-${currentLocation[currentLocation?.length -1].lng}`}
+                            icon={{
+                                url: TruckImg,
+                                scaledSize: new window.google.maps.Size(40, 40),
+                                origin: new window.google.maps.Point(0, 0),
+                                anchor: new window.google.maps.Point(10, 10),
+                            }}
+                            key={`marker-${
+                                currentLocation[currentLocation?.length - 1].lat
+                            }-${
+                                currentLocation[currentLocation?.length - 1].lng
+                            }`}
                         />
                     )}
 

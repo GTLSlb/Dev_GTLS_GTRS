@@ -462,9 +462,23 @@ export default function GtrsMain({
         }
     }
 
+    const gtrsWebUrl = window.Laravel.gtrsWeb;
+    const [consTrackingData, setConsTrackingData] = useState([]);
+    async function fetchConsTrackingData() {
+        axios
+            .get(`${gtrsWebUrl}conswithevents`)
+            .then((res) => {
+                setConsTrackingData(res.data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
+
     useEffect(() => {
         if (currentUser) {
             fetchDeliveryReport();
+            fetchConsTrackingData();
         }
     }, [currentUser]);
 
@@ -998,6 +1012,9 @@ export default function GtrsMain({
                                                     setFiltersConsTrack
                                                 }
                                                 filterValue={filtersConsTrack}
+                                                consTrackingData={
+                                                    consTrackingData
+                                                }
                                             />
                                         }
                                     />

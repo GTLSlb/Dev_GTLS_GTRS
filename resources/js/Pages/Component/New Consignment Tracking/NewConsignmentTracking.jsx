@@ -354,7 +354,7 @@ function NewConsignmentTracking() {
             ) : (
                 <div className="flex flex-col w-[550px] p-3 bg-zinc-100">
                     <div className="font-bold text-lg mt-3">
-                        Consignment Tracking
+                        Consignment Trackingdd
                     </div>
                     <Divider className="my-2" />
                     <div className="py-5 grid grid-cols-2 gap-y-5 gap-x-2">

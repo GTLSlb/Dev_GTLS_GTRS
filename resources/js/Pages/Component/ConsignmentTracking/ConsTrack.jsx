@@ -22,9 +22,9 @@ const gtrsWebUrl = window.Laravel.gtrsWeb;
 function ConsTrack({
     setFilterValue,
     filterValue,
+    consTrackingData,
 }) {
     const [selected, setSelected] = useState([]);
-
     // Todo: Replace this with the actual request
     const [filteredData, setFilteredData] = useState([
         {
@@ -1678,7 +1678,6 @@ function ConsTrack({
             },
         }
     );
-console.log(filteredData);
 
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
@@ -1691,7 +1690,7 @@ console.log(filteredData);
                 selected={selected}
                 filterTypesElements={customFilterTypes}
                 groupsElements={groups}
-                tableDataElements={filteredData}
+                tableDataElements={consTrackingData}
                 filterValueElements={filterValue}
                 setFilterValueElements={setFilterValue}
                 columnsElements={columns}
