@@ -19,7 +19,14 @@ import notFound from "../../../assets/pictures/NotFound.png";
 import { useEffect } from "react";
 import MultiChartLine from "./Dashboard_Charts/MultiLineChart";
 import DoubleBarChart from "./Dashboard_Charts/DoublBarChart";
-export default function MainCharts({ accData, safetyData, chartsData }) {
+import { canViewChart } from "@/permissions";
+export default function MainCharts({
+    accData,
+    safetyData,
+    chartsData,
+    currentUser,
+}) {
+    console.log(currentUser);
     const [filteredSafety, setFilteredSafety] = useState(safetyData);
 
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
@@ -70,8 +77,8 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
         setFilteredData(chartsData);
     }, []);
     const [layout, setLayout] = useState([
-        { i: "card02", x: 0, y: 0, w: 1, h: 4.5 }, //Information
-        { i: "card06", x: 2, y: 0, w: 1, h: 4.5 }, // Spend By month
+        { i: "card02", x: 0, y: 0, w: 1, h: 5 }, //Information
+        { i: "card06", x: 2, y: 0, w: 1, h: 5 }, // Spend By month
         { i: "card04", x: 0, y: 2, w: 1, h: 3 }, //Consignment Status
         { i: "card12", x: 2, y: 0, w: 1, h: 3 }, // Consignment By Month
         { i: "card08", x: 0, y: 2, w: 1, h: 3 }, // Pod True Vs False
@@ -165,6 +172,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
             totalCost,
             totalNoConsShipped,
             totalNoConsPassed,
+            totalConsPending,
             totalConsFailed,
             podCounter,
             podPercentage,
@@ -264,7 +272,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
 
         for (const item of data) {
             const state = item.ReceiverState;
-            const amount = Math.round(Number(item.NetAmount) * 100);
+            const amount = item.NetAmount;
             const despatchDate = new Date(item.DespatchDate);
             const year = despatchDate.getFullYear();
             const day = despatchDate.getDate();
@@ -294,47 +302,47 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
     };
     const getMonthlyRecordCounts = (data) => {
         const monthlyCounts = {};
-    
+
         for (const item of data) {
             const despatchDate = new Date(item.DespatchDate);
             const month = despatchDate.getMonth() + 1;
             const year = despatchDate.getFullYear();
             const monthYear = `${year}-${month.toString().padStart(2, "0")}`;
-    
+
             if (monthlyCounts.hasOwnProperty(monthYear)) {
                 monthlyCounts[monthYear]++;
             } else {
                 monthlyCounts[monthYear] = 1;
             }
         }
-    
+
         const sortedCounts = Object.entries(monthlyCounts).sort(([a], [b]) => {
             const [yearA, monthA] = a.split("-");
             const [yearB, monthB] = b.split("-");
             return new Date(yearA, monthA - 1) - new Date(yearB, monthB - 1);
         });
-    
+
         const monthlyRecordCounts = sortedCounts.map(([monthYear, value]) => ({
             data: monthYear,
             value,
         }));
-            return monthlyRecordCounts;
+        return monthlyRecordCounts;
     };
     const getPODCounts = (data) => {
         const podCounts = {};
         const today = new Date(); // Get today's date
-    
+
         for (const item of data) {
             const despatchDate = new Date(item.DespatchDate);
             if (despatchDate > today) {
                 continue; // Skip data with a future despatch date
             }
-    
+
             const month = despatchDate.getMonth() + 1;
             const year = despatchDate.getFullYear();
             const monthYear = `${year}-${month.toString().padStart(2, "0")}`;
             const pod = item.POD;
-    
+
             if (podCounts.hasOwnProperty(monthYear)) {
                 if (pod) {
                     podCounts[monthYear].true++;
@@ -349,20 +357,20 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                 };
             }
         }
-    
+
         const formattedCounts = Object.entries(podCounts).flatMap(
             ([monthYear, counts]) => [
                 { pod: "true", monthYear, value: counts.true },
                 { pod: "false", monthYear, value: counts.false },
             ]
         );
-    
+
         formattedCounts.sort((a, b) => {
             const [yearA, monthA] = a.monthYear.split("-");
             const [yearB, monthB] = b.monthYear.split("-");
             return new Date(yearA, monthA - 1) - new Date(yearB, monthB - 1);
         });
-    
+
         return formattedCounts;
     };
     function getPODCountsByState(data) {
@@ -515,8 +523,8 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
     const ResetLayout = () => {
         // Filter the options based on the selected receivers
         setLayout([
-            { i: "card02", x: 0, y: 0, w: 1, h: 4.5 }, //Information
-            { i: "card06", x: 2, y: 0, w: 1, h: 4.5 }, // Spend By month
+            { i: "card02", x: 0, y: 0, w: 1, h: 5 }, //Information
+            { i: "card06", x: 2, y: 0, w: 1, h: 5 }, // Spend By month
             { i: "card04", x: 0, y: 2, w: 1, h: 3 }, //Consignment Status
             { i: "card12", x: 2, y: 0, w: 1, h: 3 }, // Consignment By Month
             { i: "card08", x: 0, y: 2, w: 1, h: 3 }, // Pod True Vs False
@@ -528,8 +536,8 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
     const PODFirst = () => {
         // Filter the options based on the selected receivers
         setLayout([
-            { i: "card02", x: 0, y: 0, w: 1, h: 4.5 }, //Information
-            { i: "card06", x: 2, y: 0, w: 1, h: 4.5 }, // Spend By month
+            { i: "card02", x: 0, y: 0, w: 1, h: 5 }, //Information
+            { i: "card06", x: 2, y: 0, w: 1, h: 5 }, // Spend By month
             { i: "card04", x: 0, y: 2, w: 1, h: 3 }, //Consignment Status
             { i: "card12", x: 2, y: 0, w: 1, h: 3 }, // Consignment By Month
             { i: "card08", x: 0, y: -2, w: 1, h: 3 }, // Pod True Vs False
@@ -563,6 +571,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
             })
         );
     }, [cols]);
+
     if (chartsData.length > 0) {
         return (
             <div className=" px-4 sm:px-6 pb-4 bg-smooth">
@@ -752,6 +761,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                                 InfoData={calculateStatistics(filteredData)}
                             />{" "}
                         </div>
+
                         <div key="card06" className="relative">
                             {" "}
                             <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
@@ -834,7 +844,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                 {/* <DashboardCard11 /> */}
             </div>
         );
-    } else if (chartsData.length === 0){
+    } else if (chartsData.length === 0) {
         return (
             <div className=" min-h-screen flex items-center justify-center h-full">
                 <p>No Data Found</p>
