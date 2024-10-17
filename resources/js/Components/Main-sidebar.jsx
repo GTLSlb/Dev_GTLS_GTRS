@@ -8,7 +8,6 @@ import {
     Squares2X2Icon,
     UserGroupIcon,
     XMarkIcon,
-    HiLogout,
     Bars3Icon,
     BookmarkSquareIcon,
     UserMinusIcon,
@@ -143,6 +142,12 @@ export default function MainSidebar({
                 {
                     id: 14,
                     name: "KPI Reasons",
+                    current: false,
+                    role: ["1", "4"],
+                },
+                {
+                    id: 21,
+                    name: "Delivery Report",
                     current: false,
                     role: ["1", "4"],
                 },

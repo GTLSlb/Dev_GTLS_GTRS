@@ -45,7 +45,7 @@ export default function FailedCons({
     accData,
 }) {
 
-    
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [reason, setReason] = useState();
     const handleEditClick = (reason) => {

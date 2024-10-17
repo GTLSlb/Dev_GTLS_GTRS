@@ -56,6 +56,8 @@ export default function Gtrs({
     const [customerAccounts, setCusomterAccounts] = useState();
     const userdata = currentUser;
     const [canAccess, setCanAccess] = useState(true);
+    const [dailyReportData, setDailyReportData] = useState([]);
+
     const debtorIdsArray = userdata?.Accounts?.map((account) => {
         return { UserId: account.DebtorId };
     });
@@ -70,6 +72,53 @@ export default function Gtrs({
         document.cookie =
             "previous_page=" + encodeURIComponent(window.location.href);
     }, []);
+
+    const fetchDeliveryReport = () => {
+        axios
+            .get(`${gtrsUrl}Delivery`, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            })
+            .then((res) => {
+                const x = JSON.stringify(res.data);
+                const parsedDataPromise = new Promise((resolve, reject) => {
+                    const parsedData = JSON.parse(x);
+                    resolve(parsedData);
+                });
+                parsedDataPromise.then((parsedData) => {
+                    setDailyReportData(parsedData || []);
+                });
+            })
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                    // Handle 401 error using SweetAlert
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then(function () {
+                        axios
+                            .post("/logoutAPI")
+                            .then((response) => {
+                                if (response.status == 200) {
+                                    window.location.href = "/";
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+                    });
+                } else {
+                    // Handle other errors
+                    console.log(err);
+                }
+            });
+    }
+
     useEffect(() => {
         setUserBody(debtorIds);
         setLoadingGtrs(false);
@@ -376,6 +425,7 @@ export default function Gtrs({
                     console.log(err);
                 }
             });
+        fetchDeliveryReport();
         axios
             .get(`${gtrsUrl}/Transport`, {
                 headers: {
@@ -495,6 +545,8 @@ export default function Gtrs({
                             AToken={AToken}
                             PerfData={PerfData}
                             setPerfData={setPerfData}
+                            fetchDeliveryReport={fetchDeliveryReport}
+                            dailyReportData={dailyReportData}
                         />
                     </div>
                 </div>

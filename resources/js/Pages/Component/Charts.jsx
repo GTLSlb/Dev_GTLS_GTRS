@@ -23,6 +23,7 @@ import NewKPI from "./NewKPI";
 import NewTransitDays from "./NewTransitDays";
 import AddNewTransitDay from "./KPI/AddNewTransitDay";
 import GraphPresentation from "./Presentation/GraphPresentation";
+import DailyReportPage from "./ReportsPage/DeliveryReportPage";
 
 export default function charts({
     setCusomterAccounts,
@@ -50,6 +51,8 @@ export default function charts({
     chartsData,
     kpireasonsData,
     setkpireasonsData,
+    fetchDeliveryReport,
+    dailyReportData,
 }) {
     window.moment = moment;
     const current = new Date();
@@ -2229,6 +2232,16 @@ export default function charts({
             currentUser={currentUser}
             AToken={AToken}
         />,
+        <DailyReportPage
+            url={url}
+            currentUser={currentUser}
+            AToken={AToken}
+            dailyReportData={dailyReportData}
+            fetchDeliveryReport={fetchDeliveryReport}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            setactiveCon={setactiveCon}
+            setLastIndex={setLastIndex}
+        />
     ];
     return (
         <div className="">
