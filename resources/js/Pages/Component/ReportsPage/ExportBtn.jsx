@@ -13,6 +13,7 @@ import {
     PhoneIcon,
     PlayCircleIcon,
 } from "@heroicons/react/20/solid";
+import moment from "moment";
 
 export default function ExportBtn({unileverClient, filteredData, gridRef }){
     const [hoverMessage, setHoverMessage] = useState("");
@@ -54,7 +55,7 @@ export default function ExportBtn({unileverClient, filteredData, gridRef }){
         }));
 
         let selectedColVal = allHeaderColumns.filter(
-            (col) => col?.label?.toString().toLowerCase() !== "edit"
+            (col) => col?.label?.toString()?.toLowerCase() !== "actions"
         );
 
         const filterValue = [];
@@ -395,7 +396,7 @@ export default function ExportBtn({unileverClient, filteredData, gridRef }){
         selectedColVal = [];
         if (selectedColumns.length === 0) {
             // Use all columns except edit
-            selectedColVal = allHeaderColumns;
+            selectedColVal = allHeaderColumns.filter((col) => col?.label?.toString().toLowerCase() !== "actions");
         } else {
             allHeaderColumns.map((header) => {
                 selectedColumns.map((column) => {
@@ -417,6 +418,7 @@ export default function ExportBtn({unileverClient, filteredData, gridRef }){
 
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
+
         const columnMapping = {
             AccountNumber: "Account Number",
             DespatchDateTime: "Despatch Date",
@@ -455,7 +457,6 @@ export default function ExportBtn({unileverClient, filteredData, gridRef }){
                         [
                             "DespatchDateTime",
                             "DeliveryRequiredDateTime",
-                            "DeliveredDateTime",
                         ].includes(columnKey)
                     ) {
                         const date = new Date(person[columnKey]);
@@ -468,9 +469,11 @@ export default function ExportBtn({unileverClient, filteredData, gridRef }){
                         } else {
                             acc[columnKey] = "";
                         }
-                    } else if (columnKey === "Comments") {
+                    } else if (columnKey === "DeliveredDateTime") {
+                        acc[columnKey] = new moment(person[columnKey]).format("DD-MM-YYYY");
+                    }else if (columnKey === "Comments") {
                         acc[columnKey] = person[columnKey]?.map((item) => `${formatDate(item.AddedAt)}, ${item.Comment}`).join("\n")
-                    } else {
+                    }  else {
                         acc[columnKey] = person[columnKey];
                     }
                 } else {
@@ -499,7 +502,6 @@ export default function ExportBtn({unileverClient, filteredData, gridRef }){
     const calculateRowHeight = (cellValue) => {
         if (!cellValue) return 20; // Default row height
         const lines = cellValue.split('\n').length;
-        console.log(lines, Math.max(20, lines * 25));
         return Math.max(20, lines * 25); // Dynamic height, adjust 25px per line
     };
 

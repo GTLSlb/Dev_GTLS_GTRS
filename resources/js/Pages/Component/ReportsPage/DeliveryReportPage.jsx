@@ -302,7 +302,7 @@ export default function DailyReportPage({
                 return value?moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A"):""
+                    : moment(value).format("DD-MM-YYYY"):""
             },
         },
         {

@@ -11,9 +11,9 @@ function ConsignmentGraph({ url, currentUser, AToken }) {
     const [loading, setLoading] = useState(true);
 
 
-    useEffect(() => {
-       console.log("Orginal data changed") 
-    },[originalgraphData])
+    // useEffect(() => {
+    //    console.log("Orginal data changed")
+    // },[originalgraphData])
     const customers = [
         {
             value: 1,
@@ -32,7 +32,7 @@ function ConsignmentGraph({ url, currentUser, AToken }) {
     const [selectedReceiver, setselectedReceiver] = useState(customers[0]);
 
     function addCalculatedFields(data) {
-        console.log("here")
+        // console.log("here")
         data.forEach((item) => {
             if (item.Record && item.Record.length > 0) {
                 item.Record.forEach((record) => {
@@ -54,7 +54,7 @@ function ConsignmentGraph({ url, currentUser, AToken }) {
     }
 
     function getReportData() {
-        console.log("get function")
+        // console.log("get function")
         setLoading(true);
         axios
             .get(`${url}KpiPackRecord`, {
@@ -68,7 +68,7 @@ function ConsignmentGraph({ url, currentUser, AToken }) {
             .then((res) => {
                 setLoading(false);
                 const calculatedData = addCalculatedFields(res.data);
-                console.log(res.data)
+                // console.log(res.data)
                 setGraphOriginalData(res.data)
                 setGraphData(res.data);
             })
@@ -129,7 +129,7 @@ function ConsignmentGraph({ url, currentUser, AToken }) {
         }),
         // Add or adjust other style functions as needed
       };
-            
+
 
     const handleReceiverSelectChange = (selectedOptions) => {
         setselectedReceiver(selectedOptions);
