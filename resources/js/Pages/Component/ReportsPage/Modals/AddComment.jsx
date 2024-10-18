@@ -201,7 +201,7 @@ export default function AddComment({
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="bg-gray-800 w-[6.5rem] text-white font-bold p-2 rounded"
+                                className="bg-gray-800 w-[6.5rem] text-white font-bold p-2 rounded hover:bg-gray-800/80"
                             >
                                 {isLoading ? (
                                     <div className=" inset-0 flex justify-center items-center bg-opacity-50">

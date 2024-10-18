@@ -189,7 +189,7 @@ const navigation = [
         href: "#",
         icon: DocumentDuplicateIcon,
         current: false,
-        feature: "DailyReport_View",
+        feature: "DeliveryReport_View",
     },
 ];
 

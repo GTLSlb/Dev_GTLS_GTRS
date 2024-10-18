@@ -9,6 +9,7 @@ import OtherReports from "./OtherReports";
 import { EyeIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { getFiltersDeliveryReport } from "@/Components/utils/filters";
+import { canAddDeliveryReportComment, canViewDailyReportComment, canViewMetcashDailyReport, canViewWoolworthsDeliveryReport, canViewOtherDailyReport } from "@/permissions";
 
 export default function DailyReportPage({
     url,
@@ -97,12 +98,117 @@ export default function DailyReportPage({
         },
     ]);
 
-    const minDate = getMinMaxValue("2022-01-01", "DESPATCHDATE", 1);
-    const maxDate = getMinMaxValue("2024-12-31", "DESPATCHDATE", 2);
-
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     const [filterValue, setFilterValue] = useState(
-        getFiltersDeliveryReport(minDate, maxDate)
+        [
+            {
+                name: "AccountNumber",
+                operator: "eq",
+                type: "string",
+                value: "",
+            },
+            {
+                name: "DespatchDateTime",
+                operator: "inrange",
+                type: "date",
+                value: {
+                    start: getMinMaxValue(dailyReportData, "DespatchDateTime", 1),
+                    end: getMinMaxValue(dailyReportData, "DespatchDateTime", 2),
+                },
+            },
+            {
+                name: "ConsignmentNo",
+                operator: "contains",
+                type: "string",
+                value: "",
+            },
+            {
+                name: "SenderName",
+                operator: "contains",
+                type: "string",
+                value: "",
+            },
+            {
+                name: "SenderReference",
+                operator: "contains",
+                type: "string",
+                value: "",
+            },
+            {
+                name: "SenderState",
+                operator: "inlist",
+                type: "select",
+                value: null,
+                emptyValue: "",
+            },
+            {
+                name: "ReceiverName",
+                operator: "contains",
+                type: "string",
+                value: null,
+                emptyValue: "",
+            },
+            {
+                name: "ReceiverReference",
+                operator: "contains",
+                type: "string",
+                value: null,
+                emptyValue: "",
+            },
+            {
+                name: "ReceiverState",
+                operator: "inlist",
+                type: "select",
+                value: null,
+                emptyValue: "",
+            },
+            {
+                name: "ConsignmentStatus",
+                operator: "inlist",
+                type: "select",
+                value: null,
+                emptyValue: "",
+            },
+            {
+                name: "DeliveryInstructions",
+                operator: "contains",
+                type: "string",
+                value: "",
+                emptyValue: "",
+            },
+            {
+                name: "POD",
+                operator: "inlist",
+                type: "select",
+                value: null,
+                emptyValue: "",
+            },
+            {
+                name: "DeliveryRequiredDateTime",
+                operator: "inrange",
+                type: "date",
+                value: {
+                    start: getMinMaxValue(dailyReportData, "DeliveryRequiredDateTime", 1),
+                    end: getMinMaxValue(dailyReportData, "DeliveryRequiredDateTime", 2),
+                },
+            },
+            {
+                name: "DeliveredDateTime",
+                operator: "inrange",
+                type: "date",
+                value: {
+                    start: getMinMaxValue(dailyReportData, "DeliveredDateTime", 1),
+                    end: getMinMaxValue(dailyReportData, "DeliveredDateTime", 2),
+                },
+            },
+            {
+                name: "Comments",
+                operator: "contains",
+                type: "string",
+                value: "",
+                emptyValue: "",
+            },
+        ]
     );
 
     const groups = [
@@ -162,8 +268,8 @@ export default function DailyReportPage({
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
             filterEditorProps: {
-                minDate: minDate,
-                maxDate: maxDate,
+                minDate: getMinMaxValue(dailyReportData, "DespatchDateTime", 1),
+                maxDate: getMinMaxValue(dailyReportData, "DespatchDateTime", 2),
             },
             render: ({ value, cellProps }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
@@ -286,8 +392,8 @@ export default function DailyReportPage({
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
             filterEditorProps: {
-                minDate: minDate,
-                maxDate: maxDate,
+                minDate: getMinMaxValue(dailyReportData, "DeliveryRequiredDateTime", 1),
+                maxDate: getMinMaxValue(dailyReportData, "DeliveryRequiredDateTime", 2),
             },
             render: ({ value, cellProps }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
@@ -306,12 +412,13 @@ export default function DailyReportPage({
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
             filterEditorProps: {
-                minDate: minDate,
-                maxDate: maxDate,
+                minDate: getMinMaxValue(dailyReportData, "DeliveredDateTime", 1),
+                maxDate: getMinMaxValue(dailyReportData, "DeliveredDateTime", 2),
+
             },
             render: ({ value, cellProps }) => {
                 return value
-                    ? moment(value).format("DD-MM-YYYY hh:mm A") ==
+                    ? moment(value).format("DD-MM-YYYY") ==
                       "Invalid date"
                         ? ""
                         : moment(value).format("DD-MM-YYYY")
@@ -387,23 +494,24 @@ export default function DailyReportPage({
             render: ({ value, data }) => {
                 return (
                     <div className="flex gap-4 items-center px-2">
-                        <span
+                       {canViewDailyReportComment(currentUser) && <span
                             className="underline text-blue-400 hover:cursor-pointer"
                             onClick={() => handleViewComments(data)}
                         >
                             <EyeIcon className="h-5 w-5" />
-                        </span>
-                        <span
+                        </span>}
+                       {canAddDeliveryReportComment(currentUser) && <span
                             className="underline text-green-500 hover:cursor-pointer"
                             onClick={() => handleAddComment(data.ConsignmentID)}
                         >
                             <PlusIcon className="h-5 w-5" />
-                        </span>
+                        </span>}
                     </div>
                 );
             },
         },
     ];
+
 
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -501,7 +609,7 @@ export default function DailyReportPage({
             </div>
             <div className="w-full flex gap-4 items-center mt-4">
                 <ul className="flex space-x-0">
-                    <li
+                    {canViewMetcashDailyReport(currentUser) && <li
                         className={`cursor-pointer ${
                             activeComponentIndex === 0
                                 ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
@@ -510,8 +618,8 @@ export default function DailyReportPage({
                         onClick={() => setActiveComponentIndex(0)}
                     >
                         <div className="px-2"> Metcash</div>
-                    </li>
-                    <li
+                    </li>}
+                    {canViewWoolworthsDeliveryReport(currentUser) && <li
                         className={`cursor-pointer ${
                             activeComponentIndex === 1
                                 ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
@@ -520,8 +628,8 @@ export default function DailyReportPage({
                         onClick={() => setActiveComponentIndex(1)}
                     >
                         <div className="px-2">Woolworths</div>
-                    </li>
-                    <li
+                    </li>}
+                    {canViewOtherDailyReport(currentUser) && <li
                         className={`cursor-pointer ${
                             activeComponentIndex === 2
                                 ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
@@ -530,10 +638,18 @@ export default function DailyReportPage({
                         onClick={() => setActiveComponentIndex(2)}
                     >
                         <div className="px-2"> Other</div>
-                    </li>
+                    </li>}
                 </ul>
             </div>
-            <div>{components[activeComponentIndex]}</div>
+            {
+                (activeComponentIndex == 0 && canViewMetcashDailyReport(currentUser))
+                 ? <div>{components[activeComponentIndex]}</div>
+                 : (activeComponentIndex == 1 && canViewWoolworthsDeliveryReport(currentUser))
+                 ? <div>{components[activeComponentIndex]}</div>
+                 : (activeComponentIndex == 2 && canViewOtherDailyReport(currentUser))
+                 ? <div>{components[activeComponentIndex]}</div>
+                 : <div></div>
+            }
         </div>
     );
 }

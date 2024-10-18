@@ -696,6 +696,181 @@ export function canViewAdditionalCharges(currentUser) {
 }
 
 /**
+ * Checks if the user can view Delivery Report Comments based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can view Delivery Report Comments, false otherwise.
+ */
+export function canViewDailyReportComment(currentUser) {
+    // Define the specific permission
+    const targetPermissionName = "DeliveryReportComments_View";
+    const pageName = "Delivery Report"; // Adjust the page name as needed
+
+    // Find the specified page in the user's Pages array
+    const targetPage = currentUser.Pages.find(
+        (page) => page.PageName === pageName
+    );
+
+    // Check if the page is found and if the specified permission is present in its Features array
+    return (
+        targetPage &&
+        targetPage.Features.some(
+            (feature) => feature.FunctionName === targetPermissionName
+        )
+    );
+}
+
+/**
+ * Checks if the user can edit Delivery Report Comments based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can edit Delivery Report Comments, false otherwise.
+ */
+export function canEditDeliveryReportComment(currentUser) {
+    // Define the specific permission
+    const targetPermissionName = "DeliveryReportComment_edit";
+    const pageName = "Delivery Report"; // Adjust the page name as needed
+
+    // Find the specified page in the user's Pages array
+    const targetPage = currentUser.Pages.find(
+        (page) => page.PageName === pageName
+    );
+
+    // Check if the page is found and if the specified permission is present in its Features array
+    return (
+        targetPage &&
+        targetPage.Features.some(
+            (feature) => feature.FunctionName === targetPermissionName
+        )
+    );
+}
+
+/**
+ * Checks if the user can add Delivery Report Comments based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can add Delivery Report Comments, false otherwise.
+ */
+export function canAddDeliveryReportComment(currentUser) {
+    // Define the specific permission
+    const targetPermissionName = "DeliveryReportComment_add";
+    const pageName = "Delivery Report"; // Adjust the page name as needed
+
+    // Find the specified page in the user's Pages array
+    const targetPage = currentUser.Pages.find(
+        (page) => page.PageName === pageName
+    );
+
+    // Check if the page is found and if the specified permission is present in its Features array
+    return (
+        targetPage &&
+        targetPage.Features.some(
+            (feature) => feature.FunctionName === targetPermissionName
+        )
+    );
+}
+
+/**
+ * Checks if the user can view based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can view Delivery Report, false otherwise.
+ */
+export function canViewDeliveryReport(currentUser) {
+    // Define the specific permission
+    const targetPermissionName = "DeliveryReport_View";
+    const pageName = "Delivery Report"; // Adjust the page name as needed
+
+    // Find the specified page in the user's Pages array
+    const targetPage = currentUser.Pages.find(
+        (page) => page.PageName === pageName
+    );
+
+    // Check if the page is found and if the specified permission is present in its Features array
+    return (
+        targetPage &&
+        targetPage.Features.some(
+            (feature) => feature.FunctionName === targetPermissionName
+        )
+    );
+}
+
+/**
+ * Checks if the user can view based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can view Metcash Delivery Report, false otherwise.
+ */
+export function canViewMetcashDailyReport(currentUser) {
+    // Define the specific permission
+    const targetPermissionName = "MetcashDeliveryReport_View";
+    const pageName = "Delivery Report"; // Adjust the page name as needed
+
+    // Find the specified page in the user's Pages array
+    const targetPage = currentUser.Pages.find(
+        (page) => page.PageName === pageName
+    );
+
+    // Check if the page is found and if the specified permission is present in its Features array
+    return (
+        targetPage &&
+        targetPage.Features.some(
+            (feature) => feature.FunctionName === targetPermissionName
+        )
+    );
+}
+
+/**
+ * Checks if the user can view based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can view Woolworths Delivery Report, false otherwise.
+ */
+export function canViewWoolworthsDeliveryReport(currentUser) {
+    // Define the specific permission
+    const targetPermissionName = "WoolworthsDeliveryReport_View";
+    const pageName = "Delivery Report"; // Adjust the page name as needed
+
+    // Find the specified page in the user's Pages array
+    const targetPage = currentUser.Pages.find(
+        (page) => page.PageName === pageName
+    );
+
+    // Check if the page is found and if the specified permission is present in its Features array
+    return (
+        targetPage &&
+        targetPage.Features.some(
+            (feature) => feature.FunctionName === targetPermissionName
+        )
+    );
+}
+
+/**
+ * Checks if the user can view based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can view Other Delivery Report, false otherwise.
+ */
+export function canViewOtherDailyReport(currentUser) {
+    // Define the specific permission
+    const targetPermissionName = "OtherDeliveryReport_View";
+    const pageName = "Delivery Report"; // Adjust the page name as needed
+
+    // Find the specified page in the user's Pages array
+    const targetPage = currentUser.Pages.find(
+        (page) => page.PageName === pageName
+    );
+
+    // Check if the page is found and if the specified permission is present in its Features array
+    return (
+        targetPage &&
+        targetPage.Features.some(
+            (feature) => feature.FunctionName === targetPermissionName
+        )
+    );
+}
+
+/**
  * Checks if the user can view Driver Login Report based on their permissions.
  *
  * @param {Object} currentUser - The current user object with role and permissions.

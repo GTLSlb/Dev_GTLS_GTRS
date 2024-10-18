@@ -108,6 +108,9 @@ export default function charts({
     const minDateAdd = getMinMaxValue(AdditionalData, "DespatchDateTime", 1);
     const maxDateAdd = getMinMaxValue(AdditionalData, "DespatchDateTime", 2);
 
+    const minDateDelivery = getMinMaxValue(dailyReportData, "DespatchDate", 1);
+    const maxDateDelivery = getMinMaxValue(dailyReportData, "DespatchDate", 2);
+
     const [filtersCons, setFiltersCons] = useState([
         {
             name: "ConsignmentNo",

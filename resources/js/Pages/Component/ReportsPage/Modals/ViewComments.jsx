@@ -8,6 +8,7 @@ import axios from "axios";
 import {
     Spinner,
 } from "@nextui-org/react";
+import { canEditDeliveryReportComment } from "@/permissions";
 
 export default function ViewComments({
     isOpen,
@@ -125,7 +126,7 @@ export default function ViewComments({
                         <div className="max-h-[21rem] overflow-auto pr-1 containerscroll">
                             {data?.map((c, index) => (
                                 <div className="flex flex-col gap-4 border-b-1 border-[#D5D5D5] py-3">
-                                    <div className="flex pr-2">
+                                    {canEditDeliveryReportComment(currentUser) && <div className="flex pr-2">
                                         <div className="w-[95%]">
                                         {isEditing && editIndx === index
                                             ? <textarea type="text" className="border-[#D5D5D5] rounded-lg w-full" defaultValue={c?.Comment} value={comment} onChange={(e)=>{setComment(e.target.value)}} />
@@ -145,7 +146,7 @@ export default function ViewComments({
                                             </div>
                                             : <PencilIcon onClick={()=>{setIsEditing(true); setCommentId(c?.CommentId);setComment(c?.Comment); setEditIndx(index)}} className="w-5 h-5 text-sky-500 ml-auto hover:cursor-pointer hover:text-sky-500/70"/>
                                         }
-                                    </div>
+                                    </div>}
                                     <p className="text-gray-400 text-sm font-light">{moment(c?.AddedAt).format("DD-MM-YYYY hh:mm A")}</p>
                                 </div>
                             ))}
