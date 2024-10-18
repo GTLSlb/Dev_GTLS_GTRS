@@ -26,7 +26,6 @@ export default function MainCharts({
     chartsData,
     currentUser,
 }) {
-    console.log(currentUser);
     const [filteredSafety, setFilteredSafety] = useState(safetyData);
 
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
