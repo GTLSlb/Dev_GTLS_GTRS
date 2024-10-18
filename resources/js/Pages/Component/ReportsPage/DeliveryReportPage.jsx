@@ -20,11 +20,33 @@ export default function DailyReportPage({
     setLastIndex,
     setactiveCon,
 }) {
-
     const handleClick = (coindex) => {
         setActiveIndexGTRS(3);
         setLastIndex(21);
         setactiveCon(coindex);
+    };
+    const createNewLabelObjects = (data, fieldName) => {
+        const uniqueLabels = new Set(); // To keep track of unique labels
+        const newData = [];
+
+        // Map through the data and create new objects
+        data?.forEach((item) => {
+            const fieldValue = item[fieldName];
+
+            // Check if the label is not already included and is not null or empty
+            if (fieldValue && !uniqueLabels.has(fieldValue) && fieldValue?.trim() !== "") {
+                if (typeof fieldValue === "string") {
+                   uniqueLabels.add(fieldValue);
+                    const newObject = {
+                        id: fieldValue,
+                        label: fieldValue,
+                    };
+                    newData.push(newObject);
+                }
+            }
+        });
+
+        return newData;
     };
     const [receiverZoneOptions, setReceiverZoneOptions] = useState([
         {
@@ -44,34 +66,18 @@ export default function DailyReportPage({
             label: "QLD",
         },
     ]);
-    const [consStateOptions, setConsStateOptions] = useState([
+    const consStateOptions = createNewLabelObjects(dailyReportData, "ConsignmentStatus");
+
+    const podAvlOptions = [
         {
-            id: "Delivered",
-            label: "Delivered",
+            id: true,
+            label: "True",
         },
         {
-            id: "Depot",
-            label: "Depot",
-        },
-        {
-            id: "ON-FOR-DELIVERY",
-            label: "ON-FOR-DELIVERY",
-        },
-        {
-            id: "Loaded",
-            label: "Loaded",
-        },
-    ]);
-    const [podAvlOptions, setPodAvlOptions] = useState([
-        {
-            id: "YES",
-            label: "YES",
-        },
-        {
-            id: "NO",
-            label: "NO",
-        },
-    ]);
+            id: false,
+            label: "False",
+        }
+    ];
     const [senderZoneOptions, setSenderZoneOptions] = useState([
         {
             id: "NSW",
@@ -95,7 +101,9 @@ export default function DailyReportPage({
     const maxDate = getMinMaxValue("2024-12-31", "DESPATCHDATE", 2);
 
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
-    const [filterValue, setFilterValue] = useState(getFiltersDeliveryReport(minDate, maxDate));
+    const [filterValue, setFilterValue] = useState(
+        getFiltersDeliveryReport(minDate, maxDate)
+    );
 
     const groups = [
         {
@@ -119,10 +127,13 @@ export default function DailyReportPage({
     };
 
     useEffect(() => {
-        if(dailyReportData?.length > 0 && consId){
-            setCommentsData(dailyReportData.find((data) => data.ConsignmentID == consId)?.Comments);
+        if (dailyReportData?.length > 0 && consId) {
+            setCommentsData(
+                dailyReportData.find((data) => data.ConsignmentID == consId)
+                    ?.Comments
+            );
         }
-    },[dailyReportData, consId]);
+    }, [dailyReportData, consId]);
     const handleViewComments = (data) => {
         setCommentsData(data?.Comments);
         setConsId(data?.ConsignmentID);
@@ -299,10 +310,12 @@ export default function DailyReportPage({
                 maxDate: maxDate,
             },
             render: ({ value, cellProps }) => {
-                return value?moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY"):""
+                return value
+                    ? moment(value).format("DD-MM-YYYY hh:mm A") ==
+                      "Invalid date"
+                        ? ""
+                        : moment(value).format("DD-MM-YYYY")
+                    : "";
             },
         },
         {
@@ -320,12 +333,15 @@ export default function DailyReportPage({
             render: ({ value, data }) => {
                 return (
                     <div>
-                        {data?.POD ?
-                        <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                        True
-                    </span> : <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        false
-                    </span>}
+                        {data?.POD ? (
+                            <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                                True
+                            </span>
+                        ) : (
+                            <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                                false
+                            </span>
+                        )}
                     </div>
                 );
             },
@@ -341,18 +357,22 @@ export default function DailyReportPage({
                 return (
                     <div className="flex gap-4 items-center px-2">
                         <div className="flex flex-col">
-                            {
-                                data?.hasOwnProperty("Comments")
-                                && (
-                                    data?.Comments?.length > 0
-                                    && data?.Comments?.slice(0, 2)?.map((item) => (
-                                        <div key={item?.CommentId} className="flex gap-2">
-                                            <span>{moment(item?.AddedAt).format("DD-MM-YYYY")} {", "}</span>
-                                            <span>{item?.Comment}</span>
-                                        </div>
-                                    ))
-                                )
-                            }
+                            {data?.hasOwnProperty("Comments") &&
+                                data?.Comments?.length > 0 &&
+                                data?.Comments?.slice(0, 2)?.map((item) => (
+                                    <div
+                                        key={item?.CommentId}
+                                        className="flex gap-2"
+                                    >
+                                        <span>
+                                            {moment(item?.AddedAt).format(
+                                                "DD-MM-YYYY"
+                                            )}{" "}
+                                            {", "}
+                                        </span>
+                                        <span>{item?.Comment}</span>
+                                    </div>
+                                ))}
                         </div>
                     </div>
                 );
@@ -395,16 +415,28 @@ export default function DailyReportPage({
         setCommentsData(null);
     };
 
-    const [filteredMetcashData, setFilteredMetcashData] = useState(dailyReportData?.filter((item) => item?.CustomerTypeId == 1));
-    const [filteredWoolworthData, setFilteredWoolworthData] = useState(dailyReportData?.filter((item) => item?.CustomerTypeId == 2));
-    const [filteredOtherData, setFilteredOtherData] = useState(dailyReportData?.filter((item) => item?.CustomerTypeId == 3));
+    const [filteredMetcashData, setFilteredMetcashData] = useState(
+        dailyReportData?.filter((item) => item?.CustomerTypeId == 1)
+    );
+    const [filteredWoolworthData, setFilteredWoolworthData] = useState(
+        dailyReportData?.filter((item) => item?.CustomerTypeId == 2)
+    );
+    const [filteredOtherData, setFilteredOtherData] = useState(
+        dailyReportData?.filter((item) => item?.CustomerTypeId == 3)
+    );
     useEffect(() => {
-        if(dailyReportData?.length > 0){
-            setFilteredMetcashData(dailyReportData?.filter((item) => item?.CustomerTypeId == 1));
-            setFilteredWoolworthData(dailyReportData?.filter((item) => item?.CustomerTypeId == 2));
-            setFilteredOtherData(dailyReportData?.filter((item) => item?.CustomerTypeId == 3));
+        if (dailyReportData?.length > 0) {
+            setFilteredMetcashData(
+                dailyReportData?.filter((item) => item?.CustomerTypeId == 1)
+            );
+            setFilteredWoolworthData(
+                dailyReportData?.filter((item) => item?.CustomerTypeId == 2)
+            );
+            setFilteredOtherData(
+                dailyReportData?.filter((item) => item?.CustomerTypeId == 3)
+            );
         }
-    },[dailyReportData])
+    }, [dailyReportData]);
 
     let components = [
         <MetcashReports
@@ -459,7 +491,6 @@ export default function DailyReportPage({
             commentsData={commentsData}
         />,
     ];
-
 
     return (
         <div className="min-h-screen h-full px-8">
