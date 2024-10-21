@@ -145,6 +145,12 @@ export default function MainSidebar({
                     current: false,
                     role: ["1", "4"],
                 },
+                {
+                    id: 21,
+                    name: "Delivery Report",
+                    current: false,
+                    role: ["1", "4"],
+                },
             ],
             func: setActiveIndexGTRS,
             role: ["1", "2", "3", "4", "5"],

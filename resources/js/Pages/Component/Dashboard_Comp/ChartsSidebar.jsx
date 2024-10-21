@@ -15,6 +15,7 @@ import {
     CameraIcon,
     DocumentTextIcon,
     ClipboardDocumentIcon,
+    DocumentDuplicateIcon
 } from "@heroicons/react/24/solid";
 import "../../../../css/scroll.css";
 import TaskIcon from "@mui/icons-material/Task";
@@ -209,6 +210,14 @@ const navigation = [
         current: false,
         feature: "DailyReport_View",
     },
+    {
+        id: 21,
+        name: "Delivery Report",
+        href: "#",
+        icon: DocumentDuplicateIcon,
+        current: false,
+        feature: "DeliveryReport_View",
+    },
 ];
 
 function classNames(...classes) {
@@ -260,6 +269,7 @@ export default function ChartsSidebar({
         onData(optionSelected);
     }, [optionSelected]);
     const [sidebarElements, setSidebarElements] = useState(navigation);
+
     const handleClick = (index) => {
         setActiveIndexGTRS(index);
         const updatedElements = sidebarElements.map((element) => {
@@ -334,16 +344,26 @@ export default function ChartsSidebar({
             } else {
                 // For navigation items without options, check the feature directly
                 return user?.Pages?.some(
-                    (userPage) =>
-                        userPage?.PageName === navItem.name &&
+                    (userPage) => {
+                      if (navItem.id == 21) {
+                        return userPage?.Features?.some(
+                          (feature) =>
+                            feature?.FunctionName == 'MetcashDeliveryReport_View' ||
+                            feature?.FunctionName == 'WoolworthsDeliveryReport_View' ||
+                            feature?.FunctionName == 'OtherDeliveryReport_View'
+                        );
+                      }
+                      return userPage?.PageName === navItem.name &&
                         userPage?.Features?.some(
-                            (feature) =>
-                                feature?.FunctionName === navItem?.feature
-                        )
-                );
+                          (feature) =>
+                            feature?.FunctionName === navItem?.feature
+                        );
+                    }
+                  );
             }
         });
     };
+
     const filteredNavigation = filterNavigation(navigation, currentUser);
     useEffect(() => {
         setSidebarElements(filteredNavigation);

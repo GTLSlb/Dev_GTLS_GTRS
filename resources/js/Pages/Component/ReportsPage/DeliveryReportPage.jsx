@@ -1,33 +1,63 @@
 import React, { useState, useEffect } from "react";
-import TableStructure from "@/Components/TableStructure";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import moment from "moment";
-import { getMinMaxValue } from "@/CommonFunctions";
 import MetcashReports from "./MetcashReports";
 import WoolworthsReports from "./WoolworthsReports";
 import OtherReports from "./OtherReports";
-import { EyeIcon, PlusIcon } from "@heroicons/react/20/solid";
+import { EyeIcon, PencilIcon, PlusIcon } from "@heroicons/react/20/solid";
+import { getMinMaxValue } from "@/Components/utils/dateUtils";
+import { getFiltersDeliveryReport } from "@/Components/utils/filters";
+import {
+    canAddDeliveryReportComment,
+    canEditDeliveryReportComment,
+    canViewMetcashDeliveryReport,
+    canViewWoolworthsDeliveryReport,
+    canViewOtherDeliveryReport,
+} from "@/permissions";
 
-export default function DailyReportPage({
+export default function DeliveryReportPage({
     url,
     AToken,
-    dailyReportData,
-    user,
+    deliveryReportData,
     currentUser,
-    userPermission,
     fetchDeliveryReport,
     setActiveIndexGTRS,
     setLastIndex,
     setactiveCon,
-    // setFilterValue,
-    // filterValue,
 }) {
     const handleClick = (coindex) => {
         setActiveIndexGTRS(3);
-        setLastIndex(24);
+        setLastIndex(21);
         setactiveCon(coindex);
+    };
+    const createNewLabelObjects = (data, fieldName) => {
+        const uniqueLabels = new Set(); // To keep track of unique labels
+        const newData = [];
+
+        // Map through the data and create new objects
+        data?.forEach((item) => {
+            const fieldValue = item[fieldName];
+
+            // Check if the label is not already included and is not null or empty
+            if (
+                fieldValue &&
+                !uniqueLabels.has(fieldValue) &&
+                fieldValue?.trim() !== ""
+            ) {
+                if (typeof fieldValue === "string") {
+                    uniqueLabels.add(fieldValue);
+                    const newObject = {
+                        id: fieldValue,
+                        label: fieldValue,
+                    };
+                    newData.push(newObject);
+                }
+            }
+        });
+
+        return newData;
     };
     const [receiverZoneOptions, setReceiverZoneOptions] = useState([
         {
@@ -47,34 +77,21 @@ export default function DailyReportPage({
             label: "QLD",
         },
     ]);
-    const [consStateOptions, setConsStateOptions] = useState([
+    const consStateOptions = createNewLabelObjects(
+        deliveryReportData,
+        "ConsignmentStatus"
+    );
+
+    const podAvlOptions = [
         {
-            id: "Delivered",
-            label: "Delivered",
+            id: true,
+            label: "True",
         },
         {
-            id: "Depot",
-            label: "Depot",
+            id: false,
+            label: "False",
         },
-        {
-            id: "ON-FOR-DELIVERY",
-            label: "ON-FOR-DELIVERY",
-        },
-        {
-            id: "Loaded",
-            label: "Loaded",
-        },
-    ]);
-    const [podAvlOptions, setPodAvlOptions] = useState([
-        {
-            id: "YES",
-            label: "YES",
-        },
-        {
-            id: "NO",
-            label: "NO",
-        },
-    ]);
+    ];
     const [senderZoneOptions, setSenderZoneOptions] = useState([
         {
             id: "NSW",
@@ -94,34 +111,24 @@ export default function DailyReportPage({
         },
     ]);
 
-    const minDate = getMinMaxValue("2022-01-01", "DESPATCHDATE", 1);
-    const maxDate = getMinMaxValue("2024-12-31", "DESPATCHDATE", 2);
-
-    const [unileverCustomers, setUnileverCustomers] = useState([
-        {
-            CustomerId: 1,
-            CustomerName: "Woolworths",
-        },
-        {
-            CustomerId: 2,
-            CustomerName: "Metcash",
-        },
-    ]);
-
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     const [filterValue, setFilterValue] = useState([
         {
             name: "AccountNumber",
-            operator: "contains",
+            operator: "eq",
             type: "string",
             value: "",
+        },
+        {
+            name: "DespatchDateTime",
+            operator: "inrange",
+            type: "date",
         },
         {
             name: "ConsignmentNo",
             operator: "contains",
             type: "string",
             value: "",
-            emptyValue: "",
         },
         {
             name: "SenderName",
@@ -164,63 +171,14 @@ export default function DailyReportPage({
             emptyValue: "",
         },
         {
+            name: "ConsignmentStatus",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
             name: "DeliveryInstructions",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "Comments",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "CorrectiveAction",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "PastComments",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "Report",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "GTLSReasonCode",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "GTLSComments",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "PastReasonCode",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "PastCorrectiveAction",
             operator: "contains",
             type: "string",
             value: "",
@@ -234,38 +192,14 @@ export default function DailyReportPage({
             emptyValue: "",
         },
         {
-            name: "ConsignmentStatus",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "DespatchDateTime",
-            operator: "inrange",
-            type: "date",
-            value: {
-                start: minDate,
-                end: maxDate,
-            },
-        },
-        {
             name: "DeliveryRequiredDateTime",
             operator: "inrange",
             type: "date",
-            value: {
-                start: minDate,
-                end: maxDate,
-            },
         },
         {
             name: "DeliveredDateTime",
             operator: "inrange",
             type: "date",
-            value: {
-                start: minDate,
-                end: maxDate,
-            },
         },
         {
             name: "Comments",
@@ -298,16 +232,129 @@ export default function DailyReportPage({
     };
 
     useEffect(() => {
-        if(dailyReportData?.length > 0 && consId){
-            setCommentsData(dailyReportData.find((data) => data.ConsignmentID == consId)?.Comments);
+        if (deliveryReportData?.length > 0 && consId) {
+            setCommentsData(
+                deliveryReportData.find((data) => data.ConsignmentID == consId)
+                    ?.Comments
+            );
         }
-    },[dailyReportData, consId]);
+    }, [deliveryReportData, consId]);
     const handleViewComments = (data) => {
         setCommentsData(data?.Comments);
         setConsId(data?.ConsignmentID);
         setIsViewModalOpen(true);
     };
 
+    function CustomColumnEditor(props) {
+        const { value, onChange, onComplete, cellProps } = props; // Destructure relevant props
+
+        const [prvsComment, setPrvsComment] = useState(
+            value ? value[0].Comment : null
+        );
+        const [inputValue, setInputValue] = useState(null);
+        const [commentId, setCommentId] = useState(
+            value ? value[0].CommentId : null
+        );
+
+        const onValueChange = (e) => {
+            let newValue = e.target.value;
+            // Check if the new value exceeds the max limit
+            if (cellProps.rowIndex === 1 && cellProps.rowIndex === 2) {
+                if (max !== null && parseFloat(newValue) > max) {
+                    newValue = max; // Set to max if it exceeds
+                }
+            }
+
+            setInputValue(newValue); // Update the local state
+            onChange(newValue); // Call onChange to update the grid's internal state
+        };
+
+        const handleComplete = async (event) => {
+            await axios
+                .post(
+                    `${url}Add/Delivery/Comment`,
+                    {
+                        CommentId: commentId,
+                        ConsId: cellProps.data.ConsignmentID,
+                        Comment: prvsComment ? `${prvsComment}\n${inputValue}` : inputValue,
+                    },
+                    {
+                        headers: {
+                            UserId: currentUser.UserId,
+                            Authorization: `Bearer ${AToken}`,
+                        },
+                    }
+                )
+                .then((response) => {
+                    console.log(response);
+                    fetchDeliveryReport();
+                })
+                .catch((error) => {
+                    // Handle error
+                    if (error.response && error.response.status === 401) {
+                        // Handle 401 error using SweetAlert
+                        swal({
+                            title: "Session Expired!",
+                            text: "Please login again",
+                            type: "success",
+                            icon: "info",
+                            confirmButtonText: "OK",
+                        }).then(async function () {
+                            axios
+                                .post("/logoutAPI")
+                                .then((response) => {
+                                    if (response.status == 200) {
+                                        window.location.href = "/";
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.log(error);
+                                });
+                        });
+                    } else {
+                        // Handle other errors
+                        console.log(error);
+                    }
+                });
+            onComplete(inputValue);
+        };
+
+        const handleKeyDown = (event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                handleComplete();
+            }
+        };
+
+        return (
+            canAddDeliveryReportComment(currentUser) && <input
+                style={{ width: "100%", minheight: "100%" }}
+                type={"text"}
+                value={inputValue}
+                placeholder="Add a new comment"
+                onChange={onValueChange}
+                onKeyDown={handleKeyDown}
+            />
+        );
+    }
+
+    const GetLastValue = ({ inputString }) => {
+        const getLastValue = (str) => {
+            const values = str
+                .split(/\r?\n/)
+                .filter((value) => value.trim() !== "");
+
+            const lastValue = values[values.length - 1];
+
+            if (values.length - 1 > 0) {
+                return `${lastValue} + ${values.length - 1} Comments`;
+            } else {
+                return `${lastValue}`;
+            }
+        };
+
+        return <div>{getLastValue(inputString)}</div>;
+    };
     const columns = [
         {
             name: "AccountNumber",
@@ -330,8 +377,8 @@ export default function DailyReportPage({
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
             filterEditorProps: {
-                minDate: minDate,
-                maxDate: maxDate,
+                minDate: getMinMaxValue(deliveryReportData, "DespatchDateTime", 1),
+                maxDate: getMinMaxValue(deliveryReportData, "DespatchDateTime", 2),
             },
             render: ({ value, cellProps }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
@@ -454,8 +501,8 @@ export default function DailyReportPage({
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
             filterEditorProps: {
-                minDate: minDate,
-                maxDate: maxDate,
+                minDate: getMinMaxValue(deliveryReportData, "DeliveryRequiredDateTime", 1),
+                maxDate: getMinMaxValue(deliveryReportData, "DeliveryRequiredDateTime", 2),
             },
             render: ({ value, cellProps }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
@@ -474,14 +521,16 @@ export default function DailyReportPage({
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
             filterEditorProps: {
-                minDate: minDate,
-                maxDate: maxDate,
+                minDate: getMinMaxValue(deliveryReportData, "DeliveredDateTime", 1),
+                maxDate: getMinMaxValue(deliveryReportData, "DeliveredDateTime", 2),
+
             },
             render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY") ==
-                    "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY");
+                return value
+                    ? moment(value).format("DD-MM-YYYY") == "Invalid date"
+                        ? ""
+                        : moment(value).format("DD-MM-YYYY")
+                    : "";
             },
         },
         {
@@ -499,12 +548,15 @@ export default function DailyReportPage({
             render: ({ value, data }) => {
                 return (
                     <div>
-                        {data?.POD ?
-                        <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                        True
-                    </span> : <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        false
-                    </span>}
+                        {data?.POD ? (
+                            <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                                True
+                            </span>
+                        ) : (
+                            <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                                false
+                            </span>
+                        )}
                     </div>
                 );
             },
@@ -514,24 +566,21 @@ export default function DailyReportPage({
             header: "Comments",
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 450,
+            defaultWidth: 280,
+            editable: true,
             filterEditor: StringFilter,
+            editor: CustomColumnEditor,
             render: ({ value, data }) => {
                 return (
                     <div className="flex gap-4 items-center px-2">
                         <div className="flex flex-col">
-                            {
-                                data?.hasOwnProperty("Comments")
-                                && (
-                                    data?.Comments?.length > 0
-                                    && data?.Comments?.slice(0, 2)?.map((item) => (
-                                        <div key={item?.CommentId} className="flex gap-2">
-                                            <span>{moment(item?.AddedAt).format("DD-MM-YYYY")} {", "}</span>
-                                            <span className="truncate max-w-xs">{item?.Comment}</span>
-                                        </div>
-                                    ))
-                                )
-                            }
+                            {value ? (
+                                <>
+                                    <GetLastValue
+                                        inputString={value[0].Comment}
+                                    />
+                                </>
+                            ) : null}
                         </div>
                     </div>
                 );
@@ -546,18 +595,14 @@ export default function DailyReportPage({
             render: ({ value, data }) => {
                 return (
                     <div className="flex gap-4 items-center px-2">
-                        <span
-                            className="underline text-blue-400 hover:cursor-pointer"
-                            onClick={() => handleViewComments(data)}
-                        >
-                            <EyeIcon className="h-5 w-5" />
-                        </span>
-                        <span
-                            className="underline text-green-500 hover:cursor-pointer"
-                            onClick={() => handleAddComment(data.ConsignmentID)}
-                        >
-                            <PlusIcon className="h-5 w-5" />
-                        </span>
+                        {canEditDeliveryReportComment(currentUser) && (
+                            <span
+                                className="underline text-blue-400 hover:cursor-pointer"
+                                onClick={() => handleViewComments(data)}
+                            >
+                                <PencilIcon className="h-5 w-5" />
+                            </span>
+                        )}
                     </div>
                 );
             },
@@ -574,16 +619,28 @@ export default function DailyReportPage({
         setCommentsData(null);
     };
 
-    const [filteredMetcashData, setFilteredMetcashData] = useState(dailyReportData?.filter((item) => item?.CustomerTypeId == 1));
-    const [filteredWoolworthData, setFilteredWoolworthData] = useState(dailyReportData?.filter((item) => item?.CustomerTypeId == 2));
-    const [filteredOtherData, setFilteredOtherData] = useState(dailyReportData?.filter((item) => item?.CustomerTypeId == 3));
+    const [filteredMetcashData, setFilteredMetcashData] = useState(
+        deliveryReportData?.filter((item) => item?.CustomerTypeId == 1)
+    );
+    const [filteredWoolworthData, setFilteredWoolworthData] = useState(
+        deliveryReportData?.filter((item) => item?.CustomerTypeId == 2)
+    );
+    const [filteredOtherData, setFilteredOtherData] = useState(
+        deliveryReportData?.filter((item) => item?.CustomerTypeId == 3)
+    );
     useEffect(() => {
-        if(dailyReportData?.length > 0){
-            setFilteredMetcashData(dailyReportData?.filter((item) => item?.CustomerTypeId == 1));
-            setFilteredWoolworthData(dailyReportData?.filter((item) => item?.CustomerTypeId == 2));
-            setFilteredOtherData(dailyReportData?.filter((item) => item?.CustomerTypeId == 3));
+        if (deliveryReportData?.length > 0) {
+            setFilteredMetcashData(
+                deliveryReportData?.filter((item) => item?.CustomerTypeId == 1)
+            );
+            setFilteredWoolworthData(
+                deliveryReportData?.filter((item) => item?.CustomerTypeId == 2)
+            );
+            setFilteredOtherData(
+                deliveryReportData?.filter((item) => item?.CustomerTypeId == 3)
+            );
         }
-    },[dailyReportData])
+    }, [deliveryReportData]);
 
     let components = [
         <MetcashReports
@@ -639,9 +696,8 @@ export default function DailyReportPage({
         />,
     ];
 
-
     return (
-        <div className="min-h-screen h-full px-8">
+        <div className="min-h-full px-8">
             <div className="sm:flex-auto mt-6">
                 <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
                     Unilever Delivery Report
@@ -649,39 +705,56 @@ export default function DailyReportPage({
             </div>
             <div className="w-full flex gap-4 items-center mt-4">
                 <ul className="flex space-x-0">
-                    <li
-                        className={`cursor-pointer ${
-                            activeComponentIndex === 0
-                                ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
-                                : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
-                        }`}
-                        onClick={() => setActiveComponentIndex(0)}
-                    >
-                        <div className="px-2"> Metcash</div>
-                    </li>
-                    <li
-                        className={`cursor-pointer ${
-                            activeComponentIndex === 1
-                                ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
-                                : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
-                        }`}
-                        onClick={() => setActiveComponentIndex(1)}
-                    >
-                        <div className="px-2">Woolworths</div>
-                    </li>
-                    <li
-                        className={`cursor-pointer ${
-                            activeComponentIndex === 2
-                                ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
-                                : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
-                        }`}
-                        onClick={() => setActiveComponentIndex(2)}
-                    >
-                        <div className="px-2"> Other</div>
-                    </li>
+                    {canViewMetcashDeliveryReport(currentUser) && (
+                        <li
+                            className={`cursor-pointer ${
+                                activeComponentIndex === 0
+                                    ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
+                                    : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
+                            }`}
+                            onClick={() => setActiveComponentIndex(0)}
+                        >
+                            <div className="px-2"> Metcash</div>
+                        </li>
+                    )}
+                    {canViewWoolworthsDeliveryReport(currentUser) && (
+                        <li
+                            className={`cursor-pointer ${
+                                activeComponentIndex === 1
+                                    ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
+                                    : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
+                            }`}
+                            onClick={() => setActiveComponentIndex(1)}
+                        >
+                            <div className="px-2">Woolworths</div>
+                        </li>
+                    )}
+                    {canViewOtherDeliveryReport(currentUser) && (
+                        <li
+                            className={`cursor-pointer ${
+                                activeComponentIndex === 2
+                                    ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
+                                    : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
+                            }`}
+                            onClick={() => setActiveComponentIndex(2)}
+                        >
+                            <div className="px-2"> Other</div>
+                        </li>
+                    )}
                 </ul>
             </div>
-            <div>{components[activeComponentIndex]}</div>
+            {activeComponentIndex == 0 &&
+            canViewMetcashDeliveryReport(currentUser) ? (
+                <div>{components[activeComponentIndex]}</div>
+            ) : activeComponentIndex == 1 &&
+              canViewWoolworthsDeliveryReport(currentUser) ? (
+                <div>{components[activeComponentIndex]}</div>
+            ) : activeComponentIndex == 2 &&
+              canViewOtherDeliveryReport(currentUser) ? (
+                <div>{components[activeComponentIndex]}</div>
+            ) : (
+                <div></div>
+            )}
         </div>
     );
 }

@@ -31,6 +31,7 @@ import { Button } from "@nextui-org/react";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import ConsMap from "./TrafficPage/ConsMap";
 import DailyReportPage from "./ReportsPage/DeliveryReportPage";
+import DeliveryReportPage from "./ReportsPage/DeliveryReportPage";
 
 export default function charts({
     setCusomterAccounts,
@@ -60,6 +61,8 @@ export default function charts({
     userPermission,
     kpireasonsData,
     setkpireasonsData,
+    fetchDeliveryReport,
+    deliveryReportData,
 }) {
     window.moment = moment;
     const current = new Date();
@@ -2624,6 +2627,16 @@ export default function charts({
             consignment={consignmentToTrack}
             setActiveIndexGTRS={setActiveIndexGTRS}
         />,
+        <DeliveryReportPage
+            url={url}
+            currentUser={currentUser}
+            AToken={AToken}
+            deliveryReportData={deliveryReportData}
+            fetchDeliveryReport={fetchDeliveryReport}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            setactiveCon={setactiveCon}
+            setLastIndex={setLastIndex}
+        />
     ];
 
     return (

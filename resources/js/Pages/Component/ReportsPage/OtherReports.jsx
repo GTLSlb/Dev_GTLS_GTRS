@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef, useEffect  } from "react";
 import TableStructure from "@/Components/TableStructure";
 import AddComment from "./Modals/AddComment";
 import ViewComments from "./Modals/ViewComments";
-import ExportBtn from "../../Component/ExportBtn";
-
+import ExportBtn from "./ExportBtn";
 export default function OtherReports({
     filterValue,
     setFilterValue,
@@ -17,111 +16,48 @@ export default function OtherReports({
     currentUser,
     isViewModalOpen,
     handleViewModalClose,
+    isEditModalOpen,
+    handleEditCommentClose,
     isAddModalOpen,
     handleAddModalClose,
     commentsData,
 }) {
     const gridRef = useRef(null);
     const [selected, setSelected] = useState([]);
-    const [hoverMessage, setHoverMessage] = useState("");
-    const [isMessageVisible, setMessageVisible] = useState(false);
+    const [rowHeight, setRowHeight] = useState();
+    const getRowHeight = (row) => {
+        let rowHeight = 40;
+        data?.map((item) => {
+          if (item?.hasOwnProperty('Comments')) {
+            item?.Comments?.map((comment) => {
+              const commentLength = comment?.Comment?.length * 3; //3px per letter
+              const maxCommentLength = 280 - 10; // 280px column width - 10px bottom padding
+              const commentRows = Math.ceil(commentLength / maxCommentLength);
+              rowHeight = Math.max(rowHeight, commentRows * 40 + 10); // 40px per row + 10px bottom padding
+            });
+          }
+        });
 
-    const popoverData = [
-        {
-            label: "Account Number",
-            value: "AccountNumber",
-        },
-        {
-            label: "Despatch Date",
-            value: "DespatchDate",
-        },
-        {
-            label: "Consignment Number",
-            value: "ConsignmentNo",
-        },
-        {
-            label: "Sender Name",
-            value: "SenderName",
-        },
-        {
-            label: "Sender Reference",
-            value: "SenderReference",
-        },
-        {
-            label: "Sender State",
-            value: "SenderState",
-        },
-        {
-            label: "Receiver Name",
-            value: "ReceiverName",
-        },
-        {
-            label: "Receiver Reference",
-            value: "ReceiverReference",
-        },
-        {
-            label: "Receiver Zone",
-            value: "ReceiverState",
-        },
-        {
-            label: "Consignment Status",
-            value: "ConsignmentStatus",
-        },
-        {
-            label: "Special Instructions",
-            value: "DeliveryInstructions",
-        },
-        {
-            label: "Delivery Required Date",
-            value: "DeliveryRequiredDateTime",
-        },
-        {
-            label: "Delivered DateTime",
-            value: "DeliveredDateTime",
-        },
-        {
-            label: "POD Avl",
-            value: "POD",
-        },
-        {
-            label: "Past Comments",
-            value: "Comments",
-        },
-    ];
-
-    const handleMouseEnter = () => {
-        if (data?.length === 0) {
-            setHoverMessage("No Data Found");
-            setMessageVisible(true);
-            setTimeout(() => {
-                setMessageVisible(false);
-            }, 1000);
-        }
-    };
-
+        return rowHeight;
+      };
+    useEffect(() => {
+        setRowHeight(getRowHeight())
+    },[])
     return (
         <div>
-            <ExportBtn
-                 handleMouseEnter={handleMouseEnter}
-                 filteredData={data}
-                 isMessageVisible={isMessageVisible}
-                 hoverMessage={hoverMessage}
-                 popoverData={popoverData}
-                 gridRef={gridRef}
-                 workbookName={"Unilever-Others-Reports.xlsx"}
-            />
-            {filterValue && data && (
+            <ExportBtn unileverClient={"Other"} filteredData ={data} gridRef={gridRef}/>
+            {filterValue && data && rowHeight &&(
                 <TableStructure
                     id={"ReportId"}
                     setSelected={setSelected}
                     gridRef={gridRef}
+                    rowHeight={rowHeight}
                     selected={selected}
                     setFilterValueElements={setFilterValue}
                     tableDataElements={data}
                     filterValueElements={filterValue}
                     groupsElements={groups}
                     columnsElements={columns}
-                    rowHeight={50}
                 />
             )}
             <AddComment
