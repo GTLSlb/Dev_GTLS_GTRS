@@ -56,7 +56,7 @@ export default function Gtrs({
     const [customerAccounts, setCusomterAccounts] = useState();
     const userdata = currentUser;
     const [canAccess, setCanAccess] = useState(true);
-    const [dailyReportData, setDailyReportData] = useState([]);
+    const [deliveryReportData, setDeliveryReportData] = useState([]);
 
     const debtorIdsArray = userdata?.Accounts?.map((account) => {
         return { UserId: account.DebtorId };
@@ -88,7 +88,7 @@ export default function Gtrs({
                     resolve(parsedData);
                 });
                 parsedDataPromise.then((parsedData) => {
-                    setDailyReportData(parsedData || []);
+                    setDeliveryReportData(parsedData || []);
                 });
             })
             .catch((err) => {
@@ -546,7 +546,7 @@ export default function Gtrs({
                             PerfData={PerfData}
                             setPerfData={setPerfData}
                             fetchDeliveryReport={fetchDeliveryReport}
-                            dailyReportData={dailyReportData}
+                            deliveryReportData={deliveryReportData}
                         />
                     </div>
                 </div>

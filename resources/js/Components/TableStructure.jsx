@@ -19,6 +19,7 @@ export default function TableStructure({
     gridRef,
     selected,
     id,
+    rowHeight,
 }) {
 
     const [tableData, setTableData] = useState(tableDataElements);
@@ -45,19 +46,11 @@ export default function TableStructure({
         {
             autoHide: true,
             alwaysShowTrack: true,
-            scrollThumbWidth: 10,
-            scrollThumbOverWidth: 10,
+            scrollThumbWidth: 6,
+            scrollThumbOverWidth: 6,
         }
     );
-    const rowStyle = ({ data }) => {
-        const colorMap = {
-            ca: "#7986cb",
-            uk: "#ef9a9a",
-        };
-        return {
-            color: colorMap[data.country],
-        };
-    };
+
     const gridStyle = { minHeight: 600 };
     const onFilterValueChange = useCallback((filterValue) => {
         setFilterValueElements(filterValue);
@@ -75,7 +68,7 @@ export default function TableStructure({
                         }
                         className={"rounded-lg shadow-lg overflow-hidden"}
                         pagination
-                        rowStyle={rowStyle}
+                        rowHeight={rowHeight ? rowHeight : 40}
                         filterTypes={filterTypes}
                         scrollProps={scrollProps}
                         showColumnMenuTool={false}

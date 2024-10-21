@@ -23,7 +23,7 @@ import NewKPI from "./NewKPI";
 import NewTransitDays from "./NewTransitDays";
 import AddNewTransitDay from "./KPI/AddNewTransitDay";
 import GraphPresentation from "./Presentation/GraphPresentation";
-import DailyReportPage from "./ReportsPage/DeliveryReportPage";
+import DeliveryReportPage from "./ReportsPage/DeliveryReportPage";
 
 export default function charts({
     setCusomterAccounts,
@@ -52,7 +52,7 @@ export default function charts({
     kpireasonsData,
     setkpireasonsData,
     fetchDeliveryReport,
-    dailyReportData,
+    deliveryReportData,
 }) {
     window.moment = moment;
     const current = new Date();
@@ -107,9 +107,6 @@ export default function charts({
 
     const minDateAdd = getMinMaxValue(AdditionalData, "DespatchDateTime", 1);
     const maxDateAdd = getMinMaxValue(AdditionalData, "DespatchDateTime", 2);
-
-    const minDateDelivery = getMinMaxValue(dailyReportData, "DespatchDate", 1);
-    const maxDateDelivery = getMinMaxValue(dailyReportData, "DespatchDate", 2);
 
     const [filtersCons, setFiltersCons] = useState([
         {
@@ -2235,11 +2232,11 @@ export default function charts({
             currentUser={currentUser}
             AToken={AToken}
         />,
-        <DailyReportPage
+        <DeliveryReportPage
             url={url}
             currentUser={currentUser}
             AToken={AToken}
-            dailyReportData={dailyReportData}
+            deliveryReportData={deliveryReportData}
             fetchDeliveryReport={fetchDeliveryReport}
             setActiveIndexGTRS={setActiveIndexGTRS}
             setactiveCon={setactiveCon}

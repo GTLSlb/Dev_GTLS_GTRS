@@ -701,7 +701,7 @@ export function canViewAdditionalCharges(currentUser) {
  * @param {Object} currentUser - The current user object with role and permissions.
  * @return {boolean} True if the user can view Delivery Report Comments, false otherwise.
  */
-export function canViewDailyReportComment(currentUser) {
+export function canViewDeliveryReportComment(currentUser) {
     // Define the specific permission
     const targetPermissionName = "DeliveryReportComments_View";
     const pageName = "Delivery Report"; // Adjust the page name as needed
@@ -801,7 +801,7 @@ export function canViewDeliveryReport(currentUser) {
  * @param {Object} currentUser - The current user object with role and permissions.
  * @return {boolean} True if the user can view Metcash Delivery Report, false otherwise.
  */
-export function canViewMetcashDailyReport(currentUser) {
+export function canViewMetcashDeliveryReport(currentUser) {
     // Define the specific permission
     const targetPermissionName = "MetcashDeliveryReport_View";
     const pageName = "Delivery Report"; // Adjust the page name as needed
@@ -851,7 +851,7 @@ export function canViewWoolworthsDeliveryReport(currentUser) {
  * @param {Object} currentUser - The current user object with role and permissions.
  * @return {boolean} True if the user can view Other Delivery Report, false otherwise.
  */
-export function canViewOtherDailyReport(currentUser) {
+export function canViewOtherDeliveryReport(currentUser) {
     // Define the specific permission
     const targetPermissionName = "OtherDeliveryReport_View";
     const pageName = "Delivery Report"; // Adjust the page name as needed

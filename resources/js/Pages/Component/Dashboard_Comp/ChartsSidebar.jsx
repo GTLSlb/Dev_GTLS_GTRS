@@ -316,13 +316,22 @@ export default function ChartsSidebar({
             } else {
                 // For navigation items without options, check the feature directly
                 return user?.Pages?.some(
-                    (userPage) =>
-                        userPage?.PageName === navItem.name &&
+                    (userPage) => {
+                      if (navItem.id == 21) {
+                        return userPage?.Features?.some(
+                          (feature) =>
+                            feature?.FunctionName == 'MetcashDeliveryReport_View' ||
+                            feature?.FunctionName == 'WoolworthsDeliveryReport_View' ||
+                            feature?.FunctionName == 'OtherDeliveryReport_View'
+                        );
+                      }
+                      return userPage?.PageName === navItem.name &&
                         userPage?.Features?.some(
-                            (feature) =>
-                                feature?.FunctionName === navItem?.feature
-                        )
-                );
+                          (feature) =>
+                            feature?.FunctionName === navItem?.feature
+                        );
+                    }
+                  );
             }
         });
     };

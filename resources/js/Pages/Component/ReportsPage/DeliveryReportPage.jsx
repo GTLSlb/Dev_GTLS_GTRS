@@ -6,15 +6,14 @@ import moment from "moment";
 import MetcashReports from "./MetcashReports";
 import WoolworthsReports from "./WoolworthsReports";
 import OtherReports from "./OtherReports";
-import { EyeIcon, PlusIcon } from "@heroicons/react/20/solid";
+import { EyeIcon, PencilIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
-import { getFiltersDeliveryReport } from "@/Components/utils/filters";
-import { canAddDeliveryReportComment, canViewDailyReportComment, canViewMetcashDailyReport, canViewWoolworthsDeliveryReport, canViewOtherDailyReport } from "@/permissions";
+import { canAddDeliveryReportComment, canViewDeliveryReportComment, canViewMetcashDeliveryReport, canViewWoolworthsDeliveryReport, canViewOtherDeliveryReport } from "@/permissions";
 
-export default function DailyReportPage({
+export default function DeliveryReportPage({
     url,
     AToken,
-    dailyReportData,
+    deliveryReportData,
     currentUser,
     fetchDeliveryReport,
     setActiveIndexGTRS,
@@ -67,7 +66,7 @@ export default function DailyReportPage({
             label: "QLD",
         },
     ]);
-    const consStateOptions = createNewLabelObjects(dailyReportData, "ConsignmentStatus");
+    const consStateOptions = createNewLabelObjects(deliveryReportData, "ConsignmentStatus");
 
     const podAvlOptions = [
         {
@@ -222,13 +221,13 @@ export default function DailyReportPage({
     };
 
     useEffect(() => {
-        if (dailyReportData?.length > 0 && consId) {
+        if (deliveryReportData?.length > 0 && consId) {
             setCommentsData(
-                dailyReportData.find((data) => data.ConsignmentID == consId)
+                deliveryReportData.find((data) => data.ConsignmentID == consId)
                     ?.Comments
             );
         }
-    }, [dailyReportData, consId]);
+    }, [deliveryReportData, consId]);
     const handleViewComments = (data) => {
         setCommentsData(data?.Comments);
         setConsId(data?.ConsignmentID);
@@ -257,8 +256,8 @@ export default function DailyReportPage({
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
             filterEditorProps: {
-                minDate: getMinMaxValue(dailyReportData, "DespatchDateTime", 1),
-                maxDate: getMinMaxValue(dailyReportData, "DespatchDateTime", 2),
+                minDate: getMinMaxValue(deliveryReportData, "DespatchDateTime", 1),
+                maxDate: getMinMaxValue(deliveryReportData, "DespatchDateTime", 2),
             },
             render: ({ value, cellProps }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
@@ -381,8 +380,8 @@ export default function DailyReportPage({
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
             filterEditorProps: {
-                minDate: getMinMaxValue(dailyReportData, "DeliveryRequiredDateTime", 1),
-                maxDate: getMinMaxValue(dailyReportData, "DeliveryRequiredDateTime", 2),
+                minDate: getMinMaxValue(deliveryReportData, "DeliveryRequiredDateTime", 1),
+                maxDate: getMinMaxValue(deliveryReportData, "DeliveryRequiredDateTime", 2),
             },
             render: ({ value, cellProps }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
@@ -401,8 +400,8 @@ export default function DailyReportPage({
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
             filterEditorProps: {
-                minDate: getMinMaxValue(dailyReportData, "DeliveredDateTime", 1),
-                maxDate: getMinMaxValue(dailyReportData, "DeliveredDateTime", 2),
+                minDate: getMinMaxValue(deliveryReportData, "DeliveredDateTime", 1),
+                maxDate: getMinMaxValue(deliveryReportData, "DeliveredDateTime", 2),
 
             },
             render: ({ value, cellProps }) => {
@@ -483,18 +482,18 @@ export default function DailyReportPage({
             render: ({ value, data }) => {
                 return (
                     <div className="flex gap-4 items-center px-2">
-                       {canViewDailyReportComment(currentUser) && <span
+                       {canViewDeliveryReportComment(currentUser) && <span
                             className="underline text-blue-400 hover:cursor-pointer"
                             onClick={() => handleViewComments(data)}
                         >
-                            <EyeIcon className="h-5 w-5" />
+                            <PencilIcon className="h-5 w-5" />
                         </span>}
-                       {canAddDeliveryReportComment(currentUser) && <span
+                       {/* {canAddDeliveryReportComment(currentUser) && <span
                             className="underline text-green-500 hover:cursor-pointer"
                             onClick={() => handleAddComment(data.ConsignmentID)}
                         >
                             <PlusIcon className="h-5 w-5" />
-                        </span>}
+                        </span>} */}
                     </div>
                 );
             },
@@ -513,27 +512,27 @@ export default function DailyReportPage({
     };
 
     const [filteredMetcashData, setFilteredMetcashData] = useState(
-        dailyReportData?.filter((item) => item?.CustomerTypeId == 1)
+        deliveryReportData?.filter((item) => item?.CustomerTypeId == 1)
     );
     const [filteredWoolworthData, setFilteredWoolworthData] = useState(
-        dailyReportData?.filter((item) => item?.CustomerTypeId == 2)
+        deliveryReportData?.filter((item) => item?.CustomerTypeId == 2)
     );
     const [filteredOtherData, setFilteredOtherData] = useState(
-        dailyReportData?.filter((item) => item?.CustomerTypeId == 3)
+        deliveryReportData?.filter((item) => item?.CustomerTypeId == 3)
     );
     useEffect(() => {
-        if (dailyReportData?.length > 0) {
+        if (deliveryReportData?.length > 0) {
             setFilteredMetcashData(
-                dailyReportData?.filter((item) => item?.CustomerTypeId == 1)
+                deliveryReportData?.filter((item) => item?.CustomerTypeId == 1)
             );
             setFilteredWoolworthData(
-                dailyReportData?.filter((item) => item?.CustomerTypeId == 2)
+                deliveryReportData?.filter((item) => item?.CustomerTypeId == 2)
             );
             setFilteredOtherData(
-                dailyReportData?.filter((item) => item?.CustomerTypeId == 3)
+                deliveryReportData?.filter((item) => item?.CustomerTypeId == 3)
             );
         }
-    }, [dailyReportData]);
+    }, [deliveryReportData]);
 
     let components = [
         <MetcashReports
@@ -598,7 +597,7 @@ export default function DailyReportPage({
             </div>
             <div className="w-full flex gap-4 items-center mt-4">
                 <ul className="flex space-x-0">
-                    {canViewMetcashDailyReport(currentUser) && <li
+                    {canViewMetcashDeliveryReport(currentUser) && <li
                         className={`cursor-pointer ${
                             activeComponentIndex === 0
                                 ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
@@ -618,7 +617,7 @@ export default function DailyReportPage({
                     >
                         <div className="px-2">Woolworths</div>
                     </li>}
-                    {canViewOtherDailyReport(currentUser) && <li
+                    {canViewOtherDeliveryReport(currentUser) && <li
                         className={`cursor-pointer ${
                             activeComponentIndex === 2
                                 ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
@@ -631,11 +630,11 @@ export default function DailyReportPage({
                 </ul>
             </div>
             {
-                (activeComponentIndex == 0 && canViewMetcashDailyReport(currentUser))
+                (activeComponentIndex == 0 && canViewMetcashDeliveryReport(currentUser))
                  ? <div>{components[activeComponentIndex]}</div>
                  : (activeComponentIndex == 1 && canViewWoolworthsDeliveryReport(currentUser))
                  ? <div>{components[activeComponentIndex]}</div>
-                 : (activeComponentIndex == 2 && canViewOtherDailyReport(currentUser))
+                 : (activeComponentIndex == 2 && canViewOtherDeliveryReport(currentUser))
                  ? <div>{components[activeComponentIndex]}</div>
                  : <div></div>
             }
