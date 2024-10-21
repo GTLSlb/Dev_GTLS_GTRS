@@ -5,9 +5,7 @@ import moment from "moment";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import swal from "sweetalert";
 import axios from "axios";
-import {
-    Spinner,
-} from "@nextui-org/react";
+import { Spinner } from "@nextui-org/react";
 import { canEditDeliveryReportComment } from "@/permissions";
 
 export default function ViewComments({
@@ -20,44 +18,45 @@ export default function ViewComments({
     currentUser,
     commentsData,
 }) {
-
-    const [ data, setData] = useState([]);
-    const [ comment, setComment] = useState(null);
-    const [ commentId, setCommentId] = useState(null);
-    const [ isEditing, setIsEditing] = useState(false);
-    const [ editIndx, setEditIndx] = useState(null);
-    const [ isLoading, setIsLoading] = useState(false);
+    const [data, setData] = useState([]);
+    const [comment, setComment] = useState(null);
+    const [commentId, setCommentId] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editIndx, setEditIndx] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-       setData(commentsData);
-    },[commentsData])
+        setData(commentsData);
+    }, [commentsData]);
 
     const handleSubmit = async () => {
         let formValues = {
-            "CommentId": commentId,
-            "ConsId": consId,
-            "Comment": comment
+            CommentId: commentId,
+            ConsId: consId,
+            Comment: comment,
         };
         console.log(formValues);
 
         try {
             setIsLoading(true);
 
-            const response = await axios.post(`${url}Add/Delivery/Comment`, formValues, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            }).then((response) => {
-                fetchData();
-                setTimeout(() => {
-                    setIsLoading(false);
-                    setCommentId(null);
-                    setComment(null);
-                    setIsEditing(false);
-                    setEditIndx(null);
-                }, 1000);
-            })
+            const response = await axios
+                .post(`${url}Add/Delivery/Comment`, formValues, {
+                    headers: {
+                        UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
+                    },
+                })
+                .then((response) => {
+                    fetchData();
+                    setTimeout(() => {
+                        setIsLoading(false);
+                        setCommentId(null);
+                        setComment(null);
+                        setIsEditing(false);
+                        setEditIndx(null);
+                    }, 1000);
+                });
         } catch (error) {
             setIsLoading(false);
             // Handle error
@@ -71,15 +70,15 @@ export default function ViewComments({
                     confirmButtonText: "OK",
                 }).then(async function () {
                     axios
-                    .post("/logoutAPI")
-                    .then((response) => {
-                        if (response.status == 200) {
-                            window.location.href = "/";
-                        }
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
+                        .post("/logoutAPI")
+                        .then((response) => {
+                            if (response.status == 200) {
+                                window.location.href = "/";
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
                 });
             } else {
                 // Handle other errors
@@ -90,7 +89,6 @@ export default function ViewComments({
         }
     };
 
-
     return (
         <ReactModal
             ariaHideApp={false}
@@ -99,8 +97,11 @@ export default function ViewComments({
             overlayClassName="fixed inset-0 bg-black bg-opacity-60"
         >
             <div className="bg-white w-[40%] rounded-lg shadow-lg py-6 px-8">
-                <div className="flex justify-between pb-4 border-b-1 border-[#D5D5D5]">
-                    <h2 className="text-2xl font-bold text-gray-500">Comments</h2>
+                <div className="flex justify-between pb-2 border-b-1 border-[#D5D5D5]">
+                    <h2 className="text-2xl font-bold text-gray-500">
+                        Comments
+                        {data?.length > 0 && <p className="mt-2 text-dark text-sm font-light">Last edited:  {moment(data[0]?.AddedAt).format("DD-MM-YYYY hh:mm A")}</p>}
+                    </h2>
                     <button
                         className="text-gray-500 hover:text-gray-700"
                         onClick={handleClose}
@@ -125,34 +126,82 @@ export default function ViewComments({
                     {data?.length > 0 ? (
                         <div className="max-h-[21rem] overflow-auto pr-1 containerscroll">
                             {data?.map((c, index) => (
-                                <div className="flex flex-col gap-4 border-b-1 border-[#D5D5D5] py-3">
-                                    {canEditDeliveryReportComment(currentUser) && <div className="flex pr-2">
-                                        <div className="w-[95%]">
-                                        {isEditing && editIndx === index
-                                            ? <textarea type="text" className="border-[#D5D5D5] rounded-lg w-full" defaultValue={c?.Comment} value={comment} onChange={(e)=>{setComment(e.target.value)}} />
-                                            :<p>{c?.Comment}</p>
-                                        }
-                                        </div>
-                                        {isEditing && editIndx === index
-                                            ? <div className="flex mt-auto gap-4 ml-3 text-sm h-[1.6rem]">
-                                                <button onClick={()=>{setIsEditing(false); setCommentId(null); setEditIndx(null)}} disabled={isLoading} className="text-gray-500">Cancel</button>
-                                                {
-                                                    isLoading
-                                                    ? <div className=" inset-0 flex justify-center items-center bg-opacity-50">
-                                                        <Spinner color="secondary" size="sm" />
-                                                      </div>
-                                                    : <button className="bg-gray-800 w-16 text-white font-bold rounded" onClick={()=>handleSubmit()}>Save</button>
-                                                }
+                                <div className="flex flex-col gap-4 py-3">
+                                    {canEditDeliveryReportComment(
+                                        currentUser
+                                    ) && (
+                                        <div className="flex pr-2">
+                                            <div className="w-[95%]">
+                                                {isEditing &&
+                                                editIndx === index ? (
+                                                    <textarea
+                                                        type="text"
+                                                        className="border-[#D5D5D5] rounded-lg w-full"
+                                                        defaultValue={
+                                                            c?.Comment
+                                                        }
+                                                        value={comment}
+                                                        onChange={(e) => {
+                                                            setComment(
+                                                                e.target.value
+                                                            );
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <p>{c?.Comment}</p>
+                                                )}
                                             </div>
-                                            : <PencilIcon onClick={()=>{setIsEditing(true); setCommentId(c?.CommentId);setComment(c?.Comment); setEditIndx(index)}} className="w-5 h-5 text-sky-500 ml-auto hover:cursor-pointer hover:text-sky-500/70"/>
-                                        }
-                                    </div>}
-                                    <p className="text-gray-400 text-sm font-light">{moment(c?.AddedAt).format("DD-MM-YYYY hh:mm A")}</p>
+                                            {isEditing && editIndx === index ? (
+                                                <div className="flex mt-auto gap-4 ml-3 text-sm h-[1.6rem]">
+                                                    <button
+                                                        onClick={() => {
+                                                            setIsEditing(false);
+                                                            setCommentId(null);
+                                                            setEditIndx(null);
+                                                        }}
+                                                        disabled={isLoading}
+                                                        className="text-gray-500"
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                    {isLoading ? (
+                                                        <div className=" inset-0 flex justify-center items-center bg-opacity-50">
+                                                            <Spinner
+                                                                color="secondary"
+                                                                size="sm"
+                                                            />
+                                                        </div>
+                                                    ) : (
+                                                        <button
+                                                            className="bg-gray-800 w-16 text-white font-bold rounded"
+                                                            onClick={() =>
+                                                                handleSubmit()
+                                                            }
+                                                        >
+                                                            Save
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <PencilIcon
+                                                    onClick={() => {
+                                                        setIsEditing(true);
+                                                        setCommentId(
+                                                            c?.CommentId
+                                                        );
+                                                        setComment(c?.Comment);
+                                                        setEditIndx(index);
+                                                    }}
+                                                    className="w-5 h-5 text-sky-500 ml-auto hover:cursor-pointer hover:text-sky-500/70"
+                                                />
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-gray-500 text-lg py-4">
+                        <div className="h-full flex flex-col items-center justify-center text-gray-500 text-lg pt-8 pb-5">
                             <p>No comments found</p>
                         </div>
                     )}
