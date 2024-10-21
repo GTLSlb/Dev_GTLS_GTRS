@@ -111,10 +111,6 @@ export default function DailyReportPage({
                 name: "DespatchDateTime",
                 operator: "inrange",
                 type: "date",
-                value: {
-                    start: getMinMaxValue(dailyReportData, "DespatchDateTime", 1),
-                    end: getMinMaxValue(dailyReportData, "DespatchDateTime", 2),
-                },
             },
             {
                 name: "ConsignmentNo",
@@ -187,19 +183,12 @@ export default function DailyReportPage({
                 name: "DeliveryRequiredDateTime",
                 operator: "inrange",
                 type: "date",
-                value: {
-                    start: getMinMaxValue(dailyReportData, "DeliveryRequiredDateTime", 1),
-                    end: getMinMaxValue(dailyReportData, "DeliveryRequiredDateTime", 2),
-                },
+
             },
             {
                 name: "DeliveredDateTime",
                 operator: "inrange",
                 type: "date",
-                value: {
-                    start: getMinMaxValue(dailyReportData, "DeliveredDateTime", 1),
-                    end: getMinMaxValue(dailyReportData, "DeliveredDateTime", 2),
-                },
             },
             {
                 name: "Comments",
