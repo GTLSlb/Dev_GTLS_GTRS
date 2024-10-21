@@ -723,7 +723,7 @@ export default function DailyReportPage({
     ];
 
     return (
-        <div className="min-h-screen h-full px-8">
+        <div className="min-h-full px-8">
             <div className="sm:flex-auto mt-6">
                 <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
                     Unilever Delivery Report
