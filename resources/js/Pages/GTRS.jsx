@@ -118,7 +118,7 @@ export default function Gtrs({
                     console.log(err);
                 }
             });
-    }
+    };
 
     useEffect(() => {
         setUserBody(debtorIds);
@@ -494,7 +494,14 @@ export default function Gtrs({
             }
         }
     }, [user, loadingGtrs]);
-    if (consApi && reportApi && chartsApi && DebtorsApi && KPIReasonsApi && transportApi) {
+    if (
+        consApi &&
+        reportApi &&
+        chartsApi &&
+        DebtorsApi &&
+        KPIReasonsApi &&
+        transportApi
+    ) {
         setLoadingGtrs(true);
     }
 

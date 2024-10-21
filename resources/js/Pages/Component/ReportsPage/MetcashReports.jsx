@@ -43,6 +43,7 @@ export default function MetcashReports({
     useEffect(() => {
         setRowHeight(getRowHeight())
     },[])
+
     return (
         <div>
             <ExportBtn unileverClient={"Metcash"} filteredData ={data} gridRef={gridRef}/>

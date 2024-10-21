@@ -247,7 +247,7 @@ export default function DeliveryReportPage({
 
     function CustomColumnEditor(props) {
         const { value, onChange, onComplete, cellProps } = props; // Destructure relevant props
-
+        console.log(value);
         const [prvsComment, setPrvsComment] = useState(
             value ? value[0].Comment : null
         );
@@ -276,7 +276,9 @@ export default function DeliveryReportPage({
                     {
                         CommentId: commentId,
                         ConsId: cellProps.data.ConsignmentID,
-                        Comment: prvsComment ? `${prvsComment}\n${inputValue}` : inputValue,
+                        Comment: prvsComment
+                            ? `${prvsComment}\n${inputValue}`
+                            : inputValue,
                     },
                     {
                         headers: {
@@ -327,14 +329,16 @@ export default function DeliveryReportPage({
         };
 
         return (
-            canAddDeliveryReportComment(currentUser) && <input
-                style={{ width: "100%", minheight: "100%" }}
-                type={"text"}
-                value={inputValue}
-                placeholder="Add a new comment"
-                onChange={onValueChange}
-                onKeyDown={handleKeyDown}
-            />
+            canAddDeliveryReportComment(currentUser) && (
+                <input
+                    style={{ width: "100%", minheight: "100%" }}
+                    type={"text"}
+                    value={inputValue}
+                    placeholder="Add a new comment"
+                    onChange={onValueChange}
+                    onKeyDown={handleKeyDown}
+                />
+            )
         );
     }
 
@@ -353,7 +357,9 @@ export default function DeliveryReportPage({
             }
         };
 
-        return <div>{getLastValue(inputString)}</div>;
+        return inputString != "" ? (
+            <div>{getLastValue(inputString)}</div>
+        ) : null;
     };
     const columns = [
         {
@@ -377,8 +383,16 @@ export default function DeliveryReportPage({
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
             filterEditorProps: {
-                minDate: getMinMaxValue(deliveryReportData, "DespatchDateTime", 1),
-                maxDate: getMinMaxValue(deliveryReportData, "DespatchDateTime", 2),
+                minDate: getMinMaxValue(
+                    deliveryReportData,
+                    "DespatchDateTime",
+                    1
+                ),
+                maxDate: getMinMaxValue(
+                    deliveryReportData,
+                    "DespatchDateTime",
+                    2
+                ),
             },
             render: ({ value, cellProps }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
@@ -501,8 +515,16 @@ export default function DeliveryReportPage({
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
             filterEditorProps: {
-                minDate: getMinMaxValue(deliveryReportData, "DeliveryRequiredDateTime", 1),
-                maxDate: getMinMaxValue(deliveryReportData, "DeliveryRequiredDateTime", 2),
+                minDate: getMinMaxValue(
+                    deliveryReportData,
+                    "DeliveryRequiredDateTime",
+                    1
+                ),
+                maxDate: getMinMaxValue(
+                    deliveryReportData,
+                    "DeliveryRequiredDateTime",
+                    2
+                ),
             },
             render: ({ value, cellProps }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
@@ -521,9 +543,16 @@ export default function DeliveryReportPage({
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
             filterEditorProps: {
-                minDate: getMinMaxValue(deliveryReportData, "DeliveredDateTime", 1),
-                maxDate: getMinMaxValue(deliveryReportData, "DeliveredDateTime", 2),
-
+                minDate: getMinMaxValue(
+                    deliveryReportData,
+                    "DeliveredDateTime",
+                    1
+                ),
+                maxDate: getMinMaxValue(
+                    deliveryReportData,
+                    "DeliveredDateTime",
+                    2
+                ),
             },
             render: ({ value, cellProps }) => {
                 return value
@@ -576,9 +605,11 @@ export default function DeliveryReportPage({
                         <div className="flex flex-col">
                             {value ? (
                                 <>
-                                    <GetLastValue
-                                        inputString={value[0].Comment}
-                                    />
+                                    {value != "" ? (
+                                        <GetLastValue
+                                            inputString={value[0].Comment}
+                                        />
+                                    ) : null}
                                 </>
                             ) : null}
                         </div>

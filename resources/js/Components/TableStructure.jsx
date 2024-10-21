@@ -20,7 +20,6 @@ export default function TableStructure({
     selected,
     rowHeight,
     id,
-    rowHeight,
 }) {
 
     const [tableData, setTableData] = useState(tableDataElements);
@@ -102,7 +101,6 @@ export default function TableStructure({
                         showColumnMenuLockOptions={false}
                         showColumnMenuGroupOptions={false}
                         selected={selectedRows}
-                        rowHeight={rowHeight == undefined || rowHeight == null ? 40 : rowHeight}
                         style={gridStyle}
                         // onSelectionChange={onSelectionChange}
                         onFilterValueChange={onFilterValueChange}

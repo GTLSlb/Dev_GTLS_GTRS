@@ -180,7 +180,7 @@ export default function ViewComments({
                                     <div className="flex flex-col gap-4 pr-2">
                                         <textarea
                                             type="text"
-                                            className="border-[#D5D5D5] rounded-lg w-full"
+                                            className="border-[#D5D5D5] rounded-lg w-full min-h-[150px]"
                                             defaultValue={comment}
                                             value={comment}
                                             onChange={onValueChange}

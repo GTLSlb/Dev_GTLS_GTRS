@@ -61,7 +61,6 @@ export default function charts({
     userPermission,
     kpireasonsData,
     setkpireasonsData,
-    fetchDeliveryReport,
     deliveryReportData,
 }) {
     window.moment = moment;
@@ -1568,7 +1567,9 @@ export default function charts({
 
     function getOldestDespatchDate(data) {
         // Filter out elements with invalid 'CreatedDate' values
-        const validData = data?.filter((item) => isValidDate(item.DespatchDate));
+        const validData = data?.filter((item) =>
+            isValidDate(item.DespatchDate)
+        );
 
         // Sort the validData array based on the 'CreatedDate' property
         const sortedData = validData.sort(
@@ -1592,7 +1593,9 @@ export default function charts({
         return !isNaN(date);
     }
     function getLatestDespatchDate(data) {
-        const validData = data?.filter((item) => isValidDate(item.DespatchDate));
+        const validData = data?.filter((item) =>
+            isValidDate(item.DespatchDate)
+        );
 
         // Sort the data array based on the 'DespatchDate' property in descending order
         const sortedData = validData.sort(
@@ -2061,7 +2064,7 @@ export default function charts({
         });
     }, [sharedEndDate, sharedStartDate]);
 
-    const [dailyReportData, setDailyReportData] = useState([]);
+    const [dailyReportData, setDailyReportData] = useState(deliveryReportData);
     const fetchDeliveryReport = async () => {
         try {
             const res = await axios.get(`${url}Delivery`, {
@@ -2609,36 +2612,21 @@ export default function charts({
             setActiveIndexGTRS={setActiveIndexGTRS}
             setConsignmentToTrack={setConsignmentToTrack}
         />,
-        <DailyReportPage
+        <DeliveryReportPage
             url={url}
-            AToken={AToken}
             currentUser={currentUser}
-            userPermission={user}
-            user={user}
-            dailyReportData={dailyReportData}
-            setLastIndex={setLastIndex}
-            setactiveCon={setactiveCon}
-            setActiveIndexGTRS={setActiveIndexGTRS}
-            setFilterValue={setFiltersDailyReport}
-            filterValue={filtersDailyValue}
+            AToken={AToken}
+            deliveryReportData={dailyReportData}
             fetchDeliveryReport={fetchDeliveryReport}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            setactiveCon={setactiveCon}
+            setLastIndex={setLastIndex}
         />,
         <ConsMap
             consignment={consignmentToTrack}
             setActiveIndexGTRS={setActiveIndexGTRS}
         />,
-        <DeliveryReportPage
-            url={url}
-            currentUser={currentUser}
-            AToken={AToken}
-            deliveryReportData={deliveryReportData}
-            fetchDeliveryReport={fetchDeliveryReport}
-            setActiveIndexGTRS={setActiveIndexGTRS}
-            setactiveCon={setactiveCon}
-            setLastIndex={setLastIndex}
-        />
     ];
-
     return (
         <div className="h-full">
             <div className="h-full">

@@ -66,7 +66,6 @@ export default function AddComment({
                         },
                     })
                     .then((response) => {
-
                         fetchData();
                         setTimeout(() => {
                             handleClose();
@@ -176,11 +175,11 @@ export default function AddComment({
                         {error && (
                             <div className="text-red-500 my-2">{error}</div>
                         )}
-                        <div className="w-full border border-black/30 rounded my-4">
+                        <div className="w-full border border-black/30 h-[250px] rounded my-4">
                             <textarea
                                 id="NewComment"
                                 name="Name"
-                                className="w-full h-full border-none containerscroll"
+                                className="w-full h-[250px] border-none containerscroll"
                                 placeholder="Enter your comment"
                                 defaultValue={formValues.Comment?.Name}
                                 value={formValues.Comment?.Name}
