@@ -11,7 +11,7 @@ import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { getFiltersDeliveryReport } from "@/Components/utils/filters";
 import {
     canAddDeliveryReportComment,
-    canViewDeliveryReportComment,
+    canEditDeliveryReportComment,
     canViewMetcashDeliveryReport,
     canViewWoolworthsDeliveryReport,
     canViewOtherDeliveryReport,
@@ -327,7 +327,7 @@ export default function DeliveryReportPage({
         };
 
         return (
-            <input
+            canAddDeliveryReportComment(currentUser) && <input
                 style={{ width: "100%", minheight: "100%" }}
                 type={"text"}
                 value={inputValue}
@@ -595,22 +595,12 @@ export default function DeliveryReportPage({
             render: ({ value, data }) => {
                 return (
                     <div className="flex gap-4 items-center px-2">
-                        {canViewDeliveryReportComment(currentUser) && (
+                        {canEditDeliveryReportComment(currentUser) && (
                             <span
                                 className="underline text-blue-400 hover:cursor-pointer"
                                 onClick={() => handleViewComments(data)}
                             >
-                                <EyeIcon className="h-5 w-5" />
-                            </span>
-                        )}
-                        {canAddDeliveryReportComment(currentUser) && (
-                            <span
-                                className="underline text-green-500 hover:cursor-pointer"
-                                onClick={() =>
-                                    handleAddComment(data.ConsignmentID)
-                                }
-                            >
-                                <PlusIcon className="h-5 w-5" />
+                                <PencilIcon className="h-5 w-5" />
                             </span>
                         )}
                     </div>

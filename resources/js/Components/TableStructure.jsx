@@ -18,7 +18,6 @@ export default function TableStructure({
     setSelected,
     gridRef,
     selected,
-    rowHeight,
     id,
     rowHeight,
 }) {
@@ -69,10 +68,6 @@ export default function TableStructure({
                         }
                         className={"rounded-lg shadow-lg overflow-hidden"}
                         pagination
-<<<<<<< HEAD
-=======
-                        rowStyle={rowStyle}
->>>>>>> 52c5d46499bef90412a7a87c004335364a0117c2
                         rowHeight={rowHeight ? rowHeight : 40}
                         filterTypes={filterTypes}
                         scrollProps={scrollProps}

@@ -21,26 +21,58 @@ export default function ViewComments({
     const [data, setData] = useState([]);
     const [comment, setComment] = useState(null);
     const [commentId, setCommentId] = useState(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [editIndx, setEditIndx] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-
     useEffect(() => {
-        setData(commentsData);
+        if (commentsData) {
+            setData(commentsData);
+            setComment(
+                commentsData[0]?.Comment?.split("\n")?.reverse()?.join("\n")
+            );
+        }
     }, [commentsData]);
 
+    const onValueChange = (e) => {
+        let newValue = e.target.value;
+        setComment(newValue); // Update the local state
+    };
+
+    function convertUtcToUserTimezone(utcDateString) {
+        // Create a Date object from the UTC date string
+        const utcDate = new Date(utcDateString);
+
+        // Get the current user's timezone
+        const targetTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        const formatter = new Intl.DateTimeFormat("en-US", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            timeZone: targetTimezone,
+        });
+
+        const convertedDate = formatter.format(utcDate);
+        return convertedDate;
+    }
+
     const handleSubmit = async () => {
+        const values = comment
+            .split(/\r?\n/)
+            .filter((value) => value.trim() !== "");
+        const reversedValues = values.reverse().join("\n");
+
         let formValues = {
             CommentId: commentId,
             ConsId: consId,
-            Comment: comment,
+            Comment: reversedValues,
         };
-        console.log(formValues);
 
         try {
             setIsLoading(true);
 
-            const response = await axios
+            await axios
                 .post(`${url}Add/Delivery/Comment`, formValues, {
                     headers: {
                         UserId: currentUser.UserId,
@@ -53,9 +85,8 @@ export default function ViewComments({
                         setIsLoading(false);
                         setCommentId(null);
                         setComment(null);
-                        setIsEditing(false);
-                        setEditIndx(null);
                     }, 1000);
+                    handleClose();
                 });
         } catch (error) {
             setIsLoading(false);
@@ -100,11 +131,30 @@ export default function ViewComments({
                 <div className="flex justify-between pb-2 border-b-1 border-[#D5D5D5]">
                     <h2 className="text-2xl font-bold text-gray-500">
                         Comments
-                        {data?.length > 0 && <p className="mt-2 text-dark text-sm font-light">Last edited:  {moment(data[0]?.AddedAt).format("DD-MM-YYYY hh:mm A")}</p>}
+                        {data?.length > 0 && (
+                            <p className="mt-2 text-dark text-sm font-light">
+                                Last edited:{" "}
+                                {moment(
+                                    convertUtcToUserTimezone(
+                                        data[0]?.AddedAt + "Z"
+                                    ),
+
+                                    "MM/DD/YYYY, h:mm:ss A"
+                                ).format("YYYY-MM-DD hh:mm A") == "Invalid date"
+                                    ? ""
+                                    : moment(
+                                          convertUtcToUserTimezone(
+                                              data[0]?.AddedAt + "Z"
+                                          ),
+
+                                          "MM/DD/YYYY, h:mm:ss A"
+                                      ).format("YYYY-MM-DD hh:mm A")}
+                            </p>
+                        )}
                     </h2>
                     <button
-                        className="text-gray-500 hover:text-gray-700"
-                        onClick={handleClose}
+                        className="text-gray-500 -mt-8 hover:text-gray-700"
+                        onClick={()=>{setComment(null);setCommentId(null);handleClose();}}
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -125,80 +175,49 @@ export default function ViewComments({
                 <div>
                     {data?.length > 0 ? (
                         <div className="max-h-[21rem] overflow-auto pr-1 containerscroll">
-                            {data?.map((c, index) => (
-                                <div className="flex flex-col gap-4 py-3">
-                                    {canEditDeliveryReportComment(
-                                        currentUser
-                                    ) && (
-                                        <div className="flex pr-2">
-                                            <div className="w-[95%]">
-                                                {isEditing &&
-                                                editIndx === index ? (
-                                                    <textarea
-                                                        type="text"
-                                                        className="border-[#D5D5D5] rounded-lg w-full"
-                                                        defaultValue={
-                                                            c?.Comment
-                                                        }
-                                                        value={comment}
-                                                        onChange={(e) => {
-                                                            setComment(
-                                                                e.target.value
-                                                            );
-                                                        }}
+                            <div className="flex flex-col gap-4 py-3">
+                                {canEditDeliveryReportComment(currentUser) && (
+                                    <div className="flex flex-col gap-4 pr-2">
+                                        <textarea
+                                            type="text"
+                                            className="border-[#D5D5D5] rounded-lg w-full"
+                                            defaultValue={comment}
+                                            value={comment}
+                                            onChange={onValueChange}
+                                        />
+                                        <div className="flex ml-auto gap-6 text-sm h-[2.4rem]">
+                                            <button
+                                                onClick={() => {
+                                                    setComment(null);
+                                                    setCommentId(null);
+                                                    handleClose();
+                                                }}
+                                                disabled={isLoading}
+                                                className="text-gray-500 hover:text-black"
+                                            >
+                                                Cancel
+                                            </button>
+                                            {isLoading ? (
+                                                <div className=" inset-0 flex justify-center items-center bg-opacity-50">
+                                                    <Spinner
+                                                        color="secondary"
+                                                        size="sm"
                                                     />
-                                                ) : (
-                                                    <p>{c?.Comment}</p>
-                                                )}
-                                            </div>
-                                            {isEditing && editIndx === index ? (
-                                                <div className="flex mt-auto gap-4 ml-3 text-sm h-[1.6rem]">
-                                                    <button
-                                                        onClick={() => {
-                                                            setIsEditing(false);
-                                                            setCommentId(null);
-                                                            setEditIndx(null);
-                                                        }}
-                                                        disabled={isLoading}
-                                                        className="text-gray-500"
-                                                    >
-                                                        Cancel
-                                                    </button>
-                                                    {isLoading ? (
-                                                        <div className=" inset-0 flex justify-center items-center bg-opacity-50">
-                                                            <Spinner
-                                                                color="secondary"
-                                                                size="sm"
-                                                            />
-                                                        </div>
-                                                    ) : (
-                                                        <button
-                                                            className="bg-gray-800 w-16 text-white font-bold rounded"
-                                                            onClick={() =>
-                                                                handleSubmit()
-                                                            }
-                                                        >
-                                                            Save
-                                                        </button>
-                                                    )}
                                                 </div>
                                             ) : (
-                                                <PencilIcon
-                                                    onClick={() => {
-                                                        setIsEditing(true);
-                                                        setCommentId(
-                                                            c?.CommentId
-                                                        );
-                                                        setComment(c?.Comment);
-                                                        setEditIndx(index);
-                                                    }}
-                                                    className="w-5 h-5 text-sky-500 ml-auto hover:cursor-pointer hover:text-sky-500/70"
-                                                />
+                                                <button
+                                                    className="bg-gray-800 w-16 text-white font-bold rounded hover:bg-gray-800/80"
+                                                    onClick={() =>
+                                                        handleSubmit()
+                                                    }
+                                                >
+                                                    Save
+                                                </button>
                                             )}
                                         </div>
-                                    )}
-                                </div>
-                            ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     ) : (
                         <div className="h-full flex flex-col items-center justify-center text-gray-500 text-lg pt-8 pb-5">
