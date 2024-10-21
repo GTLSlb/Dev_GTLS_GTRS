@@ -66,7 +66,6 @@ export default function AddComment({
                         },
                     })
                     .then((response) => {
-                        console.log(response);
 
                         fetchData();
                         setTimeout(() => {
