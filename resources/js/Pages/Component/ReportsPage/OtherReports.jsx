@@ -21,19 +21,29 @@ export default function OtherReports({
     isAddModalOpen,
     handleAddModalClose,
     commentsData,
+    setCellLoading
 }) {
     const gridRef = useRef(null);
     const [selected, setSelected] = useState([]);
-    const formatDate = (dateString) => {
-        if (dateString) {
-            const [date, time] = dateString.split("T");
-            const [day, month, year] = date.split("-");
-            // Using template literals to format the date
-            return `${year}-${month}-${day}`;
-        } else {
-            return dateString;
-        }
-    };
+    const [rowHeight, setRowHeight] = useState();
+    const getRowHeight = (row) => {
+        let rowHeight = 60;
+        data?.map((item) => {
+          if (item?.hasOwnProperty('Comments')) {
+            item?.Comments?.map((comment) => {
+              const commentLength = comment?.Comment?.length * 3; //3px per letter
+              const maxCommentLength = 280 - 10; // 280px column width - 10px bottom padding
+              const commentRows = Math.ceil(commentLength / maxCommentLength);
+              rowHeight = Math.max(rowHeight, commentRows * 40 + 10); // 40px per row + 10px bottom padding
+            });
+          }
+        });
+
+        return rowHeight;
+      };
+    useEffect(() => {
+        setRowHeight(getRowHeight())
+    },[])
     return (
         <div>
             <ExportBtn unileverClient={"Other"} filteredData ={data} gridRef={gridRef}/>
@@ -64,6 +74,7 @@ export default function OtherReports({
             <ViewComments
                 url={url}
                 AToken={AToken}
+                setCellLoading={setCellLoading}
                 isOpen={isViewModalOpen}
                 handleClose={handleViewModalClose}
                 consId={consId}

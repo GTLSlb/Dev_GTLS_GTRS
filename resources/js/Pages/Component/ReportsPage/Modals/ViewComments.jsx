@@ -19,6 +19,7 @@ export default function ViewComments({
     fetchData,
     currentUser,
     commentsData,
+    setCellLoading,
 }) {
 
     const [ data, setData] = useState([]);
@@ -42,22 +43,24 @@ export default function ViewComments({
 
         try {
             setIsLoading(true);
-
-            const response = await axios.post(`${url}Add/Delivery/Comment`, formValues, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            }).then((response) => {
-                fetchData();
-                setTimeout(() => {
-                    setIsLoading(false);
-                    setCommentId(null);
-                    setComment(null);
-                    setIsEditing(false);
-                    setEditIndx(null);
-                }, 1000);
-            })
+            setCellLoading(consId)
+            await axios
+                .post(`${url}Add/Delivery/Comment`, formValues, {
+                    headers: {
+                        UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
+                    },
+                })
+                .then((response) => {
+                    fetchData(setCellLoading);
+                    setTimeout(() => {
+                        setIsLoading(false);
+                        setCommentId(null);
+                        setComment(null);
+                    }, 1000);
+                    
+                    handleClose();
+                });
         } catch (error) {
             setIsLoading(false);
             // Handle error
@@ -99,11 +102,37 @@ export default function ViewComments({
             overlayClassName="fixed inset-0 bg-black bg-opacity-60"
         >
             <div className="bg-white w-[40%] rounded-lg shadow-lg py-6 px-8">
-                <div className="flex justify-between pb-4 border-b-1 border-[#D5D5D5]">
-                    <h2 className="text-2xl font-bold text-gray-500">Comments</h2>
+                <div className="flex justify-between pb-2 border-b-1 border-[#D5D5D5]">
+                    <h2 className="text-2xl font-bold text-gray-500">
+                        Comments
+                        {data?.length > 0 && (
+                            <p className="mt-2 text-dark text-sm font-light">
+                                Added At:{" "}
+                                {moment(
+                                    convertUtcToUserTimezone(
+                                        data[0]?.AddedAt + "Z"
+                                    ),
+
+                                    "MM/DD/YYYY, h:mm:ss A"
+                                ).format("DD-MM-YYYY hh:mm A") == "Invalid date"
+                                    ? ""
+                                    : moment(
+                                          convertUtcToUserTimezone(
+                                              data[0]?.AddedAt + "Z"
+                                          ),
+
+                                          "MM/DD/YYYY, h:mm:ss A"
+                                      ).format("DD-MM-YYYY hh:mm A")}
+                            </p>
+                        )}
+                    </h2>
                     <button
-                        className="text-gray-500 hover:text-gray-700"
-                        onClick={handleClose}
+                        className="text-gray-500 -mt-8 hover:text-gray-700"
+                        onClick={() => {
+                            setComment(null);
+                            setCommentId(null);
+                            handleClose();
+                        }}
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -124,14 +153,45 @@ export default function ViewComments({
                 <div>
                     {data?.length > 0 ? (
                         <div className="max-h-[21rem] overflow-auto pr-1 containerscroll">
-                            {data?.map((c, index) => (
-                                <div className="flex flex-col gap-4 border-b-1 border-[#D5D5D5] py-3">
-                                    {canEditDeliveryReportComment(currentUser) && <div className="flex pr-2">
-                                        <div className="w-[95%]">
-                                        {isEditing && editIndx === index
-                                            ? <textarea type="text" className="border-[#D5D5D5] rounded-lg w-full" defaultValue={c?.Comment} value={comment} onChange={(e)=>{setComment(e.target.value)}} />
-                                            :<p>{c?.Comment}</p>
-                                        }
+                            <div className="flex flex-col gap-4 py-3">
+                                {canEditDeliveryReportComment(currentUser) && (
+                                    <div className="flex flex-col gap-4 px-1">
+                                        <textarea
+                                            type="text"
+                                            className="border-[#D5D5D5] rounded-lg  focus:!ring-[#D5D5D5] resize-none w-full min-h-[150px]"
+                                            defaultValue={comment}
+                                            value={comment}
+                                            onChange={onValueChange}
+                                        />
+                                        <div className="flex ml-auto gap-6  text-sm h-[2.4rem]">
+                                            <button
+                                                onClick={() => {
+                                                    setComment(null);
+                                                    setCommentId(null);
+                                                    handleClose();
+                                                }}
+                                                disabled={isLoading}
+                                                className="text-gray-500 hover:text-black"
+                                            >
+                                                Cancel
+                                            </button>
+                                            {isLoading ? (
+                                                <div className=" inset-0 flex justify-center items-center bg-opacity-50">
+                                                    <Spinner
+                                                        color="secondary"
+                                                        size="sm"
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    className="bg-gray-800 w-16 text-white font-bold rounded hover:bg-gray-800/80"
+                                                    onClick={() =>
+                                                        handleSubmit()
+                                                    }
+                                                >
+                                                    Save
+                                                </button>
+                                            )}
                                         </div>
                                         {isEditing && editIndx === index
                                             ? <div className="flex mt-auto gap-4 ml-3 text-sm h-[1.6rem]">
