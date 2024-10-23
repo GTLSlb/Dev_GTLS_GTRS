@@ -8,6 +8,8 @@ import WoolworthsReports from "./WoolworthsReports";
 import OtherReports from "./OtherReports";
 import { EyeIcon, PencilIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
+import { Spinner } from "@nextui-org/react";
+
 import { getFiltersDeliveryReport } from "@/Components/utils/filters";
 import {
     canAddDeliveryReportComment,
@@ -112,6 +114,8 @@ export default function DeliveryReportPage({
     ]);
 
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
+    const [cellLoading, setCellLoading] = useState(false);
+
     const [filterValue, setFilterValue] = useState([
         {
             name: "AccountNumber",
@@ -210,6 +214,105 @@ export default function DeliveryReportPage({
         },
     ]);
 
+    useEffect(() => {
+        setFilterValue([
+            {
+                name: "AccountNumber",
+                operator: "eq",
+                type: "string",
+                value: "",
+            },
+            {
+                name: "DespatchDateTime",
+                operator: "inrange",
+                type: "date",
+            },
+            {
+                name: "ConsignmentNo",
+                operator: "contains",
+                type: "string",
+                value: "",
+            },
+            {
+                name: "SenderName",
+                operator: "contains",
+                type: "string",
+                value: "",
+            },
+            {
+                name: "SenderReference",
+                operator: "contains",
+                type: "string",
+                value: "",
+            },
+            {
+                name: "SenderState",
+                operator: "inlist",
+                type: "select",
+                value: null,
+                emptyValue: "",
+            },
+            {
+                name: "ReceiverName",
+                operator: "contains",
+                type: "string",
+                value: null,
+                emptyValue: "",
+            },
+            {
+                name: "ReceiverReference",
+                operator: "contains",
+                type: "string",
+                value: null,
+                emptyValue: "",
+            },
+            {
+                name: "ReceiverState",
+                operator: "inlist",
+                type: "select",
+                value: null,
+                emptyValue: "",
+            },
+            {
+                name: "ConsignmentStatus",
+                operator: "inlist",
+                type: "select",
+                value: null,
+                emptyValue: "",
+            },
+            {
+                name: "DeliveryInstructions",
+                operator: "contains",
+                type: "string",
+                value: "",
+                emptyValue: "",
+            },
+            {
+                name: "POD",
+                operator: "inlist",
+                type: "select",
+                value: null,
+                emptyValue: "",
+            },
+            {
+                name: "DeliveryRequiredDateTime",
+                operator: "inrange",
+                type: "date",
+            },
+            {
+                name: "DeliveredDateTime",
+                operator: "inrange",
+                type: "date",
+            },
+            {
+                name: "Comments",
+                operator: "contains",
+                type: "string",
+                value: "",
+                emptyValue: "",
+            },
+        ]);
+    }, [activeComponentIndex]);
     const groups = [
         {
             name: "senderDetails",
@@ -226,11 +329,6 @@ export default function DeliveryReportPage({
     const [consId, setConsId] = useState(null);
     const [commentsData, setCommentsData] = useState(null);
 
-    const handleAddComment = (consId) => {
-        setConsId(consId);
-        setIsAddModalOpen(true);
-    };
-
     useEffect(() => {
         if (deliveryReportData?.length > 0 && consId) {
             setCommentsData(
@@ -244,41 +342,34 @@ export default function DeliveryReportPage({
         setConsId(data?.ConsignmentID);
         setIsViewModalOpen(true);
     };
-
+    
     function CustomColumnEditor(props) {
-        const { value, onChange, onComplete, cellProps } = props; // Destructure relevant props
-        console.log(value);
+        const { value, onChange, onComplete, cellProps, onCancel } = props; // Destructure relevant props
+
         const [prvsComment, setPrvsComment] = useState(
             value ? value[0].Comment : null
         );
-        const [inputValue, setInputValue] = useState(null);
+        const [inputValue, setInputValue] = useState(prvsComment);
         const [commentId, setCommentId] = useState(
             value ? value[0].CommentId : null
         );
 
         const onValueChange = (e) => {
             let newValue = e.target.value;
-            // Check if the new value exceeds the max limit
-            if (cellProps.rowIndex === 1 && cellProps.rowIndex === 2) {
-                if (max !== null && parseFloat(newValue) > max) {
-                    newValue = max; // Set to max if it exceeds
-                }
-            }
 
-            setInputValue(newValue); // Update the local state
-            onChange(newValue); // Call onChange to update the grid's internal state
+            setInputValue(newValue);
+            onChange(newValue);
         };
 
         const handleComplete = async (event) => {
+            setCellLoading(cellProps.data.ConsignmentID);
             await axios
                 .post(
                     `${url}Add/Delivery/Comment`,
                     {
                         CommentId: commentId,
                         ConsId: cellProps.data.ConsignmentID,
-                        Comment: prvsComment
-                            ? `${prvsComment}\n${inputValue}`
-                            : inputValue,
+                        Comment: `${inputValue}`,
                     },
                     {
                         headers: {
@@ -288,8 +379,7 @@ export default function DeliveryReportPage({
                     }
                 )
                 .then((response) => {
-                    console.log(response);
-                    fetchDeliveryReport();
+                    fetchDeliveryReport(setCellLoading);
                 })
                 .catch((error) => {
                     // Handle error
@@ -330,14 +420,19 @@ export default function DeliveryReportPage({
 
         return (
             canAddDeliveryReportComment(currentUser) && (
-                <input
-                    style={{ width: "100%", minheight: "100%" }}
-                    type={"text"}
-                    value={inputValue}
-                    placeholder="Add a new comment"
-                    onChange={onValueChange}
-                    onKeyDown={handleKeyDown}
-                />
+                <>
+                    <textarea
+                        style={{ width: "100%", maxHeight: "100%" }}
+                        type={"text"}
+                        value={inputValue}
+                        className="text-sm font-semibold placeholder:text-sm placeholder:font-light resize-none placeholder:text-gray-500"
+                        placeholder="Add a new comment"
+                        onBlur={onCancel}
+                        onBlurCapture={onCancel}
+                        onChange={onValueChange}
+                        onKeyDown={handleKeyDown}
+                    />
+                </>
             )
         );
     }
@@ -350,8 +445,14 @@ export default function DeliveryReportPage({
 
             const lastValue = values[values.length - 1];
 
+            const count = values.length - 1;
             if (values.length - 1 > 0) {
-                return `${lastValue} + ${values.length - 1} Comments`;
+                return (
+                    <div>
+                        {lastValue} + {count}{" "}
+                        {count == 1 ? "Comment" : "Comments"}
+                    </div>
+                );
             } else {
                 return `${lastValue}`;
             }
@@ -361,6 +462,7 @@ export default function DeliveryReportPage({
             <div>{getLastValue(inputString)}</div>
         ) : null;
     };
+
     const columns = [
         {
             name: "AccountNumber",
@@ -599,20 +701,36 @@ export default function DeliveryReportPage({
             editable: true,
             filterEditor: StringFilter,
             editor: CustomColumnEditor,
+            // Add the getFilterValue function
+            getFilterValue: ({ data }) => {
+                if (data.Comments && data.Comments.length > 0) {
+                    return data.Comments[0].Comment;
+                }
+                return "";
+            },
             render: ({ value, data }) => {
                 return (
                     <div className="flex gap-4 items-center px-2">
-                        <div className="flex flex-col">
-                            {value ? (
-                                <>
-                                    {value != "" ? (
-                                        <GetLastValue
-                                            inputString={value[0].Comment}
-                                        />
-                                    ) : null}
-                                </>
-                            ) : null}
-                        </div>
+                        {data.ConsignmentID == cellLoading ? (
+                            <div className="flex flex-col w-full">
+                                <div className=" inset-0 flex justify-center items-center bg-opacity-50">
+                                    <Spinner color="default" size="sm" />
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                {" "}
+                                {value ? (
+                                    <>
+                                        {value != "" ? (
+                                            <GetLastValue
+                                                inputString={value[0].Comment}
+                                            />
+                                        ) : null}
+                                    </>
+                                ) : null}
+                            </>
+                        )}
                     </div>
                 );
             },
@@ -625,15 +743,13 @@ export default function DeliveryReportPage({
             defaultWidth: 200,
             render: ({ value, data }) => {
                 return (
-                    <div className="flex gap-4 items-center px-2">
-                        {canEditDeliveryReportComment(currentUser) && (
-                            <span
-                                className="underline text-blue-400 hover:cursor-pointer"
-                                onClick={() => handleViewComments(data)}
-                            >
-                                <PencilIcon className="h-5 w-5" />
-                            </span>
-                        )}
+                    <div className="flex gap-4 items-center justify-center px-2">
+                        <span
+                            className="underline text-blue-400 hover:cursor-pointer"
+                            onClick={() => handleViewComments(data)}
+                        >
+                            <EyeIcon className="h-5 w-5 text-goldt" />
+                        </span>
                     </div>
                 );
             },
@@ -683,6 +799,7 @@ export default function DeliveryReportPage({
             url={url}
             AToken={AToken}
             consId={consId}
+            setCellLoading={setCellLoading}
             fetchData={fetchDeliveryReport}
             currentUser={currentUser}
             isViewModalOpen={isViewModalOpen}
@@ -699,6 +816,7 @@ export default function DeliveryReportPage({
             data={filteredWoolworthData}
             url={url}
             AToken={AToken}
+            setCellLoading={setCellLoading}
             consId={consId}
             fetchData={fetchDeliveryReport}
             currentUser={currentUser}
@@ -717,6 +835,7 @@ export default function DeliveryReportPage({
             url={url}
             AToken={AToken}
             consId={consId}
+            setCellLoading={setCellLoading}
             fetchData={fetchDeliveryReport}
             currentUser={currentUser}
             isViewModalOpen={isViewModalOpen}

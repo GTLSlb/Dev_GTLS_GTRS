@@ -21,12 +21,13 @@ export default function OtherReports({
     isAddModalOpen,
     handleAddModalClose,
     commentsData,
+    setCellLoading
 }) {
     const gridRef = useRef(null);
     const [selected, setSelected] = useState([]);
     const [rowHeight, setRowHeight] = useState();
     const getRowHeight = (row) => {
-        let rowHeight = 40;
+        let rowHeight = 60;
         data?.map((item) => {
           if (item?.hasOwnProperty('Comments')) {
             item?.Comments?.map((comment) => {
@@ -73,6 +74,7 @@ export default function OtherReports({
             <ViewComments
                 url={url}
                 AToken={AToken}
+                setCellLoading={setCellLoading}
                 isOpen={isViewModalOpen}
                 handleClose={handleViewModalClose}
                 consId={consId}

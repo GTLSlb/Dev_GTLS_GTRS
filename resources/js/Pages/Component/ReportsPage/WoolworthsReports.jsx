@@ -22,12 +22,13 @@ export default function WoolworthsReports({
     isAddModalOpen,
     handleAddModalClose,
     commentsData,
+    setCellLoading,
 }) {
     const gridRef = useRef(null);
     const [selected, setSelected] = useState([]);
     const [rowHeight, setRowHeight] = useState();
     const getRowHeight = (row) => {
-        let rowHeight = 40;
+        let rowHeight = 60;
         data?.map((item) => {
           if (item?.hasOwnProperty('Comments')) {
             item?.Comments?.map((comment) => {
@@ -75,6 +76,7 @@ export default function WoolworthsReports({
                 url={url}
                 AToken={AToken}
                 isOpen={isViewModalOpen}
+                setCellLoading={setCellLoading}
                 handleClose={handleViewModalClose}
                 consId={consId}
                 fetchData={fetchData}

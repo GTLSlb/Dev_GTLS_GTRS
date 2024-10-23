@@ -2065,7 +2065,7 @@ export default function charts({
     }, [sharedEndDate, sharedStartDate]);
 
     const [dailyReportData, setDailyReportData] = useState(deliveryReportData);
-    const fetchDeliveryReport = async () => {
+    const fetchDeliveryReport = async (setCellLoading) => {
         try {
             const res = await axios.get(`${url}Delivery`, {
                 headers: {
@@ -2074,6 +2074,11 @@ export default function charts({
                 },
             });
             setDailyReportData(res.data || []);
+    
+            // Check if setCellLoading exists before calling it
+            if (typeof setCellLoading === 'function') {
+                setCellLoading(null);
+            }
         } catch (err) {
             if (err.response && err.response.status === 401) {
                 // Handle 401 error using SweetAlert
@@ -2089,9 +2094,14 @@ export default function charts({
             } else {
                 // Handle other errors
                 console.log(err);
+                // Check if setCellLoading exists before calling it
+                if (typeof setCellLoading === 'function') {
+                    setCellLoading(null);
+                }
             }
         }
     };
+    
 
     useEffect(() => {
         if (currentUser) {

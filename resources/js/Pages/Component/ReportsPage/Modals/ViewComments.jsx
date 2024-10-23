@@ -17,6 +17,7 @@ export default function ViewComments({
     fetchData,
     currentUser,
     commentsData,
+    setCellLoading,
 }) {
     const [data, setData] = useState([]);
     const [comment, setComment] = useState(null);
@@ -71,7 +72,7 @@ export default function ViewComments({
 
         try {
             setIsLoading(true);
-
+            setCellLoading(consId)
             await axios
                 .post(`${url}Add/Delivery/Comment`, formValues, {
                     headers: {
@@ -80,12 +81,13 @@ export default function ViewComments({
                     },
                 })
                 .then((response) => {
-                    fetchData();
+                    fetchData(setCellLoading);
                     setTimeout(() => {
                         setIsLoading(false);
                         setCommentId(null);
                         setComment(null);
                     }, 1000);
+                    
                     handleClose();
                 });
         } catch (error) {
@@ -133,14 +135,14 @@ export default function ViewComments({
                         Comments
                         {data?.length > 0 && (
                             <p className="mt-2 text-dark text-sm font-light">
-                                Last edited:{" "}
+                                Added At:{" "}
                                 {moment(
                                     convertUtcToUserTimezone(
                                         data[0]?.AddedAt + "Z"
                                     ),
 
                                     "MM/DD/YYYY, h:mm:ss A"
-                                ).format("YYYY-MM-DD hh:mm A") == "Invalid date"
+                                ).format("DD-MM-YYYY hh:mm A") == "Invalid date"
                                     ? ""
                                     : moment(
                                           convertUtcToUserTimezone(
@@ -148,13 +150,17 @@ export default function ViewComments({
                                           ),
 
                                           "MM/DD/YYYY, h:mm:ss A"
-                                      ).format("YYYY-MM-DD hh:mm A")}
+                                      ).format("DD-MM-YYYY hh:mm A")}
                             </p>
                         )}
                     </h2>
                     <button
                         className="text-gray-500 -mt-8 hover:text-gray-700"
-                        onClick={()=>{setComment(null);setCommentId(null);handleClose();}}
+                        onClick={() => {
+                            setComment(null);
+                            setCommentId(null);
+                            handleClose();
+                        }}
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -177,15 +183,15 @@ export default function ViewComments({
                         <div className="max-h-[21rem] overflow-auto pr-1 containerscroll">
                             <div className="flex flex-col gap-4 py-3">
                                 {canEditDeliveryReportComment(currentUser) && (
-                                    <div className="flex flex-col gap-4 pr-2">
+                                    <div className="flex flex-col gap-4 px-1">
                                         <textarea
                                             type="text"
-                                            className="border-[#D5D5D5] rounded-lg w-full min-h-[150px]"
+                                            className="border-[#D5D5D5] rounded-lg  focus:!ring-[#D5D5D5] resize-none w-full min-h-[150px]"
                                             defaultValue={comment}
                                             value={comment}
                                             onChange={onValueChange}
                                         />
-                                        <div className="flex ml-auto gap-6 text-sm h-[2.4rem]">
+                                        <div className="flex ml-auto gap-6  text-sm h-[2.4rem]">
                                             <button
                                                 onClick={() => {
                                                     setComment(null);
