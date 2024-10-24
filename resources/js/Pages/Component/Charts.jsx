@@ -50,8 +50,7 @@ export default function charts({
     chartsData,
     kpireasonsData,
     setkpireasonsData,
-    fetchDeliveryReport,
-    dailyReportData,
+    deliveryReportData,
 }) {
     window.moment = moment;
     const current = new Date();
@@ -107,8 +106,8 @@ export default function charts({
     const minDateAdd = getMinMaxValue(AdditionalData, "DespatchDateTime", 1);
     const maxDateAdd = getMinMaxValue(AdditionalData, "DespatchDateTime", 2);
 
-    const minDateDelivery = getMinMaxValue(dailyReportData, "DespatchDate", 1);
-    const maxDateDelivery = getMinMaxValue(dailyReportData, "DespatchDate", 2);
+    const minDateDelivery = getMinMaxValue(deliveryReportData, "DespatchDate", 1);
+    const maxDateDelivery = getMinMaxValue(deliveryReportData, "DespatchDate", 2);
 
     const minDateTransport = getMinMaxValue(transportData, "PickupDate", 1);
     const maxDateTransport = getMinMaxValue(transportData, "PickupDate", 2);

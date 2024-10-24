@@ -3,6 +3,7 @@ import TableStructure from "@/Components/TableStructure";
 import AddComment from "./Modals/AddComment";
 import ViewComments from "./Modals/ViewComments";
 import ExportBtn from "./ExportBtn";
+import { useEffect } from "react";
 export default function OtherReports({
     filterValue,
     setFilterValue,

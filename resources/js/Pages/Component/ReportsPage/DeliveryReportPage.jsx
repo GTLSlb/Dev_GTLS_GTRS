@@ -18,6 +18,7 @@ import {
     canViewWoolworthsDeliveryReport,
     canViewOtherDailyReport,
 } from "@/permissions";
+import { useRef } from "react";
 
 export default function DailyReportPage({
     url,
@@ -343,9 +344,9 @@ export default function DailyReportPage({
         setConsId(data?.ConsignmentID);
         setIsViewModalOpen(true);
     };
-    
+
     function CustomColumnEditor(props) {
-        const { value, onChange, onComplete, cellProps, onCancel } = props; // Destructure relevant props
+        const { value, onChange, onComplete, cellProps, onCancel } = props;
 
         const [prvsComment, setPrvsComment] = useState(
             value ? value[0].Comment : null
@@ -355,6 +356,16 @@ export default function DailyReportPage({
             value ? value[0].CommentId : null
         );
 
+        // Create a ref for the textarea
+        const textareaRef = useRef(null);
+
+        // Focus the textarea when the component mounts
+        useEffect(() => {
+            if (textareaRef.current) {
+                textareaRef.current.focus();
+            }
+        }, []); // Empty dependency array ensures this runs once on mount
+
         const onValueChange = (e) => {
             let newValue = e.target.value;
 
@@ -362,7 +373,7 @@ export default function DailyReportPage({
             onChange(newValue);
         };
 
-        const handleComplete = async (event) => {
+        const handleComplete = async () => {
             setCellLoading(cellProps.data.ConsignmentID);
             await axios
                 .post(
@@ -396,7 +407,7 @@ export default function DailyReportPage({
                             axios
                                 .post("/logoutAPI")
                                 .then((response) => {
-                                    if (response.status == 200) {
+                                    if (response.status === 200) {
                                         window.location.href = "/";
                                     }
                                 })
@@ -416,6 +427,7 @@ export default function DailyReportPage({
             if (event.key === "Enter" && !event.shiftKey) {
                 event.preventDefault();
                 handleComplete();
+                onCancel();
             }
         };
 
@@ -423,13 +435,13 @@ export default function DailyReportPage({
             canAddDeliveryReportComment(currentUser) && (
                 <>
                     <textarea
+                        ref={textareaRef} // Attach the ref here
                         style={{ width: "100%", maxHeight: "100%" }}
-                        type={"text"}
+                        type="text"
                         value={inputValue}
                         className="text-sm font-semibold placeholder:text-sm placeholder:font-light resize-none placeholder:text-gray-500"
                         placeholder="Add a new comment"
                         onBlur={onCancel}
-                        onBlurCapture={onCancel}
                         onChange={onValueChange}
                         onKeyDown={handleKeyDown}
                     />
@@ -445,7 +457,6 @@ export default function DailyReportPage({
                 .filter((value) => value.trim() !== "");
 
             const lastValue = values[values.length - 1];
-
             const count = values.length - 1;
             if (values.length - 1 > 0) {
                 return (
@@ -454,6 +465,8 @@ export default function DailyReportPage({
                         {count == 1 ? "Comment" : "Comments"}
                     </div>
                 );
+            } else if (lastValue == undefined) {
+                return "";
             } else {
                 return `${lastValue}`;
             }
@@ -717,7 +730,9 @@ export default function DailyReportPage({
                                             <GetLastValue
                                                 inputString={value[0].Comment}
                                             />
-                                        ) : null}
+                                        ) : (
+                                            ""
+                                        )}
                                     </>
                                 ) : null}
                             </>

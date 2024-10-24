@@ -56,7 +56,7 @@ export default function Gtrs({
     const [customerAccounts, setCusomterAccounts] = useState();
     const userdata = currentUser;
     const [canAccess, setCanAccess] = useState(true);
-    const [dailyReportData, setDailyReportData] = useState([]);
+    const [deliveryReportData, setDeliveryReportData] = useState([]);
 
     const debtorIdsArray = userdata?.Accounts?.map((account) => {
         return { UserId: account.DebtorId };
@@ -88,7 +88,7 @@ export default function Gtrs({
                     resolve(parsedData);
                 });
                 parsedDataPromise.then((parsedData) => {
-                    setDailyReportData(parsedData || []);
+                    setDeliveryReportData(parsedData || []);
                 });
             })
             .catch((err) => {
@@ -117,7 +117,7 @@ export default function Gtrs({
                     console.log(err);
                 }
             });
-    }
+    };
 
     useEffect(() => {
         setUserBody(debtorIds);
@@ -493,7 +493,14 @@ export default function Gtrs({
             }
         }
     }, [user, loadingGtrs]);
-    if (consApi && reportApi && chartsApi && DebtorsApi && KPIReasonsApi && transportApi) {
+    if (
+        consApi &&
+        reportApi &&
+        chartsApi &&
+        DebtorsApi &&
+        KPIReasonsApi &&
+        transportApi
+    ) {
         setLoadingGtrs(true);
     }
 
@@ -546,7 +553,7 @@ export default function Gtrs({
                             PerfData={PerfData}
                             setPerfData={setPerfData}
                             fetchDeliveryReport={fetchDeliveryReport}
-                            dailyReportData={dailyReportData}
+                            deliveryReportData={deliveryReportData}
                         />
                     </div>
                 </div>
