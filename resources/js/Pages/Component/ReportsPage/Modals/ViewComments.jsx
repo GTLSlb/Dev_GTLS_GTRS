@@ -19,17 +19,19 @@ export default function ViewComments({
     commentsData,
     setCellLoading,
 }) {
+    console.log( consId, commentsData )
     const [data, setData] = useState([]);
     const [comment, setComment] = useState(null);
     const [commentId, setCommentId] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+
     useEffect(() => {
         if (commentsData) {
             setData(commentsData);
             setComment(
                 commentsData[0]?.Comment?.split("\n")?.reverse()?.join("\n")
             );
-            setCommentId(commentsData[0]?.CommentId)
+            setCommentId(commentsData[0]?.CommentId);
         }
     }, [commentsData]);
 
@@ -192,6 +194,7 @@ export default function ViewComments({
                                             value={comment}
                                             onChange={onValueChange}
                                         />
+
                                         <div className="flex ml-auto gap-6  text-sm h-[2.4rem]">
                                             <button
                                                 onClick={() => {

@@ -330,15 +330,6 @@ export default function DailyReportPage({
     const [consId, setConsId] = useState(null);
     const [commentsData, setCommentsData] = useState(null);
 
-    useEffect(() => {
-        if (dailyReportData?.length > 0 && consId) {
-            setCommentsData(
-                dailyReportData.find((data) => data.ConsignmentID == consId)
-                    ?.Comments
-            );
-        }
-    }, [dailyReportData, consId]);
-
     const handleViewComments = (data) => {
         setCommentsData(data?.Comments);
         setConsId(data?.ConsignmentID);
