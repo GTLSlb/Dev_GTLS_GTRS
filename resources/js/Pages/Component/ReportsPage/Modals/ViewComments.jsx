@@ -19,7 +19,6 @@ export default function ViewComments({
     commentsData,
     setCellLoading,
 }) {
-    console.log( consId, commentsData )
     const [data, setData] = useState([]);
     const [comment, setComment] = useState(null);
     const [commentId, setCommentId] = useState(null);
