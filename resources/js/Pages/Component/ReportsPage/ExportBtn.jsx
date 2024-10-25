@@ -72,13 +72,16 @@ export default function ExportBtn({ unileverClient, filteredData, gridRef }) {
                     continue;
                 }
                 if (type === "string") {
-                    const valLowerCase = val[col.name]
-                        ?.toString()
-                        .toLowerCase();
+                    const valLowerCase =
+                        Array.isArray(val[col.name]) &&
+                        val[col.name].length > 0 &&
+                        val[col.name][0].Comment
+                            ? val[col.name][0].Comment.toString().toLowerCase()
+                            : "";
+
                     const cellValueLowerCase = cellValue
                         ?.toString()
                         .toLowerCase();
-
                     switch (operator) {
                         case "contains":
                             conditionMet =
