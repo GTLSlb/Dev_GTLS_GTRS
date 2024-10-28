@@ -3,7 +3,7 @@ import React from "react";
 function DashboardCard07(props) {
     const data = props.InfoData;
     const percentagePassed =
-        (data.totalNoConsPassed / data.totalNoConsShipped) * 100;
+        (data.totalNoConsPassed / (data.totalConsFailed + data.totalNoConsPassed)) * 100;
     const percentageFailed =
         (data.totalConsFailed / data.totalNoConsShipped) * 100;
     const percentagePending =
