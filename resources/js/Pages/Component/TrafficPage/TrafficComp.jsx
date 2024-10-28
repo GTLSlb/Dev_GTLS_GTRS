@@ -56,6 +56,7 @@ const defaultFilterValue = [
     { name: "suburb", type: "string", operator: "contains", value: "" },
     { name: "api_source", type: "string", operator: "contains", value: "" },
     { name: "event_type", type: "string", operator: "contains", value: "" },
+    { name: "description", type: "string", operator: "contains", value: "" },
     {
         name: "start_date",
         type: "date",
@@ -82,6 +83,8 @@ const defaultFilterValue = [
         operator: "contains",
         value: "",
     },
+    { name: "advice", type: "string", operator: "contains", value: "" },
+    { name: "information", type: "string", operator: "contains", value: "" },
 ];
 
 function TraffiComp() {
@@ -143,19 +146,6 @@ function TraffiComp() {
         return category ? category.event_category : "";
     }
 
-    function handleViewDetails(id) {
-        setLoading(true);
-        onOpen();
-        axios
-            .get(`${gtrsWebUrl}get-positions/${id}`)
-            .then((res) => {
-                setEventDetails(res.data);
-                setLoading(false);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }
     const columns = [
         {
             name: "api_source",
@@ -254,7 +244,6 @@ function TraffiComp() {
             textAlign: "center",
             defaultWidth: 170,
         },
-
         {
             name: "advice",
             header: "Advice",
@@ -269,32 +258,7 @@ function TraffiComp() {
             textAlign: "center",
             defaultWidth: 170,
         },
-        {
-            name: "actions",
-            header: "Actions",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            render: ({ value, data }) => {
-                return (
-                    <div>
-                        <button
-                            className={
-                                "rounded text-goldd justify-center items-center  "
-                            }
-                            onClick={() => {
-                                handleViewDetails(data.id);
-                            }}
-                        >
-                            <span className="flex gap-x-1">
-                                <EyeIcon className="h-4" />
-                                View
-                            </span>
-                        </button>
-                    </div>
-                );
-            },
-        },
+        
     ];
 
     function handleFilterTable() {
@@ -673,7 +637,6 @@ function TraffiComp() {
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-        console.log(jsonData);
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
@@ -813,21 +776,18 @@ function TraffiComp() {
 
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "Traffic-report.xlsx");
-            setExportLoading(false)
+            setExportLoading(false);
         });
     }
     const getexceldata = ({ skip, limit, sortInfo, filterValue }) => {
-        setExportLoading(true)
-        const url =
-            `${gtrsWebUrl}get-positions`;
-
-        console.log(skip, limit, sortInfo, filterValue);
+        setExportLoading(true);
+        const url = `${gtrsWebUrl}get-positions`;
         return fetch(url).then((response) => {
             const totalCount = response.headers.get("X-Total-Count");
             return response.json().then((data) => {
                 // const totalCount = data.pagination.total;
-                setDatatoexport(data)
-                handleDownloadExcel()
+                setDatatoexport(data);
+                handleDownloadExcel();
             });
         });
     };
@@ -837,7 +797,7 @@ function TraffiComp() {
     const dataSource = useCallback(loadData, []);
     const [hoverMessage, setHoverMessage] = useState("");
     const [isMessageVisible, setMessageVisible] = useState(false);
-    
+
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
             <div className="sm:flex sm:items-center">
@@ -847,7 +807,7 @@ function TraffiComp() {
                     </h1>
                 </div>
                 <Popover className="relative ">
-                    <button >
+                    <button>
                         <Popover.Button
                             className={`inline-flex items-center w-[5.5rem] h-[36px] rounded-md border ${
                                 // datatoexport?.length === 0
@@ -857,7 +817,7 @@ function TraffiComp() {
                             } px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
                             disabled={exportLoading}
                         >
-                            {exportLoading? "Exporting..." : "Export"}
+                            {exportLoading ? "Exporting..." : "Export"}
                             <ChevronDownIcon
                                 className="h-5 w-5"
                                 aria-hidden="true"
