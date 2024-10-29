@@ -49,7 +49,7 @@ export function canCalculateKPI(currentUser) {
     const targetPermissionName = "Kpi_calculate";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.some(feature => feature?.FunctionName === targetPermissionName) || false;
 }
 
 /**

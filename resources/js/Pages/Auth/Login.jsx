@@ -42,6 +42,7 @@ export default function Login({ }) {
             handleForgotPassword={() =>
                 (window.location.href = "/forgot-password")
             }
+            backToHomeURL={'https://web.gtls.store/'}
             gtlsLogo={Logo}
             microsoftLogo={MicrosoftLogo}
         />

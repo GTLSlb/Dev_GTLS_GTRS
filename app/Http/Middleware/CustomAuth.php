@@ -11,6 +11,7 @@ use Closure;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 
 class CustomAuth extends Middleware
 {

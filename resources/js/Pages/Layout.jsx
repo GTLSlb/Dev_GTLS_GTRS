@@ -9,12 +9,14 @@ import Login from "./Auth/Login";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import ForgotPassword from "./Auth/ForgotPassword";
 import { handleSessionExpiration } from "@/CommonFunctions";
+import NoAccess from "@/Components/NoAccess";
 
 export default function Sidebar(Boolean) {
     const [currentUser, setcurrentUser] = useState(null);
     const [user, setUser] = useState(null);
     const [allowedApplications, setAllowedApplications] = useState([]);
     const [Token, setToken] = useState(Cookies.get("access_token"));
+    const [canAccess, setCanAccess] = useState(true);
     const Gtamurl = window.Laravel.gtamUrl;
     const appDomain = window.Laravel.appDomain;
 
@@ -45,11 +47,7 @@ export default function Sidebar(Boolean) {
                     setcurrentUser(res.data);
                 }
             })
-            .catch((error) => {
-                if(error.status === 401) {
-                    window.location.href = `${window.Laravel.appUrl}/login`;
-             }
-            }
+            .catch((error) => {console.log(error)}
         );
     }, []);
 
@@ -79,6 +77,13 @@ export default function Sidebar(Boolean) {
                 });
                 parsedDataPromise.then((parsedData) => {
                     setAllowedApplications(parsedData);
+
+                    let hasAccessToApp = parsedData?.find((app) => app.AppId == window.Laravel.appId);
+                    if (!hasAccessToApp) {
+                        setCanAccess(false);
+                    }else{
+                        setCanAccess(true);
+                    }
                 });
             })
             .catch((err) => {
@@ -131,6 +136,9 @@ export default function Sidebar(Boolean) {
                 })
                 .catch((err) => {
                     console.log(err);
+                    if(err.response.status === 401) {
+                        handleSessionExpiration();
+                    }
                 });
         }
     }, [currentUser]);
@@ -138,43 +146,47 @@ export default function Sidebar(Boolean) {
     if (!currentUser) {
         return null; // Render nothing
     } else {
-        return (
-            <div className="h-screen">
-                {Token ? (
-                    <div className="bg-smooth h-full ">
-                        <Routes>
-                            <Route
-                                path="/gtrs/*"
-                                element={
-                                    <Gtrs
-                                        setToken={setToken}
-                                        user={user}
-                                        setMobileMenuOpen={setMobileMenuOpen}
-                                        mobileMenuOpen={mobileMenuOpen}
-                                        loadingGtrs={loadingGtrs}
-                                        setLoadingGtrs={setLoadingGtrs}
-                                        currentUser={currentUser}
-                                        AToken={Token}
-                                        setCurrentUser={setcurrentUser}
-                                        allowedApplications={
-                                            allowedApplications
-                                        }
-                                        setcurrentUser={setcurrentUser}
-                                    />
-                                }
-                            />
-                            <Route path="/login" element={<Login />} />
-                            <Route
-                                path="/notFound"
-                                element={<NotFoundPage />}
-                            />
-                            <Route path="/*" element={<NotFoundPage />} />
-                        </Routes>
-                    </div>
-                ) : (
-                    <AnimatedLoading />
-                )}
-            </div>
-        );
+        if(canAccess === false) {
+            return <NoAccess />
+        }else{
+            return (
+                <div className="h-screen">
+                    {Token ? (
+                        <div className="bg-smooth h-full ">
+                            <Routes>
+                                <Route
+                                    path="/gtrs/*"
+                                    element={
+                                        <Gtrs
+                                            setToken={setToken}
+                                            user={user}
+                                            setMobileMenuOpen={setMobileMenuOpen}
+                                            mobileMenuOpen={mobileMenuOpen}
+                                            loadingGtrs={loadingGtrs}
+                                            setLoadingGtrs={setLoadingGtrs}
+                                            currentUser={currentUser}
+                                            AToken={Token}
+                                            setCurrentUser={setcurrentUser}
+                                            allowedApplications={
+                                                allowedApplications
+                                            }
+                                            setcurrentUser={setcurrentUser}
+                                        />
+                                    }
+                                />
+                                <Route path="/login" element={<Login />} />
+                                <Route
+                                    path="/notFound"
+                                    element={<NotFoundPage />}
+                                />
+                                <Route path="/*" element={<NotFoundPage />} />
+                            </Routes>
+                        </div>
+                    ) : (
+                        <AnimatedLoading />
+                    )}
+                </div>
+            );
+        }
     }
 }

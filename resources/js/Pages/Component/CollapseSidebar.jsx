@@ -174,7 +174,7 @@ const menu = [
                 url: "/gtrs/kpi/holidays",
             },
         ],
-        feature: "KPI",
+        feature: "KPI_view",
     },
     {
         id: 4,
@@ -299,7 +299,7 @@ const menu = [
         href: "#",
         icon: ClipboardDocumentIcon,
         current: false,
-        feature: "DailyReport_View",
+        feature: "DeliveryReport_View",
         url: "/gtrs/delivery-report",
     },
 
@@ -314,6 +314,7 @@ export default function CollapseSidebar({
     setCusomterAccounts,
     customerAccounts,
     onData,
+    user,
 }) {
     const [collapsed, setCollapsed] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -322,9 +323,23 @@ export default function CollapseSidebar({
     const [customerOptions, setCustomerOptions] = useState([]);
     const [showList, setShowList] = useState(false);
     const showSelect = customerOptions?.length > 0;
-    const [sidebarElements, setSidebarElements] = useState(menu);
+    const [sidebarElements, setSidebarElements] = useState();
     const [optionSelected, setoptionSelected] = useState([]);
     const navigate = useNavigate();
+
+    useEffect(() => {
+       let items = [];
+       menu?.map((menuItem) => {
+           if(user?.find((item) => item?.FunctionName == menuItem?.feature)){
+               items.push({...menuItem, current : false })
+           }
+       })
+       if (items.length > 0) {
+        navigate(items[0].url);
+        items[0].current = true;
+      }
+        setSidebarElements(items);
+    },[])
 
     useEffect(() => {
         setCustomerOptions(customerAccounts);
@@ -489,8 +504,9 @@ export default function CollapseSidebar({
         return active;
     }
 
-    
+
     return (
+       sidebarElements?.length > 0 &&
         <div className="h-full relative z-20">
             <Sidebar
                 collapsed={collapsed} // collapsed the menu
@@ -637,7 +653,7 @@ export default function CollapseSidebar({
                             rootStyles="w-1/2 overflow-auto bg-gray-100  mx-10"
                             menuItemStyles={menuItemStyles}
                         >
-                            {sidebarElements.map((menuItem, itemIndex) => (
+                            {sidebarElements?.map((menuItem, itemIndex) => (
                                 <>
                                     {menuItem?.options && !collapsed ? (
                                         <div className="px-5 py-2">

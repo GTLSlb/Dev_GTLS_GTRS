@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
 import { PublicClientApplication } from "@azure/msal-browser";
 import { AlertToast } from "./permissions";
-
+import NoAccess from "@/Components/NoAccess";
 
 const msalConfig = {
     auth: {
@@ -211,3 +211,16 @@ export const formatDateToExcel = (dateValue) => {
     // Convert to Excel date serial number format
     return (date.getTime() - date.getTimezoneOffset() * 60000) / 86400000 + 25569;
 };
+
+
+export function ProtectedRoute({ permission, route, element }) {
+    const userHasPermission = checkUserPermission(permission, route);
+    return userHasPermission ? element : <NoAccess />;
+}
+
+function checkUserPermission(permission, route) {
+    // Go over the flat permissions and check if the user has the required permission
+    return permission?.some((feature) => {
+        return feature.FunctionName == route
+    });
+}

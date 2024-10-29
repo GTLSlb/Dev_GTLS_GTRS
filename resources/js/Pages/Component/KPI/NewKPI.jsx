@@ -121,6 +121,7 @@ function NewKPI({
 
         return filteredKPI;
     };
+
     useEffect(() => {
         setFilteredData(filterData());
         setReceiverStateOptions(
