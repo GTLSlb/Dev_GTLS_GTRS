@@ -32,6 +32,7 @@ import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import ConsMap from "./TrafficPage/ConsMap";
 import DailyReportPage from "./ReportsPage/DeliveryReportPage";
 import DeliveryReportPage from "./ReportsPage/DeliveryReportPage";
+import NewConsignmentTracking from "./New Consignment Tracking/NewConsignmentTracking";
 
 export default function charts({
     setCusomterAccounts,
@@ -2636,6 +2637,7 @@ export default function charts({
             consignment={consignmentToTrack}
             setActiveIndexGTRS={setActiveIndexGTRS}
         />,
+        <NewConsignmentTracking />
     ];
     return (
         <div className="h-full">

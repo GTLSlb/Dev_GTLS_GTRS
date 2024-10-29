@@ -262,12 +262,12 @@ const menu = [
         feature: "TrafficReport_View",
     },
     {
-        id: 23,
-        name: "Consignment Tracking",
+        id: 26,
+        name: "Consignment Tracking 2",
         href: "#",
-        icon: MapPinIcon,
+        icon: ClipboardDocumentIcon,
         current: false,
-        feature: "ConsignmentTracking_View",
+        feature: "View_Tracking2",
     },
     {
         id: 24,
@@ -278,7 +278,9 @@ const menu = [
         feature: "DeliveryReport_View",
         url: "/gtrs/delivery-report",
     },
+
 ];
+
 
 export default function CollapseSidebar({
     setActivePage,
@@ -381,53 +383,15 @@ export default function CollapseSidebar({
         }),
     };
 
-    function setPage(menuIndex, menuItem) {
-        setActivePage(menuItem.id);
-    }
-    const [value, setValue] = useState(0);
     const [selectedItems, setSelectedItems] = useState(new Set(["0"]));
-    function removeTrailingSlash(url) {
-        return url.endsWith("/") ? url.slice(0, -1) : url;
-    }
-    // useEffect(() => {
-    //     // Find the index of the item whose URL is in the current path
-    //     const currentPath = location.pathname;
 
-    //     const index = menu.findIndex((item) => currentPath.includes(item.url));
-    //     const match = menu.find(
-    //         (item) =>
-    //             removeTrailingSlash(item.url) ===
-    //             removeTrailingSlash(currentPath)
-    //     );
-    //     if (match && match.menuItems.length > 0) {
-    //         navigate(match.menuItems[0].Link);
-    //     }
-    //     if (index !== -1) {
-    //         setSelectedItems(`${index}`);
-    //         setValue(index);
-    //     }
-    // }, [location, menu]);
+
 
     useEffect(() => {
         setSelectedItems(new Set(["0"]));
     }, []);
 
-    const handleChangeModule = (item) => {
-        if (!location.pathname.includes(item.url)) {
-            navigate(item.url);
-        }
-    };
-    function handleSelectOnClick() {
-        if (collapsed) {
-            setCollapsed(false);
-            if (collapsed === false) {
-                setIsOpen(true);
-            }
-        } else {
-            setIsOpen(!isOpen);
-        }
-        // setIsOpen(!isOpen);
-    }
+    
     function isItemActive(menuItemLabel) {
         let active = false;
 
