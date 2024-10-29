@@ -265,7 +265,7 @@ const menu = [
         id: 26,
         name: "Consignment Tracking 2",
         href: "#",
-        icon: ClipboardDocumentIcon,
+        icon: MapPinIcon,
         current: false,
         feature: "View_Tracking2",
     },
