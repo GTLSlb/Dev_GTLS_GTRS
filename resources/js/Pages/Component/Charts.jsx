@@ -65,6 +65,8 @@ export default function charts({
     kpireasonsData,
     setkpireasonsData,
     userPermission,
+    sidebarElements,
+    setSidebarElements,
 }) {
     window.moment = moment;
     const current = new Date();
@@ -1998,6 +2000,8 @@ export default function charts({
                         user={user}
                         onData={handleDataFromChild}
                         currentUser={currentUser}
+                        setSidebarElements={setSidebarElements}
+                        sidebarElements={sidebarElements}
                     />
 
                     <main className="w-full bg-gray-50 h-full overflow-y-auto">

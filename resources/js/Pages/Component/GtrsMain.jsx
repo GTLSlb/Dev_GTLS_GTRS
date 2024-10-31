@@ -73,6 +73,10 @@ export default function GtrsMain({
     kpireasonsData,
     setkpireasonsData,
     userPermission,
+    sidebarElements,
+    setSidebarElements,
+    setToken,
+    setCurrentUser,
 }) {
     window.moment = moment;
     const [KPIData, setKPIData] = useState([]);
@@ -624,6 +628,8 @@ export default function GtrsMain({
                         rtl={rtl}
                         toggled={toggled}
                         setToggled={setToggled}
+                        sidebarElements={sidebarElements}
+                        setSidebarElements={setSidebarElements}
                         setCusomterAccounts={setCusomterAccounts}
                         customerAccounts={customerAccounts}
                         onData={handleDataFromChild}
@@ -664,6 +670,7 @@ export default function GtrsMain({
                                                 safetyData={safetyData}
                                                 accData={dataFromChild}
                                             />}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
                                             />
                                         }
                                     />
@@ -681,6 +688,7 @@ export default function GtrsMain({
                                                 minDate={minDate}
                                                 maxDate={maxDate}
                                             />}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
                                             />
                                         }
                                     />
@@ -693,7 +701,9 @@ export default function GtrsMain({
                                             element={<ConsDetails
                                                 url={url}
                                                 currentUser={currentUser}
-                                            />}/>
+                                            />}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                            />
                                         }
                                     />
                                     <Route
@@ -719,7 +729,9 @@ export default function GtrsMain({
                                                 SDate={SDate}
                                                 setSDate={setSDate}
                                                 userPermission={userPermission}
-                                            />}/>
+                                            />}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                            />
                                         }
                                     />
                                     <Route
@@ -755,7 +767,9 @@ export default function GtrsMain({
                                                     setFailedReasons
                                                 }
                                                 userPermission={userPermission}
-                                            />}/>
+                                            />}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                            />
                                         }
                                     />
                                     <Route
@@ -773,7 +787,9 @@ export default function GtrsMain({
                                                 currentUser={currentUser}
                                                 NoDelData={NoDelData}
                                                 setNoDelData={setNoDelData}
-                                            />}/>
+                                            />}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                            />
                                         }
                                     />
                                     <Route
@@ -793,7 +809,9 @@ export default function GtrsMain({
                                                 setAdditionalData={
                                                     setAdditionalData
                                                 }
-                                            />}/>
+                                            />}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                            />
                                         }
                                     />
                                     <Route
@@ -811,7 +829,9 @@ export default function GtrsMain({
                                                 setFilterValue={
                                                     setFiltersDriver
                                                 }
-                                            />}/>
+                                            />}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                            />
                                         }
                                     />
                                     <Route
@@ -843,7 +863,9 @@ export default function GtrsMain({
                                                 rddReasons={rddReasons}
                                                 setrddReasons={setrddReasons}
                                                 userPermission={userPermission}
-                                            />}/>
+                                            />}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                            />
                                         }
                                     />
                                     <Route
@@ -883,7 +905,9 @@ export default function GtrsMain({
                                                     setsafetyDataState
                                                 }
                                                 userPermission={userPermission}
-                                            />}/>
+                                            />}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                            />
                                         }
                                     />
                                     <Route
@@ -899,7 +923,9 @@ export default function GtrsMain({
                                                 }
                                                 accData={dataFromChild}
                                                 PerfData={PerfData}
-                                            />}/>
+                                            />}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                            />
                                         }
                                     />
                                     <Route
@@ -919,7 +945,9 @@ export default function GtrsMain({
                                                 url={url}
                                                 AToken={AToken}
                                                 userPermission={userPermission}
-                                            />}/>
+                                            />}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                            />
                                         }
                                     />
                                     <Route
@@ -937,7 +965,9 @@ export default function GtrsMain({
                                                     setkpireasonsData
                                                 }
                                                 userPermission={userPermission}
-                                            />}/>
+                                            />}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                            />
                                         }
                                     />
                                     <Route
@@ -955,7 +985,9 @@ export default function GtrsMain({
                                                 }
                                                 minDate={minDate}
                                                 maxDate={maxDate}
-                                            />}/>
+                                            />}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                            />
                                         }
                                     />
                                     <Route
@@ -977,7 +1009,9 @@ export default function GtrsMain({
                                                 url={url}
                                                 AToken={AToken}
                                                 userPermission={userPermission}
-                                            />}/>
+                                            />}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                            />
                                         }
                                     />
                                     <Route
@@ -998,7 +1032,9 @@ export default function GtrsMain({
                                                 currentUser={currentUser}
                                                 url={url}
                                                 userPermission={userPermission}
-                                            />}/>
+                                            />}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                            />
                                         }
                                     />
                                     <Route
@@ -1017,7 +1053,9 @@ export default function GtrsMain({
                                                     setNewTransitDays
                                                 }
                                                 AToken={AToken}
-                                            />}/>
+                                            />}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                            />
                                         }
                                     />
                                     <Route
@@ -1030,7 +1068,9 @@ export default function GtrsMain({
                                                 url={url}
                                                 currentUser={currentUser}
                                                 AToken={AToken}
-                                            />}/>
+                                            />}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                            />
                                         }
                                     />
                                     <Route
@@ -1038,7 +1078,9 @@ export default function GtrsMain({
                                         element={ <ProtectedRoute
                                             permission={userPermission}
                                             route="TrafficReport_View"
-                                            element={<TrafficComp />}/>}
+                                            element={<TrafficComp />}
+                                            />}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
                                     />
                                     <Route
                                         path="/incident"
@@ -1053,6 +1095,7 @@ export default function GtrsMain({
                                                 userPermission={userPermission}
                                             />}/>
                                         }
+                                        currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
                                     />
                                     <Route
                                         path="/consignment-tracking"
@@ -1067,6 +1110,7 @@ export default function GtrsMain({
                                                 filterValue={filtersConsTrack}
                                             />}/>
                                         }
+                                        currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
                                     />
                                     <Route
                                         path="/delivery-report"
@@ -1086,6 +1130,7 @@ export default function GtrsMain({
                                                 }
                                             />}/>
                                         }
+                                        currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
                                     />
                                     <Route
                                         path="/consignment-map"
@@ -1093,6 +1138,7 @@ export default function GtrsMain({
                                             permission={userPermission}
                                             route="ConsignmentMap_View"
                                             element={<ConsMap />}/>}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
                                     />
                                     <Route
                                         path="/consignment-tracking-2"
@@ -1100,6 +1146,7 @@ export default function GtrsMain({
                                             permission={userPermission}
                                             route="View_Tracking2"
                                             element={<NewConsignmentTracking />}/>}
+                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
                                     />
                                     <Route
                                         path="/*"

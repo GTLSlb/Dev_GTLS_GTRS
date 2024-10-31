@@ -65,7 +65,7 @@ export default function Holidays({
     const holidayOptions = createNewLabelObjects(holidays, "HolidayName");
     const stateOptions = createNewLabelObjects(holidays, "HolidayState");
 
-    const columns = [
+    const [columns, setColumns] = useState([
         {
             name: "HolidayName",
             minWidth: 170,
@@ -139,35 +139,43 @@ export default function Holidays({
                 );
             },
         },
-        {
-            name: "edit",
-            header: "edit",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 100,
-            render: ({ value, data }) => {
-                return (
-                    <div>
-                        {canEditHolidays(userPermission) ? (
-                            <button
-                                className={
-                                    "rounded text-blue-500 justify-center items-center  "
-                                }
-                                onClick={() => {
-                                    handleEditClick(data);
-                                }}
-                            >
-                                <span className="flex gap-x-1">
-                                    <PencilIcon className="h-4" />
-                                    Edit
-                                </span>
-                            </button>
-                        ) : null}
-                    </div>
-                );
-            },
-        },
-    ];
+    ]);
+
+    useEffect(() => {
+        if(userPermission && canEditHolidays(userPermission)){
+            setColumns([
+                ...columns,
+                {
+                    name: "edit",
+                    header: "edit",
+                    headerAlign: "center",
+                    textAlign: "center",
+                    defaultWidth: 100,
+                    render: ({ value, data }) => {
+                        return (
+                            <div>
+                                {canEditHolidays(userPermission) ? (
+                                    <button
+                                        className={
+                                            "rounded text-blue-500 justify-center items-center  "
+                                        }
+                                        onClick={() => {
+                                            handleEditClick(data);
+                                        }}
+                                    >
+                                        <span className="flex gap-x-1">
+                                            <PencilIcon className="h-4" />
+                                            Edit
+                                        </span>
+                                    </button>
+                                ) : null}
+                            </div>
+                        );
+                    },
+                },
+            ])
+        }
+    },[userPermission]);
 
     return (
         <div>

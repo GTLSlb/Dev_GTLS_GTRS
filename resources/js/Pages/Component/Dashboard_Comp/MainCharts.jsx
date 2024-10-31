@@ -19,9 +19,23 @@ import notFound from "../../../assets/pictures/NotFound.png";
 import { useEffect } from "react";
 import MultiChartLine from "./Dashboard_Charts/MultiLineChart";
 import DoubleBarChart from "./Dashboard_Charts/DoublBarChart";
-import { getLatestDespatchDate, getOldestDespatchDate } from "@/Components/utils/dateUtils";
-import { calculateStatistics, getConsStatusCounter, getKPIStatusCounter, getMonthlyData, getMonthlyRecordCounts, getPODCounts, getPODCountsByState, getStateRecordCounts, getStateTotalWeights } from "@/Components/utils/chartFunc";
+import {
+    getLatestDespatchDate,
+    getOldestDespatchDate,
+} from "@/Components/utils/dateUtils";
+import {
+    calculateStatistics,
+    getConsStatusCounter,
+    getKPIStatusCounter,
+    getMonthlyData,
+    getMonthlyRecordCounts,
+    getPODCounts,
+    getPODCountsByState,
+    getStateRecordCounts,
+    getStateTotalWeights,
+} from "@/Components/utils/chartFunc";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import GtrsButton from "../GtrsButton";
 export default function MainCharts({ accData, safetyData, chartsData }) {
     const [filteredSafety, setFilteredSafety] = useState(safetyData);
 
@@ -42,6 +56,20 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
         { i: "card13", x: 2, y: 4, w: 1, h: 3 },
         { i: "card14", x: 0, y: 4, w: 1, h: 3 },
     ]);
+    const ResetLayout = () => {
+        // Filter the options based on the selected receivers
+        setLayout([
+            { i: "card02", x: 0, y: 0, w: 1, h: 4.5 }, //Information
+            { i: "card06", x: 2, y: 0, w: 1, h: 4.5 }, // Spend By month
+            { i: "card04", x: 0, y: 2, w: 1, h: 3 }, //Consignment Status
+            { i: "card12", x: 2, y: 0, w: 1, h: 3 }, // Consignment By Month
+            { i: "card08", x: 0, y: 2, w: 1, h: 3 }, // Pod True Vs False
+            { i: "card03", x: 2, y: 2, w: 1, h: 3 }, // Pod Status
+            { i: "card03_2", x: 0, y: 4, w: 1, h: 3 },
+            { i: "card13", x: 2, y: 4, w: 1, h: 3 },
+            { i: "card14", x: 0, y: 4, w: 1, h: 3 },
+        ]);
+    };
     const [cols, setCols] = useState(2);
     useEffect(() => {
         const handleResize = () => {
@@ -73,7 +101,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
     };
     const [hasData, setHasData] = useState(true);
     const uniqueReceiverNames = Array.from(
-        new Set(filteredData.map((item) => item.ReceiverName))
+        new Set(chartsData.map((item) => item.ReceiverName))
     );
     const handleReceiverSelectChange = (selectedOptions) => {
         setselectedReceiver(selectedOptions);
@@ -279,6 +307,14 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                                     </div>
                                 </div>
                             </div>
+                            <div className="ml-auto">
+                                <button
+                                    className={`  items-center w-auto h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+                                    onClick={ResetLayout}
+                                >
+                                    Reset layout
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div className="lg:hidden px-2 py-3 w-full">
@@ -327,12 +363,15 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                             {" "}
                             <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                             <DashboardCard07
-                                InfoData={calculateStatistics(filteredData, filteredSafety)}
+                                InfoData={calculateStatistics(
+                                    filteredData,
+                                    filteredSafety
+                                )}
                             />{" "}
                         </div>
                         <div key="card06" className="relative">
                             {" "}
-                            <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
+                            <ArrowsPointingOutIcon className=" absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                             <MultiChartLine
                                 chartData={getMonthlyData(filteredData)}
                                 chartTitle={"Spend By State"}
@@ -410,15 +449,13 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                 )}
             </div>
         );
-    } else if (chartsData.length === 0){
+    } else if (chartsData.length === 0) {
         return (
             <div className=" min-h-screen flex items-center justify-center h-full">
                 <p>No Data Found</p>
             </div>
         );
     } else {
-        return (
-            <AnimatedLoading />
-        );
+        return <AnimatedLoading />;
     }
 }

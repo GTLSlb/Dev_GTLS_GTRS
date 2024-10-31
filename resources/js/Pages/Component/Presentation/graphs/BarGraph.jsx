@@ -36,6 +36,7 @@ function BarGraph({
     setGraphData,
     updateData,
     userPermission,
+    AToken,
 }) {
     const chartRef = useRef(null);
 
@@ -250,6 +251,7 @@ function BarGraph({
                 currentUser={currentUser}
                 userPermission={userPermission}
                 selectedReceiver={selectedReceiver}
+                AToken={AToken}
             />
         </div>
     );

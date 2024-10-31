@@ -10,6 +10,8 @@ import AnimatedLoading from "@/Components/AnimatedLoading";
 import ForgotPassword from "./Auth/ForgotPassword";
 import { handleSessionExpiration } from "@/CommonFunctions";
 import NoAccess from "@/Components/NoAccess";
+import menu from "@/SidebarMenuItems";
+import { useNavigate } from "react-router-dom";
 
 export default function Sidebar(Boolean) {
     const [currentUser, setcurrentUser] = useState(null);
@@ -17,8 +19,11 @@ export default function Sidebar(Boolean) {
     const [allowedApplications, setAllowedApplications] = useState([]);
     const [Token, setToken] = useState(Cookies.get("access_token"));
     const [canAccess, setCanAccess] = useState(true);
+    const [sidebarElements, setSidebarElements] = useState();
     const Gtamurl = window.Laravel.gtamUrl;
     const appDomain = window.Laravel.appDomain;
+
+    const navigate = useNavigate();
 
     const getAppPermisions = () => {
         //user permissions
@@ -32,6 +37,17 @@ export default function Sidebar(Boolean) {
             .then((res) => {
                 if (typeof res.data == "object") {
                     setUser(res.data);
+                        // let items = [];
+                        // menu?.map((menuItem) => {
+                        //     if(res.data?.Features?.find((item) => item?.FunctionName == menuItem?.feature)){
+                        //         items.push({...menuItem, current : false })
+                        //     }
+                        // })
+                        // if (items.length > 0) {
+                        //     localStorage.getItem("current") ? items.find((item) => item.id == localStorage.getItem("current")).current = true : items[0].current = true;
+                        //     items.find((item) => item.id == localStorage.getItem("current")) ? navigate(items.find((item) => item.id == localStorage.getItem("current")).url) : navigate(items[0].url);
+                        // }
+                        //  setSidebarElements(items);
                 }
             })
             .catch((err) => {
@@ -47,7 +63,14 @@ export default function Sidebar(Boolean) {
                     setcurrentUser(res.data);
                 }
             })
-            .catch((error) => {console.log(error)}
+            .catch((error) => {
+                if(error.status == 401 && Cookies.get('msal.isMicrosoftLogin') == undefined) {
+                    //Session not found
+                    handleSessionExpiration();
+                }
+
+                console.log(error)
+            }
         );
     }, []);
 
@@ -147,7 +170,7 @@ export default function Sidebar(Boolean) {
         return null; // Render nothing
     } else {
         if(canAccess === false) {
-            return <NoAccess />
+            return <NoAccess currentUser={currentUser} setToken={setToken} setCurrentUser={setcurrentUser}/>
         }else{
             return (
                 <div className="h-screen">
@@ -155,7 +178,7 @@ export default function Sidebar(Boolean) {
                         <div className="bg-smooth h-full ">
                             <Routes>
                                 <Route
-                                    path="/gtrs/*"
+                                    path="/*"
                                     element={
                                         <Gtrs
                                             setToken={setToken}
@@ -170,6 +193,8 @@ export default function Sidebar(Boolean) {
                                             allowedApplications={
                                                 allowedApplications
                                             }
+                                            setSidebarElements={setSidebarElements}
+                                            sidebarElements={sidebarElements}
                                             setcurrentUser={setcurrentUser}
                                         />
                                     }
@@ -179,6 +204,7 @@ export default function Sidebar(Boolean) {
                                     path="/notFound"
                                     element={<NotFoundPage />}
                                 />
+                                <Route path="/no-access" element ={<NoAccess currentUser={currentUser} setToken={setToken} setCurrentUser={setcurrentUser}/>} />
                                 <Route path="/*" element={<NotFoundPage />} />
                             </Routes>
                         </div>

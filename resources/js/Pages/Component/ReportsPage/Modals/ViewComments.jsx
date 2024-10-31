@@ -38,8 +38,6 @@ export default function ViewComments({
             "ConsId": consId,
             "Comment": comment
         };
-        console.log(formValues);
-
         try {
             setIsLoading(true);
 
