@@ -62,24 +62,9 @@ export default function DailyReportPage({
 
         return newData;
     };
-    const [receiverZoneOptions, setReceiverZoneOptions] = useState([
-        {
-            id: "NSW",
-            label: "NSW",
-        },
-        {
-            id: "SA",
-            label: "SA",
-        },
-        {
-            id: "VIC",
-            label: "VIC",
-        },
-        {
-            id: "QLD",
-            label: "QLD",
-        },
-    ]);
+    const [receiverZoneOptions, setReceiverZoneOptions] = useState(createNewLabelObjects(dailyReportData, "ReceiverState"));
+
+    console.log();
     const consStateOptions = createNewLabelObjects(
         dailyReportData,
         "ConsignmentStatus"
@@ -95,24 +80,9 @@ export default function DailyReportPage({
             label: "False",
         },
     ];
-    const [senderZoneOptions, setSenderZoneOptions] = useState([
-        {
-            id: "NSW",
-            label: "NSW",
-        },
-        {
-            id: "SA",
-            label: "SA",
-        },
-        {
-            id: "VIC",
-            label: "VIC",
-        },
-        {
-            id: "QLD",
-            label: "QLD",
-        },
-    ]);
+    const [senderZoneOptions, setSenderZoneOptions] = useState(
+        createNewLabelObjects(dailyReportData, "SenderState")
+    );
 
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     const [cellLoading, setCellLoading] = useState(false);
