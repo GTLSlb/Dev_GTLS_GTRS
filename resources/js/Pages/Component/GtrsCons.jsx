@@ -10,6 +10,7 @@ import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { useNavigate } from "react-router-dom";
+import CustomDateFilter from "@/Components/TableComp/CustomDateFilter";
 export default function GtrsCons({
     consData,
     minDate,
@@ -18,6 +19,7 @@ export default function GtrsCons({
     setFilterValue,
     accData,
 }) {
+    console.log(filterValue)
     window.moment = moment;
     const navigate = useNavigate();
     const [filteredData, setFilteredData] = useState(consData);
@@ -130,7 +132,7 @@ export default function GtrsCons({
             defaultFlex: 1,
             minWidth: 200,
             dateFormat: "DD-MM-YYYY",
-            filterEditor: DateFilter,
+            filterEditor: CustomDateFilter,
             filterEditorProps: {
                 minDate: minDate,
                 maxDate: maxDate,
