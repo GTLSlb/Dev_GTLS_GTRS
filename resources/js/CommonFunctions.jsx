@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
 import { PublicClientApplication } from "@azure/msal-browser";
 import { AlertToast } from "./permissions";
-
+import NoAccessRedirect from "@/Pages/NoAccessRedirect";
 
 const msalConfig = {
     auth: {
@@ -62,10 +62,34 @@ export async function handleSessionExpiration() {
                 })
                 .catch((error) => {
                     console.log(error);
+                    if (error.response && error.response.status === 401) {
+                        // Handle 401 error using SweetAlert
+                        swal({
+                            title: "Session Expired!",
+                            text: "Please login again to continue.",
+                            icon: "warning",
+                            button: "Ok",
+                        }).then(async function () {
+                            window.location.href = `/login`;
+                        });
+                    }
                 });
         }
     })
-    .catch((error) => console.log(error));
+    .catch((error) => {
+        console.log(error)
+        if (error.response && error.response.status === 401) {
+            // Handle 401 error using SweetAlert
+            swal({
+                title: "Session Expired!",
+                text: "Please login again to continue.",
+                icon: "warning",
+                button: "Ok",
+            }).then(async function () {
+                window.location.href = `/login`;
+            });
+        }
+    });
 }
 
 
@@ -194,7 +218,7 @@ export function getApiRequest(url, headers = {}) {
             } else {
                 // Handle other errors
                 AlertToast("Something went wrong", 2);
-                console.log("url", url, err);
+                console.log(err);
             }
         });
 }
@@ -211,3 +235,16 @@ export const formatDateToExcel = (dateValue) => {
     // Convert to Excel date serial number format
     return (date.getTime() - date.getTimezoneOffset() * 60000) / 86400000 + 25569;
 };
+
+
+export function ProtectedRoute({ permission, route, element, currentUser, setToken, setcurrentUser }) {
+    const userHasPermission = checkUserPermission(permission, route);
+    return userHasPermission ? element : <NoAccessRedirect />;
+}
+
+function checkUserPermission(permission, route) {
+    // Go over the flat permissions and check if the user has the required permission
+    return permission?.Features?.some((feature) => {
+        return feature.FunctionName == route
+    });
+}

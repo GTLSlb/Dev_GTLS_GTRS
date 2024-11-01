@@ -672,7 +672,6 @@ function TraffiComp() {
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-        // console.log(jsonData);
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );

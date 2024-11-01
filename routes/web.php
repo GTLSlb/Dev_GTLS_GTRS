@@ -29,8 +29,9 @@ use gtls\loginstory\LoginClass;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::redirect('/', '/gtrs/dashboard');
+Route::get('/', function () {
+    return Inertia::render('Layout');
+})->middleware(['custom.auth'])->name('Main');
 
 Route::get('/login', function () {
     return Inertia::render('Auth/Login');
@@ -39,10 +40,6 @@ Route::get('/login', function () {
 Route::get('/forgot-password', function () {
     return Inertia::render('Auth/ForgotPassword');
 })->name('forgot.password');
-
-Route::get('/', function () {
-    return Inertia::render('Layout');
-})->middleware(['custom.auth'])->name('Main');
 
 Route::post('/loginComp', [ LoginClass::class, 'login'])->name('loginComp');
 
@@ -54,10 +51,11 @@ Route::post('/composerLogout', [ LoginClass::class, 'logout'])->middleware(['cus
 
 Route::post('/logoutWithoutReq', [ LoginClass::class, 'logoutWithoutRequest'])->middleware(['custom.auth'])->name('composerLogoutWithoutReq');
 
-
 Route::get('/gtrs/dashboard', function () {
     return Inertia::render('Layout');
 })->middleware(['custom.auth'])->name('layout');
+
+Route::redirect('/', '/main');
 
 Route::get('/LandingPage', function () {
     return Inertia::render('LandingPage');

@@ -6,7 +6,8 @@ import MainSidebar from "@/Components/Main-sidebar";
 import MainNavbar from "@/Components/Main-navbar";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import GtrsMain from "./Component/GtrsMain";
-
+import { Routes, Route } from "react-router-dom";
+import MainPageGTRS from "@/Pages/MainPageGTRS";
 export default function Gtrs({
     user,
     setToken,
@@ -18,6 +19,8 @@ export default function Gtrs({
     allowedApplications,
     mobileMenuOpen,
     setcurrentUser,
+    setSidebarElements,
+    sidebarElements,
 }) {
     const [chartsData, setchartsData] = useState([]);
     const [debtorsData, setdebtorsData] = useState([]);
@@ -128,57 +131,81 @@ export default function Gtrs({
     if (loadingGtrs && AToken) {
         if (canAccess) {
             return (
-                <div className="h-full">
-                    {/* <mainSidebar/> */}
-                    <MainSidebar
-                        allowedApplications={allowedApplications}
-                        setMobileMenuOpen={setMobileMenuOpen}
-                        mobileMenuOpen={mobileMenuOpen}
-                        setToken={setToken}
-                        user={user}
-                        currentUser={currentUser}
-                        setCurrentUser={setcurrentUser}
-                    />
-                    <MainNavbar setMobileMenuOpen={setMobileMenuOpen} />
+                <Routes>
+                    <Route
+                        path="/gtrs/*"
+                        element={
+                            <div className="h-full">
+                                {/* <mainSidebar/> */}
+                                <MainSidebar
+                                    allowedApplications={allowedApplications}
+                                    setMobileMenuOpen={setMobileMenuOpen}
+                                    mobileMenuOpen={mobileMenuOpen}
+                                    setToken={setToken}
+                                    user={user}
+                                    currentUser={currentUser}
+                                    setCurrentUser={setcurrentUser}
+                                />
+                                <MainNavbar
+                                    setMobileMenuOpen={setMobileMenuOpen}
+                                />
 
-                    <div className="bg-smooth h-full">
-                        <div className="md:pl-20 pt-16 h-full">
-                            <GtrsMain
-                                transportData={transportData}
-                                setCusomterAccounts={setCusomterAccounts}
-                                kpireasonsData={kpireasonsData}
-                                setkpireasonsData={setkpireasonsData}
-                                userBody={userBody}
-                                url={gtrsUrl}
-                                gtccrUrl={gtccrUrl}
-                                chartsData={chartsData}
-                                rddReasons={rddReasons}
-                                setrddReasons={setrddReasons}
-                                safetyData={safetyData}
-                                debtorsData={debtorsData}
-                                customerAccounts={customerAccounts}
-                                IDfilter={dataFromChild}
-                                currentUser={currentUser}
-                                user={user}
-                                userPermission={user}
-                                dashData={PerfData}
-                                setactiveCon={setactiveCon}
-                                consData={consData}
-                                activeCon={activeCon}
-                                AToken={AToken}
-                                PerfData={PerfData}
-                                setPerfData={setPerfData}
-                            />
-                        </div>
-                    </div>
-                </div>
+                                <div className="bg-smooth h-full">
+                                    <div className="md:pl-20 pt-16 h-full">
+                                        <GtrsMain
+                                            transportData={transportData}
+                                            setCusomterAccounts={
+                                                setCusomterAccounts
+                                            }
+                                            kpireasonsData={kpireasonsData}
+                                            setkpireasonsData={
+                                                setkpireasonsData
+                                            }
+                                            userBody={userBody}
+                                            url={gtrsUrl}
+                                            gtccrUrl={gtccrUrl}
+                                            chartsData={chartsData}
+                                            rddReasons={rddReasons}
+                                            setrddReasons={setrddReasons}
+                                            safetyData={safetyData}
+                                            debtorsData={debtorsData}
+                                            customerAccounts={customerAccounts}
+                                            IDfilter={dataFromChild}
+                                            currentUser={currentUser}
+                                            user={user}
+                                            userPermission={user}
+                                            dashData={PerfData}
+                                            setactiveCon={setactiveCon}
+                                            consData={consData}
+                                            activeCon={activeCon}
+                                            AToken={AToken}
+                                            PerfData={PerfData}
+                                            setPerfData={setPerfData}
+                                            setToken={setToken}
+                                            setCurrentUser={setcurrentUser}
+                                            sidebarElements={sidebarElements}
+                                            setSidebarElements={
+                                                setSidebarElements
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    />
+                    <Route path="/main" element={<MainPageGTRS user={user} setSidebarElements={setSidebarElements} sidebarElements={sidebarElements} AToken={AToken} currentUser={currentUser}/>} />
+                </Routes>
             );
         } else {
-            return <NoAccess />;
+            return (
+                <NoAccess
+                    currentUser={currentUser}
+                    setToken={setToken}
+                    setCurrentUser={setcurrentUser}
+                />
+            );
         }
     } else {
-        return (
-            <AnimatedLoading />
-        );
+        return <AnimatedLoading />;
     }
 }

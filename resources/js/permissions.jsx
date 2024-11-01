@@ -49,7 +49,7 @@ export function canCalculateKPI(currentUser) {
     const targetPermissionName = "Kpi_calculate";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 /**
@@ -63,7 +63,7 @@ export function canEditKPI(currentUser) {
     const targetPermissionName = "Kpi_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 /**
@@ -77,7 +77,7 @@ export function canAddTransitDays(currentUser) {
     const targetPermissionName = "TransitDays_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 /**
@@ -91,7 +91,7 @@ export function canAddNewTransitDays(currentUser) {
     const targetPermissionName = "NewTransitDays_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 /**
@@ -105,7 +105,7 @@ export function canEditTransitDays(currentUser) {
     const targetPermissionName = "TransitDays_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 
@@ -120,7 +120,7 @@ export function canAddHolidays(currentUser) {
     const targetPermissionName = "Holidays_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 /**
@@ -134,7 +134,7 @@ export function canEditHolidays(currentUser) {
     const targetPermissionName = "Holidays_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 /**
@@ -148,7 +148,7 @@ export function canAddKpiReasons(currentUser) {
     const targetPermissionName = "KpiReasons_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 
@@ -163,7 +163,7 @@ export function canEditKpiReasons(currentUser) {
     const targetPermissionName = "KpiReasons_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 
@@ -178,7 +178,7 @@ export function canEditFailedConsignments(currentUser) {
     const targetPermissionName = "FailedConsignments_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 
@@ -193,7 +193,7 @@ export function canViewFailedReasons(currentUser) {
     const targetPermissionName = "FailedReasons_view";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 
@@ -208,7 +208,7 @@ export function canAddFailedReasons(currentUser) {
     const targetPermissionName = "FailedReasons_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 
@@ -223,7 +223,7 @@ export function canEditFailedReasons(currentUser) {
     const targetPermissionName = "FailedReasons_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 /**
@@ -237,7 +237,7 @@ export function canViewInternal(currentUser) {
     const targetPermissionName = "IR_Internal";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature.FunctionName === targetPermissionName);
 }
 
 /**
@@ -251,7 +251,7 @@ export function canEditRDD(currentUser) {
     const targetPermissionName = "RDD_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 
@@ -266,7 +266,7 @@ export function canViewRDDReasons(currentUser) {
     const targetPermissionName = "RDDReasons_view";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 
@@ -281,7 +281,7 @@ export function canAddRDDReasons(currentUser) {
     const targetPermissionName = "RDDReasons_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 
@@ -296,7 +296,7 @@ export function canEditRDDReasons(currentUser) {
     const targetPermissionName = "RDDReasons_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 
@@ -311,7 +311,7 @@ export function canAddSafetyReport(currentUser) {
     const targetPermissionName = "SafetyReport_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 
@@ -326,7 +326,7 @@ export function canViewSafetyType(currentUser) {
     const targetPermissionName = "SafetyType_view";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 
@@ -341,7 +341,7 @@ export function canEditSafetyReport(currentUser) {
     const targetPermissionName = "SafetyReport_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 
@@ -356,7 +356,7 @@ export function canAddSafetyType(currentUser) {
     const targetPermissionName = "SafetyType_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 
@@ -371,7 +371,7 @@ export function canEditSafetyType(currentUser) {
     const targetPermissionName = "SafetyType_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features.some(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
 }
 
 
@@ -384,7 +384,7 @@ export function canEditSafetyType(currentUser) {
  */
 export function canViewDashboard(currentUser) {
     // Check for 'Dashboard_view' permission in the user's permissions array
-    return currentUser?.Features.some(feature => feature?.FunctionName === "Dashboard_view");
+    return currentUser?.Features?.find(feature => feature?.FunctionName === "Dashboard_view");
 }
 
 /**

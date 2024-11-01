@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback  } from "react";
 import moment from "moment";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
@@ -122,12 +121,13 @@ function NewKPI({
         return filteredKPI;
     };
     useEffect(() => {
-        setFilteredData(filterData());
+        let filteredData = filterData()
+        setFilteredData(filteredData);
         setReceiverStateOptions(
-            createNewLabelObjects(filterData(), "ReceiverState")
+            createNewLabelObjects(filteredData, "ReceiverState")
         );
         setSenderStateOptions(
-            createNewLabelObjects(filterData(), "SenderState")
+            createNewLabelObjects(filteredData, "SenderState")
         );
     }, [accData, KPIData]);
     const [selected, setSelected] = useState([]);
@@ -474,6 +474,22 @@ function NewKPI({
         }
     }, []);
 
+    useEffect(() => {
+        if (receiverStateOptions?.length > 0 && senderStateOptions?.length > 0) {
+          setNewColumns((prevColumns) => {
+            return prevColumns.map((column) => {
+              if (column.name === "SenderState") {
+                return { ...column, filterEditorProps: { ...column.filterEditorProps, dataSource: senderStateOptions } };
+              }
+              if(column.name === "ReceiverState"){
+                return { ...column, filterEditorProps: { ...column.filterEditorProps, dataSource: receiverStateOptions } };
+              }
+              return column;
+            });
+          });
+        }
+      }, [receiverStateOptions, senderStateOptions]);
+
     const [statusMessage, setStatusMessage] = useState("");
     const messageDisplayTime = 3000; // Time in milliseconds (3000ms = 3 seconds)
     const clearStatusMessage = () => {
@@ -614,28 +630,34 @@ function NewKPI({
         </div>
     );
 
+    const renderTable = useCallback(() => {
+        return (
+            <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
+            <TableStructure
+                gridRef={gridRef}
+                handleDownloadExcel={handleDownloadExcel}
+                title={"KPI Report"}
+                additionalButtons={additionalButtons}
+                id={"ConsignmentId"}
+                setSelected={setSelected}
+                selected={selected}
+                filterTypesElements={customFilterTypes}
+                groupsElements={groups}
+                tableDataElements={filteredData}
+                filterValueElements={filterValue}
+                setFilterValueElements={setFilterValue}
+                columnsElements={newColumns}
+            />
+        </div>
+        );
+      }, [newColumns]);
+
     return (
         <div>
             {isFetching && newColumns && columns ? (
                 <AnimatedLoading />
             ) : (
-                <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                    <TableStructure
-                        gridRef={gridRef}
-                        handleDownloadExcel={handleDownloadExcel}
-                        title={"KPI Report"}
-                        additionalButtons={additionalButtons}
-                        id={"ConsignmentId"}
-                        setSelected={setSelected}
-                        selected={selected}
-                        filterTypesElements={customFilterTypes}
-                        groupsElements={groups}
-                        tableDataElements={filteredData}
-                        filterValueElements={filterValue}
-                        setFilterValueElements={setFilterValue}
-                        columnsElements={newColumns}
-                    />
-                </div>
+                renderTable()
             )}
             <NewKPIModalAddReason
                 AToken={AToken}

@@ -106,7 +106,7 @@ function NewTransitDays({
 
         return uniqueCustomers;
     }
-    const columns = [
+    const [columns, setColumns] = useState([
         {
             name: "CustomerName",
             header: "Customer Name",
@@ -214,40 +214,45 @@ function NewTransitDays({
             defaultFlex: 1,
             textAlign: "center",
             filterEditor: NumberFilter,
-        },
-        {
-            name: "edit",
-            header: "Edit",
-            headerAlign: "center",
-            textAlign: "center",
-            minWidth: 170,
-            defaultFlex: 1,
-            render: ({ value, data }) => {
-                return (
-                    <div>
-                        {canEditTransitDays(userPermission) ? (
-                            <button
-                                className={
-                                    "rounded text-blue-500 justify-center items-center  "
-                                }
-                                onClick={() => {
-                                    handleEditClick(data);
-                                }}
-                            >
-                                <span className="flex gap-x-1">
-                                    <PencilIcon className="h-4" />
-                                    Edit
-                                </span>
-                            </button>
-                        ) : null}
-                    </div>
-                );
-            },
-        },
-    ];
+        }
+    ]);
     useEffect(() => {
         fetchData();
     }, []);
+    useEffect(() => {
+        if(userPermission && canEditTransitDays(userPermission)){
+            setColumns([
+                ...columns,
+                {
+                    name: "edit",
+                    header: "Edit",
+                    headerAlign: "center",
+                    textAlign: "center",
+                    minWidth: 170,
+                    defaultFlex: 1,
+                    render: ({ value, data }) => {
+                        return (
+                            <div>
+                                    <button
+                                        className={
+                                            "rounded text-blue-500 justify-center items-center  "
+                                        }
+                                        onClick={() => {
+                                            handleEditClick(data);
+                                        }}
+                                    >
+                                        <span className="flex gap-x-1">
+                                            <PencilIcon className="h-4" />
+                                            Edit
+                                        </span>
+                                    </button>
+                            </div>
+                        );
+                    },
+                },
+            ]);
+        }
+    },[userPermission])
     useEffect(() => {
         setFilteredData(newTransitDays);
     }, [newTransitDays]);

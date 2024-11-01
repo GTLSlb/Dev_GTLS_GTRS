@@ -19,6 +19,7 @@ import ConsIcon from "@/assets/icons/ConsIcon.png";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import List from "@mui/icons-material/List";
 import HelpCenterRounded from "@mui/icons-material/HelpCenterRounded";
+import {ToastContainer} from 'react-toastify'
 import {
     SelectItem,
     Divider,
@@ -28,6 +29,7 @@ import {
     Image,
 } from "@nextui-org/react";
 import { ChevronLeftIcon, MapPinIcon } from "@heroicons/react/20/solid";
+import { AlertToast } from "@/permissions";
 
 const center = { lat: -25.2744, lng: 133.7751 };
 const australiaBounds = {
@@ -148,6 +150,7 @@ function NewConsignmentTracking() {
             .catch((error) => {
                 setLoading(false);
                 console.log(error);
+                AlertToast(error.response.data.message , 2);
             });
     };
 
@@ -238,6 +241,8 @@ function NewConsignmentTracking() {
     }
     return (
         <div className=" h-full min-w-[550px] flex">
+            {/* Added this for toast container to show */}
+            <ToastContainer />
             {markerDetails ? (
                 <div className="flex flex-col w-[550px] p-3 bg-zinc-100">
                     <div className="flex">

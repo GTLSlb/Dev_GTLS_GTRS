@@ -69,18 +69,19 @@ export default function MainSidebar({
         };
 
         await pca.initialize();
+
         axios
             .post("/composerLogout", credentials)
             .then((response) => {
                 if (response.status === 200 && response.data.status === 200) {
+                    localStorage.removeItem('current');
                     const isMicrosoftLogin = Cookies.get(
                         "msal.isMicrosoftLogin"
                     );
-
                     clearMSALLocalStorage();
                     Cookies.remove('access_token');
 
-                    if (isMicrosoftLogin === "true") {
+                    if (isMicrosoftLogin == "true") {
                         window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=${window.Laravel.appUrl}/login`;
                         setToken(null);
                         setCurrentUser(null);

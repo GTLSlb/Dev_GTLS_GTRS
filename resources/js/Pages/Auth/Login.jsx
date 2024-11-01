@@ -34,7 +34,7 @@ export default function Login({ }) {
         <div className="h-screen w-full">
         <LoginPage
             appDomain={appDomain}
-            redirectURL="/gtrs/dashboard"
+            redirectURL="/main"
             loginURL="/loginComp"
             gtamURl={gtamURl}
             pca={pca}
@@ -42,6 +42,7 @@ export default function Login({ }) {
             handleForgotPassword={() =>
                 (window.location.href = "/forgot-password")
             }
+            backToHomeURL={'https://web.gtls.store/'}
             gtlsLogo={Logo}
             microsoftLogo={MicrosoftLogo}
         />

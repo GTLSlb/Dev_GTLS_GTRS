@@ -55,6 +55,7 @@ export const calculateStatistics = (data, filteredSafety) => {
     const numUniqueReceivers = uniqueReceivers.size;
     const podPercentage = (podCounter / data.length) * 100;
 
+    fuelLevy = isNaN(fuelLevy) ? 0 : fuelLevy;
     return {
         numUniqueReceivers,
         totalWeight,

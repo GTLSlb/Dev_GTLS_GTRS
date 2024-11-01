@@ -7,8 +7,6 @@ import {
     menuClasses,
 } from "react-pro-sidebar";
 import { useNavigate } from "react-router-dom";
-import TaskIcon from "@mui/icons-material/Task";
-import ReportIcon from "@mui/icons-material/Report";
 
 import {
     ChartPieIcon,
@@ -34,7 +32,7 @@ import {
     AccordionItem,
 } from "react-headless-accordion";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
-import { MapPinIcon } from "@heroicons/react/20/solid";
+
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -120,190 +118,6 @@ const hexToRgba = (hex, alpha) => {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
-const menu = [
-    {
-        id: 0,
-        name: "Dashboard",
-        href: "#",
-        icon: ChartPieIcon,
-        current: true,
-        feature: "Dashboard_view",
-        url: "/gtrs/dashboard",
-    },
-    {
-        id: 1,
-        name: "Consignments",
-        href: "#",
-        icon: TruckIcon,
-        current: false,
-        feature: "ConsignmetsReport_view",
-        url: "/gtrs/consignments",
-    },
-    {
-        id: 2,
-        name: "KPI Report",
-        href: "#",
-        icon: ClipboardDocumentCheckIcon,
-        current: false,
-        options: [
-            {
-                id: 17,
-                name: "KPI",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "KPI_view",
-                url: "/gtrs/kpi",
-            },
-            {
-                id: 18,
-                name: "Transit Days",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "View_TransitDays",
-                url: "/gtrs/kpi/transit-days",
-            },
-            {
-                id: 13,
-                name: "Holidays",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "View_Holidays",
-                url: "/gtrs/kpi/holidays",
-            },
-        ],
-        feature: "KPI",
-    },
-    {
-        id: 4,
-        name: "Performance Report",
-        href: "#",
-        icon: PresentationChartLineIcon,
-        current: false,
-        feature: "Performance_view",
-        url: "/gtrs/performance",
-    },
-    {
-        id: 5,
-        name: "Failed Consignments",
-        href: "#",
-        icon: ExclamationTriangleIcon,
-        current: false,
-        feature: "View_failedConsignment",
-        url: "/gtrs/failed-consignments",
-    },
-    {
-        id: 16,
-        name: "Transport Report",
-        href: "#",
-        icon: TaskIcon,
-        current: false,
-        feature: "View_Transport",
-        url: "/gtrs/transport",
-    },
-    {
-        id: 9,
-        name: "RDD",
-        href: "#",
-        icon: ClockIcon,
-        current: false,
-        feature: "View_RDD",
-        url: "/gtrs/rdd",
-    },
-    {
-        id: 11,
-        name: "Missing POD",
-        href: "#",
-        icon: CameraIcon,
-        current: false,
-        feature: "MissingPOD_view",
-        url: "/gtrs/missing-pod",
-    },
-    {
-        id: 10,
-        name: "Safety",
-        href: "#",
-        icon: ShieldCheckIcon,
-        current: false,
-        feature: "View_safety",
-        url: "/gtrs/safety",
-    },
-    {
-        id: 6,
-        name: "No Delivery info.",
-        href: "#",
-        icon: NoSymbolIcon,
-        current: false,
-        feature: "NoDeliveryInfo_view",
-        url: "/gtrs/no-delivery",
-    },
-    {
-        id: 7,
-        name: "Additional Charges",
-        href: "#",
-        icon: CurrencyDollarIcon,
-        current: false,
-        feature: "AdditionalCharges_view",
-        url: "/gtrs/additional-charges",
-    },
-    {
-        id: 8,
-        name: "Driver Login",
-        href: "#",
-        icon: UserIcon,
-        current: false,
-        feature: "DriverLogin_view",
-        url: "/gtrs/driver-login",
-    },
-    {
-        id: 20,
-        name: "KPI Pack Report",
-        href: "#",
-        icon: DocumentTextIcon,
-        current: false,
-        feature: "UnileverReport_View",
-        url: "/gtrs/pack-report",
-    },
-    {
-        id: 21,
-        name: "Traffic Report",
-        href: "#",
-        icon: ReportIcon,
-        current: false,
-        feature: "TrafficReport_View",
-        url: "/gtrs/traffic-report",
-    },
-    {
-        id: 23,
-        name: "Consignment Tracking",
-        href: "#",
-        icon: MapPinIcon,
-        current: false,
-        feature: "ConsignmentTracking_View",
-        url: "/gtrs/consignment-tracking",
-    },
-    {
-        id: 25,
-        name: "Consignment Tracking 2",
-        href: "#",
-        icon: ClipboardDocumentIcon,
-        current: false,
-        feature: "View_Tracking2",
-        url: "/gtrs/consignment-tracking-2",
-    },
-    {
-        id: 24,
-        name: "Delivery Report",
-        href: "#",
-        icon: ClipboardDocumentIcon,
-        current: false,
-        feature: "DailyReport_View",
-        url: "/gtrs/delivery-report",
-    },
-
-];
 
 export default function CollapseSidebar({
     setBroken,
@@ -314,6 +128,9 @@ export default function CollapseSidebar({
     setCusomterAccounts,
     customerAccounts,
     onData,
+    user,
+    sidebarElements,
+    setSidebarElements,
 }) {
     const [collapsed, setCollapsed] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -322,7 +139,7 @@ export default function CollapseSidebar({
     const [customerOptions, setCustomerOptions] = useState([]);
     const [showList, setShowList] = useState(false);
     const showSelect = customerOptions?.length > 0;
-    const [sidebarElements, setSidebarElements] = useState(menu);
+    // const [sidebarElements, setSidebarElements] = useState();
     const [optionSelected, setoptionSelected] = useState([]);
     const navigate = useNavigate();
 
@@ -489,8 +306,9 @@ export default function CollapseSidebar({
         return active;
     }
 
-    
+
     return (
+       sidebarElements?.length > 0 &&
         <div className="h-full relative z-20">
             <Sidebar
                 collapsed={collapsed} // collapsed the menu
@@ -637,7 +455,7 @@ export default function CollapseSidebar({
                             rootStyles="w-1/2 overflow-auto bg-gray-100  mx-10"
                             menuItemStyles={menuItemStyles}
                         >
-                            {sidebarElements.map((menuItem, itemIndex) => (
+                            {sidebarElements?.map((menuItem, itemIndex) => (
                                 <>
                                     {menuItem?.options && !collapsed ? (
                                         <div className="px-5 py-2">

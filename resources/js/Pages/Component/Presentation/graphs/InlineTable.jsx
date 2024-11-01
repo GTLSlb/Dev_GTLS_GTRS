@@ -4,6 +4,8 @@ import "@inovua/reactdatagrid-community/index.css";
 import axios from "axios";
 import { useCallback } from "react";
 import "../../../../../css/graphTable.css";
+import { AlertToast } from "@/permissions";
+import {ToastContainer,toast} from 'react-toastify'
 
 // Component
 function InlineTable({
@@ -14,6 +16,7 @@ function InlineTable({
     getReportData,
     selectedReceiver,
     updateLocalDataFromJson,
+    AToken,
 }) {
     const [jsonData, setJsonData] = useState(graphData);
     // Function to format date to column name
@@ -298,6 +301,7 @@ function InlineTable({
                 .post(`${url}Add/KpiPackRecord`, baseRecord, {
                     headers: {
                         UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
                     },
                 })
                 .then((res) => {
@@ -348,6 +352,7 @@ function InlineTable({
                 })
                 .catch((err) => {
                     console.log(err);
+                    AlertToast(err.response.data.Message, 2);
                 });
 
             setDataSource(data);
@@ -383,6 +388,8 @@ function InlineTable({
 
     return (
         <div className="mt-10">
+            {/* Added toast container since it wasn't showing */}
+            <ToastContainer />
             <ReactDataGrid
                 idProperty="metric"
                 style={{ minHeight: 284, fontWeight: "bold" }}

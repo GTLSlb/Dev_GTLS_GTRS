@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
@@ -32,7 +32,6 @@ function ConsTrack({
         const data = await getApiRequest(`https://map.gtls.store/conswithevents`);
 
         if (data) {
-            console.log(data)
             setFilteredData(data || []);
         }
     }
@@ -85,11 +84,22 @@ function ConsTrack({
     const [senderStateOptions, setSenderStateOptions] = useState(
         createNewLabelObjects(filteredData, "ReceiverState") || []
     );
+
     const minDispatchDate = getMinMaxValue(filteredData, "DispatchDate", 1);
     const maxDispatchDate = getMinMaxValue(filteredData, "DispatchDate", 2);
     const minRDDDate = getMinMaxValue(filteredData, "RDD", 1);
     const maxRDDDate = getMinMaxValue(filteredData, "RDD", 2);
 
+    useEffect(() => {
+        if(filteredData){
+            setSenderStateOptions(
+                createNewLabelObjects(filteredData, "SenderState")
+            );
+            setReceiverStateOptions(
+                createNewLabelObjects(filteredData, "ReceiverState")
+            );
+        }
+    },[filteredData]);
     function getAllEvents() {
         axios
             .get(`${gtrsWebUrl}get-eventsCategories`)
@@ -113,7 +123,7 @@ function ConsTrack({
     const handleClick = (coindex) => {
         navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
     }
-    const columns = [
+    const [columns, setColumns] = useState([
         {
             name: "ConsignmentNo",
             headerAlign: "center",
@@ -316,7 +326,7 @@ function ConsTrack({
             },
             defaultWidth: 200,
         },
-    ];
+    ]);
 
     function handleDownloadExcel() {
         const jsonData = handleFilterTable(gridRef, filteredData);
@@ -431,8 +441,23 @@ function ConsTrack({
         }
     );
 
-    return (
-        <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
+    useEffect(() => {
+        if (receiverStateOptions?.length > 0 && senderStateOptions?.length > 0) {
+          setColumns((prevColumns) => {
+            return prevColumns.map((column) => {
+              if (column.name === "SenderState") {
+                return { ...column, filterEditorProps: { ...column.filterEditorProps, dataSource: senderStateOptions } };
+              }
+              if(column.name === "ReceiverState"){
+                return { ...column, filterEditorProps: { ...column.filterEditorProps, dataSource: receiverStateOptions } };
+              }
+              return column;
+            });
+          });
+        }
+      }, [receiverStateOptions, senderStateOptions]);
+    const renderTable = useCallback(() => {
+        return (
             <TableStructure
                 gridRef={gridRef}
                 title={"Consignment Tracking"}
@@ -447,6 +472,12 @@ function ConsTrack({
                 setFilterValueElements={setFilterValue}
                 columnsElements={columns}
             />
+        );
+      }, [columns]);
+
+    return (
+        <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
+            {renderTable()}
             <EventModal
                 getEventCategoryById={getEventCategoryById}
                 eventDetails={eventDetails}

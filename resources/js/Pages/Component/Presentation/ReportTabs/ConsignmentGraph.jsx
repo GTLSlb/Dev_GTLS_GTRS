@@ -159,6 +159,7 @@ function ConsignmentGraph({ url, currentUser, AToken, userPermission }) {
                     userPermission={userPermission}
                     selectedReceiver={selectedReceiver}
                     originalgraphData={originalgraphData}
+                    AToken={AToken}
                 />
             </div>
         </div>

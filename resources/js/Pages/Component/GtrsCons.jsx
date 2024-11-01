@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import "../../../css/reactdatagrid.css";
 import TableStructure from "@/Components/TableStructure";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
@@ -81,7 +81,7 @@ export default function GtrsCons({
             headerAlign: "center",
         },
     ];
-    const columns = [
+    const [columns, setColumns] = useState([
         {
             name: "ConsignmentNo",
             header: "Cons No",
@@ -277,7 +277,44 @@ export default function GtrsCons({
                 );
             },
         },
-    ];
+    ]);
+
+    useEffect(() => {
+        const observer = new MutationObserver((mutations) => {
+          const menu = document.querySelector('.inovua-react-toolkit-menu__table');
+          if (menu) {
+            const handleClick = (event) => {
+              if (event.target.textContent === 'Clear all') {
+                gridRef.current.allColumns.forEach((column) => {
+                  if (column.name === 'DespatchDate') {
+                    // Clear filter for DespatchDate column using DataGrid API if available
+                    gridRef.current.clearColumnFilter(column.id || 'DespatchDate');
+                  }
+                });
+                // Re-render columns state to reflect the cleared filter
+                setColumns((cols) => [...cols]);
+              }
+            };
+            menu.addEventListener('click', handleClick);
+          }
+        });
+
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true,
+        });
+
+        // Cleanup event listener and observer on component unmount
+        return () => {
+          observer.disconnect();
+          const menu = document.querySelector('.inovua-react-toolkit-menu__table');
+          if (menu) {
+            menu.removeEventListener('click', handleClick);
+          }
+        };
+      }, [columns]);
+
+
     const filterData = () => {
         const intArray = accData?.map((str) => {
             const intValue = parseInt(str);
@@ -296,21 +333,27 @@ export default function GtrsCons({
         setFilteredData(filterData());
     }, [accData]);
 
-    return (
+    const renderTable = useCallback(() => {
+      return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
-            <TableStructure
-                handleDownloadExcel={handleDownloadExcel}
-                title={"Consignments"}
-                id={"ConsignmentId"}
-                setSelected={setSelected}
-                gridRef={gridRef}
-                selected={selected}
-                tableDataElements={filteredData}
-                filterValueElements={filterValue}
-                setFilterValueElements={setFilterValue}
-                groupsElements={groups}
-                columnsElements={columns}
-            />
+          <TableStructure
+            handleDownloadExcel={handleDownloadExcel}
+            title={"Consignments"}
+            id={"ConsignmentId"}
+            setSelected={setSelected}
+            gridRef={gridRef}
+            selected={selected}
+            tableDataElements={filteredData}
+            filterValueElements={filterValue}
+            setFilterValueElements={setFilterValue}
+            groupsElements={groups}
+            columnsElements={columns}
+          />
         </div>
+      );
+    }, [columns]);
+
+    return (
+        renderTable()
     );
 }
