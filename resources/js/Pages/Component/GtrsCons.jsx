@@ -286,7 +286,9 @@ export default function GtrsCons({
                 gridRef.current.allColumns.forEach((column) => {
                   if (column.name === 'DespatchDate') {
                     // Clear filter for DespatchDate column using DataGrid API if available
-                    gridRef.current.clearColumnFilter(column.id || 'DespatchDate');
+                    console.log(column.computedFilterValue);
+                    column.computedFilterValue.value={start: "", end: ""}
+                    column.computedFilterValue.emptyValue = ""
                   }
                 });
                 // Re-render columns state to reflect the cleared filter
@@ -294,6 +296,12 @@ export default function GtrsCons({
               }
             };
             menu.addEventListener('click', handleClick);
+
+
+            // Cleanup to prevent multiple listeners
+            return () => {
+                menu.removeEventListener('click', handleClick);
+            };
           }
         });
 
@@ -302,13 +310,9 @@ export default function GtrsCons({
           subtree: true,
         });
 
-        // Cleanup event listener and observer on component unmount
+        // Cleanup observer on component unmount
         return () => {
-          observer.disconnect();
-          const menu = document.querySelector('.inovua-react-toolkit-menu__table');
-          if (menu) {
-            menu.removeEventListener('click', handleClick);
-          }
+            observer.disconnect();
         };
       }, [columns]);
 
@@ -332,7 +336,7 @@ export default function GtrsCons({
     }, [accData]);
 
     const renderTable = useCallback(() => {
-      return (
+        return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
           <TableStructure
             handleDownloadExcel={handleDownloadExcel}
@@ -349,7 +353,7 @@ export default function GtrsCons({
           />
         </div>
       );
-    }, [columns]);
+    }, [columns, filteredData]);
 
     return (
         renderTable()

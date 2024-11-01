@@ -118,10 +118,11 @@ export default function TableStructure({
                         filterTypes={filterTypes}
                         scrollProps={scrollProps}
                         showColumnMenuTool={false}
-                        enableColumnAutosize={false}                        
+                        enableColumnAutosize={false}
                         showColumnMenuLockOptions={false}
                         showColumnMenuGroupOptions={false}
                         selected={selectedRows}
+                        clearDataSourceCacheOnChange
                         style={gridStyle}
                         onFilterValueChange={onFilterValueChange}
                         defaultFilterValue={filters}

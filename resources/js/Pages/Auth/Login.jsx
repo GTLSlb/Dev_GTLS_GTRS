@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import Logo from "../../assets/pictures/Logo.png";
+import Logo from "../../assets/pictures/Logo-upscaled.png";
 import { PublicClientApplication } from "@azure/msal-browser";
 import "../../../css/scroll.css";
-import { LoginPage } from "gtls-npm-libraries";
+import { LoginPage } from "gtls-npm-librarie";
 import MicrosoftLogo from "@/assets/icons/microsoft-logo.png";
 import { clearMSALLocalStorage } from "@/CommonFunctions";
 
@@ -24,7 +24,7 @@ const pca = new PublicClientApplication(msalConfig);
 export default function Login({ }) {
     const gtamURl = window.Laravel.gtamUrl;
     const appDomain = window.Laravel.appDomain;
-
+    const backToHomeURL = window.Laravel.backToHomeURL;
 
     useEffect(() => {
         clearMSALLocalStorage();
@@ -42,7 +42,7 @@ export default function Login({ }) {
             handleForgotPassword={() =>
                 (window.location.href = "/forgot-password")
             }
-            backToHomeURL={'https://web.gtls.store/'}
+            backToHomeURL={backToHomeURL}
             gtlsLogo={Logo}
             microsoftLogo={MicrosoftLogo}
         />
