@@ -13,7 +13,6 @@ import moment from "moment";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import { useEffect, useRef } from "react";
-import CustomDateFilter from "@/Components/TableComponents/CustomDateFilter";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
