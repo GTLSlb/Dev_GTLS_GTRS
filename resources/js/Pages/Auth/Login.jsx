@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Logo from "../../assets/pictures/Logo-upscaled.png";
 import { PublicClientApplication } from "@azure/msal-browser";
 import "../../../css/scroll.css";
-import { LoginPage } from "gtls-npm-librarie";
+import { LoginPage } from "gtls-npm-libraries";
 import MicrosoftLogo from "@/assets/icons/microsoft-logo.png";
 import { clearMSALLocalStorage } from "@/CommonFunctions";
 

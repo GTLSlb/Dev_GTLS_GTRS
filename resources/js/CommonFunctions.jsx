@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 import { PublicClientApplication } from "@azure/msal-browser";
 import { AlertToast } from "./permissions";
 import NoAccessRedirect from "@/Pages/NoAccessRedirect";
+import menu from "@/SidebarMenuItems";
 
 const msalConfig = {
     auth: {
@@ -247,4 +248,20 @@ function checkUserPermission(permission, route) {
     return permission?.Features?.some((feature) => {
         return feature.FunctionName == route
     });
+}
+
+export function navigateToFirstAllowedPage({setSidebarElements, user, navigate}){
+    let items = [];
+
+    menu?.map((menuItem) => {
+        if(user?.Features?.find((item) => item?.FunctionName == menuItem?.feature)){
+            items.push({...menuItem, current : false })
+        }
+    })
+
+    if (items.length > 0) {
+        localStorage.getItem("current") ? items.find((item) => item.id == localStorage.getItem("current")) ? items.find((item) => item.id == localStorage.getItem("current")): items[0].current = true : items[0].current = true;
+        items.find((item) => item.id == localStorage.getItem("current")) ? navigate(items.find((item) => item.id == localStorage.getItem("current")).url) : navigate(items[0].url);
+    }
+    setSidebarElements(items);
 }
