@@ -38,11 +38,11 @@ export default function DailyReportPage({
     const createNewLabelObjects = (data, fieldName) => {
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
-
+    
         // Map through the data and create new objects
         data?.forEach((item) => {
             const fieldValue = item[fieldName];
-
+    
             // Check if the label is not already included and is not null or empty
             if (
                 fieldValue &&
@@ -59,12 +59,17 @@ export default function DailyReportPage({
                 }
             }
         });
-
+    
+        // Sort newData alphabetically by the label property
+        newData.sort((a, b) => a.label.localeCompare(b.label));
+    
         return newData;
     };
-    const [receiverZoneOptions, setReceiverZoneOptions] = useState(createNewLabelObjects(dailyReportData, "ReceiverState"));
-
-    console.log();
+    
+    const receiverZoneOptions = createNewLabelObjects(dailyReportData, "ReceiverZone");
+    const receiverStateOptions = createNewLabelObjects(dailyReportData, "ReceiverState");
+    const senderZoneOptions = createNewLabelObjects(dailyReportData, "SenderZone");
+    const senderStateOptions = createNewLabelObjects(dailyReportData,"SenderState")
     const consStateOptions = createNewLabelObjects(
         dailyReportData,
         "ConsignmentStatus"
@@ -80,9 +85,7 @@ export default function DailyReportPage({
             label: "False",
         },
     ];
-    const [senderZoneOptions, setSenderZoneOptions] = useState(
-        createNewLabelObjects(dailyReportData, "SenderState")
-    );
+
 
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     const [cellLoading, setCellLoading] = useState(false);
@@ -125,6 +128,13 @@ export default function DailyReportPage({
             emptyValue: "",
         },
         {
+            name: "SenderZone",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
             name: "ReceiverName",
             operator: "contains",
             type: "string",
@@ -135,6 +145,13 @@ export default function DailyReportPage({
             name: "ReceiverReference",
             operator: "contains",
             type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ReceiverZone",
+            operator: "inlist",
+            type: "select",
             value: null,
             emptyValue: "",
         },
@@ -185,105 +202,105 @@ export default function DailyReportPage({
         },
     ]);
 
-    useEffect(() => {
-        setFilterValue([
-            {
-                name: "AccountNumber",
-                operator: "eq",
-                type: "string",
-                value: "",
-            },
-            {
-                name: "DespatchDateTime",
-                operator: "inrange",
-                type: "date",
-            },
-            {
-                name: "ConsignmentNo",
-                operator: "contains",
-                type: "string",
-                value: "",
-            },
-            {
-                name: "SenderName",
-                operator: "contains",
-                type: "string",
-                value: "",
-            },
-            {
-                name: "SenderReference",
-                operator: "contains",
-                type: "string",
-                value: "",
-            },
-            {
-                name: "SenderState",
-                operator: "inlist",
-                type: "select",
-                value: null,
-                emptyValue: "",
-            },
-            {
-                name: "ReceiverName",
-                operator: "contains",
-                type: "string",
-                value: null,
-                emptyValue: "",
-            },
-            {
-                name: "ReceiverReference",
-                operator: "contains",
-                type: "string",
-                value: null,
-                emptyValue: "",
-            },
-            {
-                name: "ReceiverState",
-                operator: "inlist",
-                type: "select",
-                value: null,
-                emptyValue: "",
-            },
-            {
-                name: "ConsignmentStatus",
-                operator: "inlist",
-                type: "select",
-                value: null,
-                emptyValue: "",
-            },
-            {
-                name: "DeliveryInstructions",
-                operator: "contains",
-                type: "string",
-                value: "",
-                emptyValue: "",
-            },
-            {
-                name: "POD",
-                operator: "inlist",
-                type: "select",
-                value: null,
-                emptyValue: "",
-            },
-            {
-                name: "DeliveryRequiredDateTime",
-                operator: "inrange",
-                type: "date",
-            },
-            {
-                name: "DeliveredDateTime",
-                operator: "inrange",
-                type: "date",
-            },
-            {
-                name: "Comments",
-                operator: "contains",
-                type: "string",
-                value: "",
-                emptyValue: "",
-            },
-        ]);
-    }, [activeComponentIndex]);
+    // useEffect(() => {
+    //     setFilterValue([
+    //         {
+    //             name: "AccountNumber",
+    //             operator: "eq",
+    //             type: "string",
+    //             value: "",
+    //         },
+    //         {
+    //             name: "DespatchDateTime",
+    //             operator: "inrange",
+    //             type: "date",
+    //         },
+    //         {
+    //             name: "ConsignmentNo",
+    //             operator: "contains",
+    //             type: "string",
+    //             value: "",
+    //         },
+    //         {
+    //             name: "SenderName",
+    //             operator: "contains",
+    //             type: "string",
+    //             value: "",
+    //         },
+    //         {
+    //             name: "SenderReference",
+    //             operator: "contains",
+    //             type: "string",
+    //             value: "",
+    //         },
+    //         {
+    //             name: "SenderState",
+    //             operator: "inlist",
+    //             type: "select",
+    //             value: null,
+    //             emptyValue: "",
+    //         },
+    //         {
+    //             name: "ReceiverName",
+    //             operator: "contains",
+    //             type: "string",
+    //             value: null,
+    //             emptyValue: "",
+    //         },
+    //         {
+    //             name: "ReceiverReference",
+    //             operator: "contains",
+    //             type: "string",
+    //             value: null,
+    //             emptyValue: "",
+    //         },
+    //         {
+    //             name: "ReceiverState",
+    //             operator: "inlist",
+    //             type: "select",
+    //             value: null,
+    //             emptyValue: "",
+    //         },
+    //         {
+    //             name: "ConsignmentStatus",
+    //             operator: "inlist",
+    //             type: "select",
+    //             value: null,
+    //             emptyValue: "",
+    //         },
+    //         {
+    //             name: "DeliveryInstructions",
+    //             operator: "contains",
+    //             type: "string",
+    //             value: "",
+    //             emptyValue: "",
+    //         },
+    //         {
+    //             name: "POD",
+    //             operator: "inlist",
+    //             type: "select",
+    //             value: null,
+    //             emptyValue: "",
+    //         },
+    //         {
+    //             name: "DeliveryRequiredDateTime",
+    //             operator: "inrange",
+    //             type: "date",
+    //         },
+    //         {
+    //             name: "DeliveredDateTime",
+    //             operator: "inrange",
+    //             type: "date",
+    //         },
+    //         {
+    //             name: "Comments",
+    //             operator: "contains",
+    //             type: "string",
+    //             value: "",
+    //             emptyValue: "",
+    //         },
+    //     ]);
+    // }, [activeComponentIndex]);
     const groups = [
         {
             name: "senderDetails",
@@ -509,6 +526,19 @@ export default function DailyReportPage({
         },
         {
             name: "SenderState",
+            header: "Sender State",
+            group: "senderDetails",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: senderStateOptions,
+            },
+        },
+        {
+            name: "SenderZone",
             header: "Sender Zone",
             group: "senderDetails",
             headerAlign: "center",
@@ -540,6 +570,19 @@ export default function DailyReportPage({
         },
         {
             name: "ReceiverState",
+            header: "Receiver State",
+            group: "receiverDetails",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: receiverStateOptions,
+            },
+        },
+        {
+            name: "ReceiverZone",
             header: "Receiver Zone",
             group: "receiverDetails",
             headerAlign: "center",
