@@ -19,3 +19,7 @@ yarn-error.log
 /.vscode
 *.pdf
 node_modules.zip
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
