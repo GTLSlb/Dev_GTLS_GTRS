@@ -20,6 +20,7 @@ import GraphPresentation from "./Presentation/GraphPresentation";
 import DailyReportPage from "./ReportsPage/DeliveryReportPage";
 import Incident from "./Incident/Incident";
 import { getApiRequest, ProtectedRoute } from "@/CommonFunctions";
+import MainPageGTRS from "../../Pages/MainPageGTRS";
 import {
     getLatestDespatchDate,
     getMinMaxValue,
@@ -658,6 +659,8 @@ export default function GtrsMain({
                         <div className="h-full">
                             <div className="rounded-lg h-full">
                                 <Routes>
+                                <Route path="/main" element={<MainPageGTRS user={userPermission} setSidebarElements={setSidebarElements} sidebarElements={sidebarElements} AToken={AToken} currentUser={currentUser}/>} />
+
                                     <Route
                                         path="/dashboard"
                                         element={

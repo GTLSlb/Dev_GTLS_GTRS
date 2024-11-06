@@ -3,6 +3,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "test-chrome" : "npx playwright test authentication/ForgetPassword --project \"Google Chrome\"  --headed --debug",
     "test": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/MainPortal_Development/test-reports,reportFilename=testResults,timestamp,autoOpen 'tests/*.js'",
     "test:parallel": "npx mocha --no-timeout -p --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/MainPortal_Development/test-reports,reportFilename=testResults,timestamp,autoOpen 'tests/*.js'"
   },
@@ -15,7 +16,10 @@
     "@vitejs/plugin-react": "^3.0.0",
     "autoprefixer": "^10.4.13",
     "axios": "^1.1.2",
+    "dotenv": "^16.4.5",
     "laravel-vite-plugin": "^0.7.2",
+    "mochawesome": "^7.1.3",
+    "playwright": "^1.48.2",
     "postcss": "^8.4.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -62,7 +66,6 @@
     "lord-icon-element": "^4.1.1",
     "lottie-web": "^5.11.0",
     "mocha": "^10.2.0",
-    "mochawesome": "^7.1.3",
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.45",
     "next": "^13.4.2",

@@ -4,6 +4,7 @@ import {navigateToFirstAllowedPage} from "@/CommonFunctions";
 export default function MainPageGTRS({sidebarElements, user, currentUser, AToken, setSidebarElements}) {
     const navigate = useNavigate();
     useEffect(() => {
+        console.log(currentUser);
         if(user){
            navigateToFirstAllowedPage({setSidebarElements, user, navigate})
         }
