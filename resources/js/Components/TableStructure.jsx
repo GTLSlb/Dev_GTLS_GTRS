@@ -173,6 +173,7 @@ export default function TableStructure({
                         showColumnMenuLockOptions={false}
                         showColumnMenuGroupOptions={false}
                         selected={selectedRows}
+                        clearDataSourceCacheOnChange
                         style={gridStyle}
                         onFilterValueChange={onFilterValueChange}
                         defaultFilterValue={filters}

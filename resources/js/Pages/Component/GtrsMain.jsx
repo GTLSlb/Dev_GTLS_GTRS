@@ -660,7 +660,6 @@ export default function GtrsMain({
                                 <Routes>
                                     <Route
                                         path="/dashboard"
-
                                         element={
                                             <ProtectedRoute
                                             permission={userPermission}

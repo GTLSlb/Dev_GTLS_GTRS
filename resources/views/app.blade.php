@@ -37,6 +37,7 @@
             appUrl: "{{ env('APP_URL') }}",
             gtrsWeb: "{{ env('GTRS_WEB_URL') }}",
             azureCallback: "{{ env('AZURE_CALLBACK_URL') }}",
+            backToHomeURL: "{{ env('BACK_TO_HOME_URL') }}",
         };
     </script>
     <!-- resources/views/layouts/app.blade.php -->

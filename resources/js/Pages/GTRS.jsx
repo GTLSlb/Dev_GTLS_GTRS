@@ -8,6 +8,8 @@ import AnimatedLoading from "@/Components/AnimatedLoading";
 import GtrsMain from "./Component/GtrsMain";
 import { Routes, Route } from "react-router-dom";
 import MainPageGTRS from "@/Pages/MainPageGTRS";
+import {navigateToFirstAllowedPage} from "@/CommonFunctions";
+import { useNavigate } from "react-router-dom";
 export default function Gtrs({
     user,
     setToken,
@@ -117,6 +119,13 @@ export default function Gtrs({
             setCanAccess(false);
         }
     }, [currentUser, loadingGtrs]);
+
+    const navigate = useNavigate();
+    useEffect(() => {
+        if(user){
+           navigateToFirstAllowedPage({setSidebarElements, user, navigate})
+        }
+    },[user])
     if (
         consApi &&
         reportApi &&
