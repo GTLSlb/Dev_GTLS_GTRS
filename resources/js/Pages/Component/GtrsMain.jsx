@@ -50,6 +50,7 @@ import {
 } from "@/Components/utils/filters";
 import ConsDetails from "../ConsDetails";
 import NewConsignmentTracking from "./New Consignment Tracking/NewConsignmentTracking";
+import MainPageGTRS from "../MainPageGTRS";
 
 export default function GtrsMain({
     setCusomterAccounts,
@@ -658,6 +659,7 @@ export default function GtrsMain({
                         <div className="h-full">
                             <div className="rounded-lg h-full">
                                 <Routes>
+                                <Route path="/main" element={<MainPageGTRS user={userPermission} setSidebarElements={setSidebarElements} sidebarElements={sidebarElements} AToken={AToken} currentUser={currentUser}/>} />
                                     <Route
                                         path="/dashboard"
                                         element={

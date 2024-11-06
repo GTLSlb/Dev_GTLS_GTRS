@@ -25,86 +25,71 @@ export async function handleSessionExpiration() {
     const appUrl = window.Laravel.appUrl;
 
     // Ensure CSRF token is set in Axios for the logout request
-    axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    axios.defaults.headers.common["X-CSRF-TOKEN"] = document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute("content");
+    axios;
+    const credentials = {
+        CurrentUser: {},
+        URL: window.Laravel.gtamUrl,
+        SessionDomain: window.Laravel.appDomain,
+    };
     axios
-    .get("/users")
-    .then((res) => {
-        if (typeof res.data == "object") {
-            const credentials = {
-                CurrentUser: res.data,
-                URL: window.Laravel.gtamUrl,
-                SessionDomain: window.Laravel.appDomain,
-            };
-            axios
-                .post("/logoutWithoutReq", credentials)
-                .then(async (response) => {
-                    if (response.status === 200) {
-                        const isMicrosoftLogin = Cookies.get(
-                            "msal.isMicrosoftLogin"
-                        );
+        .post("/logoutWithoutReq", credentials)
+        .then(async (response) => {
+            if (response.status === 200) {
+                const isMicrosoftLogin = Cookies.get("msal.isMicrosoftLogin");
 
-                        // Clear MSAL-related data from localStorage
-                        clearMSALLocalStorage();
-                        Cookies.remove('access_token');
+                // Clear MSAL-related data from localStorage
+                clearMSALLocalStorage();
+                Cookies.remove("access_token");
 
-                        if (isMicrosoftLogin === "true") {
-                            // Redirect to Microsoft logout URL
-                            window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=${appUrl}/login`;
-                        } else {
-                            // Clear any session cookies related to CSRF or session before redirect
-                            Cookies.remove("XSRF-TOKEN"); // If using js-cookie
-                            Cookies.remove("gtls_session"); // Adjust according to your session cookie name
-                            // Force a reload to ensure new CSRF token generation
-                            window.location.href = `/login`;
-                        }
-                    } else {
-                        console.log("Logout error:", response);
-                    }
-                })
-                .catch((error) => {
-                    console.log(error);
-                    if (error.response && error.response.status === 401) {
-                        // Handle 401 error using SweetAlert
-                        swal({
-                            title: "Session Expired!",
-                            text: "Please login again to continue.",
-                            icon: "warning",
-                            button: "Ok",
-                        }).then(async function () {
-                            window.location.href = `/login`;
-                        });
-                    }
+                if (isMicrosoftLogin === "true") {
+                    // Redirect to Microsoft logout URL
+                    window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=${appUrl}/login`;
+                } else {
+                    // Clear any session cookies related to CSRF or session before redirect
+                    Cookies.remove("XSRF-TOKEN"); // If using js-cookie
+                    Cookies.remove("gtls_session"); // Adjust according to your session cookie name
+                    // Force a reload to ensure new CSRF token generation
+                    window.location.href = `/login`;
+                }
+            } else {
+                console.log("Logout error:", response);
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            if (error.response && error.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again to continue.",
+                    icon: "warning",
+                    button: "Ok",
+                }).then(async function () {
+                    window.location.href = `/login`;
                 });
-        }
-    })
-    .catch((error) => {
-        console.log(error)
-        if (error.response && error.response.status === 401) {
-            // Handle 401 error using SweetAlert
-            swal({
-                title: "Session Expired!",
-                text: "Please login again to continue.",
-                icon: "warning",
-                button: "Ok",
-            }).then(async function () {
-                window.location.href = `/login`;
-            });
-        }
-    });
+            }
+        });
 }
-
 
 export function clearMSALLocalStorage() {
     const appDomain = window.Laravel.appDomain;
 
     // Find all keys in localStorage starting with 'msal' and remove them
-    const msalKeys = Object.keys(localStorage).filter(key => key.startsWith("msal"));
-    msalKeys.forEach(key => {
+    const msalKeys = Object.keys(localStorage).filter((key) =>
+        key.startsWith("msal")
+    );
+    msalKeys.forEach((key) => {
         localStorage.removeItem(key);
     });
 
     // Remove the msal.isMicrosoftLogin cookie
-    Cookies.set('msal.isMicrosoftLogin', '', { expires: -1, domain: appDomain });
+    Cookies.set("msal.isMicrosoftLogin", "", {
+        expires: -1,
+        domain: appDomain,
+    });
 }
 export function getMinMaxValue(data, fieldName, identifier) {
     // Check for null safety
@@ -145,8 +130,13 @@ export function getMinMaxValue(data, fieldName, identifier) {
     return `${day}-${month}-${year}`;
 }
 
-
-export const fetchApiData = async (url, setData, currentUser, AToken, setApiStatus) => {
+export const fetchApiData = async (
+    url,
+    setData,
+    currentUser,
+    AToken,
+    setApiStatus
+) => {
     try {
         const response = await axios.get(url, {
             headers: {
@@ -224,7 +214,6 @@ export function getApiRequest(url, headers = {}) {
         });
 }
 
-
 export const formatDateToExcel = (dateValue) => {
     const date = new Date(dateValue);
 
@@ -234,11 +223,19 @@ export const formatDateToExcel = (dateValue) => {
     }
 
     // Convert to Excel date serial number format
-    return (date.getTime() - date.getTimezoneOffset() * 60000) / 86400000 + 25569;
+    return (
+        (date.getTime() - date.getTimezoneOffset() * 60000) / 86400000 + 25569
+    );
 };
 
-
-export function ProtectedRoute({ permission, route, element, currentUser, setToken, setcurrentUser }) {
+export function ProtectedRoute({
+    permission,
+    route,
+    element,
+    currentUser,
+    setToken,
+    setcurrentUser,
+}) {
     const userHasPermission = checkUserPermission(permission, route);
     return userHasPermission ? element : <NoAccessRedirect />;
 }
@@ -246,22 +243,42 @@ export function ProtectedRoute({ permission, route, element, currentUser, setTok
 function checkUserPermission(permission, route) {
     // Go over the flat permissions and check if the user has the required permission
     return permission?.Features?.some((feature) => {
-        return feature.FunctionName == route
+        return feature.FunctionName == route;
     });
 }
 
-export function navigateToFirstAllowedPage({setSidebarElements, user, navigate}){
+export function navigateToFirstAllowedPage({
+    setSidebarElements,
+    user,
+    navigate,
+}) {
     let items = [];
 
     menu?.map((menuItem) => {
-        if(user?.Features?.find((item) => item?.FunctionName == menuItem?.feature)){
-            items.push({...menuItem, current : false })
+        if (
+            user?.Features?.find(
+                (item) => item?.FunctionName == menuItem?.feature
+            )
+        ) {
+            items.push({ ...menuItem, current: false });
         }
-    })
+    });
 
     if (items.length > 0) {
-        localStorage.getItem("current") ? items.find((item) => item.id == localStorage.getItem("current")) ? items.find((item) => item.id == localStorage.getItem("current")): items[0].current = true : items[0].current = true;
-        items.find((item) => item.id == localStorage.getItem("current")) ? navigate(items.find((item) => item.id == localStorage.getItem("current")).url) : navigate(items[0].url);
+        localStorage.getItem("current")
+            ? items.find((item) => item.id == localStorage.getItem("current"))
+                ? items.find(
+                      (item) => item.id == localStorage.getItem("current")
+                  )
+                : (items[0].current = true)
+            : (items[0].current = true);
+        items.find((item) => item.id == localStorage.getItem("current"))
+            ? navigate(
+                  items.find(
+                      (item) => item.id == localStorage.getItem("current")
+                  ).url
+              )
+            : navigate(items[0].url);
     }
     setSidebarElements(items);
 }

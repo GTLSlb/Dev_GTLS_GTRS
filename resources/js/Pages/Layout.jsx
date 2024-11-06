@@ -64,7 +64,11 @@ export default function Sidebar(Boolean) {
                 }
             })
             .catch((error) => {
-                if(error.status == 401 && Cookies.get('msal.isMicrosoftLogin') == undefined) {
+                if(error.status == 401) {
+                    //Session not found
+                    handleSessionExpiration();
+                }
+                if(error.status == 404) {
                     //Session not found
                     handleSessionExpiration();
                 }

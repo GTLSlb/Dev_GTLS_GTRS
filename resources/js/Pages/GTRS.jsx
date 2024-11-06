@@ -202,7 +202,6 @@ export default function Gtrs({
                             </div>
                         }
                     />
-                    <Route path="/main" element={<MainPageGTRS user={user} setSidebarElements={setSidebarElements} sidebarElements={sidebarElements} AToken={AToken} currentUser={currentUser}/>} />
                 </Routes>
             );
         } else {
