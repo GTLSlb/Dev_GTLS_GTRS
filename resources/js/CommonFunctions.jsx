@@ -6,7 +6,7 @@ import { PublicClientApplication } from "@azure/msal-browser";
 import { AlertToast } from "./permissions";
 import NoAccessRedirect from "@/Pages/NoAccessRedirect";
 import menu from "@/SidebarMenuItems";
-
+import routes from "@/GTRSRoutes";
 const msalConfig = {
     auth: {
         clientId: "05f70999-6ca7-4ee8-ac70-f2d136c50288",
@@ -253,32 +253,36 @@ export function navigateToFirstAllowedPage({
     navigate,
 }) {
     let items = [];
+    let doesRouteExist = routes?.find((route) => route == window.location.pathname)
+    if(!doesRouteExist){
+        navigate("/notFound");
+    }else{
+        menu?.map((menuItem) => {
+            if (
+                user?.Features?.find(
+                    (item) => item?.FunctionName == menuItem?.feature
+                )
+            ) {
+                items.push({ ...menuItem, current: false });
+            }
+        });
 
-    menu?.map((menuItem) => {
-        if (
-            user?.Features?.find(
-                (item) => item?.FunctionName == menuItem?.feature
-            )
-        ) {
-            items.push({ ...menuItem, current: false });
-        }
-    });
-
-    if (items.length > 0) {
-        localStorage.getItem("current")
-            ? items.find((item) => item.id == localStorage.getItem("current"))
-                ? items.find(
-                      (item) => item.id == localStorage.getItem("current")
+        if (items.length > 0) {
+            localStorage.getItem("current")
+                ? items.find((item) => item.id == localStorage.getItem("current"))
+                    ? items.find(
+                          (item) => item.id == localStorage.getItem("current")
+                      ).current = true
+                    : (items[0].current = true)
+                : (items[0].current = true);
+            items.find((item) => item.id == localStorage.getItem("current"))
+                ? navigate(
+                      items.find(
+                          (item) => item.id == localStorage.getItem("current")
+                      ).url
                   )
-                : (items[0].current = true)
-            : (items[0].current = true);
-        items.find((item) => item.id == localStorage.getItem("current"))
-            ? navigate(
-                  items.find(
-                      (item) => item.id == localStorage.getItem("current")
-                  ).url
-              )
-            : navigate(items[0].url);
+                : navigate(items[0].url);
+        }
+        setSidebarElements(items);
     }
-    setSidebarElements(items);
 }

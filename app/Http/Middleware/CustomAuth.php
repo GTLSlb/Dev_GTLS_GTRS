@@ -48,21 +48,18 @@ class CustomAuth extends Middleware
     {
         $hasSession = $request->hasSession();
         if ($hasSession) {
-            //$session = $request->session();
             $sessionToken = $request->session()->token();
             $path = $request->path();
-
             $request->headers->set('X-CSRF-TOKEN', csrf_token());
-            // Allow access to the login route
-            if ($path == 'loginComp' || $path == 'login' || $path == 'loginapi' || $path == 'forgot-password' || $path == 'auth/azure' || $path == 'auth/azure/callback' || $path == 'microsoftToken' || $path == 'logoutWithoutRequest' || $path= 'gtrs/logoutWithoutReq'|| $path= 'logoutWithoutReq') {
+            if ($path == 'loginComp' || $path == 'login' || $path == 'loginapi' || $path == 'forgot-password' || $path == 'auth/azure' || $path == 'auth/azure/callback' || $path == 'microsoftToken' || $path == 'logoutWithoutRequest' || $path == 'gtrs/logoutWithoutReq'|| $path == 'logoutWithoutReq') {
                 return $next($request);
             }
-            if ($path !== 'loginComp' || $path !== 'login' && $path !== 'loginapi' && $path !== 'forgot-password' && !$request->session()->has('user')) {
+            if (!$request->session()->has('user')) {
                 return redirect()->route('login');
             }
         } else {
             $path = $request->path();
-            if ($request->path() == 'loginComp' || $request->path() == 'login' || $request->path() == 'loginapi' || $request->path() == '/auth/azure' || $request->path() == 'auth/azure/callback' || $request->path() == 'microsoftToken' || $request->path() == 'logoutWithoutRequest'|| $path= 'gtrs/logoutWithoutReq' || $path= 'logoutWithoutReq') {
+            if ($path == 'loginComp' || $path == 'login' || $path == 'loginapi' || $path == 'forgot-password' || $path == '/auth/azure' || $path == 'auth/azure/callback' || $path == 'microsoftToken' || $path == 'logoutWithoutRequest'|| $path == 'gtrs/logoutWithoutReq' || $path == 'logoutWithoutReq') {
                 return $next($request);
             }
         }

@@ -5,7 +5,7 @@ const CustomDateFilter = ({ value, onChange, minDate, maxDate }, props) => {
     const [selectedDate, setSelectedDate] = useState(value?.date || null);
     const [startDate, setStartDate] = useState(value?.start || null);
     const [endDate, setEndDate] = useState(value?.end || null);
-    console.log(onChange)
+
     const handleFilterTypeChange = (e) => {
         const newFilterType = e.target.value;
         setFilterType(newFilterType);
