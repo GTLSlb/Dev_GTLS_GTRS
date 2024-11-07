@@ -1,0 +1,220 @@
+{
+  "stats": {
+    "suites": 2,
+    "tests": 2,
+    "passes": 2,
+    "pending": 0,
+    "failures": 0,
+    "start": "2024-11-07T12:16:51.478Z",
+    "end": "2024-11-07T12:19:31.952Z",
+    "duration": 160474,
+    "testsRegistered": 2,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "19d035a3-2cb2-4ea1-aa8e-540664a31df6",
+      "title": "",
+      "fullFile": "",
+      "file": "",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "d3b0e67c-9dbd-476c-81fe-3beca09357fd",
+          "title": "User Logout Tests with credentials",
+          "fullFile": "C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\tests\\authentication\\Logout.js",
+          "file": "\\tests\\authentication\\Logout.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"User Logout Tests with credentials\"",
+              "fullTitle": "User Logout Tests with credentials \"before all\" hook in \"User Logout Tests with credentials\"",
+              "timedOut": false,
+              "duration": 33859,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Initialize the WebDriver\ndriver = await new Builder().forBrowser('chrome').build();\n// Define valid credentials\nconst validEmail = process.env.USERNAME + '@gtls.com.au'; // Ensure USERNAME is set in your environment\nconst validPassword = process.env.USER_PASS; // Replace with the actual password\n// Call the login helper function\nawait login(driver, validEmail, validPassword);",
+              "err": {},
+              "uuid": "dadb0bb6-8ef2-438f-b40f-63d3d633e4de",
+              "parentUUID": "d3b0e67c-9dbd-476c-81fe-3beca09357fd",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"User Logout Tests with credentials\"",
+              "fullTitle": "User Logout Tests with credentials \"after all\" hook in \"User Logout Tests with credentials\"",
+              "timedOut": false,
+              "duration": 58,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Quit the WebDriver after tests\nawait driver.quit();",
+              "err": {},
+              "uuid": "6e73366f-b5fe-4d08-96af-f492a9a9074e",
+              "parentUUID": "d3b0e67c-9dbd-476c-81fe-3beca09357fd",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [
+            {
+              "title": "should allow a user to log out after logging in",
+              "fullTitle": "User Logout Tests with credentials should allow a user to log out after logging in",
+              "timedOut": false,
+              "duration": 1414,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to the main page\nawait driver.wait(until.urlIs('https://gtrs.gtls.store/gtrs/dashboard'));\n// Step 2: Click on the Logout button\nconst logoutButton = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div/div[1]/div/div/div/div[2]/button/button')); // Adjust selector as needed\nawait logoutButton.click();\n// Step 3: Verify that the user is redirected to the login page\nawait driver.wait(until.urlIs('https://gtrs.gtls.store/login'), 5000);\nconst currentUrl = await driver.getCurrentUrl();\nassert.strictEqual(currentUrl, 'https://gtrs.gtls.store/login', \"User should be redirected to the login page after logout.\");",
+              "err": {},
+              "uuid": "d403f69a-7a02-486b-a779-4f1be0bc39de",
+              "parentUUID": "d3b0e67c-9dbd-476c-81fe-3beca09357fd",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "d403f69a-7a02-486b-a779-4f1be0bc39de"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 1414,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 0
+        },
+        {
+          "uuid": "4d68fe79-784a-4ae6-9be3-0286afc69d0c",
+          "title": "Microsoft Logout Tests",
+          "fullFile": "C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\tests\\authentication\\Logout.js",
+          "file": "\\tests\\authentication\\Logout.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"Microsoft Logout Tests\"",
+              "fullTitle": "Microsoft Logout Tests \"before all\" hook in \"Microsoft Logout Tests\"",
+              "timedOut": false,
+              "duration": 958,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Initialize the WebDriver\ndriver = await new Builder().forBrowser('chrome').build();",
+              "err": {},
+              "uuid": "d1eac196-98bf-4435-8622-df3c43f1ccc0",
+              "parentUUID": "4d68fe79-784a-4ae6-9be3-0286afc69d0c",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"Microsoft Logout Tests\"",
+              "fullTitle": "Microsoft Logout Tests \"after all\" hook in \"Microsoft Logout Tests\"",
+              "timedOut": false,
+              "duration": 76,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Quit the WebDriver after tests\nawait driver.quit();",
+              "err": {},
+              "uuid": "ceddd051-2b8c-430c-9d33-6cc5ea6a6250",
+              "parentUUID": "4d68fe79-784a-4ae6-9be3-0286afc69d0c",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [
+            {
+              "title": "should allow a user to log out after logging in with Microsoft",
+              "fullTitle": "Microsoft Logout Tests should allow a user to log out after logging in with Microsoft",
+              "timedOut": false,
+              "duration": 124101,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to the login URL\nawait driver.get('https://gtrs.gtls.store/login');\n// Step 2: Click on Sign in with Microsoft button\nconst microsoftLoginButton = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div/div/div[2]/div/div[1]/div[2]/button'));\nawait microsoftLoginButton.click();\n// Step 3: Wait for the user to complete Microsoft login\nconsole.log('Please log in with your Microsoft account and then press Enter to continue...');\nawait driver.sleep(60000); // Wait for user input to continue\n// Step 4: Wait for the main page to load after login\nawait driver.wait(until.urlIs('https://gtrs.gtls.store/gtrs/dashboard'), 10000);\n// Step 5: Click on the Logout button\nconst logoutButton = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div/div[1]/div/div/div/div[2]/button/button')); // Adjust selector as needed\nawait logoutButton.click();\n// Step 6: Verify that the user is redirected to the login page\nawait driver.wait(until.urlIs('https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=https://gtrs.gtls.store/login'), 5000);\nawait driver.sleep(60000);\nconst currentUrl = await driver.getCurrentUrl();\nassert.strictEqual(currentUrl, 'https://gtrs.gtls.store/login', \"User should be redirected to the login page after logout.\");",
+              "err": {},
+              "uuid": "3a1b1ad1-29e9-453f-a592-60ccd079681c",
+              "parentUUID": "4d68fe79-784a-4ae6-9be3-0286afc69d0c",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "3a1b1ad1-29e9-453f-a592-60ccd079681c"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 124101,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 0
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 0
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "10.8.2"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "testResults",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports",
+        "reportFilename": "testResults",
+        "timestamp": true,
+        "autoOpen": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}

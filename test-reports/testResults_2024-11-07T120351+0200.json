@@ -1,0 +1,531 @@
+{
+  "stats": {
+    "suites": 4,
+    "tests": 10,
+    "passes": 4,
+    "pending": 0,
+    "failures": 6,
+    "start": "2024-11-07T10:01:20.655Z",
+    "end": "2024-11-07T10:03:51.783Z",
+    "duration": 151128,
+    "testsRegistered": 10,
+    "passPercent": 40,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "37229b1d-81dc-4c31-b3be-09d58d8a71a3",
+      "title": "",
+      "fullFile": "",
+      "file": "",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "6dcbd376-cfb0-4397-8e6f-a4682ece7f6d",
+          "title": "Invalid Session Test",
+          "fullFile": "C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\tests\\authentication\\Login.js",
+          "file": "\\tests\\authentication\\Login.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"Invalid Session Test\"",
+              "fullTitle": "Invalid Session Test \"before all\" hook in \"Invalid Session Test\"",
+              "timedOut": false,
+              "duration": 1041,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Initialize the WebDriver\ndriver = await new Builder().forBrowser(\"chrome\").build();",
+              "err": {},
+              "uuid": "9f5d216e-144b-450f-bab5-7d1f11ee38d4",
+              "parentUUID": "6dcbd376-cfb0-4397-8e6f-a4682ece7f6d",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"Invalid Session Test\"",
+              "fullTitle": "Invalid Session Test \"after all\" hook in \"Invalid Session Test\"",
+              "timedOut": false,
+              "duration": 103,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Quit the WebDriver after tests\nawait driver.quit();",
+              "err": {},
+              "uuid": "5f638918-63f3-4b89-b457-2edbd4c62bca",
+              "parentUUID": "6dcbd376-cfb0-4397-8e6f-a4682ece7f6d",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [
+            {
+              "title": "should show login screen if session is invalid/expired",
+              "fullTitle": "Invalid Session Test should show login screen if session is invalid/expired",
+              "timedOut": false,
+              "duration": 6386,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Clear all cookies to simulate an invalid session\nawait driver.manage().deleteAllCookies();\n// Step 2: Navigate to the application URL\nawait driver.get(\"https://gtrs.gtls.store\");\n// Step 3: Wait until the URL is the login page\nawait driver.wait(until.urlIs(\"https://gtrs.gtls.store/login\"), 5000);\n// Step 4: Verify that the current URL is as expected\nconst currentUrl = await driver.getCurrentUrl();\nassert.strictEqual(currentUrl, 'https://gtrs.gtls.store/login', `Expected URL to be 'https://gtrs.gtls.store/login' but got '${currentUrl}'.`);",
+              "err": {
+                "message": "TimeoutError: Waiting for URL to be \"https://gtrs.gtls.store/login\"\nWait timed out after 5031ms",
+                "estack": "TimeoutError: Waiting for URL to be \"https://gtrs.gtls.store/login\"\nWait timed out after 5031ms\n    at C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:928:22\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)",
+                "diff": null
+              },
+              "uuid": "17c354cf-db30-4703-8515-18c25bb29cb0",
+              "parentUUID": "6dcbd376-cfb0-4397-8e6f-a4682ece7f6d",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should show login screen if entering wrong route",
+              "fullTitle": "Invalid Session Test should show login screen if entering wrong route",
+              "timedOut": false,
+              "duration": 2115,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Clear all cookies to simulate an invalid session\nawait driver.manage().deleteAllCookies();\n// Step 2: Navigate to the invalid route URL\nawait driver.get(\"https://gtrs.gtls.store/left\");\n// Step 3: Wait until the URL is the login page\nawait driver.wait(until.urlIs(\"https://gtrs.gtls.store/login\"), 5000);\n// Step 4: Verify that the current URL is as expected\nconst currentUrl = await driver.getCurrentUrl();\nassert.strictEqual(currentUrl, 'https://gtrs.gtls.store/login', `Expected URL to be 'https://gtrs.gtls.store/login' but got '${currentUrl}'.`);",
+              "err": {},
+              "uuid": "c0cf7a3d-2c80-4d35-91d5-8c2860f12530",
+              "parentUUID": "6dcbd376-cfb0-4397-8e6f-a4682ece7f6d",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "go to login route",
+              "fullTitle": "Invalid Session Test go to login route",
+              "timedOut": false,
+              "duration": 754,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Clear all cookies to simulate an invalid session\nawait driver.manage().deleteAllCookies();\n// Step 2: Navigate to the login route URL\nawait driver.get(\"https://gtrs.gtls.store/login\");\n// Step 3: Wait until the URL is the login page\nawait driver.wait(until.urlIs(\"https://gtrs.gtls.store/login\"), 5000);\n// Step 4: Verify that the login screen is displayed\nconst loginScreenEmailInput = driver.findElement(By.name(\"email\"));\nconst loginScreenPassInput = driver.findElement(By.name(\"password\"));\n// Expect both input fields to be visible\nawait driver.wait(until.elementIsVisible(loginScreenEmailInput));\nawait driver.wait(until.elementIsVisible(loginScreenPassInput));\n// Assert that both input fields are displayed\nassert.strictEqual(await loginScreenEmailInput.isDisplayed(), true, \"Email input field should be visible\");\nassert.strictEqual(await loginScreenPassInput.isDisplayed(), true, \"Password input field should be visible\");",
+              "err": {},
+              "uuid": "597c2492-4103-4e20-9b44-c0dd2ffcb453",
+              "parentUUID": "6dcbd376-cfb0-4397-8e6f-a4682ece7f6d",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Sign in button is disabled unless i do the recaptcha",
+              "fullTitle": "Invalid Session Test Sign in button is disabled unless i do the recaptcha",
+              "timedOut": false,
+              "duration": 60774,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Clear all cookies to simulate an invalid session\nawait driver.manage().deleteAllCookies();\n// Step 2: Navigate to the application URL\nawait driver.get(\"https://gtrs.gtls.store/login\");\n// Step 3: Verify that the Sign In button is disabled\nconst signInButton = await driver.findElement(By.xpath(\"//*[@id=\\\"app\\\"]/div/div/div/div/div/div[2]/div/div[1]/div[3]/button\"));\n// Assert that the button is disabled\nassert.strictEqual(await signInButton.isEnabled(), false, \"Sign In button should be disabled before reCAPTCHA\");\n// Step 4: Click the reCAPTCHA checkbox and do it manually then resume test\nawait driver.sleep(60000); // Wait for the user to complete the reCAPTCHA\n// Step 5: Verify that the Sign In button is enabled\nawait driver.wait(until.elementIsEnabled(signInButton), 10000); // Wait up to 10 seconds for the button to be enabled\n// Assert that the button is enabled\nassert.strictEqual(await signInButton.isEnabled(), true, \"Sign In button should be enabled after reCAPTCHA\");",
+              "err": {},
+              "uuid": "f43ec23d-3301-4776-8fed-d04565628021",
+              "parentUUID": "6dcbd376-cfb0-4397-8e6f-a4682ece7f6d",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Clicking on Back to home button redirects me to website",
+              "fullTitle": "Invalid Session Test Clicking on Back to home button redirects me to website",
+              "timedOut": false,
+              "duration": 6961,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Assuming the session is invalid, you may need to clear cookies or set up the state accordingly\nawait driver.manage().deleteAllCookies();\n// Step 1: Navigate to the application URL\nawait driver.get(\"https://gtrs.gtls.store/login\");\n// Step 2: Click on back to home button\nconst backToHomeLink = await driver.findElement(By.xpath(\"//*[@id=\\\"app\\\"]/div/div/div/div/div/div[2]/div/div[1]/div[1]/a\"));\nawait backToHomeLink.click();\n// Step 3: Wait until the URL is the login page\nawait driver.wait(until.urlIs(process.env.BACK_TO_HOME_URL), 5000);\n// Step 4: Verify that the current URL is as expected\nassert.strictEqual(until.urlIs(process.env.BACK_TO_HOME_URL), true, \"Back to home should redirect me to \", process.env.BACK_TO_HOME_URL);",
+              "err": {
+                "message": "TimeoutError: Waiting for URL to be undefined\nWait timed out after 5209ms",
+                "estack": "TimeoutError: Waiting for URL to be undefined\nWait timed out after 5209ms\n    at C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:928:22\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)",
+                "diff": null
+              },
+              "uuid": "62f91171-9a31-4eec-a307-bad50e49d271",
+              "parentUUID": "6dcbd376-cfb0-4397-8e6f-a4682ece7f6d",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "c0cf7a3d-2c80-4d35-91d5-8c2860f12530",
+            "597c2492-4103-4e20-9b44-c0dd2ffcb453",
+            "f43ec23d-3301-4776-8fed-d04565628021"
+          ],
+          "failures": [
+            "17c354cf-db30-4703-8515-18c25bb29cb0",
+            "62f91171-9a31-4eec-a307-bad50e49d271"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 76990,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 0
+        },
+        {
+          "uuid": "1a7d5d2d-dd24-47f8-843e-262a270bd8d4",
+          "title": "Login Test",
+          "fullFile": "C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\tests\\authentication\\Login.js",
+          "file": "\\tests\\authentication\\Login.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"Login Test\"",
+              "fullTitle": "Login Test \"before all\" hook in \"Login Test\"",
+              "timedOut": false,
+              "duration": 1187,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Initialize the WebDriver\ndriver = await new Builder().forBrowser(\"chrome\").build();",
+              "err": {},
+              "uuid": "4e3d3060-f3d3-4efc-99ac-b64a02a2e350",
+              "parentUUID": "1a7d5d2d-dd24-47f8-843e-262a270bd8d4",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"Login Test\"",
+              "fullTitle": "Login Test \"after all\" hook in \"Login Test\"",
+              "timedOut": false,
+              "duration": 60,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Quit the WebDriver after tests\nawait driver.quit();",
+              "err": {},
+              "uuid": "b87fbea8-32a6-4eec-9557-df8e6f051f65",
+              "parentUUID": "1a7d5d2d-dd24-47f8-843e-262a270bd8d4",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [
+            {
+              "title": "login with wrong credentials",
+              "fullTitle": "Login Test login with wrong credentials",
+              "timedOut": false,
+              "duration": 2378,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to the login URL\nawait driver.get(\"https://gtrs.gtls.store/login\");\n// Step 2: Enter wrong credentials\nconst wrongEmail = \"wrongemail@gtls.com.au\"; // Replace with an invalid email\nconst wrongPassword = \"wrongpassword\"; // Replace with an invalid password\nawait driver.findElement(By.name(\"email\")).sendKeys(wrongEmail); // Fill in the email input\nawait driver.findElement(By.name(\"password\")).sendKeys(wrongPassword); // Fill in the password input\n// Step 3: Click the Sign In button\nawait driver\n    .findElement(By.css('button[type=\"button\"]:has-text(\"Sign In\")'))\n    .click();\n// Step 4: Check if an error message appears\nconst errorMessageLocator = await driver.findElement(By.css(\"div.error-message\")); // Adjust this selector if necessary\nawait driver.wait(until.elementIsVisible(errorMessageLocator), 5000); // Wait for the error message to be visible\n// Assert that the error message is displayed\nconst isErrorMessageVisible = await errorMessageLocator.isDisplayed();\nassert.strictEqual(isErrorMessageVisible, true, \"Error message should be displayed for wrong credentials.\");\n// Step 5: Check if the URL remains the same\nawait driver.wait(until.urlIs(\"https://gtrs.gtls.store/login\"), 5000); // Ensure the URL is still the login page\n// Assert that the URL is correct\nconst currentUrl = await driver.getCurrentUrl();\nassert.strictEqual(currentUrl, \"https://gtrs.gtls.store/login\", \"User should remain on the login page.\");",
+              "err": {
+                "message": "InvalidSelectorError: invalid selector\nfrom javascript error: {\"status\":32,\"value\":\"An invalid or illegal selector was specified\"}\n  (Session info: chrome=130.0.6723.92)",
+                "estack": "InvalidSelectorError: invalid selector\nfrom javascript error: {\"status\":32,\"value\":\"An invalid or illegal selector was specified\"}\n  (Session info: chrome=130.0.6723.92)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)\n    at async Context.<anonymous> (tests\\authentication\\Login.js:139:9)",
+                "diff": null
+              },
+              "uuid": "cb515580-7d7b-4084-9262-f32b5daf3852",
+              "parentUUID": "1a7d5d2d-dd24-47f8-843e-262a270bd8d4",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "cb515580-7d7b-4084-9262-f32b5daf3852"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 2378,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 0
+        },
+        {
+          "uuid": "e4fb5018-e51a-4c1f-a4dc-533a1a826e01",
+          "title": "Valid Session Tests",
+          "fullFile": "C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\tests\\authentication\\Login.js",
+          "file": "\\tests\\authentication\\Login.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"Valid Session Tests\"",
+              "fullTitle": "Valid Session Tests \"before all\" hook in \"Valid Session Tests\"",
+              "timedOut": false,
+              "duration": 948,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Initialize the WebDriver\ndriver = await new Builder().forBrowser('chrome').build();",
+              "err": {},
+              "uuid": "c665c444-4bfd-4ced-bdce-e4b5eb502855",
+              "parentUUID": "e4fb5018-e51a-4c1f-a4dc-533a1a826e01",
+              "isHook": true,
+              "skipped": false
+            },
+            {
+              "title": "\"before each\" hook in \"Valid Session Tests\"",
+              "fullTitle": "Valid Session Tests \"before each\" hook in \"Valid Session Tests\"",
+              "timedOut": false,
+              "duration": 2563,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Call the login helper function before each test\nawait login(driver);",
+              "err": {},
+              "uuid": "9cbe0033-0cd7-45c4-b760-044e078fec44",
+              "parentUUID": "e4fb5018-e51a-4c1f-a4dc-533a1a826e01",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"Valid Session Tests\"",
+              "fullTitle": "Valid Session Tests \"after all\" hook in \"Valid Session Tests\"",
+              "timedOut": false,
+              "duration": 61,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Quit the WebDriver after tests\nawait driver.quit();",
+              "err": {},
+              "uuid": "266ca518-1f7b-4458-8d08-cfc72b7a8e5e",
+              "parentUUID": "e4fb5018-e51a-4c1f-a4dc-533a1a826e01",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [
+            {
+              "title": "should show main screen if session is valid",
+              "fullTitle": "Valid Session Tests should show main screen if session is valid",
+              "timedOut": false,
+              "duration": 44,
+              "state": "passed",
+              "speed": "medium",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Check for the gtls_session cookie\nconst cookies = await driver.manage().getCookies();\nconst hasSessionCookie = cookies.some(cookie => cookie.name === 'gtls_session');\n// Step 2: Verify that the main screen is displayed\nif (hasSessionCookie) {\n    // Wait for the sidebar div to be visible\n    const mainScreenDiv = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div/div[1]/div'));\n    await driver.wait(until.elementIsVisible(mainScreenDiv), 5000); // Wait for the main screen to be visible\n    // Assert that the main screen div is visible\n    const isDisplayed = await mainScreenDiv.isDisplayed();\n    assert.strictEqual(isDisplayed, true, \"Main screen should be visible.\");\n} else {\n    // Fail test if it does not have a session\n    throw new Error('No session cookie found');\n}",
+              "err": {},
+              "uuid": "f07c87d8-79a3-40f1-8030-b0441a8199fd",
+              "parentUUID": "e4fb5018-e51a-4c1f-a4dc-533a1a826e01",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "f07c87d8-79a3-40f1-8030-b0441a8199fd"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 44,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 0
+        },
+        {
+          "uuid": "0b625005-0d6a-4cef-bd3c-87cd30f1eb77",
+          "title": "Microsoft Login Tests",
+          "fullFile": "C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\tests\\authentication\\Login.js",
+          "file": "\\tests\\authentication\\Login.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"Microsoft Login Tests\"",
+              "fullTitle": "Microsoft Login Tests \"before all\" hook in \"Microsoft Login Tests\"",
+              "timedOut": false,
+              "duration": 928,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Initialize the WebDriver\ndriver = await new Builder().forBrowser('chrome').build();",
+              "err": {},
+              "uuid": "cfa4b9ab-8d97-459d-bccf-11684bacb0b3",
+              "parentUUID": "0b625005-0d6a-4cef-bd3c-87cd30f1eb77",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"Microsoft Login Tests\"",
+              "fullTitle": "Microsoft Login Tests \"after all\" hook in \"Microsoft Login Tests\"",
+              "timedOut": false,
+              "duration": 143,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Quit the WebDriver after tests\nawait driver.quit();",
+              "err": {},
+              "uuid": "096ec4ea-8835-490d-a3ca-88b4ab68a453",
+              "parentUUID": "0b625005-0d6a-4cef-bd3c-87cd30f1eb77",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [
+            {
+              "title": "Verify that pressing Sign in with Microsoft shows login popup",
+              "fullTitle": "Microsoft Login Tests Verify that pressing Sign in with Microsoft shows login popup",
+              "timedOut": false,
+              "duration": 2500,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to the application URL\nawait driver.get('https://gtrs.gtls.store/login');\n// Step 2: Click on the \"Sign in with Microsoft\" button\nawait driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div/div/div[2]/div/div[1]/div[2]/button')).click();\n// Step 3: Switch to the Microsoft login popup\nconst windows = await driver.getAllWindowHandles();\nassert.strictEqual(windows.length, 2, \"There should be two windows open\");\nawait driver.switchTo().window(windows[1]); // Switch to the new popup window\n// Verify that the popup URL contains Microsoft's login domain\nconst currentUrl = await driver.getCurrentUrl();\nassert.match(currentUrl, /https:\\/\\/login\\.microsoftonline\\.com/, \"Popup URL should contain Microsoft's login domain.\");\n// Close the popup after verification\nawait driver.close();\nawait driver.switchTo().window(windows[0]); // Switch back to the main window",
+              "err": {
+                "message": "AssertionError: Popup URL should contain Microsoft's login domain.",
+                "estack": "AssertionError [ERR_ASSERTION]: Popup URL should contain Microsoft's login domain.\n    at Context.<anonymous> (tests\\authentication\\Login.js:227:16)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)",
+                "diff": null
+              },
+              "uuid": "785721e4-0a09-4ab3-acfd-c42a15350721",
+              "parentUUID": "0b625005-0d6a-4cef-bd3c-87cd30f1eb77",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Verify that entering invalid credentials in Microsoft popup does not redirect",
+              "fullTitle": "Microsoft Login Tests Verify that entering invalid credentials in Microsoft popup does not redirect",
+              "timedOut": false,
+              "duration": 60980,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to the application URL and open Microsoft login\nawait driver.get('https://gtrs.gtls.store/login');\nawait driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div/div/div[2]/div/div[1]/div[2]/button')).click();\nconst windows = await driver.getAllWindowHandles();\nassert.strictEqual(windows.length, 2, \"There should be two windows open\");\nawait driver.switchTo().window(windows[1]); // Switch to the popup window\n// Step 2: Enter invalid credentials in the Microsoft login popup\nawait driver.sleep(60000); // Pause for manual entry of invalid credentials\n// Step 3: Verify that the popup remains open and the user is not redirected\nconst currentUrl = await driver.getCurrentUrl();\nassert.match(currentUrl, /.*login.*error/, \"Popup URL should indicate an error.\");\n// Close the popup after verification\nawait driver.close();\nawait driver.switchTo().window(windows[0]); // Switch back to the main window",
+              "err": {
+                "message": "AssertionError: Popup URL should indicate an error.",
+                "estack": "AssertionError [ERR_ASSERTION]: Popup URL should indicate an error.\n    at Context.<anonymous> (tests\\authentication\\Login.js:249:16)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)",
+                "diff": null
+              },
+              "uuid": "deff07fb-34b3-44af-b7ae-d8376ce6b2d1",
+              "parentUUID": "0b625005-0d6a-4cef-bd3c-87cd30f1eb77",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Verify that entering valid credentials in Microsoft popup redirects to the system",
+              "fullTitle": "Microsoft Login Tests Verify that entering valid credentials in Microsoft popup redirects to the system",
+              "timedOut": false,
+              "duration": 1182,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to the application URL and open Microsoft login\nawait driver.get('https://gtrs.gtls.store/login');\nawait driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div/div/div[2]/div/div[1]/div[2]/button')).click();\nconst windows = await driver.getAllWindowHandles();\nassert.strictEqual(windows.length, 2, \"There should be two windows open\");\nawait driver.switchTo().window(windows[1]); // Switch to the popup window\n// Step 2: Enter valid credentials in the Microsoft login popup\nawait driver.sleep(60000); // Pause for manual entry of valid credentials\n// Step 3: Wait for redirection to the application\nawait driver.switchTo().window(windows[0]); // Switch back to the main window\nawait driver.wait(until.urlIs('https://gtrs.gtls.store/main'), 15000); // Wait for the redirection to the main page\n// Assert that the URL is correct\nconst currentUrl = await driver.getCurrentUrl();\nassert.strictEqual(currentUrl, 'https://gtrs.gtls.store/main', \"User should be redirected to the main page.\");",
+              "err": {
+                "message": "AssertionError: There should be two windows open",
+                "estack": "AssertionError [ERR_ASSERTION]: There should be two windows open\n    at Context.<anonymous> (tests\\authentication\\Login.js:262:16)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)",
+                "diff": "- 3\n+ 2\n"
+              },
+              "uuid": "74aa5783-ec28-4665-8ab5-98fa6e8abd3a",
+              "parentUUID": "0b625005-0d6a-4cef-bd3c-87cd30f1eb77",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "785721e4-0a09-4ab3-acfd-c42a15350721",
+            "deff07fb-34b3-44af-b7ae-d8376ce6b2d1",
+            "74aa5783-ec28-4665-8ab5-98fa6e8abd3a"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 64662,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 0
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 0
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "10.8.2"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "testResults",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports",
+        "reportFilename": "testResults",
+        "timestamp": true,
+        "autoOpen": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}

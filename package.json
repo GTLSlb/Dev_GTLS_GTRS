@@ -3,8 +3,9 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "test": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/MainPortal_Development/test-reports,reportFilename=testResults,timestamp,autoOpen 'tests/*.js'",
-        "test:parallel": "npx mocha --no-timeout -p --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/MainPortal_Development/test-reports,reportFilename=testResults,timestamp,autoOpen 'tests/*.js'"
+        "test:authorization": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports,reportFilename=testResults,timestamp,autoOpen \"tests/authentication/Logout.js\"",
+        "test": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports,reportFilename=testResults,timestamp,autoOpen 'tests/*.js'",
+        "test:parallel": "npx mocha --no-timeout -p --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports,reportFilename=testResults,timestamp,autoOpen 'tests/*.js'"
     },
     "devDependencies": {
         "@headlessui/react": "^1.4.2",
@@ -14,6 +15,8 @@
         "autoprefixer": "^10.4.13",
         "axios": "^1.1.2",
         "laravel-vite-plugin": "^0.7.2",
+        "mocha": "^10.8.2",
+        "mochawesome": "^7.1.3",
         "postcss": "^8.4.21",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
@@ -49,6 +52,7 @@
         "chartjs-adapter-moment": "^1.0.1",
         "crypto-js": "^4.2.0",
         "date-fns": "^2.29.3",
+        "dotenv": "^16.4.5",
         "exceljs": "^4.3.0",
         "file-saver": "^2.0.5",
         "flowbite-react": "^0.5.0",
@@ -59,8 +63,6 @@
         "lodash.debounce": "^4.0.8",
         "lord-icon-element": "^4.1.1",
         "lottie-web": "^5.11.0",
-        "mocha": "^10.2.0",
-        "mochawesome": "^7.1.3",
         "moment": "^2.30.1",
         "moment-timezone": "^0.5.45",
         "next": "^13.4.2",
@@ -96,7 +98,7 @@
         "react-toastify": "^9.1.3",
         "react-transition-group": "^4.4.5",
         "react-youtube": "^10.1.0",
-        "selenium-webdriver": "^4.15.0",
+        "selenium-webdriver": "^4.26.0",
         "signalr": "^2.4.3",
         "slick-carousel": "^1.8.1",
         "styled-components": "^5.3.9",
