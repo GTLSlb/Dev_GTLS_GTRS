@@ -197,6 +197,7 @@ export default function Sidebar(Boolean) {
                                             allowedApplications={
                                                 allowedApplications
                                             }
+                                            setUser={setUser}
                                             setSidebarElements={setSidebarElements}
                                             sidebarElements={sidebarElements}
                                             setcurrentUser={setcurrentUser}

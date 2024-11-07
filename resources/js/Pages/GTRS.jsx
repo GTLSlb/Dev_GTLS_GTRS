@@ -23,6 +23,7 @@ export default function Gtrs({
     setcurrentUser,
     setSidebarElements,
     sidebarElements,
+    setUser,
 }) {
     const [chartsData, setchartsData] = useState([]);
     const [debtorsData, setdebtorsData] = useState([]);
@@ -171,6 +172,7 @@ export default function Gtrs({
                                                 setkpireasonsData
                                             }
                                             userBody={userBody}
+                                            setUser={setUser}
                                             url={gtrsUrl}
                                             gtccrUrl={gtccrUrl}
                                             chartsData={chartsData}

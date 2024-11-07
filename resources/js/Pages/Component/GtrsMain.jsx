@@ -78,6 +78,7 @@ export default function GtrsMain({
     setSidebarElements,
     setToken,
     setCurrentUser,
+    setUser,
 }) {
     window.moment = moment;
     const [KPIData, setKPIData] = useState([]);
@@ -659,7 +660,7 @@ export default function GtrsMain({
                         <div className="h-full">
                             <div className="rounded-lg h-full">
                                 <Routes>
-                                <Route path="/main" element={<MainPageGTRS user={userPermission} setSidebarElements={setSidebarElements} sidebarElements={sidebarElements} AToken={AToken} currentUser={currentUser}/>} />
+                                <Route path="/main" element={<MainPageGTRS user={userPermission} setUser={setUser} setSidebarElements={setSidebarElements} sidebarElements={sidebarElements} AToken={AToken} currentUser={currentUser}/>} />
                                     <Route
                                         path="/dashboard"
                                         element={

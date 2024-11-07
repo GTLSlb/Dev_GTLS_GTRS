@@ -58,7 +58,7 @@ Route::get('/gtrs/dashboard', function () {
 Route::redirect('/', '/gtrs/main');
 
 Route::get('/gtrs/main', function () {
-    return Inertia::render('MainPageGTRS');
+    return Inertia::render('Layout');
 })->middleware(['custom.auth'])->name('landing.page');
 
 Route::get('/LandingPage', function () {
