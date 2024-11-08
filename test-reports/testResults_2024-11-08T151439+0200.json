@@ -1,0 +1,147 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 0,
+    "pending": 0,
+    "failures": 1,
+    "start": "2024-11-08T13:14:05.982Z",
+    "end": "2024-11-08T13:14:39.853Z",
+    "duration": 33871,
+    "testsRegistered": 1,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "089a6808-19eb-45d0-97e0-70063064b167",
+      "title": "",
+      "fullFile": "C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\tests\\authentication\\AppsIntegration.js",
+      "file": "\\tests\\authentication\\AppsIntegration.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "76d89de1-6bc5-4bf1-a216-78ca0df8233a",
+          "title": "Apps Integration Tests",
+          "fullFile": "C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\tests\\authentication\\AppsIntegration.js",
+          "file": "\\tests\\authentication\\AppsIntegration.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"Apps Integration Tests\"",
+              "fullTitle": "Apps Integration Tests \"before all\" hook in \"Apps Integration Tests\"",
+              "timedOut": false,
+              "duration": 992,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const options = new chrome.Options();\noptions.addArguments(\"--log-level=1\"); // add this line\ndriver = await new Builder()\n    .forBrowser(\"chrome\")\n    .setChromeOptions(options)\n    .build();",
+              "err": {},
+              "uuid": "df908630-e2ab-45ff-9955-0c8127cc45ce",
+              "parentUUID": "76d89de1-6bc5-4bf1-a216-78ca0df8233a",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"Apps Integration Tests\"",
+              "fullTitle": "Apps Integration Tests \"after all\" hook in \"Apps Integration Tests\"",
+              "timedOut": false,
+              "duration": 111,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await driver.quit();",
+              "err": {},
+              "uuid": "45e42f40-759a-472e-8fb9-a95673f64bee",
+              "parentUUID": "76d89de1-6bc5-4bf1-a216-78ca0df8233a",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [
+            {
+              "title": "User doesn't have dashboard in sidebar after having no access",
+              "fullTitle": "Apps Integration Tests User doesn't have dashboard in sidebar after having no access",
+              "timedOut": false,
+              "duration": 32763,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "await login(driver);\nconst dashboardSelector = await driver.findElement(\n    By.xpath(\n        \"/html/body/div[1]/div/div/div/div/div[2]/div/div/div/div/div/aside/div/div/div[4]/nav/ul/li[1]/div/span/div\"\n    )\n);\nawait driver.wait(until.elementIsVisible(dashboardSelector), 500);\nconst firstElement = await driver.findElement(dashboardSelector);\nconst firstElementText = await firstElement.getText();\nconst currentUrl = await driver.getCurrentUrl();\nassert.notStrictEqual(\n    firstElementText,\n    \"Dashboard\",\n    \"User still has access to 'Dashboard' in the sidebar\"\n);\nassert.notStrictEqual(\n    currentUrl,\n    \"https://gtrs.gtls.store/gtrs/dashboard\",\n    \"User is still able to access the dashboard URL\"\n);",
+              "err": {
+                "message": "TypeError: Invalid locator",
+                "estack": "TypeError: Invalid locator\n    at Object.check [as checkedLocator] (node_modules\\selenium-webdriver\\lib\\by.js:417:9)\n    at Driver.findElement (node_modules\\selenium-webdriver\\lib\\webdriver.js:1004:20)\n    at Context.<anonymous> (tests\\authentication\\AppsIntegration.js:143:43)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)",
+                "diff": null
+              },
+              "uuid": "768838ba-57dd-4446-8c10-aa2fbe8a88dd",
+              "parentUUID": "76d89de1-6bc5-4bf1-a216-78ca0df8233a",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "768838ba-57dd-4446-8c10-aa2fbe8a88dd"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 32763,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 0
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 0
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "10.8.2"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "testResults",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports",
+        "reportFilename": "testResults",
+        "timestamp": true,
+        "autoOpen": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 0,
+    "pending": 0,
+    "failures": 1,
+    "start": "2024-11-08T11:58:37.777Z",
+    "end": "2024-11-08T11:59:42.709Z",
+    "duration": 64932,
+    "testsRegistered": 1,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "0cffc536-677d-48ae-917b-1983828f694b",
+      "title": "",
+      "fullFile": "C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\tests\\authentication\\AppsIntegration.js",
+      "file": "\\tests\\authentication\\AppsIntegration.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "0ee12bb1-2bd5-4c5a-a2f3-dceed53f7603",
+          "title": "Apps Integration Tests",
+          "fullFile": "C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\tests\\authentication\\AppsIntegration.js",
+          "file": "\\tests\\authentication\\AppsIntegration.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"Apps Integration Tests\"",
+              "fullTitle": "Apps Integration Tests \"before all\" hook in \"Apps Integration Tests\"",
+              "timedOut": false,
+              "duration": 33605,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Initialize the WebDriver\ndriver = await new Builder().forBrowser(\"chrome\").build();\n// Define system variables\nconst url = \"https://gtam.gtls.store\";\nconst mainUrl = \"gtam\";\n// Call the login helper function\nawait loginToApp(driver, url, mainUrl);",
+              "err": {},
+              "uuid": "382aad96-4699-4fb8-943c-1c7b5e60bb45",
+              "parentUUID": "0ee12bb1-2bd5-4c5a-a2f3-dceed53f7603",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"Apps Integration Tests\"",
+              "fullTitle": "Apps Integration Tests \"after all\" hook in \"Apps Integration Tests\"",
+              "timedOut": false,
+              "duration": 90,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Quit the WebDriver after tests\nawait driver.quit();",
+              "err": {},
+              "uuid": "857cbace-613e-4de7-b4be-03322eaabe0e",
+              "parentUUID": "0ee12bb1-2bd5-4c5a-a2f3-dceed53f7603",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [
+            {
+              "title": "User can't access page DAS if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page DAS if he has no access",
+              "timedOut": false,
+              "duration": 31231,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.findElement(\n    By.xpath(\n        \"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[1]/div/div/aside/div/div/div[3]/nav/ul/li[4]/a/span/div\"\n    )\n).click();\n// Select GTRS app\nconsole.log('Remove access manually');\nawait driver.sleep(30000); // Wait 30s for manual action,\n// Step 2: Verify that the user is not allowed access\nawait driver.get(`https://gtrs.gtls.store/gtrs/dashboard`);\n// Wait for the element to be present and visible\nawait driver.wait(until.elementIsVisible(driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'))), 10000);\n// Step 3: Verify that the user is not allowed access\nconst noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\nassert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"//*[@id=\"app\"]/div/div/div/div[2]\"}\n  (Session info: chrome=130.0.6723.117)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"//*[@id=\"app\"]/div/div/div/div[2]\"}\n  (Session info: chrome=130.0.6723.117)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)",
+                "diff": null
+              },
+              "uuid": "7f9753da-5785-444e-b958-6f03b6d34183",
+              "parentUUID": "0ee12bb1-2bd5-4c5a-a2f3-dceed53f7603",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "7f9753da-5785-444e-b958-6f03b6d34183"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 31231,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 0
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 0
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "10.8.2"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "testResults",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports",
+        "reportFilename": "testResults",
+        "timestamp": true,
+        "autoOpen": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}

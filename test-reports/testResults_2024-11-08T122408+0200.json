@@ -1,0 +1,561 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 19,
+    "passes": 0,
+    "pending": 0,
+    "failures": 19,
+    "start": "2024-11-08T10:20:10.611Z",
+    "end": "2024-11-08T10:24:08.549Z",
+    "duration": 237938,
+    "testsRegistered": 19,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "cb0e04ec-5bcb-4924-8c89-f1087a9ee19c",
+      "title": "",
+      "fullFile": "C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\tests\\authentication\\AppsIntegration.js",
+      "file": "\\tests\\authentication\\AppsIntegration.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+          "title": "Apps Integration Tests",
+          "fullFile": "C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\tests\\authentication\\AppsIntegration.js",
+          "file": "\\tests\\authentication\\AppsIntegration.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"Apps Integration Tests\"",
+              "fullTitle": "Apps Integration Tests \"before all\" hook in \"Apps Integration Tests\"",
+              "timedOut": false,
+              "duration": 33805,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Initialize the WebDriver\ndriver = await new Builder().forBrowser('chrome').build();\n// Define system variables\nconst url =  \"https://gtam.gtls.store\";\nconst mainUrl = 'gtam';\n// Call the login helper function\nawait loginToApp(driver, url, mainUrl);",
+              "err": {},
+              "uuid": "0370323b-9ef3-4561-98d0-76ac0abcb82c",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"Apps Integration Tests\"",
+              "fullTitle": "Apps Integration Tests \"after all\" hook in \"Apps Integration Tests\"",
+              "timedOut": false,
+              "duration": 89,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Quit the WebDriver after tests\nawait driver.quit();",
+              "err": {},
+              "uuid": "a9a40c9c-cddd-4df8-93bb-055e4d514684",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [
+            {
+              "title": "User can't access page Dashboard if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page Dashboard if he has no access",
+              "timedOut": false,
+              "duration": 10867,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.get('https://gtam.gtls.store/gtam/applications');\nawait driver.sleep(10000);\nawait driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]')).click();\n// wait until applications page is visible\nawait driver.sleep(60000); // Wait manual action\nconsole.log('Remove access manually');\n// Step 2: Verify that the user is not allowed access\nawait driver.get(`https://gtrs.gtls.store/${url}`);\n// Step 3: Verify that the user is not allowed access\nconst noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\nassert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)\n    at async Context.<anonymous> (tests\\authentication\\AppsIntegration.js:85:13)",
+                "diff": null
+              },
+              "uuid": "fd43bb21-e4df-4e8c-9051-d118203259ce",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "User can't access page Consignments if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page Consignments if he has no access",
+              "timedOut": false,
+              "duration": 10714,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.get('https://gtam.gtls.store/gtam/applications');\nawait driver.sleep(10000);\nawait driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]')).click();\n// wait until applications page is visible\nawait driver.sleep(60000); // Wait manual action\nconsole.log('Remove access manually');\n// Step 2: Verify that the user is not allowed access\nawait driver.get(`https://gtrs.gtls.store/${url}`);\n// Step 3: Verify that the user is not allowed access\nconst noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\nassert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)\n    at async Context.<anonymous> (tests\\authentication\\AppsIntegration.js:85:13)",
+                "diff": null
+              },
+              "uuid": "8c535943-e91d-4888-90b0-f93c74609174",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "User can't access page KPI if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page KPI if he has no access",
+              "timedOut": false,
+              "duration": 10793,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.get('https://gtam.gtls.store/gtam/applications');\nawait driver.sleep(10000);\nawait driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]')).click();\n// wait until applications page is visible\nawait driver.sleep(60000); // Wait manual action\nconsole.log('Remove access manually');\n// Step 2: Verify that the user is not allowed access\nawait driver.get(`https://gtrs.gtls.store/${url}`);\n// Step 3: Verify that the user is not allowed access\nconst noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\nassert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)\n    at async Context.<anonymous> (tests\\authentication\\AppsIntegration.js:85:13)",
+                "diff": null
+              },
+              "uuid": "cb5e2046-35c2-4cff-8870-e06c1454af37",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "User can't access page Transit Days if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page Transit Days if he has no access",
+              "timedOut": false,
+              "duration": 10697,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.get('https://gtam.gtls.store/gtam/applications');\nawait driver.sleep(10000);\nawait driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]')).click();\n// wait until applications page is visible\nawait driver.sleep(60000); // Wait manual action\nconsole.log('Remove access manually');\n// Step 2: Verify that the user is not allowed access\nawait driver.get(`https://gtrs.gtls.store/${url}`);\n// Step 3: Verify that the user is not allowed access\nconst noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\nassert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)\n    at async Context.<anonymous> (tests\\authentication\\AppsIntegration.js:85:13)",
+                "diff": null
+              },
+              "uuid": "cc62ee26-844a-4fba-8589-ec259fd8d04f",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "User can't access page Holidays if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page Holidays if he has no access",
+              "timedOut": false,
+              "duration": 10681,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.get('https://gtam.gtls.store/gtam/applications');\nawait driver.sleep(10000);\nawait driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]')).click();\n// wait until applications page is visible\nawait driver.sleep(60000); // Wait manual action\nconsole.log('Remove access manually');\n// Step 2: Verify that the user is not allowed access\nawait driver.get(`https://gtrs.gtls.store/${url}`);\n// Step 3: Verify that the user is not allowed access\nconst noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\nassert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)\n    at async Context.<anonymous> (tests\\authentication\\AppsIntegration.js:85:13)",
+                "diff": null
+              },
+              "uuid": "71fa196e-a34b-456a-9280-660f45655a77",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "User can't access page Consignments performance if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page Consignments performance if he has no access",
+              "timedOut": false,
+              "duration": 10694,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.get('https://gtam.gtls.store/gtam/applications');\nawait driver.sleep(10000);\nawait driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]')).click();\n// wait until applications page is visible\nawait driver.sleep(60000); // Wait manual action\nconsole.log('Remove access manually');\n// Step 2: Verify that the user is not allowed access\nawait driver.get(`https://gtrs.gtls.store/${url}`);\n// Step 3: Verify that the user is not allowed access\nconst noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\nassert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)\n    at async Context.<anonymous> (tests\\authentication\\AppsIntegration.js:85:13)",
+                "diff": null
+              },
+              "uuid": "82ea5e26-78d0-481d-a4a0-cd59653b0dac",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "User can't access page Failed Consignments if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page Failed Consignments if he has no access",
+              "timedOut": false,
+              "duration": 10706,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.get('https://gtam.gtls.store/gtam/applications');\nawait driver.sleep(10000);\nawait driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]')).click();\n// wait until applications page is visible\nawait driver.sleep(60000); // Wait manual action\nconsole.log('Remove access manually');\n// Step 2: Verify that the user is not allowed access\nawait driver.get(`https://gtrs.gtls.store/${url}`);\n// Step 3: Verify that the user is not allowed access\nconst noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\nassert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)\n    at async Context.<anonymous> (tests\\authentication\\AppsIntegration.js:85:13)",
+                "diff": null
+              },
+              "uuid": "cee6f329-9887-4f32-a49c-191b90e02f6b",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "User can't access page Transport Report if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page Transport Report if he has no access",
+              "timedOut": false,
+              "duration": 10701,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.get('https://gtam.gtls.store/gtam/applications');\nawait driver.sleep(10000);\nawait driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]')).click();\n// wait until applications page is visible\nawait driver.sleep(60000); // Wait manual action\nconsole.log('Remove access manually');\n// Step 2: Verify that the user is not allowed access\nawait driver.get(`https://gtrs.gtls.store/${url}`);\n// Step 3: Verify that the user is not allowed access\nconst noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\nassert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)\n    at async Context.<anonymous> (tests\\authentication\\AppsIntegration.js:85:13)",
+                "diff": null
+              },
+              "uuid": "d3defc88-e4d8-4109-bdf1-e679ac7e8458",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "User can't access page RDD if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page RDD if he has no access",
+              "timedOut": false,
+              "duration": 10687,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.get('https://gtam.gtls.store/gtam/applications');\nawait driver.sleep(10000);\nawait driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]')).click();\n// wait until applications page is visible\nawait driver.sleep(60000); // Wait manual action\nconsole.log('Remove access manually');\n// Step 2: Verify that the user is not allowed access\nawait driver.get(`https://gtrs.gtls.store/${url}`);\n// Step 3: Verify that the user is not allowed access\nconst noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\nassert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)\n    at async Context.<anonymous> (tests\\authentication\\AppsIntegration.js:85:13)",
+                "diff": null
+              },
+              "uuid": "8e044296-f873-470a-b7da-699d2ac08cf9",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "User can't access page Missing pod if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page Missing pod if he has no access",
+              "timedOut": false,
+              "duration": 10780,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.get('https://gtam.gtls.store/gtam/applications');\nawait driver.sleep(10000);\nawait driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]')).click();\n// wait until applications page is visible\nawait driver.sleep(60000); // Wait manual action\nconsole.log('Remove access manually');\n// Step 2: Verify that the user is not allowed access\nawait driver.get(`https://gtrs.gtls.store/${url}`);\n// Step 3: Verify that the user is not allowed access\nconst noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\nassert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)\n    at async Context.<anonymous> (tests\\authentication\\AppsIntegration.js:85:13)",
+                "diff": null
+              },
+              "uuid": "ae0a9e82-f873-45b1-8f7e-ea0d3c56e0f4",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "User can't access page Safety if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page Safety if he has no access",
+              "timedOut": false,
+              "duration": 10696,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.get('https://gtam.gtls.store/gtam/applications');\nawait driver.sleep(10000);\nawait driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]')).click();\n// wait until applications page is visible\nawait driver.sleep(60000); // Wait manual action\nconsole.log('Remove access manually');\n// Step 2: Verify that the user is not allowed access\nawait driver.get(`https://gtrs.gtls.store/${url}`);\n// Step 3: Verify that the user is not allowed access\nconst noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\nassert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)\n    at async Context.<anonymous> (tests\\authentication\\AppsIntegration.js:85:13)",
+                "diff": null
+              },
+              "uuid": "74249313-7810-4b95-bb95-f0b7b6d2039f",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "User can't access page No Delivery if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page No Delivery if he has no access",
+              "timedOut": false,
+              "duration": 10695,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.get('https://gtam.gtls.store/gtam/applications');\nawait driver.sleep(10000);\nawait driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]')).click();\n// wait until applications page is visible\nawait driver.sleep(60000); // Wait manual action\nconsole.log('Remove access manually');\n// Step 2: Verify that the user is not allowed access\nawait driver.get(`https://gtrs.gtls.store/${url}`);\n// Step 3: Verify that the user is not allowed access\nconst noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\nassert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)\n    at async Context.<anonymous> (tests\\authentication\\AppsIntegration.js:85:13)",
+                "diff": null
+              },
+              "uuid": "ccb11697-b5fa-40ce-b568-450f31025c13",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "User can't access page Additional Charges if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page Additional Charges if he has no access",
+              "timedOut": false,
+              "duration": 10713,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.get('https://gtam.gtls.store/gtam/applications');\nawait driver.sleep(10000);\nawait driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]')).click();\n// wait until applications page is visible\nawait driver.sleep(60000); // Wait manual action\nconsole.log('Remove access manually');\n// Step 2: Verify that the user is not allowed access\nawait driver.get(`https://gtrs.gtls.store/${url}`);\n// Step 3: Verify that the user is not allowed access\nconst noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\nassert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)\n    at async Context.<anonymous> (tests\\authentication\\AppsIntegration.js:85:13)",
+                "diff": null
+              },
+              "uuid": "3d3b4ee8-65b7-4f78-b898-615a05de7d29",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "User can't access page Driver Login if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page Driver Login if he has no access",
+              "timedOut": false,
+              "duration": 10824,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.get('https://gtam.gtls.store/gtam/applications');\nawait driver.sleep(10000);\nawait driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]')).click();\n// wait until applications page is visible\nawait driver.sleep(60000); // Wait manual action\nconsole.log('Remove access manually');\n// Step 2: Verify that the user is not allowed access\nawait driver.get(`https://gtrs.gtls.store/${url}`);\n// Step 3: Verify that the user is not allowed access\nconst noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\nassert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)\n    at async Context.<anonymous> (tests\\authentication\\AppsIntegration.js:85:13)",
+                "diff": null
+              },
+              "uuid": "18935dc6-403e-4f37-9d86-4b51fe58c6f6",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "User can't access page Unilever Pack Report if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page Unilever Pack Report if he has no access",
+              "timedOut": false,
+              "duration": 10783,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.get('https://gtam.gtls.store/gtam/applications');\nawait driver.sleep(10000);\nawait driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]')).click();\n// wait until applications page is visible\nawait driver.sleep(60000); // Wait manual action\nconsole.log('Remove access manually');\n// Step 2: Verify that the user is not allowed access\nawait driver.get(`https://gtrs.gtls.store/${url}`);\n// Step 3: Verify that the user is not allowed access\nconst noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\nassert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)\n    at async Context.<anonymous> (tests\\authentication\\AppsIntegration.js:85:13)",
+                "diff": null
+              },
+              "uuid": "ebb46dab-9399-4a3d-a417-74934b254acc",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "User can't access page Traffic Report if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page Traffic Report if he has no access",
+              "timedOut": false,
+              "duration": 10686,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.get('https://gtam.gtls.store/gtam/applications');\nawait driver.sleep(10000);\nawait driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]')).click();\n// wait until applications page is visible\nawait driver.sleep(60000); // Wait manual action\nconsole.log('Remove access manually');\n// Step 2: Verify that the user is not allowed access\nawait driver.get(`https://gtrs.gtls.store/${url}`);\n// Step 3: Verify that the user is not allowed access\nconst noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\nassert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)\n    at async Context.<anonymous> (tests\\authentication\\AppsIntegration.js:85:13)",
+                "diff": null
+              },
+              "uuid": "2756618e-40a3-4dc4-ba5c-2fc21179bfe8",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "User can't access page Consignment Tracking if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page Consignment Tracking if he has no access",
+              "timedOut": false,
+              "duration": 10709,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.get('https://gtam.gtls.store/gtam/applications');\nawait driver.sleep(10000);\nawait driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]')).click();\n// wait until applications page is visible\nawait driver.sleep(60000); // Wait manual action\nconsole.log('Remove access manually');\n// Step 2: Verify that the user is not allowed access\nawait driver.get(`https://gtrs.gtls.store/${url}`);\n// Step 3: Verify that the user is not allowed access\nconst noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\nassert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)\n    at async Context.<anonymous> (tests\\authentication\\AppsIntegration.js:85:13)",
+                "diff": null
+              },
+              "uuid": "17af7bbd-af5e-4fbc-8cb8-05da360e6718",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "User can't access page Consignment Tracking 2 if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page Consignment Tracking 2 if he has no access",
+              "timedOut": false,
+              "duration": 10743,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.get('https://gtam.gtls.store/gtam/applications');\nawait driver.sleep(10000);\nawait driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]')).click();\n// wait until applications page is visible\nawait driver.sleep(60000); // Wait manual action\nconsole.log('Remove access manually');\n// Step 2: Verify that the user is not allowed access\nawait driver.get(`https://gtrs.gtls.store/${url}`);\n// Step 3: Verify that the user is not allowed access\nconst noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\nassert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)\n    at async Context.<anonymous> (tests\\authentication\\AppsIntegration.js:85:13)",
+                "diff": null
+              },
+              "uuid": "70c771a2-b038-49cd-b221-bf7ca216f70f",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "User can't access page Unilever Delivery Report if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page Unilever Delivery Report if he has no access",
+              "timedOut": false,
+              "duration": 10850,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.get('https://gtam.gtls.store/gtam/applications');\nawait driver.sleep(10000);\nawait driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]')).click();\n// wait until applications page is visible\nawait driver.sleep(60000); // Wait manual action\nconsole.log('Remove access manually');\n// Step 2: Verify that the user is not allowed access\nawait driver.get(`https://gtrs.gtls.store/${url}`);\n// Step 3: Verify that the user is not allowed access\nconst noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\nassert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]\"}\n  (Session info: chrome=130.0.6723.117)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:521:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:514:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:446:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:744:17)\n    at async toWireValue (node_modules\\selenium-webdriver\\lib\\webdriver.js:148:15)\n    at async C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\node_modules\\selenium-webdriver\\lib\\webdriver.js:194:16\n    at async forEachKey (node_modules\\selenium-webdriver\\lib\\webdriver.js:188:9)\n    at async convertKeys (node_modules\\selenium-webdriver\\lib\\webdriver.js:193:3)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:742:22)\n    at async Context.<anonymous> (tests\\authentication\\AppsIntegration.js:85:13)",
+                "diff": null
+              },
+              "uuid": "8cfe6a15-5a66-44d9-91ac-f105b2aec021",
+              "parentUUID": "9315454d-ce82-44a2-920c-2ccd55c9afae",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "fd43bb21-e4df-4e8c-9051-d118203259ce",
+            "8c535943-e91d-4888-90b0-f93c74609174",
+            "cb5e2046-35c2-4cff-8870-e06c1454af37",
+            "cc62ee26-844a-4fba-8589-ec259fd8d04f",
+            "71fa196e-a34b-456a-9280-660f45655a77",
+            "82ea5e26-78d0-481d-a4a0-cd59653b0dac",
+            "cee6f329-9887-4f32-a49c-191b90e02f6b",
+            "d3defc88-e4d8-4109-bdf1-e679ac7e8458",
+            "8e044296-f873-470a-b7da-699d2ac08cf9",
+            "ae0a9e82-f873-45b1-8f7e-ea0d3c56e0f4",
+            "74249313-7810-4b95-bb95-f0b7b6d2039f",
+            "ccb11697-b5fa-40ce-b568-450f31025c13",
+            "3d3b4ee8-65b7-4f78-b898-615a05de7d29",
+            "18935dc6-403e-4f37-9d86-4b51fe58c6f6",
+            "ebb46dab-9399-4a3d-a417-74934b254acc",
+            "2756618e-40a3-4dc4-ba5c-2fc21179bfe8",
+            "17af7bbd-af5e-4fbc-8cb8-05da360e6718",
+            "70c771a2-b038-49cd-b221-bf7ca216f70f",
+            "8cfe6a15-5a66-44d9-91ac-f105b2aec021"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 204019,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 0
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 0
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "10.8.2"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "testResults",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports",
+        "reportFilename": "testResults",
+        "timestamp": true,
+        "autoOpen": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}

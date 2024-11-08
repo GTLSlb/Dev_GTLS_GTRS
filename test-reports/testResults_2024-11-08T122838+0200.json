@@ -1,0 +1,143 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2024-11-08T10:28:03.962Z",
+    "end": "2024-11-08T10:28:38.577Z",
+    "duration": 34615,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "243136da-3d70-4e11-9b46-cc73d1523ee9",
+      "title": "",
+      "fullFile": "C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\tests\\authentication\\AppsIntegration.js",
+      "file": "\\tests\\authentication\\AppsIntegration.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "cbcdaa7c-3117-465f-bfda-854580f1e23c",
+          "title": "Apps Integration Tests",
+          "fullFile": "C:\\xampp\\htdocs\\Dev_GTLS_GTRS\\tests\\authentication\\AppsIntegration.js",
+          "file": "\\tests\\authentication\\AppsIntegration.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"Apps Integration Tests\"",
+              "fullTitle": "Apps Integration Tests \"before all\" hook in \"Apps Integration Tests\"",
+              "timedOut": false,
+              "duration": 33659,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Initialize the WebDriver\ndriver = await new Builder().forBrowser('chrome').build();\n// Define system variables\nconst url =  \"https://gtam.gtls.store\";\nconst mainUrl = 'gtam';\n// Call the login helper function\nawait loginToApp(driver, url, mainUrl);",
+              "err": {},
+              "uuid": "3edec8be-53ea-40cc-bdd5-1ccede62bfe7",
+              "parentUUID": "cbcdaa7c-3117-465f-bfda-854580f1e23c",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"Apps Integration Tests\"",
+              "fullTitle": "Apps Integration Tests \"after all\" hook in \"Apps Integration Tests\"",
+              "timedOut": false,
+              "duration": 114,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Quit the WebDriver after tests\nawait driver.quit();",
+              "err": {},
+              "uuid": "7add8b55-51f3-4fea-9da7-99d5988fb469",
+              "parentUUID": "cbcdaa7c-3117-465f-bfda-854580f1e23c",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [
+            {
+              "title": "User can't access page DAS if he has no access",
+              "fullTitle": "Apps Integration Tests User can't access page DAS if he has no access",
+              "timedOut": false,
+              "duration": 835,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// Step 1: Navigate to applications page in GTAM\nawait driver.get('https://gtam.gtls.store/gtam/applications');\n// await driver.sleep(10000);\n//await driver.findElement(By.xpath('/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[7]/div[1]')).click();\n// wait until applications page is visible\n//await driver.sleep(60000); // Wait manual action\n///console.log('Remove access manually');\n// Step 2: Verify that the user is not allowed access\n//await driver.get(`https://gtrs.gtls.store/${url}`);\n// Step 3: Verify that the user is not allowed access\n//const noAccess = await driver.findElement(By.xpath('//*[@id=\"app\"]/div/div/div/div[2]'));\n//assert.ok(await noAccess.isDisplayed(), \"User should not be able to access the app.\");",
+              "err": {},
+              "uuid": "d80f9f55-78d1-418c-8ec8-42eed04eb1c5",
+              "parentUUID": "cbcdaa7c-3117-465f-bfda-854580f1e23c",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "d80f9f55-78d1-418c-8ec8-42eed04eb1c5"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 835,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 0
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 0
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "10.8.2"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "testResults",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports",
+        "reportFilename": "testResults",
+        "timestamp": true,
+        "autoOpen": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}
