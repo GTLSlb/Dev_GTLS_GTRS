@@ -3,118 +3,19 @@ const assert = require("assert");
 const { login, loginToApp } = require("../helper/helper");
 require("dotenv").config();
 
-const chrome = require('selenium-webdriver/chrome');
-
-describe("Apps Integration Tests", function () {
-    let driver;
-
-    // Login to GTAM
-    before(async () => {
-        // Initialize the WebDriver
-        driver = await new Builder().forBrowser("chrome").build();
-
-        // Define system variables
-        const url = "https://gtam.gtls.store";
-        const mainUrl = "gtam";
-
-        // Call the login helper function
-        await loginToApp(driver, url, mainUrl);
-    });
-
-    after(async () => {
-        // Quit the WebDriver after tests
-        await driver.quit();
-    });
-
-it("User cannot access if he has an inactive role in GTAM", async () => {
-    // Step 1: Remove user access of GTRS from GTAM
-    await driver.get('https://gtam.gtls.store/gtam/employees');
-
-    // Search for user
-    await driver.sleep(6000); // Wait for search to complete
-
-    // Select GTRS app
-    await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[1]/div/div[3]/div[2]/div/div/div/div[2]/div/div[1]/div[2]/div[2]/div[2]')).click();
-
-    // Remove access
-    const overlay = await driver.findElement(By.xpath('/html/body/div[3]/div/div/div/div[2]/div/div/div/div'));
-    const activeCheckbox = await driver.findElement(By.xpath('/html/body/div[3]/div/div/div/div[2]/div/div/div/div/div/div[2]/div/div[3]/div[2]/label'));
-
-    // Scroll the overlay until the checkbox is visible
-    while (!(await activeCheckbox.isDisplayed())) {
-        await driver.executeScript("arguments[0].scrollBy(0, 100);", overlay); // Scroll down by 100 pixels
-        await driver.sleep(100); // Wait for the scroll animation to complete
-    }
-    activeCheckbox.click();
-    await driver.findElement(By.xpath('/html/body/div[3]/div/div/div/div[2]/div/div/div/div/div/div[2]/div/button')).click();
-
-    // Step 2: Navigate to GTRS
-    await driver.get('https://gtrs.gtls.store/gtrs/dashboard');
-
-    // Step 3: Verify that the user is not allowed access
-    await driver.sleep(30000);
-    const noAccess = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div[2]'));
-    assert.ok(await noAccess.isDisplayed(), "User should not be able to access the app.");
-})
-
-const GtrsPages = [
-    { pageName: "Dashboard", url: "gtrs/dashboard" },
-    { pageName: "Consignments", url: "gtrs/consignments" },
-    { pageName: "KPI", url: "gtrs/kpi" },
-    { pageName: "Transit Days", url: "gtrs/kpi/transit-days" },
-    { pageName: "Holidays", url: "gtrs/kpi/holidays" },
-    { pageName: "Consignments performance", url: "gtrs/performance" },
-    { pageName: "Failed Consignments", url: "gtrs/failed-consignments" },
-    { pageName: "Transport Report", url: "gtrs/transport" },
-    { pageName: "RDD", url: "gtrs/rdd" },
-    { pageName: "Missing pod", url: "gtrs/missing-pod" },
-    { pageName: "Safety", url: "gtrs/safety" },
-    { pageName: "No Delivery", url: "gtrs/no-delivery" },
-    { pageName: "Additional Charges", url: "gtrs/additional-charges" },
-    { pageName: "Driver Login", url: "gtrs/driver-login" },
-    { pageName: "Unilever Pack Report", url: "gtrs/pack-report" },
-    { pageName: "Traffic Report", url: "gtrs/traffic-report" },
-    { pageName: "Consignment Tracking", url: "gtrs/consignment-tracking" },
-    {
-        pageName: "Consignment Tracking 2",
-        url: "gtrs/consignment-tracking-2",
-    },
-    { pageName: "Unilever Delivery Report", url: "gtrs/delivery-report" },
+const allSystems = [
+    { name: "GTAM", url: "https://gtam.gtls.store", main: "/gtam/employees" },
+    { name: "GTIS", url: "https://gtis.gtls.store", main: "/gtis/main" },
+    { name: "GTCCR", url: "https://gtccr.gtls.store", main: "/gtccr/main" },
 ];
 
-   for (const { pageName, url } of GtrsPages) {
-    it(`User can't access page ${pageName} if he has no access`, async () => {
-        // Step 1: Navigate to applications page in GTAM
-        await driver.findElement(
-            By.xpath(
-                "/html/body/div[1]/div/div/div/div/div[1]/div/div[3]/div[1]/div/div/aside/div/div/div[3]/nav/ul/li[4]/a/span/div"
-            )
-        ).click();
-
-        // Select GTRS app
-        console.log('Remove access manually');
-        await driver.sleep(30000); // Wait 30s for manual action
-
-        // Step 2: Verify that the user is not allowed access
-        await driver.get(`https://gtrs.gtls.store/${url}`);
-        await driver.sleep(60000); // Wait 60s for website to load
-
-        // Wait for the element to be present and visible
-        await driver.wait(until.elementIsVisible(driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div[2]'))), 10000);
-
-        // Step 3: Verify that the user is not allowed access
-        const noAccess = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div[2]'));
-        assert.ok(await noAccess.isDisplayed(), "User should not be able to access the app.");
-    });
-    }
- });
-
-describe("Apps Integration Tests", function () {
+// Using user credentials
+describe("Test login to and from all systems using credentials", function () {
     let driver;
 
     before(async () => {
         const options = new chrome.Options();
-        options.addArguments("--log-level=1"); // add this line
+        options.addArguments("--log-level=1");
         driver = await new Builder()
             .forBrowser("chrome")
             .setChromeOptions(options)
@@ -125,59 +26,494 @@ describe("Apps Integration Tests", function () {
         await driver.quit();
     });
 
-    // Prerequisites:
-    // 1. User is logged in to GTRS
-    // 2. User has access to GTRS
-    // 3. User has no access to dashboard
-    it("User doesn't have dashboard in sidebar after having no access", async () => {
-        await login(driver);
+    it("user can navigate to GTRS from website", async () => {
+        // Step 1: Navigate to the main page
+        await loginToApp(driver, "https://web.gtls.store", "web");
+        await driver.sleep(5000);
 
-        const dashboardSelector = await driver.findElement(
-            By.xpath(
-                "/html/body/div[1]/div/div/div/div/div[2]/div/div/div/div/div/aside/div/div/div[4]/nav/ul/li[1]/div/span/div"
-            )
+        // Step 2: Press on GTRS in the landing page
+        await driver.findElement(By.id("Reporting system")).click();
+
+        // Step 3: Wait for the new tab to open
+        const windows = await driver.getAllWindowHandles();
+        assert.strictEqual(
+            windows.length,
+            2,
+            "There should be two windows open after clicking the link."
         );
 
-        await driver.wait(until.elementIsVisible(dashboardSelector), 500);
-        const firstElement = await driver.findElement(By.xpath("/html/body/div[1]/div/div/div/div/div[2]/div/div/div/div/div/aside/div/div/div[4]/nav/ul/li[1]/div/span/div"));
-        const firstElementText = await firstElement.getText();
+        // Step 4: Switch to the new tab
+        await driver.switchTo().window(windows[1]);
+
+        // Step 5: Verify that the user is redirected to GTRS
+        await driver.wait(
+            until.urlIs("https://gtrs.gtls.store/gtrs/dashboard"),
+            10000
+        );
+
+        // Step 6: Verify that the user is logged in
         const currentUrl = await driver.getCurrentUrl();
-
-        assert.notStrictEqual(
-            firstElementText,
-            "Dashboard",
-            "User still has access to 'Dashboard' in the sidebar"
-        );
-        assert.notStrictEqual(
+        assert.strictEqual(
             currentUrl,
             "https://gtrs.gtls.store/gtrs/dashboard",
-            "User is still able to access the dashboard URL"
+            `Expected URL to be 'https://gtrs.gtls.store/gtrs/dashboard' but got '${currentUrl}'.`
+        );
+        await driver.switchTo().window(windows[0]); // Switch back to the original tab
+    });
+
+    for (const system of allSystems) {
+        it(`user can navigate to GTRS from ${system.name}`, async () => {
+            // Step 1: Navigate to the main page
+            await loginToApp(driver, system.url, system.name);
+            await driver.sleep(5000);
+
+            // Step 2: Press on GTRS in the sidebar
+            const nav = await driver.findElement(
+                By.css("[aria-label=Sidebar]")
+            );
+            // find a link with the href https://gtrs.gtls.store/
+            const link = await nav.findElement(
+                By.css('a[href="https://gtrs.gtls.store/"]')
+            );
+            await link.click();
+
+            // Step 3: Wait for the new tab to open
+            const windows = await driver.getAllWindowHandles();
+            assert.strictEqual(
+                windows.length,
+                2,
+                "There should be two windows open after clicking the link."
+            );
+
+            // Step 4: Switch to the new tab
+            await driver.switchTo().window(windows[1]);
+
+            // Step 5: Verify that the user is redirected to GTRS
+            await driver.wait(
+                until.urlIs("https://gtrs.gtls.store/gtrs/dashboard"),
+                10000
+            );
+
+            // Step 6: Verify that the user is logged in
+            const currentUrl = await driver.getCurrentUrl();
+            assert.strictEqual(
+                currentUrl,
+                "https://gtrs.gtls.store/gtrs/dashboard",
+                `Expected URL to be 'https://gtrs.gtls.store/gtrs/dashboard' but got '${currentUrl}'.`
+            );
+            await driver.switchTo().window(windows[0]); // Switch back to the original tab
+        });
+    }
+
+    for (const system of allSystems) {
+        it(`user can navigate from GTRS to ${system.name}`, async () => {
+            // Step 1: Login to GTRS
+            await login(driver);
+            await driver.sleep(5000);
+
+            // Step 2: Press on system in the sidebar
+            const nav = await driver.findElement(
+                By.css("[aria-label=Sidebar]")
+            );
+            // find a link with the app's url
+            const link = await nav.findElement(
+                By.css(`a[href=${system.url}]`)
+            );
+            await link.click();
+
+            // Step 3: Verify that the user is redirected to GTRS
+            await driver.wait(
+                until.urlIs(`${system.url}${system.main}`),
+                10000
+            );
+
+            // Step 4: Verify that the user is logged in
+            const currentUrl = await driver.getCurrentUrl();
+            assert.strictEqual(
+                currentUrl,
+                `${system.url}${system.main}`,
+                `Expected URL to be ${system.url}${system.main} but got '${currentUrl}'.`
+            );
+        });
+    }
+
+    it(`user can navigate from GTRS to website`, async () => {
+        // Step 1: Login to GTRS
+        await login(driver);
+        await driver.sleep(5000);
+
+        // Step 2: Go to website's landing page
+        await driver.get('https://web.gtls.store/landingPage');
+
+        // Step 3: Verify that the user is redirected to the website's landing page
+        const title = await driver.findElement(By.xpath("/html/body/div/div/div/div[1]/div/div/div[2]/h1"));
+
+        // Step 4: Verify that the user is logged in
+        assert.strictEqual(
+            title.isDisplayed()
+            `Expected user to be redirected to the website's landing page.`
         );
     });
+});
 
-    //Test can be re-used for all li elements
-    it('should ensure that no <li> elements contain "Consignments"', async () => {
-        // Navigate to the application URL
-        await driver.get('https://gtrs.gtls.store/login');
+describe("Test logout to and from all systems using credentials", function () {
+    let driver;
 
-        // Wait for the <ul> element to be present
-        const ulLocator = By.xpath('/html/body/div[1]/div/div/div/div/div[2]/div/div/div/div/div/aside/div/div/div[4]/nav/ul');
-        await driver.wait(until.elementLocated(ulLocator), 5000);
-
-        // Find the <ul> element
-        const ulElement = await driver.findElement(ulLocator);
-
-        // Get all <li> elements within the <ul>
-        const liElements = await ulElement.findElements(By.tagName('li'));
-
-        // Check each <li> element to ensure it does not contain "Consignments"
-        for (let li of liElements) {
-            const text = await li.getText();
-            if (text == 'Consignments') {
-                throw new Error('Found an <li> element containing "Consignments": ' + text);
-            }
-        }
-
-        console.log('No <li> elements contain "Consignments".');
+    before(async () => {
+        const options = new chrome.Options();
+        options.addArguments("--log-level=1");
+        driver = await new Builder()
+            .forBrowser("chrome")
+            .setChromeOptions(options)
+            .build();
     });
+
+    after(async () => {
+        await driver.quit();
+    });
+
+    for (const system of allSystems) {
+        it(`user can logout from ${system.name} and be logged out from GTRS`, async () => {
+            //Step 1: Login to system
+            await loginToApp(driver, system.url, system.name);
+            await driver.sleep(5000);
+
+            //Step 2: Logout from system
+            // scroll to logout button if it's not in view
+            await driver.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+            const logoutButton = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[1]/div/div/div/div[2]/button/button'));
+            await logoutButton.click();
+
+            //Step 3: Verify that the user is logged out from GTRS
+            await driver.get('https://gtrs.gtls.store/gtrs/dashboard');
+            await driver.sleep(3000);
+            const currentUrl = await driver.getCurrentUrl();
+            assert.strictEqual(
+                currentUrl,
+                'https://gtrs.gtls.store/login',
+                `Expected user to be redirected to login page but got '${currentUrl}'.`
+            )
+        })
+    }
+
+    for (const system of allSystems) {
+        it(`user can logout from GTRS and be logged out from ${system.name}`, async () => {
+            //Step 1: Login to GTRS
+            await login(driver);
+            await driver.sleep(5000);
+
+            //Step 2: Logout from GTRS
+            // scroll to logout button if it's not in view
+            await driver.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+            const logoutButton = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[1]/div/div/div/div[2]/button/button'));
+            await logoutButton.click();
+
+            //Step 3: Verify that the user is logged out from system
+            await driver.get(`${system.url}${system.main}`);
+            await driver.sleep(3000);
+            const currentUrl = await driver.getCurrentUrl();
+            assert.strictEqual(
+                currentUrl,
+                `${system.url}/login`,
+                `Expected user to be redirected to login page but got '${currentUrl}'.`
+            )
+        })
+    }
+
+    it(`user can logout from the website and be logged out from GTRS`, async () => {
+        //Step 1: Login to the website
+        await loginToApp(driver, "https://web.gtls.store", "web");
+        await driver.sleep(5000);
+
+        //Step 2: Logout from the website
+        const logoutButton = await driver.findElement(By.xpath('/html/body/div/div/div/div[1]/div/div/div[1]/div/button'));
+        await logoutButton.click();
+
+        //Step 3: Verify that the user is logged out from GTRS
+        await driver.get('https://gtrs.gtls.store/gtrs/dashboard');
+        await driver.sleep(3000);
+        const currentUrl = await driver.getCurrentUrl();
+        assert.strictEqual(
+            currentUrl,
+            'https://gtrs.gtls.store/login',
+            `Expected user to be redirected to login page but got '${currentUrl}'.`
+        )
+    })
+
+    it(`user can logout from GTRS and be logged out from the website`, async () => {
+        //Step 1: Login to GTRS
+        await login(driver);
+        await driver.sleep(5000);
+
+        //Step 2: Logout from GTRS
+        // scroll to logout button if it's not in view
+        await driver.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+        const logoutButton = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[1]/div/div/div/div[2]/button/button'));
+        await logoutButton.click();
+
+        //Step 3: Verify that the user is logged out from the website
+        await driver.get('https://web.gtls.store/landingPage');
+        await driver.sleep(3000);
+        const currentUrl = await driver.getCurrentUrl();
+        assert.strictEqual(
+            currentUrl,
+            'https://web.gtls.store/login',
+            `Expected user to be redirected to login page but got '${currentUrl}'.`
+        )
+    })
+});
+
+
+// Using Microsoft login
+describe("Test login to and from all systems using credentials", function () {
+    let driver;
+
+    before(async () => {
+        const options = new chrome.Options();
+        options.addArguments("--log-level=1");
+        driver = await new Builder()
+            .forBrowser("chrome")
+            .setChromeOptions(options)
+            .build();
+    });
+
+    after(async () => {
+        await driver.quit();
+    });
+
+    it("user can navigate to GTRS from website", async () => {
+        // Step 1: Navigate to the main page
+        await loginToAppMicrosoft(driver, "https://web.gtls.store", "web");
+        await driver.sleep(5000);
+
+        // Step 2: Press on GTRS in the landing page
+        await driver.findElement(By.id("Reporting system")).click();
+
+        // Step 3: Wait for the new tab to open
+        const windows = await driver.getAllWindowHandles();
+        assert.strictEqual(
+            windows.length,
+            2,
+            "There should be two windows open after clicking the link."
+        );
+
+        // Step 4: Switch to the new tab
+        await driver.switchTo().window(windows[1]);
+
+        // Step 5: Verify that the user is redirected to GTRS
+        await driver.wait(
+            until.urlIs("https://gtrs.gtls.store/gtrs/dashboard"),
+            10000
+        );
+
+        // Step 6: Verify that the user is logged in
+        const currentUrl = await driver.getCurrentUrl();
+        assert.strictEqual(
+            currentUrl,
+            "https://gtrs.gtls.store/gtrs/dashboard",
+            `Expected URL to be 'https://gtrs.gtls.store/gtrs/dashboard' but got '${currentUrl}'.`
+        );
+        await driver.switchTo().window(windows[0]); // Switch back to the original tab
+    });
+
+    for (const system of allSystems) {
+        it(`user can navigate to GTRS from ${system.name}`, async () => {
+            // Step 1: Navigate to the main page
+            await loginToAppMicrosoft(driver, system.url, system.name);
+            await driver.sleep(5000);
+
+            // Step 2: Press on GTRS in the sidebar
+            const nav = await driver.findElement(
+                By.css("[aria-label=Sidebar]")
+            );
+            // find a link with the href https://gtrs.gtls.store/
+            const link = await nav.findElement(
+                By.css('a[href="https://gtrs.gtls.store/"]')
+            );
+            await link.click();
+
+            // Step 3: Wait for the new tab to open
+            const windows = await driver.getAllWindowHandles();
+            assert.strictEqual(
+                windows.length,
+                2,
+                "There should be two windows open after clicking the link."
+            );
+
+            // Step 4: Switch to the new tab
+            await driver.switchTo().window(windows[1]);
+
+            // Step 5: Verify that the user is redirected to GTRS
+            await driver.wait(
+                until.urlIs("https://gtrs.gtls.store/gtrs/dashboard"),
+                10000
+            );
+
+            // Step 6: Verify that the user is logged in
+            const currentUrl = await driver.getCurrentUrl();
+            assert.strictEqual(
+                currentUrl,
+                "https://gtrs.gtls.store/gtrs/dashboard",
+                `Expected URL to be 'https://gtrs.gtls.store/gtrs/dashboard' but got '${currentUrl}'.`
+            );
+            await driver.switchTo().window(windows[0]); // Switch back to the original tab
+        });
+    }
+
+    for (const system of allSystems) {
+        it(`user can navigate from GTRS to ${system.name}`, async () => {
+            // Step 1: Login to GTRS
+            await loginMicrosoft(driver);
+            await driver.sleep(5000);
+
+            // Step 2: Press on system in the sidebar
+            const nav = await driver.findElement(
+                By.css("[aria-label=Sidebar]")
+            );
+            // find a link with the app's url
+            const link = await nav.findElement(
+                By.css(`a[href=${system.url}]`)
+            );
+            await link.click();
+
+            // Step 3: Verify that the user is redirected to GTRS
+            await driver.wait(
+                until.urlIs(`${system.url}${system.main}`),
+                10000
+            );
+
+            // Step 4: Verify that the user is logged in
+            const currentUrl = await driver.getCurrentUrl();
+            assert.strictEqual(
+                currentUrl,
+                `${system.url}${system.main}`,
+                `Expected URL to be ${system.url}${system.main} but got '${currentUrl}'.`
+            );
+        });
+    }
+
+    it(`user can navigate from GTRS to website`, async () => {
+        // Step 1: Login to GTRS
+        await loginMicrosoft(driver);
+        await driver.sleep(5000);
+
+        // Step 2: Go to website's landing page
+        await driver.get('https://web.gtls.store/landingPage');
+
+        // Step 3: Verify that the user is redirected to the website's landing page
+        const title = await driver.findElement(By.xpath("/html/body/div/div/div/div[1]/div/div/div[2]/h1"));
+
+        // Step 4: Verify that the user is logged in
+        assert.strictEqual(
+            title.isDisplayed()
+            `Expected user to be redirected to the website's landing page.`
+        );
+    });
+});
+
+describe("Test logout to and from all systems using credentials", function () {
+    let driver;
+
+    before(async () => {
+        const options = new chrome.Options();
+        options.addArguments("--log-level=1");
+        driver = await new Builder()
+            .forBrowser("chrome")
+            .setChromeOptions(options)
+            .build();
+    });
+
+    after(async () => {
+        await driver.quit();
+    });
+
+    for (const system of allSystems) {
+        it(`user can logout from ${system.name} and be logged out from GTRS`, async () => {
+            //Step 1: Login to system
+            await loginToAppMicrosoft(driver, system.url, system.name);
+            await driver.sleep(5000);
+
+            //Step 2: Logout from system
+            // scroll to logout button if it's not in view
+            await driver.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+            const logoutButton = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[1]/div/div/div/div[2]/button/button'));
+            await logoutButton.click();
+
+            //Step 3: Verify that the user is logged out from GTRS
+            await driver.get('https://gtrs.gtls.store/gtrs/dashboard');
+            await driver.sleep(3000);
+            const currentUrl = await driver.getCurrentUrl();
+            assert.strictEqual(
+                currentUrl,
+                'https://gtrs.gtls.store/login',
+                `Expected user to be redirected to login page but got '${currentUrl}'.`
+            )
+        })
+    }
+
+    for (const system of allSystems) {
+        it(`user can logout from GTRS and be logged out from ${system.name}`, async () => {
+            //Step 1: Login to GTRS
+            await loginMicrosoft(driver);
+            await driver.sleep(5000);
+
+            //Step 2: Logout from GTRS
+            // scroll to logout button if it's not in view
+            await driver.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+            const logoutButton = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[1]/div/div/div/div[2]/button/button'));
+            await logoutButton.click();
+
+            //Step 3: Verify that the user is logged out from system
+            await driver.get(`${system.url}${system.main}`);
+            await driver.sleep(3000);
+            const currentUrl = await driver.getCurrentUrl();
+            assert.strictEqual(
+                currentUrl,
+                `${system.url}/login`,
+                `Expected user to be redirected to login page but got '${currentUrl}'.`
+            )
+        })
+    }
+
+    it(`user can logout from the website and be logged out from GTRS`, async () => {
+        //Step 1: Login to the website
+        await loginToAppMicrosoft(driver, "https://web.gtls.store", "web");
+        await driver.sleep(5000);
+
+        //Step 2: Logout from the website
+        const logoutButton = await driver.findElement(By.xpath('/html/body/div/div/div/div[1]/div/div/div[1]/div/button'));
+        await logoutButton.click();
+
+        //Step 3: Verify that the user is logged out from GTRS
+        await driver.get('https://gtrs.gtls.store/gtrs/dashboard');
+        await driver.sleep(3000);
+        const currentUrl = await driver.getCurrentUrl();
+        assert.strictEqual(
+            currentUrl,
+            'https://gtrs.gtls.store/login',
+            `Expected user to be redirected to login page but got '${currentUrl}'.`
+        )
+    })
+
+    it(`user can logout from GTRS and be logged out from the website`, async () => {
+        //Step 1: Login to GTRS
+        await loginMicrosoft(driver);
+        await driver.sleep(5000);
+
+        //Step 2: Logout from GTRS
+        // scroll to logout button if it's not in view
+        await driver.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+        const logoutButton = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[1]/div/div/div/div[2]/button/button'));
+        await logoutButton.click();
+
+        //Step 3: Verify that the user is logged out from the website
+        await driver.get('https://web.gtls.store/landingPage');
+        await driver.sleep(3000);
+        const currentUrl = await driver.getCurrentUrl();
+        assert.strictEqual(
+            currentUrl,
+            'https://web.gtls.store/login',
+            `Expected user to be redirected to login page but got '${currentUrl}'.`
+        )
+    })
 });

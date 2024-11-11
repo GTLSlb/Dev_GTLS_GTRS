@@ -66,6 +66,7 @@
         "moment": "^2.30.1",
         "moment-timezone": "^0.5.45",
         "next": "^13.4.2",
+        "ocular": "^0.6.2",
         "pako": "^2.1.0",
         "pdfjs-dist": "^3.8.162",
         "react-autosuggest": "^10.1.0",
