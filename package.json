@@ -5,7 +5,7 @@
         "build": "vite build",
         "test:authorization": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports,reportFilename=testResults,timestamp,autoOpen \"tests/authentication/AppsIntegration.js\"",
         "test": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports,reportFilename=testResults,timestamp,autoOpen 'tests/*.js'",
-        "test:parallel": "npx mocha --no-timeout -p --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports,reportFilename=testResults,timestamp,autoOpen 'tests/*.js'"
+        "test:gtrs": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports,reportFilename=testResults,timestamp,autoOpen \"tests/GTRS/dashboard.js\""
     },
     "devDependencies": {
         "@headlessui/react": "^1.4.2",
@@ -17,6 +17,8 @@
         "laravel-vite-plugin": "^0.7.2",
         "mocha": "^10.8.2",
         "mochawesome": "^7.1.3",
+        "pixelmatch": "^1.1.0",
+        "pngjs": "^7.0.0",
         "postcss": "^8.4.21",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
