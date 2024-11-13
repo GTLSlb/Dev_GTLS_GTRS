@@ -486,11 +486,9 @@ async function testSpendChart(driver, expectedData) {
 }
 
 async function dashboardHelper(driver, testIs, testInput) {
-    try{
+    try {
         // Step 1: Navigate to the dashboard page
-        let ulElement = await driver.findElement(
-            By.className("css-ewdv3l")
-        );
+        let ulElement = await driver.findElement(By.className("css-ewdv3l"));
 
         // Get all child elements with class 'ps-menuitem-root' within the <ul>
         let menuItems = await ulElement.findElements(
@@ -508,30 +506,27 @@ async function dashboardHelper(driver, testIs, testInput) {
         // Step 2: Select the date range
         let startDate, endDate, account, receiver;
 
-        if(testIs == 'date only'){
+        if (testIs == "date only") {
             startDate = new Date(testInput.startDate);
             endDate = new Date(testInput.endDate);
-        }
-        else if(testIs == 'account only'){
+        } else if (testIs == "account only") {
             account = testInput.account;
-        }else if(testIs == 'receiver only'){
+        } else if (testIs == "receiver only") {
             receiver = testInput.receiver;
-        }else if(testIs == 'date and account'){
+        } else if (testIs == "date and account") {
             startDate = new Date(testInput.startDate);
             endDate = new Date(testInput.endDate);
             account = testInput.account;
-        }else if(testIs == 'date and receiver'){
+        } else if (testIs == "date and receiver") {
             startDate = new Date(testInput.startDate);
             endDate = new Date(testInput.endDate);
             receiver = testInput.receiver;
-        }else if(testIs == 'account and receiver'){
+        } else if (testIs == "account and receiver") {
             account = testInput.account;
             receiver = testInput.receiver;
         }
 
-        const fromDateInput = await driver.findElement(
-            By.name("from-date")
-        );
+        const fromDateInput = await driver.findElement(By.name("from-date"));
         await fromDateInput.sendKeys("2024-03-21"); // Ensure to await this
         const toDateInput = await driver.findElement(By.name("to-date"));
         await toDateInput.sendKeys("2024-04-13"); // Ensure to await this
@@ -555,32 +550,28 @@ async function dashboardHelper(driver, testIs, testInput) {
             );
 
             // Filter data based on filters
-            if(testIs == 'date only'){
+            if (testIs == "date only") {
                 data = resData.data.filter((item) => {
                     const despatchDate = new Date(item.DespatchDate);
                     return despatchDate >= startDate && despatchDate <= endDate;
                 });
-            }
-            else if(testIs == 'account only'){
+            } else if (testIs == "account only") {
                 const filtered = data.filter((item) => {
                     const chargeToMatch =
-                        account?.length === 0 || account?.includes(item.ChargeToId);
-                    return (
-                        chargeToMatch
-                    );
+                        account?.length === 0 ||
+                        account?.includes(item.ChargeToId);
+                    return chargeToMatch;
                 });
-            data = filtered;
-            }else if(testIs == 'receiver only'){
+                data = filtered;
+            } else if (testIs == "receiver only") {
                 const filtered = data.filter((item) => {
                     const isIncluded =
                         receiver.length === 0 ||
                         receiver?.includes(item.ReceiverName);
-                    return (
-                        isIncluded
-                    );
+                    return isIncluded;
                 });
                 data = filtered;
-            }else if(testIs == 'date and account'){
+            } else if (testIs == "date and account") {
                 const filtered = data.filter((item) => {
                     const itemDate = new Date(item.DespatchDate);
                     const filterStartDate = new Date(startDate);
@@ -591,7 +582,8 @@ async function dashboardHelper(driver, testIs, testInput) {
                     filterEndDate.setHours(23);
 
                     const chargeToMatch =
-                        account?.length === 0 || account?.includes(item.ChargeToId);
+                        account?.length === 0 ||
+                        account?.includes(item.ChargeToId);
 
                     return (
                         itemDate >= filterStartDate &&
@@ -600,7 +592,7 @@ async function dashboardHelper(driver, testIs, testInput) {
                     );
                 });
                 data = filtered;
-            }else if(testIs == 'date and receiver'){
+            } else if (testIs == "date and receiver") {
                 const filtered = chartsData.filter((item) => {
                     const isIncluded =
                         receiver.length === 0 ||
@@ -620,19 +612,17 @@ async function dashboardHelper(driver, testIs, testInput) {
                     );
                 });
                 data = filtered;
-            }else if(testIs == 'account and receiver'){
+            } else if (testIs == "account and receiver") {
                 const filtered = chartsData.filter((item) => {
                     const isIncluded =
                         receiver.length === 0 ||
                         receiver?.includes(item.ReceiverName);
 
                     const chargeToMatch =
-                        account?.length === 0 || account?.includes(item.ChargeToId);
+                        account?.length === 0 ||
+                        account?.includes(item.ChargeToId);
 
-                    return (
-                        isIncluded &&
-                        chargeToMatch
-                    );
+                    return isIncluded && chargeToMatch;
                 });
                 data = filtered;
             }
@@ -651,18 +641,95 @@ async function dashboardHelper(driver, testIs, testInput) {
             //Filter safety data
             if (account) {
                 if (account && account?.length > 0) {
-                    resSafety.data = resSafety.data.filter((data) => account.includes(data.DebtorId));
+                    resSafety.data = resSafety.data.filter((data) =>
+                        account.includes(data.DebtorId)
+                    );
                 }
             }
 
             // Assign safety data
             safetyData = resSafety.data;
-
         } catch (error) {
             console.error("Error occurred:", error);
+            throw new Error("Test failed due to: " + error);
+        }
+    } catch (error) {
+        console.error("Error occurred:", error);
         throw new Error("Test failed due to: " + error);
     }
-    }catch (error) {
+}
+
+async function navigateToPage(driver, pageName) {
+    try {
+        console.log(`Navigate to ${pageName}`);
+
+        let mainDiv = await driver.findElement(
+            By.xpath(
+                "/html/body/div[1]/div/div/div/div/div[2]/div/div/div/div/div/aside/div/div/div[4]"
+            )
+        );
+        let navbar = await mainDiv.findElement(By.tagName("nav"));
+        await driver.wait(until.elementIsVisible(navbar), 3000);
+
+        let ulElement = await navbar.findElement(By.tagName("ul"));
+
+        //get all <li> elements within the <ul>
+        //note: since KPI report is a dropdown, it is not a <li>
+        const liElements = await ulElement.findElements(
+            By.css(".ps-menuitem-root")
+        );
+
+        if (liElements.length == 0) {
+            throw new Error("No elements in navbar found");
+        } else {
+            if (
+                pageName == "KPI Report" ||
+                pageName == "Transit Days" ||
+                pageName == "Holidays" ||
+                pageName == "KPI"
+            ) {
+                //find the KPI drowpdown
+                const kpiDropdown = await driver.findElement(
+                    By.xpath(
+                        `//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/div/aside/div/div/div[4]/nav/ul/div`
+                    )
+                );
+                await driver.wait(until.elementLocated(kpiDropdown), 3000);
+                await kpiDropdown.click();
+
+                //find the <button> element that contains the page name
+                const parentDivKPI = await driver.findElement(
+                    By.xpath(
+                        `/html/body/div[1]/div/div/div/div/div[2]/div/div/div/div/div/aside/div/div/div[4]/nav/ul/div/div/div`
+                    )
+                );
+                await driver.wait(until.elementLocated(parentDivKPI), 3000);
+                const subElements = await parentDivKPI.findElements(
+                    By.tagName("button")
+                );
+
+                const pageElement = subElements.find((li) => {
+                    return li.getText().then((text) => text === pageName);
+                });
+
+                await pageElement.click();
+            } else {
+                //find the <li> element that contains the page name
+                let pageElement = null;
+                await Promise.all(
+                    liElements.map(async (li) => {
+                        const elementText = await li.getText();
+                        if (elementText == pageName) {
+                            console.log("li", elementText);
+                            pageElement = li;
+                        }
+                    })
+                );
+                await pageElement.click();
+            }
+            return;
+        }
+    } catch (error) {
         console.error("Error occurred:", error);
         throw new Error("Test failed due to: " + error);
     }
@@ -676,4 +743,5 @@ module.exports = {
     testInformation,
     testSpendChart,
     dashboardHelper,
+    navigateToPage,
 };

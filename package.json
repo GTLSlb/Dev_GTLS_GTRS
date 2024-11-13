@@ -5,7 +5,7 @@
         "build": "vite build",
         "test:authorization": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports,reportFilename=testResults,timestamp,autoOpen \"tests/authentication/AppsIntegration.js\"",
         "test": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports,reportFilename=testResults,timestamp,autoOpen 'tests/*.js'",
-        "test:gtrs": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports,reportFilename=testResults,timestamp,autoOpen \"tests/GTRS/dashboard.js\""
+        "test:gtrs": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports,reportFilename=testResults,timestamp,autoOpen \"tests/GTRS/consignments.js\""
     },
     "devDependencies": {
         "@headlessui/react": "^1.4.2",
