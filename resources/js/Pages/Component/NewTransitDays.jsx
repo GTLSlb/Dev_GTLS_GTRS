@@ -187,7 +187,7 @@ function NewTransitDays({
                 dataSource: customers,
             },
             render: ({ value }) => {
-                return isDummyAccount("Sender Name", value);
+                return isDummyAccount(value);
             },
         },
         {
@@ -207,7 +207,7 @@ function NewTransitDays({
             render: ({ value, data }) => {
                 return (
                     <div>
-                        {isDummyAccount("Customer Type", data.CustomerType)}
+                        {isDummyAccount(data.CustomerType)}
                     </div>
                 );
             },
@@ -250,7 +250,7 @@ function NewTransitDays({
             textAlign: "center",
             filterEditor: StringFilter,
             render: ({ value }) => {
-                return isDummyAccount("Receiver Name", value);
+                return isDummyAccount(value);
             },
         },
         {

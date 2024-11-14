@@ -115,10 +115,18 @@ export function clearMSALLocalStorage() {
     // Remove the msal.isMicrosoftLogin cookie
     Cookies.set('msal.isMicrosoftLogin', '', { expires: -1, domain: appDomain });
 }
-export const isDummyAccount = (dummy, value) => {
+export const isDummyAccount = (value) => {
     const email = Cookies.get('userEmail');
-    if ( email == "Ahmadb@gtls.com.au"){
+    if ( email == "demo@gtls.com.au"){
         return "********"
+    } else {
+        return value
+    }
+};
+export const isDummyAccountWithDummyData = (dummy, value) => {
+    const email = Cookies.get('userEmail');
+    if ( email == "demo@gtls.com.au"){
+        return dummy
     } else {
         return value
     }

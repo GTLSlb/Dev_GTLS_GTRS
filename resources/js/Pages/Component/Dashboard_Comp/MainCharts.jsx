@@ -20,6 +20,7 @@ import { useEffect } from "react";
 import MultiChartLine from "./Dashboard_Charts/MultiLineChart";
 import DoubleBarChart from "./Dashboard_Charts/DoublBarChart";
 import { canViewChart } from "@/permissions";
+import { isDummyAccountWithDummyData } from "@/CommonFunctions";
 export default function MainCharts({
     accData,
     safetyData,
@@ -404,15 +405,15 @@ export default function MainCharts({
     };
     const [hasData, setHasData] = useState(true);
     const uniqueReceiverNames = Array.from(
-        new Set(filteredData.map((item) => item.ReceiverName))
+        new Set(chartsData.map((item) => item.ReceiverName))
     );
     const handleReceiverSelectChange = (selectedOptions) => {
         setselectedReceiver(selectedOptions);
         // filterData(SDate, EDate, selectedReceiver);
     };
-    const receiverOptions = uniqueReceiverNames.map((name) => ({
+    const receiverOptions = uniqueReceiverNames.map((name, index) => ({
         value: name,
-        label: name,
+        label: isDummyAccountWithDummyData(`Receiver No.${index + 1} `, name),
     }));
     function filterReportsByDebtorId(safetyData, debtorIds) {
         return safetyData.filter((data) => debtorIds.includes(data.DebtorId));

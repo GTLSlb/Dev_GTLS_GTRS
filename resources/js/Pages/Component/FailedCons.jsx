@@ -30,6 +30,7 @@ import ReactDataGrid from "@inovua/reactdatagrid-community";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import { canEditFailedConsignments } from "@/permissions";
+import { isDummyAccount } from "@/CommonFunctions";
 
 export default function FailedCons({
     PerfData,
@@ -44,8 +45,6 @@ export default function FailedCons({
     currentUser,
     accData,
 }) {
-
-
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [reason, setReason] = useState();
     const handleEditClick = (reason) => {
@@ -205,8 +204,7 @@ export default function FailedCons({
                         className="underline text-blue-500 hover:cursor-pointer"
                         onClick={() => handleClick(data.CONSIGNMNENTID)}
                     >
-                        {" "}
-                        {value}
+                        {isDummyAccount(value)}
                     </span>
                 );
             },
@@ -228,6 +226,9 @@ export default function FailedCons({
 
             group: "senderInfo",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SENDERREFERENCE",
@@ -238,6 +239,9 @@ export default function FailedCons({
             textAlign: "center",
             group: "senderInfo",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SenderState",
@@ -262,6 +266,9 @@ export default function FailedCons({
             textAlign: "center",
             group: "receiverInfo",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "RECEIVER REFERENCE",
@@ -272,6 +279,9 @@ export default function FailedCons({
             textAlign: "center",
             group: "receiverInfo",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "RECEIVERSTATE",
@@ -974,6 +984,15 @@ export default function FailedCons({
             FailedNote: "Explanation",
         };
 
+        const fieldsToCheck = [
+            "CONSIGNMENTNUMBER",
+            "SENDERNAME",
+            "SENDERREFERENCE",
+            "RECEIVERNAME",
+            "RECEIVER REFERENCE",
+            "ReceiverReference",
+        ]; // for dummy data
+        
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
@@ -1008,7 +1027,7 @@ export default function FailedCons({
                         } else {
                             acc[columnKey] = "";
                         }
-                    } else if ( columnKey === "DELIVERYREQUIREDDATETIME") {
+                    } else if (columnKey === "DELIVERYREQUIREDDATETIME") {
                         const date = new Date(person[columnKey]);
                         if (!isNaN(date)) {
                             acc[columnKey] =
@@ -1058,7 +1077,9 @@ export default function FailedCons({
                     } else if (columnKey === "State") {
                         acc[columnKey] = person["State"];
                     } else if (columnKey === "RECEIVERREFERENCE") {
-                        acc[columnKey] = person["RECEIVER REFERENCE"];
+                        acc[columnKey] = isDummyAccount(person["RECEIVER REFERENCE"]);
+                    } else if (fieldsToCheck.includes(columnKey)) {
+                        acc[column] = isDummyAccount(person[columnKey]);
                     } else {
                         acc[columnKey] = person[columnKey.toUpperCase()];
                     }

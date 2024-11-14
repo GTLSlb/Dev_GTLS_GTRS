@@ -9,8 +9,14 @@ import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import moment from "moment";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, {
+    useState,
+    useEffect,
+    forwardRef,
+    useImperativeHandle,
+} from "react";
 import { useRef } from "react";
+import { isDummyAccount } from "@/CommonFunctions";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -27,8 +33,10 @@ function TransportRep({
     accData,
 }) {
     const RDDTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
-        const [value, setValue] = useState(filterValue ? filterValue.value : "");
-    
+        const [value, setValue] = useState(
+            filterValue ? filterValue.value : ""
+        );
+
         const handleChange = (event) => {
             const newValue = event.target.value + ":00";
             setValue(newValue);
@@ -40,7 +48,7 @@ function TransportRep({
                 type: "string",
             });
         };
-    
+
         const handleClear = () => {
             setValue("");
             onChange({
@@ -51,17 +59,17 @@ function TransportRep({
                 type: "string",
             });
         };
-    
+
         useEffect(() => {
             setValue(filterValue ? filterValue.value : "");
         }, [filterValue]);
-    
+
         useImperativeHandle(ref, () => ({
             setValue: (newValue) => {
                 setValue(newValue);
             },
         }));
-    
+
         return (
             <div className="flex gap-2 mx-1">
                 <input
@@ -88,8 +96,10 @@ function TransportRep({
         );
     });
     const PickTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
-        const [value, setValue] = useState(filterValue ? filterValue.value : "");
-    
+        const [value, setValue] = useState(
+            filterValue ? filterValue.value : ""
+        );
+
         const handleChange = (event) => {
             const newValue = event.target.value + ":00";
             setValue(newValue);
@@ -101,7 +111,7 @@ function TransportRep({
                 type: "string",
             });
         };
-    
+
         const handleClear = () => {
             setValue("");
             onChange({
@@ -112,18 +122,18 @@ function TransportRep({
                 type: "string",
             });
         };
-    
+
         useEffect(() => {
             setValue(filterValue ? filterValue.value : "");
         }, [filterValue]);
-    
+
         // Expose the setValue method to the grid
         useImperativeHandle(ref, () => ({
             setValue: (newValue) => {
                 setValue(newValue || "");
             },
         }));
-    
+
         return (
             <div className="flex gap-2 mx-1">
                 <input
@@ -150,8 +160,10 @@ function TransportRep({
         );
     });
     const DeliveryTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
-        const [value, setValue] = useState(filterValue ? filterValue.value : "");
-    
+        const [value, setValue] = useState(
+            filterValue ? filterValue.value : ""
+        );
+
         const handleChange = (event) => {
             const newValue = event.target.value + ":00";
             setValue(newValue);
@@ -163,7 +175,7 @@ function TransportRep({
                 type: "string",
             });
         };
-    
+
         const handleClear = () => {
             setValue("");
             onChange({
@@ -174,18 +186,18 @@ function TransportRep({
                 type: "string",
             });
         };
-    
+
         useEffect(() => {
             setValue(filterValue ? filterValue.value : "");
         }, [filterValue]);
-    
+
         // Expose the setValue method to the grid
         useImperativeHandle(ref, () => ({
             setValue: (newValue) => {
                 setValue(newValue || "");
             },
         }));
-    
+
         return (
             <div className="flex gap-2 mx-1">
                 <input
@@ -211,7 +223,7 @@ function TransportRep({
             </div>
         );
     });
-    
+
     window.moment = moment;
     const [filteredData, setFilteredData] = useState(transportData);
     const [selected, setSelected] = useState({});
@@ -641,7 +653,12 @@ function TransportRep({
             DelayReason: "Delay Reason",
             TransportComments: "Transport Comments",
         };
-
+        const fieldsToCheck = [
+            "SenderName",
+            "CustomerName",
+            "CustomerPO",
+            "DeliveryNo",
+        ]; // for dummy data
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
@@ -684,6 +701,8 @@ function TransportRep({
                     } else if (columnKey === "ActualDeliveryTime") {
                         acc["Actual Delivery Time"] =
                             person["ActualDeliveryTime"];
+                    } else if (fieldsToCheck.includes(columnKey)) {
+                        acc[column] = isDummyAccount(person[columnKey]);
                     } else {
                         acc[columnMapping[columnKey] || columnKey] =
                             person[columnKey];
@@ -849,6 +868,9 @@ function TransportRep({
             filterEditor: StringFilter,
             headerAlign: "center",
             textAlign: "center",
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SenderState",
@@ -872,6 +894,9 @@ function TransportRep({
             filterEditor: StringFilter,
             headerAlign: "center",
             textAlign: "center",
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "CustomerPO",
@@ -881,6 +906,9 @@ function TransportRep({
             textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "DeliveryNo",
@@ -890,6 +918,9 @@ function TransportRep({
             textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "RddDate",
@@ -973,7 +1004,7 @@ function TransportRep({
                 minDate: minDate,
                 maxDate: maxDate,
             },
-            filterType: 'date',
+            filterType: "date",
             render: ({ value, cellProps }) => {
                 return extractUTCFormattedDate(value);
             },
@@ -1081,15 +1112,16 @@ function TransportRep({
         // Filter the data based on the start and end date filters, selected receiver names, and chargeTo values
         const filtered = transportData.filter((item) => {
             const chargeToMatch =
-                (intArray?.length === 0 || intArray?.includes(item.ChargeToID)) &&
+                (intArray?.length === 0 ||
+                    intArray?.includes(item.ChargeToID)) &&
                 !excludedDebtorIds.includes(item.ChargeToID); // Exclude specified ChargeToIDs
-    
+
             return chargeToMatch;
         });
-    
+
         return filtered;
     };
-    
+
     useEffect(() => {
         setFilteredData(filterData());
     }, [accData]);

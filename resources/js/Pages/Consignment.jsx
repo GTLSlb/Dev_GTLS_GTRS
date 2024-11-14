@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import "../../css/scroll.css";
 import moment from "moment";
 import swal from "sweetalert";
+import { isDummyAccount } from "@/CommonFunctions";
 export default function ConsignmentD({
     setActiveIndexGTRS,
     activeCon,
@@ -37,11 +38,15 @@ export default function ConsignmentD({
         return [
             {
                 label: "Sender",
-                value: Consignment[0].SenderReciever[0].SenderName,
+                value: isDummyAccount(
+                    Consignment[0].SenderReciever[0].SenderName
+                ),
             },
             {
                 label: "Receiver",
-                value: Consignment[0].SenderReciever[0].ReceiverName,
+                value: isDummyAccount(
+                    Consignment[0].SenderReciever[0].ReceiverName
+                ),
             },
             {
                 label: "Address",
@@ -109,11 +114,15 @@ export default function ConsignmentD({
             },
             {
                 label: "Sender Ref",
-                value: Consignment[0].SenderReciever[0].SenderReference,
+                value: isDummyAccount(
+                    Consignment[0].SenderReciever[0].SenderReference
+                ),
             },
             {
                 label: "Receiver Ref",
-                value: Consignment[0].SenderReciever[0].ReceiverReference,
+                value: isDummyAccount(
+                    Consignment[0].SenderReciever[0].ReceiverReference
+                ),
             },
             // Add more options as needed
         ];
@@ -248,10 +257,10 @@ export default function ConsignmentD({
                                 Consignment Details :{" "}
                                 <span className="text-goldd">
                                     {" "}
-                                    {
+                                    {isDummyAccount(
                                         Consignment[0].MainDetails[0]
                                             .ConsignmentNo
-                                    }
+                                    )}
                                 </span>
                             </h4>
                         </div>
@@ -333,20 +342,20 @@ export default function ConsignmentD({
                                                 Consignment No.
                                             </dt>
                                             <dd className="mt-1 text-sm text-gray-500 sm:mt-0">
-                                                {
+                                                {isDummyAccount(
                                                     Consignment[0]
                                                         .MainDetails[0]
                                                         .ConsignmentNo
-                                                }
+                                                )}
                                             </dd>
                                             <dt className="text-sm font-medium text-gray-900">
                                                 Charge To
                                             </dt>
                                             <dd className="mt-1 text-sm text-gray-500  sm:mt-0">
-                                                {
+                                                {isDummyAccount(
                                                     Consignment[0]
                                                         .MainDetails[0].ChargeTo
-                                                }
+                                                )}
                                             </dd>
                                         </div>
                                         <div className="py-4 sm:grid sm:grid-cols-6 sm:gap-4 sm:py-5 sm:px-6">
@@ -828,17 +837,19 @@ export default function ConsignmentD({
                                                                 )}
                                                             </td>
                                                             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-600 sm:pl-3">
-                                                                <a
-                                                                    href={
-                                                                        item.PODimage
-                                                                    }
-                                                                    target="_blank"
-                                                                    className="text-indigo-600 hover:text-goldds"
-                                                                >
-                                                                    {
-                                                                        item.PODimage
-                                                                    }
-                                                                </a>
+                                                                {isDummyAccount(
+                                                                    <a
+                                                                        href={
+                                                                            item.PODimage
+                                                                        }
+                                                                        target="_blank"
+                                                                        className="text-indigo-600 hover:text-goldds"
+                                                                    >
+                                                                        {
+                                                                            item.PODimage
+                                                                        }
+                                                                    </a>
+                                                                )}{" "}
                                                             </td>
                                                         </tr>
                                                     )

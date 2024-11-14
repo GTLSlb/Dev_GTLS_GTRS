@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import { isDummyAccount } from "@/CommonFunctions";
 
 export default function ConsPerf({
     PerfData,
@@ -58,7 +59,8 @@ export default function ConsPerf({
                 filterEndDate.setSeconds(59);
                 filterEndDate.setMinutes(59);
                 filterEndDate.setHours(23);
-                dateMatch = itemDate >= filterStartDate && itemDate <= filterEndDate; // Compare the item date to the filter dates
+                dateMatch =
+                    itemDate >= filterStartDate && itemDate <= filterEndDate; // Compare the item date to the filter dates
             }
             const ConsNbMatch = selectedConsignment
                 ? item.CONSIGNMENTNUMBER.toLowerCase().includes(
@@ -70,7 +72,7 @@ export default function ConsPerf({
         setFilteredData(filtered);
         setCurrentPage(0);
     };
-    
+
     useEffect(() => {
         filterData(SDate, EDate, selectedConsignment);
     }, [accData]);
@@ -107,21 +109,25 @@ export default function ConsPerf({
         "RECEIVER POSTCODE",
     ];
 
+    const fieldsToCheck = [
+        "CONSIGNMENTNUMBER",
+        "ACCOUNTNAME",
+        "SENDERNAME",
+        "SENDERREFERENCE",
+        "RECEIVERNAME",
+        "RECEIVERREFERENCE",
+    ]; // for dummy data
     function handleDownloadExcel() {
         // Get the selected columns or use all columns if none are selected
 
         let selectedColumns = headers; // Use all columns
-
         // Extract the data for the selected columns  moment(consignment.DespatchDate, 'YYYY-MM-DD').format('DD-MM-YYYY')
         const data = filteredData.map((person) =>
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
-                    if (column.replace(/\s+/g, "") === "RECEIVERREFERENCE") {
-                        acc["RECEIVER REFERENCE"] =
-                            person["RECEIVER REFERENCE"];
-                    } else if (column.replace(/\s+/g, "") === "ACCOUNTNAME") {
-                        acc[columnKey] = person["ACCOUNTNUMBER"];
+                    if (column.replace(/\s+/g, "") === "ACCOUNTNAME") {
+                        acc[columnKey] =  isDummyAccount(person["ACCOUNTNUMBER"]);
                     } else if (column.replace(/\s+/g, "") === "KPIDATETIME") {
                         acc[columnKey] =
                             moment(
@@ -163,6 +169,8 @@ export default function ConsPerf({
                                       person["DESPATCHDATE"]?.replace("T", " "),
                                       "YYYY-MM-DD HH:mm:ss"
                                   ).format("DD-MM-YYYY HH:mm A");
+                    } else if (fieldsToCheck.includes(columnKey)) {
+                        acc[column] = isDummyAccount(person[columnKey]);
                     } else {
                         acc[column.replace(/\s+/g, "")] =
                             person[column.replace(/\s+/g, "")];
@@ -310,7 +318,7 @@ export default function ConsPerf({
                             <h3 className="text-base font-semibold leading-6 text-gray-900">
                                 CONSIGNMENT NO. :{" "}
                                 <span className="text-goldd">
-                                    {item.CONSIGNMENTNUMBER}
+                                    {isDummyAccount(item.CONSIGNMENTNUMBER)}
                                 </span>
                             </h3>
                         </div>

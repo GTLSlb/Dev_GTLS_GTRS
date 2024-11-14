@@ -18,6 +18,7 @@ import ReactDataGrid from "@inovua/reactdatagrid-community";
 import { PencilIcon } from "@heroicons/react/24/outline";
 import { canEditRDD } from "@/permissions";
 import { DataObject } from "@mui/icons-material";
+import { isDummyAccount } from "@/CommonFunctions";
 
 export default function RDDreason({
     setActiveIndexGTRS,
@@ -499,14 +500,22 @@ export default function RDDreason({
             NewRdd: "New Rdd",
             ReasonDesc: "Reason Desc",
         };
-    
+        const fieldsToCheck = [
+            "ConsignmentNo",
+            "DebtorName",
+            "AccountNumber",
+            "SenderName",
+            "SenderReference",
+            "ReceiverName",
+            "ReceiverReference",
+        ]; // for dummy data
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
-    
+
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
@@ -518,27 +527,32 @@ export default function RDDreason({
                         );
                         acc[columnKey] = Reason?.ReasonName;
                     } else if (
-                        ["DespatchDate", "ChangeAt", "OldRdd", "NewRdd"].includes(columnKey)
+                        [
+                            "DespatchDate",
+                            "ChangeAt",
+                            "OldRdd",
+                            "NewRdd",
+                        ].includes(columnKey)
                     ) {
                         const date = new Date(person[columnKey]);
                         if (!isNaN(date)) {
                             acc[columnKey] =
                                 (date.getTime() -
                                     date.getTimezoneOffset() * 60000) /
-                                86400000 +
+                                    86400000 +
                                 25569; // Convert to Excel date serial number
                         } else {
                             acc[columnKey] = "";
                         }
                     } else if (column === "Account Name") {
-                        acc[columnKey] = person.AccountNumber;
+                        acc[columnKey] = isDummyAccount(person.AccountNumber);
                     } else if (column === "ChangedAt") {
                         const date = new Date(person["ChangedAt"]);
                         if (!isNaN(date)) {
                             acc[columnKey] =
                                 (date.getTime() -
                                     date.getTimezoneOffset() * 60000) /
-                                86400000 +
+                                    86400000 +
                                 25569; // Convert to Excel date serial number
                         } else {
                             acc[columnKey] = "";
@@ -549,12 +563,14 @@ export default function RDDreason({
                             acc[columnKey] =
                                 (date.getTime() -
                                     date.getTimezoneOffset() * 60000) /
-                                86400000 +
+                                    86400000 +
                                 25569; // Convert to Excel date serial number
                         } else {
                             acc[columnKey] = "";
                         }
-                    } else {
+                    }else if (fieldsToCheck.includes(columnKey)) {
+                        acc[column] = isDummyAccount(person[columnKey]);
+                    }  else {
                         acc[columnKey] = person[columnKey];
                     }
                 } else {
@@ -563,13 +579,13 @@ export default function RDDreason({
                 return acc;
             }, {})
         );
-    
+
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
-    
+
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
-    
+
         // Apply custom styles to the header row
         const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
@@ -579,54 +595,55 @@ export default function RDDreason({
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
         headerRow.alignment = { horizontal: "center" };
-    
+
         // Add the data to the worksheet
         data.forEach((rowData) => {
             const row = worksheet.addRow(Object.values(rowData));
-    
+
             // Apply date format to the DespatchDate column
-            const despatchDateIndex = newSelectedColumns.indexOf("Despatch Date");
+            const despatchDateIndex =
+                newSelectedColumns.indexOf("Despatch Date");
             if (despatchDateIndex !== -1) {
                 const cell = row.getCell(despatchDateIndex + 1);
-                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
-    
+
             // Apply date format to the ChangedAt column
             const changedAtDateIndex = newSelectedColumns.indexOf("Changed At");
             if (changedAtDateIndex !== -1) {
                 const cell = row.getCell(changedAtDateIndex + 1);
-                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
-    
+
             // Apply date format to the OldRdd column
             const oldRddDateIndex = newSelectedColumns.indexOf("Old Rdd");
             if (oldRddDateIndex !== -1) {
                 const cell = row.getCell(oldRddDateIndex + 1);
-                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
-    
+
             // Apply date format to the NewRdd column
             const newRddDateIndex = newSelectedColumns.indexOf("New Rdd");
             if (newRddDateIndex !== -1) {
                 const cell = row.getCell(newRddDateIndex + 1);
-                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
         });
-    
+
         // Set column widths
         const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
         }));
-    
+
         // Generate the Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
             // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-    
+
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "RDD-Report.xlsx");
         });
@@ -678,7 +695,7 @@ export default function RDDreason({
                 uniqueLabels.add(fieldValue);
                 const newObject = {
                     id: fieldValue,
-                    label: fieldValue,
+                    label: fieldName === "AccountNumber" ? isDummyAccount(fieldValue) : fieldValue,
                 };
                 newData.push(newObject);
             }
@@ -770,7 +787,7 @@ export default function RDDreason({
                         onClick={() => handleClick(data.ConsignmentId)}
                     >
                         {" "}
-                        {value}
+                        {isDummyAccount(value)}
                     </span>
                 );
             },
@@ -783,6 +800,9 @@ export default function RDDreason({
             textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "AccountNumber",
@@ -797,6 +817,9 @@ export default function RDDreason({
                 wrapMultiple: false,
                 dataSource: accountOptions,
             },
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SenderName",
@@ -807,6 +830,10 @@ export default function RDDreason({
             defaultWidth: 170,
             filterEditor: StringFilter,
             group: "senderInfo",
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
+            
         },
         {
             name: "SenderReference",
@@ -817,6 +844,9 @@ export default function RDDreason({
             defaultWidth: 170,
             filterEditor: StringFilter,
             group: "senderInfo",
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SenderAddress",
@@ -827,6 +857,9 @@ export default function RDDreason({
             defaultWidth: 170,
             filterEditor: StringFilter,
             group: "senderInfo",
+            render: ({ value }) => {
+                return (value);
+            },
         },
         {
             name: "SenderSuburb",
@@ -867,6 +900,9 @@ export default function RDDreason({
             textAlign: "center",
             filterEditor: StringFilter,
             group: "receiverInfo",
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "ReceiverReference",
@@ -877,6 +913,9 @@ export default function RDDreason({
             defaultWidth: 170,
             filterEditor: StringFilter,
             group: "receiverInfo",
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "ReceiverAddress",
@@ -887,6 +926,9 @@ export default function RDDreason({
             textAlign: "start",
             filterEditor: StringFilter,
             group: "receiverInfo",
+            render: ({ value }) => {
+                return (value);
+            },
         },
         {
             name: "ReceiverSuburb",

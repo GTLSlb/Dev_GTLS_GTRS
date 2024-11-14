@@ -420,7 +420,14 @@ export default function GtrsCons({
             ReceiverReference: "Receiver Reference",
             ReceiverZone: "Receiver Zone",
         };
-
+        const fieldsToCheck = [
+            "AccountName",
+            "ConsignmentNo",
+            "SenderName",
+            "SenderReference",
+            "ReceiverName",
+            "ReceiverReference",
+        ]; // for dummy data
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
@@ -447,6 +454,8 @@ export default function GtrsCons({
                         } else {
                             acc[column] = "";
                         }
+                    } else if (fieldsToCheck.includes(columnKey)) {
+                        acc[column] = isDummyAccount(person[columnKey]);
                     } else {
                         acc[columnMapping[columnKey] || columnKey] =
                             person[columnKey];
@@ -557,7 +566,7 @@ export default function GtrsCons({
         },
     ];
 
-    const [columns, setColumns] = useState ([
+    const [columns, setColumns] = useState([
         {
             name: "ConsignmentNo",
             header: "Cons No",
@@ -571,7 +580,7 @@ export default function GtrsCons({
                         className="underline text-blue-500 hover:cursor-pointer"
                         onClick={() => handleClick(data.ConsignmentId)}
                     >
-                        {value}
+                        {isDummyAccount(value)}
                     </span>
                 );
             },
@@ -585,7 +594,7 @@ export default function GtrsCons({
             defaultWidth: 170,
             filterEditor: StringFilter,
             render: ({ value }) => {
-                return isDummyAccount("Account Name", value);
+                return isDummyAccount(value);
             },
         },
         {
@@ -646,7 +655,7 @@ export default function GtrsCons({
             defaultWidth: 200,
             filterEditor: StringFilter,
             render: ({ value }) => {
-                return isDummyAccount("Sender Name", value);
+                return isDummyAccount(value);
             },
         },
         {
@@ -690,6 +699,9 @@ export default function GtrsCons({
             headerAlign: "center",
             textAlign: "center",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "ReceiverName",
@@ -700,7 +712,7 @@ export default function GtrsCons({
             defaultWidth: 200,
             filterEditor: StringFilter,
             render: ({ value }) => {
-                return isDummyAccount("Receiver Name", value);
+                return isDummyAccount(value);
             },
         },
         {
@@ -731,6 +743,9 @@ export default function GtrsCons({
             headerAlign: "center",
             textAlign: "center",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "ReceiverZone",

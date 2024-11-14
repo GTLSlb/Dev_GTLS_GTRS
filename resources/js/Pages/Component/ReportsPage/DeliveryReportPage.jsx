@@ -19,6 +19,7 @@ import {
     canViewOtherDailyReport,
 } from "@/permissions";
 import { useRef } from "react";
+import { isDummyAccount } from "@/CommonFunctions";
 
 export default function DailyReportPage({
     url,
@@ -462,7 +463,7 @@ export default function DailyReportPage({
             filterEditor: StringFilter,
             defaultWidth: 200,
             render: ({ value }) => {
-                return <div>{value}</div>;
+                return isDummyAccount(value);
             },
         },
         {
@@ -499,8 +500,7 @@ export default function DailyReportPage({
                             className="underline text-blue-500 hover:cursor-pointer"
                             onClick={() => handleClick(data.ConsignmentID)}
                         >
-                            {" "}
-                            {value}
+                            {isDummyAccount(value)}
                         </span>
                     </div>
                 );
@@ -514,6 +514,9 @@ export default function DailyReportPage({
             textAlign: "center",
             defaultWidth: 200,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SenderReference",
@@ -523,6 +526,9 @@ export default function DailyReportPage({
             textAlign: "center",
             defaultWidth: 180,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SenderState",
@@ -558,6 +564,9 @@ export default function DailyReportPage({
             textAlign: "center",
             defaultWidth: 200,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "ReceiverReference",
@@ -567,6 +576,9 @@ export default function DailyReportPage({
             textAlign: "center",
             defaultWidth: 180,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "ReceiverState",

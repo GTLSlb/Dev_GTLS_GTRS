@@ -1,3 +1,4 @@
+import { isDummyAccountWithDummyData } from "@/CommonFunctions";
 import { getDataDetail } from "@microsoft/signalr/dist/esm/Utils";
 import React from "react";
 import { useEffect } from "react";
@@ -17,15 +18,15 @@ function ConsignmentGraph({ url, currentUser, AToken }) {
     const customers = [
         {
             value: 1,
-            label: "Unilever/ Metcash 12 Monthly Consignment",
+            label: isDummyAccountWithDummyData(`Account No: 1`, "Unilever/ Metcash 12 Monthly Consignment"),
         },
         {
             value: 3,
-            label: "Unilever Monthly Consignment",
+            label: isDummyAccountWithDummyData(`Account No: 2`, "Unilever Monthly Consignment"),
         },
         {
             value: 2,
-            label: "Unilever/ Woolworth 12 Monthly Consignment",
+            label: isDummyAccountWithDummyData(`Account No: 3`, "Unilever/ Woolworth 12 Monthly Consignment"),
         },
     ];
 

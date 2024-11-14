@@ -21,6 +21,7 @@ import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import TableStructure from "@/Components/TableStructure";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import { canAddSafetyReport, canEditSafetyReport } from "@/permissions";
+import { isDummyAccount } from "@/CommonFunctions";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -484,7 +485,7 @@ export default function SafetyRepTable({
             OccuredAt: "Occured At",
             AddedBy: "Added By",
         };
-    
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
@@ -506,7 +507,8 @@ export default function SafetyRepTable({
                         const Reason = customerAccounts?.find(
                             (reason) => reason.DebtorId == person.DebtorId
                         );
-                        acc[columnKey] = Reason?.AccountNo;
+                        
+                        acc[columnKey] = isDummyAccount(Reason?.AccountNo);
                     } else if (columnKey === "OccuredAt") {
                         const date = new Date(person[columnKey]);
                         if (!isNaN(date)) {
@@ -702,7 +704,7 @@ export default function SafetyRepTable({
     }));
     const debtorsOptions = customerAccounts.map((reason) => ({
         id: parseInt(reason.DebtorId.trim(), 10), // Convert id to integer and remove any whitespace
-        label: reason.AccountNo,
+        label: isDummyAccount(reason.AccountNo),
     }));
     const referenceOptions = [
         {
@@ -763,13 +765,11 @@ export default function SafetyRepTable({
             render: ({ value }) => {
                 return (
                     <div>
-                        {/* {value} */}
-                        {
-                            customerAccounts?.find(
-                                (customer) => customer.DebtorId == value
-                            )?.AccountNo
-                        }
-                    </div>
+                    {isDummyAccount(customerAccounts?.find(
+                        (customer) => customer.DebtorId == value
+                    )?.AccountNo)}
+                </div>
+                
                 );
             },
         },
