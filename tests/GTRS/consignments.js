@@ -257,11 +257,11 @@ describe("Table Test", () => {
             const authCookie = cookies.find((c) => c.name === "access_token");
 
             const resData = await axios.get(
-                `${process.env.GTRS_API_URL}Dashboard`,
+                `${process.env.GTRS_API_URL}Consignments`,
                 {
                     headers: {
                         Authorization: `Bearer ${authCookie.value}`,
-                        UserId: 9,
+                        UserId: process.env.USER_ID,
                     },
                 }
             );
@@ -370,11 +370,11 @@ describe("Table Test", () => {
                 );
 
                 const resData = await axios.get(
-                    `${process.env.GTRS_API_URL}Dashboard`,
+                    `${process.env.GTRS_API_URL}Consignments`,
                     {
                         headers: {
                             Authorization: `Bearer ${authCookie.value}`,
-                            UserId: 9,
+                            UserId: process.env.USER_ID,
                         },
                     }
                 );
@@ -498,11 +498,11 @@ describe("Table Test", () => {
             const authCookie = cookies.find((c) => c.name === "access_token");
 
             const resData = await axios.get(
-                `${process.env.GTRS_API_URL}Dashboard`,
+                `${process.env.GTRS_API_URL}Consignments`,
                 {
                     headers: {
                         Authorization: `Bearer ${authCookie.value}`,
-                        UserId: 9,
+                        UserId: process.env.USER_ID,
                     },
                 }
             );
@@ -664,5 +664,56 @@ describe("Table Test", () => {
             console.error("Error occurred:", error);
             throw new Error("Test failed due to: " + error);
         }
+    });
+});
+
+describe("Table Test", () => {
+    it("user can navigate to consignment details page", async () => {
+        // Step 1: Navigate to the kpi page
+        await driver.sleep(2000);
+        await navigateToPage(driver, "Consignments");
+
+        // Step 2: Fetch data from API request
+        let data = [];
+        const cookies = await driver.manage().getCookies();
+        const authCookie = cookies.find((c) => c.name === "access_token");
+
+        const resData = await axios.get(
+            `${process.env.GTRS_API_URL}ConsignmentById`,
+            {
+                headers: {
+                    Authorization: `Bearer ${authCookie.value}`,
+                    UserId: process.env.USER_ID,
+                    consignment_id: process.env.CONS_ID
+                },
+            }
+        );
+
+        data = resData.data;
+
+        // Step 3: Click on consignment details
+        //Get con nbr that corresponds to this id
+        const consInput = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/div/div/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[3]/div[1]/input'));
+        await consInput.sendKeys('GMI2237');
+
+        // Click on cons nbr
+        const conNbr = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/div/div/div[1]/div[1]/div[2]/div[1]/div/div[1]/div/div/div[1]/div/div/div[1]/div/span'))
+        await conNbr.click();
+
+        await driver.sleep(10000);
+
+        // Step 4: Verify the data
+        const url = await driver.getCurrentUrl();
+
+        assert.strictEqual(
+            url, 'https://gtrs.gtls.store/gtrs/consignment-details',
+            `URL should be https://gtrs.gtls.store/gtrs/consignment-details but got ${url}`
+        );
+
+        const consNumber = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/div[1]/div[1]/h4/span'));
+
+        assert.strictEqual(
+            consNumber.getText(), 'GMI2237', `Cons number should be GMI2237 but got ${consNumber.getText()}`
+        );
     });
 });

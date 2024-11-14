@@ -151,7 +151,7 @@ describe("User can filter dashboard data based on date", () => {
                 {
                     headers: {
                         Authorization: `Bearer ${authCookie.value}`,
-                        UserId: 9,
+                        UserId: process.env.USER_ID,
                     },
                 }
             );
@@ -168,7 +168,7 @@ describe("User can filter dashboard data based on date", () => {
                 {
                     headers: {
                         Authorization: `Bearer ${authCookie.value}`,
-                        UserId: 9,
+                        UserId: process.env.USER_ID,
                     },
                 }
             );
