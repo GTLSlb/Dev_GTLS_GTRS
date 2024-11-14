@@ -75,7 +75,7 @@ function DashboardCard07(props) {
                                 </td>
                                 <td className="px-1">
                                     <div className="text-center text-sm text-right">
-                                        {data.totalPalletSpace}
+                                        {data.totalPalletSpace?.toFixed(2)}
                                     </div>
                                 </td>
                             </tr>

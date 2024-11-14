@@ -653,7 +653,7 @@ export default function MissingPOD({
                 return (
                     <span
                         className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => handleClick(data.ConsignmentId)}
+                        onClick={() => handleClick(data.CONSIGNMNENTID)}
                     >
                         {" "}
                         {value}
