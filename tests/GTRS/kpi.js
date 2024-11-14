@@ -35,7 +35,7 @@ describe("Invalid Session Test", () => {
             assert.strictEqual(
                 await title.getText(),
                 "KPI",
-                "KPI title should be displayed should be displayed."
+                "KPI title should be displayed."
             );
         } catch (err) {
             if (
@@ -601,7 +601,7 @@ describe("Table Test", () => {
         try {
             // Step 1: Navigate to the kpi page
             await driver.sleep(2000);
-            await navigateToPage(driver, "KPI Report");
+            await navigateToPage(driver, "KPI");
 
             await driver.sleep(4000);
             // Step 2: Map over all filters and give them a value
@@ -697,10 +697,22 @@ describe("Table Test", () => {
 });
 
 describe("Table Test", () => {
+    let driver;
+
+    before(async () => {
+        // Initialize the WebDriver
+        driver = await new Builder().forBrowser("chrome").build();
+        await login(driver);
+    });
+
+    after(async () => {
+        // Quit the WebDriver after tests
+        await driver.quit();
+    });
     it("user can navigate to consignment details page", async () => {
         // Step 1: Navigate to the kpi page
         await driver.sleep(2000);
-        await navigateToPage(driver, "KPI Report");
+        await navigateToPage(driver, "KPI");
 
         // Step 2: Fetch data from API request
         let data = [];

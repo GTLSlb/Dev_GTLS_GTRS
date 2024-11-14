@@ -35,7 +35,7 @@ describe("Invalid Session Test", () => {
             assert.strictEqual(
                 await title.getText(),
                 "Transit Days",
-                "Transit Days title should be displayed should be displayed."
+                "Transit Days title should be displayed."
             );
         } catch (err) {
             if (
@@ -622,6 +622,18 @@ describe("Table Test", () => {
 });
 
 describe("Table Test", () => {
+    let driver;
+
+    before(async () => {
+        // Initialize the WebDriver
+        driver = await new Builder().forBrowser("chrome").build();
+        await login(driver);
+    });
+
+    after(async () => {
+        // Quit the WebDriver after tests
+        await driver.quit();
+    });
     it("user can navigate to consignment details page", async () => {
         // Step 1: Navigate to the Transit Days page
         await driver.sleep(2000);

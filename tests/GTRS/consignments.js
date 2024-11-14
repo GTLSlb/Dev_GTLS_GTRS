@@ -668,6 +668,18 @@ describe("Table Test", () => {
 });
 
 describe("Table Test", () => {
+    let driver;
+
+    before(async () => {
+        // Initialize the WebDriver
+        driver = await new Builder().forBrowser("chrome").build();
+        await login(driver);
+    });
+
+    after(async () => {
+        // Quit the WebDriver after tests
+        await driver.quit();
+    });
     it("user can navigate to consignment details page", async () => {
         // Step 1: Navigate to the kpi page
         await driver.sleep(2000);
