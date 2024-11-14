@@ -6,7 +6,7 @@ const cookie = require("cookie-js");
 require("dotenv").config();
 const gtrsPages = require("../helper/gtrsPages");
 
-describe("Invalid Session Test", () => {
+describe("Navigation Test", () => {
     let driver;
 
     before(async () => {

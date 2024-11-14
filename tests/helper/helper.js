@@ -4,6 +4,8 @@ require("dotenv").config();
 const fs = require("fs");
 const { PNG } = require("pngjs");
 const pixelmatch = require("pixelmatch");
+const axios = require("axios");
+
 async function login(driver) {
     try {
         // Navigate to the login page
@@ -735,6 +737,143 @@ async function navigateToPage(driver, pageName) {
     }
 }
 
+async function fetchData(root, headers) {
+    const authHeaders = {
+        ...headers,
+        Authorization: `Bearer ${authCookie.value}`,
+        UserId: process.env.USER_ID,
+    };
+    const resData = await axios.get(
+        `${process.env.GTRS_API_URL}ConsignmentById`,
+        {
+            headers: authHeaders,
+        }
+    );
+    return resData.data;
+}
+
+async function fetchPerformanceDataFromView(driver) {
+    let performanceDataInView = [];
+    let hasNextPage = true;
+
+    while (hasNextPage) {
+        const cards = await driver.findElements(
+            By.css(
+                "relative border-b border-gray-400 py-5 sm:pb-0 px-5 mt-5 h-auto bg-white rounded-xl shadow-md"
+            )
+        );
+        for (const card of cards) {
+            let keyValuePairs = {};
+            // Get AccountNumber
+            const consNo = await card
+                .findElement(By.css("text-goldd"))
+                .getText();
+            const allTabs = await card.findElements(By.tagName("a"));
+            for (const tab of allTabs) {
+                await tab.click();
+                const allHeadersInTab = await card.findElements(
+                    By.tagName("dt")
+                );
+                const allInfoInTab = await card.findElements(By.tagName("dd"));
+                for (let i = 0; i < allInfoInTab.length; i++) {
+                    const keyFromView = await allHeadersInTab[i].getText();
+                    const keyAsFromApi = keys.find(
+                        (key) => Object.keys(key)[0] === keyFromView
+                    );
+                    const key =
+                        keyAsFromApi &&
+                        keyAsFromApi[Object.keys(keyAsFromApi)[0]];
+                    const value = await allInfoInTab[i].getText();
+                    keyValuePairs[key] = value;
+                }
+                keyValuePairs[ConsignmentNo] = consNo;
+                if (i + 1 < allTabs?.length) {
+                    allTabs[i + 1].click();
+                }
+            }
+            performanceDataInView.push(keyValuePairs);
+        }
+        // Step 2: Check for the next page button and click it
+        //Scroll to the bottom to get to next button
+        const scrollArea = await driver.findElement(
+            By.xpath(
+                '//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div'
+            )
+        );
+        await driver.executeScript(
+            "arguments[0].scrollTop = arguments[0].offsetHeight",
+            scrollArea
+        );
+        const nextButton = await driver.findElements(
+            By.xpath(
+                '//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div[5]/ul/li[9]/a'
+            )
+        );
+        if (
+            performanceDataInView.length < dataLength &&
+            (await nextButton[0].isEnabled())
+        ) {
+            await nextButton[0].click(); // Click the next button
+            await driver.sleep(3000); // Wait for the next page to load
+        } else {
+            hasNextPage = false; // No more pages
+        }
+    }
+    return performanceDataInView;
+}
+
+async function comparePerformanceData(performanceDataInView, filteredAPIData){
+    // Create a map for quick look-up of API data by AccountNumber
+    const apiDataMap = new Map(filteredAPIData.map(item => [item.AccountNumber, item]));
+
+    const discrepancies = [];
+
+    // Iterate through each performance data entry
+    for (const viewData of performanceDataInView) {
+        const apiData = apiDataMap.get(viewData.AccountNumber); // Find corresponding API data
+
+        if (!apiData) {
+            discrepancies.push({
+                type: 'Missing in API',
+                data: viewData
+            });
+            continue; // Move to the next item if no matching API data
+        }
+
+        // List of fields to compare
+        const keysToCompare = [
+            'ConsignmentStatus', 'KpiDatetime', 'PodDateTime', 'POD', 'Status',
+            'Service', 'ManifestNo', 'LoadingTime', 'TotalQuantity',
+            'TotalWeight', 'DeliveryRequiredDateTime', 'DeliveredDate',
+            'FuelLevy', 'NettAmount', 'RateAmount', 'SenderName',
+            'SenderZone', 'SenderSuburb', 'SenderPostcode', 'SenderReference',
+            'ReceiverName', 'ReceiverZone', 'ReceiverSuburb',
+            'ReceiverPostcode', 'ReceiverReference'
+        ];
+
+        // Compare the specified fields
+        for (const key of keysToCompare) {
+            if (viewData[key] !== apiData[key]) {
+                discrepancies.push({
+                    type: 'Mismatch',
+                    key: key,
+                    viewValue: viewData[key],
+                    apiValue: apiData[key]
+                });
+            }
+        }
+    }
+
+    // Log any discrepancies found
+    if (discrepancies.length > 0) {
+        console.error('Discrepancies found:', discrepancies);
+    } else {
+        console.log('All data matches between view and API.');
+    }
+
+    return discrepancies;
+}
+
 module.exports = {
     login,
     loginToApp,
@@ -744,4 +883,7 @@ module.exports = {
     testSpendChart,
     dashboardHelper,
     navigateToPage,
+    fetchData,
+    fetchPerformanceDataFromView,
+    comparePerformanceData,
 };

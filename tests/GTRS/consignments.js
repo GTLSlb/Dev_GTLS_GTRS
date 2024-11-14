@@ -7,7 +7,7 @@ require("dotenv").config();
 const gtrsPages = require("../helper/gtrsPages");
 
 
-describe("Invalid Session Test", () => {
+describe("Navigation Test", () => {
     let driver;
 
     before(async () => {
@@ -84,8 +84,8 @@ describe("Invalid Session Test", () => {
 
             assert.strictEqual(
                 currentUrl,
-                "https://gtrs.gtls.store/gtrs/Consignments",
-                `Expected URL to be 'https://gtrs.gtls.store/gtrs/Consignments' but got '${currentUrl}'.`
+                "https://gtrs.gtls.store/gtrs/consignments",
+                `Expected URL to be 'https://gtrs.gtls.store/gtrs/consignments' but got '${currentUrl}'.`
             );
         });
     }
