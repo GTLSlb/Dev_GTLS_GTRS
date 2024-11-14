@@ -416,6 +416,7 @@ describe("Table data test", () => {
 
         //Step 4: Clean up filter
         await ualDebtor.click();
+        await debAccDropdown.click();
     });
 
     it("user can filter data by date and cons no", async () => {
@@ -566,6 +567,7 @@ describe("Table data test", () => {
 
         //Step 4: Clean up filter
         await ualDebtor.click();
+        await debAccDropdown.click();
         await dateFromInput.sendKeys("");
         await dateToInput.sendKeys("");
     });
@@ -641,6 +643,7 @@ describe("Table data test", () => {
 
         //Step 4: Clean up filter
         await ualDebtor.click();
+        await debAccDropdown.click();
         await consNo.clear();
     });
 
@@ -725,6 +728,7 @@ describe("Table data test", () => {
 
         //Step 4: Clean up filter
         await ualDebtor.click();
+        await debAccDropdown.click();
         await consNo.clear();
         await dateFromInput.sendKeys("");
         await dateToInput.sendKeys("");
