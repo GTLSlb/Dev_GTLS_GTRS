@@ -13,6 +13,7 @@ import moment from "moment";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import { useEffect, useRef } from "react";
+import { isDummyAccount } from "@/CommonFunctions";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -25,6 +26,7 @@ export default function GtrsCons({
     filterValue,
     setFilterValue,
     setLastIndex,
+    userBody,
     accData,
 }) {
     window.moment = moment;
@@ -569,7 +571,6 @@ export default function GtrsCons({
                         className="underline text-blue-500 hover:cursor-pointer"
                         onClick={() => handleClick(data.ConsignmentId)}
                     >
-                        {" "}
                         {value}
                     </span>
                 );
@@ -583,6 +584,9 @@ export default function GtrsCons({
             textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount("Account Name", value);
+            },
         },
         {
             name: "Service",
@@ -641,6 +645,9 @@ export default function GtrsCons({
             textAlign: "center",
             defaultWidth: 200,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount("Sender Name", value);
+            },
         },
         {
             name: "SenderState",
@@ -692,6 +699,9 @@ export default function GtrsCons({
             textAlign: "center",
             defaultWidth: 200,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount("Receiver Name", value);
+            },
         },
         {
             name: "ReceiverState",

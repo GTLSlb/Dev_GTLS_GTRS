@@ -20,6 +20,7 @@ import axios from "axios";
 import swal from "sweetalert";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import NewKPIModalAddReason from "./KPI/NEWKPIModal";
+import { isDummyAccount } from "@/CommonFunctions";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -845,6 +846,9 @@ function NewKPI({
             textAlign: "center",
             filterEditor: StringFilter,
             defaultWidth: 200,
+            render: ({ value }) => {
+                return isDummyAccount("Sender Name", value);
+            },
         },
         {
             name: "SenderReference",
@@ -880,6 +884,9 @@ function NewKPI({
             textAlign: "center",
             filterEditor: StringFilter,
             defaultWidth: 200,
+            render: ({ value }) => {
+                return isDummyAccount("Receiver Name", value);
+            },
         },
         {
             name: "ReceiverReference",

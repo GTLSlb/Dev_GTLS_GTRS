@@ -23,6 +23,7 @@ import NewTransitDays from "./NewTransitDays";
 import AddNewTransitDay from "./KPI/AddNewTransitDay";
 import GraphPresentation from "./Presentation/GraphPresentation";
 import DailyReportPage from "./ReportsPage/DeliveryReportPage";
+import Cookies from "js-cookie";
 
 export default function charts({
     setCusomterAccounts,
@@ -2076,7 +2077,11 @@ export default function charts({
             },
         },
     ]);
-
+    useEffect(() => {
+        if (user) {
+            Cookies.set('userEmail', user.Email);
+        }
+    })
     const components = [
         <MainCharts
             chartsData={chartsData}
@@ -2099,6 +2104,7 @@ export default function charts({
             setactiveCon={setactiveCon}
             consData={consData}
             AToken={AToken}
+            userBody={userBody}
             filterValue={filtersCons}
             setFilterValue={setFiltersCons}
             minDate={minDate}
