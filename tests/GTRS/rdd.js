@@ -143,7 +143,7 @@ describe("Table Test", () => {
         {
             filterName: "Sender Name",
             value: "UNILEVER FOODS - MELB",
-            key: "Sender Name",
+            key: "SenderName",
             locator: '//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/div/div/div/div/div/div/div[1]/div[1]/div[1]/div[1]/div[1]/div[7]/div[3]/div[1]/div[3]/div[1]/input',
             clearLocator:
                 "/html/body/div[1]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/div/div/div[5]/div/div/div/div/div[1]/div[1]/div[2]/table/tbody/tr[9]",

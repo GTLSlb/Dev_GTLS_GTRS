@@ -915,6 +915,21 @@ async function compareData(DataInView, filteredAPIData, keysToCompare){
     return discrepancies;
 }
 
+async function navigateToUnileverSubDebtor(driver, debtorName) {
+    // Navigate to the Unilever sub-debtor page
+    if(debtorName == "Metcash"){
+        const metTab = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div[2]/ul/li[1]'));
+        await metTab.click();
+    }else if(debtorName == "Woolworths"){
+        const woolTab = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div[2]/ul/li[2]'));
+        await woolTab.click();
+    }else if(debtorName == "Other"){
+        const otherTab = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div[2]/ul/li[3]'));
+        await otherTab.click();
+    }
+    await driver.sleep(2000);
+}
+
 module.exports = {
     login,
     loginToApp,
@@ -927,5 +942,6 @@ module.exports = {
     fetchData,
     fetchPerformanceDataFromView,
     comparePerformanceData,
-    compareData
+    compareData,
+    navigateToUnileverSubDebtor,
 };
