@@ -874,6 +874,47 @@ async function comparePerformanceData(performanceDataInView, filteredAPIData){
     return discrepancies;
 }
 
+async function compareData(DataInView, filteredAPIData, keysToCompare){
+    // Create a map for quick look-up of API data by AccountNumber
+    const apiDataMap = new Map(filteredAPIData.map(item => [item.AccountNumber, item]));
+
+    const discrepancies = [];
+
+    // Iterate through each performance data entry
+    for (const viewData of DataInView) {
+        const apiData = apiDataMap.get(viewData.AccountNumber); // Find corresponding API data
+
+        if (!apiData) {
+            discrepancies.push({
+                type: 'Missing in API',
+                data: viewData
+            });
+            continue; // Move to the next item if no matching API data
+        }
+
+        // Compare the specified fields
+        for (const key of keysToCompare) {
+            if (viewData[key] !== apiData[key]) {
+                discrepancies.push({
+                    type: 'Mismatch',
+                    key: key,
+                    viewValue: viewData[key],
+                    apiValue: apiData[key]
+                });
+            }
+        }
+    }
+
+    // Log any discrepancies found
+    if (discrepancies.length > 0) {
+        console.error('Discrepancies found:', discrepancies);
+    } else {
+        console.log('All data matches between view and API.');
+    }
+
+    return discrepancies;
+}
+
 module.exports = {
     login,
     loginToApp,
@@ -886,4 +927,5 @@ module.exports = {
     fetchData,
     fetchPerformanceDataFromView,
     comparePerformanceData,
+    compareData
 };

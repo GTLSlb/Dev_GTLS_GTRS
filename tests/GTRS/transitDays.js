@@ -650,7 +650,7 @@ describe("Table Test", () => {
                 headers: {
                     Authorization: `Bearer ${authCookie.value}`,
                     UserId: process.env.USER_ID,
-                    consignment_id: process.env.CONS_ID,
+                    Consignment_id: process.env.CONS_ID,
                 },
             }
         );

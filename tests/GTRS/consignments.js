@@ -314,7 +314,7 @@ describe("Table Test", () => {
             });
 
             // Map cell values to API values
-            const mappedValues = cellValues.map((cellValue, index) => {
+            const mappedValues = allCellValues.map((cellValue, index) => {
                 const apiValue = apiValues[index];
                 return {
                     cellValue,
@@ -696,7 +696,7 @@ describe("Table Test", () => {
                 headers: {
                     Authorization: `Bearer ${authCookie.value}`,
                     UserId: process.env.USER_ID,
-                    consignment_id: process.env.CONS_ID
+                    Consignment_id: process.env.CONS_ID
                 },
             }
         );
