@@ -33,6 +33,7 @@ import ConsMap from "./TrafficPage/ConsMap";
 import DailyReportPage from "./ReportsPage/DeliveryReportPage";
 import DeliveryReportPage from "./ReportsPage/DeliveryReportPage";
 import NewConsignmentTracking from "./New Consignment Tracking/NewConsignmentTracking";
+import RealFoodKPIPack from "./RealFoodKPIPack/RealFoodKPIPack";
 
 export default function charts({
     setCusomterAccounts,
@@ -2075,9 +2076,9 @@ export default function charts({
                 },
             });
             setDailyReportData(res.data || []);
-    
+
             // Check if setCellLoading exists before calling it
-            if (typeof setCellLoading === 'function') {
+            if (typeof setCellLoading === "function") {
                 setCellLoading(null);
             }
         } catch (err) {
@@ -2096,13 +2097,12 @@ export default function charts({
                 // Handle other errors
                 console.log(err);
                 // Check if setCellLoading exists before calling it
-                if (typeof setCellLoading === 'function') {
+                if (typeof setCellLoading === "function") {
                     setCellLoading(null);
                 }
             }
         }
     };
-    
 
     useEffect(() => {
         if (currentUser) {
@@ -2637,7 +2637,8 @@ export default function charts({
             consignment={consignmentToTrack}
             setActiveIndexGTRS={setActiveIndexGTRS}
         />,
-        <NewConsignmentTracking />
+        <NewConsignmentTracking />,
+        <RealFoodKPIPack url={url} currentUser={currentUser} AToken={AToken} />,
     ];
     return (
         <div className="h-full">

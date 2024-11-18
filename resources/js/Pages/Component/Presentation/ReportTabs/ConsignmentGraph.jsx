@@ -4,30 +4,10 @@ import { useState } from "react";
 import Select from "react-select";
 import BarGraph from "../graphs/BarGraph";
 
-function ConsignmentGraph({ url, currentUser, AToken }) {
+function ConsignmentGraph({ url, currentUser, AToken, customers, CustomerId }) {
     const [graphData, setGraphData] = useState();
     const [originalgraphData, setGraphOriginalData] = useState();
     const [loading, setLoading] = useState(true);
-
-
-    // useEffect(() => {
-    //    console.log("Orginal data changed")
-    // },[originalgraphData])
-    const customers = [
-        {
-            value: 1,
-            label: "Unilever/ Metcash 12 Monthly Consignment",
-        },
-        {
-            value: 3,
-            label: "Unilever Monthly Consignment",
-        },
-        {
-            value: 2,
-            label: "Unilever/ Woolworth 12 Monthly Consignment",
-        },
-    ];
-
     const [selectedReceiver, setselectedReceiver] = useState(customers[0]);
 
     function addCalculatedFields(data) {
@@ -51,24 +31,22 @@ function ConsignmentGraph({ url, currentUser, AToken }) {
         });
         return data;
     }
-
     function getReportData() {
-        // console.log("get function")
         setLoading(true);
         axios
             .get(`${url}KpiPackRecord`, {
                 headers: {
                     UserId: currentUser.UserId,
-                    CustomerId: "1",
+                    CustomerId: CustomerId,
                     CustomerTypeId: selectedReceiver.value,
                     Authorization: `Bearer ${AToken}`,
                 },
             })
             .then((res) => {
                 setLoading(false);
-                const calculatedData = addCalculatedFields(res.data);
-                // console.log(res.data)
-                setGraphOriginalData(res.data)
+                const calculatedData = addCalculatedFields(res.data); // it updates the data it self there's no need to update the state using calculated data
+
+                setGraphOriginalData(res.data);
                 setGraphData(res.data);
             })
             .catch((err) => {
@@ -129,12 +107,12 @@ function ConsignmentGraph({ url, currentUser, AToken }) {
             // Add more styles for indicators container if necessary
         }),
         // Add or adjust other style functions as needed
-      };
-
+    };
 
     const handleReceiverSelectChange = (selectedOptions) => {
         setselectedReceiver(selectedOptions);
     };
+
 
     return loading ? (
         <div className="md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
@@ -176,10 +154,13 @@ function ConsignmentGraph({ url, currentUser, AToken }) {
                 <BarGraph
                     graphData={graphData}
                     url={url}
+                    CustomerId={CustomerId}
                     AToken={AToken}
                     currentUser={currentUser}
                     selectedReceiver={selectedReceiver}
                     originalgraphData={originalgraphData}
+                    getReportData={getReportData}
+                    setGraphData={setGraphData}
                 />
             </div>
         </div>

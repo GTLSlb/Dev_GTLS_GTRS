@@ -247,11 +247,19 @@ const menu = [
     },
     {
         id: 20,
-        name: "KPI Pack Report",
+        name: "Unilever KPI Pack",
         href: "#",
         icon: DocumentTextIcon,
         current: false,
         feature: "UnileverReport_View",
+    },
+    {
+        id: 27,
+        name: "Real Food KPI Pack",
+        href: "#",
+        icon: DocumentTextIcon,
+        current: false,
+        feature: "RealFoodReport_View",
     },
     {
         id: 21,
