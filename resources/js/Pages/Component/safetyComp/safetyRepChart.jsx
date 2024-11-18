@@ -241,7 +241,7 @@ export default function SafetyRepChart({
     const percentage = calculateSafetyTypePercentage(filteredData);
     const byStateAndType = countRecordsByStateAndType(filteredData);
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
+// console.log('countRecordsByMonth', recordCounts);
     const ResetLayout = () => {
         // Filter the options based on the selected receivers
         setLayout([

@@ -44,7 +44,7 @@ describe("Navigation Test", () => {
     });
 
     for (const { pageName, url } of gtrsPages) {
-        it("user can navigate from other pages to the Performance Report", async () => {
+        it(`user can navigate from ${pageName} to the Performance Report`, async () => {
             // Step 1: Navigate to the main page
             await driver.sleep(3000);
 

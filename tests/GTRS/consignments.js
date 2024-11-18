@@ -39,7 +39,7 @@ describe("Navigation Test", () => {
     });
 
     for (const { pageName, url } of gtrsPages) {
-        it("user can navigate from other pages to the Consignments", async () => {
+        it(`user can navigate from ${pageName} to the Consignments`, async () => {
             // Step 1: Navigate to the main page
             await driver.sleep(3000);
 
@@ -379,7 +379,7 @@ describe("Table Test", () => {
                     }
                 );
 
-                // Filter data based on date
+                // Filter data
                 if (filterName.toLowerCase().includes("date")) {
                     const filterDate = new Date(value);
                     data = resData.data.filter((item) => {
@@ -388,8 +388,10 @@ describe("Table Test", () => {
                     });
                 } else {
                     data = resData.data.filter((item) => {
-                        const filtered = item[key]?.toLowerCase();
-                        return filtered?.includes(value.toLowerCase());
+                        const filtered = item[key];
+                        if(typeof filtered === "undefined" || filtered === null) return false;
+                        else if(typeof filtered == "string") return filtered.toLowerCase().includes(value.toLowerCase());
+                        else return filtered == value;
                     });
                 }
 

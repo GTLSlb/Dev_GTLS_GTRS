@@ -368,6 +368,10 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                                     filteredSafety
                                 )}
                             />{" "}
+                            {/* {console.log('info', calculateStatistics(
+                                    filteredData,
+                                    filteredSafety
+                                ))} */}
                         </div>
                         <div key="card06" className="relative">
                             {" "}
@@ -376,6 +380,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                                 chartData={getMonthlyData(filteredData)}
                                 chartTitle={"Spend By State"}
                             />{" "}
+                            {/* {console.log('Spend By State', getMonthlyData(filteredData))} */}
                         </div>
                         <div key="card12" className="relative">
                             {" "}
@@ -384,6 +389,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                                 chartData={getMonthlyRecordCounts(filteredData)}
                                 chartTitle={" Consignment By Month"}
                             />{" "}
+                            {/* {console.log('Consignment By Month', getMonthlyRecordCounts(filteredData))} */}
                         </div>
                         <div key="card04" className="relative">
                             {" "}
@@ -392,6 +398,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                                 chartData={getConsStatusCounter(filteredData)}
                                 chartTitle={"Consignment Status"}
                             />{" "}
+                            {/* {console.log('Consignment Status', getConsStatusCounter(filteredData))} */}
                         </div>
                         <div key="card08" className="relative">
                             {" "}
@@ -400,6 +407,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                                 chartData={getPODCounts(filteredData)}
                                 chartTitle={"POD True vs False"}
                             />{" "}
+                            {/* {console.log('POD True vs False', getPODCounts(filteredData))} */}
                         </div>
                         <div key="card03" className="relative">
                             {" "}
@@ -408,6 +416,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                                 chartData={getPODCountsByState(filteredData)}
                                 chartTitle={"POD Status By State"}
                             />{" "}
+                            {/* {console.log('POD Status By State', getPODCountsByState(filteredData))} */}
                         </div>
                         <div key="card03_2">
                             <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
@@ -415,6 +424,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                                 chartData={getStateRecordCounts(filteredData)}
                                 chartTitle={" Consignments By state"}
                             />{" "}
+                            {/* {console.log('Consignments By state', getStateRecordCounts(filteredData))} */}
                         </div>
                         <div key="card13" className="relative">
                             {" "}
@@ -423,6 +433,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                                 chartData={getStateTotalWeights(filteredData)}
                                 chartTitle={" Weight By state"}
                             />{" "}
+                            {/* {console.log('Weight By state', getStateTotalWeights(filteredData))} */}
                         </div>
                         <div key="card14" className="relative">
                             {" "}
@@ -431,6 +442,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                                 chartData={getKPIStatusCounter(filteredData)}
                                 chartTitle={"KPI Status"}
                             />{" "}
+                            {/* {console.log('KPI Status', getKPIStatusCounter(filteredData))} */}
                         </div>
                     </ReactGridLayout>
                 ) : (

@@ -38,7 +38,7 @@ describe("Navigation Test", () => {
     });
 
     for (const { pageName, url } of gtrsPages) {
-        it("user can navigate from other pages to the Missing POD", async () => {
+        it(`user can navigate from ${pageName} to the Missing POD`, async () => {
             // Step 1: Navigate to the main page
             await driver.sleep(3000);
 
@@ -352,7 +352,7 @@ describe("Table Test", () => {
                     return entry.POD === false;
                 });
 
-                // Filter data based on date
+                // Filter data
                 if (filterName.toLowerCase().includes("date") || filterName.toLowerCase().includes("rdd")) {
                     const filterDate = new Date(value);
                     data = falsePodOnly.filter((item) => {
@@ -360,9 +360,11 @@ describe("Table Test", () => {
                         return dateAPI == filterDate;
                     });
                 } else {
-                    data = falsePodOnly.filter((item) => {
-                        const filtered = item[key]?.toLowerCase();
-                        return filtered?.includes(value.toLowerCase());
+                    data = resData.data.filter((item) => {
+                        const filtered = item[key];
+                        if(typeof filtered === "undefined" || filtered === null) return false;
+                        else if(typeof filtered == "string") return filtered.toLowerCase().includes(value.toLowerCase());
+                        else return filtered == value;
                     });
                 }
 

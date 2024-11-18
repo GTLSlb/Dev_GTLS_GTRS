@@ -930,6 +930,21 @@ async function navigateToUnileverSubDebtor(driver, debtorName) {
     await driver.sleep(2000);
 }
 
+async function navigateToSafetyTab(driver, tabName) {
+    // Navigate to the Unilever sub-debtor page
+    if(tabName == "Report"){
+        const repTab = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/ul/li[1]/div'));
+        await repTab.click();
+    }else if(tabName == "Charts"){
+        const chTab = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/ul/li[2]/div'));
+        await chTab.click();
+    }else if(tabName == "Types"){
+        const typesTab = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/ul/li[3]/div'));
+        await typesTab.click();
+    }
+    await driver.sleep(2000);
+}
+
 module.exports = {
     login,
     loginToApp,
@@ -944,4 +959,5 @@ module.exports = {
     comparePerformanceData,
     compareData,
     navigateToUnileverSubDebtor,
+    navigateToSafetyTab,
 };

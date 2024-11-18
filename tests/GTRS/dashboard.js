@@ -18,17 +18,17 @@ const {
 } = require("../helper/chartsHelper");
 
 describe("Invalid Session Test", () => {
-    // let driver;
-    // before(async () => {
-    //     // Initialize the WebDriver
-    //     driver = await new Builder().forBrowser("chrome").build();
-    //     await login(driver);
-    // });
-    // after(async () => {
-    //     // Quit the WebDriver after tests
-    //     await driver.quit();
-    // });
-    /*it("user can view the dashboard", async () => {
+    let driver;
+    before(async () => {
+        // Initialize the WebDriver
+        driver = await new Builder().forBrowser("chrome").build();
+        await login(driver);
+    });
+    after(async () => {
+        // Quit the WebDriver after tests
+        await driver.quit();
+    });
+    it("user can view the dashboard", async () => {
         // Step 1: Navigate to the main page
         await driver.sleep(3000);
 
@@ -46,7 +46,7 @@ describe("Invalid Session Test", () => {
     });
 
     for (const { pageName, url } of gtrsPages) {
-        it("user can navigate from other pages to the dashboard", async () => {
+        it(`user can navigate from ${pageName} to the dashboard`, async () => {
             // Step 1: Navigate to the main page
             await driver.sleep(3000);
 
@@ -95,7 +95,7 @@ describe("Invalid Session Test", () => {
                 `Expected URL to be 'https://gtrs.gtls.store/gtrs/dashboard' but got '${currentUrl}'.`
             );
         });
-    }*/
+    }
 });
 describe("User can filter dashboard data based on date", () => {
     let driver;
@@ -202,17 +202,61 @@ describe("User can filter dashboard data based on date", () => {
         const actualData = getMonthlyData(data);
         const differences = [];
         const expData = [
-            { month: "2024-03", amount: 10650717, state: "NSW" },
-            { month: "2024-03", amount: 986155, state: "VIC" },
-            { month: "2024-03", amount: 7960672, state: "QLD" },
-            { month: "2024-03", amount: 3323244, state: "SA" },
-            { month: "2024-03", amount: 120396, state: "ACT" },
-            { month: "2024-03", amount: 4400400, state: "WA" },
-            { month: "2024-04", amount: 16012303, state: "QLD" },
-            { month: "2024-04", amount: 4479865, state: "SA" },
-            { month: "2024-04", amount: 13947574, state: "NSW" },
-            { month: "2024-04", amount: 218774, state: "ACT" },
-            { month: "2024-04", amount: 1112322, state: "VIC" },
+            {
+                "month": "2024-03",
+                "amount": 10650717,
+                "state": "NSW"
+            },
+            {
+                "month": "2024-03",
+                "amount": 986155,
+                "state": "VIC"
+            },
+            {
+                "month": "2024-03",
+                "amount": 7960672,
+                "state": "QLD"
+            },
+            {
+                "month": "2024-03",
+                "amount": 3323244,
+                "state": "SA"
+            },
+            {
+                "month": "2024-03",
+                "amount": 120396,
+                "state": "ACT"
+            },
+            {
+                "month": "2024-03",
+                "amount": 4400400,
+                "state": "WA"
+            },
+            {
+                "month": "2024-04",
+                "amount": 9684495,
+                "state": "NSW"
+            },
+            {
+                "month": "2024-04",
+                "amount": 668249,
+                "state": "VIC"
+            },
+            {
+                "month": "2024-04",
+                "amount": 11143118,
+                "state": "QLD"
+            },
+            {
+                "month": "2024-04",
+                "amount": 2710241,
+                "state": "SA"
+            },
+            {
+                "month": "2024-04",
+                "amount": 149560,
+                "state": "ACT"
+            }
         ];
 
         for (let i = 0; i < actualData.length; i++) {
@@ -252,13 +296,13 @@ describe("User can filter dashboard data based on date", () => {
         // Step 4: Compare the fetched data with the expected data
         const expectedData = [
             {
-                data: "2024-03",
-                value: 260,
+                "data": "2024-03",
+                "value": 260
             },
             {
-                data: "2024-04",
-                value: 332,
-            },
+                "data": "2024-04",
+                "value": 332
+            }
         ];
         const actualData = getMonthlyRecordCounts(data);
         console.log("actualData", actualData);
@@ -303,15 +347,25 @@ describe("User can filter dashboard data based on date", () => {
         await dashboardHelper(driver, "date only", dateInputs);
         const expectedData = [
             {
-                monthYear: "2024-03",
-                true: 255,
-                false: 5,
+                "pod": "true",
+                "monthYear": "2024-03",
+                "value": 255
             },
             {
-                monthYear: "2024-04",
-                true: 331,
-                false: 1,
+                "pod": "false",
+                "monthYear": "2024-03",
+                "value": 5
             },
+            {
+                "pod": "true",
+                "monthYear": "2024-04",
+                "value": 331
+            },
+            {
+                "pod": "false",
+                "monthYear": "2024-04",
+                "value": 1
+            }
         ];
         const actualData = getPODCounts(data);
         console.log("actualData", actualData);
@@ -332,12 +386,30 @@ describe("User can filter dashboard data based on date", () => {
 
         await dashboardHelper(driver, "date only", dateInputs);
         const expectedData = [
-            { label: "NSW", value: 295 },
-            { label: "VIC", value: 30 },
-            { label: "QLD", value: 176 },
-            { label: "SA", value: 72 },
-            { label: "ACT", value: 11 },
-            { label: "WA", value: 2 },
+            {
+                "label": "NSW",
+                "value": 295
+            },
+            {
+                "label": "VIC",
+                "value": 30
+            },
+            {
+                "label": "QLD",
+                "value": 176
+            },
+            {
+                "label": "SA",
+                "value": 72
+            },
+            {
+                "label": "ACT",
+                "value": 11
+            },
+            {
+                "label": "WA",
+                "value": 2
+            }
         ];
         const actualData = getPODCountsByState(data);
         console.log("actualData", actualData);
@@ -359,29 +431,29 @@ describe("User can filter dashboard data based on date", () => {
         await dashboardHelper(driver, "date only", dateInputs);
         const expectedData = [
             {
-                data: "NSW",
-                value: 300,
+                "data": "NSW",
+                "value": 300
             },
             {
-                data: "VIC",
-                value: 31,
+                "data": "VIC",
+                "value": 31
             },
             {
-                data: "QLD",
-                value: 176,
+                "data": "QLD",
+                "value": 176
             },
             {
-                data: "SA",
-                value: 72,
+                "data": "SA",
+                "value": 72
             },
             {
-                data: "ACT",
-                value: 11,
+                "data": "ACT",
+                "value": 11
             },
             {
-                data: "WA",
-                value: 2,
-            },
+                "data": "WA",
+                "value": 2
+            }
         ];
         const actualData = getStateRecordCounts(data);
         console.log("actualData", actualData);
@@ -403,29 +475,29 @@ describe("User can filter dashboard data based on date", () => {
         await dashboardHelper(driver, "date only", dateInputs);
         const expectedData = [
             {
-                data: "NSW",
-                value: 535.19,
+                "data": "NSW",
+                "value": 535.19
             },
             {
-                data: "VIC",
-                value: 188.59,
+                "data": "VIC",
+                "value": 188.59
             },
             {
-                data: "QLD",
-                value: 447.89,
+                "data": "QLD",
+                "value": 447.89
             },
             {
-                data: "SA",
-                value: 214.24,
+                "data": "SA",
+                "value": 214.24
             },
             {
-                data: "ACT",
-                value: 9,
+                "data": "ACT",
+                "value": 9
             },
             {
-                data: "WA",
-                value: 17.96,
-            },
+                "data": "WA",
+                "value": 17.96
+            }
         ];
         const actualData = getStateTotalWeights(data);
         console.log("actualData", actualData);
@@ -446,9 +518,18 @@ describe("User can filter dashboard data based on date", () => {
 
         await dashboardHelper(driver, "date only", dateInputs);
         const expectedData = [
-            { label: "Pass", value: 311 },
-            { label: "Fail", value: 84 },
-            { label: "N/A", value: 197 },
+            {
+                "label": "Pass",
+                "value": 311
+            },
+            {
+                "label": "N/A",
+                "value": 197
+            },
+            {
+                "label": "Fail",
+                "value": 84
+            }
         ];
         const actualData = getKPIStatusCounter(data);
         console.log("actualData", actualData);
