@@ -38,7 +38,12 @@ function BarGraph({
     getReportData,
     selectedReceiver,
     setGraphData,
+    CustomerId,
 }) {
+
+    // useEffect(() => {
+    //     getReportData();
+    // }, [graphData]);
     function generateMonthArrayFromJson(data) {
         const monthNames = [
             "JAN",
@@ -83,11 +88,11 @@ function BarGraph({
         return result;
     }
 
-    let colLabel = generateMonthArrayFromJson(originalgraphData);
-    let dataTotal = getFieldArrayFromJson(originalgraphData, "TotalCons");
-    let dataKPI = getFieldArrayFromJson(originalgraphData, "KpiBenchMark");
-    let dataOnTime = getFieldArrayFromJson(originalgraphData, "onTimePercentage");
-    let dataPOD = getFieldArrayFromJson(originalgraphData, "PODPercentage");
+    let colLabel = generateMonthArrayFromJson(graphData);
+    let dataTotal = getFieldArrayFromJson(graphData, "TotalCons");
+    let dataKPI = getFieldArrayFromJson(graphData, "KpiBenchMark");
+    let dataOnTime = getFieldArrayFromJson(graphData, "onTimePercentage");
+    let dataPOD = getFieldArrayFromJson(graphData, "PODPercentage");
 
     const chartRef = useRef(null);
 
@@ -199,6 +204,7 @@ function BarGraph({
                 originalgraphData={originalgraphData}
                 url={url}
                 currentUser={currentUser}
+                CustomerId={CustomerId}
                 selectedReceiver={selectedReceiver}
                 setGraphData={setGraphData}
             />

@@ -24,6 +24,7 @@ import AddNewTransitDay from "./KPI/AddNewTransitDay";
 import GraphPresentation from "./Presentation/GraphPresentation";
 import DailyReportPage from "./ReportsPage/DeliveryReportPage";
 import Cookies from "js-cookie";
+import RealFoodKPIPack from "./RealFoodKPIPack/RealFoodKPIPack";
 
 export default function charts({
     setCusomterAccounts,
@@ -107,8 +108,16 @@ export default function charts({
     const minDateAdd = getMinMaxValue(AdditionalData, "DespatchDateTime", 1);
     const maxDateAdd = getMinMaxValue(AdditionalData, "DespatchDateTime", 2);
 
-    const minDateDelivery = getMinMaxValue(deliveryReportData, "DespatchDate", 1);
-    const maxDateDelivery = getMinMaxValue(deliveryReportData, "DespatchDate", 2);
+    const minDateDelivery = getMinMaxValue(
+        deliveryReportData,
+        "DespatchDate",
+        1
+    );
+    const maxDateDelivery = getMinMaxValue(
+        deliveryReportData,
+        "DespatchDate",
+        2
+    );
 
     const minDateTransport = getMinMaxValue(transportData, "PickupDate", 1);
     const maxDateTransport = getMinMaxValue(transportData, "PickupDate", 2);
@@ -1883,9 +1892,9 @@ export default function charts({
                 },
             });
             setDailyReportData(res.data || []);
-    
+
             // Check if setCellLoading exists before calling it
-            if (typeof setCellLoading === 'function') {
+            if (typeof setCellLoading === "function") {
                 setCellLoading(null);
             }
         } catch (err) {
@@ -1904,13 +1913,12 @@ export default function charts({
                 // Handle other errors
                 console.log(err);
                 // Check if setCellLoading exists before calling it
-                if (typeof setCellLoading === 'function') {
+                if (typeof setCellLoading === "function") {
                     setCellLoading(null);
                 }
             }
         }
     };
-    
 
     useEffect(() => {
         if (currentUser) {
@@ -2079,9 +2087,9 @@ export default function charts({
     ]);
     useEffect(() => {
         if (user) {
-            Cookies.set('userEmail', user.Email);
+            Cookies.set("userEmail", user.Email);
         }
-    })
+    });
     const components = [
         <MainCharts
             chartsData={chartsData}
@@ -2429,6 +2437,7 @@ export default function charts({
             setactiveCon={setactiveCon}
             setLastIndex={setLastIndex}
         />,
+        <RealFoodKPIPack url={url} currentUser={currentUser} AToken={AToken} />,
     ];
     return (
         <div className="">

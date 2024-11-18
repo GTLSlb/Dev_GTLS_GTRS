@@ -1,4 +1,8 @@
-
+import swal from "sweetalert";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Cookies from "js-cookie";
+import { PublicClientApplication } from "@azure/msal-browser";
 
 export function getMinMaxValue(data, fieldName, identifier) {
     // Check for null safety
@@ -39,7 +43,6 @@ export function getMinMaxValue(data, fieldName, identifier) {
     return `${day}-${month}-${year}`;
 }
 
-
 export const formatDateToExcel = (dateValue) => {
     const date = new Date(dateValue);
 
@@ -51,12 +54,6 @@ export const formatDateToExcel = (dateValue) => {
     // Convert to Excel date serial number format
     return (date.getTime() - date.getTimezoneOffset() * 60000) / 86400000 + 25569;
 };
-import swal from "sweetalert";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import Cookies from "js-cookie";
-import { PublicClientApplication } from "@azure/msal-browser";
-
 
 const msalConfig = {
     auth: {
@@ -101,8 +98,6 @@ export async function handleSessionExpiration() {
             console.log(error);
         });
 }
-
-
 export function clearMSALLocalStorage() {
     const appDomain = window.Laravel.appDomain;
 
