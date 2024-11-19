@@ -945,6 +945,17 @@ async function navigateToSafetyTab(driver, tabName) {
     await driver.sleep(2000);
 }
 
+function areObjectsEqual(obj1, obj2) {
+    if (obj1 === null || obj2 === null || obj1 === undefined || obj2 === undefined) {
+      return false;
+    }
+    if (Object.keys(obj1).length !== Object.keys(obj2).length) return false;
+    for (const key in obj1) {
+      if (obj1[key] !== obj2[key]) return false;
+    }
+    return true;
+  }
+
 module.exports = {
     login,
     loginToApp,
@@ -960,4 +971,5 @@ module.exports = {
     compareData,
     navigateToUnileverSubDebtor,
     navigateToSafetyTab,
+    areObjectsEqual,
 };

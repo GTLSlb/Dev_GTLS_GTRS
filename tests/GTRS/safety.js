@@ -3,6 +3,7 @@ const {
     login,
     navigateToPage,
     navigateToSafetyTab,
+    areObjectsEqual,
 } = require("../helper/helper");
 const assert = require("assert");
 const axios = require("axios");
@@ -19,32 +20,50 @@ const {
     countReportsBySafetyType,
     normalizeData,
 } = require("../helper/safetyChartsHelper");
+const moment = require("moment");
+let driver;
 
-/*
+before(async () => {
+    // Initialize the WebDriver
+    driver = await new Builder().forBrowser("chrome").build();
+    await login(driver);
+
+    //Navigate to the Safety page
+    await driver.sleep(2000);
+    await navigateToPage(driver, "Safety");
+
+    await driver.sleep(4000);
+});
+
+after(async () => {
+    // Quit the WebDriver after tests
+    await driver.quit();
+});
+
 describe("Navigation Test", () => {
-    let driver;
+    //let driver;
 
-    before(async () => {
-        // Initialize the WebDriver
-        driver = await new Builder().forBrowser("chrome").build();
-        await login(driver);
-    });
+    // before(async () => {
+    //     // Initialize the WebDriver
+    //     driver = await new Builder().forBrowser("chrome").build();
+    //     await login(driver);
+    // });
 
-    after(async () => {
-        // Quit the WebDriver after tests
-        await driver.quit();
-    });
+    // after(async () => {
+    //     // Quit the WebDriver after tests
+    //     await driver.quit();
+    // });
 
     it("user can view the Safety Report page", async () => {
         // Step 1: Navigate to the main page
         await driver.sleep(3000);
 
         // Step 2: Verify that Safety is displayed
-        // const title = await driver.findElement(
-        //     By.xpath(
-        //         '//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/div[1]/div/h1'
-        //     )
-        // );
+        const title = await driver.findElement(
+            By.xpath(
+                '//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/div[1]/div/h1'
+            )
+        );
 
         const currentUrl = await driver.getCurrentUrl();
 
@@ -114,7 +133,7 @@ describe("Navigation Test", () => {
         });
     }
 });
-*/
+
 describe("Table Test", () => {
     const tableFilters = [
         {
@@ -218,27 +237,10 @@ describe("Table Test", () => {
             label: "External",
         },
     ];
-
-    let driver;
-
-    before(async () => {
-        // Initialize the WebDriver
-        driver = await new Builder().forBrowser("chrome").build();
-        await login(driver);
-    });
-
-    after(async () => {
-        // Quit the WebDriver after tests
-        await driver.quit();
-    });
-
+/*
     it(`Safety Report data is correct`, async () => {
         try {
-            // Step 1: Navigate to the Safety Report page
-            await driver.sleep(2000);
-            await navigateToPage(driver, "Safety");
-
-            await driver.sleep(4000);
+            // Navigate to the Safety reports page
             await navigateToSafetyTab(driver, "Report");
             await driver.sleep(2000);
 
@@ -262,8 +264,49 @@ describe("Table Test", () => {
             // Fetch data visible in the table
             const nbPages = Math.ceil(data?.length / 50); // Number of total pages; deafult number of rows in page is 50
             let allCellValues = [];
-            for (let i = 1; i <= nbPages; i++) {
-                // Navigate to the current page
+            for (let i = 0; i < nbPages; i++) {
+                // Extract the data from the current page
+                const gridCells = await driver.findElements(
+                    By.css(".InovuaReactDataGrid__cell__content")
+                );
+                // This will get all cell values including Edit column and not mapped according to the key
+                const cellValues = await Promise.all(
+                    gridCells.map(async (cell) => {
+                        return await cell.getText();
+                    })
+                );
+                    console.log("cellValues before", cellValues);
+                // Remove "Edit" values
+                const filteredCellValues = cellValues.filter(
+                    (value) => value !== "Edit"
+                );
+
+                // Split the cell values into rows
+                const rows = [];
+                for (let j = 0; j < filteredCellValues.length; j += 10) {
+                    //10 since we have 10 columns in the table (excluding edit column)
+                    rows.push(filteredCellValues.slice(j, j + 10));
+                }
+                // Map the data to key-value pairs
+                const cellPairs = rows.map((row) => {
+                    return {
+                        SafetyType: row[0],
+                        ConsNo: row[1],
+                        DebtorName: row[2],
+                        CAUSE: row[3],
+                        State: row[4],
+                        Explanation: row[5],
+                        Resolution: row[6],
+                        Reference: row[7],
+                        OccuredAt: row[8],
+                        AddedBy: row[9],
+                    };
+                });
+
+                // Add the data to the overall array
+                allCellValues.push(...cellPairs);
+
+                // Navigate to the next page
                 await driver
                     .findElement(
                         By.css(
@@ -272,34 +315,21 @@ describe("Table Test", () => {
                     )
                     .click();
                 await driver.sleep(1000); // wait for page to load
-
-                // Extract the data from the current page
-                const gridCells = await driver.findElements(
-                    By.css(".InovuaReactDataGrid__cell__content")
-                );
-                const cellValues = await Promise.all(
-                    gridCells.map(async (cell) => {
-                        return await cell.getText();
-                    })
-                );
-
-                // Add the data to the overall array
-                allCellValues.push(...cellValues);
             }
 
             const apiValues = data.map((safety) => {
-                return [
-                    safety.SafetyType,
-                    safety.ConsNo,
-                    safety.DebtorName,
-                    safety.CAUSE,
-                    safety.State,
-                    safety.Explanation,
-                    safety.Resolution,
-                    safety.Reference,
-                    safety.OccuredAt,
-                    safety.AddedBy,
-                ];
+                return {
+                    SafetyType: safety.SafetyType,
+                    ConsNo: safety.ConsNo,
+                    DebtorName: safety.DebtorName,
+                    CAUSE: safety.CAUSE,
+                    State: safety.State,
+                    Explanation: safety.Explanation,
+                    Resolution: safety.Resolution,
+                    Reference: safety.Reference,
+                    OccuredAt: safety.OccuredAt,
+                    AddedBy: safety.AddedBy,
+                };
             });
 
             // Map over api values to change safety reference to internal or external
@@ -328,6 +358,10 @@ describe("Table Test", () => {
                 )?.SafetyTypeName;
             });
 
+            apiValues.forEach((apiValue) => {
+                apiValue.OccuredAt = moment(apiValue.OccuredAt).format("DD-MM-YYYY hh:mm A");
+            });
+
             // Map cell values to API values
             const mappedValues = allCellValues.map((cellValue, index) => {
                 const apiValue = apiValues[index];
@@ -339,13 +373,20 @@ describe("Table Test", () => {
 
             let differences = [];
             // Compare mapped values
-            mappedValues.forEach((mappedValue) => {
-                if (mappedValue.cellValue !== mappedValue.apiValue) {
-                    differences.push(
-                        `Mismatch: ${mappedValue.cellValue} vs ${mappedValue.apiValue}`
-                    );
+            mappedValues.forEach((mappedValue, index) => {
+                if (!areObjectsEqual(mappedValue.cellValue, mappedValue.apiValue)) {
+                  differences.push(
+                    `Mismatch: ${JSON.stringify(mappedValue.cellValue)} vs ${JSON.stringify(mappedValue.apiValue)}`
+                  );
                 }
-            });
+              });
+
+            const firstPageBtn = await driver.findElement(
+                By.css(
+                    ".inovua-react-pagination-toolbar__icon--named--FIRST_PAGE"
+                )
+            );
+            await firstPageBtn.click();
 
             if (differences.length > 0) {
                 console.log("differences", differences);
@@ -355,7 +396,7 @@ describe("Table Test", () => {
             console.error("Error occurred:", error);
             throw new Error("Test failed due to: " + error);
         }
-    });
+    });*/
 
     for (const {
         filterName,
@@ -376,8 +417,31 @@ describe("Table Test", () => {
 
                 // Step 2: Click on the filter input
                 await driver.sleep(2000);
-                const filerInput = await driver.findElement(By.xpath(locator));
+                let filerInput;
+                try {
+                    filerInput = await driver.findElement(By.xpath(locator));
+                } catch (error) {
+                    if (error instanceof NoSuchElementError) {
+                        // Scroll to the right
+                        const scrollArea = await driver.findElement(
+                            By.css(".InovuaReactDataGrid__virtual-list")
+                        );
+                        await driver.executeScript(
+                            "arguments[0].scrollLeft = arguments[0].offsetWidth",
+                            scrollArea
+                        );
+                        // Try to find the element again
+                        filerInput = await driver.findElement(
+                            By.xpath(locator)
+                        );
+                    } else {
+                        throw error;
+                    }
+                }
+
                 await filerInput.sendKeys(value);
+                await driver.sleep(5000);
+
                 await filerInput.click();
                 const actions = driver.actions();
                 await actions.sendKeys(Key.RETURN).perform();
@@ -433,7 +497,7 @@ describe("Table Test", () => {
                         } else if (key == "Reference") {
                             // Get the id of the reference that you filtered by
                             const idFromreferenceOptions =
-                            referenceOptions?.find(
+                                referenceOptions?.find(
                                     (ref) =>
                                         ref.label.toLowerCase() ===
                                         value.toLowerCase()
@@ -484,18 +548,18 @@ describe("Table Test", () => {
                 }
 
                 const apiValues = data.map((safety) => {
-                    return [
-                        safety.SafetyType,
-                        safety.ConsNo,
-                        safety.DebtorName,
-                        safety.CAUSE,
-                        safety.State,
-                        safety.Explanation,
-                        safety.Resolution,
-                        safety.Reference,
-                        safety.OccuredAt,
-                        safety.AddedBy,
-                    ];
+                    return {
+                        SafetyType: safety.SafetyType,
+                        ConsNo: safety.ConsNo,
+                        DebtorName: safety.DebtorName,
+                        CAUSE: safety.CAUSE,
+                        State: safety.State,
+                        Explanation: safety.Explanation,
+                        Resolution: safety.Resolution,
+                        Reference: safety.Reference,
+                        OccuredAt: safety.OccuredAt,
+                        AddedBy: safety.AddedBy,
+                    };
                 });
 
                 // Map over api values to change safety reference to internal or external
@@ -523,16 +587,30 @@ describe("Table Test", () => {
 
                 let differences = [];
                 // Compare mapped values
-                mappedValues.forEach((mappedValue) => {
-                    if (mappedValue.cellValue !== mappedValue.apiValue) {
-                        differences.push(
-                            `Mismatch: ${mappedValue.cellValue} vs ${mappedValue.apiValue}`
-                        );
+                mappedValues.forEach((mappedValue, index) => {
+                    if (!areObjectsEqual(mappedValue.cellValue, mappedValue.apiValue)) {
+                      differences.push(
+                        `Mismatch: ${JSON.stringify(mappedValue.cellValue)} vs ${JSON.stringify(mappedValue.apiValue)}`
+                      );
                     }
-                });
+                  });
 
                 // Clear filter
                 console.log(`Clear ${filterName} manually`);
+                const firstPageBtn = await driver.findElement(
+                    By.css(
+                        ".inovua-react-pagination-toolbar__icon--named--FIRST_PAGE"
+                    )
+                );
+                await firstPageBtn.click();
+
+                await filerInput.sendKeys("");
+                await filerInput.click();
+                await actions
+                    .keyDown(Key.CONTROL)
+                    .sendKeys(Key.BACK_SPACE)
+                    .keyUp(Key.CONTROL)
+                    .perform(); //simulate pressing CTRL + BACKSPACE together
                 await driver.sleep(6000);
 
                 if (differences.length > 0) {
@@ -630,18 +708,18 @@ describe("Table Test", () => {
             }
 
             const apiValues = data.map((safety) => {
-                return [
-                    safety.SafetyType,
-                    safety.ConsNo,
-                    safety.DebtorName,
-                    safety.CAUSE,
-                    safety.State,
-                    safety.Explanation,
-                    safety.Resolution,
-                    safety.Reference,
-                    safety.OccuredAt,
-                    safety.AddedBy,
-                ];
+                return {
+                    SafetyType: safety.SafetyType,
+                    ConsNo: safety.ConsNo,
+                    DebtorName: safety.DebtorName,
+                    CAUSE: safety.CAUSE,
+                    State: safety.State,
+                    Explanation: safety.Explanation,
+                    Resolution: safety.Resolution,
+                    Reference: safety.Reference,
+                    OccuredAt: safety.OccuredAt,
+                    AddedBy: safety.AddedBy,
+                };
             });
 
             // Map over api values to change safety reference to internal or external
@@ -679,23 +757,30 @@ describe("Table Test", () => {
                 };
             });
             // Compare mapped values
-            mappedValues.forEach((mappedValue) => {
-                if (mappedValue.cellValue !== mappedValue.apiValue) {
-                    differences.push(
-                        `Mismatch: ${mappedValue.cellValue} vs ${mappedValue.apiValue}`
-                    );
+            mappedValues.forEach((mappedValue, index) => {
+                if (!areObjectsEqual(mappedValue.cellValue, mappedValue.apiValue)) {
+                  differences.push(
+                    `Mismatch: ${JSON.stringify(mappedValue.cellValue)} vs ${JSON.stringify(mappedValue.apiValue)}`
+                  );
                 }
-            });
+              });
+
+            const firstPageBtn = await driver.findElement(
+                By.css(
+                    ".inovua-react-pagination-toolbar__icon--named--FIRST_PAGE"
+                )
+            );
+            await firstPageBtn.click();
         });
     }
 
-    it("user can clear all filters", async () => {
+   /*  it("user can clear all filters", async () => {
         try {
             // Step 1: Navigate to the Safety Report page
-            await driver.sleep(2000);
-            await navigateToPage(driver, "Safety");
+            //await driver.sleep(2000);
+            //await navigateToPage(driver, "Safety");
 
-            await driver.sleep(4000);
+            await driver.sleep(6000);
             await navigateToSafetyTab(driver, "Report");
             await driver.sleep(4000);
 
@@ -789,993 +874,1005 @@ describe("Table Test", () => {
             console.error("Error occurred:", error);
             throw new Error("Test failed due to: " + error);
         }
-    });
-});
-
-/*
-describe("Safety Report Table Actions", () => {
-    let driver;
-    before(async () => {
-        // Initialize the WebDriver
-        driver = await new Builder().forBrowser("chrome").build();
-        await login(driver);
-    });
-
-    after(async () => {
-        // Quit the WebDriver after tests
-        await driver.quit();
-    });
-
-    const referenceOptions = [
-        {
-            id: 1,
-            label: "Internal",
-        },
-        {
-            id: 2,
-            label: "External",
-        },
-    ];
-
-    it("user can edit a safety report", async () => {
-        try {
-            // Step 1: Navigate to the Safety Report page
-            await driver.sleep(2000);
-            await navigateToPage(driver, "Safety");
-            await driver.sleep(4000);
-            await navigateToSafetyTab(driver, "Report");
-            await driver.sleep(2000);
-
-            // Step 2: Click on the edit button
-            // Scroll to the end of the table
-            const scrollArea = await driver.findElement(
-                By.css(".InovuaReactDataGrid__virtual-list")
-            );
-            await driver.executeScript(
-                "arguments[0].scrollLeft = arguments[0].offsetWidth",
-                scrollArea
-            );
-            // Try to find edit btn
-            const editBtn = await driver.findElement(
-                By.xpath(
-                    '//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/div[3]/div/div/div/div/div/div[1]/div[1]/div[2]/div[1]/div/div[1]/div/div/div[1]/div[1]/div/div[11]/div/div/button'
-                )
-            );
-
-            await driver.wait(until.elementIsVisible(editBtn), 4000);
-            await editBtn.click();
-
-            // Step 3: Find inputs and give them a value
-            const consNo = await driver.findElement(By.id("ConsNo"));
-            await consNo.sendKeys("");
-            await consNo.sendKeys("1234567890");
-
-            // Click on create button
-            // Scroll to the end of the form
-            const scrollForm = await driver.findElement(
-                By.xpath("/html/body/div[5]/div/div/div/form")
-            );
-            await driver.executeScript(
-                "arguments[0].scrollTop = arguments[0].offsetWidth",
-                scrollForm
-            );
-            // Try to find save btn
-            const saveBtn = await driver.findElement(
-                By.xpath("/html/body/div[5]/div/div/div/form/div/button")
-            );
-
-            await driver.wait(until.elementIsVisible(saveBtn), 4000);
-            await saveBtn.click();
-
-            // Step 4: Check if safety report is edited
-            await driver.sleep(2000);
-            await driver.executeScript(
-                "arguments[0].scrollRight = arguments[0].offsetWidth",
-                scrollArea
-            );
-
-            const newConsNo = await driver.findElement(
-                By.xpath(
-                    '//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/div[3]/div/div/div/div/div/div[1]/div[1]/div[2]/div[1]/div/div[1]/div/div/div[1]/div[1]/div/div[2]/div'
-                )
-            );
-            const newConNoText = await newConsNo.getText();
-            assert.strictEqual(newConNoText, "NA1234567890"),
-                `Expected ConsNo to be NA1234567890 but got ${newConNoText}`;
-        } catch (error) {
-            console.error("Error occurred:", error);
-            throw new Error("Test failed due to: " + error);
-        }
-    });
-
-    it("user can filter safety report based on account name", async () => {
-        // Step 1: Navigate to the Safety Report page
-        await driver.sleep(2000);
-        await navigateToPage(driver, "Safety");
-        await driver.sleep(4000);
-        await navigateToSafetyTab(driver, "Report");
-        await driver.sleep(2000);
-
-        // Step 2: Filter by debtor
-        const debtorDropdown = await driver.findElement(
-            By.xpath(
-                '//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/div/aside/div/div/div[2]/div/div[1]'
-            )
-        );
-        await debtorDropdown.click();
-
-        const ualDebtor = await driver.findElement(By.id("1507      "));
-        await ualDebtor.click();
-
-        await debtorDropdown.click();
-
-        // Step 3: Verify that the filtered data is displayed
-        let data = [];
-        const cookies = await driver.manage().getCookies();
-        const authCookie = cookies.find((c) => c.name === "access_token");
-
-        const resData = await axios.get(
-            `${process.env.GTRS_API_URL}SafetyReport`,
-            {
-                headers: {
-                    Authorization: `Bearer ${authCookie.value}`,
-                    UserId: process.env.USER_ID,
-                },
-            }
-        );
-        data = resData.data?.filter((obj) => obj.DebtorId == "1507");
-
-        // Fetch data visible in the table
-        let safetyTypes = [];
-        const resSafetTypesData = await axios.get(
-            `${process.env.GTRS_API_URL}SafetyTypes`,
-            {
-                headers: {
-                    Authorization: `Bearer ${authCookie.value}`,
-                    UserId: process.env.USER_ID,
-                },
-            }
-        );
-
-        safetyTypes = resSafetTypesData.data;
-        const nbPages = Math.ceil(data?.length / 50); // Number of total pages; deafult number of rows in page is 50
-        let allCellValues = [];
-        for (let i = 1; i <= nbPages; i++) {
-            // Navigate to the current page
-            await driver
-                .findElement(
-                    By.css(
-                        ".inovua-react-pagination-toolbar__icon--named--NEXT_PAGE"
-                    )
-                )
-                .click();
-            await driver.sleep(1000); // wait for page to load
-
-            // Extract the data from the current page
-            const gridCells = await driver.findElements(
-                By.css(".InovuaReactDataGrid__cell__content")
-            );
-            const cellValues = await Promise.all(
-                gridCells.map(async (cell) => {
-                    return await cell.getText();
-                })
-            );
-
-            // Add the data to the overall array
-            allCellValues.push(...cellValues);
-        }
-
-        const apiValues = data?.map((safety) => {
-            return [
-                safety.SafetyType,
-                safety.ConsNo,
-                safety.DebtorName,
-                safety.CAUSE,
-                safety.State,
-                safety.Explanation,
-                safety.Resolution,
-                safety.Reference,
-                safety.OccuredAt,
-                safety.AddedBy,
-            ];
-        });
-
-        // Map over api values to change safety reference to internal or external
-        apiValues?.forEach((apiValue) => {
-            apiValue.Reference = referenceOptions.find(
-                (ref) => ref.id === apiValue.Reference
-            )?.label;
-        });
-
-        // Map over api values to change safety type according to safety type id
-        apiValues.forEach((apiValue) => {
-            apiValue.SafetyType = safetyTypes?.find(
-                (type) => type.SafetyTypeId === apiValue.SafetyType
-            )?.SafetyTypeName;
-        });
-
-        // Map cell values to API values
-        const mappedValues = allCellValues.map((cellValue, index) => {
-            const apiValue = apiValues[index];
-            return {
-                cellValue,
-                apiValue,
-            };
-        });
-
-        let differences = [];
-        // Compare mapped values
-        mappedValues.forEach((mappedValue) => {
-            if (mappedValue.cellValue !== mappedValue.apiValue) {
-                differences.push(
-                    `Mismatch: ${mappedValue.cellValue} vs ${mappedValue.apiValue}`
-                );
-            }
-        });
-    });
+    });*/
 });
 
 
+// describe("Safety Report Table Actions", () => {
+//     // let driver;
+//     // before(async () => {
+//     //     // Initialize the WebDriver
+//     //     driver = await new Builder().forBrowser("chrome").build();
+//     //     await login(driver);
+//     // });
 
-describe("Safety Types Table Test", () => {
-    let driver;
-    before(async () => {
-        // Initialize the WebDriver
-        driver = await new Builder().forBrowser("chrome").build();
-        await login(driver);
-    });
+//     // after(async () => {
+//     //     // Quit the WebDriver after tests
+//     //     await driver.quit();
+//     // });
 
-    after(async () => {
-        // Quit the WebDriver after tests
-        await driver.quit();
-    });
+//     const referenceOptions = [
+//         {
+//             id: 1,
+//             label: "Internal",
+//         },
+//         {
+//             id: 2,
+//             label: "External",
+//         },
+//     ];
 
-    it("safety types are displayed correctly", async () => {
-        // Step 1: Navigate to the Safety Types page
-        await driver.sleep(2000);
-        await navigateToPage(driver, "Safety");
+//     it("user can edit a safety report", async () => {
+//         try {
+//             // Step 1: Navigate to the Safety Report page
+//             await driver.sleep(2000);
+//             await navigateToPage(driver, "Safety");
+//             await driver.sleep(4000);
+//             await navigateToSafetyTab(driver, "Report");
+//             await driver.sleep(2000);
 
-        await driver.sleep(4000);
-        await navigateToSafetyTab(driver, "Types");
-        await driver.sleep(2000);
+//             // Step 2: Click on the edit button
+//             // Scroll to the end of the table
+//             const scrollArea = await driver.findElement(
+//                 By.css(".InovuaReactDataGrid__virtual-list")
+//             );
+//             await driver.executeScript(
+//                 "arguments[0].scrollLeft = arguments[0].offsetWidth",
+//                 scrollArea
+//             );
+//             // Try to find edit btn
+//             const editBtn = await driver.findElement(
+//                 By.xpath(
+//                     '//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/div[3]/div/div/div/div/div/div[1]/div[1]/div[2]/div[1]/div/div[1]/div/div/div[1]/div[1]/div/div[11]/div/div/button'
+//                 )
+//             );
 
-        // Step 2: Fetch data from API request
-        let safetyTypes = [];
-        const cookies = await driver.manage().getCookies();
-        const authCookie = cookies.find((c) => c.name === "access_token");
+//             await driver.wait(until.elementIsVisible(editBtn), 4000);
+//             await editBtn.click();
 
-        const resSafetTypesData = await axios.get(
-            `${process.env.GTRS_API_URL}SafetyTypes`,
-            {
-                headers: {
-                    Authorization: `Bearer ${authCookie.value}`,
-                    UserId: process.env.USER_ID,
-                },
-            }
-        );
+//             // Step 3: Find inputs and give them a value
+//             const consNo = await driver.findElement(By.id("ConsNo"));
+//             await consNo.sendKeys("");
+//             await consNo.sendKeys("1234567890");
 
-        safetyTypes = resSafetTypesData.data;
+//             // Click on create button
+//             // Scroll to the end of the form
+//             const scrollForm = await driver.findElement(
+//                 By.xpath("/html/body/div[5]/div/div/div/form")
+//             );
+//             await driver.executeScript(
+//                 "arguments[0].scrollTop = arguments[0].offsetWidth",
+//                 scrollForm
+//             );
+//             // Try to find save btn
+//             const saveBtn = await driver.findElement(
+//                 By.xpath("/html/body/div[5]/div/div/div/form/div/button")
+//             );
 
-        // Step 3: Fetch data from table
-        // Check if safety types are displayed correctly
-        const safetyTypesTable = await driver.findElement(By.id("details"));
-        await driver.wait(until.elementIsVisible(safetyTypesTable), 1000);
+//             await driver.wait(until.elementIsVisible(saveBtn), 4000);
+//             await saveBtn.click();
 
-        const safetyTypesTableBody = await safetyTypesTable.findElement(
-            By.tagName("tbody")
-        );
-        const rows = await safetyTypesTableBody.findElements(By.tagName("tr"));
+//             // Step 4: Check if safety report is edited
+//             await driver.sleep(2000);
+//             await driver.executeScript(
+//                 "arguments[0].scrollRight = arguments[0].offsetWidth",
+//                 scrollArea
+//             );
 
-        let dataFromTable = [];
-        // Get the text of each row but without the last column
-        for (let i = 0; i < rows.length; i++) {
-            const cells = await rows[i].findElements(By.tagName("td"));
-            cells.pop();
-            // final object will look like this
-            // {SafetyTypeName: 'Safety Type 1', SafetyStatus: true}
-            const rowObject = {};
-            cells.map(async (cell, index) => {
-                const text = await cell.getText();
-                const key = index === 0 ? "SafetyTypeName" : "SafetyStatus";
-                rowObject[key] =
-                    index === 0 ? text : text === "Active" ? true : false;
-            });
-            dataFromTable.push(rowObject);
-        }
+//             const newConsNo = await driver.findElement(
+//                 By.xpath(
+//                     '//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/div[3]/div/div/div/div/div/div[1]/div[1]/div[2]/div[1]/div/div[1]/div/div/div[1]/div[1]/div/div[2]/div'
+//                 )
+//             );
+//             const newConNoText = await newConsNo.getText();
+//             assert.strictEqual(newConNoText, "NA1234567890"),
+//                 `Expected ConsNo to be NA1234567890 but got ${newConNoText}`;
+//         } catch (error) {
+//             console.error("Error occurred:", error);
+//             throw new Error("Test failed due to: " + error);
+//         }
+//     });
 
-        // Step 4: Check if safety types are displayed correctly
-        // map over API data to take relevant fields
-        const mappedValues = dataFromTable.map((row, index) => {
-            const apiValue = safetyTypes[index];
-            return {
-                safetyTypeName: row.SafetyTypeName,
-                safetyStatus: row.SafetyStatus,
-                apiSafetyTypeName: apiValue.SafetyTypeName,
-                apiSafetyStatus: apiValue.SafetyStatus,
-            };
-        });
+//     it("user can filter safety report based on account name", async () => {
+//         // Step 1: Navigate to the Safety Report page
+//         await driver.sleep(2000);
+//         await navigateToPage(driver, "Safety");
+//         await driver.sleep(4000);
+//         await navigateToSafetyTab(driver, "Report");
+//         await driver.sleep(2000);
 
-        let differences = [];
-        // Compare mapped values
-        mappedValues.forEach((mappedValue) => {
-            if (mappedValue.cellValue !== mappedValue.apiValue) {
-                differences.push(
-                    `Mismatch: ${mappedValue.cellValue} vs ${mappedValue.apiValue}`
-                );
-            }
-        });
+//         // Step 2: Filter by debtor
+//         const debtorDropdown = await driver.findElement(
+//             By.xpath(
+//                 '//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/div/aside/div/div/div[2]/div/div[1]'
+//             )
+//         );
+//         await debtorDropdown.click();
 
-        if (differences.length > 0) {
-            console.log("differences", differences);
-            throw new Error("Test failed due to differences in data");
-        }
-    });
+//         const ualDebtor = await driver.findElement(By.id("1507      "));
+//         await ualDebtor.click();
 
-    it("user can edit a safety type", async () => {
-        try {
-            // Step 1: Navigate to the Safety Report page
-            await driver.sleep(2000);
-            await navigateToPage(driver, "Safety");
-            await driver.sleep(4000);
-            await navigateToSafetyTab(driver, "Types");
-            await driver.sleep(2000);
+//         await debtorDropdown.click();
 
-            // Step 2: Click on the edit button
-            const editBtn = await driver.findElement(
-                By.xpath('//*[@id="details"]/tbody/tr[1]/td[3]/button')
-            );
-            await editBtn.click();
+//         // Step 3: Verify that the filtered data is displayed
+//         let data = [];
+//         const cookies = await driver.manage().getCookies();
+//         const authCookie = cookies.find((c) => c.name === "access_token");
 
-            // Step 3: Find inputs and give them a value
-            const safTypeNameInput = await driver.findElement(By.id("name"));
-            await safTypeNameInput.clear();
-            await safTypeNameInput.sendKeys("Near Miss");
+//         const resData = await axios.get(
+//             `${process.env.GTRS_API_URL}SafetyReport`,
+//             {
+//                 headers: {
+//                     Authorization: `Bearer ${authCookie.value}`,
+//                     UserId: process.env.USER_ID,
+//                 },
+//             }
+//         );
+//         data = resData.data?.filter((obj) => obj.DebtorId == "1507");
 
-            // Click on create button
-            // Try to find save btn
-            const saveBtn = await driver.findElement(
-                By.xpath("/html/body/div[4]/div/div/div/form/div[2]/button")
-            );
+//         // Fetch data visible in the table
+//         let safetyTypes = [];
+//         const resSafetTypesData = await axios.get(
+//             `${process.env.GTRS_API_URL}SafetyTypes`,
+//             {
+//                 headers: {
+//                     Authorization: `Bearer ${authCookie.value}`,
+//                     UserId: process.env.USER_ID,
+//                 },
+//             }
+//         );
 
-            await saveBtn.click();
+//         safetyTypes = resSafetTypesData.data;
+//         const nbPages = Math.ceil(data?.length / 50); // Number of total pages; deafult number of rows in page is 50
+//         let allCellValues = [];
+//         for (let i = 1; i <= nbPages; i++) {
+//             // Navigate to the current page
+//             await driver
+//                 .findElement(
+//                     By.css(
+//                         ".inovua-react-pagination-toolbar__icon--named--NEXT_PAGE"
+//                     )
+//                 )
+//                 .click();
+//             await driver.sleep(1000); // wait for page to load
 
-            // Step 4: Check if safety type is edited
-            await driver.sleep(15000);
+//             // Extract the data from the current page
+//             const gridCells = await driver.findElements(
+//                 By.css(".InovuaReactDataGrid__cell__content")
+//             );
+//             const cellValues = await Promise.all(
+//                 gridCells.map(async (cell) => {
+//                     return await cell.getText();
+//                 })
+//             );
 
-            const newSafType = await driver.findElement(
-                By.xpath('//*[@id="details"]/tbody/tr[1]/td[1]')
-            );
-            const newSafTypeName = await newSafType.getText();
-            assert.strictEqual(newSafTypeName, "Near Miss"),
-                `Expected safety type name to be Near Miss but got ${newSafTypeName}`;
-        } catch (error) {
-            console.error("Error occurred:", error);
-            throw new Error("Test failed due to: " + error);
-        }
-    });
+//             // Add the data to the overall array
+//             allCellValues.push(...cellValues);
+//         }
 
-    it("user can add a safety type", async () => {
-        try {
-            // Step 1: Navigate to the Safety Report page
-            await driver.sleep(2000);
-            await navigateToPage(driver, "Safety");
-            await driver.sleep(4000);
-            await navigateToSafetyTab(driver, "Types");
-            await driver.sleep(2000);
+//         const apiValues = data.map((safety) => {
+//                 return {
+//                     SafetyType: safety.SafetyType,
+//                     ConsNo: safety.ConsNo,
+//                     DebtorName: safety.DebtorName,
+//                     CAUSE: safety.CAUSE,
+//                     State: safety.State,
+//                     Explanation: safety.Explanation,
+//                     Resolution: safety.Resolution,
+//                     Reference: safety.Reference,
+//                     OccuredAt: safety.OccuredAt,
+//                     AddedBy: safety.AddedBy,
+//                 };
+//         });
 
-            // Step 2: Click on the add button
-            const addBtn = await driver.findElement(
-                By.xpath(
-                    '//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/div[3]/div[1]/div[2]/button'
-                )
-            );
-            await addBtn.click();
+//         // Map over api values to change safety reference to internal or external
+//         apiValues?.forEach((apiValue) => {
+//             apiValue.Reference = referenceOptions.find(
+//                 (ref) => ref.id === apiValue.Reference
+//             )?.label;
+//         });
 
-            // Step 3: Find inputs and give them a value
-            const safTypeNameInput = await driver.findElement(By.id("name"));
-            await safTypeNameInput.sendKeys("");
-            await safTypeNameInput.sendKeys("Test-Type");
+//         // Map over api values to change safety type according to safety type id
+//         apiValues.forEach((apiValue) => {
+//             apiValue.SafetyType = safetyTypes?.find(
+//                 (type) => type.SafetyTypeId === apiValue.SafetyType
+//             )?.SafetyTypeName;
+//         });
 
-            // Click on create button
-            // Try to find save btn
-            const saveBtn = await driver.findElement(
-                By.xpath("/html/body/div[4]/div/div/div/form/div[2]/button")
-            );
+//         // Map cell values to API values
+//         const mappedValues = allCellValues.map((cellValue, index) => {
+//             const apiValue = apiValues[index];
+//             return {
+//                 cellValue,
+//                 apiValue,
+//             };
+//         });
 
-            await saveBtn.click();
+//         let differences = [];
+//         // Compare mapped values
+//         mappedValues.forEach((mappedValue, index) => {
+//                 if (!areObjectsEqual(mappedValue.cellValue, mappedValue.apiValue)) {
+//                   differences.push(
+//                     `Mismatch: ${JSON.stringify(mappedValue.cellValue)} vs ${JSON.stringify(mappedValue.apiValue)}`
+//                   );
+//                 }
+//               });
 
-            // Step 4: Check if safety type is added
-            await driver.sleep(15000);
-
-            // Go over all table data
-            const safetyTypesTable = await driver.findElement(By.id("details"));
-            await driver.wait(until.elementIsVisible(safetyTypesTable), 1000);
-
-            const safetyTypesTableBody = await safetyTypesTable.findElement(
-                By.tagName("tbody")
-            );
-            const rows = await safetyTypesTableBody.findElements(
-                By.tagName("tr")
-            );
-
-            // Get the text of each row but without the last column
-            for (let i = 0; i < rows.length; i++) {
-                const cells = await rows[i].findElements(By.tagName("td"));
-                cells.pop();
-                // final object will look like this
-                let isFound = true;
-
-                for (let i = 0; i < cells.length; i++) {
-                    const text = await cells[i].getText();
-                    // Check that safety type is added correctly
-                    if (
-                        text == "Test-Type" &&
-                        (await cells[i + 1].getText()) == "active"
-                    ) {
-                        isFound = true;
-                    }
-                }
-
-                if (!isFound) {
-                    throw new Error(
-                        "Test failed due to safety type not being added"
-                    );
-                }
-            }
-        } catch (error) {
-            console.error("Error occurred:", error);
-            throw new Error("Test failed due to: " + error);
-        }
-    });
-});
+//             const firstPageBtn = await driver.findElement(
+//                 By.css(
+//                     ".inovua-react-pagination-toolbar__icon--named--FIRST_PAGE"
+//                 )
+//             );
+//             await firstPageBtn.click();
+//     });
+// });
 
 
-describe("Safety Charts Test", () => {
-    let driver;
-    before(async () => {
-        // Initialize the WebDriver
-        driver = await new Builder().forBrowser("chrome").build();
-        await login(driver);
-        await driver.sleep(2000);
 
-        //Navigate to safety charts page
-        await navigateToPage(driver, "Safety");
-        await driver.sleep(4000);
-        await navigateToSafetyTab(driver, "Charts");
-        await driver.sleep(2000);
-    });
+// describe("Safety Types Table Test", () => {
+//     // let driver;
+//     // before(async () => {
+//     //     // Initialize the WebDriver
+//     //     driver = await new Builder().forBrowser("chrome").build();
+//     //     await login(driver);
+//     // });
 
-    after(async () => {
-        // Quit the WebDriver after tests
-        await driver.quit();
-    });
+//     // after(async () => {
+//     //     // Quit the WebDriver after tests
+//     //     await driver.quit();
+//     // });
 
-    it("reports by month data is correct", async () => {
-        try {
-            let data = [];
-            const cookies = await driver.manage().getCookies();
-            const authCookie = cookies.find((c) => c.name === "access_token");
+//     it("safety types are displayed correctly", async () => {
+//         // Step 1: Navigate to the Safety Types page
+//         await driver.sleep(2000);
+//         await navigateToPage(driver, "Safety");
 
-            const resData = await axios.get(
-                `${process.env.GTRS_API_URL}SafetyReport`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${authCookie.value}`,
-                        UserId: process.env.USER_ID,
-                    },
-                }
-            );
+//         await driver.sleep(4000);
+//         await navigateToSafetyTab(driver, "Types");
+//         await driver.sleep(2000);
 
-            data = resData.data;
-            const expData = countRecordsByMonth(data);
-            const actualData = {
-                "04-01-2024": 2,
-                "03-01-2024": 2,
-                "06-01-2023": 332,
-            };
+//         // Step 2: Fetch data from API request
+//         let safetyTypes = [];
+//         const cookies = await driver.manage().getCookies();
+//         const authCookie = cookies.find((c) => c.name === "access_token");
 
-            const differences = [];
-            if (Array.isArray(expData)) {
-                if (Array.isArray(actualData)) {
-                    // Both are arrays, use forEach
-                    expData.forEach((expItem, index) => {
-                        const actualItem = actualData[index];
-                        if (
-                            expItem.label !== actualItem.label ||
-                            expItem.value !== actualItem.value
-                        ) {
-                            differences.push(
-                                `Mismatch at key ${actualItem.label}: ${JSON.stringify(
-                                    expItem
-                                )} vs ${JSON.stringify(actualItem)}`
-                            );
-                        }
-                    });
-                } else {
-                    // expData is an array, actualData is an object
-                    Object.keys(actualData).forEach((key) => {
-                        const expItem = expData.find(
-                            (item) => item.label === key
-                        );
-                        if (!expItem || expItem.value !== actualData[key]) {
-                            differences.push(
-                                `Mismatch at key ${key}: ${JSON.stringify(
-                                    expItem
-                                )} vs ${JSON.stringify(actualData[key])}`
-                            );
-                        }
-                    });
-                }
-            } else {
-                // expData is an object
-                if (Array.isArray(actualData)) {
-                    // expData is an object, actualData is an array
-                    actualData.forEach((actualItem, index) => {
-                        const expItem = expData[actualItem.label];
-                        if (!expItem || expItem !== actualItem.value) {
-                            differences.push(
-                                `Mismatch at key ${actualItem.label}: ${JSON.stringify(
-                                    expItem
-                                )} vs ${JSON.stringify(actualItem)}`
-                            );
-                        }
-                    });
-                } else {
-                    // Both are objects
-                    Object.keys(expData).forEach((key) => {
-                        if (expData[key] != actualData[key]) {
-                            differences.push(
-                                `Mismatch at key ${key}: ${JSON.stringify(
-                                    expData[key]
-                                )} vs ${JSON.stringify(actualData[key])}`
-                            );
-                        }
-                    });
-                }
-            }
+//         const resSafetTypesData = await axios.get(
+//             `${process.env.GTRS_API_URL}SafetyTypes`,
+//             {
+//                 headers: {
+//                     Authorization: `Bearer ${authCookie.value}`,
+//                     UserId: process.env.USER_ID,
+//                 },
+//             }
+//         );
 
-            if (differences.length > 0) {
-                console.log("Test failed due to differences in data:");
-                console.log(differences);
-                throw new Error("Test failed due to differences in data");
-            }
-        } catch (error) {
-            console.error("Error occurred:", error);
-            throw new Error("Test failed due to: " + error);
-        }
-    });
-    it("reports by state data is correct", async () => {
-        try {
-            let data = [];
-            const cookies = await driver.manage().getCookies();
-            const authCookie = cookies.find((c) => c.name === "access_token");
+//         safetyTypes = resSafetTypesData.data;
 
-            const resData = await axios.get(
-                `${process.env.GTRS_API_URL}SafetyReport`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${authCookie.value}`,
-                        UserId: process.env.USER_ID,
-                    },
-                }
-            );
+//         // Step 3: Fetch data from table
+//         // Check if safety types are displayed correctly
+//         const safetyTypesTable = await driver.findElement(By.id("details"));
+//         await driver.wait(until.elementIsVisible(safetyTypesTable), 1000);
 
-            data = resData.data;
-            const expData = getCountByState(data);
-            const actualData = {
-                NSW: 335,
-                SA: 1,
-            };
-            const differences = [];
-            if (Array.isArray(expData)) {
-                if (Array.isArray(actualData)) {
-                    // Both are arrays, use forEach
-                    expData.forEach((expItem, index) => {
-                        const actualItem = actualData[index];
-                        if (
-                            expItem.label !== actualItem.label ||
-                            expItem.value !== actualItem.value
-                        ) {
-                            differences.push(
-                                `Mismatch at key ${actualItem.label}: ${JSON.stringify(
-                                    expItem
-                                )} vs ${JSON.stringify(actualItem)}`
-                            );
-                        }
-                    });
-                } else {
-                    // expData is an array, actualData is an object
-                    Object.keys(actualData).forEach((key) => {
-                        const expItem = expData.find(
-                            (item) => item.label === key
-                        );
-                        if (!expItem || expItem.value !== actualData[key]) {
-                            differences.push(
-                                `Mismatch at key ${key}: ${JSON.stringify(
-                                    expItem
-                                )} vs ${JSON.stringify(actualData[key])}`
-                            );
-                        }
-                    });
-                }
-            } else {
-                // expData is an object
-                if (Array.isArray(actualData)) {
-                    // expData is an object, actualData is an array
-                    actualData.forEach((actualItem, index) => {
-                        const expItem = expData[actualItem.label];
-                        if (!expItem || expItem !== actualItem.value) {
-                            differences.push(
-                                `Mismatch at key ${actualItem.label}: ${JSON.stringify(
-                                    expItem
-                                )} vs ${JSON.stringify(actualItem)}`
-                            );
-                        }
-                    });
-                } else {
-                    // Both are objects
-                    Object.keys(expData).forEach((key) => {
-                        if (expData[key] != actualData[key]) {
-                            differences.push(
-                                `Mismatch at key ${key}: ${JSON.stringify(
-                                    expData[key]
-                                )} vs ${JSON.stringify(actualData[key])}`
-                            );
-                        }
-                    });
-                }
-            }
+//         const safetyTypesTableBody = await safetyTypesTable.findElement(
+//             By.tagName("tbody")
+//         );
+//         const rows = await safetyTypesTableBody.findElements(By.tagName("tr"));
 
-            if (differences.length > 0) {
-                console.log("Test failed due to differences in data:");
-                console.log(differences);
-                throw new Error("Test failed due to differences in data");
-            }
-        } catch (error) {
-            console.error("Error occurred:", error);
-            throw new Error("Test failed due to: " + error);
-        }
-    });
-    it("POD status by state data is correct", async () => {
-        try {
-            let data = [],
-                safetyTypes = [];
-            const cookies = await driver.manage().getCookies();
-            const authCookie = cookies.find((c) => c.name === "access_token");
+//         let dataFromTable = [];
+//         // Get the text of each row but without the last column
+//         for (let i = 0; i < rows.length; i++) {
+//             const cells = await rows[i].findElements(By.tagName("td"));
+//             cells.pop();
+//             // final object will look like this
+//             // {SafetyTypeName: 'Safety Type 1', SafetyStatus: true}
+//             const rowObject = {};
+//             cells.map(async (cell, index) => {
+//                 const text = await cell.getText();
+//                 const key = index === 0 ? "SafetyTypeName" : "SafetyStatus";
+//                 rowObject[key] =
+//                     index === 0 ? text : text === "Active" ? true : false;
+//             });
+//             dataFromTable.push(rowObject);
+//         }
 
-            const resData = await axios.get(
-                `${process.env.GTRS_API_URL}SafetyReport`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${authCookie.value}`,
-                        UserId: process.env.USER_ID,
-                    },
-                }
-            );
+//         // Step 4: Check if safety types are displayed correctly
+//         // map over API data to take relevant fields
+//         const mappedValues = dataFromTable.map((row, index) => {
+//             const apiValue = safetyTypes[index];
+//             return {
+//                 safetyTypeName: row.SafetyTypeName,
+//                 safetyStatus: row.SafetyStatus,
+//                 apiSafetyTypeName: apiValue.SafetyTypeName,
+//                 apiSafetyStatus: apiValue.SafetyStatus,
+//             };
+//         });
 
-            data = resData.data;
-            const safetyTypesResData = await axios.get(
-                `${process.env.GTRS_API_URL}SafetyTypes`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${authCookie.value}`,
-                        UserId: process.env.USER_ID,
-                    },
-                }
-            );
+//         let differences = [];
+//         // Compare mapped values
+//         mappedValues.forEach((mappedValue, index) => {
+//                 if (!areObjectsEqual(mappedValue.cellValue, mappedValue.apiValue)) {
+//                   differences.push(
+//                     `Mismatch: ${JSON.stringify(mappedValue.cellValue)} vs ${JSON.stringify(mappedValue.apiValue)}`
+//                   );
+//                 }
+//               });
 
-            safetyTypes = safetyTypesResData.data;
-            const counter = countReportsBySafetyType(data);
-            const expData = compareLabels(counter, safetyTypes);
-            const actualData = [
-                {
-                    label: "Hazard",
-                    value: 334,
-                },
-                {
-                    label: "Vehicle Accident",
-                    value: 1,
-                },
-                {
-                    label: "Damage",
-                    value: 1,
-                },
-            ];
-            const differences = [];
-            if (Array.isArray(expData)) {
-                if (Array.isArray(actualData)) {
-                    // Both are arrays, use forEach
-                    expData.forEach((expItem, index) => {
-                        const actualItem = actualData[index];
-                        if (
-                            expItem.label !== actualItem.label ||
-                            expItem.value !== actualItem.value
-                        ) {
-                            differences.push(
-                                `Mismatch at key ${actualItem.label}: ${JSON.stringify(
-                                    expItem
-                                )} vs ${JSON.stringify(actualItem)}`
-                            );
-                        }
-                    });
-                } else {
-                    // expData is an array, actualData is an object
-                    Object.keys(actualData).forEach((key) => {
-                        const expItem = expData.find(
-                            (item) => item.label === key
-                        );
-                        if (!expItem || expItem.value !== actualData[key]) {
-                            differences.push(
-                                `Mismatch at key ${key}: ${JSON.stringify(
-                                    expItem
-                                )} vs ${JSON.stringify(actualData[key])}`
-                            );
-                        }
-                    });
-                }
-            } else {
-                // expData is an object
-                if (Array.isArray(actualData)) {
-                    // expData is an object, actualData is an array
-                    actualData.forEach((actualItem, index) => {
-                        const expItem = expData[actualItem.label];
-                        if (!expItem || expItem !== actualItem.value) {
-                            differences.push(
-                                `Mismatch at key ${actualItem.label}: ${JSON.stringify(
-                                    expItem
-                                )} vs ${JSON.stringify(actualItem)}`
-                            );
-                        }
-                    });
-                } else {
-                    // Both are objects
-                    Object.keys(expData).forEach((key) => {
-                        if (expData[key] != actualData[key]) {
-                            differences.push(
-                                `Mismatch at key ${key}: ${JSON.stringify(
-                                    expData[key]
-                                )} vs ${JSON.stringify(actualData[key])}`
-                            );
-                        }
-                    });
-                }
-            }
+//             const firstPageBtn = await driver.findElement(
+//                 By.css(
+//                     ".inovua-react-pagination-toolbar__icon--named--FIRST_PAGE"
+//                 )
+//             );
+//             await firstPageBtn.click();
 
-            if (differences.length > 0) {
-                console.log("Test failed due to differences in data:");
-                console.log(differences);
-                throw new Error("Test failed due to differences in data");
-            }
-        } catch (error) {
-            console.error("Error occurred:", error);
-            throw new Error("Test failed due to: " + error);
-        }
-    });
-    it("reports by state & by type data is correct", async () => {
-        try {
-            let data = [], safetyTypes = [];
-            const cookies = await driver.manage().getCookies();
-            const authCookie = cookies.find((c) => c.name === "access_token");
+//         if (differences.length > 0) {
+//             console.log("differences", differences);
+//             throw new Error("Test failed due to differences in data");
+//         }
+//     });
 
-            const resData = await axios.get(
-                `${process.env.GTRS_API_URL}SafetyReport`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${authCookie.value}`,
-                        UserId: process.env.USER_ID,
-                    },
-                }
-            );
+//     it("user can edit a safety type", async () => {
+//         try {
+//             // Step 1: Navigate to the Safety Report page
+//             await driver.sleep(2000);
+//             await navigateToPage(driver, "Safety");
+//             await driver.sleep(4000);
+//             await navigateToSafetyTab(driver, "Types");
+//             await driver.sleep(2000);
 
-            data = resData.data;
+//             // Step 2: Click on the edit button
+//             const editBtn = await driver.findElement(
+//                 By.xpath('//*[@id="details"]/tbody/tr[1]/td[3]/button')
+//             );
+//             await editBtn.click();
 
-            const safetyTypesResData = await axios.get(
-                `${process.env.GTRS_API_URL}SafetyTypes`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${authCookie.value}`,
-                        UserId: process.env.USER_ID,
-                    },
-                }
-            );
+//             // Step 3: Find inputs and give them a value
+//             const safTypeNameInput = await driver.findElement(By.id("name"));
+//             await safTypeNameInput.clear();
+//             await safTypeNameInput.sendKeys("Near Miss");
 
-            safetyTypes = safetyTypesResData.data;
-            const expData = countRecordsByStateAndType(data, safetyTypes);
-            const actualData = [
-                {
-                    state: "NSW",
-                    value: 333,
-                    type: "Hazard",
-                },
-                {
-                    state: "NSW",
-                    value: 1,
-                    type: "Vehicle Accident",
-                },
-                {
-                    state: "NSW",
-                    value: 1,
-                    type: "Damage",
-                },
-                {
-                    state: "SA",
-                    value: 1,
-                    type: "Hazard",
-                },
-            ];
-            const differences = [];
-            if (Array.isArray(expData)) {
-                if (Array.isArray(actualData)) {
-                    // Both are arrays, use forEach
-                    expData.forEach((expItem, index) => {
-                        const actualItem = actualData[index];
-                        if (
-                            expItem.label !== actualItem.label ||
-                            expItem.value !== actualItem.value
-                        ) {
-                            differences.push(
-                                `Mismatch at key ${actualItem.label}: ${JSON.stringify(
-                                    expItem
-                                )} vs ${JSON.stringify(actualItem)}`
-                            );
-                        }
-                    });
-                } else {
-                    // expData is an array, actualData is an object
-                    Object.keys(actualData).forEach((key) => {
-                        const expItem = expData.find(
-                            (item) => item.label === key
-                        );
-                        if (!expItem || expItem.value !== actualData[key]) {
-                            differences.push(
-                                `Mismatch at key ${key}: ${JSON.stringify(
-                                    expItem
-                                )} vs ${JSON.stringify(actualData[key])}`
-                            );
-                        }
-                    });
-                }
-            } else {
-                // expData is an object
-                if (Array.isArray(actualData)) {
-                    // expData is an object, actualData is an array
-                    actualData.forEach((actualItem, index) => {
-                        const expItem = expData[actualItem.label];
-                        if (!expItem || expItem !== actualItem.value) {
-                            differences.push(
-                                `Mismatch at key ${actualItem.label}: ${JSON.stringify(
-                                    expItem
-                                )} vs ${JSON.stringify(actualItem)}`
-                            );
-                        }
-                    });
-                } else {
-                    // Both are objects
-                    Object.keys(expData).forEach((key) => {
-                        if (expData[key] != actualData[key]) {
-                            differences.push(
-                                `Mismatch at key ${key}: ${JSON.stringify(
-                                    expData[key]
-                                )} vs ${JSON.stringify(actualData[key])}`
-                            );
-                        }
-                    });
-                }
-            }
+//             // Click on create button
+//             // Try to find save btn
+//             const saveBtn = await driver.findElement(
+//                 By.xpath("/html/body/div[4]/div/div/div/form/div[2]/button")
+//             );
 
-            if (differences.length > 0) {
-                console.log("Test failed due to differences in data:");
-                console.log(differences);
-                throw new Error("Test failed due to differences in data");
-            }
-        } catch (error) {
-            console.error("Error occurred:", error);
-            throw new Error("Test failed due to: " + error);
-        }
-    });
-    it("report type by month data is correct", async () => {
-        try {
-            let data = [];
-            const cookies = await driver.manage().getCookies();
-            const authCookie = cookies.find((c) => c.name === "access_token");
+//             await saveBtn.click();
 
-            const resData = await axios.get(
-                `${process.env.GTRS_API_URL}SafetyReport`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${authCookie.value}`,
-                        UserId: process.env.USER_ID,
-                    },
-                }
-            );
+//             // Step 4: Check if safety type is edited
+//             await driver.sleep(15000);
 
-            data = resData.data;
-            let expData = countSafetyTypesByMonth(data);
-            let actualData = {
-                "04-01-2024": {
-                    "2": 1,
-                    "4": 1,
-                },
-                "03-01-2024": {
-                    "2": 1,
-                    "3": 1,
-                },
-                "06-01-2023": {
-                    "2": 332,
-                },
-            };
-            expData = normalizeData(expData);
-            actualData = normalizeData(actualData);
-            const differences = [];
-            if (Array.isArray(expData)) {
-                if (Array.isArray(actualData)) {
-                    // Both are arrays, use forEach
-                    expData.forEach((expItem, index) => {
-                        const actualItem = actualData[index];
-                        if (
-                            expItem.label !== actualItem.label ||
-                            expItem.value !== actualItem.value
-                        ) {
-                            differences.push(
-                                `Mismatch at key ${actualItem.label}: ${JSON.stringify(
-                                    expItem
-                                )} vs ${JSON.stringify(actualItem)}`
-                            );
-                        }
-                    });
-                } else {
-                    // expData is an array, actualData is an object
-                    Object.keys(actualData).forEach((key) => {
-                        const expItem = expData.find(
-                            (item) => item.label === key
-                        );
-                        if (!expItem || expItem.value !== actualData[key]) {
-                            differences.push(
-                                `Mismatch at key ${key}: ${JSON.stringify(
-                                    expItem
-                                )} vs ${JSON.stringify(actualData[key])}`
-                            );
-                        }
-                    });
-                }
-            } else {
-                // expData is an object
-                if (Array.isArray(actualData)) {
-                    // expData is an object, actualData is an array
-                    actualData.forEach((actualItem, index) => {
-                        const expItem = expData[actualItem.label];
-                        if (!expItem || expItem !== actualItem.value) {
-                            differences.push(
-                                `Mismatch at key ${actualItem.label}: ${JSON.stringify(
-                                    expItem
-                                )} vs ${JSON.stringify(actualItem)}`
-                            );
-                        }
-                    });
-                } else {
-                    // Both are objects
-                    Object.keys(expData).forEach((key) => {
-                        if (expData[key] != actualData[key]) {
-                            differences.push(
-                                `Mismatch at key ${key}: ${JSON.stringify(
-                                    expData[key]
-                                )} vs ${JSON.stringify(actualData[key])}`
-                            );
-                        }
-                    });
-                }
-            }
+//             const newSafType = await driver.findElement(
+//                 By.xpath('//*[@id="details"]/tbody/tr[1]/td[1]')
+//             );
+//             const newSafTypeName = await newSafType.getText();
+//             assert.strictEqual(newSafTypeName, "Near Miss"),
+//                 `Expected safety type name to be Near Miss but got ${newSafTypeName}`;
+//         } catch (error) {
+//             console.error("Error occurred:", error);
+//             throw new Error("Test failed due to: " + error);
+//         }
+//     });
 
-            if (differences.length > 0) {
-                console.log("Test failed due to differences in data:");
-                console.log(differences);
-                throw new Error("Test failed due to differences in data");
-            }
-        } catch (error) {
-            console.error("Error occurred:", error);
-            throw new Error("Test failed due to: " + error);
-        }
-    });
-});
+//     it("user can add a safety type", async () => {
+//         try {
+//             // Step 1: Navigate to the Safety Report page
+//             await driver.sleep(2000);
+//             await navigateToPage(driver, "Safety");
+//             await driver.sleep(4000);
+//             await navigateToSafetyTab(driver, "Types");
+//             await driver.sleep(2000);
 
-*/
+//             // Step 2: Click on the add button
+//             const addBtn = await driver.findElement(
+//                 By.xpath(
+//                     '//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/div[3]/div[1]/div[2]/button'
+//                 )
+//             );
+//             await addBtn.click();
+
+//             // Step 3: Find inputs and give them a value
+//             const safTypeNameInput = await driver.findElement(By.id("name"));
+//             await safTypeNameInput.sendKeys("");
+//             await safTypeNameInput.sendKeys("Test-Type");
+
+//             // Click on create button
+//             // Try to find save btn
+//             const saveBtn = await driver.findElement(
+//                 By.xpath("/html/body/div[4]/div/div/div/form/div[2]/button")
+//             );
+
+//             await saveBtn.click();
+
+//             // Step 4: Check if safety type is added
+//             await driver.sleep(15000);
+
+//             // Go over all table data
+//             const safetyTypesTable = await driver.findElement(By.id("details"));
+//             await driver.wait(until.elementIsVisible(safetyTypesTable), 1000);
+
+//             const safetyTypesTableBody = await safetyTypesTable.findElement(
+//                 By.tagName("tbody")
+//             );
+//             const rows = await safetyTypesTableBody.findElements(
+//                 By.tagName("tr")
+//             );
+
+//             // Get the text of each row but without the last column
+//             for (let i = 0; i < rows.length; i++) {
+//                 const cells = await rows[i].findElements(By.tagName("td"));
+//                 cells.pop();
+//                 // final object will look like this
+//                 let isFound = true;
+
+//                 for (let i = 0; i < cells.length; i++) {
+//                     const text = await cells[i].getText();
+//                     // Check that safety type is added correctly
+//                     if (
+//                         text == "Test-Type" &&
+//                         (await cells[i + 1].getText()) == "active"
+//                     ) {
+//                         isFound = true;
+//                     }
+//                 }
+
+//                 if (!isFound) {
+//                     throw new Error(
+//                         "Test failed due to safety type not being added"
+//                     );
+//                 }
+//             }
+//         } catch (error) {
+//             console.error("Error occurred:", error);
+//             throw new Error("Test failed due to: " + error);
+//         }
+//     });
+// });
+
+
+// describe("Safety Charts Test", () => {
+//     //let driver;
+//     before(async () => {
+//         // Initialize the WebDriver
+//         //driver = await new Builder().forBrowser("chrome").build();
+//         //await login(driver);
+//         //await driver.sleep(2000);
+
+//         //Navigate to safety charts page
+//         await navigateToPage(driver, "Safety");
+//         await driver.sleep(4000);
+//         await navigateToSafetyTab(driver, "Charts");
+//         await driver.sleep(2000);
+//     });
+
+//     // after(async () => {
+//     //     // Quit the WebDriver after tests
+//     //     await driver.quit();
+//     // });
+
+//     it("reports by month data is correct", async () => {
+//         try {
+//             let data = [];
+//             const cookies = await driver.manage().getCookies();
+//             const authCookie = cookies.find((c) => c.name === "access_token");
+
+//             const resData = await axios.get(
+//                 `${process.env.GTRS_API_URL}SafetyReport`,
+//                 {
+//                     headers: {
+//                         Authorization: `Bearer ${authCookie.value}`,
+//                         UserId: process.env.USER_ID,
+//                     },
+//                 }
+//             );
+
+//             data = resData.data;
+//             const expData = countRecordsByMonth(data);
+//             const actualData = {
+//                 "04-01-2024": 2,
+//                 "03-01-2024": 2,
+//                 "06-01-2023": 332,
+//             };
+
+//             const differences = [];
+//             if (Array.isArray(expData)) {
+//                 if (Array.isArray(actualData)) {
+//                     // Both are arrays, use forEach
+//                     expData.forEach((expItem, index) => {
+//                         const actualItem = actualData[index];
+//                         if (
+//                             expItem.label !== actualItem.label ||
+//                             expItem.value !== actualItem.value
+//                         ) {
+//                             differences.push(
+//                                 `Mismatch at key ${actualItem.label}: ${JSON.stringify(
+//                                     expItem
+//                                 )} vs ${JSON.stringify(actualItem)}`
+//                             );
+//                         }
+//                     });
+//                 } else {
+//                     // expData is an array, actualData is an object
+//                     Object.keys(actualData).forEach((key) => {
+//                         const expItem = expData.find(
+//                             (item) => item.label === key
+//                         );
+//                         if (!expItem || expItem.value !== actualData[key]) {
+//                             differences.push(
+//                                 `Mismatch at key ${key}: ${JSON.stringify(
+//                                     expItem
+//                                 )} vs ${JSON.stringify(actualData[key])}`
+//                             );
+//                         }
+//                     });
+//                 }
+//             } else {
+//                 // expData is an object
+//                 if (Array.isArray(actualData)) {
+//                     // expData is an object, actualData is an array
+//                     actualData.forEach((actualItem, index) => {
+//                         const expItem = expData[actualItem.label];
+//                         if (!expItem || expItem !== actualItem.value) {
+//                             differences.push(
+//                                 `Mismatch at key ${actualItem.label}: ${JSON.stringify(
+//                                     expItem
+//                                 )} vs ${JSON.stringify(actualItem)}`
+//                             );
+//                         }
+//                     });
+//                 } else {
+//                     // Both are objects
+//                     Object.keys(expData).forEach((key) => {
+//                         if (expData[key] != actualData[key]) {
+//                             differences.push(
+//                                 `Mismatch at key ${key}: ${JSON.stringify(
+//                                     expData[key]
+//                                 )} vs ${JSON.stringify(actualData[key])}`
+//                             );
+//                         }
+//                     });
+//                 }
+//             }
+
+//             if (differences.length > 0) {
+//                 console.log("Test failed due to differences in data:");
+//                 console.log(differences);
+//                 throw new Error("Test failed due to differences in data");
+//             }
+//         } catch (error) {
+//             console.error("Error occurred:", error);
+//             throw new Error("Test failed due to: " + error);
+//         }
+//     });
+//     it("reports by state data is correct", async () => {
+//         try {
+//             let data = [];
+//             const cookies = await driver.manage().getCookies();
+//             const authCookie = cookies.find((c) => c.name === "access_token");
+
+//             const resData = await axios.get(
+//                 `${process.env.GTRS_API_URL}SafetyReport`,
+//                 {
+//                     headers: {
+//                         Authorization: `Bearer ${authCookie.value}`,
+//                         UserId: process.env.USER_ID,
+//                     },
+//                 }
+//             );
+
+//             data = resData.data;
+//             const expData = getCountByState(data);
+//             const actualData = {
+//                 NSW: 335,
+//                 SA: 1,
+//             };
+//             const differences = [];
+//             if (Array.isArray(expData)) {
+//                 if (Array.isArray(actualData)) {
+//                     // Both are arrays, use forEach
+//                     expData.forEach((expItem, index) => {
+//                         const actualItem = actualData[index];
+//                         if (
+//                             expItem.label !== actualItem.label ||
+//                             expItem.value !== actualItem.value
+//                         ) {
+//                             differences.push(
+//                                 `Mismatch at key ${actualItem.label}: ${JSON.stringify(
+//                                     expItem
+//                                 )} vs ${JSON.stringify(actualItem)}`
+//                             );
+//                         }
+//                     });
+//                 } else {
+//                     // expData is an array, actualData is an object
+//                     Object.keys(actualData).forEach((key) => {
+//                         const expItem = expData.find(
+//                             (item) => item.label === key
+//                         );
+//                         if (!expItem || expItem.value !== actualData[key]) {
+//                             differences.push(
+//                                 `Mismatch at key ${key}: ${JSON.stringify(
+//                                     expItem
+//                                 )} vs ${JSON.stringify(actualData[key])}`
+//                             );
+//                         }
+//                     });
+//                 }
+//             } else {
+//                 // expData is an object
+//                 if (Array.isArray(actualData)) {
+//                     // expData is an object, actualData is an array
+//                     actualData.forEach((actualItem, index) => {
+//                         const expItem = expData[actualItem.label];
+//                         if (!expItem || expItem !== actualItem.value) {
+//                             differences.push(
+//                                 `Mismatch at key ${actualItem.label}: ${JSON.stringify(
+//                                     expItem
+//                                 )} vs ${JSON.stringify(actualItem)}`
+//                             );
+//                         }
+//                     });
+//                 } else {
+//                     // Both are objects
+//                     Object.keys(expData).forEach((key) => {
+//                         if (expData[key] != actualData[key]) {
+//                             differences.push(
+//                                 `Mismatch at key ${key}: ${JSON.stringify(
+//                                     expData[key]
+//                                 )} vs ${JSON.stringify(actualData[key])}`
+//                             );
+//                         }
+//                     });
+//                 }
+//             }
+
+//             if (differences.length > 0) {
+//                 console.log("Test failed due to differences in data:");
+//                 console.log(differences);
+//                 throw new Error("Test failed due to differences in data");
+//             }
+//         } catch (error) {
+//             console.error("Error occurred:", error);
+//             throw new Error("Test failed due to: " + error);
+//         }
+//     });
+//     it("POD status by state data is correct", async () => {
+//         try {
+//             let data = [],
+//                 safetyTypes = [];
+//             const cookies = await driver.manage().getCookies();
+//             const authCookie = cookies.find((c) => c.name === "access_token");
+
+//             const resData = await axios.get(
+//                 `${process.env.GTRS_API_URL}SafetyReport`,
+//                 {
+//                     headers: {
+//                         Authorization: `Bearer ${authCookie.value}`,
+//                         UserId: process.env.USER_ID,
+//                     },
+//                 }
+//             );
+
+//             data = resData.data;
+//             const safetyTypesResData = await axios.get(
+//                 `${process.env.GTRS_API_URL}SafetyTypes`,
+//                 {
+//                     headers: {
+//                         Authorization: `Bearer ${authCookie.value}`,
+//                         UserId: process.env.USER_ID,
+//                     },
+//                 }
+//             );
+
+//             safetyTypes = safetyTypesResData.data;
+//             const counter = countReportsBySafetyType(data);
+//             const expData = compareLabels(counter, safetyTypes);
+//             const actualData = [
+//                 {
+//                     label: "Hazard",
+//                     value: 334,
+//                 },
+//                 {
+//                     label: "Vehicle Accident",
+//                     value: 1,
+//                 },
+//                 {
+//                     label: "Damage",
+//                     value: 1,
+//                 },
+//             ];
+//             const differences = [];
+//             if (Array.isArray(expData)) {
+//                 if (Array.isArray(actualData)) {
+//                     // Both are arrays, use forEach
+//                     expData.forEach((expItem, index) => {
+//                         const actualItem = actualData[index];
+//                         if (
+//                             expItem.label !== actualItem.label ||
+//                             expItem.value !== actualItem.value
+//                         ) {
+//                             differences.push(
+//                                 `Mismatch at key ${actualItem.label}: ${JSON.stringify(
+//                                     expItem
+//                                 )} vs ${JSON.stringify(actualItem)}`
+//                             );
+//                         }
+//                     });
+//                 } else {
+//                     // expData is an array, actualData is an object
+//                     Object.keys(actualData).forEach((key) => {
+//                         const expItem = expData.find(
+//                             (item) => item.label === key
+//                         );
+//                         if (!expItem || expItem.value !== actualData[key]) {
+//                             differences.push(
+//                                 `Mismatch at key ${key}: ${JSON.stringify(
+//                                     expItem
+//                                 )} vs ${JSON.stringify(actualData[key])}`
+//                             );
+//                         }
+//                     });
+//                 }
+//             } else {
+//                 // expData is an object
+//                 if (Array.isArray(actualData)) {
+//                     // expData is an object, actualData is an array
+//                     actualData.forEach((actualItem, index) => {
+//                         const expItem = expData[actualItem.label];
+//                         if (!expItem || expItem !== actualItem.value) {
+//                             differences.push(
+//                                 `Mismatch at key ${actualItem.label}: ${JSON.stringify(
+//                                     expItem
+//                                 )} vs ${JSON.stringify(actualItem)}`
+//                             );
+//                         }
+//                     });
+//                 } else {
+//                     // Both are objects
+//                     Object.keys(expData).forEach((key) => {
+//                         if (expData[key] != actualData[key]) {
+//                             differences.push(
+//                                 `Mismatch at key ${key}: ${JSON.stringify(
+//                                     expData[key]
+//                                 )} vs ${JSON.stringify(actualData[key])}`
+//                             );
+//                         }
+//                     });
+//                 }
+//             }
+
+//             if (differences.length > 0) {
+//                 console.log("Test failed due to differences in data:");
+//                 console.log(differences);
+//                 throw new Error("Test failed due to differences in data");
+//             }
+//         } catch (error) {
+//             console.error("Error occurred:", error);
+//             throw new Error("Test failed due to: " + error);
+//         }
+//     });
+//     it("reports by state & by type data is correct", async () => {
+//         try {
+//             let data = [], safetyTypes = [];
+//             const cookies = await driver.manage().getCookies();
+//             const authCookie = cookies.find((c) => c.name === "access_token");
+
+//             const resData = await axios.get(
+//                 `${process.env.GTRS_API_URL}SafetyReport`,
+//                 {
+//                     headers: {
+//                         Authorization: `Bearer ${authCookie.value}`,
+//                         UserId: process.env.USER_ID,
+//                     },
+//                 }
+//             );
+
+//             data = resData.data;
+
+//             const safetyTypesResData = await axios.get(
+//                 `${process.env.GTRS_API_URL}SafetyTypes`,
+//                 {
+//                     headers: {
+//                         Authorization: `Bearer ${authCookie.value}`,
+//                         UserId: process.env.USER_ID,
+//                     },
+//                 }
+//             );
+
+//             safetyTypes = safetyTypesResData.data;
+//             const expData = countRecordsByStateAndType(data, safetyTypes);
+//             const actualData = [
+//                 {
+//                     state: "NSW",
+//                     value: 333,
+//                     type: "Hazard",
+//                 },
+//                 {
+//                     state: "NSW",
+//                     value: 1,
+//                     type: "Vehicle Accident",
+//                 },
+//                 {
+//                     state: "NSW",
+//                     value: 1,
+//                     type: "Damage",
+//                 },
+//                 {
+//                     state: "SA",
+//                     value: 1,
+//                     type: "Hazard",
+//                 },
+//             ];
+//             const differences = [];
+//             if (Array.isArray(expData)) {
+//                 if (Array.isArray(actualData)) {
+//                     // Both are arrays, use forEach
+//                     expData.forEach((expItem, index) => {
+//                         const actualItem = actualData[index];
+//                         if (
+//                             expItem.label !== actualItem.label ||
+//                             expItem.value !== actualItem.value
+//                         ) {
+//                             differences.push(
+//                                 `Mismatch at key ${actualItem.label}: ${JSON.stringify(
+//                                     expItem
+//                                 )} vs ${JSON.stringify(actualItem)}`
+//                             );
+//                         }
+//                     });
+//                 } else {
+//                     // expData is an array, actualData is an object
+//                     Object.keys(actualData).forEach((key) => {
+//                         const expItem = expData.find(
+//                             (item) => item.label === key
+//                         );
+//                         if (!expItem || expItem.value !== actualData[key]) {
+//                             differences.push(
+//                                 `Mismatch at key ${key}: ${JSON.stringify(
+//                                     expItem
+//                                 )} vs ${JSON.stringify(actualData[key])}`
+//                             );
+//                         }
+//                     });
+//                 }
+//             } else {
+//                 // expData is an object
+//                 if (Array.isArray(actualData)) {
+//                     // expData is an object, actualData is an array
+//                     actualData.forEach((actualItem, index) => {
+//                         const expItem = expData[actualItem.label];
+//                         if (!expItem || expItem !== actualItem.value) {
+//                             differences.push(
+//                                 `Mismatch at key ${actualItem.label}: ${JSON.stringify(
+//                                     expItem
+//                                 )} vs ${JSON.stringify(actualItem)}`
+//                             );
+//                         }
+//                     });
+//                 } else {
+//                     // Both are objects
+//                     Object.keys(expData).forEach((key) => {
+//                         if (expData[key] != actualData[key]) {
+//                             differences.push(
+//                                 `Mismatch at key ${key}: ${JSON.stringify(
+//                                     expData[key]
+//                                 )} vs ${JSON.stringify(actualData[key])}`
+//                             );
+//                         }
+//                     });
+//                 }
+//             }
+
+//             if (differences.length > 0) {
+//                 console.log("Test failed due to differences in data:");
+//                 console.log(differences);
+//                 throw new Error("Test failed due to differences in data");
+//             }
+//         } catch (error) {
+//             console.error("Error occurred:", error);
+//             throw new Error("Test failed due to: " + error);
+//         }
+//     });
+//     it("report type by month data is correct", async () => {
+//         try {
+//             let data = [];
+//             const cookies = await driver.manage().getCookies();
+//             const authCookie = cookies.find((c) => c.name === "access_token");
+
+//             const resData = await axios.get(
+//                 `${process.env.GTRS_API_URL}SafetyReport`,
+//                 {
+//                     headers: {
+//                         Authorization: `Bearer ${authCookie.value}`,
+//                         UserId: process.env.USER_ID,
+//                     },
+//                 }
+//             );
+
+//             data = resData.data;
+//             let expData = countSafetyTypesByMonth(data);
+//             let actualData = {
+//                 "04-01-2024": {
+//                     "2": 1,
+//                     "4": 1,
+//                 },
+//                 "03-01-2024": {
+//                     "2": 1,
+//                     "3": 1,
+//                 },
+//                 "06-01-2023": {
+//                     "2": 332,
+//                 },
+//             };
+//             expData = normalizeData(expData);
+//             actualData = normalizeData(actualData);
+//             const differences = [];
+//             if (Array.isArray(expData)) {
+//                 if (Array.isArray(actualData)) {
+//                     // Both are arrays, use forEach
+//                     expData.forEach((expItem, index) => {
+//                         const actualItem = actualData[index];
+//                         if (
+//                             expItem.label !== actualItem.label ||
+//                             expItem.value !== actualItem.value
+//                         ) {
+//                             differences.push(
+//                                 `Mismatch at key ${actualItem.label}: ${JSON.stringify(
+//                                     expItem
+//                                 )} vs ${JSON.stringify(actualItem)}`
+//                             );
+//                         }
+//                     });
+//                 } else {
+//                     // expData is an array, actualData is an object
+//                     Object.keys(actualData).forEach((key) => {
+//                         const expItem = expData.find(
+//                             (item) => item.label === key
+//                         );
+//                         if (!expItem || expItem.value !== actualData[key]) {
+//                             differences.push(
+//                                 `Mismatch at key ${key}: ${JSON.stringify(
+//                                     expItem
+//                                 )} vs ${JSON.stringify(actualData[key])}`
+//                             );
+//                         }
+//                     });
+//                 }
+//             } else {
+//                 // expData is an object
+//                 if (Array.isArray(actualData)) {
+//                     // expData is an object, actualData is an array
+//                     actualData.forEach((actualItem, index) => {
+//                         const expItem = expData[actualItem.label];
+//                         if (!expItem || expItem !== actualItem.value) {
+//                             differences.push(
+//                                 `Mismatch at key ${actualItem.label}: ${JSON.stringify(
+//                                     expItem
+//                                 )} vs ${JSON.stringify(actualItem)}`
+//                             );
+//                         }
+//                     });
+//                 } else {
+//                     // Both are objects
+//                     Object.keys(expData).forEach((key) => {
+//                         if (expData[key] != actualData[key]) {
+//                             differences.push(
+//                                 `Mismatch at key ${key}: ${JSON.stringify(
+//                                     expData[key]
+//                                 )} vs ${JSON.stringify(actualData[key])}`
+//                             );
+//                         }
+//                     });
+//                 }
+//             }
+
+//             if (differences.length > 0) {
+//                 console.log("Test failed due to differences in data:");
+//                 console.log(differences);
+//                 throw new Error("Test failed due to differences in data");
+//             }
+//         } catch (error) {
+//             console.error("Error occurred:", error);
+//             throw new Error("Test failed due to: " + error);
+//         }
+//     });
+// });

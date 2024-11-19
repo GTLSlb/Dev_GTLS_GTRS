@@ -132,8 +132,8 @@ describe("Login Test", () => {
         await driver.get("https://gtrs.gtls.store/login");
 
         // Step 2: Enter wrong credentials
-        const wrongEmail = "wrongemail@gtls.com.au"; // Replace with an invalid email
-        const wrongPassword = "wrongpassword"; // Replace with an invalid password
+        const wrongEmail = process.env.INVALID_USER ; // Replace with an invalid email
+        const wrongPassword = process.env.INVALID_PASS; // Replace with an invalid password
 
         await driver.findElement(By.name("email")).sendKeys(wrongEmail); // Fill in the email input
         await driver.findElement(By.name("password")).sendKeys(wrongPassword); // Fill in the password input
