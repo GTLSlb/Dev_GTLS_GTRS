@@ -166,49 +166,59 @@ export default function Gtrs({
                     console.log(err);
                 }
             });
-        axios
-            .get(`${gtamUrl}/Customer/Accounts`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setCusomterAccounts(parsedData || []);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+
+            axios
+                .get(`${gtamUrl}/Customer/Accounts`, {
+                    headers: {
+                        UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
+                    },
+                })
+                .then((res) => {
+                    const x = JSON.stringify(res.data);
+                    const parsedDataPromise = new Promise((resolve, reject) => {
+                        const parsedData = JSON.parse(x);
+                        resolve(parsedData);
                     });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
+                    parsedDataPromise.then((parsedData) => {
+                        // Remove duplicates based on DebtorId
+                        const uniqueAccounts = parsedData.reduce((acc, current) => {
+                            if (!acc.some(account => account.DebtorId.trim() === current.DebtorId.trim())) {
+                                acc.push(current);
+                            }
+                            return acc;
+                        }, []);
+                        
+                        setCusomterAccounts(uniqueAccounts || []);
+                    });
+                })
+                .catch((err) => {
+                    if (err.response && err.response.status === 401) {
+                        // Handle 401 error using SweetAlert
+                        swal({
+                            title: "Session Expired!",
+                            text: "Please login again",
+                            type: "success",
+                            icon: "info",
+                            confirmButtonText: "OK",
+                        }).then(function () {
+                            axios
+                                .post("/logoutAPI")
+                                .then((response) => {
+                                    if (response.status == 200) {
+                                        window.location.href = "/";
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.log(error);
+                                });
+                        });
+                    } else {
+                        // Handle other errors
+                        console.log(err);
+                    }
+                });
+            
         axios
             .get(`${gtrsUrl}/SafetyReport`, {
                 headers: {
