@@ -132,7 +132,8 @@ export default function GtrsCons({
             defaultFlex: 1,
             minWidth: 200,
             dateFormat: "DD-MM-YYYY",
-            filterEditor: CustomDateFilter,
+            filterable: true,
+            filterEditor: DateFilter,
             filterEditorProps: {
                 minDate: minDate,
                 maxDate: maxDate,

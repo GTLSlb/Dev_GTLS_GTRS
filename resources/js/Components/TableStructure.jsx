@@ -1,6 +1,7 @@
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
 import { useEffect, useCallback, useState } from "react";
+import ExportPopover from "./ExportPopover";
 
 export default function TableStructure({
     tableDataElements,
@@ -11,6 +12,9 @@ export default function TableStructure({
     columnsElements,
     filterTypesElements,
     setFilterTypesElements,
+    additionalButtons,
+    title,
+    handleDownloadExcel,
     setSelected,
     gridRef,
     selected,
@@ -90,7 +94,6 @@ export default function TableStructure({
                 columnHeader = headerElement
                     ? headerElement.textContent.trim()
                     : null;
-
             }
 
             // Proceed with menu-specific actions only if the menu exists
@@ -128,10 +131,10 @@ export default function TableStructure({
                             column.computedFilterValue.value = null;
                             column.computedFilterValue.operator = "eq";
                             column.computedFilterValue.emptyValue = "";
-                
+
                             // Re-render columns state to reflect the cleared filter
                             setColumns((cols) => [...cols]);
-                          }
+                        }
                     }
                 };
 
@@ -155,6 +158,21 @@ export default function TableStructure({
 
     return (
         <div className="">
+            <div className="sm:flex sm:items-center mt-3">
+                <div className="sm:flex-auto">
+                    <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
+                        {title}
+                    </h1>
+                </div>
+                <div className="flex gap-2">
+                    {additionalButtons}
+                    <ExportPopover
+                        columns={columnsElements}
+                        handleDownloadExcel={handleDownloadExcel}
+                        filteredData={tableDataElements}
+                    />
+                </div>
+            </div>
             <div className="py-5">
                 {tableData ? (
                     <ReactDataGrid
@@ -173,7 +191,6 @@ export default function TableStructure({
                         showColumnMenuLockOptions={false}
                         showColumnMenuGroupOptions={false}
                         selected={selectedRows}
-                        clearDataSourceCacheOnChange
                         style={gridStyle}
                         onFilterValueChange={onFilterValueChange}
                         defaultFilterValue={filters}

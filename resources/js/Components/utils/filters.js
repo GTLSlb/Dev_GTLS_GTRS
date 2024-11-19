@@ -25,8 +25,12 @@ export const getFiltersCons = (minDate, maxDate) => {
             name: "DespatchDate",
             operator: "inrange",
             type: "date",
-            value: "",
+            value: {
+                start: minDate,
+                end: maxDate,
+            },
         },
+
         {
             name: "Status",
             operator: "inlist",
