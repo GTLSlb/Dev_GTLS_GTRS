@@ -5,6 +5,7 @@ const axios = require("axios");
 const cookie = require("cookie-js");
 require("dotenv").config();
 const gtrsPages = require("../helper/gtrsPages");
+const baseUrl = process.env.WEB_URL;
 
 // taken from consTrack
 describe("Navigation Test", () => {
@@ -84,8 +85,8 @@ describe("Navigation Test", () => {
 
             assert.strictEqual(
                 currentUrl,
-                "https://gtrs.gtls.store/gtrs/driver-login",
-                `Expected URL to be 'https://gtrs.gtls.store/gtrs/driver-login' but got '${currentUrl}'.`
+                baseUrl+"gtrs/driver-login",
+                `Expected URL to be '${baseUrl}gtrs/driver-login' but got '${currentUrl}'.`
             );
         });
     }

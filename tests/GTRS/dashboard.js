@@ -16,6 +16,7 @@ const {
     getStateTotalWeights,
     getKPIStatusCounter,
 } = require("../helper/chartsHelper");
+const baseUrl = process.env.WEB_URL;
 
 describe("Invalid Session Test", () => {
     let driver;
@@ -91,8 +92,8 @@ describe("Invalid Session Test", () => {
 
             assert.strictEqual(
                 currentUrl,
-                "https://gtrs.gtls.store/gtrs/dashboard",
-                `Expected URL to be 'https://gtrs.gtls.store/gtrs/dashboard' but got '${currentUrl}'.`
+                baseUrl+"gtrs/dashboard",
+                `Expected URL to be '${baseUrl}gtrs/dashboard' but got '${currentUrl}'.`
             );
         });
     }

@@ -5,6 +5,7 @@ const axios = require("axios");
 const cookie = require("cookie-js");
 require("dotenv").config();
 const gtrsPages = require("../helper/gtrsPages");
+const baseUrl = process.env.WEB_URL;
 
 describe("Navigation Test", () => {
     let driver;
@@ -96,8 +97,8 @@ describe("Navigation Test", () => {
 
             assert.strictEqual(
                 currentUrl,
-                "https://gtrs.gtls.store/gtrs/kpi/transit-days",
-                `Expected URL to be 'https://gtrs.gtls.store/gtrs/kpi/transit-days' but got '${currentUrl}'.`
+                baseUrl+"gtrs/kpi/transit-days",
+                `Expected URL to be ${baseUrl}'gtrs/kpi/transit-days' but got '${currentUrl}'.`
             );
         });
     }
@@ -683,8 +684,8 @@ describe("Table Test", () => {
 
         assert.strictEqual(
             url,
-            "https://gtrs.gtls.store/gtrs/consignment-details",
-            `URL should be https://gtrs.gtls.store/gtrs/consignment-details but got ${url}`
+            baseUrl+"gtrs/consignment-details",
+            `URL should be ${baseUrl}'gtrs/consignment-details but got ${url}`
         );
 
         const consNumber = await driver.findElement(
@@ -726,8 +727,8 @@ describe("Table Test", () => {
         const currentUrl = await driver.getCurrentUrl();
         assert.strictEqual(
             currentUrl,
-            "https://gtrs.gtls.store/gtrs/add-transit",
-            `Expected URL to be 'https://gtrs.gtls.store/gtrs/add-transit' but got '${currentUrl}'`
+            baseUrl+"gtrs/add-transit",
+            `Expected URL to be ${baseUrl}'gtrs/add-transit' but got '${currentUrl}'`
         );
 
         const senderPostCode = await driver.findElement(By.id('SenderPostCode'));
@@ -743,7 +744,7 @@ describe("Table Test", () => {
 
         // Step 4: Verify the data
         const url = await driver.getCurrentUrl();
-        assert.strictEqual(url, "https://gtrs.gtls.store/gtrs/kpi/transit-days", `URL should be https://gtrs.gtls.store/gtrs/kpi/transit-days but got ${url}`);
+        assert.strictEqual(url, baseUrl+"gtrs/kpi/transit-days", `URL should be ${baseUrl}'gtrs/kpi/transit-days but got ${url}`);
 
         const senderPostCodeFromTable = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/div/div/div/div/div[1]/div[1]/div[2]/div[1]/div/div[1]/div/div/div[1]/div[1]/div/div[4]/div/div'));
         const receiverPostCodeFromTable = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/div/div/div/div/div[1]/div[1]/div[2]/div[1]/div/div[1]/div/div/div[1]/div[1]/div/div[7]/div'));

@@ -5,13 +5,14 @@ const fs = require("fs");
 const { PNG } = require("pngjs");
 const pixelmatch = require("pixelmatch");
 const axios = require("axios");
+const baseUrl = process.env.WEB_URL;
 
 async function login(driver) {
     try {
         // Navigate to the login page
-        await driver.get("https://gtrs.gtls.store/login");
+        await driver.get(baseUrl+"login");
 
-        const userName = process.env.USERNAME + "@gtls.com.au";
+        const userName = process.env.USERNAME + '@'+ process.env.WEB_DOMAIN;
         const pass = process.env.USER_PASS;
 
         // Fill in the login form (update selectors and values as needed)
@@ -21,9 +22,6 @@ async function login(driver) {
         // Wait for the user to complete the reCAPTCHA
         console.log("Please complete the reCAPTCHA manually");
         await driver.sleep(30000); // 30 seconds
-
-        // Wait for the page to finish loading after submitting the login form
-        // await driver.wait(until.urlContains('dashboard'));
 
         // Wait for a specific element to appear on the page after login
         await driver.wait(
@@ -35,6 +33,7 @@ async function login(driver) {
         );
     } catch (error) {
         console.error("Error during login:", error);
+        assert.fail("Login failed");
     }
 }
 
@@ -43,7 +42,7 @@ async function loginToApp(driver, url, mainUrl) {
         // Navigate to the login page
         await driver.get(`${url}/login`);
 
-        const userName = process.env.USERNAME + "@gtls.com.au";
+        const userName = process.env.USERNAME + '@'+ process.env.WEB_DOMAIN;
         const pass = process.env.USER_PASS;
 
         // Fill in the login form (update selectors and values as needed)
@@ -64,7 +63,7 @@ async function loginToApp(driver, url, mainUrl) {
 async function loginMicrosoft(driver) {
     try {
         // Step 1: Navigate to the application URL and open Microsoft login
-        await driver.get("https://gtrs.gtls.store/login");
+        await driver.get(baseUrl+"login");
         await driver
             .findElement(
                 By.xpath(
@@ -945,16 +944,61 @@ async function navigateToSafetyTab(driver, tabName) {
     await driver.sleep(2000);
 }
 
+function normalizeString(str) {
+    return str.trim().replace(/\s+/g, ' ').toLowerCase(); // Normalize by trimming whitespace and converting to lowercase
+}
+
+function areValuesEqual(value1, value2) {
+    if (typeof value1 === 'string' && typeof value2 === 'string') {
+        return normalizeString(value1) === normalizeString(value2); // Normalize and compare strings
+    }
+    return value1 === value2; // For other types, use strict comparison
+}
+
 function areObjectsEqual(obj1, obj2) {
+    // Check for null or undefined
     if (obj1 === null || obj2 === null || obj1 === undefined || obj2 === undefined) {
-      return false;
+        return false;
     }
-    if (Object.keys(obj1).length !== Object.keys(obj2).length) return false;
-    for (const key in obj1) {
-      if (obj1[key] !== obj2[key]) return false;
+
+    // Check if both are the same type
+    if (typeof obj1 !== typeof obj2) {
+        return false;
     }
-    return true;
-  }
+
+    // Check if both are arrays
+    if (Array.isArray(obj1) && Array.isArray(obj2)) {
+        if (obj1.length !== obj2.length) return false;
+        for (let i = 0; i < obj1.length; i++) {
+            if (!areObjectsEqual(obj1[i], obj2[i])) return false; // Recursive call for array elements
+        }
+        return true;
+    }
+
+    // Check if both are objects
+    if (typeof obj1 === 'object' && typeof obj2 === 'object') {
+        const keys1 = Object.keys(obj1);
+        const keys2 = Object.keys(obj2);
+
+        // Check number of keys
+        if (keys1.length !== keys2.length) return false;
+
+        // Check each key
+        for (const key of keys1) {
+            if (!keys2.includes(key)) {
+                return false; // Key not found in both objects
+            }
+            // Compare normalized values
+            if (!areValuesEqual(obj1[key], obj2[key])) {
+                return false; // Recursive call for object properties
+            }
+        }
+        return true;
+    }
+
+    // For primitive types, perform a strict comparison
+    return areValuesEqual(obj1, obj2);
+}
 
 module.exports = {
     login,

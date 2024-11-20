@@ -50,6 +50,7 @@
         "@tailwindcss/aspect-ratio": "^0.4.2",
         "@tailwindcss/line-clamp": "^0.4.2",
         "@tanstack/react-table": "^8.9.3",
+        "aes256": "^1.1.0",
         "animejs": "^3.2.1",
         "chart.js": "^4.4.3",
         "chartjs-adapter-moment": "^1.0.1",

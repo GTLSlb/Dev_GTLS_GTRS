@@ -2,6 +2,7 @@ const { Builder, By, until } = require("selenium-webdriver");
 const { login } = require("../helper/helper");
 const assert = require('assert');
 require('dotenv').config();
+const baseUrl = process.env.WEB_URL;
 
 describe("Invalid Session Test", () => {
     let driver;
@@ -21,14 +22,14 @@ describe("Invalid Session Test", () => {
         await driver.manage().deleteAllCookies();
 
         // Step 2: Navigate to the application URL
-        await driver.get("https://gtrs.gtls.store");
+        await driver.get(baseUrl);
 
         // Step 3: Wait until the URL is the login page
-        await driver.wait(until.urlIs("https://gtrs.gtls.store/login"), 5000);
+        await driver.wait(until.urlIs(baseUrl + "login"), 5000);
 
         // Step 4: Verify that the current URL is as expected
         const currentUrl = await driver.getCurrentUrl();
-        assert.strictEqual(currentUrl, 'https://gtrs.gtls.store/login', `Expected URL to be 'https://gtrs.gtls.store/login' but got '${currentUrl}'.`);
+        assert.strictEqual(currentUrl, baseUrl+'login', `Expected URL to be ${baseUrl}login' but got '${currentUrl}'.`);
     });
 
     it("should show login screen if entering wrong route", async () => {
@@ -36,14 +37,14 @@ describe("Invalid Session Test", () => {
         await driver.manage().deleteAllCookies();
 
         // Step 2: Navigate to the invalid route URL
-        await driver.get("https://gtrs.gtls.store/left");
+        await driver.get(baseUrl+"left");
 
         // Step 3: Wait until the URL is the login page
-        await driver.wait(until.urlIs("https://gtrs.gtls.store/login"), 5000);
+        await driver.wait(until.urlIs(baseUrl+"login"), 5000);
 
         // Step 4: Verify that the current URL is as expected
         const currentUrl = await driver.getCurrentUrl();
-        assert.strictEqual(currentUrl, 'https://gtrs.gtls.store/login', `Expected URL to be 'https://gtrs.gtls.store/login' but got '${currentUrl}'.`);
+        assert.strictEqual(currentUrl, baseUrl+'login', `Expected URL to be ${baseUrl}'login' but got '${currentUrl}'.`);
 
     });
 
@@ -52,10 +53,10 @@ describe("Invalid Session Test", () => {
         await driver.manage().deleteAllCookies();
 
         // Step 2: Navigate to the login route URL
-        await driver.get("https://gtrs.gtls.store/login");
+        await driver.get(baseUrl+"login");
 
         // Step 3: Wait until the URL is the login page
-        await driver.wait(until.urlIs("https://gtrs.gtls.store/login"), 5000);
+        await driver.wait(until.urlIs(baseUrl+"login"), 5000);
 
         // Step 4: Verify that the login screen is displayed
         const loginScreenEmailInput = driver.findElement(By.name("email"));
@@ -75,7 +76,7 @@ describe("Invalid Session Test", () => {
         await driver.manage().deleteAllCookies();
 
         // Step 2: Navigate to the application URL
-        await driver.get("https://gtrs.gtls.store/login");
+        await driver.get(baseUrl+"login");
 
         // Step 3: Verify that the Sign In button is disabled
         const signInButton = await driver.findElement(By.xpath("//*[@id=\"app\"]/div/div/div/div/div/div[2]/div/div[1]/div[3]/button"));
@@ -98,7 +99,7 @@ describe("Invalid Session Test", () => {
         await driver.manage().deleteAllCookies();
 
         // Step 1: Navigate to the application URL
-        await driver.get("https://gtrs.gtls.store/login");
+        await driver.get(baseUrl+"login");
 
         // Step 2: Click on back to home button
         const backToHomeLink = await driver.findElement(By.xpath("//*[@id=\"app\"]/div/div/div/div/div/div[2]/div/div[1]/div[1]/a"));
@@ -129,13 +130,14 @@ describe("Login Test", () => {
 
     it("login with wrong credentials", async () => {
         // Step 1: Navigate to the login URL
-        await driver.get("https://gtrs.gtls.store/login");
+        await driver.get(baseUrl+"login");
 
         // Step 2: Enter wrong credentials
-        const wrongEmail = process.env.INVALID_USER ; // Replace with an invalid email
-        const wrongPassword = process.env.INVALID_PASS; // Replace with an invalid password
+        const wrongEmail = process.env.INVALID_USER;
+        const wrongPassword = process.env.INVALID_PASS;
+        const domain = process.env.WEB_DOMAIN;
 
-        await driver.findElement(By.name("email")).sendKeys(wrongEmail); // Fill in the email input
+        await driver.findElement(By.name("email")).sendKeys(wrongEmail + '@' + domain); // Fill in the email input
         await driver.findElement(By.name("password")).sendKeys(wrongPassword); // Fill in the password input
 
         // Step 3: Click the Sign In button
@@ -158,11 +160,36 @@ describe("Login Test", () => {
         assert.strictEqual(isErrorMessageVisible, true, "Error message should be displayed for wrong credentials.");
 
         // Step 7: Check if the URL remains the same
-        await driver.wait(until.urlIs("https://gtrs.gtls.store/login"), 5000); // Ensure the URL is still the login page
+        await driver.wait(until.urlIs(baseUrl+"login"), 5000); // Ensure the URL is still the login page
 
         // Assert that the URL is correct
         const currentUrl = await driver.getCurrentUrl();
-        assert.strictEqual(currentUrl, "https://gtrs.gtls.store/login", "User should remain on the login page.");
+        assert.strictEqual(currentUrl, baseUrl+"login", "User should remain on the login page.");
+    });
+
+    it("login with wrong credentials", async () => {
+        // Step 1: Navigate to the login URL
+        await driver.get(baseUrl+"login");
+
+        // Step 2: Enter wrong credentials
+        const Email = process.env.USERNAME;
+        const Password = process.env.USER_PASS;
+        const domain = process.env.WEB_DOMAIN;
+
+        await driver.findElement(By.name("email")).sendKeys(Email + '@' + domain); // Fill in the email input
+        await driver.findElement(By.name("password")).sendKeys(Password); // Fill in the password input
+
+        // Step 3: Click the Sign In button
+        await driver
+            .findElement(By.xpath('//*[@id="app"]/div/div/div/div/div/div[2]/div/div[1]/div[3]/button'))
+            .click();
+
+        // Step 4: Check that the user is redirected to the system
+        await driver.wait(until.urlIs(baseUrl+"main"), 5000); // Ensure the URL is still the login page
+
+        // Assert that the URL is correct
+        const currentUrl = await driver.getCurrentUrl();
+        assert.strictEqual(currentUrl, baseUrl+"main", "User should remain on the login page.");
     });
 });
 
@@ -220,7 +247,7 @@ describe('Microsoft Login Tests', function () {
 
     it('Verify that pressing Sign in with Microsoft shows login popup', async () => {
         // Step 1: Navigate to the application URL
-        await driver.get('https://gtrs.gtls.store/login');
+        await driver.get(baseUrl+'login');
 
         // Step 2: Click on the "Sign in with Microsoft" button
         await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div/div[2]/div/div[1]/div[2]/button')).click();
@@ -241,31 +268,9 @@ describe('Microsoft Login Tests', function () {
         await driver.switchTo().window(windows[0]); // Switch back to the main window
     });
 
-    // it('Verify that entering invalid credentials in Microsoft popup does not redirect', async () => {
-    //     // Step 1: Navigate to the application URL and open Microsoft login
-    //     await driver.get('https://gtrs.gtls.store/login');
-    //     await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div/div[2]/div/div[1]/div[2]/button')).click();
-
-    //     const windows = await driver.getAllWindowHandles();
-    //     assert.strictEqual(windows.length, 2, "There should be two windows open");
-
-    //     await driver.switchTo().window(windows[1]); // Switch to the popup window
-
-    //     // Step 2: Enter invalid credentials in the Microsoft login popup
-    //     await driver.sleep(60000); // Pause for manual entry of invalid credentials
-
-    //     // Step 3: Verify that the popup remains open and the user is not redirected
-    //     const currentUrl = await driver.getCurrentUrl();
-    //     assert.match(currentUrl, /.*login.*error/, "Popup URL should indicate an error.");
-
-    //     // Close the popup after verification
-    //     await driver.close();
-    //     await driver.switchTo().window(windows[0]); // Switch back to the main window
-    // });
-
     it('Verify that entering valid credentials in Microsoft popup redirects to the system', async () => {
         // Step 1: Navigate to the application URL and open Microsoft login
-        await driver.get('https://gtrs.gtls.store/login');
+        await driver.get(baseUrl+'login');
         await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div/div[2]/div/div[1]/div[2]/button')).click();
 
         // Step 2: Enter valid credentials in the Microsoft login popup

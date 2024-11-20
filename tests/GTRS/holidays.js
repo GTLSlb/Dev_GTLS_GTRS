@@ -5,6 +5,7 @@ const axios = require("axios");
 const cookie = require("cookie-js");
 require("dotenv").config();
 const gtrsPages = require("../helper/gtrsPages");
+const baseUrl = process.env.WEB_URL;
 
 describe("Navigation Test", () => {
     let driver;
@@ -96,8 +97,8 @@ describe("Navigation Test", () => {
 
             assert.strictEqual(
                 currentUrl,
-                "https://gtrs.gtls.store/gtrs/kpi/holidays",
-                `Expected URL to be 'https://gtrs.gtls.store/gtrs/kpi/holidays' but got '${currentUrl}'.`
+                baseUrl+"gtrs/kpi/holidays",
+                `Expected URL to be '${baseUrl}gtrs/kpi/holidays' but got '${currentUrl}'.`
             );
         });
     }

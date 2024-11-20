@@ -2,6 +2,7 @@ const { Builder, By, until } = require('selenium-webdriver');
 const assert = require('assert');
 const { login } = require("../helper/helper");
 require('dotenv').config();
+const baseUrl = process.env.WEB_URL;
 
 describe('Forgot Password Tests', function () {
     let driver;
@@ -18,28 +19,28 @@ describe('Forgot Password Tests', function () {
 
     it('Redirect user to forgot password page', async () => {
         // Step 1: Navigate to the login URL
-        await driver.get('https://gtrs.gtls.store/login');
+        await driver.get(baseUrl+'login');
 
         // Step 2: Click on Forgot your password
         const forgetPassBtn = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div/div[2]/div/div[1]/div[2]/div/div[2]/button'));
         await forgetPassBtn.click();
 
         // Step 3: Verify that the user is redirected to the forgot password page
-        await driver.wait(until.urlIs('https://gtrs.gtls.store/forgot-password'), 5000);
+        await driver.wait(until.urlIs(baseUrl+'forgot-password'), 5000);
         const currentUrl = await driver.getCurrentUrl();
-        assert.strictEqual(currentUrl, 'https://gtrs.gtls.store/forgot-password', "User should be redirected to the forgot password page.");
+        assert.strictEqual(currentUrl, baseUrl+'forgot-password', "User should be redirected to the forgot password page.");
     });
 
     it('User enters his email in the input in forgot password page it will send an email', async () => {
         // Step 1: Navigate to the login URL
-        await driver.get('https://gtrs.gtls.store/login');
+        await driver.get(baseUrl+'login');
 
         // Step 2: Click on Forgot your password
         const forgetPassBtn = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div/div[2]/div/div[1]/div[2]/div/div[2]/button'));
         await forgetPassBtn.click();
 
         // Step 3: Fill in the email input
-        const userName = process.env.USERNAME + '@gtls.com.au';
+        const userName = process.env.USERNAME + '@'+ process.env.WEB_DOMAIN;
         await driver.findElement(By.name('email')).sendKeys(userName);
 
         // Step 4: Click on Reset Password
@@ -54,14 +55,14 @@ describe('Forgot Password Tests', function () {
 
     it('User enters an invalid OTP', async () => {
         // Step 1: Navigate to the login URL
-        await driver.get('https://gtrs.gtls.store/login');
+        await driver.get(baseUrl+'login');
 
         // Step 2: Click on Forgot your password
         const forgetPassBtn = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div/div[2]/div/div[1]/div[2]/div/div[2]/button'));
         await forgetPassBtn.click();
 
         // Step 3: Fill in the email input
-        const userName = process.env.USERNAME + '@gtls.com.au';
+        const userName = process.env.USERNAME + '@'+ process.env.WEB_DOMAIN;
         await driver.findElement(By.name('email')).sendKeys(userName);
 
         // Step 4: Click on Reset Password
@@ -79,14 +80,14 @@ describe('Forgot Password Tests', function () {
 
     it('User enters a valid OTP', async () => {
         // Step 1: Navigate to the login URL
-        await driver.get('https://gtrs.gtls.store/login');
+        await driver.get(baseUrl+'login');
 
         // Step 2: Click on Forgot your password
         const forgetPassBtn = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div/div[2]/div/div[1]/div[2]/div/div[2]/button'));
         await forgetPassBtn.click();
 
         // Step 3: Fill in the email input
-        const userName = process.env.USERNAME + '@gtls.com.au';
+        const userName = process.env.USERNAME + '@'+ process.env.WEB_DOMAIN;
         await driver.findElement(By.name('email')).sendKeys(userName);
 
         // Step 4: Click on Reset Password
@@ -104,14 +105,14 @@ describe('Forgot Password Tests', function () {
 
     it('User enters a new password', async () => {
         // Step 1: Navigate to the login URL
-        await driver.get('https://gtrs.gtls.store/login');
+        await driver.get(baseUrl+'login');
 
         // Step 2: Click on Forgot your password
         const forgetPassBtn = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div/div[2]/div/div[1]/div[2]/div/div[2]/button'));
         await forgetPassBtn.click();
 
         // Step 3: Fill in the email input
-        const userName = process.env.USERNAME + '@gtls.com.au';
+        const userName = process.env.USERNAME + '@'+ process.env.WEB_DOMAIN;
         await driver.findElement(By.name('email')).sendKeys(userName);
 
         // Step 4: Click on Reset Password
@@ -130,8 +131,8 @@ describe('Forgot Password Tests', function () {
         await saveBtn.click();
 
         // Step 8: Verify that the user is redirected to the login page
-        await driver.wait(until.urlIs('https://gtrs.gtls.store/login'), 5000);
+        await driver.wait(until.urlIs(baseUrl+'login'), 5000);
         const currentUrl = await driver.getCurrentUrl();
-        assert.strictEqual(currentUrl, 'https://gtrs.gtls.store/login', "User should be redirected to the login page.");
+        assert.strictEqual(currentUrl, baseUrl+'login', "User should be redirected to the login page.");
     });
 });

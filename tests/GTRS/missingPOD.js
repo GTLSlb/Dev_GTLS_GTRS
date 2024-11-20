@@ -5,6 +5,7 @@ const axios = require("axios");
 const cookie = require("cookie-js");
 require("dotenv").config();
 const gtrsPages = require("../helper/gtrsPages");
+const baseUrl = process.env.WEB_URL;
 
 describe("Navigation Test", () => {
     let driver;
@@ -83,8 +84,8 @@ describe("Navigation Test", () => {
 
             assert.strictEqual(
                 currentUrl,
-                "https://gtrs.gtls.store/gtrs/missing-pod",
-                `Expected URL to be 'https://gtrs.gtls.store/gtrs/missing-pod' but got '${currentUrl}'.`
+                baseUrl+"gtrs/missing-pod",
+                `Expected URL to be ${baseUrl}'gtrs/missing-pod' but got '${currentUrl}'.`
             );
         });
     }
@@ -831,8 +832,8 @@ describe("Table Test", () => {
         const url = await driver.getCurrentUrl();
 
         assert.strictEqual(
-            url, 'https://gtrs.gtls.store/gtrs/consignment-details',
-            `URL should be https://gtrs.gtls.store/gtrs/consignment-details but got ${url}`
+            url, baseUrl+'gtrs/consignment-details',
+            `URL should be ${baseUrl}gtrs/consignment-details but got ${url}`
         );
 
         const consNumber = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/div[1]/div[1]/h4/span'));

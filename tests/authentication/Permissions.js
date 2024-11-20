@@ -38,7 +38,7 @@ describe("Permissions Tests", function () {
         driver = await new Builder().forBrowser("chrome").build();
 
         // Define system variables
-        const url = "https://gtam.gtls.store";
+        const url = process.env.GTAM_URL;
         const mainUrl = "gtam";
 
         // Call the login helper function
@@ -52,7 +52,7 @@ describe("Permissions Tests", function () {
 
 it("User cannot access if he has an inactive role in GTAM", async () => {
     // Step 1: Remove user access of GTRS from GTAM
-    await driver.get('https://gtam.gtls.store/gtam/employees');
+    await driver.get(process.env.GTAM_URL+'gtam/employees');
 
     // Search for user
     await driver.sleep(6000); // Wait for search to complete
@@ -73,7 +73,7 @@ it("User cannot access if he has an inactive role in GTAM", async () => {
     await driver.findElement(By.xpath('/html/body/div[3]/div/div/div/div[2]/div/div/div/div/div/div[2]/div/button')).click();
 
     // Step 2: Navigate to GTRS
-    await driver.get('https://gtrs.gtls.store/gtrs/dashboard');
+    await driver.get(process.env.WEB_URL+'gtrs/dashboard');
 
     // Step 3: Verify that the user is not allowed access
     await driver.sleep(30000);
@@ -95,7 +95,7 @@ it("User cannot access if he has an inactive role in GTAM", async () => {
         await driver.sleep(30000); // Wait 30s for manual action
 
         // Step 2: Verify that the user is not allowed access
-        await driver.get(`https://gtrs.gtls.store/${url}`);
+        await driver.get(`${process.env.WEB_URL}${url}`);
         await driver.sleep(60000); // Wait 60s for website to load
 
         // Wait for the element to be present and visible
@@ -149,7 +149,7 @@ describe("Apps Integration Tests", function () {
         );
         assert.notStrictEqual(
             currentUrl,
-            "https://gtrs.gtls.store/gtrs/dashboard",
+            process.env.WEB_URL+"gtrs/dashboard",
             "User is still able to access the dashboard URL"
         );
     });
@@ -158,7 +158,7 @@ describe("Apps Integration Tests", function () {
     for (const { pageName, url } of GtrsPages) {
     it(`should ensure that no <li> elements contain ${pageName}`, async () => {
         // Navigate to the application URL
-        await driver.get('https://gtrs.gtls.store/login');
+        await driver.get(process.env.WEB_URL+'login');
 
         // Wait for the <ul> element to be present
         const ulLocator = By.xpath('/html/body/div[1]/div/div/div/div/div[2]/div/div/div/div/div/aside/div/div/div[4]/nav/ul');
