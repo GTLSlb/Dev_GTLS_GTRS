@@ -53,6 +53,7 @@ export default function SafetyModal({
         setFormValues({
             ReportId: id,
             SafetyType: modalSafetyType,
+            DebtorId: modalDebtorId,
             ConsNo: modalConsNo,
             MainCause: modalMainCause,
             State: modalState,
@@ -101,7 +102,6 @@ export default function SafetyModal({
         event.preventDefault(); // Prevent the default form submission behavior
         try {
             SetIsLoading(true);
-
             const response = await axios.post(
                 `${url}Add/SafetyReport`,
                 formValues,
