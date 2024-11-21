@@ -1,4 +1,4 @@
-const { Builder, By, until } = require("selenium-webdriver");
+const { Builder, By, until, Key, actions } = require("selenium-webdriver");
 const assert = require("assert");
 require("dotenv").config();
 const fs = require("fs");
@@ -6,13 +6,17 @@ const { PNG } = require("pngjs");
 const pixelmatch = require("pixelmatch");
 const axios = require("axios");
 const baseUrl = process.env.WEB_URL;
-
+const mainPageUrl = process.env.MAIN_PAGE_URL;
+const cookie_name = process.env.COOKIE_NAME;
+const cookie_value = process.env.COOKIE_VAL;
+const token_name = process.env.TOKEN_NAME;
+const token_value = process.env.TOKEN_VAL;
 async function login(driver) {
     try {
         // Navigate to the login page
-        await driver.get(baseUrl+"login");
+        await driver.get(baseUrl + "login");
 
-        const userName = process.env.USERNAME + '@'+ process.env.WEB_DOMAIN;
+        const userName = process.env.USERNAME + "@" + process.env.WEB_DOMAIN;
         const pass = process.env.USER_PASS;
 
         // Fill in the login form (update selectors and values as needed)
@@ -37,12 +41,36 @@ async function login(driver) {
     }
 }
 
+async function bypassLogin(driver) {
+    try {
+        await driver.get(baseUrl + "login");
+
+        await driver.manage().addCookie({
+            name: cookie_name,
+            value: cookie_value,
+        });
+
+        await driver.manage().addCookie({
+            name: token_name,
+            value: token_value,
+        });
+        await driver.sleep(2000);
+        const fullUrl = `${baseUrl}${mainPageUrl}`;
+        await driver.get(fullUrl);
+        await driver.navigate().to(fullUrl);
+        await driver.sleep(6000);
+    } catch (error) {
+        console.error("Error during login:", error);
+        assert.fail("Login failed");
+    }
+}
+
 async function loginToApp(driver, url, mainUrl) {
     try {
         // Navigate to the login page
         await driver.get(`${url}/login`);
 
-        const userName = process.env.USERNAME + '@'+ process.env.WEB_DOMAIN;
+        const userName = process.env.USERNAME + "@" + process.env.WEB_DOMAIN;
         const pass = process.env.USER_PASS;
 
         // Fill in the login form (update selectors and values as needed)
@@ -63,7 +91,7 @@ async function loginToApp(driver, url, mainUrl) {
 async function loginMicrosoft(driver) {
     try {
         // Step 1: Navigate to the application URL and open Microsoft login
-        await driver.get(baseUrl+"login");
+        await driver.get(baseUrl + "login");
         await driver
             .findElement(
                 By.xpath(
@@ -138,11 +166,6 @@ async function testInformation(rows, calculatedData) {
                             `Expected: ${calculatedData.numUniqueReceivers}, Found: ${secondTdText}`
                         );
                     }
-                    // assert.match(
-                    //     secondTdText,
-                    //     calculatedData.numUniqueReceivers,
-                    //     `Total number of Rec should be ${calculatedData.numUniqueReceivers}`
-                    // );
                     break;
                 case "Total Weight":
                     if (
@@ -155,13 +178,6 @@ async function testInformation(rows, calculatedData) {
                             )} KG, Found: ${secondTdText}`
                         );
                     }
-                    // assert.Equal(
-                    //     secondTdText,
-                    //     `${calculatedData.totalWeight?.toFixed(2)} KG`,
-                    //     `Total Weight should be ${calculatedData.totalWeight?.toFixed(
-                    //         2
-                    //     )}`
-                    // );
                     break;
                 case "Total Pallet Space":
                     if (secondTdText != `${calculatedData.totalPalletSpace}`) {
@@ -169,11 +185,6 @@ async function testInformation(rows, calculatedData) {
                             `Expected: ${calculatedData.totalPalletSpace}, Found: ${secondTdText}`
                         );
                     }
-                    // assert.match(
-                    //     secondTdText,
-                    //     `${calculatedData.totalPalletSpace}`,
-                    //     `Total Pallet Space should be ${calculatedData.totalPalletSpace}`
-                    // );
                     break;
                 case "Total CHEP":
                     if (secondTdText != `${calculatedData.totalChep}`) {
@@ -181,11 +192,6 @@ async function testInformation(rows, calculatedData) {
                             `Expected: ${calculatedData.totalChep}, Found: ${secondTdText}`
                         );
                     }
-                    // assert.match(
-                    //     secondTdText,
-                    //     `${calculatedData.totalChep}`,
-                    //     `Total CHEP should be ${calculatedData.totalChep}`
-                    // );
                     break;
                 case "Total LOSCAM":
                     if (secondTdText != `${calculatedData.totalLoscam}`) {
@@ -193,11 +199,6 @@ async function testInformation(rows, calculatedData) {
                             `Expected: ${calculatedData.totalLoscam}, Found: ${secondTdText}`
                         );
                     }
-                    // assert.match(
-                    //     secondTdText,
-                    //     `${calculatedData.totalLoscam}`,
-                    //     `Total LOSCAM should be ${calculatedData.totalLoscam}`
-                    // );
                     break;
                 case "Total CUSTOMER OWN":
                     if (secondTdText != `${calculatedData.totalCustomerOwn}`) {
@@ -205,11 +206,6 @@ async function testInformation(rows, calculatedData) {
                             `Expected: ${calculatedData.totalCustomerOwn}, Found: ${secondTdText}`
                         );
                     }
-                    // assert.match(
-                    //     secondTdText,
-                    //     `${calculatedData.totalCustomerOwn}`,
-                    //     `Total CUSTOMER OWN should be ${calculatedData.totalCustomerOwn}`
-                    // );
                     break;
                 case "Cost":
                     if (secondTdText != `${calculatedData.totalCost}`) {
@@ -217,11 +213,6 @@ async function testInformation(rows, calculatedData) {
                             `Expected: ${calculatedData.totalCost}, Found: ${secondTdText}`
                         );
                     }
-                    // assert.match(
-                    //     secondTdText,
-                    //     `${calculatedData.totalCost}`,
-                    //     `Cost should be ${calculatedData.totalCost}`
-                    // );
                     break;
                 case "Fuel Surcharge cost":
                     if (secondTdText != `${calculatedData.fuelLevy}`) {
@@ -229,11 +220,6 @@ async function testInformation(rows, calculatedData) {
                             `Expected: ${calculatedData.fuelLevy}, Found: ${secondTdText}`
                         );
                     }
-                    // assert.match(
-                    //     secondTdText,
-                    //     `${calculatedData.fuelLevy}`,
-                    //     `Fuel Surcharge cost should be ${calculatedData.fuelLevy}`
-                    // );
                     break;
                 case "Total No. Cons Shipped":
                     if (
@@ -243,11 +229,6 @@ async function testInformation(rows, calculatedData) {
                             `Expected: ${calculatedData.totalNoConsShipped}, Found: ${secondTdText}`
                         );
                     }
-                    // assert.match(
-                    //     secondTdText,
-                    //     `${calculatedData.totalNoConsShipped}`,
-                    //     `Total number of consignments shipped should be ${calculatedData.totalNoConsShipped}`
-                    // );
                     break;
                 case "Total No. Cons Passed":
                     const expectedPassed = `${
@@ -258,14 +239,6 @@ async function testInformation(rows, calculatedData) {
                             `Expected: ${expectedPassed}, Found: ${secondTdText}`
                         );
                     }
-                    // const expectedPassed = `${
-                    //     data.totalNoConsPassed
-                    // } / ${percentagePassed?.toFixed(2)} %`;
-                    // assert.match(
-                    //     secondTdText,
-                    //     expectedPassed,
-                    //     `Total number of Cons Passed should be ${expectedPassed}`
-                    // );
                     break;
                 case "Total No. Cons Failed":
                     const expectedFailed = `${
@@ -276,14 +249,6 @@ async function testInformation(rows, calculatedData) {
                             `Expected: ${expectedFailed}, Found: ${secondTdText}`
                         );
                     }
-                    // const expectedFailed = `${
-                    //     data.totalConsFailed
-                    // } / ${percentageFailed?.toFixed(2)} %`;
-                    // assert.match(
-                    //     secondTdText,
-                    //     expectedFailed,
-                    //     `Total number of Cons Failed should be ${expectedFailed}`
-                    // );
                     break;
                 case "# of True PODs":
                     if (secondTdText != `${calculatedData.podCounter}`) {
@@ -291,11 +256,6 @@ async function testInformation(rows, calculatedData) {
                             `Expected: ${calculatedData.podCounter}, Found: ${secondTdText}`
                         );
                     }
-                    // assert.match(
-                    //     secondTdText,
-                    //     `${calculatedData.podCounter}`,
-                    //     `Total number of True PODs should be ${calculatedData.podCounter}`
-                    // );
                     break;
                 case "% of True PODs":
                     const expectedPercentage = `${data.podPercentage?.toFixed(
@@ -306,14 +266,6 @@ async function testInformation(rows, calculatedData) {
                             `Expected: ${expectedPercentage}, Found: ${secondTdText}`
                         );
                     }
-                    // const expectedPercentage = `${data.podPercentage?.toFixed(
-                    //     2
-                    // )} %`;
-                    // assert.match(
-                    //     secondTdText,
-                    //     expectedPercentage,
-                    //     `Total % of True PODs should be ${expectedPercentage}`
-                    // );
                     break;
                 case "# of safety issues":
                     if (secondTdText != data.safetyCounter) {
@@ -321,11 +273,6 @@ async function testInformation(rows, calculatedData) {
                             `Expected: ${data.safetyCounter}, Found: ${secondTdText}`
                         );
                     }
-                    // assert.match(
-                    //     secondTdText,
-                    //     data.safetyCounter,
-                    //     `Total number of safety issues should be ${data.safetyCounter}`
-                    // );
                     break;
                 default:
                     console.warn(`No assertion for: ${firstTdText}`);
@@ -344,107 +291,6 @@ async function testInformation(rows, calculatedData) {
         throw error; // Rethrow the error to fail the test
     }
 }
-
-// async function testSpendChart(driver, data) {
-//     try {
-//         // Step 1: Locate the chart element
-//         const chartLocator = By.xpath(
-//             '//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div[3]/div[2]/div/div/div/canvas'
-//         );
-//         const graphElement = await driver.wait(
-//             until.elementLocated(chartLocator),
-//             10000
-//         );
-//         await driver.sleep(2000);
-
-//         // if graph element is found and visible and not a promise
-//         if (graphElement) {
-//             // Capture the website chart
-//             try {
-//                 await graphElement.takeScreenshot().then((image) => {
-//                     fs.writeFileSync(
-//                         "spend-by-state-chart.png",
-//                         image,
-//                         "base64"
-//                     );
-//                 });
-//             } catch (error) {
-//                 throw new Error("Error occurred: " + error);
-//             }
-
-//             // Step 2: Inject `@ant-design/plots` if not loaded
-//             const plotScript = fs.readFileSync(
-//                 'C:/xampp/htdocs/Dev_GTLS_GTRS/node_modules/@ant-design/plots/es/index.js'
-//               );
-
-//             // Inject the module code directly into the browser
-//             await driver.executeScript(`
-//         (function() {
-//             ${plotScript}
-//             window['@ant-design/plots'] = require('@ant-design/plots');
-//         })();
-//     `);
-
-//             // Confirm that @ant-design/plots is available
-//             const isLoaded = await driver.executeScript(
-//                 "return typeof window['@ant-design/plots'] != 'undefined';"
-//             );
-//             if (!isLoaded) throw new Error("@ant-design/plots failed to load");
-
-//             // Render the chart using the loaded module
-//             await driver.executeScript(`
-//         const { Line } = window['@ant-design/plots'];
-//         const data = ${JSON.stringify(data)};
-//         const container = document.createElement('div');
-//         container.style.position = 'absolute';
-//         container.style.top = '0';
-//         container.style.left = '0';
-//         container.style.width = '724px';
-//         container.style.height = '395px';
-//         document.body.appendChild(container);
-//         ReactDOM.render(React.createElement(Line, { data }), container);
-//     `);
-
-//             console.log("oscular chart rendered");
-//             // Wait for the chart to render
-//             await driver.sleep(1000);
-
-//             // Capture the Ocular chart
-//             await driver.takeScreenshot().then((image) => {
-//                 fs.writeFileSync("ocular-chart.png", image, "base64");
-//             });
-
-//             // Step 3: Compare the images
-//             const img1 = PNG.sync.read(fs.readFileSync("website-chart.png"));
-//             const img2 = PNG.sync.read(fs.readFileSync("ocular-chart.png"));
-
-//             console.log("Imgs", img1, img2);
-//             const { width, height } = img1;
-//             const diff = new PNG({ width, height });
-
-//             const numDiffPixels = pixelmatch(
-//                 img1.data,
-//                 img2.data,
-//                 diff.data,
-//                 width,
-//                 height,
-//                 { threshold: 0.1 }
-//             );
-
-//             fs.writeFileSync("diff.png", PNG.sync.write(diff));
-
-//             console.log(`Number of different pixels: ${numDiffPixels}`);
-
-//             // Step 4: Assert that the charts are similar enough
-//             assert(numDiffPixels < 1000, "Charts differ too much!");
-//         } else {
-//             throw new Error("Canvas not found");
-//         }
-//     } catch (error) {
-//         console.error("Error occurred:", error);
-//         throw new Error("Test failed due to: " + error);
-//     }
-// }
 
 async function testSpendChart(driver, expectedData) {
     try {
@@ -821,9 +667,11 @@ async function fetchPerformanceDataFromView(driver) {
     return performanceDataInView;
 }
 
-async function comparePerformanceData(performanceDataInView, filteredAPIData){
+async function comparePerformanceData(performanceDataInView, filteredAPIData) {
     // Create a map for quick look-up of API data by AccountNumber
-    const apiDataMap = new Map(filteredAPIData.map(item => [item.AccountNumber, item]));
+    const apiDataMap = new Map(
+        filteredAPIData.map((item) => [item.AccountNumber, item])
+    );
 
     const discrepancies = [];
 
@@ -833,31 +681,49 @@ async function comparePerformanceData(performanceDataInView, filteredAPIData){
 
         if (!apiData) {
             discrepancies.push({
-                type: 'Missing in API',
-                data: viewData
+                type: "Missing in API",
+                data: viewData,
             });
             continue; // Move to the next item if no matching API data
         }
 
         // List of fields to compare
         const keysToCompare = [
-            'ConsignmentStatus', 'KpiDatetime', 'PodDateTime', 'POD', 'Status',
-            'Service', 'ManifestNo', 'LoadingTime', 'TotalQuantity',
-            'TotalWeight', 'DeliveryRequiredDateTime', 'DeliveredDate',
-            'FuelLevy', 'NettAmount', 'RateAmount', 'SenderName',
-            'SenderZone', 'SenderSuburb', 'SenderPostcode', 'SenderReference',
-            'ReceiverName', 'ReceiverZone', 'ReceiverSuburb',
-            'ReceiverPostcode', 'ReceiverReference'
+            "ConsignmentStatus",
+            "KpiDatetime",
+            "PodDateTime",
+            "POD",
+            "Status",
+            "Service",
+            "ManifestNo",
+            "LoadingTime",
+            "TotalQuantity",
+            "TotalWeight",
+            "DeliveryRequiredDateTime",
+            "DeliveredDate",
+            "FuelLevy",
+            "NettAmount",
+            "RateAmount",
+            "SenderName",
+            "SenderZone",
+            "SenderSuburb",
+            "SenderPostcode",
+            "SenderReference",
+            "ReceiverName",
+            "ReceiverZone",
+            "ReceiverSuburb",
+            "ReceiverPostcode",
+            "ReceiverReference",
         ];
 
         // Compare the specified fields
         for (const key of keysToCompare) {
             if (viewData[key] !== apiData[key]) {
                 discrepancies.push({
-                    type: 'Mismatch',
+                    type: "Mismatch",
                     key: key,
                     viewValue: viewData[key],
-                    apiValue: apiData[key]
+                    apiValue: apiData[key],
                 });
             }
         }
@@ -865,17 +731,19 @@ async function comparePerformanceData(performanceDataInView, filteredAPIData){
 
     // Log any discrepancies found
     if (discrepancies.length > 0) {
-        console.error('Discrepancies found:', discrepancies);
+        console.error("Discrepancies found:", discrepancies);
     } else {
-        console.log('All data matches between view and API.');
+        console.log("All data matches between view and API.");
     }
 
     return discrepancies;
 }
 
-async function compareData(DataInView, filteredAPIData, keysToCompare){
+async function compareData(DataInView, filteredAPIData, keysToCompare) {
     // Create a map for quick look-up of API data by AccountNumber
-    const apiDataMap = new Map(filteredAPIData.map(item => [item.AccountNumber, item]));
+    const apiDataMap = new Map(
+        filteredAPIData.map((item) => [item.AccountNumber, item])
+    );
 
     const discrepancies = [];
 
@@ -885,8 +753,8 @@ async function compareData(DataInView, filteredAPIData, keysToCompare){
 
         if (!apiData) {
             discrepancies.push({
-                type: 'Missing in API',
-                data: viewData
+                type: "Missing in API",
+                data: viewData,
             });
             continue; // Move to the next item if no matching API data
         }
@@ -895,10 +763,10 @@ async function compareData(DataInView, filteredAPIData, keysToCompare){
         for (const key of keysToCompare) {
             if (viewData[key] !== apiData[key]) {
                 discrepancies.push({
-                    type: 'Mismatch',
+                    type: "Mismatch",
                     key: key,
                     viewValue: viewData[key],
-                    apiValue: apiData[key]
+                    apiValue: apiData[key],
                 });
             }
         }
@@ -906,9 +774,9 @@ async function compareData(DataInView, filteredAPIData, keysToCompare){
 
     // Log any discrepancies found
     if (discrepancies.length > 0) {
-        console.error('Discrepancies found:', discrepancies);
+        console.error("Discrepancies found:", discrepancies);
     } else {
-        console.log('All data matches between view and API.');
+        console.log("All data matches between view and API.");
     }
 
     return discrepancies;
@@ -916,14 +784,26 @@ async function compareData(DataInView, filteredAPIData, keysToCompare){
 
 async function navigateToUnileverSubDebtor(driver, debtorName) {
     // Navigate to the Unilever sub-debtor page
-    if(debtorName == "Metcash"){
-        const metTab = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div[2]/ul/li[1]'));
+    if (debtorName == "Metcash") {
+        const metTab = await driver.findElement(
+            By.xpath(
+                '//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div[2]/ul/li[1]'
+            )
+        );
         await metTab.click();
-    }else if(debtorName == "Woolworths"){
-        const woolTab = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div[2]/ul/li[2]'));
+    } else if (debtorName == "Woolworths") {
+        const woolTab = await driver.findElement(
+            By.xpath(
+                '//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div[2]/ul/li[2]'
+            )
+        );
         await woolTab.click();
-    }else if(debtorName == "Other"){
-        const otherTab = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div[2]/ul/li[3]'));
+    } else if (debtorName == "Other") {
+        const otherTab = await driver.findElement(
+            By.xpath(
+                '//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div[2]/ul/li[3]'
+            )
+        );
         await otherTab.click();
     }
     await driver.sleep(2000);
@@ -931,25 +811,37 @@ async function navigateToUnileverSubDebtor(driver, debtorName) {
 
 async function navigateToSafetyTab(driver, tabName) {
     // Navigate to the Unilever sub-debtor page
-    if(tabName == "Report"){
-        const repTab = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/ul/li[1]/div'));
+    if (tabName == "Report") {
+        const repTab = await driver.findElement(
+            By.xpath(
+                '//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/ul/li[1]/div'
+            )
+        );
         await repTab.click();
-    }else if(tabName == "Charts"){
-        const chTab = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/ul/li[2]/div'));
+    } else if (tabName == "Charts") {
+        const chTab = await driver.findElement(
+            By.xpath(
+                '//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/ul/li[2]/div'
+            )
+        );
         await chTab.click();
-    }else if(tabName == "Types"){
-        const typesTab = await driver.findElement(By.xpath('//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/ul/li[3]/div'));
+    } else if (tabName == "Types") {
+        const typesTab = await driver.findElement(
+            By.xpath(
+                '//*[@id="app"]/div/div/div/div/div[2]/div/div/div/div/main/div[2]/div/div/div/ul/li[3]/div'
+            )
+        );
         await typesTab.click();
     }
     await driver.sleep(2000);
 }
 
 function normalizeString(str) {
-    return str.trim().replace(/\s+/g, ' ').toLowerCase(); // Normalize by trimming whitespace and converting to lowercase
+    return str.trim().replace(/\s+/g, " ").toLowerCase(); // Normalize by trimming whitespace and converting to lowercase
 }
 
 function areValuesEqual(value1, value2) {
-    if (typeof value1 === 'string' && typeof value2 === 'string') {
+    if (typeof value1 === "string" && typeof value2 === "string") {
         return normalizeString(value1) === normalizeString(value2); // Normalize and compare strings
     }
     return value1 === value2; // For other types, use strict comparison
@@ -957,7 +849,12 @@ function areValuesEqual(value1, value2) {
 
 function areObjectsEqual(obj1, obj2) {
     // Check for null or undefined
-    if (obj1 === null || obj2 === null || obj1 === undefined || obj2 === undefined) {
+    if (
+        obj1 === null ||
+        obj2 === null ||
+        obj1 === undefined ||
+        obj2 === undefined
+    ) {
         return false;
     }
 
@@ -976,7 +873,7 @@ function areObjectsEqual(obj1, obj2) {
     }
 
     // Check if both are objects
-    if (typeof obj1 === 'object' && typeof obj2 === 'object') {
+    if (typeof obj1 === "object" && typeof obj2 === "object") {
         const keys1 = Object.keys(obj1);
         const keys2 = Object.keys(obj2);
 
@@ -1000,6 +897,72 @@ function areObjectsEqual(obj1, obj2) {
     return areValuesEqual(obj1, obj2);
 }
 
+async function scrollandFilter(driver, locator, value, scrollAreaLocator, direction) {
+    let filterInput;
+    const actions = driver.actions();
+    try {
+        filterInput = await driver.findElement(By.xpath(locator));
+        await filterInput.sendKeys(value.toString());
+        await filterInput.click();
+        await actions.sendKeys(Key.RETURN).perform();
+    } catch (error) {
+        if (
+            error.name == "NoSuchElementError" ||
+            error.name == "StaleElementReferenceError" ||
+            error.name == "ElementNotInteractableError" ||
+            error.name == "TypeError"
+        ) {
+            // Scroll to the right
+            const scrollArea = await driver.findElement(
+                By.css(scrollAreaLocator)
+            );
+            const maxAttempts = 50; // Set a maximum number of attempts
+            let attempts = 0;
+
+            while (attempts < maxAttempts) {
+                // Check if the target element is displayed
+                let targetElement;
+                try {
+                    targetElement = await driver.findElement(By.xpath(locator)); // Replace with actual locator
+                } catch (e) {
+                    console.log("Target element not found, scrolling...");
+                }
+                if (targetElement) {
+                    const isVisible = await targetElement.isDisplayed();
+
+                    if (isVisible) {
+                        console.log("Target element is now visible.");
+                        await targetElement.sendKeys(value);
+                        await targetElement.click();
+                        await actions.sendKeys(Key.RETURN).perform();
+                        break; // Exit the loop if the target element is visible
+                    }
+                }
+
+                // Scroll to the right
+                // Send the right arrow key to scroll
+                if(direction == 'right'){
+                    await actions
+                    .move({ origin: scrollArea })
+                    .sendKeys(Key.RIGHT)
+                    .perform();
+                }else if(direction == 'left'){
+                    await actions
+                    .move({ origin: scrollArea })
+                    .sendKeys(Key.LEFT)
+                    .perform();
+                }
+
+                // Optional: Wait briefly to allow the scroll action to take effect
+                await driver.sleep(200);
+                attempts++;
+            }
+        } else {
+            throw error;
+        }
+    }
+}
+
 module.exports = {
     login,
     loginToApp,
@@ -1016,4 +979,6 @@ module.exports = {
     navigateToUnileverSubDebtor,
     navigateToSafetyTab,
     areObjectsEqual,
+    bypassLogin,
+    scrollandFilter,
 };

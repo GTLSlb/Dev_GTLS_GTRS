@@ -3,10 +3,11 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "test:authorization": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports,reportFilename=testResults,timestamp,autoOpen \"tests/authentication/AppsIntegration.js\"",
-        "test:safety": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports,reportFilename=testResults,timestamp,autoOpen \"tests/GTRS/safety.js\"",
+        "test:authorization": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports,reportFilename=testResults,timestamp,autoOpen \"tests/authentication/*.js\"",
+        "test:safety": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports,reportFilename=testResults,timestamp,autoOpen \"tests/GTRS/Safety/Report/safetyReport.js",
         "test": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports,reportFilename=testResults,timestamp,autoOpen 'tests/*.js'",
-        "test:gtrs": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports,reportFilename=testResults,timestamp,autoOpen \"tests/GTRS/consignments.js\""
+        "test:gtrs": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports,reportFilename=testResults,timestamp,autoOpen \"tests/GTRS/*.js\"",
+        "test:gtrs-parallel": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/Dev_GTLS_GTRS/test-reports,reportFilename=testResults,timestamp,autoOpen --parallel \"tests/GTRS/*.js\""
     },
     "devDependencies": {
         "@headlessui/react": "^1.4.2",
