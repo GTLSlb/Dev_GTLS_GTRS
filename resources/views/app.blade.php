@@ -32,7 +32,9 @@
             gtrsUrl: "{{ env('GTRS_API_URL') }}",
             gtccrUrl: "{{ env('GTCCR_API_URL') }}",
             gtamUrl: "{{ env('GTAM_API_URL') }}",
-            appDomain: "{{ env('SESSION_DOMAIN') }}",            gtrsWeb: "{{ env('GTRS_WEB_URL') }}",
+            appDomain: "{{ env('SESSION_DOMAIN') }}",
+            gtrsWeb: "{{ env('GTRS_WEB_URL') }}",
+            googleMapsKey: "{{ env('GOOGLE_MAPS_KEY') }}",
         };
     </script>
     <!-- resources/views/layouts/app.blade.php -->
