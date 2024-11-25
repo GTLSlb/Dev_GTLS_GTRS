@@ -7,6 +7,7 @@ import { AlertToast } from "./permissions";
 import NoAccessRedirect from "@/Pages/NoAccessRedirect";
 import menu from "@/SidebarMenuItems";
 import routes from "@/GTRSRoutes";
+
 const msalConfig = {
     auth: {
         clientId: "05f70999-6ca7-4ee8-ac70-f2d136c50288",

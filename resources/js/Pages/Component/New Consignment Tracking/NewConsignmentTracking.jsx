@@ -31,6 +31,7 @@ import {
 import { ChevronLeftIcon, MapPinIcon } from "@heroicons/react/20/solid";
 import { AlertToast } from "@/permissions";
 
+const googleMapsKey = window.Laravel.googleMapsKey;
 const center = { lat: -25.2744, lng: 133.7751 };
 const australiaBounds = {
     north: -15.0,
@@ -658,7 +659,7 @@ function NewConsignmentTracking() {
 
             <div className=" h-full w-full">
                 <LoadScript
-                    googleMapsApiKey="AIzaSyCvQ-XLmR8QNAr25M30xEcqX-nD-yTQ0go"
+                    googleMapsApiKey={'AIzaSyAKvWV3uHzAynsk1PacF3HWk59FcCvDqik'}
                     libraries={["geometry", "visualization"]}
                 >
                     <GoogleMap

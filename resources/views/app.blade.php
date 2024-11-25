@@ -38,6 +38,7 @@
             gtrsWeb: "{{ env('GTRS_WEB_URL') }}",
             azureCallback: "{{ env('AZURE_CALLBACK_URL') }}",
             backToHomeURL: "{{ env('BACK_TO_HOME_URL') }}",
+            googleMapsKey: "{{ env('GOOGLE_MAPS_KEY') }}",
         };
     </script>
     <!-- resources/views/layouts/app.blade.php -->
