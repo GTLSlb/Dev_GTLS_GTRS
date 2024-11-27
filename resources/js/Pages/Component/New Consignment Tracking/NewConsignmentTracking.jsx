@@ -659,7 +659,7 @@ function NewConsignmentTracking() {
 
             <div className=" h-full w-full">
                 <LoadScript
-                    googleMapsApiKey={'AIzaSyAKvWV3uHzAynsk1PacF3HWk59FcCvDqik'}
+                    googleMapsApiKey={googleMapsKey}
                     libraries={["geometry", "visualization"]}
                 >
                     <GoogleMap
