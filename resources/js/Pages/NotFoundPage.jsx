@@ -13,7 +13,7 @@ export default function NotFoundPage() {
                         <img src={notFound} alt="" />
                     </div>
                     <div className="w-full">
-                        
+
                         <div className="text-3xl sm:text-6xl text-smooth  font-bold flex justify-center">
                             Page Not Found
                         </div>

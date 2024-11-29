@@ -1,20 +1,16 @@
 import React from "react";
 import BarCharData from "./safetyCharts/SafetyCard02";
-import TypeofProblemChart from "./safetyCharts/BarChartData";
 import RGL, { WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 const ReactGridLayout = WidthProvider(RGL);
 import "react-resizable/css/styles.css";
 import { useEffect } from "react";
-import notFound from "../../../assets/pictures/NotFound.png";
 import { useState } from "react";
 import SafetyRepByState from "./safetyCharts/SafetyRepByState";
 import MultiBarChart from "./safetyCharts/SafetyDoubleBarChart";
 import BasicPieCharts from "@/Components/dashboard/DashboardCard13";
 import {
-    ChevronDownIcon,
     ArrowsPointingOutIcon,
-    PlayCircleIcon,
 } from "@heroicons/react/20/solid";
 import StackedBarChart from "./safetyCharts/StackedBarChart";
 export default function SafetyRepChart({

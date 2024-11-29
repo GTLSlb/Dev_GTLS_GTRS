@@ -23,7 +23,7 @@ export default function Reciever(item) {
                     RECEIVER POSTCODE
                     </dt>
                     <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['RECEIVERPOSTCODE']}</dd>
-                    
+
                 </div>
             </dl>
         </div>

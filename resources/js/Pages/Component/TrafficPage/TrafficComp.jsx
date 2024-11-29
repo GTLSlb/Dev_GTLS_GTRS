@@ -6,7 +6,6 @@ import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import {
     ChevronDownIcon,
     EyeIcon,
-    PencilIcon,
 } from "@heroicons/react/24/outline";
 import { saveAs } from "file-saver";
 import ExcelJS from "exceljs";
@@ -258,7 +257,7 @@ function TraffiComp() {
             textAlign: "center",
             defaultWidth: 170,
         },
-        
+
     ];
 
     function handleFilterTable() {
@@ -780,8 +779,10 @@ function TraffiComp() {
         });
     }
     const getexceldata = ({ skip, limit, sortInfo, filterValue }) => {
-        setExportLoading(true);
-        const url = `${gtrsWebUrl}get-positions`;
+        setExportLoading(true)
+        const url =
+            `${gtrsWebUrl}get-positions`;
+
         return fetch(url).then((response) => {
             const totalCount = response.headers.get("X-Total-Count");
             return response.json().then((data) => {

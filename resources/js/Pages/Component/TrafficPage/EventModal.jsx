@@ -59,7 +59,6 @@ function EventModal({
     isOpen,
     eventDetails,
     loading,
-    getEventCategoryById,
 }) {
      const getIcon = (eventType) => {
        

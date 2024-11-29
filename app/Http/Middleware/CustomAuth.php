@@ -10,6 +10,8 @@ use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 
 class CustomAuth extends Middleware
 {
@@ -42,27 +44,24 @@ class CustomAuth extends Middleware
         return false;
     }
 
-    public function handle($request, Closure $next, ...$guards)
+    public function handle($request, $next, ...$guards)
     {
         $hasSession = $request->hasSession();
         if ($hasSession) {
-            //$session = $request->session();
             $sessionToken = $request->session()->token();
             $path = $request->path();
             $request->headers->set('X-CSRF-TOKEN', csrf_token());
-            // Allow access to the login route
-            if ($path == 'login' || $path == 'loginapi') {
+            if ($path == 'loginComp' || $path == 'login' || $path == 'loginapi' || $path == 'forgot-password' || $path == 'auth/azure' || $path == 'auth/azure/callback' || $path == 'microsoftToken' || $path == 'logoutWithoutRequest' || $path == 'gtrs/logoutWithoutReq'|| $path == 'logoutWithoutReq') {
                 return $next($request);
             }
-            if ($path !== 'login' && $path !== 'loginapi' && $path !== 'forgot-password' && !$request->session()->has('user')) {
+            if (!$request->session()->has('user')) {
                 return redirect()->route('login');
             }
         } else {
-            if ($request->path() == 'login' || $request->path() == 'loginapi') {
+            $path = $request->path();
+            if ($path == 'loginComp' || $path == 'login' || $path == 'loginapi' || $path == 'forgot-password' || $path == '/auth/azure' || $path == 'auth/azure/callback' || $path == 'microsoftToken' || $path == 'logoutWithoutRequest'|| $path == 'gtrs/logoutWithoutReq' || $path == 'logoutWithoutReq') {
                 return $next($request);
             }
-
-
         }
         return $next($request);
     }

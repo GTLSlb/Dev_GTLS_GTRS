@@ -3,13 +3,21 @@ import { PencilIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useEffect } from "react";
 import AddFailedModal from "../../../modals/AddFailedModal";
-import notFound from "../../../../../assets/pictures/NotFound.png"
+import notFound from "../../../../../assets/pictures/NotFound.png";
 import AddSafetyCausesModal from "./AddSafetyCausesModel";
-import swal from 'sweetalert';
+import swal from "sweetalert";
+import { getApiRequest, handleSessionExpiration } from "@/CommonFunctions";
+
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
-export default function AddSafetyCauses({ AToken, safetyCauses, setSafetyCauses , currentUser , url}) {
+export default function AddSafetyCauses({
+    AToken,
+    safetyCauses,
+    setSafetyCauses,
+    currentUser,
+    url,
+}) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [Data, setData] = useState(safetyCauses);
     const [cause, setCause] = useState();
@@ -20,51 +28,16 @@ export default function AddSafetyCauses({ AToken, safetyCauses, setSafetyCauses 
         setIsModalOpen(isModalCurrentlyOpen);
     };
     const [currentPage, setCurrentPage] = useState(0);
-    function fetchData() {
-        axios
-            .get(`${url}SafetyCauses`,{
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setSafetyCauses(parsedData);
-                    setData(parsedData);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
-                } else {
-                  // Handle other errors
-                  console.log(err);
-                }
-              });
+
+    async function fetchData() {
+        const data = await getApiRequest(`${url}SafetyCauses`, {
+            UserId: currentUser?.UserId,
+        });
+
+        if (data) {
+            setSafetyCauses(data);
+            setData(data);
+        }
     }
 
     const updateLocalData = () => {
@@ -96,7 +69,6 @@ export default function AddSafetyCauses({ AToken, safetyCauses, setSafetyCauses 
                                 <table
                                     id="details"
                                     className="min-w-full table-fixed divide-y divide-gray-300 "
-                                    // ref={tableRef}
                                 >
                                     <thead className="h-12">
                                         <tr className="py-2.5">
@@ -179,12 +151,12 @@ export default function AddSafetyCauses({ AToken, safetyCauses, setSafetyCauses 
                                             <tr>
                                                 <td colSpan="7">
                                                     <div class=" h-64 flex items-center justify-center mt-10">
-                                                    <div class="text-center flex justify-center flex-col">
-                                                           <img
-                                                           src={notFound}
-                                                           alt=""
-                                                           className="w-52 h-auto "
-                                                           />
+                                                        <div class="text-center flex justify-center flex-col">
+                                                            <img
+                                                                src={notFound}
+                                                                alt=""
+                                                                className="w-52 h-auto "
+                                                            />
                                                             <h1 class="text-3xl font-bold text-gray-900">
                                                                 No Data Found
                                                             </h1>
@@ -198,24 +170,24 @@ export default function AddSafetyCauses({ AToken, safetyCauses, setSafetyCauses 
                             </div>
                         ) : (
                             <div class=" h-64 flex items-center justify-center mt-10">
-                                                        <div class="text-center flex justify-center flex-col">
-                                                           <img
-                                                           src={notFound}
-                                                           alt=""
-                                                           className="w-52 h-auto "
-                                                           />
-                                                            <h1 class="text-3xl font-bold text-gray-900">
-                                                                No Data Found
-                                                            </h1>
-                                                        </div>
-                                                    </div>
+                                <div class="text-center flex justify-center flex-col">
+                                    <img
+                                        src={notFound}
+                                        alt=""
+                                        className="w-52 h-auto "
+                                    />
+                                    <h1 class="text-3xl font-bold text-gray-900">
+                                        No Data Found
+                                    </h1>
+                                </div>
+                            </div>
                         )}
                     </div>
                 </div>
             </div>
             <AddSafetyCausesModal
-            url={url}
-            AToken={AToken}
+                url={url}
+                AToken={AToken}
                 currentUser={currentUser}
                 ariaHideApp={false}
                 isOpen={isModalOpen}

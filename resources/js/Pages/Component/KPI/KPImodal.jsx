@@ -4,12 +4,15 @@ import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import ReactModal from "react-modal";
 import swal from "sweetalert";
+import { handleSessionExpiration } from '@/CommonFunctions';
+
 export default function KPIModalAddReason({
     isOpen,
     handleClose,
     url,
     kpi,
     AToken,
+    userPermission,
     currentUser,
     updateLocalData,
     kpiReasons,
@@ -20,7 +23,6 @@ export default function KPIModalAddReason({
     const [kpiRow, setKPIRow] = useState(kpi);
     const [note, setNote] = useState("");
     const [isLoading, SetIsLoading] = useState(false);
-    const [audit, setAudit] = useState();
     const [reasonname, setReasonName] = useState();
     const [selected, setSelected] = useState();
     const [showDesc, setShowDesc] = useState();
@@ -87,17 +89,8 @@ export default function KPIModalAddReason({
                             type: "success",
                             icon: "info",
                             confirmButtonText: "OK",
-                        }).then(function () {
-                            axios
-                                .post("/logoutAPI")
-                                .then((response) => {
-                                    if (response.status == 200) {
-                                        window.location.href = "/";
-                                    }
-                                })
-                                .catch((error) => {
-                                    console.log(error);
-                                });
+                        }).then(async function () {
+                            await handleSessionExpiration();
                         });
                     } else {
                         // Handle other errors

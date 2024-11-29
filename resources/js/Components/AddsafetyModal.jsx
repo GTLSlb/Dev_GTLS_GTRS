@@ -1,11 +1,10 @@
 import ReactModal from "react-modal";
-import TextInput from "./TextInput";
-import InputError from "./InputError";
 import { useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
 import "../../css/scroll.css";
 import swal from "sweetalert";
+import { handleSessionExpiration } from '@/CommonFunctions';
 
 const placeholder = "test";
 
@@ -54,6 +53,7 @@ export default function SafetyModal({
         setFormValues({
             ReportId: id,
             SafetyType: modalSafetyType,
+            DebtorId: modalDebtorId,
             ConsNo: modalConsNo,
             MainCause: modalMainCause,
             State: modalState,
@@ -102,7 +102,6 @@ export default function SafetyModal({
         event.preventDefault(); // Prevent the default form submission behavior
         try {
             SetIsLoading(true);
-            
             const response = await axios.post(
                 `${url}Add/SafetyReport`,
                 formValues,
@@ -132,20 +131,10 @@ export default function SafetyModal({
                     type: "success",
                     icon: "info",
                     confirmButtonText: "OK",
-                }).then(function () {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                            if (response.status == 200) {
-                                window.location.href = "/";
-                            }
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                        });
+                }).then(async function () {
+                    await handleSessionExpiration();
                 });
             } else {
-                // Handle other errors
                 console.log(err);
             }
             console.log(error);
@@ -156,11 +145,10 @@ export default function SafetyModal({
         <ReactModal
             ariaHideApp={false}
             isOpen={isOpen}
-            // onRequestClose={handlePopUpClose}
             className="fixed inset-0 flex items-center justify-center "
             overlayClassName="fixed inset-0 bg-black bg-opacity-60"
         >
-            <div className="bg-white w-96 rounded-lg shadow-lg p-6 ">
+            <div className="bg-white w-96 2xl:w-[28%] rounded-lg shadow-lg p-6 ">
                 <div className="flex justify-end">
                     <button
                         className="text-gray-500 hover:text-gray-700"

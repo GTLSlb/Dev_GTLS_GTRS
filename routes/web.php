@@ -8,7 +8,6 @@ use App\Http\Controllers\ContactUsFormController;
 use App\Http\Controllers\SupportFormController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\FileController;
-use App\Http\Controllers\AzureAuthController;
 use App\Http\Controllers\SendDailyEmail;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -16,8 +15,10 @@ use Inertia\Inertia;
 use Laravel\Socialite\Facades\Socialite;
 use SocialiteProviders\Azure\AzureProvider;
 use Illuminate\Http\Request;
-use App\Http\Controllers\LoginController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\ImageController;
+use gtls\loginstory\LoginClass;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -28,102 +29,44 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/', function () {
+    return Inertia::render('Layout');
+})->middleware(['custom.auth'])->name('Main');
 
 Route::get('/login', function () {
     return Inertia::render('Auth/Login');
 })->name('login');
 
-Route::get('/', function () {
-    return Inertia::render('Layout');
-})->middleware(['custom.auth'])->name('Main');
+Route::get('/forgot-password', function () {
+    return Inertia::render('Auth/ForgotPassword');
+})->name('forgot.password');
 
-Route::post('/loginapi', [LoginController::class, 'login'])->name('loginapi');
+Route::post('/loginComp', [ LoginClass::class, 'login'])->name('loginComp');
 
-Route::post('/logoutAPI', [LoginController::class, 'logout'])->middleware(['custom.auth'])->name('logoutAPI');
+Route::get('/auth/azure/callback', [LoginClass::class, 'handleCallback'])->name('azure.callback');
 
-Route::get('/main', function () {
+Route::post('/microsoftToken', [LoginClass::class, 'sendToken'])->name('azure.token');
+
+Route::post('/composerLogout', [ LoginClass::class, 'logout'])->middleware(['custom.auth'])->name('composerLogout');
+
+Route::post('/logoutWithoutReq', [ LoginClass::class, 'logoutWithoutRequest'])->middleware(['custom.auth'])->name('composerLogoutWithoutReq');
+
+Route::get('/gtrs/dashboard', function () {
     return Inertia::render('Layout');
 })->middleware(['custom.auth'])->name('layout');
 
-Route::get('/LandingPage', function () {
-    return Inertia::render('LandingPage');
+Route::redirect('/', '/gtrs/main');
+
+Route::get('/gtrs/main', function () {
+    return Inertia::render('Layout');
 })->middleware(['custom.auth'])->name('landing.page');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['custom.auth'])->name('dashboard');
-
-Route::get('/gtms', function () {
-    return Inertia::render('GTMS');
-})->middleware(['custom.auth']);
 
 Route::get('/gtam', function () {
     return Inertia::render('GTAM');
 })->middleware(['custom.auth'])->name('gtam');
 
-Route::get('/gtrs', function () {
-    return Inertia::render('GTRS');
-})->middleware(['custom.auth'])->name('gtrs');
-
-Route::get('/gtw', function () {
-    return Inertia::render('GTW');
-})->middleware(['custom.auth'])->name('gtw');
-
-Route::get('/opportunities', function () {
-    return Inertia::render('Opportunities');
-})->name('opportunities');
-
-Route::get('/goinggreen', function () {
-    return Inertia::render('GoingGreen');
-})->name('goinggreen');
-
-Route::get('/terms', function () {
-    return Inertia::render('Terms');
-})->name('terms');
-
-Route::get('/palletterms', function () {
-    return Inertia::render('PalletTerms');
-})->name('palletterms');
-
-Route::get('/capabilitystatement', function () {
-    return Inertia::render('Capability');
-})->name('capabilitystatement');
-
-// Route::get('/news', function () {
-//     return Inertia::render('NewsPage');
-// })-> name('news');
-
-Route::get('/news/{id}', function ($id) {
-    return Inertia::render('NewsPage', ['id' => $id]);
-})->name('news');
-
-Route::post('/contact', [ContactFormController::class, 'submitContactForm'])->name('contact.submit');
-Route::post('/contactus', [ContactUsFormController::class, 'submitContactUsForm'])->name('contactus.submit');
 Route::post('/support', [SupportFormController::class, 'submitSupportForm'])->name('support.submit');
-
-Route::get('/download-docx', function () {
-    $pathToFile = public_path('pdf/20230630-Gold-Tiger-Logistics-Solutions-Trading-Terms-and-Conditions.pdf');
-    $headers = array(
-        'Content-Type: application/pdf',
-    );
-    return response()->download($pathToFile, '20230630-Gold-Tiger-Logistics-Solutions-Trading-Terms-and-Conditions.pdf', $headers);
-});
-// Route::post('/auth/azure', function (Request $request) {
-//     $data = $request->json()->all();
-//     $email = $data['email'];
-//     $UserId = $data['UserId'];
-//     return Socialite::driver('azure')
-//     ->with(['login_hint' => $email]) // Pass the email address as a parameter to the Azure AD login page
-//     ->redirect();
-// });
-
-Route::get('/downloadGTLS-Pallets', function () {
-    $pathToFile = public_path('docs/GTLS Pallet Trading Policy 2023_08_23.pdf');
-    $headers = array(
-        'Content-Type: application/docx',
-    );
-    return response()->download($pathToFile, 'GTLS Pallet Trading Policy 2023_08_23.pdf', $headers);
-});
 
 Route::post('/sendemail', [SendDailyEmail::class, 'SendEmail']);
 
@@ -152,18 +95,11 @@ Route::get('/downloadGTLS-docx', function () {
 });
 
 Route::get('/checkAuth', [AuthenticatedSessionController::class, 'checkAuth']);
-Route::get('/auth/azure', function () {
-    return Socialite::driver('azure')->redirect();
-});
-
-Route::get('/auth/azure/callback', [AzureAuthController::class, 'handleCallback']);
-Route::get('/checkEmail', [AzureAuthController::class, 'handleClickCallBack']);
-
 
 Route::middleware('custom.auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::get('/users', [RegisteredUserController::class, 'getCurrentUserName']);
+    Route::get('/users', [RegisteredUserController::class, 'getCurrentUserName'])->name('/gtms');
     Route::get('/childrens/{id}', [RegisteredUserController::class, 'getChildrens']);
     Route::get('/childrenlist/{id}', [RegisteredUserController::class, 'getChildrensList']);
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -172,7 +108,15 @@ Route::middleware('custom.auth')->group(function () {
     Route::get('/findUserById/{user_id}', [RegisteredUserController::class, 'searchUserByName']);
     Route::get('/getUsersWhoCanApprove', [RegisteredUserController::class, 'getUsersWhoCanApprove']);
     Route::delete('/delete-file', [RegisteredUserController::class, 'deleteFile']);
+    Route::post('/auth/azure', function () {
+        return Socialite::driver('azure')->redirect();
+    })->name('azure.login');
+    Route::get('/{path?}', function (Request $request) {
+        return Inertia::render('Layout');
+    })->where('path', '.*');
 });
+
+Route::post('/getAppLogo', [ImageController::class, 'showAppLogo'])->name('logo.show');
 
 Route::get('/session-data', function () {
     return response()->json(['userr' => session('userr')]);
@@ -184,8 +128,5 @@ Route::fallback(function () {
     ]);
 });
 
-Route::get('/forgot-password', function () {
-    return Inertia::render('Auth/ForgotPassword');
-})->name('forgot.password');
 
 require __DIR__ . '/auth.php';

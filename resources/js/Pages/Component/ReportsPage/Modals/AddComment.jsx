@@ -3,7 +3,10 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import "../../../../../css/scroll.css";
 import swal from "sweetalert";
-import { Spinner } from "@nextui-org/react";
+import { handleSessionExpiration } from "@/CommonFunctions";
+import {
+    Spinner,
+} from "@nextui-org/react";
 
 export default function AddComment({
     isOpen,
@@ -15,97 +18,66 @@ export default function AddComment({
     currentUser,
     commentsData,
 }) {
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, SetIsLoading] = useState(false);
     const [formValues, setFormValues] = useState({
-        CommentId: null,
-        ConsId: consId,
-        Comment: "",
+        "CommentId":null,
+        "ConsId": consId,
+        "Comment": ""
     });
 
     const handlePopUpClose = () => {
         setError(null);
         // Clear the error message
         setFormValues({
-            CommentId: null,
-            ConsId: null,
-            Comment: "",
+            "CommentId":null,
+            "ConsId": null,
+            "Comment": ""
         });
         handleClose(); // Clear the input value
     };
     useEffect(() => {
-        if (consId) {
-            setFormValues({
-                CommentId: null,
-                ConsId: consId,
-                Comment: "",
-            });
+        if(consId){
+            setFormValues(
+                {
+                    "CommentId":null,
+                    "ConsId": consId,
+                    "Comment": ""
+                }
+            )
         }
-    }, [consId]);
+    },[consId]);
 
     const [error, setError] = useState(null);
     const handleChange = (e) => {
         setFormValues({
             ...formValues,
-            Comment: e.target.value,
+            "Comment": e.target.value,
         });
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault(); // Prevent the default form submission behavior
-        if (formValues?.Comment === "" || formValues?.Comment === null) {
+        if(formValues?.Comment === "" || formValues?.Comment === null){
             setError("Comment cannot be empty");
             return;
-        } else {
+        }else{
             try {
-                setIsLoading(true);
-                await axios
-                    .post(`${url}Add/Delivery/Comment`, formValues, {
-                        headers: {
-                            UserId: currentUser.UserId,
-                            Authorization: `Bearer ${AToken}`,
-                        },
-                    })
-                    .then((response) => {
-                        fetchData();
-                        setTimeout(() => {
-                            handleClose();
-                            setIsLoading(false);
-                        }, 1000);
-                    })
-                    .catch((error) => {
-                        setIsLoading(false);
-                        // Handle error
-                        if (error.response && error.response.status === 401) {
-                            // Handle 401 error using SweetAlert
-                            swal({
-                                title: "Session Expired!",
-                                text: "Please login again",
-                                type: "success",
-                                icon: "info",
-                                confirmButtonText: "OK",
-                            }).then(async function () {
-                                axios
-                                    .post("/logoutAPI")
-                                    .then((response) => {
-                                        if (response.status == 200) {
-                                            window.location.href = "/";
-                                        }
-                                    })
-                                    .catch((error) => {
-                                        console.log(error);
-                                    });
-                            });
-                        } else {
-                            // Handle other errors
-                            console.log(error);
-                        }
-                        console.log(error);
-                        setError(
-                            "Error occurred while saving the data. Please try again."
-                        ); // Set the error message
-                    });
+                SetIsLoading(true);
+
+                const response = await axios.post(`${url}Add/Delivery/Comment`, formValues, {
+                    headers: {
+                        UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
+                    },
+                });
+
+                fetchData();
+                setTimeout(() => {
+                    handleClose();
+                    SetIsLoading(false);
+                }, 1000);
             } catch (error) {
-                setIsLoading(false);
+                SetIsLoading(false);
                 // Handle error
                 if (error.response && error.response.status === 401) {
                     // Handle 401 error using SweetAlert
@@ -116,25 +88,14 @@ export default function AddComment({
                         icon: "info",
                         confirmButtonText: "OK",
                     }).then(async function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                        await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors
                     console.log(error);
                 }
                 console.log(error);
-                setError(
-                    "Error occurred while saving the data. Please try again."
-                ); // Set the error message
+                setError("Error occurred while saving the data. Please try again."); // Set the error message
             }
         }
     };
@@ -148,7 +109,9 @@ export default function AddComment({
         >
             <div className="bg-white w-[40%] rounded-lg shadow-lg py-6 px-8">
                 <div className="flex justify-between border-b-1 border-[#D5D5D5]">
-                    <h2 className="text-2xl font-bold mb-4">Add New Comment</h2>
+                    <h2 className="text-2xl font-bold mb-4">
+                        {"Add New Comment"}
+                    </h2>
                     <button
                         className="text-gray-500 hover:text-gray-700"
                         onClick={handleClose}
@@ -175,11 +138,11 @@ export default function AddComment({
                         {error && (
                             <div className="text-red-500 my-2">{error}</div>
                         )}
-                        <div className="w-full border border-black/30 h-[250px] rounded my-4">
+                        <div className="w-full border border-black/30 rounded my-4">
                             <textarea
                                 id="NewComment"
                                 name="Name"
-                                className="w-full h-[250px] border-none containerscroll"
+                                className="w-full h-full border-none containerscroll"
                                 placeholder="Enter your comment"
                                 defaultValue={formValues.Comment?.Name}
                                 value={formValues.Comment?.Name}
@@ -199,15 +162,13 @@ export default function AddComment({
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="bg-gray-800 w-[6.5rem] text-white font-bold p-2 rounded hover:bg-gray-800/80"
+                                className="bg-gray-800 w-[6.5rem] text-white font-bold p-2 rounded"
                             >
                                 {isLoading ? (
                                     <div className=" inset-0 flex justify-center items-center bg-opacity-50">
                                         <Spinner color="default" size="sm" />
-                                    </div>
-                                ) : (
-                                    "Add"
-                                )}
+                                  </div>
+                                ) : ("Add")}
                             </button>
                         </div>
                     </div>

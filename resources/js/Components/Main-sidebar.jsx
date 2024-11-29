@@ -1,24 +1,7 @@
 import {
-    DocumentChartBarIcon,
-    CogIcon,
-    HomeIcon,
-    PhotoIcon,
-    GlobeAltIcon,
-    ArrowDownIcon,
-    Squares2X2Icon,
-    UserGroupIcon,
     XMarkIcon,
-    Bars3Icon,
-    BookmarkSquareIcon,
-    UserMinusIcon,
-    DocumentMagnifyingGlassIcon,
-    PencilIcon,
-    UsersIcon,
     ArrowRightOnRectangleIcon,
-    PencilSquareIcon,
     QuestionMarkCircleIcon,
-    ArrowLeftOnRectangleIcon,
-    ChevronDownIcon,
 } from "@heroicons/react/24/outline";
 import {
     Accordion,
@@ -28,425 +11,36 @@ import {
 } from "react-headless-accordion";
 import { useEffect } from "react";
 import { Fragment, useState } from "react";
-import { Dialog, Menu, Transition } from "@headlessui/react";
+import { Dialog, Transition } from "@headlessui/react";
 import tiger from "../assets/pictures/tiger.png";
-import JAIX from "../assets/partners/JAIX.webp";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import SupportModal from "@/Pages/Component/modals/SupportModal";
+import { PublicClientApplication } from "@azure/msal-browser";
+import { clearMSALLocalStorage } from "@/CommonFunctions";
+import Cookies from "js-cookie";
 
 export default function MainSidebar({
     allowedApplications,
     setMobileMenuOpen,
     mobileMenuOpen,
-    setActiveIndexGtam,
-    setactivePage,
-    setActiveIndexInv,
+    setToken,
+    setCurrentUser,
     currentUser,
-    setActiveIndexGTRS,
-    activePage,
+    user,
 }) {
-    const invoicesRoles = [6, 7, 8, 9, 10];
-    const [gtrsCurrent, setGtrsCurrent] = useState();
-    // useEffect(() => {
-    //     handleSetActivePage(0);
-    // }, []);
-
-    const current_user_role = currentUser?.role_id;
+    const appUrl = window.Laravel.appUrl;
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const sidebarNavigation = [
-        {
-            id: 0,
-            name: "GTRS",
-            // href: "#",
-            icon: DocumentMagnifyingGlassIcon,
-            current: false,
-            options: [
-                {
-                    id: 0,
-                    name: "Dashboard",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 1,
-                    name: "Consignments",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 2,
-                    name: "Kpi Report",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 4,
-                    name: "Performance report",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 5,
-                    name: "Failed Consignments",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 6,
-                    name: "No Delivery info",
-                    current: false,
-                    role: ["1", "4"],
-                },
-                {
-                    id: 7,
-                    name: "Additional Charges",
-                    current: false,
-                    role: ["1", "4"],
-                },
-                {
-                    id: 8,
-                    name: "Driver Login",
-                    current: false,
-                    role: ["1", "4"],
-                },
-                {
-                    id: 9,
-                    name: "RDD",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 10,
-                    name: "Safety",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 11,
-                    name: "Missing POD",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 12,
-                    name: "Transit Days",
-                    current: false,
-                    role: ["1", "4"],
-                },
-                {
-                    id: 13,
-                    name: "Holidays",
-                    current: false,
-                    role: ["1", "4"],
-                },
-                {
-                    id: 14,
-                    name: "KPI Reasons",
-                    current: false,
-                    role: ["1", "4"],
-                },
-                {
-                    id: 21,
-                    name: "Delivery Report",
-                    current: false,
-                    role: ["1", "4"],
-                },
-            ],
-            func: setActiveIndexGTRS,
-            role: ["1", "2", "3", "4", "5"],
-        },
-        {
-            id: 2,
-            name: "Invoices",
-            href: "https://gtis.gtls.au",
-            icon: DocumentChartBarIcon,
-            current: gtrsCurrent,
-            options: [
-                // {
-                //     id: 0,
-                //     name: "Dashboard",
-                //     current: false,
-                //     role: ["1"],
-                // },
-                // {
-                //     id: 1,
-                //     name: "Invoices",
-                //     current: false,
-                //     role: ["1", "6", "7", "8", "9", "10"],
-                // },
-                // {
-                //     id: 2,
-                //     name: "Purchase order",
-                //     current: false,
-                //     role: ["1", "6", "7", "8", "9", "10"],
-                // },
-                // {
-                //     id: 3,
-                //     name: "Suppliers",
-                //     current: false,
-                //     role: ["1", "6", "7", "8", "9", "10"],
-                // },
-                // {
-                //     id: 4,
-                //     name: "Services",
-                //     current: false,
-                //     role: ["1", "6", "7", "8", "9", "10"],
-                // },
-                // {
-                //     id: 5,
-                //     name: "Companies",
-                //     current: false,
-                //     role: ["1", "6", "7", "8", "9", "10"],
-                // },
-                // {
-                //     id: 11,
-                //     name: "Categories",
-                //     current: false,
-                //     role: ["1", "6", "7", "8", "9", "10"],
-                // },
-                // {
-                //     id: 12,
-                //     name: "Close reasons",
-                //     current: false,
-                //     role: ["1", "6", "7", "8", "9", "10"],
-                // },
-            ],
-            role: ["1", "6", "7", "8", "9", "10"],
-        },
-        {
-            id: 1,
-            name: "GTAM",
-            href: "https://gtam.gtls.au",
-            icon: UsersIcon,
-            current: false,
-            options: [
-                // {
-                //     id: 0,
-                //     name: "Dashboard",
-                //     current: false,
-                //     role: ["1", "2", "3", "4", "5"],
-                // },
-                // {
-                //     id: 1,
-                //     name: "Employees",
-                //     current: false,
-                //     role: ["1", "2", "3", "4", "5"],
-                // },
-                // {
-                //     id: 2,
-                //     name: "Roles",
-                //     current: false,
-                //     role: ["1", "2", "3", "4", "5"],
-                // },
-                // {
-                //     id: 3,
-                //     name: "Apps",
-                //     current: false,
-                //     role: ["1", "2", "3", "4", "5"],
-                // },
-                // {
-                //     id: 4,
-                //     name: "Groups",
-                //     current: false,
-                //     role: ["1", "2", "3", "4", "5"],
-                // },
-                // {
-                //     id: 5,
-                //     name: "Branches",
-                //     current: false,
-                //     role: ["1", "4"],
-                // },
-            ],
-            role: ["1"],
-        },
-        {
-            id: 3,
-            name: "GTRS",
-            href: "https://gtrs.gtls.au",
-            icon: DocumentMagnifyingGlassIcon,
-            current: false,
-            options: [
-                {
-                    id: 0,
-                    name: "Dashboard",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 1,
-                    name: "Consignments",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 2,
-                    name: "Kpi Report",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 4,
-                    name: "Performance report",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 5,
-                    name: "Failed Consignments",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 6,
-                    name: "No Delivery info",
-                    current: false,
-                    role: ["1", "4"],
-                },
-                {
-                    id: 7,
-                    name: "Additional Charges",
-                    current: false,
-                    role: ["1", "4"],
-                },
-                {
-                    id: 8,
-                    name: "Driver Login",
-                    current: false,
-                    role: ["1", "4"],
-                },
-                {
-                    id: 9,
-                    name: "RDD",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 10,
-                    name: "Safety",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 11,
-                    name: "Missing POD",
-                    current: false,
-                    role: ["1", "2", "3", "4", "5"],
-                },
-                {
-                    id: 12,
-                    name: "Transit Days",
-                    current: false,
-                    role: ["1", "4"],
-                },
-                {
-                    id: 13,
-                    name: "Holidays",
-                    current: false,
-                    role: ["1", "4"],
-                },
-                {
-                    id: 14,
-                    name: "KPI Reasons",
-                    current: false,
-                    role: ["1", "4"],
-                },
-            ],
-            func: setActiveIndexGTRS,
-            role: ["1", "2", "3", "4", "5"],
-        },
-        {
-            id: 4,
-            name: "GTMS",
-            href: "https://gtms.gtls.au",
-            icon: HomeIcon,
-            current: false,
-            role: ["1"],
-        },
-        {
-            id: 5,
-            name: "Admin",
-            href: "/nova",
-            icon: PencilSquareIcon,
-            current: false,
-
-            role: ["1"],
-        },
-        {
-            id: 6,
-            name: "Jaix",
-            href: "https://jaixwebapps.gtls.com.au/Portal/Account/Login.aspx",
-            img: JAIX,
-            current: false,
-            role: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-        },
-
-        // { name: 'Settings', href: '#', icon: CogIcon, current: false },
-    ];
-    const [sidebarElements, setSidebarElements] = useState([]);
+    const [sidebarNavigation, setSidebarNavigation] = useState([]);
     useEffect(() => {
-        let elements = [];
-       sidebarNavigation?.map((item)=>{
-           allowedApplications?.map((element)=>{
-               if(item.id == element.AppId){
-                    item.href=element?.AppURL
-                    elements.push(item)
-               }
-           })
-       })
-       setSidebarElements(elements.reverse())
-    },[allowedApplications])
-    const handleClick = (index) => {
-        if (index == 5 || index == 6) {
-            setMobileMenuOpen(false);
-        } else {
-            setactivePage(index);
-            setMobileMenuOpen(false);
-            const updatedElements = sidebarNavigation.map((element) => {
-                if (element.id === index) {
-                    return { ...element, current: true };
-                } else {
-                    return { ...element, current: false };
-                }
-            });
-            setSidebarElements(updatedElements);
+        if (user && Object.keys(user).length !== 0) {
+            let gtrsElements = sidebarNavigation;
+            setSidebarNavigation(gtrsElements);
         }
-    };
-    const handleClickSupport = (index) => {};
-
-    const handleClickSide = (index, tabind) => {
-        setactivePage(0);
-        if (index == 3) {
-            setActiveIndexGTRS(tabind);
-        } else if (index == 2) {
-            setActiveIndexInv(tabind);
-        } else if (index == 1) {
-            setActiveIndexGtam(tabind);
-        }
-
-        setMobileMenuOpen(false);
-        const updatedElements = sidebarElements.map((element) => {
-            if (element.id === index) {
-                element?.options.map((option)=>{
-                    if(option.id == tabind){
-                        option.current = true;
-                    }
-                })
-                return { ...element, current: true };
-            } else {
-                return { ...element, current: false };
-            }
-        });
-        setSidebarElements(updatedElements);
-    };
+    }, [user]);
 
     function classNames(...classes) {
         return classes.filter(Boolean).join(" ");
     }
-    const handleLinkClick = (event) => {
-        event.preventDefault();
-        // Call the `visit` method to navigate to the new page
-        Inertia.visit(event.target.href);
-    };
 
     const handleEditClick = () => {
         const isModalCurrentlyOpen = !isModalOpen;
@@ -454,14 +48,48 @@ export default function MainSidebar({
         setIsModalOpen(isModalCurrentlyOpen);
         setMobileMenuOpen(false);
     };
+    const msalConfig = {
+        auth: {
+            clientId: "05f70999-6ca7-4ee8-ac70-f2d136c50288",
+            authority:
+                "https://login.microsoftonline.com/647bf8f1-fc82-468e-b769-65fd9dacd442",
+            redirectUri: window.Laravel.azureCallback,
+        },
+        cache: {
+            cacheLocation: "localStorage",
+            storeAuthStateInCookie: true, // Set this to true if dealing with IE11 or issues with sessionStorage
+        },
+    };
+    const pca = new PublicClientApplication(msalConfig);
+    const handleLogout = async () => {
+        const credentials = {
+            URL: window.Laravel.gtamUrl,
+            CurrentUser: currentUser,
+            SessionDomain: window.Laravel.appDomain,
+        };
 
-    const handleLogout = () => {
-        const isLoggingOut = true;
+        await pca.initialize();
+
         axios
-            .post("/logoutAPI", isLoggingOut)
+            .post("/composerLogout", credentials)
             .then((response) => {
-                if (response.status == 200) {
-                    window.location.href = "/";
+                if (response.status === 200 && response.data.status === 200) {
+                    localStorage.removeItem('current');
+                    const isMicrosoftLogin = Cookies.get(
+                        "msal.isMicrosoftLogin"
+                    );
+                    clearMSALLocalStorage();
+                    Cookies.remove('access_token');
+
+                    if (isMicrosoftLogin == "true") {
+                        window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=${window.Laravel.appUrl}/login`;
+                        setToken(null);
+                        setCurrentUser(null);
+                    } else {
+                        window.location.href = `${window.Laravel.appUrl}/login`;
+                        setToken(null);
+                        setCurrentUser(null);
+                    }
                 }
             })
             .catch((error) => {
@@ -481,15 +109,48 @@ export default function MainSidebar({
         }
         return array;
     }
-    const handleMenuSide = (item) => {
-        if(item?.options?.length == 0){
-            window.location.href = item?.href;
-        }
-    }
+
     moveToHead(allowedApplications, 3);
+
+    const [appsImgs, setAppsImgs] = useState([]);
+    const fetchAppsLogo = async (picName, app) => {
+        try {
+            const response = await axios({
+                method: "post",
+                url: "/getAppLogo",
+                responseType: "blob", // Set the expected response type as 'blob'
+                data: {
+                    filename: picName,
+                },
+            });
+
+            const blobUrl = URL.createObjectURL(response.data); // Create a URL for the Blob
+            setAppsImgs((prev) => ({
+                ...prev,
+                [app.AppId]: blobUrl,
+            }));
+        } catch (error) {
+            console.log(error);
+            setAppsImgs((prev) => ({
+                ...prev,
+                [app.AppId]: "/icons/NoPhoto.jpg",
+            }));
+        }
+    };
+    useEffect(() => {
+        if (allowedApplications?.length > 0) {
+            allowedApplications?.forEach((app) => {
+                if (!appsImgs[app.AppId]) {
+                    // Check if the image URL is not already loaded
+                    fetchAppsLogo(app?.AppIcon, app);
+                }
+            });
+        }
+    }, [allowedApplications]);
 
     return (
         <div>
+            {/* Desktop SideBar */}
             <div className="hidden md:flex md:flex-shrink-0 h-full fixed top-0 left-0 z-50 w-auto">
                 <div className="flex w-20 flex-col">
                     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-gray-800 containerscroll">
@@ -504,8 +165,6 @@ export default function MainSidebar({
                                 className="flex flex-col items-center space-y-3 pt-6"
                             >
                                 {allowedApplications?.map((item) => (
-                                    //{sidebarElements.map((item) => (
-
                                     <a
                                         href={item.AppURL}
                                         key={item.AppId}
@@ -522,7 +181,6 @@ export default function MainSidebar({
                                                     : "text-gray-400 hover:bg-gray-900 hover:text-white",
                                                 "group w-auto p-3 rounded-md flex flex-col items-center text-xs font-medium"
                                             )}
-                                            // aria-current={item.current ? 'page' : undefined}
                                         >
                                             {item.icon ? (
                                                 <item.icon
@@ -536,7 +194,7 @@ export default function MainSidebar({
                                                 />
                                             ) : (
                                                 <img
-                                                    src={`${item.AppIcon}`}
+                                                    src={appsImgs[item?.AppId]}
                                                     className={classNames(
                                                         item.AppId ==
                                                             currentAppId
@@ -550,7 +208,6 @@ export default function MainSidebar({
                                             <span>{item.AppAbv}</span>
                                         </button>
                                     </a>
-                                    // </Link>
                                 ))}
                             </nav>
                         </div>
@@ -580,7 +237,6 @@ export default function MainSidebar({
                             </a>
                             <button onClick={handleLogout}>
                                 <ResponsiveNavLink
-                                    // href={route("logout")}
                                     as="button"
                                     className="flex flex-col hover:bg-gray-900 hover:text-white"
                                 >
@@ -594,6 +250,8 @@ export default function MainSidebar({
                     </div>
                 </div>
             </div>
+
+            {/* Mobile SideBar */}
             <Transition.Root show={mobileMenuOpen} as={Fragment}>
                 <Dialog
                     as="div"
@@ -660,206 +318,133 @@ export default function MainSidebar({
                                 <div className="mt-5 h-0 flex-1 overflow-y-auto px-2">
                                     <nav className="flex h-full flex-col">
                                         <div className="space-y-1 ">
-                                            {sidebarElements
-                                                // .filter((item) =>
-                                                //     item.role.includes(
-                                                //         current_user_role
-                                                //     )
-                                                // )
-                                                .map((item) => (
-                                                    // {sidebarElements.map((item) => (
-                                                    <Accordion
-                                                        name={item.name}
-                                                        key={item.id}
-                                                        transition={{
-                                                            duration: "300ms",
-                                                            timingFunction:
-                                                                "cubic-bezier(0, 0, 0.2, 1)",
-                                                        }}
+                                            {allowedApplications.map((item) => (
+                                                <Accordion
+                                                    name={item.AppName}
+                                                    key={item.AppId}
+                                                    transition={{
+                                                        duration: "300ms",
+                                                        timingFunction:
+                                                            "cubic-bezier(0, 0, 0.2, 1)",
+                                                    }}
+                                                >
+                                                    <a
+                                                        href={item.AppURL}
+                                                        onClick={() =>
+                                                            handleClick(
+                                                                item.AppId
+                                                            )
+                                                        }
                                                     >
-                                                        {false ? (
-                                                            <AccordionItem>
-                                                                {({ open }) => (
-                                                                    <>
-                                                                        <AccordionHeader
-                                                                            onClick={() => handleMenuSide(item)}
+                                                        <AccordionItem
+                                                            id={item.name}
+                                                        >
+                                                            {({ open }) => (
+                                                                <>
+                                                                    <AccordionHeader
+                                                                        className={classNames(
+                                                                            item.AppId ==
+                                                                                currentAppId
+                                                                                ? "bg-gray-700 text-white"
+                                                                                : "text-gray-400 hover:bg-gray-900 hover:text-white",
+                                                                            "group py-2 px-3 rounded-md flex gap-x-2 items-center text-sm font-medium w-full text-gray-600  p-4"
+                                                                        )}
+                                                                    >
+                                                                        <img
+                                                                            target="_blank"
+                                                                            src={
+                                                                                appsImgs[
+                                                                                    item
+                                                                                        ?.AppId
+                                                                                ]
+                                                                            }
                                                                             className={classNames(
-                                                                                item.current
-                                                                                    ? "bg-gray-700 text-white"
-                                                                                    : "text-gray-400 hover:bg-gray-900 hover:text-white",
-                                                                                "group py-2 px-3 rounded-md gap-x-2 text-sm font-medium w-full flex justify- items-center text-gray-600  p-4"
+                                                                                item.AppId ==
+                                                                                    currentAppId
+                                                                                    ? "text-yellow-400"
+                                                                                    : "text-gray-400 group-hover:text-white",
+                                                                                "h-8 w-8"
                                                                             )}
-                                                                        >
-                                                                            {item.icon ? (
-                                                                                <item.icon
-                                                                                    className={classNames(
-                                                                                        item.current
-                                                                                            ? "text-yellow-400"
-                                                                                            : "text-gray-400 group-hover:text-white",
-                                                                                        "h-6 w-6"
-                                                                                    )}
-                                                                                    aria-hidden="true"
-                                                                                />
-                                                                            ) : (
-                                                                                <img
-                                                                                    src={
-                                                                                        item.img
-                                                                                    }
-                                                                                    className={classNames(
-                                                                                        item.current
-                                                                                            ? "text-yellow-400"
-                                                                                            : "text-gray-400 group-hover:text-white",
-                                                                                        "h-6 w-6"
-                                                                                    )}
-                                                                                    aria-hidden="true"
-                                                                                />
-                                                                            )}
-                                                                            <span
-                                                                                id={
-                                                                                    item.name
-                                                                                }
-                                                                            >
-                                                                                {
-                                                                                    item.name
-                                                                                }
-                                                                            </span>
-                                                                            {item?.options.length > 0 ?<ChevronDownIcon className="h-3" /> : null}
-                                                                        </AccordionHeader>
-                                                                        {/* {sidebarElements.filter(item => item.role.includes(current_user_role)).map((item) => ( */}
-                                                                        {/* Mobile view  */}
-                                                                    </>
-                                                                )}
-                                                            </AccordionItem>
-                                                        ) : (
-                                                            <a
-                                                                href={item.href}
-                                                                onClick={() =>
-                                                                    handleClick(
-                                                                        item.id
-                                                                    )
-                                                                }
-                                                            >
-                                                                <AccordionItem
-                                                                    id={
-                                                                        item.name
-                                                                    }
-                                                                >
-                                                                    {({
-                                                                        open,
-                                                                    }) => (
-                                                                        <>
-                                                                            <AccordionHeader
-                                                                                // className=" "
-                                                                                className={classNames(
-                                                                                    item.current
-                                                                                        ? "bg-gray-700 text-white"
-                                                                                        : "text-gray-400 hover:bg-gray-900 hover:text-white",
-                                                                                    "group py-2 px-3 rounded-md flex gap-x-2 items-center text-sm font-medium w-full text-gray-600  p-4"
-                                                                                )}
-                                                                            >
-                                                                                {item.icon ? (
-                                                                                    <item.icon
-                                                                                        className={classNames(
-                                                                                            item.current
-                                                                                                ? "text-yellow-400"
-                                                                                                : "text-gray-400 group-hover:text-white",
-                                                                                            "h-6 w-6"
-                                                                                        )}
-                                                                                        aria-hidden="true"
-                                                                                    />
-                                                                                ) : (
-                                                                                    <img
-                                                                                        src={
-                                                                                            item.img
+                                                                            aria-hidden="true"
+                                                                        />
+
+                                                                        <span>
+                                                                            {
+                                                                                item.AppName
+                                                                            }
+                                                                        </span>
+                                                                    </AccordionHeader>
+                                                                    {item.options ? (
+                                                                        <AccordionBody className="pl-8 flex flex-col">
+                                                                            {item.options.map(
+                                                                                (
+                                                                                    option
+                                                                                ) => (
+                                                                                    <button
+                                                                                        onClick={() =>
+                                                                                            handleClickSide(
+                                                                                                item.id,
+                                                                                                option.id
+                                                                                            )
                                                                                         }
-                                                                                        className={classNames(
-                                                                                            item.current
-                                                                                                ? "text-yellow-400"
-                                                                                                : "text-gray-400 group-hover:text-white",
-                                                                                            "h-6 w-6"
-                                                                                        )}
-                                                                                        aria-hidden="true"
-                                                                                    />
-                                                                                )}
-                                                                                <span>
-                                                                                    {
-                                                                                        item.name
-                                                                                    }
-                                                                                </span>
-                                                                            </AccordionHeader>
-                                                                            {item.options ? (
-                                                                                <AccordionBody className="pl-8 flex flex-col">
-                                                                                    {item.options.map(
-                                                                                        (
-                                                                                            option
-                                                                                        ) => (
-                                                                                            <button
-                                                                                                onClick={() =>
-                                                                                                    handleClickSide(
-                                                                                                        item.id,
-                                                                                                        option.id
-                                                                                                    )
-                                                                                                }
-                                                                                                className="p-5 font-light text-left text-white"
-                                                                                            >
-                                                                                                {
-                                                                                                    option.name
-                                                                                                }
-                                                                                            </button>
-                                                                                        )
-                                                                                    )}
-                                                                                </AccordionBody>
-                                                                            ) : (
-                                                                                ""
+                                                                                        className="p-5 font-light text-left text-white"
+                                                                                    >
+                                                                                        {
+                                                                                            option.name
+                                                                                        }
+                                                                                    </button>
+                                                                                )
                                                                             )}
-                                                                        </>
+                                                                        </AccordionBody>
+                                                                    ) : (
+                                                                        ""
                                                                     )}
-                                                                </AccordionItem>
-                                                            </a>
-                                                        )}
-                                                    </Accordion>
-                                                    // </Link>
-                                                ))}
+                                                                </>
+                                                            )}
+                                                        </AccordionItem>
+                                                    </a>
+                                                </Accordion>
+                                            ))}
                                         </div>
                                     </nav>
                                 </div>
                                 <div className="flex flex-col flex-shrink-0 pb-5">
-                                <a
-                                    href="https://support.gtls.com.au/help/2703577665"
-                                    target="_blank"
-                                    className="flex"
-                                >
-                                    {" "}
-                                    <button
-                                        className={classNames(
-                                            "text-gray-400 hover:bg-gray-700 hover:text-white",
-                                            "group w-auto p-3 rounded-md flex flex-col items-center text-xs font-medium"
-                                        )}
-                                        // aria-current={item.current ? 'page' : undefined}
+                                    <a
+                                        href="https://support.gtls.com.au/help/2703577665"
+                                        target="_blank"
+                                        className="flex"
                                     >
-                                        <QuestionMarkCircleIcon
+                                        {" "}
+                                        <button
                                             className={classNames(
-                                                "text-gray-400 group-hover:text-white",
-                                                "h-6 w-6"
+                                                "text-gray-400 hover:bg-gray-700 hover:text-white",
+                                                "group w-auto p-3 rounded-md flex flex-col items-center text-xs font-medium"
                                             )}
-                                            aria-hidden="true"
-                                        />
+                                        >
+                                            <QuestionMarkCircleIcon
+                                                className={classNames(
+                                                    "text-gray-400 group-hover:text-white",
+                                                    "h-6 w-6"
+                                                )}
+                                                aria-hidden="true"
+                                            />
 
-                                        <span className="mt-2">Support</span>
+                                            <span className="mt-2">
+                                                Support
+                                            </span>
+                                        </button>
+                                    </a>
+                                    <button onClick={() => handleLogout()}>
+                                        <ResponsiveNavLink
+                                            as="button"
+                                            className="flex flex-col hover:bg-gray-900 hover:text-white w-8 h-14"
+                                        >
+                                            <ArrowRightOnRectangleIcon className="w-7 ml-2 text-gray-400" />
+                                            <span className="text-xs text-gray-400">
+                                                LOGOUT
+                                            </span>
+                                        </ResponsiveNavLink>
                                     </button>
-                                </a>
-                                <button  onClick={() => handleLogout()}>
-                                    <ResponsiveNavLink
-                                        // href={route("logout")}
-                                        as="button"
-                                        className="flex flex-col hover:bg-gray-900 hover:text-white w-8 h-14"
-                                    >
-                                        <ArrowRightOnRectangleIcon className="w-7 ml-2 text-gray-400" />
-                                        <span className="text-xs text-gray-400">
-                                            LOGOUT
-                                        </span>
-                                    </ResponsiveNavLink>
-                                </button>
                                 </div>
                             </Dialog.Panel>
                         </Transition.Child>

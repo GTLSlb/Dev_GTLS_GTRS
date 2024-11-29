@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { useState } from "react";
 import {
     ChartPieIcon,
     TruckIcon,
@@ -14,13 +14,11 @@ import {
     ShieldCheckIcon,
     CameraIcon,
     DocumentTextIcon,
-    ClipboardDocumentIcon,
-    DocumentDuplicateIcon
+    ClipboardDocumentIcon
 } from "@heroicons/react/24/solid";
 import "../../../../css/scroll.css";
 import TaskIcon from "@mui/icons-material/Task";
-import ReportIcon from '@mui/icons-material/Report';
-
+import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import {
     Accordion,
@@ -28,197 +26,8 @@ import {
     AccordionHeader,
     AccordionItem,
 } from "react-headless-accordion";
-import { MapPinIcon } from "@heroicons/react/20/solid";
 
-const navigation = [
-    {
-        id: 0,
-        name: "Dashboard",
-        href: "#",
-        icon: ChartPieIcon,
-        current: true,
-        feature: "Dashboard_view",
-    },
-    {
-        id: 1,
-        name: "Consignments",
-        href: "#",
-        icon: TruckIcon,
-        current: false,
-        feature: "ConsignmetsReport_view",
-    },
-    {
-        id: 2,
-        name: "KPI Report",
-        href: "#",
-        icon: ClipboardDocumentCheckIcon,
-        current: false,
-        options: [
-            // {
-            //     id: 2,
-            //     name: "KPI",
-            //     href: "#",
-            //     current: false,
-            //     icon: ClipboardDocumentCheckIcon,
-            //     feature: "KPI_view",
-            // },
-
-            // {
-            //     id: 12,
-            //     name: "Transit Days",
-            //     href: "#",
-            //     current: false,
-            //     icon: ClipboardDocumentCheckIcon,
-            //     feature: "View_TransitDays",
-            // },
-            {
-                id: 17,
-                name: "KPI",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "KPI_view",
-            },
-            {
-                id: 18,
-                name: "Transit Days",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "View_TransitDays",
-            },
-            {
-                id: 13,
-                name: "Holidays",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "View_Holidays",
-            },
-            // {
-            //     id: 14,
-            //     name: "KPI Reasons",
-            //     href: "#",
-            //     current: false,
-            //     icon: ClipboardDocumentCheckIcon,
-            //     feature: "View_kpiReasons",
-            // },
-        ],
-        feature: "KPI",
-    },
-    {
-        id: 4,
-        name: "Performance Report",
-        href: "#",
-        icon: PresentationChartLineIcon,
-        current: false,
-        feature: "Performance_view",
-    },
-    {
-        id: 5,
-        name: "Failed Consignments",
-        href: "#",
-        icon: ExclamationTriangleIcon,
-        current: false,
-        feature: "View_failedConsignment",
-    },
-    {
-        id: 16,
-        name: "Transport Report",
-        href: "#",
-        icon: TaskIcon,
-        current: false,
-        feature: "View_Transport",
-    },
-    {
-        id: 9,
-        name: "RDD",
-        href: "#",
-        icon: ClockIcon,
-        current: false,
-        feature: "View_RDD",
-    },
-    {
-        id: 11,
-        name: "Missing POD",
-        href: "#",
-        icon: CameraIcon,
-        current: false,
-        feature: "MissingPOD_view",
-    },
-    {
-        id: 10,
-        name: "Safety",
-        href: "#",
-        icon: ShieldCheckIcon,
-        current: false,
-        feature: "View_safety",
-    },
-    {
-        id: 6,
-        name: "No Delivery info.",
-        href: "#",
-        icon: NoSymbolIcon,
-        current: false,
-        feature: "NoDeliveryInfo_view",
-    },
-    {
-        id: 7,
-        name: "Additional Charges",
-        href: "#",
-        icon: CurrencyDollarIcon,
-        current: false,
-        feature: "AdditionalCharges_view",
-    },
-    {
-        id: 8,
-        name: "Driver Login",
-        href: "#",
-        icon: UserIcon,
-        current: false,
-        feature: "DriverLogin_view",
-    },
-    {
-        id: 20,
-        name: "KPI Pack Report",
-        href: "#",
-        icon: DocumentTextIcon,
-        current: false,
-        feature: "UnileverReport_View",
-    },
-    {
-        id: 21,
-        name: "Traffic Report",
-        href: "#",
-        icon: ReportIcon,
-        current: false,
-        feature: "TrafficReport_View",
-    },
-    {
-        id: 23,
-        name: "Consignment Tracking",
-        href: "#",
-        icon: MapPinIcon,
-        current: false,
-        feature: "ConsignmentTracking_View",
-    },
-    {
-        id: 24,
-        name: "Delivery Report",
-        href: "#",
-        icon: ClipboardDocumentIcon,
-        current: false,
-        feature: "DailyReport_View",
-    },
-    {
-        id: 21,
-        name: "Delivery Report",
-        href: "#",
-        icon: DocumentDuplicateIcon,
-        current: false,
-        feature: "DeliveryReport_View",
-    },
-];
+const navigate = useNavigate();
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -228,14 +37,161 @@ function classNames(...classes) {
 export default function ChartsSidebar({
     setCusomterAccounts,
     customerAccounts,
-    setActiveIndexGTRS,
-    currentUser,
     user,
     onData,
 }) {
     const [customerOptions, setCustomerOptions] = useState([]);
     const [showList, setShowList] = useState(false);
     const showSelect = customerOptions?.length > 0;
+    const navigation = [
+        {
+            id: 0,
+            name: "Dashboard",
+            href: "#",
+            icon: ChartPieIcon,
+            current: true,
+            feature: "Dashboard_view",
+        },
+        {
+            id: 1,
+            name: "Consignments",
+            href: "#",
+            icon: TruckIcon,
+            current: false,
+            feature: "ConsignmetsReport_view",
+        },
+        {
+            id: 2,
+            name: "KPI Report",
+            href: "#",
+            icon: ClipboardDocumentCheckIcon,
+            current: false,
+            options: [
+                {
+                    id: 17,
+                    name: "KPI",
+                    href: "#",
+                    current: false,
+                    icon: ClipboardDocumentCheckIcon,
+                    feature: "KPI_view",
+                },
+                {
+                    id: 18,
+                    name: "Transit Days",
+                    href: "#",
+                    current: false,
+                    icon: ClipboardDocumentCheckIcon,
+                    feature: "View_TransitDays",
+                },
+                {
+                    id: 13,
+                    name: "Holidays",
+                    href: "#",
+                    current: false,
+                    icon: ClipboardDocumentCheckIcon,
+                    feature: "View_Holidays",
+                },
+                {
+                    id: 14,
+                    name: "KPI Reasons",
+                    href: "#",
+                    current: false,
+                    icon: ClipboardDocumentCheckIcon,
+                    feature: "View_kpiReasons",
+                },
+            ],
+            feature: "KPI",
+        },
+        {
+            id: 4,
+            name: "Performance Report",
+            href: "#",
+            icon: PresentationChartLineIcon,
+            current: false,
+            feature: "Performance_view",
+        },
+        {
+            id: 5,
+            name: "Failed Consignments",
+            href: "#",
+            icon: ExclamationTriangleIcon,
+            current: false,
+            feature: "View_failedConsignment",
+        },
+        {
+            id: 16,
+            name: "Transport Report",
+            href: "#",
+            icon: TaskIcon,
+            current: false,
+            feature: "View_Transport",
+        },
+        {
+            id: 9,
+            name: "RDD",
+            href: "#",
+            icon: ClockIcon,
+            current: false,
+            feature: "View_RDD",
+        },
+        {
+            id: 11,
+            name: "Missing POD",
+            href: "#",
+            icon: CameraIcon,
+            current: false,
+            feature: "MissingPOD_view",
+        },
+        {
+            id: 10,
+            name: "Safety",
+            href: "#",
+            icon: ShieldCheckIcon,
+            current: false,
+            feature: "View_safety",
+        },
+        {
+            id: 6,
+            name: "No Delivery info",
+            href: "#",
+            icon: NoSymbolIcon,
+            current: false,
+            feature: "NoDeliveryInfo_view",
+        },
+        {
+            id: 7,
+            name: "Additional Charges",
+            href: "#",
+            icon: CurrencyDollarIcon,
+            current: false,
+            feature: "AdditionalCharges_view",
+        },
+        {
+            id: 8,
+            name: "Driver Login",
+            href: "#",
+            icon: UserIcon,
+            current: false,
+            feature: "DriverLogin_view",
+        },
+        {
+            id: 20,
+            name: "KPI Pack Report",
+            href: "#",
+            icon: DocumentTextIcon,
+            current: false,
+            feature: "UnileverReport_View",
+        },
+        {
+            id: 24,
+            name: "Delivery Report",
+            href: "#",
+            icon: ClipboardDocumentIcon,
+            current: false,
+            feature: "DailyReport_View",
+        },
+    ];
+
 
     const handleDivClick = () => {
         setShowList(!showList);
@@ -268,107 +224,53 @@ export default function ChartsSidebar({
     useEffect(() => {
         onData(optionSelected);
     }, [optionSelected]);
-    const [sidebarElements, setSidebarElements] = useState(navigation);
+    const [sidebarElements, setSidebarElements] = useState([]);
 
-    const handleClick = (index) => {
-        setActiveIndexGTRS(index);
-        const updatedElements = sidebarElements.map((element) => {
-            if (
-                element.id === index ||
-                index == 12 ||
-                index == 13 ||
-                index == 14 ||
-                index == 17 ||
-                index == 18
-            ) {
-                if (element.options) {
-                    return {
-                        ...element,
-                        current: true,
-                        options: element.options.map((option) => {
-                            if (option.id == index) {
-                                return { ...option, current: true };
-                            } else {
-                                return { ...option, current: false };
-                            }
-                        }),
-                    };
-                } else {
-                    if (element.id === index) {
-                        return { ...element, current: true };
-                    } else {
-                        return {
-                            ...element,
-                            current: false,
-                            ...(element.options
-                                ? element.options.map((option) => {
-                                      return { ...option, current: false };
-                                  })
-                                : {}),
-                        };
-                    }
-                }
-            } else {
+    useEffect(() => {
+        if (user && Object.keys(user).length !== 0) {
+          let gtrsElements = navigation;
+          gtrsElements = navigation?.filter((option) => {
+            return user?.some((feature) => {
+              if (option.options && option.options.length > 0) {
+                return option.options.some((childOption) => {
+                  return feature.FunctionName === childOption.feature;
+                });
+              } else {
+                return feature.FunctionName === option.feature;
+              }
+            });
+          });
+          setSidebarElements(gtrsElements);
+        }
+      }, [user]);
+
+      const handleClick = (index, item) => {
+        const updatedElements = sidebarElements?.map((element) => {
+            if (element.options) {
                 return {
                     ...element,
-                    current: false,
-                    ...(element.options
-                        ? {
-                              options: element.options.map((option) => {
-                                  return { ...option, current: false };
-                              }),
-                          }
-                        : {}),
+                    current: true,
+                    options: element.options.map((option) => {
+                        if (option.id == index) {
+                            return { ...option, current: true };
+                        } else {
+                            return { ...option, current: false };
+                        }
+                    }),
                 };
+            } else{
+                if (element.id === index) {
+                    return { ...element, current: true };
+                } else {
+                    return { ...element, current: false };
+                }
             }
+
         });
         setSidebarElements(updatedElements);
-    };
-    const filterNavigation = (navigation, user) => {
-        return navigation.filter((navItem) => {
-            // Check if the navigation item has sub-options
-            if (navItem.options) {
-                // Filter options based on user permissions
-                navItem.options = navItem.options.filter((option) =>
-                    user?.Pages?.some(
-                        (userPage) =>
-                            userPage?.PageName === option.name &&
-                            userPage?.Features?.some(
-                                (feature) =>
-                                    feature.FunctionName === option.feature
-                            )
-                    )
-                );
-                // Include the navigation item only if it has any permitted options
-                return navItem.options.length > 0;
-            } else {
-                // For navigation items without options, check the feature directly
-                return user?.Pages?.some(
-                    (userPage) => {
-                      if (navItem.id == 21) {
-                        return userPage?.Features?.some(
-                          (feature) =>
-                            feature?.FunctionName == 'MetcashDeliveryReport_View' ||
-                            feature?.FunctionName == 'WoolworthsDeliveryReport_View' ||
-                            feature?.FunctionName == 'OtherDeliveryReport_View'
-                        );
-                      }
-                      return userPage?.PageName === navItem.name &&
-                        userPage?.Features?.some(
-                          (feature) =>
-                            feature?.FunctionName === navItem?.feature
-                        );
-                    }
-                  );
-            }
-        });
+        navigate(item.url);
     };
 
-    const filteredNavigation = filterNavigation(navigation, currentUser);
-    useEffect(() => {
-        setSidebarElements(filteredNavigation);
-        setActiveIndexGTRS(filteredNavigation[0]?.id);
-    }, []);
     return (
         <div className="h-full xl:fixed xl:w-64 lg:h-full bg-gray-200 w-full ">
             {/* Static sidebar for desktop */}
@@ -494,7 +396,6 @@ export default function ChartsSidebar({
                                                 {({ open }) => (
                                                     <>
                                                         <AccordionHeader
-                                                            // className=" "
                                                             className={classNames(
                                                                 item.current
                                                                     ? "bg-gray-300 text-gray-900"
@@ -502,7 +403,7 @@ export default function ChartsSidebar({
                                                                 "group flex flex-row justify-between items-center px-2 py-2 text-sm font-medium rounded-md w-full"
                                                             )}
                                                         >
-                                                            <div className="flex items-center">
+                                                            <div onClick={()=>handleClick(item.id, item)} className="flex items-center">
                                                                 {item.icon ? (
                                                                     <item.icon
                                                                         className={classNames(
@@ -546,7 +447,7 @@ export default function ChartsSidebar({
                                                                         }
                                                                         onClick={() =>
                                                                             handleClick(
-                                                                                option.id
+                                                                                option.id, option
                                                                             )
                                                                         }
                                                                         className={classNames(
@@ -569,7 +470,7 @@ export default function ChartsSidebar({
                                         </Accordion>
                                     ) : (
                                         <a
-                                            onClick={() => handleClick(item.id)}
+                                            onClick={() => handleClick(item.id, item)}
                                             key={item.name}
                                             href={item.href}
                                             className={classNames(

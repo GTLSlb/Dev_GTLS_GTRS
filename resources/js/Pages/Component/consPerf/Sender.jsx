@@ -23,7 +23,7 @@ export default function Sender(item) {
                     SENDER POSTCODE
                     </dt>
                     <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['SENDERPOSTCODE']}</dd>
-                    
+
                 </div>
             </dl>
         </div>

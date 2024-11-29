@@ -1,54 +1,46 @@
-import Sidebar from "./Layout";
-import { useLayoutEffect, useRef, useState } from "react";
-import axios from "axios";
+import { useState } from "react";
 import { useEffect } from "react";
-import Charts from "./Component/Charts";
-import swal from "sweetalert";
-import debtors from "./Component/JsonData/debtors.json";
-import rddData from "./Component/JsonData/RddData.json";
-import { useStepContext } from "@mui/material";
 import NoAccess from "@/Components/NoAccess";
-
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
-
+import { fetchApiData } from "@/CommonFunctions";
+import MainSidebar from "@/Components/Main-sidebar";
+import MainNavbar from "@/Components/Main-navbar";
+import AnimatedLoading from "@/Components/AnimatedLoading";
+import GtrsMain from "./Component/GtrsMain";
+import { Routes, Route } from "react-router-dom";
+import MainPageGTRS from "@/Pages/MainPageGTRS";
+import {navigateToFirstAllowedPage} from "@/CommonFunctions";
+import { useNavigate } from "react-router-dom";
+import menu from "@/SidebarMenuItems";
 export default function Gtrs({
-    sessionData,
-    activeIndexGTRS,
     user,
-    setUser,
     setToken,
+    setMobileMenuOpen,
     AToken,
-    setActiveIndexGTRS,
     setLoadingGtrs,
     currentUser,
     loadingGtrs,
+    allowedApplications,
+    mobileMenuOpen,
+    setcurrentUser,
+    setSidebarElements,
+    sidebarElements,
+    setUser,
 }) {
-    const [rddData, setrddData] = useState([]);
     const [chartsData, setchartsData] = useState([]);
     const [debtorsData, setdebtorsData] = useState([]);
     const [kpireasonsData, setkpireasonsData] = useState([]);
-    const [failedReasons, setFailedReasons] = useState([]);
     const [rddReasons, setrddReasons] = useState([]);
     const [activeCon, setactiveCon] = useState(0);
-    const [lastIndex, setLastIndex] = useState(0);
     const [chartsApi, setchartsApi] = useState(false);
     const [consApi, setConsApi] = useState(false);
     const [reportApi, setReportApi] = useState(false);
     const [transportApi, setTransportApi] = useState(false);
     const [DebtorsApi, setDebtorsApi] = useState(false);
     const [KPIReasonsApi, setKPIReasonsApi] = useState(false);
-    const [safetyTypes, setSafetyTypes] = useState([]);
-    const [safetyCauses, setSafetyCauses] = useState([]);
     const [safetyData, setSafetyData] = useState([]);
     const [consData, setconsData] = useState([]);
     const [transportData, setTransportData] = useState([]);
-    const [KPIData, setKPIData] = useState([]);
     const [PerfData, setPerfData] = useState([]);
-    const [NoDelData, setNoDelData] = useState([]);
-    const [AdditionalData, setAdditionalData] = useState([]);
-    const [DriverData, setDriverData] = useState([]);
     const [userBody, setUserBody] = useState();
     const [dataFromChild, setDataFromChild] = useState(null);
     const gtrsUrl = window.Laravel.gtrsUrl;
@@ -58,21 +50,15 @@ export default function Gtrs({
     const userdata = currentUser;
     const [canAccess, setCanAccess] = useState(true);
     const [deliveryReportData, setDeliveryReportData] = useState([]);
-
     const debtorIdsArray = userdata?.Accounts?.map((account) => {
         return { UserId: account.DebtorId };
     });
-    // Usage
     let debtorIds;
     if (userdata.TypeId == 1) {
         debtorIds = debtorIdsArray;
     } else {
         debtorIds = currentUser.UserId;
     }
-    useEffect(() => {
-        document.cookie =
-            "previous_page=" + encodeURIComponent(window.location.href);
-    }, []);
 
     const fetchDeliveryReport = () => {
         axios
@@ -121,379 +107,76 @@ export default function Gtrs({
     };
 
     useEffect(() => {
-        setUserBody(debtorIds);
-        setLoadingGtrs(false);
-        axios
-            .get(`${gtrsUrl}/Dashboard`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+        if (AToken != null && currentUser) {
+            setUserBody(debtorIds);
+            setLoadingGtrs(false);
+            fetchDeliveryReport();
+            const urls = [
+                {
+                    url: `${gtrsUrl}/Dashboard`,
+                    setData: setchartsData,
+                    setApiStatus: setchartsApi,
                 },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setchartsData(parsedData || []);
-                    setchartsApi(true);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
-        axios
-            .get(`${gtamUrl}/Customer/Accounts`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                {
+                    url: `${gtamUrl}/Customer/Accounts`,
+                    setData: setCusomterAccounts,
                 },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setCusomterAccounts(parsedData || []);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
-        axios
-            .get(`${gtrsUrl}/SafetyReport`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                { url: `${gtrsUrl}/SafetyReport`, setData: setSafetyData },
+                {
+                    url: `${gtrsUrl}/Debtors`,
+                    setData: setdebtorsData,
+                    setApiStatus: setDebtorsApi,
                 },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-
-                parsedDataPromise.then((parsedData) => {
-                    setSafetyData(parsedData || []);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
-        axios
-            .get(`${gtrsUrl}/Debtors`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                {
+                    url: `${gtrsUrl}/Consignments`,
+                    setData: setconsData,
+                    setApiStatus: setConsApi,
                 },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setdebtorsData(parsedData || []);
-                    setDebtorsApi(true);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
-        axios
-            .get(`${gtrsUrl}/Consignments`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                {
+                    url: `${gtrsUrl}/PerformanceReport`,
+                    setData: setPerfData,
+                    setApiStatus: setReportApi,
                 },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-
-                parsedDataPromise.then((parsedData) => {
-                    setconsData(parsedData || []);
-                    setConsApi(true);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
-        axios
-            .get(`${gtrsUrl}/PerformanceReport`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                {
+                    url: `${gtrsUrl}/KpiReasons`,
+                    setData: setkpireasonsData,
+                    setApiStatus: setKPIReasonsApi,
                 },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedData = JSON.parse(x);
-                setPerfData(parsedData || []);
-                setReportApi(true);
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
-        axios
-            .get(`${gtrsUrl}/KpiReasons`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                {
+                    url: `${gtrsUrl}/Transport`,
+                    setData: setTransportData,
+                    setApiStatus: setTransportApi,
                 },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setkpireasonsData(parsedData || []);
-                    setKPIReasonsApi(true);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
+            ];
+            urls.forEach(({ url, setData, setApiStatus }) => {
+                fetchApiData(url, setData, currentUser, AToken, setApiStatus);
             });
-        fetchDeliveryReport();
-        axios
-            .get(`${gtrsUrl}/Transport`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedData = JSON.parse(x);
-                setTransportData(parsedData || []);
-                setTransportApi(true);
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
-    }, []);
-    function checkFeaturesInPages(jsonData) {
-        // Iterate over the Pages array in the JSON data
-        for (let i = 0; i < jsonData?.Pages?.length; i++) {
-            // Check if the page has a 'Features' key and it's not empty
-            if (
-                jsonData.Pages[i].Features &&
-                jsonData.Pages[i].Features.length > 0
-            ) {
-                return true;
-            }
         }
-        return false;
-    }
+    }, [AToken, currentUser]);
 
     useEffect(() => {
-        if (loadingGtrs) {
-            if (user == {}) {
+        if (loadingGtrs && currentUser != "") {
+            if (currentUser == {}) {
                 setCanAccess(false);
-            } else if (user) {
-                if (checkFeaturesInPages(user[0])) {
+            } else if (currentUser) {
+                if (Object.keys(currentUser)?.length > 0) {
                     setCanAccess(true);
                 } else {
                     setCanAccess(false);
                 }
             }
+        } else if (loadingGtrs && currentUser == "") {
+            setCanAccess(false);
         }
-    }, [user, loadingGtrs]);
+    }, [currentUser, loadingGtrs]);
+
+
+    const navigate = useNavigate();
+    useEffect(() => {
+        if(user){
+           navigateToFirstAllowedPage({setSidebarElements, user, navigate})
+        }
+    },[user])
     if (
         consApi &&
         reportApi &&
@@ -508,80 +191,82 @@ export default function Gtrs({
     if (loadingGtrs && AToken) {
         if (canAccess) {
             return (
-                <div className="bg-smooth h-full">
-                    <div className="md:pl-20 pt-16 h-full">
-                        <Charts
-                            transportData={transportData}
-                            setCusomterAccounts={setCusomterAccounts}
-                            kpireasonsData={kpireasonsData}
-                            setkpireasonsData={setkpireasonsData}
-                            userBody={userBody}
-                            url={gtrsUrl}
-                            gtccrUrl={gtccrUrl}
-                            chartsData={chartsData}
-                            safetyTypes={safetyTypes}
-                            setSafetyTypes={setSafetyTypes}
-                            safetyCauses={safetyCauses}
-                            setSafetyCauses={setSafetyCauses}
-                            failedReasons={failedReasons}
-                            rddReasons={rddReasons}
-                            setrddReasons={setrddReasons}
-                            setFailedReasons={setFailedReasons}
-                            safetyData={safetyData}
-                            debtorsData={debtorsData}
-                            customerAccounts={customerAccounts}
-                            rddData={rddData}
-                            setrddData={setrddData}
-                            IDfilter={dataFromChild}
-                            sessionData={sessionData}
-                            currentUser={{
-                                ...user[0],
-                                UserId: currentUser.UserId,
-                            }}
-                            userPermission={user}
-                            user={currentUser}
-                            dashData={PerfData}
-                            setActiveIndexGTRS={setActiveIndexGTRS}
-                            activeIndexGTRS={activeIndexGTRS}
-                            setactiveCon={setactiveCon}
-                            consData={consData}
-                            setLastIndex={setLastIndex}
-                            KPIData={KPIData}
-                            DriverData={DriverData}
-                            AdditionalData={AdditionalData}
-                            NoDelData={NoDelData}
-                            activeCon={activeCon}
-                            lastIndex={lastIndex}
-                            AToken={AToken}
-                            PerfData={PerfData}
-                            setPerfData={setPerfData}
-                            fetchDeliveryReport={fetchDeliveryReport}
-                            deliveryReportData={deliveryReportData}
-                        />
-                    </div>
-                </div>
+                <Routes>
+                    <Route
+                        path="/gtrs/*"
+                        element={
+                            <div className="h-full">
+                                {/* <mainSidebar/> */}
+                                <MainSidebar
+                                    allowedApplications={allowedApplications}
+                                    setMobileMenuOpen={setMobileMenuOpen}
+                                    mobileMenuOpen={mobileMenuOpen}
+                                    setToken={setToken}
+                                    user={user}
+                                    currentUser={currentUser}
+                                    setCurrentUser={setcurrentUser}
+                                />
+                                <MainNavbar
+                                    setMobileMenuOpen={setMobileMenuOpen}
+                                />
+
+                                <div className="bg-smooth h-full">
+                                    <div className="md:pl-20 pt-16 h-full">
+                                        <GtrsMain
+                                            transportData={transportData}
+                                            setCusomterAccounts={
+                                                setCusomterAccounts
+                                            }
+                                            kpireasonsData={kpireasonsData}
+                                            setkpireasonsData={
+                                                setkpireasonsData
+                                            }
+                                            userBody={userBody}
+                                            setUser={setUser}
+                                            url={gtrsUrl}
+                                            gtccrUrl={gtccrUrl}
+                                            chartsData={chartsData}
+                                            rddReasons={rddReasons}
+                                            setrddReasons={setrddReasons}
+                                            safetyData={safetyData}
+                                            debtorsData={debtorsData}
+                                            customerAccounts={customerAccounts}
+                                            IDfilter={dataFromChild}
+                                            currentUser={currentUser}
+                                            user={user}
+                                            userPermission={user}
+                                            dashData={PerfData}
+                                            setactiveCon={setactiveCon}
+                                            consData={consData}
+                                            activeCon={activeCon}
+                                            AToken={AToken}
+                                            PerfData={PerfData}
+                                            setPerfData={setPerfData}
+                                            setToken={setToken}
+                                            setCurrentUser={setcurrentUser}
+                                            sidebarElements={sidebarElements}
+                                            setSidebarElements={
+                                                setSidebarElements
+                                            }
+                                            deliveryReportData ={deliveryReportData}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    />
+                </Routes>
             );
         } else {
-            return <NoAccess />;
+            return (
+                <NoAccess
+                    currentUser={currentUser}
+                    setToken={setToken}
+                    setCurrentUser={setcurrentUser}
+                />
+            );
         }
     } else {
-        return (
-            <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
-                <div className="flex items-center justify-center">
-                    <div
-                        className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
-                    ></div>
-                    <div
-                        className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
-                    ></div>
-                    <div
-                        className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
-                    ></div>
-                </div>
-                <div className="text-dark mt-4 font-bold">
-                    Please wait while we get the data for you.
-                </div>
-            </div>
-        );
+        return <AnimatedLoading />;
     }
 }

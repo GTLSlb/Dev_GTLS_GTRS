@@ -1,21 +1,17 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { PencilIcon } from "@heroicons/react/24/outline";
-import axios from "axios";
-import { useEffect } from "react";
-import AddFailedModal from "../../../modals/AddFailedModal";
 import notFound from "../../../../../assets/pictures/NotFound.png";
 import AddSafetyTypeModal from "./AddSafetyTypeModel";
 import { canAddSafetyType, canEditSafetyType } from "@/permissions";
-import swal from 'sweetalert';
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
+import { getApiRequest } from '@/CommonFunctions';
+
 export default function AddSafetyType({
     safetyTypes,
     setSafetyTypes,
     url,
     AToken,
     currentUser,
+    userPermission,
 }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [Data, setData] = useState(safetyTypes);
@@ -27,51 +23,17 @@ export default function AddSafetyType({
         setIsModalOpen(isModalCurrentlyOpen);
     };
     const [currentPage, setCurrentPage] = useState(0);
-    function fetchData() {
-        axios
-            .get(`${url}SafetyTypes`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setSafetyTypes(parsedData);
-                    setData(parsedData);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
-                } else {
-                  // Handle other errors
-                  console.log(err);
-                }
-              });
+
+
+    async function fetchData() {
+        const data = await getApiRequest(`${url}SafetyTypes`, {
+            UserId: currentUser?.UserId,
+        });
+
+        if (data) {
+            setSafetyTypes(data);
+            setData(data);
+        }
     }
     const updateLocalData = () => {
         fetchData();
@@ -85,7 +47,7 @@ export default function AddSafetyType({
                     </h1>
                 </div>
                 <div className="inline-block  left-auto ">
-                    {canAddSafetyType(currentUser) ? (
+                    {canAddSafetyType(userPermission) ? (
                         <button
                             type="button"
                             onClick={() => handleEditClick(type)}
@@ -104,7 +66,6 @@ export default function AddSafetyType({
                                 <table
                                     id="details"
                                     className="min-w-full table-fixed divide-y divide-gray-300 "
-                                    // ref={tableRef}
                                 >
                                     <thead className="h-12">
                                         <tr className="py-2.5">
@@ -160,10 +121,9 @@ export default function AddSafetyType({
                                                     </td>
                                                     <td className="relative whitespace-nowrap py-4 pl-3 sm:pr-4 pr-6 text-left text-sm font-medium">
                                                         {canEditSafetyType(
-                                                            currentUser
+                                                            userPermission
                                                         ) ? (
-                                                            <a
-                                                                href="#"
+                                                            <button
                                                                 onClick={() =>
                                                                     handleEditClick(
                                                                         type
@@ -181,7 +141,7 @@ export default function AddSafetyType({
                                                                         type.SafetyTypeName
                                                                     }
                                                                 </span>
-                                                            </a>
+                                                            </button>
                                                         ) : null}
                                                     </td>
                                                     {/* </div> */}
@@ -228,6 +188,7 @@ export default function AddSafetyType({
             <AddSafetyTypeModal
                 url={url}
                 currentUser={currentUser}
+                userPermission={userPermission}
                 ariaHideApp={false}
                 isOpen={isModalOpen}
                 type={type}

@@ -1,15 +1,12 @@
-import { useLayoutEffect, useRef, useState } from "react";
-import ReactPaginate from "react-paginate";
-import { useDownloadExcel, downloadExcel } from "react-export-table-to-excel";
+import { useState } from "react";
 import { useEffect } from "react";
 import SafetyRepTable from "./safetyComp/safetyRepTable";
 import SafetyRepChart from "./safetyComp/safetyRepChart";
-import Select from "react-select";
 import AddSafetyType from "./safetyComp/AddSafety/safetyTypes/AddSafetyType";
-import AddSafetyCauses from "./safetyComp/AddSafety/safetyCauses/AddSafetyCauses";
 import { canViewSafetyType } from "@/permissions";
-import swal from 'sweetalert';
-import axios from "axios";
+import { getApiRequest } from "@/CommonFunctions";
+import AnimatedLoading from "@/Components/AnimatedLoading";
+
 export default function SafetyRep({
     accData,
     currentUser,
@@ -28,6 +25,7 @@ export default function SafetyRep({
     latestDate,
     DefaultSDate,
     DefaultEDate,
+    userPermission,
 }) {
     const [SDate, setSDate] = useState(DefaultSDate);
     const [EDate, setEDate] = useState(DefaultEDate);
@@ -71,27 +69,12 @@ export default function SafetyRep({
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     const [filteredData, setFilteredData] = useState(null);
     const [selectedTypes, setSelectedTypes] = useState([]);
-    const [activeTab, setActiveTab] = useState("first");
     const [currentPage, setCurrentPage] = useState(0);
     const [isDataEdited, setDataEdited] = useState(false);
     const [isFetching, setIsFetching] = useState();
     const [isFetchingTypes, setIsFetchingTypes] = useState();
-    const [isFetchingCauses, setIsFetchingCauses] = useState();
+    const [isFetchingCauses, setIsFetchingCauses] = useState(); 
 
-    const getUniqueTypes = () => {
-        const filteredTypes = safetyTypes?.reduce((acc, data) => {
-            if (!acc.find((item) => item.value === data.SafetyTypeId)) {
-                acc.push({
-                    value: data.SafetyTypeId,
-                    label: data.SafetyTypeName,
-                });
-            }
-
-            return acc;
-        }, []);
-        return filteredTypes;
-    };
-    const uniqueTypes = getUniqueTypes();
     useEffect(() => {
         if (safetyDataState.length === 0) {
             setIsFetching(true);
@@ -102,139 +85,42 @@ export default function SafetyRep({
             fetchDataCauses();
         }
     }, []);
+
     async function fetchData() {
         setIsFetching(true);
-        try {
-            const res = await axios
-                .get(`${url}SafetyReport`, {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`
-                    }
-                });
-            getEarliestDate(res.data);
-            getLatestDate(res.data);
-            setsafetyDataState(res.data || []);
-            setFilteredData(res.data || []);
+        const data = await getApiRequest(`${url}SafetyReport`, {
+            UserId: currentUser?.UserId,
+        });
+
+        if (data) {
+            getEarliestDate(data);
+            getLatestDate(data);
+            setsafetyDataState(data || []);
+            setFilteredData(data || []);
             setIsFetching(false);
-        } catch (err) {
-            if (err.response && err.response.status === 401) {
-                // Handle 401 error using SweetAlert
-                swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                }).then(function () {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                            if (response.status == 200) {
-                                window.location.href = "/";
-                            }
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                        });
-                });
-            } else {
-                // Handle other errors
-                console.log(err);
-            }
         }
     }
-    function fetchDataTypes() {
-        axios
-            .get(`${url}SafetyTypes`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setSafetyTypes(parsedData);
-                    setIsFetchingTypes(false);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
-                } else {
-                  // Handle other errors
-                  console.log(err);
-                }
-              });
+
+    async function fetchDataTypes() {
+        const data = await getApiRequest(`${url}SafetyTypes`, {
+            UserId: currentUser?.UserId,
+        });
+
+        if (data) {
+            setSafetyTypes(data);
+            setIsFetchingTypes(false);
+        }
     }
-    function fetchDataCauses() {
-        axios
-            .get(`${url}SafetyCauses`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setSafetyCauses(parsedData);
-                    setIsFetchingCauses(false);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
-                } else {
-                  // Handle other errors
-                  console.log(err);
-                }
-              });
+
+    async function fetchDataCauses() {
+        const data = await getApiRequest(`${url}SafetyCauses`, {
+            UserId: currentUser?.UserId,
+        });
+
+        if (data) {
+            setSafetyCauses(data);
+            setIsFetchingCauses(false);
+        }
     }
     useEffect(() => {
         filterData(SDate, EDate);
@@ -249,11 +135,6 @@ export default function SafetyRep({
         }
     }, [isDataEdited]);
 
-    const handleTypeChange = (selectedOptions) => {
-        // const types = selectedOptions.map((option) => option.value);
-        setSelectedTypes(selectedOptions);
-        filterData(SDate, EDate);
-    };
     const filterData = (startDate, endDate) => {
         // Filter the data based on the start and end date filters
         const intArray = accData?.map((str) => {
@@ -279,41 +160,14 @@ export default function SafetyRep({
             return (
                 itemDate >= filterStartDate &&
                 itemDate <= filterEndDate &&
-                typeMatch && 
+                typeMatch &&
                 chargeToMatch
             ); // Compare the item date to the filter dates
         });
         setFilteredData(filtered);
         setCurrentPage(0);
     };
-    const customStyles = {
-        control: (provided) => ({
-            ...provided,
-
-            // Add more styles here as needed
-        }),
-        option: (provided, state) => ({
-            ...provided,
-            color: "black",
-            // Add more styles here as needed
-        }),
-        multiValue: (provided) => ({
-            ...provided,
-            width: "auto",
-            overflow: "hidden",
-        }),
-        valueContainer: (provided) => ({
-            ...provided,
-            width: "400px",
-            maxHeight: "75px", // Set the maximum height for the value container
-            overflow: "auto", // Enable scrolling if the content exceeds the maximum height
-            // fontSize: '10px',
-        }),
-        inputContainer: (provided) => ({
-            ...provided,
-        }),
-        // Add more style functions here as needed
-    };
+    
     let components = [
         <SafetyRepTable
             url={url}
@@ -328,6 +182,7 @@ export default function SafetyRep({
             safetyData={filteredData}
             currentPageRep={currentPage}
             currentUser={currentUser}
+            userPermission={userPermission}
             setFilteredData={setFilteredData}
             setDataEdited={setDataEdited}
         />,
@@ -341,6 +196,7 @@ export default function SafetyRep({
             url={url}
             AToken={AToken}
             currentUser={currentUser}
+            userPermission={userPermission}
             safetyTypes={safetyTypes}
             setSafetyTypes={setSafetyTypes}
         />,
@@ -349,25 +205,16 @@ export default function SafetyRep({
     const handleItemClick = (index) => {
         setActiveComponentIndex(index);
     };
+    const [canView, setCanView] = useState(true);
+    useEffect(() => {
+        if (userPermission) {
+            setCanView(!canViewSafetyType(userPermission));
+        }
+    }, [userPermission]);
     return (
         <div>
             {isFetching || isFetchingCauses || isFetchingTypes ? (
-                <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
-                    <div className="flex items-center justify-center">
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
-                        ></div>
-                    </div>
-                    <div className="text-dark mt-4 font-bold">
-                        Please wait while we get the data for you.
-                    </div>
-                </div>
+                <AnimatedLoading />
             ) : (
                 <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
                     <div className="sm:flex sm:items-center">
@@ -377,7 +224,7 @@ export default function SafetyRep({
                             </h1>
                         </div>
                     </div>
-                    {!canViewSafetyType(currentUser) ? (
+                    {canView ? (
                         <ul className="flex space-x-0 mt-5">
                             <li
                                 className={`cursor-pointer ${

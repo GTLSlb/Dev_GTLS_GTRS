@@ -6,14 +6,17 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "gtls/loginstory": "^1.0",
         "guzzlehttp/guzzle": "^7.2",
         "inertiajs/inertia-laravel": "^0.6.3",
         "laravel/framework": "^10.0",
         "laravel/nova": "4.32.11",
         "laravel/sanctum": "^3.2",
+        "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.8",
-        "silviolleite/laravelpwa": "^2.0",
+        "league/flysystem-aws-s3-v3": "3.0",
         "league/oauth2-client": "^2.7",
+        "silviolleite/laravelpwa": "^2.0",
         "socialiteproviders/microsoft-azure": "^5.1",
         "tightenco/ziggy": "^1.0"
     },

@@ -24,6 +24,7 @@ export default function DeliveryReportPage({
     AToken,
     deliveryReportData,
     currentUser,
+    userPermission,
     fetchDeliveryReport,
     setActiveIndexGTRS,
     setLastIndex,
@@ -61,24 +62,22 @@ export default function DeliveryReportPage({
 
         return newData;
     };
-    const [receiverZoneOptions, setReceiverZoneOptions] = useState([
-        {
-            id: "NSW",
-            label: "NSW",
-        },
-        {
-            id: "SA",
-            label: "SA",
-        },
-        {
-            id: "VIC",
-            label: "VIC",
-        },
-        {
-            id: "QLD",
-            label: "QLD",
-        },
-    ]);
+    const [receiverZoneOptions, setReceiverZoneOptions] = useState(createNewLabelObjects(
+        deliveryReportData,
+        "ReceiverZone"
+    ));
+    const [senderZoneOptions, setSenderZoneOptions] = useState(createNewLabelObjects(
+        deliveryReportData,
+        "SenderZone"
+    ));
+    const [receiverStateOptions, setReceiverStateOptions] = useState(createNewLabelObjects(
+        deliveryReportData,
+        "ReceiverState"
+    ));
+    const [senderStateOptions, setSenderStateOptions] = useState(createNewLabelObjects(
+        deliveryReportData,
+        "SenderState"
+    ));
     const consStateOptions = createNewLabelObjects(
         deliveryReportData,
         "ConsignmentStatus"
@@ -94,24 +93,6 @@ export default function DeliveryReportPage({
             label: "False",
         },
     ];
-    const [senderZoneOptions, setSenderZoneOptions] = useState([
-        {
-            id: "NSW",
-            label: "NSW",
-        },
-        {
-            id: "SA",
-            label: "SA",
-        },
-        {
-            id: "VIC",
-            label: "VIC",
-        },
-        {
-            id: "QLD",
-            label: "QLD",
-        },
-    ]);
 
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     const [cellLoading, setCellLoading] = useState(false);
@@ -154,6 +135,13 @@ export default function DeliveryReportPage({
             emptyValue: "",
         },
         {
+            name: "SenderZone",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
             name: "ReceiverName",
             operator: "contains",
             type: "string",
@@ -169,6 +157,13 @@ export default function DeliveryReportPage({
         },
         {
             name: "ReceiverState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ReceiverZone",
             operator: "inlist",
             type: "select",
             value: null,
@@ -342,7 +337,7 @@ export default function DeliveryReportPage({
         setConsId(data?.ConsignmentID);
         setIsViewModalOpen(true);
     };
-    
+
     function CustomColumnEditor(props) {
         const { value, onChange, onComplete, cellProps, onCancel } = props; // Destructure relevant props
 
@@ -419,7 +414,7 @@ export default function DeliveryReportPage({
         };
 
         return (
-            canAddDeliveryReportComment(currentUser) && (
+            canAddDeliveryReportComment(userPermission) && (
                 <>
                     <textarea
                         style={{ width: "100%", maxHeight: "100%" }}
@@ -544,6 +539,19 @@ export default function DeliveryReportPage({
         },
         {
             name: "SenderState",
+            header: "Sender State",
+            group: "senderDetails",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: senderStateOptions,
+            },
+        },
+        {
+            name: "SenderZone",
             header: "Sender Zone",
             group: "senderDetails",
             headerAlign: "center",
@@ -575,6 +583,19 @@ export default function DeliveryReportPage({
         },
         {
             name: "ReceiverState",
+            header: "Receiver State",
+            group: "receiverDetails",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: receiverStateOptions,
+            },
+        },
+        {
+            name: "ReceiverZone",
             header: "Receiver Zone",
             group: "receiverDetails",
             headerAlign: "center",
@@ -765,7 +786,6 @@ export default function DeliveryReportPage({
         setIsViewModalOpen(false);
         setCommentsData(null);
     };
-
     const [filteredMetcashData, setFilteredMetcashData] = useState(
         deliveryReportData?.filter((item) => item?.CustomerTypeId == 1)
     );
@@ -789,6 +809,16 @@ export default function DeliveryReportPage({
         }
     }, [deliveryReportData]);
 
+    useEffect(() => {
+        if(userPermission){
+            canViewMetcashDeliveryReport(userPermission) ? (
+                setActiveComponentIndex(0)
+            ) : canViewWoolworthsDeliveryReport(userPermission) ? (
+                setActiveComponentIndex(1)
+            ) : canViewOtherDeliveryReport(userPermission) ? (
+                setActiveComponentIndex(2)
+            ) : null}
+    },[userPermission])
     let components = [
         <MetcashReports
             filterValue={filterValue}
@@ -845,7 +875,6 @@ export default function DeliveryReportPage({
             commentsData={commentsData}
         />,
     ];
-
     return (
         <div className="min-h-full px-8">
             <div className="sm:flex-auto mt-6">
@@ -855,7 +884,7 @@ export default function DeliveryReportPage({
             </div>
             <div className="w-full flex gap-4 items-center mt-4">
                 <ul className="flex space-x-0">
-                    {canViewMetcashDeliveryReport(currentUser) && (
+                    {canViewMetcashDeliveryReport(userPermission) && (
                         <li
                             className={`cursor-pointer ${
                                 activeComponentIndex === 0
@@ -867,7 +896,7 @@ export default function DeliveryReportPage({
                             <div className="px-2"> Metcash</div>
                         </li>
                     )}
-                    {canViewWoolworthsDeliveryReport(currentUser) && (
+                    {canViewWoolworthsDeliveryReport(userPermission) && (
                         <li
                             className={`cursor-pointer ${
                                 activeComponentIndex === 1
@@ -879,7 +908,7 @@ export default function DeliveryReportPage({
                             <div className="px-2">Woolworths</div>
                         </li>
                     )}
-                    {canViewOtherDeliveryReport(currentUser) && (
+                    {canViewOtherDeliveryReport(userPermission) && (
                         <li
                             className={`cursor-pointer ${
                                 activeComponentIndex === 2
@@ -894,13 +923,13 @@ export default function DeliveryReportPage({
                 </ul>
             </div>
             {activeComponentIndex == 0 &&
-            canViewMetcashDeliveryReport(currentUser) ? (
+            canViewMetcashDeliveryReport(userPermission) ? (
                 <div>{components[activeComponentIndex]}</div>
             ) : activeComponentIndex == 1 &&
-              canViewWoolworthsDeliveryReport(currentUser) ? (
+              canViewWoolworthsDeliveryReport(userPermission) ? (
                 <div>{components[activeComponentIndex]}</div>
             ) : activeComponentIndex == 2 &&
-              canViewOtherDeliveryReport(currentUser) ? (
+              canViewOtherDeliveryReport(userPermission) ? (
                 <div>{components[activeComponentIndex]}</div>
             ) : (
                 <div></div>

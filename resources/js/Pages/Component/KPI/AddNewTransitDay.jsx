@@ -1,16 +1,10 @@
 import { useState } from "react";
-import { Fragment } from "react";
-import { Listbox, Transition } from "@headlessui/react";
 import axios from "axios";
-import {
-    CheckIcon,
-    ChevronDoubleDownIcon,
-    ChevronDownIcon,
-} from "@heroicons/react/20/solid";
-import GtamButton from "../GTAM/components/Buttons/GtamButton";
-import { useEffect } from "react";
 import swal from "sweetalert";
 import { AlertToast } from "@/permissions";
+import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
+import { useLocation, useNavigate } from "react-router-dom";
+import GtrsButton from "../GtrsButton";
 
 function AddNewTransitDay({
     url,
@@ -18,8 +12,6 @@ function AddNewTransitDay({
     setNewTransitDay,
     setNewTransitDays,
     AToken,
-    setActiveIndexGTRS,
-    newtransitDay,
 }) {
     const states = [
         {
@@ -53,6 +45,7 @@ function AddNewTransitDay({
         },
     ];
 
+    const navigate = useNavigate();
     const customers = [
         { id: 1, label: "UNILEVER" },
         { id: 2, label: "GMI" },
@@ -72,71 +65,32 @@ function AddNewTransitDay({
         { id: 5, label: "KERRY" },
         { id: 99, label: "None" },
     ];
-    const [object, setObject] = useState(newtransitDay);
+    const location = useLocation();
+    const [object, setObject] = useState(location?.state?.newTransitDay);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedRstate, setSelectedRstate] = useState(
-        newtransitDay?.ReceiverState || null
+        location?.state?.newTransitDay?.ReceiverState || null
     );
     const [selectedSstate, setSelectedSstate] = useState(
-        newtransitDay?.SenderState || null
+        location?.state?.newTransitDay?.SenderState || null
     );
     const [selectedCustomer, setSelectedCustomer] = useState(
-        newtransitDay?.CustomerId || null
+        location?.state?.newTransitDay?.CustomerId || null
     );
     const [selectedType, setSelectedType] = useState(
-        newtransitDay?.CustomerTypeId || null
+        location?.state?.newTransitDay?.CustomerTypeId || null
     );
-    const [isChecked, setIsChecked] = useState(false);
-    const handleCheckboxChange = () => {
-        setIsChecked(!isChecked);
-    };
 
-    const fetchData = async () => {
-        try {
-            axios
-                .get(`${url}TransitNew`, {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
-                    },
-                })
-                .then((res) => {
-                    const x = JSON.stringify(res.data);
-                    const parsedDataPromise = new Promise((resolve, reject) => {
-                        const parsedData = JSON.parse(x);
-                        resolve(parsedData);
-                    });
-                    parsedDataPromise.then((parsedData) => {
-                        setNewTransitDays(parsedData);
-                    });
-                });
-        } catch (error) {
-            if (error.response && error.response.status === 401) {
-                // Handle 401 error using SweetAlert
-                swal({
-                    title: "Session Expired!",
-                    text: "Please login again",
-                    type: "success",
-                    icon: "info",
-                    confirmButtonText: "OK",
-                }).then(function () {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                            if (response.status == 200) {
-                                window.location.href = "/";
-                            }
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                        });
-                });
-            } else {
-                // Handle other errors
-                console.log(err);
-            }
+
+    async function fetchData() {
+        const data = await getApiRequest(`${url}TransitNew`, {
+            UserId: currentUser?.UserId,
+        });
+
+        if (data) {
+            setNewTransitDays(data);
         }
-    };
+    }
 
     function AddTransit(e) {
         e.preventDefault();
@@ -171,7 +125,7 @@ function AddNewTransitDay({
             .then((res) => {
                 fetchData();
                 setNewTransitDay(null);
-                setActiveIndexGTRS(18);
+                navigate(-1);
                 setIsLoading(false);
                 AlertToast("Saved successfully", 1);
             })
@@ -184,17 +138,8 @@ function AddNewTransitDay({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    }).then(async function () {
+                        await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors
@@ -206,13 +151,13 @@ function AddNewTransitDay({
 
     function CancelHandle() {
         setNewTransitDay(null);
-        setActiveIndexGTRS(18);
+        navigate(-1);
     }
     return (
         <div className="p-8">
             <div className="shadow bg-white p-6 rounded-lg ">
                 <form onSubmit={AddTransit}>
-                    <p className="font-bold text-lg">Add Transit</p>
+                    <p className="font-bold text-lg">{ object ? "Edit " : "Add " } Transit</p>
                     <div className="border-b mt-2" />
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-5 items-center py-4">
                         <div className="col-span-2 flex items-center gap-x-2">
@@ -223,8 +168,6 @@ function AddNewTransitDay({
                                 id="CustomerId"
                                 name="CustomerId"
                                 className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
-                                // defaultValue={modalSafetyType}
-                                // value={formValues.SafetyType || ""}
                                 value={selectedCustomer}
                                 onChange={(e) => {
                                     setSelectedCustomer(e.target.value);
@@ -256,8 +199,6 @@ function AddNewTransitDay({
                                     id="SafetyType"
                                     name="SafetyType"
                                     className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
-                                    // defaultValue={modalSafetyType}
-                                    // value={formValues.SafetyType || ""}
                                     value={selectedType}
                                     onChange={(e) => {
                                         setSelectedType(e.target.value);
@@ -292,8 +233,6 @@ function AddNewTransitDay({
                                     id="SafetyType"
                                     name="SafetyType"
                                     className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
-                                    // defaultValue={modalSafetyType}
-                                    // value={formValues.SafetyType || ""}
                                     value={selectedType}
                                     onChange={(e) => {
                                         setSelectedType(e.target.value);
@@ -342,8 +281,6 @@ function AddNewTransitDay({
                                 id="SenderState"
                                 name="SenderState"
                                 className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
-                                // defaultValue={modalSafetyType}
-                                // value={formValues.SafetyType || ""}
                                 value={selectedSstate}
                                 onChange={(e) => {
                                     setSelectedSstate(e.target.value);
@@ -374,8 +311,6 @@ function AddNewTransitDay({
                                 id="ReceiverState"
                                 name="ReceiverState"
                                 className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
-                                // defaultValue={modalSafetyType}
-                                // value={formValues.SafetyType || ""}
                                 value={selectedRstate}
                                 onChange={(e) => {
                                     setSelectedRstate(e.target.value);
@@ -463,14 +398,12 @@ function AddNewTransitDay({
                         </div>
                     </div>
                     <div className="flex w-full gap-x-2 justify-end">
-                        <GtamButton
-                            // disabled={isLoading}
+                        <GtrsButton
                             name={"Cancel"}
                             onClick={CancelHandle}
-                            type={"submit"}
+                            type={"button"}
                         />{" "}
-                        <GtamButton
-                            // disabled={isLoading}
+                        <GtrsButton
                             name={object ? "Edit" : "Create"}
                             type={"submit"}
                         />

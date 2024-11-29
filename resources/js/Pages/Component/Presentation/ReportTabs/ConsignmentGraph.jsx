@@ -9,7 +9,6 @@ function ConsignmentGraph({ url, currentUser, AToken, customers, CustomerId }) {
     const [originalgraphData, setGraphOriginalData] = useState();
     const [loading, setLoading] = useState(true);
     const [selectedReceiver, setselectedReceiver] = useState(customers[0]);
-
     function addCalculatedFields(data) {
         // console.log("here")
         data.forEach((item) => {

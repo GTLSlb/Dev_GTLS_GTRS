@@ -1,6 +1,4 @@
-// Import Chart.js
 import { Chart, Tooltip } from 'chart.js';
-// Import Tailwind config
 import { tailwindConfig } from '../utils/Utils';
 
 Chart.register(Tooltip);

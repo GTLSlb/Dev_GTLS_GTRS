@@ -3,19 +3,19 @@ import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
 import axios from "axios";
 import "../../../../../css/graphTable.css";
-import NumericEditor from "@inovua/reactdatagrid-community/NumericEditor";
+import { AlertToast } from "@/permissions";
+import {ToastContainer,toast} from 'react-toastify'
 
 // Component
 function InlineTable({
     graphData,
     url,
     currentUser,
+    userPermission,
     getReportData,
-    AToken,
-    originalgraphData,
-    CustomerId,
     selectedReceiver,
-    setGraphData,
+    updateLocalDataFromJson,
+    AToken,
 }) {
     const [jsonData, setJsonData] = useState(graphData);
     const [localGraphData, setLocalGraphData] = useState(graphData);
@@ -180,7 +180,7 @@ function InlineTable({
             };
         }
     });
-    
+
 
     const [dataSource, setDataSource] = useState(originalData);
     const [validationErrors, setValidationErrors] = useState({});
@@ -334,13 +334,14 @@ function InlineTable({
                 })
                 .then((res) => {
                     // Use functional updates to ensure you're working with the latest data
-                    const updatedData = updateLocalData(localGraphData, baseRecord);        
+                    const updatedData = updateLocalData(localGraphData, baseRecord);
                     // Persist updates
                     setLocalGraphData(updatedData);
                     setGraphData(updatedData); // Optional: If parent component needs the updates
                 })
                 .catch((err) => {
                     console.log(err);
+                    AlertToast(err.response.data.Message, 2);
                 });
 
             setDataSource(data);
@@ -397,9 +398,10 @@ function InlineTable({
         ...col,
     }));
 
-    console.log(dataSource)
     return (
         <div className="mt-10">
+            {/* Added toast container since it wasn't showing */}
+            <ToastContainer />
             <ReactDataGrid
                 idProperty="metric"
                 style={{ minHeight: 284, fontWeight: "bold" }}

@@ -6,6 +6,8 @@ import axios from "axios";
 import { useEffect } from "react";
 import "../../../../css/scroll.css";
 import swal from 'sweetalert';
+import { handleSessionExpiration } from '@/CommonFunctions';
+
 const placeholder = "test";
 
 export default function AddFailedModal({
@@ -99,18 +101,9 @@ export default function AddFailedModal({
                     type: 'success',
                     icon: "info",
                     confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
+                  }).then(async function () {
+                    await handleSessionExpiration();
+                });
                 } else {
                   // Handle other errors
                   console.log(err);

@@ -1,17 +1,13 @@
-import { Button, Divider, Select, SelectItem } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import {
     Sidebar,
     Menu,
     MenuItem,
     menuClasses,
-    SubMenu,
 } from "react-pro-sidebar";
-import { MenuIcon } from "@/assets/svgs/MenuIcon.jsx";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import TaskIcon from "@mui/icons-material/Task";
-import ReportIcon from "@mui/icons-material/Report";
-// const location = useLocation();
+import { useNavigate } from "react-router-dom";
+
 import {
     ChartPieIcon,
     TruckIcon,
@@ -36,7 +32,7 @@ import {
     AccordionItem,
 } from "react-headless-accordion";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
-import { MapPinIcon } from "@heroicons/react/20/solid";
+
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -122,192 +118,20 @@ const hexToRgba = (hex, alpha) => {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
-const menu = [
-    {
-        id: 0,
-        name: "Dashboard",
-        href: "#",
-        icon: ChartPieIcon,
-        current: true,
-        feature: "Dashboard_view",
-    },
-    {
-        id: 1,
-        name: "Consignments",
-        href: "#",
-        icon: TruckIcon,
-        current: false,
-        feature: "ConsignmetsReport_view",
-    },
-    {
-        id: 2,
-        name: "KPI Report",
-        href: "#",
-        icon: ClipboardDocumentCheckIcon,
-        current: false,
-        options: [
-            {
-                id: 17,
-                name: "KPI",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "KPI_view",
-            },
-            {
-                id: 18,
-                name: "Transit Days",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "View_TransitDays",
-            },
-            {
-                id: 13,
-                name: "Holidays",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "View_Holidays",
-            },
-        ],
-        feature: "KPI",
-    },
-    {
-        id: 4,
-        name: "Performance Report",
-        href: "#",
-        icon: PresentationChartLineIcon,
-        current: false,
-        feature: "Performance_view",
-    },
-    {
-        id: 5,
-        name: "Failed Consignments",
-        href: "#",
-        icon: ExclamationTriangleIcon,
-        current: false,
-        feature: "View_failedConsignment",
-    },
-    {
-        id: 16,
-        name: "Transport Report",
-        href: "#",
-        icon: TaskIcon,
-        current: false,
-        feature: "View_Transport",
-    },
-    {
-        id: 9,
-        name: "RDD",
-        href: "#",
-        icon: ClockIcon,
-        current: false,
-        feature: "View_RDD",
-    },
-    {
-        id: 11,
-        name: "Missing POD",
-        href: "#",
-        icon: CameraIcon,
-        current: false,
-        feature: "MissingPOD_view",
-    },
-    {
-        id: 10,
-        name: "Safety",
-        href: "#",
-        icon: ShieldCheckIcon,
-        current: false,
-        feature: "View_safety",
-    },
-    {
-        id: 6,
-        name: "No Delivery info.",
-        href: "#",
-        icon: NoSymbolIcon,
-        current: false,
-        feature: "NoDeliveryInfo_view",
-    },
-    {
-        id: 7,
-        name: "Additional Charges",
-        href: "#",
-        icon: CurrencyDollarIcon,
-        current: false,
-        feature: "AdditionalCharges_view",
-    },
-    {
-        id: 8,
-        name: "Driver Login",
-        href: "#",
-        icon: UserIcon,
-        current: false,
-        feature: "DriverLogin_view",
-    },
-    {
-        id: 20,
-        name: "Unilever KPI Pack",
-        href: "#",
-        icon: DocumentTextIcon,
-        current: false,
-        feature: "UnileverReport_View",
-    },
-    {
-        id: 27,
-        name: "Real Food KPI Pack",
-        href: "#",
-        icon: DocumentTextIcon,
-        current: false,
-        feature: "RealFoodReport_View",
-    },
-    {
-        id: 21,
-        name: "Traffic Report",
-        href: "#",
-        icon: ReportIcon,
-        current: false,
-        feature: "TrafficReport_View",
-    },
-    {
-        id: 26,
-        name: "Consignment Tracking 2",
-        href: "#",
-        icon: MapPinIcon,
-        current: false,
-        feature: "View_Tracking2",
-    },
-    {
-        id: 24,
-        name: "Delivery Report",
-        href: "#",
-        icon: ClipboardDocumentIcon,
-        current: false,
-        feature: "DeliveryReport_View",
-        url: "/gtrs/delivery-report",
-    },
-
-];
 
 
 export default function CollapseSidebar({
-    setActivePage,
-    activePage,
-    setActiveModel,
     setBroken,
     rtl,
-    activeModel,
     toggled,
     setToggled,
     currentUser,
     setCusomterAccounts,
     customerAccounts,
-    activeIndexGTRS,
-    sessionData,
-    user,
     onData,
-    userPermission,
-    setActiveIndexGTRS,
+    user,
+    sidebarElements,
+    setSidebarElements,
 }) {
     const [collapsed, setCollapsed] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -316,8 +140,9 @@ export default function CollapseSidebar({
     const [customerOptions, setCustomerOptions] = useState([]);
     const [showList, setShowList] = useState(false);
     const showSelect = customerOptions?.length > 0;
-    const [sidebarElements, setSidebarElements] = useState(menu);
     const [optionSelected, setoptionSelected] = useState([]);
+    const navigate = useNavigate();
+
     useEffect(() => {
         setCustomerOptions(customerAccounts);
     }, []);
@@ -391,15 +216,66 @@ export default function CollapseSidebar({
         }),
     };
 
-    const [selectedItems, setSelectedItems] = useState(new Set(["0"]));
+    const handleClick = (id, item) => {
+        const updatedElements = sidebarElements?.map((element) => {
+            if (id == 12 || id == 13 || id == 14 || id == 17 || id == 18) {
+                if (element.options) {
+                    return {
+                        ...element,
+                        current: true,
+                        options: element.options.map((option) => {
+                            if (option.id == id) {
+                                return { ...option, current: true };
+                            } else {
+                                return { ...option, current: false };
+                            }
+                        }),
+                    };
+                } else {
+                    if (element.id === id) {
+                        return { ...element, current: true };
+                    } else {
+                        return { ...element, current: false };
+                    }
+                }
+            } else {
+                if (element.options) {
+                return {
+                    ...element,
+                    current: false,
+                    ...(element.options
+                        ? {
+                              options: element.options.map((option) => {
+                                  return { ...option, current: false };
+                              }),
+                          }
+                        : {}),
+                };
+                } else {
+                    if (element.id === id) {
+                        return { ...element, current: true };
+                    } else {
+                        return { ...element, current: false };
+                    }
+                }
+            }
+        });
+        handleSelectOnClick();
+        setSidebarElements(updatedElements);
+        localStorage.setItem("current", JSON.stringify(id));
+        navigate(item.url);
+    };
 
-
-
-    useEffect(() => {
-        setSelectedItems(new Set(["0"]));
-    }, []);
-
-    
+    function handleSelectOnClick() {
+        if (collapsed) {
+            setCollapsed(false);
+            if (collapsed === false) {
+                setIsOpen(true);
+            }
+        } else {
+            setIsOpen(!isOpen);
+        }
+    }
     function isItemActive(menuItemLabel) {
         let active = false;
 
@@ -430,100 +306,9 @@ export default function CollapseSidebar({
         return active;
     }
 
-
-    const filterNavigation = (navigation, user) => {
-        return navigation.filter((navItem) => {
-            // Check if the navigation item has sub-options
-            if (navItem.options) {
-                // Filter options based on user permissions
-                navItem.options = navItem.options.filter((option) =>
-                    userPermission?.Pages?.some(
-                        (userPage) =>
-                            userPage?.PageName === option.name &&
-                            userPage?.Features?.some(
-                                (feature) =>
-                                    feature.FunctionName === option.feature
-                            )
-                    )
-                );
-                // Include the navigation item only if it has any permitted options
-                return navItem.options.length > 0;
-            } else {
-                // For navigation items without options, check the feature directly
-                return userPermission?.Pages?.some(
-                    (userPage) =>
-                        userPage?.PageName === navItem.name &&
-                        userPage?.Features?.some(
-                            (feature) =>
-                                feature?.FunctionName === navItem?.feature
-                        )
-                );
-            }
-        });
-    };
-
-    const filteredNavigation = filterNavigation(menu, currentUser);
-    useEffect(() => {
-        setSidebarElements(filteredNavigation);
-        setActiveIndexGTRS(filteredNavigation[0]?.id);
-    }, []);
-
-    const handleClick = (index) => {
-        setActiveIndexGTRS(index);
-        const updatedElements = sidebarElements.map((element) => {
-            if (
-                element.id === index ||
-                index == 12 ||
-                index == 13 ||
-                index == 14 ||
-                index == 17 ||
-                index == 18
-            ) {
-                if (element.options) {
-                    return {
-                        ...element,
-                        current: true,
-                        options: element.options.map((option) => {
-                            if (option.id == index) {
-                                return { ...option, current: true };
-                            } else {
-                                return { ...option, current: false };
-                            }
-                        }),
-                    };
-                } else {
-                    if (element.id === index) {
-                        return { ...element, current: true };
-                    } else {
-                        return {
-                            ...element,
-                            current: false,
-                            ...(element.options
-                                ? element.options.map((option) => {
-                                      return { ...option, current: false };
-                                  })
-                                : {}),
-                        };
-                    }
-                }
-            } else {
-                return {
-                    ...element,
-                    current: false,
-                    ...(element.options
-                        ? {
-                              options: element.options.map((option) => {
-                                  return { ...option, current: false };
-                              }),
-                          }
-                        : {}),
-                };
-            }
-        });
-        setSidebarElements(updatedElements);
-    };
     return (
-        <div className="h-full relative">
+       sidebarElements?.length > 0 &&
+        <div className="h-full relative z-20">
             <Sidebar
                 collapsed={collapsed} // collapsed the menu
                 toggled={toggled}
@@ -544,11 +329,11 @@ export default function CollapseSidebar({
                         ? themescollapse[theme].sidebar.color
                         : themes[theme].sidebar.color,
                     height: "100%",
-                    // paddingBottom: "64px",
                     position: "relative",
                     backgroundColor: "#f6f6f6",
                 }}
             >
+                {/* Sidebar content */}
                 <div className=" h-full ">
                     {/* Arrow to close and open it  */}
                     <div className="p-5 flex items-center justify-between">
@@ -560,10 +345,10 @@ export default function CollapseSidebar({
                             }
                         >
                             <p className="text-sm truncate w-24">
-                                {user.FirstName} {user.LastName}
+                                {currentUser.FirstName} {currentUser.LastName}
                             </p>
                             <p className="text-xs truncate w-32">
-                                {user.Email}
+                                {currentUser.Email}
                             </p>
                         </div>
                         <Button
@@ -669,7 +454,7 @@ export default function CollapseSidebar({
                             rootStyles="w-1/2 overflow-auto bg-gray-100  mx-10"
                             menuItemStyles={menuItemStyles}
                         >
-                            {sidebarElements.map((menuItem, itemIndex) => (
+                            {sidebarElements?.map((menuItem, itemIndex) => (
                                 <>
                                     {menuItem?.options && !collapsed ? (
                                         <div className="px-5 py-2">
@@ -685,7 +470,6 @@ export default function CollapseSidebar({
                                                     {({ open }) => (
                                                         <>
                                                             <AccordionHeader
-                                                                // className=" "
                                                                 className={classNames(
                                                                     menuItem.current
                                                                         ? "bg-gray-300 text-gray-900"
@@ -741,7 +525,8 @@ export default function CollapseSidebar({
                                                                             }
                                                                             onClick={() =>
                                                                                 handleClick(
-                                                                                    option.id
+                                                                                    option.id,
+                                                                                    option
                                                                                 )
                                                                             }
                                                                             className={classNames(
@@ -769,24 +554,23 @@ export default function CollapseSidebar({
                                             key={itemIndex}
                                             active={isItemActive(menuItem.name)}
                                             component={
-                                                // <Link to={item.Link}>
                                                 <div
                                                     className=""
                                                     onClick={() => {
                                                         setCollapsed(false);
                                                         handleClick(
-                                                            menuItem.id
+                                                            menuItem.id,
+                                                            menuItem
                                                         );
                                                     }}
                                                 ></div>
-                                                // </Link>
                                             }
                                         >
                                             <div
                                                 className={`flex items-center px-2 gap-2 ${
                                                     isItemActive(menuItem.name)
                                                         ? "bg-gray-300 text-gray-900 py-2 rounded-lg"
-                                                        : "bg-transparent text-gray-600 hover:bg-gray-500 hover:text-white py-2 rounded-lg focus:ring-2 outline-0"
+                                                        : "bg-transparent text-gray-600 py-2 rounded-lg focus:ring-2 outline-0"
                                                 }
                                                                 ${
                                                                     collapsed

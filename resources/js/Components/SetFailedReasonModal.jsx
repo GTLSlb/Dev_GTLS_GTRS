@@ -8,6 +8,7 @@ import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { People } from "@mui/icons-material";
 const placeholder = "test";
 import swal from 'sweetalert';
+import { handleSessionExpiration } from '@/CommonFunctions';
 
 export default function SetFailedReasonModal({
     isOpen,
@@ -18,6 +19,7 @@ export default function SetFailedReasonModal({
     setReason,
     failedReasons,
     currentUser,
+    userPermission,
     updateLocalData,
 }) {
     const [consignment, setConsignment] = useState();
@@ -114,7 +116,6 @@ export default function SetFailedReasonModal({
     function classNames(...classes) {
         return classes.filter(Boolean).join(" ");
     }
-    // let id = 0;
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
     const data = [
@@ -177,24 +178,15 @@ export default function SetFailedReasonModal({
                   type: 'success',
                   icon: "info",
                   confirmButtonText: 'OK'
-                }).then(function() {
-                  axios
-                      .post("/logoutAPI")
-                      .then((response) => {
-                        if (response.status == 200) {
-                          window.location.href = "/";
-                        }
-                      })
-                      .catch((error) => {
-                        console.log(error);
-                      });
+                }).then(async function () {
+                    await handleSessionExpiration();
                 });
               } else {
                 // Handle other errors
                 setError("Error occurred while saving the data. Please try again."); // Set the error message
                 console.log(err);
               }
-            
+
         }
     };
     const handlePopUpClose = () => {
@@ -212,7 +204,6 @@ export default function SetFailedReasonModal({
     return (
         <ReactModal
             isOpen={isOpen}
-            // onRequestClose={handlePopUpClose}
             className="fixed inset-0 flex items-center justify-center "
             overlayClassName="fixed inset-0 bg-black bg-opacity-60"
         >

@@ -1,12 +1,12 @@
-
-
-
 import swal from "sweetalert";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
 import { PublicClientApplication } from "@azure/msal-browser";
-
+import { AlertToast } from "./permissions";
+import NoAccessRedirect from "@/Pages/NoAccessRedirect";
+import menu from "@/SidebarMenuItems";
+import routes from "@/GTRSRoutes";
 
 const msalConfig = {
     auth: {
@@ -26,21 +26,33 @@ export async function handleSessionExpiration() {
     const appUrl = window.Laravel.appUrl;
 
     // Ensure CSRF token is set in Axios for the logout request
-    axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    axios.defaults.headers.common["X-CSRF-TOKEN"] = document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute("content");
+    axios;
+    const credentials = {
+        CurrentUser: {},
+        URL: window.Laravel.gtamUrl,
+        SessionDomain: window.Laravel.appDomain,
+    };
     axios
-        .post("/logoutWithoutRequest")
+        .post("/logoutWithoutReq", credentials)
         .then(async (response) => {
             if (response.status === 200) {
-                const isMicrosoftLogin = Cookies.get('msal.isMicrosoftLogin');
+                const isMicrosoftLogin = Cookies.get("msal.isMicrosoftLogin");
 
                 // Clear MSAL-related data from localStorage
                 clearMSALLocalStorage();
+                Cookies.remove("access_token");
 
-                if (isMicrosoftLogin === 'true') {
+                if (isMicrosoftLogin === "true") {
                     // Redirect to Microsoft logout URL
                     window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=${appUrl}/login`;
                 } else {
-                    // Redirect to the local login page
+                    // Clear any session cookies related to CSRF or session before redirect
+                    Cookies.remove("XSRF-TOKEN"); // If using js-cookie
+                    Cookies.remove("gtls_session"); // Adjust according to your session cookie name
+                    // Force a reload to ensure new CSRF token generation
                     window.location.href = `/login`;
                 }
             } else {
@@ -49,23 +61,37 @@ export async function handleSessionExpiration() {
         })
         .catch((error) => {
             console.log(error);
+            if (error.response && error.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again to continue.",
+                    icon: "warning",
+                    button: "Ok",
+                }).then(async function () {
+                    window.location.href = `/login`;
+                });
+            }
         });
 }
-
 
 export function clearMSALLocalStorage() {
     const appDomain = window.Laravel.appDomain;
 
     // Find all keys in localStorage starting with 'msal' and remove them
-    const msalKeys = Object.keys(localStorage).filter(key => key.startsWith("msal"));
-    msalKeys.forEach(key => {
+    const msalKeys = Object.keys(localStorage).filter((key) =>
+        key.startsWith("msal")
+    );
+    msalKeys.forEach((key) => {
         localStorage.removeItem(key);
     });
 
     // Remove the msal.isMicrosoftLogin cookie
-    Cookies.set('msal.isMicrosoftLogin', '', { expires: -1, domain: appDomain });
+    Cookies.set("msal.isMicrosoftLogin", "", {
+        expires: -1,
+        domain: appDomain,
+    });
 }
-
 export function getMinMaxValue(data, fieldName, identifier) {
     // Check for null safety
     if (!data || !Array.isArray(data) || data.length === 0) {
@@ -105,6 +131,89 @@ export function getMinMaxValue(data, fieldName, identifier) {
     return `${day}-${month}-${year}`;
 }
 
+export const fetchApiData = async (
+    url,
+    setData,
+    currentUser,
+    AToken,
+    setApiStatus
+) => {
+    try {
+        const response = await axios.get(url, {
+            headers: {
+                UserId: currentUser.UserId,
+                Authorization: `Bearer ${AToken}`,
+            },
+        });
+
+        const parsedData = await new Promise((resolve) => {
+            const dataString = JSON.stringify(response.data);
+            const parsedData = JSON.parse(dataString);
+            resolve(parsedData);
+        });
+
+        setData(parsedData || []);
+        if (setApiStatus) setApiStatus(true);
+    } catch (err) {
+        if (err.response && err.response.status === 401) {
+            swal({
+                title: "Session Expired!",
+                text: "Please login again",
+                type: "success",
+                icon: "info",
+                confirmButtonText: "OK",
+            }).then(async () => {
+                await handleSessionExpiration();
+            });
+        } else {
+            console.log(err);
+        }
+    }
+};
+
+/**
+ * Function to make an API GET request.
+ *
+ * @param {string} url - The URL to make the GET request to.
+ * @param {object} headers - Optional headers to include in the request.
+ * @return {Promise} A Promise that resolves with the data from the response or handles errors.
+ */
+export function getApiRequest(url, headers = {}) {
+    const Token = Cookies.get("access_token");
+    const tokenHeaders = { ...headers, Authorization: `Bearer ${Token}` };
+    return axios
+        .get(url, {
+            headers: tokenHeaders,
+        })
+        .then((res) => {
+            return res.data;
+        })
+        .catch((err) => {
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again",
+                    icon: "info",
+                    buttons: {
+                        confirm: {
+                            text: "OK",
+                            value: true,
+                            visible: true,
+                            className: "",
+                            closeModal: true,
+                        },
+                    },
+                }).then(function () {
+                    handleSessionExpiration();
+                });
+            } else {
+                // Handle other errors
+                AlertToast("Something went wrong", 2);
+                console.log(err);
+            }
+        });
+}
 
 export const formatDateToExcel = (dateValue) => {
     const date = new Date(dateValue);
@@ -115,22 +224,86 @@ export const formatDateToExcel = (dateValue) => {
     }
 
     // Convert to Excel date serial number format
-    return (date.getTime() - date.getTimezoneOffset() * 60000) / 86400000 + 25569;
+    return (
+        (date.getTime() - date.getTimezoneOffset() * 60000) / 86400000 + 25569
+    );
 };
 
-export const isDummyAccount = (value) => {
-    const email = Cookies.get('userEmail');
-    if ( email == "demo@gtls.com.au"){
-        return "********"
-    } else {
-        return value
+export function ProtectedRoute({
+    permission,
+    route,
+    element,
+    currentUser,
+    setToken,
+    setcurrentUser,
+}) {
+    const userHasPermission = checkUserPermission(permission, route);
+    return userHasPermission ? element : <NoAccessRedirect />;
+}
+
+function checkUserPermission(permission, route) {
+    if(typeof route == "string"){
+        // Go over the flat permissions and check if the user has the required permission
+        return permission?.Features?.some((feature) => {
+            return feature.FunctionName == route;
+        });
+    }else if(typeof route == "object"){
+        // Map over permissions and check if the user has the required permission
+        return permission?.Features?.some((feature) => {
+            return route?.includes(feature.FunctionName);
+        });
     }
-};
-export const isDummyAccountWithDummyData = (dummy, value) => {
-    const email = Cookies.get('userEmail');
-    if ( email == "demo@gtls.com.au"){
-        return dummy
-    } else {
-        return value
+
+}
+
+export function navigateToFirstAllowedPage({
+    setSidebarElements,
+    user,
+    navigate,
+}) {
+    let items = [];
+    let doesRouteExist = routes?.find((route) => route == window.location.pathname) ? true : false;
+
+    if(!doesRouteExist){
+        navigate("/notFound");
+    }else{
+        menu?.map((menuItem) => {
+            if (
+                user?.Features?.find(
+                    (item) => item?.FunctionName == menuItem?.feature
+                )
+            ) {
+                items.push({ ...menuItem, current: false });
+            }
+        });
+        const currentItem = items.find((item) => item.url == window.location.pathname);
+        if(currentItem){
+            items.find((item) => item.url == window.location.pathname).current = true
+            // map over other items and set current to false
+            items.map((item) => {
+                if(item.url != window.location.pathname){
+                    item.current = false
+                }
+            })
+            navigate(currentItem.url);
+        }
+        else if (items.length > 0) {
+            // Set the first item as active
+            localStorage.getItem("current")
+                ? items.find((item) => item.id == localStorage.getItem("current"))
+                    ? items.find(
+                          (item) => item.id == localStorage.getItem("current")
+                      ).current = true
+                    : (items[0].current = true)
+                : (items[0].current = true);
+            items.find((item) => item.id == localStorage.getItem("current"))
+                ? navigate(
+                      items.find(
+                          (item) => item.id == localStorage.getItem("current")
+                      ).url
+                  )
+                : navigate(items[0].url);
+        }
+        setSidebarElements(items);
     }
-};
+}

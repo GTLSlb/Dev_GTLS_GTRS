@@ -7,6 +7,7 @@ import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import swal from "sweetalert";
 import { set } from "date-fns";
+import { handleSessionExpiration } from '@/CommonFunctions';
 
 export default function ModalRDD({
     isOpen,
@@ -15,6 +16,7 @@ export default function ModalRDD({
     AToken,
     consignment,
     currentUser,
+    userPermission,
     updateLocalData,
     rddReasons,
 }) {
@@ -98,17 +100,8 @@ export default function ModalRDD({
                             type: "success",
                             icon: "info",
                             confirmButtonText: "OK",
-                        }).then(function () {
-                            axios
-                                .post("/logoutAPI")
-                                .then((response) => {
-                                    if (response.status == 200) {
-                                        window.location.href = "/";
-                                    }
-                                })
-                                .catch((error) => {
-                                    console.log(error);
-                                });
+                        }).then(async function () {
+                            await handleSessionExpiration();
                         });
                     } else {
                         // Handle other errors

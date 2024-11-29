@@ -1,14 +1,17 @@
 import { canAddKpiReasons } from "@/permissions";
 import React from "react";
 import { useEffect, useState } from "react";
-import GtamButton from "../GTAM/components/Buttons/GtamButton";
 import SmallTableKPI from "./Components/KPISmallTable";
 import swal from "sweetalert";
 import axios from "axios";
+import { handleSessionExpiration } from '@/CommonFunctions';
+import GtrsButton from "../GtrsButton";
+
 export default function KPIReasons({
     url,
     currentUser,
     AToken,
+    userPermission,
     kpireasonsData,
     setkpireasonsData,
 }) {
@@ -65,17 +68,8 @@ export default function KPIReasons({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    }).then(async function () {
+                        await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors
@@ -126,20 +120,20 @@ export default function KPIReasons({
                             />
                         </div>
                     </div>
-                    {canAddKpiReasons(currentUser) ? (
+                    {canAddKpiReasons(userPermission) ? (
                         <div className="flex flex-col sm:flex-row gap-x-5 gap-y-3">
                             {editIndex != null ? (
                                 <div className="col-span-2">
-                                    <GtamButton
+                                    <GtrsButton
                                         name={"Cancel"}
                                         onClick={() => setEditIndex(null)}
                                         className="w-full "
                                     />
                                 </div>
                             ) : null}
-                            {canAddKpiReasons(currentUser) ? (
+                            {canAddKpiReasons(userPermission) ? (
                                 <div className="col-span-2">
-                                    <GtamButton
+                                    <GtrsButton
                                         name={
                                             showAddRow ? "Cancel" : "Add Reason"
                                         }
@@ -161,6 +155,7 @@ export default function KPIReasons({
                     setShowAddRow={setShowAddRow}
                     objects={filteredData}
                     currentUser={currentUser}
+                    userPermission={userPermission}
                     editIndex={editIndex}
                     setEditIndex={setEditIndex}
                     getfunction={getKPIReasons}

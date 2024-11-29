@@ -5,6 +5,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
 import "../../../../css/scroll.css"
+import { handleSessionExpiration } from '@/CommonFunctions';
 
 const placeholder = "test";
 
@@ -17,7 +18,8 @@ export default function AddRDDReasonModal({
     AToken,
     updateLocalData,
     rddReasons,
-    currentUser
+    currentUser,
+    userPermission
 }) {
     const [Name, setName] = useState(null);
     const [Description, setdescription] = useState(null);
@@ -43,11 +45,6 @@ export default function AddRDDReasonModal({
             setdescription("");
         }
     }, [reason]);
-    // if (reasonAuditId !== null && typeof reasonAuditId === "object") {
-    //     id = 0;
-    // } else if (typeof reasonAuditId === "number") {
-    //     id = reasonAuditId;
-    // }
     const data = [
         {
             ReasonId: reason ? reason.ReasonId : "",
@@ -79,7 +76,7 @@ export default function AddRDDReasonModal({
                     UserId: currentUser.UserId,
                     Authorization: `Bearer ${AToken}`,
                 }},
-                
+
             );
             // Handle the response as needed
 
@@ -104,18 +101,9 @@ export default function AddRDDReasonModal({
                     type: 'success',
                     icon: "info",
                     confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
+                  }).then(async function () {
+                    await handleSessionExpiration();
+                });
                 } else {
                   // Handle other errors
                   console.log(err);

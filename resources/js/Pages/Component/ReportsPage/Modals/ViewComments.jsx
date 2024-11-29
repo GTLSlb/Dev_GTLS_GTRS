@@ -5,8 +5,10 @@ import moment from "moment";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import swal from "sweetalert";
 import axios from "axios";
-import { Spinner } from "@nextui-org/react";
-import { canEditDeliveryReportComment } from "@/permissions";
+import { handleSessionExpiration } from '@/CommonFunctions';
+import {
+    Spinner,
+} from "@nextui-org/react";
 
 export default function ViewComments({
     isOpen,
@@ -17,79 +19,43 @@ export default function ViewComments({
     fetchData,
     currentUser,
     commentsData,
-    setCellLoading,
 }) {
-    const [data, setData] = useState([]);
-    const [comment, setComment] = useState(null);
-    const [commentId, setCommentId] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
+
+    const [ data, setData] = useState([]);
+    const [ comment, setComment] = useState(null);
+    const [ commentId, setCommentId] = useState(null);
+    const [ isEditing, setIsEditing] = useState(false);
+    const [ editIndx, setEditIndx] = useState(null);
+    const [ isLoading, setIsLoading] = useState(false);
+
     useEffect(() => {
-        if (commentsData) {
-            setData(commentsData);
-            setComment(
-                commentsData[0]?.Comment?.split("\n")?.reverse()?.join("\n")
-            );
-        }
-    }, [commentsData]);
-
-    const onValueChange = (e) => {
-        let newValue = e.target.value;
-        setComment(newValue); // Update the local state
-    };
-
-    function convertUtcToUserTimezone(utcDateString) {
-        // Create a Date object from the UTC date string
-        const utcDate = new Date(utcDateString);
-
-        // Get the current user's timezone
-        const targetTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-        const formatter = new Intl.DateTimeFormat("en-US", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            timeZone: targetTimezone,
-        });
-
-        const convertedDate = formatter.format(utcDate);
-        return convertedDate;
-    }
+       setData(commentsData);
+    },[commentsData])
 
     const handleSubmit = async () => {
-        const values = comment
-            .split(/\r?\n/)
-            .filter((value) => value.trim() !== "");
-        const reversedValues = values.reverse().join("\n");
-
         let formValues = {
-            CommentId: commentId,
-            ConsId: consId,
-            Comment: reversedValues,
+            "CommentId": commentId,
+            "ConsId": consId,
+            "Comment": comment
         };
-
         try {
             setIsLoading(true);
-            setCellLoading(consId)
-            await axios
-                .post(`${url}Add/Delivery/Comment`, formValues, {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
-                    },
-                })
-                .then((response) => {
-                    fetchData(setCellLoading);
-                    setTimeout(() => {
-                        setIsLoading(false);
-                        setCommentId(null);
-                        setComment(null);
-                    }, 1000);
-                    
-                    handleClose();
-                });
+
+            const response = await axios.post(`${url}Add/Delivery/Comment`, formValues, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            }).then((response) => {
+                fetchData();
+                setTimeout(() => {
+                    setIsLoading(false);
+                    setCommentId(null);
+                    setComment(null);
+                    setIsEditing(false);
+                    setEditIndx(null);
+                }, 1000);
+            })
         } catch (error) {
             setIsLoading(false);
             // Handle error
@@ -102,16 +68,7 @@ export default function ViewComments({
                     icon: "info",
                     confirmButtonText: "OK",
                 }).then(async function () {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                            if (response.status == 200) {
-                                window.location.href = "/";
-                            }
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                        });
+                    await handleSessionExpiration();
                 });
             } else {
                 // Handle other errors
@@ -122,6 +79,7 @@ export default function ViewComments({
         }
     };
 
+
     return (
         <ReactModal
             ariaHideApp={false}
@@ -130,37 +88,11 @@ export default function ViewComments({
             overlayClassName="fixed inset-0 bg-black bg-opacity-60"
         >
             <div className="bg-white w-[40%] rounded-lg shadow-lg py-6 px-8">
-                <div className="flex justify-between pb-2 border-b-1 border-[#D5D5D5]">
-                    <h2 className="text-2xl font-bold text-gray-500">
-                        Comments
-                        {data?.length > 0 && (
-                            <p className="mt-2 text-dark text-sm font-light">
-                                Added At:{" "}
-                                {moment(
-                                    convertUtcToUserTimezone(
-                                        data[0]?.AddedAt + "Z"
-                                    ),
-
-                                    "MM/DD/YYYY, h:mm:ss A"
-                                ).format("DD-MM-YYYY hh:mm A") == "Invalid date"
-                                    ? ""
-                                    : moment(
-                                          convertUtcToUserTimezone(
-                                              data[0]?.AddedAt + "Z"
-                                          ),
-
-                                          "MM/DD/YYYY, h:mm:ss A"
-                                      ).format("DD-MM-YYYY hh:mm A")}
-                            </p>
-                        )}
-                    </h2>
+                <div className="flex justify-between pb-4 border-b-1 border-[#D5D5D5]">
+                    <h2 className="text-2xl font-bold text-gray-500">Comments</h2>
                     <button
-                        className="text-gray-500 -mt-8 hover:text-gray-700"
-                        onClick={() => {
-                            setComment(null);
-                            setCommentId(null);
-                            handleClose();
-                        }}
+                        className="text-gray-500 hover:text-gray-700"
+                        onClick={handleClose}
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -181,52 +113,35 @@ export default function ViewComments({
                 <div>
                     {data?.length > 0 ? (
                         <div className="max-h-[21rem] overflow-auto pr-1 containerscroll">
-                            <div className="flex flex-col gap-4 py-3">
-                                {canEditDeliveryReportComment(currentUser) && (
-                                    <div className="flex flex-col gap-4 px-1">
-                                        <textarea
-                                            type="text"
-                                            className="border-[#D5D5D5] rounded-lg  focus:!ring-[#D5D5D5] resize-none w-full min-h-[150px]"
-                                            defaultValue={comment}
-                                            value={comment}
-                                            onChange={onValueChange}
-                                        />
-                                        <div className="flex ml-auto gap-6  text-sm h-[2.4rem]">
-                                            <button
-                                                onClick={() => {
-                                                    setComment(null);
-                                                    setCommentId(null);
-                                                    handleClose();
-                                                }}
-                                                disabled={isLoading}
-                                                className="text-gray-500 hover:text-black"
-                                            >
-                                                Cancel
-                                            </button>
-                                            {isLoading ? (
-                                                <div className=" inset-0 flex justify-center items-center bg-opacity-50">
-                                                    <Spinner
-                                                        color="secondary"
-                                                        size="sm"
-                                                    />
-                                                </div>
-                                            ) : (
-                                                <button
-                                                    className="bg-gray-800 w-16 text-white font-bold rounded hover:bg-gray-800/80"
-                                                    onClick={() =>
-                                                        handleSubmit()
-                                                    }
-                                                >
-                                                    Save
-                                                </button>
-                                            )}
+                            {data?.map((c, index) => (
+                                <div className="flex flex-col gap-4 border-b-1 border-[#D5D5D5] py-3">
+                                    <div className="flex pr-2">
+                                        <div className="w-[95%]">
+                                        {isEditing && editIndx === index
+                                            ? <textarea type="text" className="border-[#D5D5D5] rounded-lg w-full" defaultValue={c?.Comment} value={comment} onChange={(e)=>{setComment(e.target.value)}} />
+                                            :<p>{c?.Comment}</p>
+                                        }
                                         </div>
+                                        {isEditing && editIndx === index
+                                            ? <div className="flex mt-auto gap-4 ml-3 text-sm h-[1.6rem]">
+                                                <button onClick={()=>{setIsEditing(false); setCommentId(null); setEditIndx(null)}} disabled={isLoading} className="text-gray-500">Cancel</button>
+                                                {
+                                                    isLoading
+                                                    ? <div className=" inset-0 flex justify-center items-center bg-opacity-50">
+                                                        <Spinner color="secondary" size="sm" />
+                                                      </div>
+                                                    : <button className="bg-gray-800 w-16 text-white font-bold rounded" onClick={()=>handleSubmit()}>Save</button>
+                                                }
+                                            </div>
+                                            : <PencilIcon onClick={()=>{setIsEditing(true); setCommentId(c?.CommentId);setComment(c?.Comment); setEditIndx(index)}} className="w-5 h-5 text-sky-500 ml-auto hover:cursor-pointer hover:text-sky-500/70"/>
+                                        }
                                     </div>
-                                )}
-                            </div>
+                                    <p className="text-gray-400 text-sm font-light">{moment(c?.AddedAt).format("DD-MM-YYYY hh:mm A")}</p>
+                                </div>
+                            ))}
                         </div>
                     ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-gray-500 text-lg pt-8 pb-5">
+                        <div className="h-full flex flex-col items-center justify-center text-gray-500 text-lg py-4">
                             <p>No comments found</p>
                         </div>
                     )}

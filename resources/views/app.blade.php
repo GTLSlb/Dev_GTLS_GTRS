@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="locale" property= "og:locale" content="en_US">
     <meta name="type" property= "og:type" content="website">
-    <meta name="url" property="og:url" content="https://web.gtls.au" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="url" property="og:url" content="https://web.gtls.store" />
     <meta name="theme-color" content="#317EFB"/>
     <meta name="site_name" property="og:site_name" content="GTLS" />
     <meta name="image" property="og:image" content="{{ asset('favicon.ico') }}" />
@@ -33,7 +34,10 @@
             gtccrUrl: "{{ env('GTCCR_API_URL') }}",
             gtamUrl: "{{ env('GTAM_API_URL') }}",
             appDomain: "{{ env('SESSION_DOMAIN') }}",
+            appUrl: "{{ env('APP_URL') }}",
             gtrsWeb: "{{ env('GTRS_WEB_URL') }}",
+            azureCallback: "{{ env('AZURE_CALLBACK_URL') }}",
+            backToHomeURL: "{{ env('BACK_TO_HOME_URL') }}",
             googleMapsKey: "{{ env('GOOGLE_MAPS_KEY') }}",
         };
     </script>

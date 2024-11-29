@@ -11,6 +11,8 @@ import { Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { useEffect } from "react";
 import { canEditKpiReasons } from "@/permissions";
+import { handleSessionExpiration } from '@/CommonFunctions';
+
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -24,6 +26,7 @@ export default function SmallTableKPI({
     setEditIndex,
     dynamicHeaders,
     AlertToast,
+    userPermission,
     setObjects,
     getfunction,
     addurl,
@@ -81,12 +84,10 @@ export default function SmallTableKPI({
                 .then((res) => {
                     getfunction();
                     setEditIndex(null);
-                    // AlertToast("Saved Successfully", 1);
                     setEditObject({});
                 })
                 .catch((err) => {
-                    // AlertToast("Error please try again.", 2);
-                    
+
                     if (err.response && err.response.status === 401) {
                         // Handle 401 error using SweetAlert
                         swal({
@@ -95,17 +96,8 @@ export default function SmallTableKPI({
                           type: 'success',
                           icon: "info",
                           confirmButtonText: 'OK'
-                        }).then(function() {
-                          axios
-                              .post("/logoutAPI")
-                              .then((response) => {
-                                if (response.status == 200) {
-                                  window.location.href = "/";
-                                }
-                              })
-                              .catch((error) => {
-                                console.log(error);
-                              });
+                        }).then(async function () {
+                            await handleSessionExpiration();
                         });
                       } else {
                         // Handle other errors
@@ -155,8 +147,6 @@ export default function SmallTableKPI({
                         resolve(parsedData);
                     });
                     parsedDataPromise.then((parsedData) => {
-                        // setObjects(parsedData);
-                        // AlertToast("Saved Successfully", 1);
                         setNewObject({});
                     });
                 })
@@ -170,24 +160,15 @@ export default function SmallTableKPI({
                           type: 'success',
                           icon: "info",
                           confirmButtonText: 'OK'
-                        }).then(function() {
-                          axios
-                              .post("/logoutAPI")
-                              .then((response) => {
-                                if (response.status == 200) {
-                                  window.location.href = "/";
-                                }
-                              })
-                              .catch((error) => {
-                                console.log(error);
-                              });
+                        }).then(async function () {
+                            await handleSessionExpiration();
                         });
                       } else {
                         // Handle other errors
                     setNewObject({});
                     console.log(err);
                       }
-                    
+
                 });
         }
     }
@@ -324,7 +305,7 @@ export default function SmallTableKPI({
                                                                 </th>
                                                             )
                                                         )}
-                                                        {canEditKpiReasons(currentUser) ? (
+                                                        {canEditKpiReasons(userPermission) ? (
                                                             <th
                                                                 scope="col"
                                                                 className="px-3 w-20 text-left text-sm font-semibold text-gray-400 border"
@@ -658,7 +639,7 @@ export default function SmallTableKPI({
                                                                                 </td>
                                                                             )
                                                                         )}
-                                                                        {canEditKpiReasons(currentUser) ? (
+                                                                        {canEditKpiReasons(userPermission) ? (
                                                                             <td
                                                                                 className={`relative bg-white whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-0  ${
                                                                                     editError
@@ -696,7 +677,7 @@ export default function SmallTableKPI({
                                                                                     ) : (
                                                                                         <div>
                                                                                             {canEditKpiReasons(
-                                                                                                currentUser
+                                                                                                userPermission
                                                                                             ) ? (
                                                                                                 <a
                                                                                                     id={`edit${index}`}

@@ -19,65 +19,35 @@ import notFound from "../../../assets/pictures/NotFound.png";
 import { useEffect } from "react";
 import MultiChartLine from "./Dashboard_Charts/MultiLineChart";
 import DoubleBarChart from "./Dashboard_Charts/DoublBarChart";
-import { canViewChart } from "@/permissions";
-export default function MainCharts({
-    accData,
-    safetyData,
-    chartsData,
-    currentUser,
-}) {
+import {
+    getLatestDespatchDate,
+    getOldestDespatchDate,
+} from "@/Components/utils/dateUtils";
+import {
+    calculateStatistics,
+    getConsStatusCounter,
+    getKPIStatusCounter,
+    getMonthlyData,
+    getMonthlyRecordCounts,
+    getPODCounts,
+    getPODCountsByState,
+    getStateRecordCounts,
+    getStateTotalWeights,
+} from "@/Components/utils/chartFunc";
+import AnimatedLoading from "@/Components/AnimatedLoading";
+import GtrsButton from "../GtrsButton";
+export default function MainCharts({ accData, safetyData, chartsData }) {
     const [filteredSafety, setFilteredSafety] = useState(safetyData);
 
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
     const [EDate, setEDate] = useState(getLatestDespatchDate(chartsData));
-    function getOldestDespatchDate(data) {
-        // Filter out elements with invalid 'CreatedDate' values
-        const validData = data?.filter((item) =>
-            isValidDate(item?.DespatchDate)
-        );
-        // Sort the validData array based on the 'CreatedDate' property
-        const sortedData = validData.sort(
-            (a, b) => new Date(a.DespatchDate) - new Date(b.DespatchDate)
-        );
-        // Check if the sortedData array is empty
-        if (sortedData.length === 0) {
-            return null; // No valid dates found
-        }
-        // Extract only the date part from the 'CreatedDate' of the first element (oldest date)
-        const oldestDate = new Date(
-            sortedData[0]?.DespatchDate
-        ).toLocaleDateString("en-CA");
-        // Return the oldest date in the 'YYYY-MM-DD' format
-        return oldestDate;
-    }
-    function isValidDate(dateString) {
-        const date = new Date(dateString);
-        return !isNaN(date);
-    }
-    function getLatestDespatchDate(data) {
-        const validData = data.filter((item) => isValidDate(item.DespatchDate));
-
-        // Sort the data array based on the 'DespatchDate' property in descending order
-        const sortedData = validData.sort(
-            (a, b) => new Date(b.DespatchDate) - new Date(a.DespatchDate)
-        );
-        if (sortedData.length === 0) {
-            return null; // No valid dates found
-        }
-        const latestDate = new Date(
-            sortedData[0]?.DespatchDate
-        ).toLocaleDateString("en-CA");
-
-        // Return the 'DespatchDate' of the first element (latest date)
-        return latestDate;
-    }
     const [filteredData, setFilteredData] = useState([chartsData]);
     useEffect(() => {
         setFilteredData(chartsData);
     }, []);
     const [layout, setLayout] = useState([
-        { i: "card02", x: 0, y: 0, w: 1, h: 5 }, //Information
-        { i: "card06", x: 2, y: 0, w: 1, h: 5 }, // Spend By month
+        { i: "card02", x: 0, y: 0, w: 1, h: 4.5 }, //Information
+        { i: "card06", x: 2, y: 0, w: 1, h: 4.5 }, // Spend By month
         { i: "card04", x: 0, y: 2, w: 1, h: 3 }, //Consignment Status
         { i: "card12", x: 2, y: 0, w: 1, h: 3 }, // Consignment By Month
         { i: "card08", x: 0, y: 2, w: 1, h: 3 }, // Pod True Vs False
@@ -86,6 +56,20 @@ export default function MainCharts({
         { i: "card13", x: 2, y: 4, w: 1, h: 3 },
         { i: "card14", x: 0, y: 4, w: 1, h: 3 },
     ]);
+    const ResetLayout = () => {
+        // Filter the options based on the selected receivers
+        setLayout([
+            { i: "card02", x: 0, y: 0, w: 1, h: 4.5 }, //Information
+            { i: "card06", x: 2, y: 0, w: 1, h: 4.5 }, // Spend By month
+            { i: "card04", x: 0, y: 2, w: 1, h: 3 }, //Consignment Status
+            { i: "card12", x: 2, y: 0, w: 1, h: 3 }, // Consignment By Month
+            { i: "card08", x: 0, y: 2, w: 1, h: 3 }, // Pod True Vs False
+            { i: "card03", x: 2, y: 2, w: 1, h: 3 }, // Pod Status
+            { i: "card03_2", x: 0, y: 4, w: 1, h: 3 },
+            { i: "card13", x: 2, y: 4, w: 1, h: 3 },
+            { i: "card14", x: 0, y: 4, w: 1, h: 3 },
+        ]);
+    };
     const [cols, setCols] = useState(2);
     useEffect(() => {
         const handleResize = () => {
@@ -105,293 +89,6 @@ export default function MainCharts({
     }, []);
     const [selectedReceiver, setselectedReceiver] = useState([]);
 
-    const calculateStatistics = (data) => {
-        let safetyCounter = 0;
-        const uniqueReceivers = new Set();
-        let totalWeight = 0;
-        let totalPalletSpace = 0;
-        let totalLoscam = 0;
-        let totalCustomerOwn = 0;
-        let totalCost = 0;
-        let totalNoConsPassed = 0;
-        let totalConsFailed = 0;
-        let totalConsPending = 0;
-        let podCounter = 0;
-        let totalChep = 0;
-        let fuelLevy = 0;
-        if (filteredSafety) {
-            safetyCounter = Object.keys(filteredSafety).length;
-        } else {
-            safetyCounter = 0;
-        }
-        for (const {
-            ReceiverName,
-            TottalWeight,
-            TotalPalletSpace,
-            TotalLoscam,
-            TotalCustomerOwn,
-            TotalChep,
-            NetAmount,
-            ConsStatus,
-            POD,
-            FuelLevy,
-        } of data) {
-            uniqueReceivers.add(ReceiverName);
-            totalWeight += TottalWeight;
-            totalPalletSpace += TotalPalletSpace;
-            totalLoscam += TotalLoscam;
-            totalCustomerOwn += TotalCustomerOwn;
-            totalChep += TotalChep;
-            totalCost += NetAmount;
-            fuelLevy += FuelLevy;
-            // Calculate other statistics
-            if (ConsStatus === "PASS") {
-                totalNoConsPassed++;
-            } else if (ConsStatus === "FAIL") {
-                totalConsFailed++;
-            } else if (ConsStatus === "PENDING") {
-                totalConsPending++;
-            }
-            if (POD) {
-                podCounter++;
-            }
-        }
-
-        const totalNoConsShipped =
-            totalConsPending + totalConsFailed + totalNoConsPassed;
-        const numUniqueReceivers = uniqueReceivers.size;
-        const podPercentage = (podCounter / data.length) * 100;
-
-        return {
-            numUniqueReceivers,
-            totalWeight,
-            totalPalletSpace,
-            totalLoscam,
-            totalCustomerOwn,
-            totalCost,
-            totalNoConsShipped,
-            totalNoConsPassed,
-            totalConsPending,
-            totalConsFailed,
-            podCounter,
-            podPercentage,
-            totalChep,
-            safetyCounter,
-            fuelLevy,
-        };
-    };
-    const getConsStatusCounter = (data) => {
-        const counter = [];
-
-        for (const item of data) {
-            const consStatus = item.ConsStatus;
-
-            const existingStatus = counter.find(
-                (obj) => obj.label === consStatus
-            );
-
-            if (existingStatus) {
-                existingStatus.value++;
-            } else {
-                counter.push({ label: consStatus, value: 1 });
-            }
-        }
-
-        return counter;
-    };
-    const getKPIStatusCounter = (data) => {
-        const counter = [];
-        for (const item of data) {
-            // Convert the boolean KPIStatus to 'pass' or 'fail'
-            const KPIStatus =
-                item.MatchDel == 0
-                    ? "N/A"
-                    : item.MatchDel == 1
-                    ? "Pass"
-                    : "Fail";
-            const existingStatus = counter.find(
-                (obj) => obj.label === KPIStatus
-            );
-
-            if (existingStatus) {
-                existingStatus.value++;
-            } else {
-                counter.push({ label: KPIStatus, value: 1 });
-            }
-        }
-
-        return counter;
-    };
-    // Information for the first charts
-    const getStateRecordCounts = (data) => {
-        const stateCounts = {};
-
-        for (const item of data) {
-            const state = item.ReceiverState;
-            if (!stateCounts[state]) {
-                stateCounts[state] = 0;
-            }
-
-            stateCounts[state]++;
-        }
-        const stateRecordCounts = Object.entries(stateCounts).map(
-            ([state, value]) => ({
-                data: state,
-                value,
-            })
-        );
-
-        return stateRecordCounts;
-    };
-    const getStateTotalWeights = (data) => {
-        const stateWeights = {};
-
-        for (const item of data) {
-            const state = item.ReceiverState;
-            const weight = item.TottalWeight;
-
-            if (!stateWeights[state]) {
-                stateWeights[state] = 0;
-            }
-
-            stateWeights[state] += weight;
-        }
-
-        const stateTotalWeights = Object.entries(stateWeights).map(
-            ([state, value]) => ({
-                data: state,
-                value: parseFloat(value.toFixed(2)),
-            })
-        );
-
-        return stateTotalWeights;
-    };
-    const getMonthlyData = (data) => {
-        const firstDayData = {};
-
-        for (const item of data) {
-            const state = item.ReceiverState;
-            const amount = item.NetAmount;
-            const despatchDate = new Date(item.DespatchDate);
-            const year = despatchDate.getFullYear();
-            const day = despatchDate.getDate();
-            const month = (despatchDate.getMonth() + 1)
-                .toString()
-                .padStart(2, "0");
-            const formattedDate = `${year}-${month}`;
-            const key = `${formattedDate}-${state}`;
-
-            if (firstDayData.hasOwnProperty(key)) {
-                firstDayData[key].amount += amount;
-            } else {
-                firstDayData[key] = {
-                    month: formattedDate,
-                    amount,
-                    state,
-                };
-            }
-        }
-
-        const sortedData = Object.values(firstDayData).sort((a, b) => {
-            const dateA = new Date(a.month);
-            const dateB = new Date(b.month);
-            return dateA - dateB;
-        });
-        return sortedData;
-    };
-    const getMonthlyRecordCounts = (data) => {
-        const monthlyCounts = {};
-
-        for (const item of data) {
-            const despatchDate = new Date(item.DespatchDate);
-            const month = despatchDate.getMonth() + 1;
-            const year = despatchDate.getFullYear();
-            const monthYear = `${year}-${month.toString().padStart(2, "0")}`;
-
-            if (monthlyCounts.hasOwnProperty(monthYear)) {
-                monthlyCounts[monthYear]++;
-            } else {
-                monthlyCounts[monthYear] = 1;
-            }
-        }
-
-        const sortedCounts = Object.entries(monthlyCounts).sort(([a], [b]) => {
-            const [yearA, monthA] = a.split("-");
-            const [yearB, monthB] = b.split("-");
-            return new Date(yearA, monthA - 1) - new Date(yearB, monthB - 1);
-        });
-
-        const monthlyRecordCounts = sortedCounts.map(([monthYear, value]) => ({
-            data: monthYear,
-            value,
-        }));
-        return monthlyRecordCounts;
-    };
-    const getPODCounts = (data) => {
-        const podCounts = {};
-        const today = new Date(); // Get today's date
-
-        for (const item of data) {
-            const despatchDate = new Date(item.DespatchDate);
-            if (despatchDate > today) {
-                continue; // Skip data with a future despatch date
-            }
-
-            const month = despatchDate.getMonth() + 1;
-            const year = despatchDate.getFullYear();
-            const monthYear = `${year}-${month.toString().padStart(2, "0")}`;
-            const pod = item.POD;
-
-            if (podCounts.hasOwnProperty(monthYear)) {
-                if (pod) {
-                    podCounts[monthYear].true++;
-                } else {
-                    podCounts[monthYear].false++;
-                }
-            } else {
-                podCounts[monthYear] = {
-                    monthYear,
-                    true: pod ? 1 : 0,
-                    false: pod ? 0 : 1,
-                };
-            }
-        }
-
-        const formattedCounts = Object.entries(podCounts).flatMap(
-            ([monthYear, counts]) => [
-                { pod: "true", monthYear, value: counts.true },
-                { pod: "false", monthYear, value: counts.false },
-            ]
-        );
-
-        formattedCounts.sort((a, b) => {
-            const [yearA, monthA] = a.monthYear.split("-");
-            const [yearB, monthB] = b.monthYear.split("-");
-            return new Date(yearA, monthA - 1) - new Date(yearB, monthB - 1);
-        });
-
-        return formattedCounts;
-    };
-    function getPODCountsByState(data) {
-        const podCountsByState = [];
-
-        data.forEach((item) => {
-            const state = item.ReceiverState;
-            const pod = item.POD;
-
-            const existingState = podCountsByState.find(
-                (obj) => obj.label === state
-            );
-
-            if (existingState) {
-                existingState.value += pod ? 1 : 0;
-            } else {
-                podCountsByState.push({ label: state, value: pod ? 1 : 0 });
-            }
-        });
-
-        return podCountsByState;
-    }
     const handleStartDateChange = (event) => {
         const value = event.target.value;
         setSDate(value);
@@ -404,7 +101,7 @@ export default function MainCharts({
     };
     const [hasData, setHasData] = useState(true);
     const uniqueReceiverNames = Array.from(
-        new Set(filteredData.map((item) => item.ReceiverName))
+        new Set(chartsData.map((item) => item.ReceiverName))
     );
     const handleReceiverSelectChange = (selectedOptions) => {
         setselectedReceiver(selectedOptions);
@@ -466,6 +163,7 @@ export default function MainCharts({
         }),
         // Add more style functions here as needed
     };
+
     const filterData = (startDate, endDate) => {
         const selectedReceiverNames = selectedReceiver.map(
             (receiver) => receiver.value
@@ -485,8 +183,6 @@ export default function MainCharts({
         } else {
             setFilteredSafety(safetyData);
         }
-
-        // Filter the data based on the start and end date filters, selected receiver names, and chargeTo values
         const filtered = chartsData.filter((item) => {
             const isIncluded =
                 selectedReceiverNames.length === 0 ||
@@ -517,47 +213,8 @@ export default function MainCharts({
     useEffect(() => {
         filterData(SDate, EDate);
     }, [accData, selectedReceiver]);
-    // const isMobile = useMediaQuery({ query: "(max-width: 1080px)" });
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const ResetLayout = () => {
-        // Filter the options based on the selected receivers
-        setLayout([
-            { i: "card02", x: 0, y: 0, w: 1, h: 5 }, //Information
-            { i: "card06", x: 2, y: 0, w: 1, h: 5 }, // Spend By month
-            { i: "card04", x: 0, y: 2, w: 1, h: 3 }, //Consignment Status
-            { i: "card12", x: 2, y: 0, w: 1, h: 3 }, // Consignment By Month
-            { i: "card08", x: 0, y: 2, w: 1, h: 3 }, // Pod True Vs False
-            { i: "card03", x: 2, y: 2, w: 1, h: 3 }, // Pod Status
-            { i: "card03_2", x: 0, y: 4, w: 1, h: 3 },
-            { i: "card13", x: 2, y: 4, w: 1, h: 3 },
-        ]);
-    };
-    const PODFirst = () => {
-        // Filter the options based on the selected receivers
-        setLayout([
-            { i: "card02", x: 0, y: 0, w: 1, h: 5 }, //Information
-            { i: "card06", x: 2, y: 0, w: 1, h: 5 }, // Spend By month
-            { i: "card04", x: 0, y: 2, w: 1, h: 3 }, //Consignment Status
-            { i: "card12", x: 2, y: 0, w: 1, h: 3 }, // Consignment By Month
-            { i: "card08", x: 0, y: -2, w: 1, h: 3 }, // Pod True Vs False
-            { i: "card03", x: 2, y: -2, w: 1, h: 3 }, // Pod Status
-            { i: "card03_2", x: 0, y: 4, w: 1, h: 3 },
-            { i: "card13", x: 2, y: 4, w: 1, h: 3 },
-        ]);
-    };
-    const ConsignmentsFirst = () => {
-        // Filter the options based on the selected receivers
-        setLayout([
-            { i: "card02", x: 0, y: 2, w: 1, h: 4.5 }, //Information
-            { i: "card06", x: 2, y: 0, w: 1, h: 4.5 }, // Spend By month
-            { i: "card04", x: 0, y: 0, w: 1, h: 4.5 }, //Consignment Status
-            { i: "card12", x: 2, y: -2, w: 1, h: 4.5 }, // Consignment By Month
-            { i: "card08", x: 0, y: 2, w: 1, h: 3 }, // Pod True Vs False
-            { i: "card03", x: 2, y: 2, w: 1, h: 3 }, // Pod Status
-            { i: "card03_2", x: 0, y: 4, w: 1, h: 3 },
-            { i: "card13", x: 2, y: 4, w: 1, h: 3 },
-        ]);
-    };
+
     useEffect(() => {
         // Update the layout when cols change
         setLayout((prevLayout) =>
@@ -650,65 +307,14 @@ export default function MainCharts({
                                     </div>
                                 </div>
                             </div>
-
-                            <Popover className="relative object-right flex-item md:ml-auto hidden">
-                                <Popover.Button
-                                    className={`inline-flex items-center w-[5.5rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+                            <div className="ml-auto">
+                                <button
+                                    className={`  items-center w-auto h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+                                    onClick={ResetLayout}
                                 >
-                                    Presets
-                                    <ChevronDownIcon
-                                        className="h-5 w-5"
-                                        aria-hidden="true"
-                                    />
-                                </Popover.Button>
-
-                                <Transition
-                                    as={Fragment}
-                                    enter="transition ease-out duration-200"
-                                    enterFrom="opacity-0 translate-y-1"
-                                    enterTo="opacity-100 translate-y-0"
-                                    leave="transition ease-in duration-150"
-                                    leaveFrom="opacity-100 translate-y-0"
-                                    leaveTo="opacity-0 translate-y-1"
-                                >
-                                    <Popover.Panel className="absolute left-20 lg:left-0 z-10 mt-5 flex w-screen max-w-max -translate-x-1/2 px-4">
-                                        <div className=" max-w-md flex-auto overflow-hidden rounded-lg bg-gray-200 text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
-                                            <div className="p-4">
-                                                <div className="mt-2 flex flex-col gap-y-2">
-                                                    <button
-                                                        onClick={ResetLayout}
-                                                        className="bg-dark h-full w-full px-5 py-1 rounded hover:bg-gray-400 text-smooth hover:text-dark"
-                                                    >
-                                                        Reset Default
-                                                    </button>
-                                                    <button
-                                                        onClick={
-                                                            ConsignmentsFirst
-                                                        }
-                                                        className="bg-dark h-full w-full px-5 py-1 rounded hover:bg-gray-400 text-smooth hover:text-dark"
-                                                    >
-                                                        Consignments First
-                                                    </button>
-                                                    <button
-                                                        onClick={PODFirst}
-                                                        className="bg-dark h-full w-full px-5 py-1 rounded hover:bg-gray-400 text-smooth hover:text-dark"
-                                                    >
-                                                        POD First
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            {/* <div className="grid grid-cols-1 divide-x divide-gray-900/5 bg-gray-50">
-                                                <button
-                                                    // onClick={handleDownloadExcel}
-                                                    className="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100"
-                                                >
-                                                    Export XLS
-                                                </button>
-                                            </div> */}
-                                        </div>
-                                    </Popover.Panel>
-                                </Transition>
-                            </Popover>
+                                    Reset layout
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div className="lg:hidden px-2 py-3 w-full">
@@ -757,13 +363,15 @@ export default function MainCharts({
                             {" "}
                             <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                             <DashboardCard07
-                                InfoData={calculateStatistics(filteredData)}
+                                InfoData={calculateStatistics(
+                                    filteredData,
+                                    filteredSafety
+                                )}
                             />{" "}
                         </div>
-
                         <div key="card06" className="relative">
                             {" "}
-                            <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
+                            <ArrowsPointingOutIcon className=" absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                             <MultiChartLine
                                 chartData={getMonthlyData(filteredData)}
                                 chartTitle={"Spend By State"}
@@ -839,8 +447,6 @@ export default function MainCharts({
                         </div>
                     </div>
                 )}
-
-                {/* <DashboardCard11 /> */}
             </div>
         );
     } else if (chartsData.length === 0) {
@@ -850,20 +456,6 @@ export default function MainCharts({
             </div>
         );
     } else {
-        return (
-            <div className=" min-h-screen md:pl-20 pt-16 h-full">
-                <div className="fixed inset-0 flex items-center justify-center">
-                    <div
-                        className={`h-5 w-5 bg-goldd   rounded-full mr-5 animate-bounce`}
-                    ></div>
-                    <div
-                        className={`h-5 w-5 bg-goldd   rounded-full mr-5 animate-bounce200`}
-                    ></div>
-                    <div
-                        className={`h-5 w-5 bg-goldd   rounded-full animate-bounce400`}
-                    ></div>
-                </div>
-            </div>
-        );
+        return <AnimatedLoading />;
     }
 }

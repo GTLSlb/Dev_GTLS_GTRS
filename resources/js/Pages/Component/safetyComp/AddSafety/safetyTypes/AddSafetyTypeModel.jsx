@@ -1,10 +1,11 @@
 import ReactModal from "react-modal";
 import InputError from "@/Components/InputError";
-import TextInput from "@/Components/TextInput";
 import { useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
 import swal from 'sweetalert';
+import { handleSessionExpiration } from '@/CommonFunctions';
+
 const placeholder = "test";
 
 export default function AddSafetyTypeModal({
@@ -32,12 +33,10 @@ export default function AddSafetyTypeModal({
             setStatus(type?.SafetyStatus);
             setTypeStatus(type?.SafetyStatus);
             setName(type?.SafetyTypeName);
-            // setdescription(type?.ReasonDesc);
         } else {
             setTypeStatus(true);
             setStatus(true);
             setName("");
-            // setdescription("");
         }
     }, [type]);
     const data = [
@@ -50,9 +49,7 @@ export default function AddSafetyTypeModal({
 
     const handlePopUpClose = () => {
         setError(null); // Clear the error message
-        // setInputValue("");
         setName("");
-        // setdescription("");
         handleClose(); // Clear the input value
     };
     const handleSubmit = async (event) => {
@@ -95,19 +92,9 @@ export default function AddSafetyTypeModal({
                     type: 'success',
                     icon: "info",
                     confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                  });
-                } else {
+                  }).then(async function () {
+                    await handleSessionExpiration();
+                });
                   // Handle other errors
                   console.log(err);
                 }

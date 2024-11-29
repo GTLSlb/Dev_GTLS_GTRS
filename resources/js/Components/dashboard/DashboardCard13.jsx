@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import ReactDOM from "react-dom";
 import { Pie } from "@ant-design/plots";
 
 const BasicPieCharts = (props) => {
@@ -47,9 +46,6 @@ const BasicPieCharts = (props) => {
             <header className="px-5 py-4 border-b border-slate-100">
                 <h2 className="font-semibold text-slate-800">{chartTitle}</h2>
             </header>
-            {/*  <div className="">
-                
-            </div> */}
             <Pie {...config} className="p-4" />
         </div>
     );
