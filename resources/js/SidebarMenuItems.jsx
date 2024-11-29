@@ -72,6 +72,15 @@ const menu = [
                 feature: "View_Holidays",
                 url: "/gtrs/kpi/holidays",
             },
+            // {
+            //     id: 14,
+            //     name: "KPI Reasons",
+            //     href: "#",
+            //     current: false,
+            //     icon: ClipboardDocumentCheckIcon,
+            //     feature: "View_KPIReasons",
+            //     url: "/gtrs/kpi/reasons",
+            // },
         ],
         feature: "KPI_view",
     },
@@ -158,7 +167,7 @@ const menu = [
     },
     {
         id: 20,
-        name: "KPI Pack Report",
+        name: "Unilever KPI Pack",
         href: "#",
         icon: DocumentTextIcon,
         current: false,
@@ -200,6 +209,15 @@ const menu = [
         current: false,
         feature: "DeliveryReport_View",
         url: "/gtrs/delivery-report",
+    },
+    {
+        id: 26,
+        name: "Real Food KPI Pack",
+        href: "#",
+        icon: DocumentTextIcon,
+        current: false,
+        feature: "RealFoodReport_View",
+        url: "/gtrs/real-food-report",
     },
 
 ];

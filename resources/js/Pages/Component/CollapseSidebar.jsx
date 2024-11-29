@@ -139,7 +139,6 @@ export default function CollapseSidebar({
     const [customerOptions, setCustomerOptions] = useState([]);
     const [showList, setShowList] = useState(false);
     const showSelect = customerOptions?.length > 0;
-    // const [sidebarElements, setSidebarElements] = useState();
     const [optionSelected, setoptionSelected] = useState([]);
     const navigate = useNavigate();
 
@@ -305,7 +304,6 @@ export default function CollapseSidebar({
 
         return active;
     }
-
 
     return (
        sidebarElements?.length > 0 &&

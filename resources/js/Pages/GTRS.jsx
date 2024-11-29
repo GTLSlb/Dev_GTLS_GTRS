@@ -10,6 +10,7 @@ import { Routes, Route } from "react-router-dom";
 import MainPageGTRS from "@/Pages/MainPageGTRS";
 import {navigateToFirstAllowedPage} from "@/CommonFunctions";
 import { useNavigate } from "react-router-dom";
+import menu from "@/SidebarMenuItems";
 export default function Gtrs({
     user,
     setToken,
@@ -48,6 +49,7 @@ export default function Gtrs({
     const [customerAccounts, setCusomterAccounts] = useState();
     const userdata = currentUser;
     const [canAccess, setCanAccess] = useState(true);
+    const [deliveryReportData, setDeliveryReportData] = useState([]);
     const debtorIdsArray = userdata?.Accounts?.map((account) => {
         return { UserId: account.DebtorId };
     });
@@ -58,10 +60,57 @@ export default function Gtrs({
         debtorIds = currentUser.UserId;
     }
 
+    const fetchDeliveryReport = () => {
+        axios
+            .get(`${gtrsUrl}Delivery`, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            })
+            .then((res) => {
+                const x = JSON.stringify(res.data);
+                const parsedDataPromise = new Promise((resolve, reject) => {
+                    const parsedData = JSON.parse(x);
+                    resolve(parsedData);
+                });
+                parsedDataPromise.then((parsedData) => {
+                    setDeliveryReportData(parsedData || []);
+                });
+            })
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                    // Handle 401 error using SweetAlert
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then(function () {
+                        axios
+                            .post("/logoutAPI")
+                            .then((response) => {
+                                if (response.status == 200) {
+                                    window.location.href = "/";
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+                    });
+                } else {
+                    // Handle other errors
+                    console.log(err);
+                }
+            });
+    };
+
     useEffect(() => {
         if (AToken != null && currentUser) {
             setUserBody(debtorIds);
             setLoadingGtrs(false);
+            fetchDeliveryReport();
             const urls = [
                 {
                     url: `${gtrsUrl}/Dashboard`,
@@ -120,6 +169,7 @@ export default function Gtrs({
             setCanAccess(false);
         }
     }, [currentUser, loadingGtrs]);
+
 
     const navigate = useNavigate();
     useEffect(() => {
@@ -198,6 +248,7 @@ export default function Gtrs({
                                             setSidebarElements={
                                                 setSidebarElements
                                             }
+                                            deliveryReportData ={deliveryReportData}
                                         />
                                     </div>
                                 </div>

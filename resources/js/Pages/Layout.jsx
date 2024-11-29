@@ -37,17 +37,6 @@ export default function Sidebar(Boolean) {
             .then((res) => {
                 if (typeof res.data == "object") {
                     setUser(res.data);
-                        // let items = [];
-                        // menu?.map((menuItem) => {
-                        //     if(res.data?.Features?.find((item) => item?.FunctionName == menuItem?.feature)){
-                        //         items.push({...menuItem, current : false })
-                        //     }
-                        // })
-                        // if (items.length > 0) {
-                        //     localStorage.getItem("current") ? items.find((item) => item.id == localStorage.getItem("current")).current = true : items[0].current = true;
-                        //     items.find((item) => item.id == localStorage.getItem("current")) ? navigate(items.find((item) => item.id == localStorage.getItem("current")).url) : navigate(items[0].url);
-                        // }
-                        //  setSidebarElements(items);
                 }
             })
             .catch((err) => {

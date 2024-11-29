@@ -242,10 +242,18 @@ export function ProtectedRoute({
 }
 
 function checkUserPermission(permission, route) {
-    // Go over the flat permissions and check if the user has the required permission
-    return permission?.Features?.some((feature) => {
-        return feature.FunctionName == route;
-    });
+    if(typeof route == "string"){
+        // Go over the flat permissions and check if the user has the required permission
+        return permission?.Features?.some((feature) => {
+            return feature.FunctionName == route;
+        });
+    }else if(typeof route == "object"){
+        // Map over permissions and check if the user has the required permission
+        return permission?.Features?.some((feature) => {
+            return route?.includes(feature.FunctionName);
+        });
+    }
+
 }
 
 export function navigateToFirstAllowedPage({
@@ -254,7 +262,8 @@ export function navigateToFirstAllowedPage({
     navigate,
 }) {
     let items = [];
-    let doesRouteExist = routes?.find((route) => route == window.location.pathname)
+    let doesRouteExist = routes?.find((route) => route == window.location.pathname) ? true : false;
+
     if(!doesRouteExist){
         navigate("/notFound");
     }else{
@@ -267,8 +276,19 @@ export function navigateToFirstAllowedPage({
                 items.push({ ...menuItem, current: false });
             }
         });
-
-        if (items.length > 0) {
+        const currentItem = items.find((item) => item.url == window.location.pathname);
+        if(currentItem){
+            items.find((item) => item.url == window.location.pathname).current = true
+            // map over other items and set current to false
+            items.map((item) => {
+                if(item.url != window.location.pathname){
+                    item.current = false
+                }
+            })
+            navigate(currentItem.url);
+        }
+        else if (items.length > 0) {
+            // Set the first item as active
             localStorage.getItem("current")
                 ? items.find((item) => item.id == localStorage.getItem("current"))
                     ? items.find(
