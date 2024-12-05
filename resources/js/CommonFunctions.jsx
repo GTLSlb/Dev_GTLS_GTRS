@@ -260,50 +260,61 @@ export function navigateToFirstAllowedPage({
     setSidebarElements,
     user,
     navigate,
-}) {
+  }) {
     let items = [];
-    let doesRouteExist = routes?.find((route) => route == window.location.pathname) ? true : false;
 
-    if(!doesRouteExist){
-        navigate("/notFound");
-    }else{
-        menu?.map((menuItem) => {
-            if (
-                user?.Features?.find(
-                    (item) => item?.FunctionName == menuItem?.feature
-                )
-            ) {
-                items.push({ ...menuItem, current: false });
-            }
+    // Check if the current route exists
+    const doesRouteExist = routes?.some((route) => route === window.location.pathname);
+
+    // If the route does not exist, navigate to notFound page
+    if (!doesRouteExist) {
+      navigate("/notFound");
+    } else {
+      // Filter allowed menu items based on user features
+      menu?.forEach((menuItem) => {
+        if (user?.Features?.some((item) => item?.FunctionName === menuItem?.feature)) {
+          items.push({ ...menuItem, current: false });
+        }
+      });
+
+      // Find the current menu item for the active route
+      const currentItem = items.find((item) => item.url === window.location.pathname);
+
+      if (currentItem) {
+        // Mark the current item as active
+        currentItem.current = true;
+
+        // Set the other items' `current` to false
+        items.forEach((item) => {
+          if (item.url !== window.location.pathname) {
+            item.current = false;
+          }
         });
-        const currentItem = items.find((item) => item.url == window.location.pathname);
-        if(currentItem){
-            items.find((item) => item.url == window.location.pathname).current = true
-            // map over other items and set current to false
-            items.map((item) => {
-                if(item.url != window.location.pathname){
-                    item.current = false
-                }
-            })
-            navigate(currentItem.url);
+
+        // Navigate to the current item
+        navigate(currentItem.url);
+      } else if (items.length > 0) {
+        // Get the `current` item from localStorage, if it exists
+        const savedCurrentId = localStorage.getItem("current");
+
+        let firstItemToActivate;
+
+        if (savedCurrentId) {
+          firstItemToActivate = items.find((item) => item.id === savedCurrentId);
         }
-        else if (items.length > 0) {
-            // Set the first item as active
-            localStorage.getItem("current")
-                ? items.find((item) => item.id == localStorage.getItem("current"))
-                    ? items.find(
-                          (item) => item.id == localStorage.getItem("current")
-                      ).current = true
-                    : (items[0].current = true)
-                : (items[0].current = true);
-            items.find((item) => item.id == localStorage.getItem("current"))
-                ? navigate(
-                      items.find(
-                          (item) => item.id == localStorage.getItem("current")
-                      ).url
-                  )
-                : navigate(items[0].url);
+
+        if (firstItemToActivate) {
+          firstItemToActivate.current = true;
+          navigate(firstItemToActivate.url);
+        } else {
+          items[0].current = true;
+          navigate(items[0].url);
+          window.location.pathname = items[0].url;
         }
-        setSidebarElements(items);
+      }
+
+      // Set the sidebar elements
+      setSidebarElements(items);
     }
-}
+  }
+
