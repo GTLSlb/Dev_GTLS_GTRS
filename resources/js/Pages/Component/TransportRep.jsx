@@ -169,7 +169,7 @@ function TransportRep({
                 <input
                     type="time"
                     className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm"
-                    value={value.slice(0, 5)}
+                    value={value?.slice(0, 5)}
                     onChange={handleChange}
                 />
                 <button onClick={handleClear}>
