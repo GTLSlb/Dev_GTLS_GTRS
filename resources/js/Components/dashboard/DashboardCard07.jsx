@@ -6,6 +6,8 @@ function DashboardCard07(props) {
         (data.totalNoConsPassed / data.totalNoConsShipped) * 100;
     const percentageFailed =
         (data.totalConsFailed / data.totalNoConsShipped) * 100;
+    const percentagePending =
+        (data.totalConsPending / data.totalNoConsShipped) * 100;
     function formatCost(cost) {
         // Ensure the cost is a number and round it to two decimal places
         const roundedCost = cost.toFixed(2);
@@ -28,7 +30,7 @@ function DashboardCard07(props) {
             </header>
             <div className="px-4">
                 {/* Table */}
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto pt-2">
                     <table className="table-auto w-full">
                         {/* Table header */}
                         {/* Table body */}
@@ -38,7 +40,7 @@ function DashboardCard07(props) {
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
                                         <div className="text-slate-800 text-sm">
-                                            # of Rec's
+                                            # of Receivers
                                         </div>
                                     </div>
                                 </td>
@@ -58,7 +60,7 @@ function DashboardCard07(props) {
                                 </td>
                                 <td className="px-1">
                                     <div className="text-center text-sm text-right">
-                                        {data.totalWeight?.toFixed(2)} KG
+                                        {data.totalWeight?.toFixed(2)} T
                                     </div>
                                 </td>
                             </tr>
@@ -153,7 +155,7 @@ function DashboardCard07(props) {
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
                                         <div className="text-slate-800 text-sm">
-                                            Total No. Cons Shipped
+                                            Total No. Consignment Shipped
                                         </div>
                                     </div>
                                 </td>
@@ -167,7 +169,23 @@ function DashboardCard07(props) {
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
                                         <div className="text-slate-800 text-sm">
-                                            Total No. Cons Passed
+                                            Total No. Consignment Pending
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="px-1">
+                                    <div className="text-center text-sm text-right">
+                                        {data.totalConsPending} /{" "}
+                                        {percentagePending?.toFixed(2)} %{" "}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="px-1">
+                                    <div className="flex items-center py-1 font-extrabold">
+                                        <div className="text-slate-800 text-sm">
+                                            Total No. Consignment Delivered on
+                                            time
                                         </div>
                                     </div>
                                 </td>
@@ -182,7 +200,8 @@ function DashboardCard07(props) {
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
                                         <div className="text-slate-800 text-sm">
-                                            Total No. Cons Failed
+                                            Total No. Consignment Not Delivered
+                                            on time
                                         </div>
                                     </div>
                                 </td>

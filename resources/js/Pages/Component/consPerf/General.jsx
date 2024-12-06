@@ -9,13 +9,13 @@ export default function General({ item }) {
                         CONSIGNMENT STATUS
                     </dt>
                     <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">
-                        {item.ConsignmentStatus}
+                        {item.CONSIGNMENTSTATUS}
                     </dd>
                     <dt className="text-sm font-medium text-gray-900">
                         ACCOUNT NAME
                     </dt>
                     <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">
-                        {item.AccountNumber}
+                        {item["ACCOUNTNUMBER"]}
                     </dd>
                     <dt className="text-sm font-medium text-gray-900">POD</dt>
                     <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">
@@ -25,9 +25,9 @@ export default function General({ item }) {
                         KPI DATETIME
                     </dt>
                     <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">
-                        {item.KpiDatetime
+                        {item['KPI DATETIME']
                             ? moment(
-                                  item.KpiDatetime.replace("T", " "),
+                                  item['KPI DATETIME'].replace("T", " "),
                                   "YYYY-MM-DD HH:mm:ss"
                               ).format("DD-MM-YYYY h:mm A")
                             : null}
@@ -36,9 +36,9 @@ export default function General({ item }) {
                         POD DATETIME
                     </dt>
                     <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">
-                        {item.PodDateTime
+                        {item.PODDATETIME
                             ? moment(
-                                  item.PodDateTime.replace("T", " "),
+                                  item.PODDATETIME.replace("T", " "),
                                   "YYYY-MM-DD HH:mm:ss"
                               ).format("DD-MM-YYYY h:mm A")
                             : null}
@@ -47,7 +47,7 @@ export default function General({ item }) {
                         STATUS
                     </dt>
                     <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">
-                        {item.Status}
+                        {item.STATUS}
                     </dd>
                 </div>
             </dl>

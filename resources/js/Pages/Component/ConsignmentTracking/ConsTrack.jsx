@@ -23,10 +23,17 @@ function ConsTrack({
     setFilterValue,
     filterValue,
 }) {
+    const [filteredData, setFilteredData] = useState([]);
+    useEffect(() => {
+        axios
+            .get(`${gtrsWebUrl}/conswithevents`)
+            .then((response) => setFilteredData(response.data))
+            .catch((err) => {
+                console.log("Error", err);
+                setFilteredData([])
+            });
+    }, []);
     const [selected, setSelected] = useState([]);
-
-    // Todo: Replace this with the actual request
-    const [filteredData, setFilteredData] = useState();
 
     async function fetchtData() {
         const data = await getApiRequest(`https://map.gtls.store/conswithevents`);
@@ -78,6 +85,7 @@ function ConsTrack({
         });
         return newData;
     };
+    console.log(filteredData);
     const [receiverStateOptions, setReceiverStateOptions] = useState(
         createNewLabelObjects(filteredData, "SenderState") || []
     );
@@ -110,11 +118,9 @@ function ConsTrack({
                 console.log(err);
             });
     }
-
     useEffect(() => {
         getAllEvents();
     }, []);
-
     function getEventCategoryById(id) {
         const category = categories.find((event) => event.id === id);
         return category ? category.event_category : "";

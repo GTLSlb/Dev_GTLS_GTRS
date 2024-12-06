@@ -324,7 +324,7 @@ export default function ConsPerf({
                             <h3 className="text-base font-semibold leading-6 text-gray-900">
                                 CONSIGNMENT NO. :{" "}
                                 <span className="text-goldd">
-                                    {item.ConsignmentNo}
+                                    {item.CONSIGNMENTNUMBER}
                                 </span>
                             </h3>
                         </div>

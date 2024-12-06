@@ -25,8 +25,9 @@ const routes = [
     "/gtrs/traffic-report",
     "/gtrs/consignment-map",
     "/gtrs/consignment-tracking",
-    "/gtrs/consignment-tracking-2",
+    // "/gtrs/consignment-tracking-2",
     "/gtrs/delivery-report",
+    "/gtrs/real-food-report",
 ]
 
 export default routes

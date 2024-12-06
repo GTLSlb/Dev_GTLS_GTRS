@@ -1,264 +1,32 @@
-import React, { useState, useEffect, useCallback } from "react";
-3;
-import ReactDataGrid from "@inovua/reactdatagrid-community";
-import "@inovua/reactdatagrid-community/index.css";
-import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
-import {
-    ChevronDownIcon,
-    EyeIcon,
-} from "@heroicons/react/24/outline";
-import { saveAs } from "file-saver";
-import ExcelJS from "exceljs";
-import axios from "axios";
-import { useDisclosure } from "@nextui-org/react";
-import { Fragment } from "react";
+import { Fragment, useRef, useState, useEffect } from "react";
 import { Popover, Transition } from "@headlessui/react";
-import EventModal from "./EventModal";
-import { useRef } from "react";
-const gtrsWebUrl = window.Laravel.gtrsWeb;
+import moment from "moment";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
-const columnMapping = {
-    api_source: "State",
-    suburb: "Suburb",
-    event_type: "Event Type",
-    description: "Event Description",
-    start_date: "Start Date",
-    end_date: "End Date",
-    impact: "Event Impact",
-    hours_difference: "Duration Impact",
-    road_name: "Road Name",
-    advice: "Advice",
-    information: "More information",
-};
-const loadData = ({ skip, limit, sortInfo, filterValue }) => {
-    const url =
-        `${gtrsWebUrl}get-positions` +
-        "?skip=" +
-        skip +
-        "&limit=" +
-        limit +
-        "&sortInfo=" +
-        JSON.stringify(sortInfo) +
-        "&filterBy=" +
-        JSON.stringify(filterValue);
-
-    return fetch(url).then((response) => {
-        const totalCount = response.headers.get("X-Total-Count");
-        return response.json().then((data) => {
-            // const totalCount = data.pagination.total;
-            return Promise.resolve({ data, count: parseInt(totalCount) });
-        });
-    });
-};
-
-const defaultFilterValue = [
-    { name: "suburb", type: "string", operator: "contains", value: "" },
-    { name: "api_source", type: "string", operator: "contains", value: "" },
-    { name: "event_type", type: "string", operator: "contains", value: "" },
-    { name: "description", type: "string", operator: "contains", value: "" },
-    {
-        name: "start_date",
-        type: "date",
-        operator: "eq",
-        value: "",
-        emptyValue: "",
-    },
-    {
-        name: "end_date",
-        type: "date",
-        operator: "eq",
-        value: "",
-        emptyValue: "",
-    },
-    {
-        name: "road_name",
-        type: "string",
-        operator: "contains",
-        value: "",
-    },
-    {
-        name: "impact",
-        type: "string",
-        operator: "contains",
-        value: "",
-    },
-    { name: "advice", type: "string", operator: "contains", value: "" },
-    { name: "information", type: "string", operator: "contains", value: "" },
-];
-
-function TraffiComp() {
-    function formatTime(hours) {
-        const years = Math.floor(hours / (24 * 30 * 12));
-        const months = Math.floor((hours % (24 * 30 * 12)) / (24 * 30));
-        const days = Math.floor((hours % (24 * 30)) / 24);
-        const remainingHours = hours % 24;
-
-        const parts = [];
-
-        if (years > 0) {
-            parts.push(`${years} year${years > 1 ? "s" : ""}`);
-        }
-        if (months > 0) {
-            parts.push(`${months} month${months > 1 ? "s" : ""}`);
-        }
-        if (days > 0) {
-            parts.push(`${days} day${days > 1 ? "s" : ""}`);
-        }
-        if (remainingHours > 0) {
-            parts.push(
-                `${remainingHours} hour${remainingHours > 1 ? "s" : ""}`
-            );
-        }
-
-        if (parts.length === 0) {
-            return null;
-        } else if (parts.length > 1) {
-            return parts[0];
-        }
-        // return parts.join(" and ");
+export default function ExportBtn({
+    handleMouseEnter,
+    filteredData,
+    isMessageVisible,
+    hoverMessage,
+    popoverData,
+    columns,
+    gridRef,
+    workbookName,
+}) {
+    const [columnsList, setColumnsList] = useState([]);
+    function transformData() {
+        return columns.reduce((acc, curr) => {
+            acc[curr.value] = curr.label;
+            return acc;
+        }, {});
     }
-    const gridRef = useRef(null);
-    const gridStyle = { minHeight: 550, marginTop: 10 };
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    const [eventDetails, setEventDetails] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [datatoexport, setDatatoexport] = useState([]);
-    const [exportLoading, setExportLoading] = useState(false);
-    const [categories, setCategories] = useState([]);
-    function getAllEvents() {
-        axios
-            .get(`${gtrsWebUrl}get-eventsCategories`)
-            .then((res) => {
-                setCategories(res.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }
-
     useEffect(() => {
-        getAllEvents();
-    }, []);
-
-    function getEventCategoryById(id) {
-        const category = categories.find((event) => event.id === id);
-        return category ? category.event_category : "";
-    }
-
-    const columns = [
-        {
-            name: "api_source",
-            header: "State",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-        },
-        {
-            name: "suburb",
-            header: "Suburb",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-        },
-        {
-            name: "event_type",
-            header: "Event Type",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            render: ({ data }) => {
-                return getEventCategoryById(data.event_category_id);
-            },
-        },
-        {
-            name: "description",
-            header: "Event Description",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-        },
-        {
-            name: "start_date",
-            header: "Start Date",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            dateFormat: "YYYY-MM-DD",
-            filterEditor: DateFilter,
-            filterEditorProps: (props, { index }) => {
-                // for range and notinrange operators, the index is 1 for the after field
-                return {
-                    dateFormat: "MM-DD-YYYY",
-                };
-            },
-            render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
-            },
-        },
-        {
-            name: "end_date",
-            header: "End Date",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            dateFormat: "YYYY-MM-DD",
-            filterEditor: DateFilter,
-            filterEditorProps: (props, { index }) => {
-                // for range and notinrange operators, the index is 1 for the after field
-                return {
-                    dateFormat: "MM-DD-YYYY",
-                };
-            },
-            render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
-            },
-        },
-        {
-            name: "impact",
-            header: "Event Impact",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-        },
-        {
-            name: "hours_difference",
-            header: "Duration Impact",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            render: ({ value }) => {
-                return formatTime(value);
-            },
-        },
-        {
-            name: "road_name",
-            header: "Road Name",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-        },
-        {
-            name: "advice",
-            header: "Advice",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-        },
-        {
-            name: "information",
-            header: "More information",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-        },
-
-    ];
+        if (columns) {
+            setColumnsList(transformData(columns));
+        }
+    }, [columns]);
 
     function handleFilterTable() {
         // Get the selected columns or use all columns if none are selected
@@ -270,27 +38,25 @@ function TraffiComp() {
             name: column.name,
             value: column.computedFilterValue?.value,
             type: column.computedFilterValue?.type,
+            label: column.computedHeader,
             operator: column.computedFilterValue?.operator,
         }));
+
         let selectedColVal = allHeaderColumns.filter(
-            (col) => col.name !== "edit"
+            (col) => col?.label?.toString().toLowerCase() !== "edit"
         );
 
         const filterValue = [];
-        datatoexport?.map((val) => {
+        filteredData?.map((val) => {
             let isMatch = true;
+
             for (const col of selectedColVal) {
                 const { name, value, type, operator } = col;
+
                 const cellValue = value;
                 let conditionMet = false;
                 // Skip the filter condition if no filter is set (cellValue is null or empty)
-                if (
-                    (!cellValue || cellValue.length === 0) &&
-                    !(
-                        type === "number" &&
-                        (operator === "empty" || cellValue === 0)
-                    )
-                ) {
+                if (!cellValue || cellValue.length === 0) {
                     conditionMet = true;
                     continue;
                 }
@@ -350,21 +116,15 @@ function TraffiComp() {
                     switch (operator) {
                         case "eq":
                             conditionMet =
-                                (numericCellValue !== "" ||
-                                    numericCellValue === 0) &&
-                                (numericValue !== "" || numericValue === 0) &&
-                                numericValue == numericCellValue;
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue === numericCellValue;
                             break;
                         case "neq":
                             conditionMet =
                                 numericCellValue != "" &&
                                 numericValue != "" &&
                                 numericValue !== numericCellValue;
-                            break;
-                        case "empty":
-                            conditionMet =
-                                Number.isNaN(numericCellValue) &&
-                                Number.isNaN(numericValue);
                             break;
                         case "gt":
                             conditionMet =
@@ -454,8 +214,15 @@ function TraffiComp() {
                             break;
                         case "inlist":
                             const listValues = Array.isArray(value)
-                                ? value.map((v) => v.toLowerCase())
+                                ? value.map((v) => {
+                                      if (typeof v === "string") {
+                                          return v.toLowerCase();
+                                      } else {
+                                          return v.toString();
+                                      }
+                                  })
                                 : [value?.toLowerCase()];
+
                             conditionMet =
                                 cellValue?.length > 0 &&
                                 listValues.includes(valLowerCase);
@@ -472,7 +239,7 @@ function TraffiComp() {
                     }
                 } else if (type === "date") {
                     const dateValue = moment(
-                        val[col.name].replace("T", " "),
+                        val[col.name]?.replace("T", " "),
                         "YYYY-MM-DD HH:mm:ss"
                     );
                     const hasStartDate =
@@ -617,16 +384,20 @@ function TraffiComp() {
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
+            // Use all columns except edit
             selectedColVal = allHeaderColumns.filter(
-                (col) => col.name !== "edit"
-            ); // Use all columns
+                (col) => col?.label?.toString().toLowerCase() !== "edit"
+            );
         } else {
             allHeaderColumns.map((header) => {
                 selectedColumns.map((column) => {
                     const formattedColumn = column
-                        .replace(/\s/g, "")
-                        .toLowerCase();
-                    if (header.name.toLowerCase() === formattedColumn) {
+                        ?.replace(/\s/g, "")
+                        ?.toLowerCase();
+                    if (
+                        header?.name?.replace(/\s/g, "").toLowerCase() ===
+                        formattedColumn
+                    ) {
                         selectedColVal.push(header);
                     }
                 });
@@ -634,77 +405,146 @@ function TraffiComp() {
         }
         return { selectedColumns: selectedColVal, filterValue: filterValue };
     }
+
+    const formatDate = (date) => {
+        const d = new Date(date);
+        const month = d.getMonth() + 1;
+        const day = d.getDate();
+        const year = d.getFullYear();
+        const formattedDate = `${year}-${month}-${day}`;
+        return formattedDate;
+    };
+
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
         const newSelectedColumns = selectedColumns.map(
-            (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
+            (column) => columnsList[column] || column // Replace with new name, or keep original if not found in mapping
         );
 
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
-                const columnKey = column.replace(/\s+/g, "");
+                const columnKey = column?.replace(/\s+/g, "");
+
                 if (columnKey) {
                     if (person[columnKey] === true) {
                         acc[columnKey] = "true";
                     } else if (person[columnKey] === false) {
                         acc[columnKey] = "false";
                     } else if (
-                        ["DispatchDate", "DeliveryDate", "RDD"].includes(
-                            columnKey
-                        )
+                        [
+                            "DESPATCHDATE",
+                            "ARRIVEDDATETIME",
+                            "OccuredAt",
+                        ].includes(columnKey)
                     ) {
                         const date = new Date(person[columnKey]);
                         if (!isNaN(date)) {
-                            acc[column] =
+                            acc[columnKey] =
                                 (date.getTime() -
                                     date.getTimezoneOffset() * 60000) /
                                     86400000 +
                                 25569; // Convert to Excel date serial number
                         } else {
-                            acc[column] = "";
+                            acc[columnKey] = "";
                         }
-                    } else if (columnKey == "CalculatedDelDate") {
+                    } else if (columnKey === "DELIVERYREQUIREDDATETIME") {
                         const date = new Date(person[columnKey]);
                         if (!isNaN(date)) {
-                            acc[column] =
+                            acc[columnKey] =
                                 (date.getTime() -
                                     date.getTimezoneOffset() * 60000) /
                                     86400000 +
                                 25569; // Convert to Excel date serial number
                         } else {
-                            acc[column] = "";
-                        }
-                    } else if (columnKey === "MatchRdd") {
-                        if (person[columnKey] === 3) {
-                            acc[columnKey] = "Pending";
-                        } else if (person[columnKey] === 1) {
-                            acc[columnKey] = "True";
-                        } else if (person[columnKey] === 2) {
-                            acc[columnKey] = "False";
-                        }
-                    } else if (columnKey === "MatchDel") {
-                        if (person[columnKey] == 0) {
                             acc[columnKey] = "";
-                        } else if (person[columnKey] == 1) {
-                            acc[columnKey] = "PASS";
-                        } else if (person[columnKey] == 2) {
-                            acc[columnKey] = "FAIL";
                         }
-                    } else if (columnKey === "ReasonId") {
-                        const Reason = kpireasonsData?.find(
-                            (reason) => reason.ReasonId === person.ReasonId
+                    } else if (columnKey == "KPIDATETIME") {
+                        const date = new Date(person["KPI DATETIME"]);
+                        if (!isNaN(date)) {
+                            acc[columnKey] =
+                                (date.getTime() -
+                                    date.getTimezoneOffset() * 60000) /
+                                    86400000 +
+                                25569; // Convert to Excel date serial number
+                        } else {
+                            acc[columnKey] = "";
+                        }
+                    } else if (column === "Consignemnt Number") {
+                        acc[columnKey] = person["CONSIGNMENTNUMBER"];
+                    } else if (columnKey === "FailedReason") {
+                        const failedReason = failedReasons?.find(
+                            (reason) => reason.ReasonId === person.FailedReason
                         );
-                        acc[columnKey] = Reason?.ReasonName;
+                        acc[columnKey] = failedReason?.ReasonName;
+                    } else if (columnKey === "SenderState") {
+                        acc[columnKey] = person["SenderState"];
+                    } else if (columnKey === "IncidentNo") {
+                        acc[columnKey] = person["IncidentNo"];
+                    } else if (columnKey === "IncidentStatusName") {
+                        acc[columnKey] = person["IncidentStatusName"];
+                    } else if (columnKey === "IncidentTypeName") {
+                        acc[columnKey] = person["IncidentTypeName"];
+                    } else if (columnKey === "FailedReasonDesc") {
+                        acc[columnKey] = person["FailedReasonDesc"];
+                    } else if (columnKey === "FailedNote") {
+                        acc[columnKey] = person["FailedNote"];
+                    } else if (columnKey === "Reference") {
+                        if (person["Reference"] == 1) {
+                            acc[columnKey] = "Internal";
+                        } else if (person["Reference"] == 2) {
+                            acc[columnKey] = "External";
+                        } else {
+                            acc[columnKey] = "";
+                        }
+                    } else if (columnKey === "Resolution") {
+                        acc[columnKey] = person["Resolution"];
+                    } else if (columnKey === "Department") {
+                        acc[columnKey] = person["Department"];
+                    } else if (columnKey === "State") {
+                        acc[columnKey] = person["State"];
+                    } else if (columnKey === "RECEIVERREFERENCE") {
+                        acc[columnKey] = person["RECEIVER REFERENCE"];
+                    } else if (
+                        columnKey === "DespatchDateTime" ||
+                        columnKey === "DeliveryRequiredDateTime"
+                    ) {
+                        acc[columnKey] = moment(person[columnKey]).format(
+                            "DD-MM-YYYY hh:mm A"
+                        );
+                    } else if (columnKey === "Comments") {
+                        acc[columnKey] = person["Comments"]
+                            ?.map((item) => {
+                                const formattedComment = item.Comment.split(" ")
+                                    .reduce((acc, word, index) => {
+                                        const groupIndex = Math.floor(
+                                            index / 8
+                                        ); // Group every 5 words
+                                        if (!acc[groupIndex]) {
+                                            acc[groupIndex] = [];
+                                        }
+                                        acc[groupIndex].push(word);
+                                        return acc;
+                                    }, [])
+                                    .map((group) => group.join(" ")) // Join each group of 5 words
+                                    .join("\n"); // Join the groups with a new line
+
+                                return `${formatDate(
+                                    item.AddedAt
+                                )}, ${formattedComment}`;
+                            })
+                            .join("\n\n");
                     } else {
                         acc[columnKey] = person[columnKey];
                     }
                 } else {
-                    acc[columnKey] = person[columnKey];
+                    acc[columnKey] = person[columnKey?.toUpperCase()];
                 }
+
                 return acc;
             }, {})
         );
@@ -725,38 +565,79 @@ function TraffiComp() {
         };
         headerRow.alignment = { horizontal: "center" };
 
+        // Function to calculate row height based on content length
+        const calculateRowHeight = (cellValue) => {
+            if (!cellValue) return 20; // Default row height
+            const lines = cellValue.split("\n").length;
+            return Math.max(20, lines * 25); // Dynamic height, adjust 25px per line
+        };
+
+        // Add the data to the worksheet
         data.forEach((rowData) => {
             const row = worksheet.addRow(Object.values(rowData));
-            // Apply date format to the Dispatch Date column
-            const dispatchDateIndex =
-                newSelectedColumns.indexOf("Dispatch Date");
-            if (dispatchDateIndex !== -1) {
-                const cell = row.getCell(dispatchDateIndex + 1);
+            // Apply date format to the DESPATCHDATE column
+            const despatchDateIndex =
+                newSelectedColumns.indexOf("Despatch Date");
+            if (despatchDateIndex !== -1) {
+                const cell = row.getCell(despatchDateIndex + 1);
                 cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
 
-            // Apply date format to the Delivery Date column
-            const deliveryDateIndex =
-                newSelectedColumns.indexOf("Delivery Date");
-            if (deliveryDateIndex !== -1) {
-                const cell = row.getCell(deliveryDateIndex + 1);
+            // Apply date format to the ARRIVEDDATETIME column
+            const arrivedDateIndex =
+                newSelectedColumns.indexOf("Arrived Date Time");
+            if (arrivedDateIndex !== -1) {
+                const cell = row.getCell(arrivedDateIndex + 1);
                 cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
 
-            // Apply date format to the RDD column
-            const RDDDateIndex = newSelectedColumns.indexOf("RDD");
-            if (RDDDateIndex !== -1) {
-                const cell = row.getCell(RDDDateIndex + 1);
+            // Apply date format to the DELIVEREDDATETIME column
+            const deliveredDateIndex =
+                newSelectedColumns.indexOf("Delivered Datetime");
+            if (deliveredDateIndex !== -1) {
+                const cell = row.getCell(deliveredDateIndex + 1);
                 cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
-            // Apply date format to the RDD column
-            const CalculatedDateIndex = newSelectedColumns.indexOf(
-                "Calculated Delivery Date"
-            );
-            if (CalculatedDateIndex !== -1) {
-                const cell = row.getCell(CalculatedDateIndex + 1);
-                cell.numFmt = "dd-mm-yyyy";
+
+            // Apply date format to the OCCUREDAT column
+            const occuredAtDateIndex = newSelectedColumns.indexOf("Occured At");
+            if (occuredAtDateIndex !== -1) {
+                const cell = row.getCell(occuredAtDateIndex + 1);
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
+
+            // Apply date format to the DELIVERYREQUIREDDATETIME column
+            const deliveryReqDateIndex = newSelectedColumns.indexOf("RDD");
+            if (deliveryReqDateIndex !== -1) {
+                const cell = row.getCell(deliveryReqDateIndex + 1);
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+            }
+
+            // Apply date format to the KPI_DATETIME column
+            const kpiDateTimeIndex = newSelectedColumns.indexOf("KPI DateTime");
+            if (kpiDateTimeIndex !== -1) {
+                const cell = row.getCell(kpiDateTimeIndex + 1);
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+            }
+
+            // Calculate the maximum height needed for each row based on multiline content
+            let maxHeight = 15; // Start with the default height
+
+            row.eachCell({ includeEmpty: true }, (cell) => {
+                const cellValue = cell.value?.toString() || "";
+
+                // Enable text wrapping for multiline content
+                cell.alignment = { wrapText: true, vertical: "top" };
+
+                // Calculate the height for this particular cell
+                const rowHeight = calculateRowHeight(cellValue);
+
+                // Keep track of the maximum height needed for this row
+                maxHeight = Math.max(maxHeight, rowHeight);
+            });
+
+            // Set the row height to the maximum calculated height for the row
+            row.height = maxHeight;
         });
 
         // Set column widths
@@ -774,128 +655,80 @@ function TraffiComp() {
             });
 
             // Save the file using FileSaver.js or alternative method
-            saveAs(blob, "Traffic-report.xlsx");
-            setExportLoading(false);
+            saveAs(blob, workbookName);
         });
     }
-    const getexceldata = ({ skip, limit, sortInfo, filterValue }) => {
-        setExportLoading(true)
-        const url =
-            `${gtrsWebUrl}get-positions`;
-
-        return fetch(url).then((response) => {
-            const totalCount = response.headers.get("X-Total-Count");
-            return response.json().then((data) => {
-                // const totalCount = data.pagination.total;
-                setDatatoexport(data);
-                handleDownloadExcel();
-            });
-        });
-    };
-
-    const [filterValue, setFilterValue] = useState(defaultFilterValue);
-
-    const dataSource = useCallback(loadData, []);
-    const [hoverMessage, setHoverMessage] = useState("");
-    const [isMessageVisible, setMessageVisible] = useState(false);
 
     return (
-        <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
-            <div className="sm:flex sm:items-center">
-                <div className="sm:flex-auto mt-6">
-                    <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                        Traffic Report
-                    </h1>
-                </div>
-                <Popover className="relative ">
-                    <button>
-                        <Popover.Button
-                            className={`inline-flex items-center w-[5.5rem] h-[36px] rounded-md border ${
-                                // datatoexport?.length === 0
-                                exportLoading
-                                    ? "bg-gray-300 cursor-not-allowed"
-                                    : "bg-gray-800"
-                            } px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
-                            disabled={exportLoading}
-                        >
-                            {exportLoading ? "Exporting..." : "Export"}
-                            <ChevronDownIcon
-                                className="h-5 w-5"
-                                aria-hidden="true"
-                            />
-                        </Popover.Button>
-                    </button>
-                    {isMessageVisible && (
-                        <div className="absolute top-9.5 text-center left-0 md:-left-14 w-[9rem] right-0 bg-red-200 text-dark z-10 text-xs py-2 px-4 rounded-md opacity-100 transition-opacity duration-300">
-                            {hoverMessage}
-                        </div>
-                    )}
+        <div className="">
+            <div className="w-full relative">
+                <div className=" sm:border-gray-200 text-gray-400 flex flex-col justify-between md:flex-row gap-y-4 gap-x-2 md:items-center">
+                    <Popover className="relative object-right flex-item md:ml-auto">
+                        <button onMouseEnter={handleMouseEnter}>
+                            <Popover.Button
+                                className={`inline-flex items-center w-[5.5rem] h-[36px] rounded-md border ${
+                                    filteredData?.length === 0
+                                        ? "bg-gray-300 cursor-not-allowed"
+                                        : "bg-gray-800"
+                                } px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+                                disabled={filteredData?.length === 0}
+                            >
+                                Export
+                                <ChevronDownIcon
+                                    className="h-5 w-5"
+                                    aria-hidden="true"
+                                />
+                            </Popover.Button>
+                        </button>
+                        {isMessageVisible && (
+                            <div className="absolute top-9.5 text-center left-0 md:-left-14 w-[9rem] right-0 bg-red-200 text-dark z-10 text-xs py-2 px-4 rounded-md opacity-100 transition-opacity duration-300">
+                                {hoverMessage}
+                            </div>
+                        )}
 
-                    <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-200"
-                        enterFrom="opacity-0 translate-y-1"
-                        enterTo="opacity-100 translate-y-0"
-                        leave="transition ease-in duration-150"
-                        leaveFrom="opacity-100 translate-y-0"
-                        leaveTo="opacity-0 translate-y-1"
-                    >
-                        <Popover.Panel className="absolute left-20 lg:left-0 z-10 mt-5 flex w-screen max-w-max -translate-x-1/2 px-4">
-                            <div className=" max-w-md flex-auto overflow-hidden rounded-lg bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
-                                <div className="p-4">
-                                    <div className="mt-2 flex flex-col">
-                                        {Object.entries(columnMapping).map(
-                                            ([key, value]) => (
-                                                <label key={key} className="">
+                        <Transition
+                            as={Fragment}
+                            enter="transition ease-out duration-200"
+                            enterFrom="opacity-0 translate-y-1"
+                            enterTo="opacity-100 translate-y-0"
+                            leave="transition ease-in duration-150"
+                            leaveFrom="opacity-100 translate-y-0"
+                            leaveTo="opacity-0 translate-y-1"
+                        >
+                            <Popover.Panel className="absolute left-20 lg:-left-5 z-10 mt-5 flex w-screen max-w-max -translate-x-1/2 px-4">
+                                <div className=" max-w-md flex-auto overflow-hidden rounded-lg bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
+                                    <div className="p-4">
+                                        <div className="mt-2 flex flex-col">
+                                            {popoverData?.map((item, index) => (
+                                                <label
+                                                    key={item?.value}
+                                                    className=""
+                                                >
                                                     <input
                                                         type="checkbox"
                                                         name="column"
-                                                        value={key}
-                                                        className="text-dark rounded focus:ring-goldd"
+                                                        value={item?.value}
+                                                        className="text-dark focus:ring-goldd rounded "
                                                     />{" "}
-                                                    {value}
+                                                    {item?.label}
                                                 </label>
-                                            )
-                                        )}
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-1 divide-x divide-gray-900/5 bg-gray-50">
+                                        <button
+                                            onClick={handleDownloadExcel}
+                                            className="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100"
+                                        >
+                                            Export XLS
+                                        </button>
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-1 divide-x divide-gray-900/5 bg-gray-50">
-                                    <button
-                                        onClick={getexceldata}
-                                        disabled={exportLoading}
-                                        className="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100"
-                                    >
-                                        Export XLS
-                                    </button>
-                                </div>
-                            </div>
-                        </Popover.Panel>
-                    </Transition>
-                </Popover>
+                            </Popover.Panel>
+                        </Transition>
+                    </Popover>
+                </div>
             </div>
-            <ReactDataGrid
-                idProperty="id"
-                handle={(ref) => (gridRef.current = ref ? ref.current : [])}
-                style={gridStyle}
-                columns={columns}
-                className={"rounded-lg shadow-lg overflow-hidden"}
-                showColumnMenuTool={false}
-                enableColumnAutosize={false}
-                filterValue={filterValue}
-                onFilterValueChange={setFilterValue}
-                pagination
-                dataSource={dataSource}
-                defaultLimit={15}
-            />
-            <EventModal
-                getEventCategoryById={getEventCategoryById}
-                eventDetails={eventDetails}
-                loading={loading}
-                isOpen={isOpen}
-                onOpenChange={onOpenChange}
-            />
         </div>
     );
 }
-
-export default TraffiComp;

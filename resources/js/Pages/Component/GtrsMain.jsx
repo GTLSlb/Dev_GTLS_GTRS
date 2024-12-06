@@ -17,7 +17,7 @@ import NewKPI from "./KPI/NewKPI";
 import NewTransitDays from "./KPI/NewTransitDays";
 import AddNewTransitDay from "./KPI/AddNewTransitDay";
 import GraphPresentation from "./Presentation/GraphPresentation";
-import DailyReportPage from "./ReportsPage/DeliveryReportPage";
+import DeliveryReportPage from "./ReportsPage/DeliveryReportPage";
 import Incident from "./Incident/Incident";
 import { getApiRequest, ProtectedRoute } from "@/CommonFunctions";
 import {
@@ -51,6 +51,7 @@ import {
 import ConsDetails from "../ConsDetails";
 import NewConsignmentTracking from "./New Consignment Tracking/NewConsignmentTracking";
 import MainPageGTRS from "../MainPageGTRS";
+import RealFoodKPIPack from "./RealFoodKPIPack/RealFoodKPIPack";
 
 export default function GtrsMain({
     setCusomterAccounts,
@@ -79,6 +80,7 @@ export default function GtrsMain({
     setToken,
     setCurrentUser,
     setUser,
+    deliveryReportData,
 }) {
     window.moment = moment;
     const [KPIData, setKPIData] = useState([]);
@@ -456,17 +458,43 @@ export default function GtrsMain({
         setEDate(formatDate(val.end));
     }, [filtersMissingPOD]);
 
-    const [dailyReportData, setDailyReportData] = useState([]);
+    const [dailyReportData, setDailyReportData] = useState(deliveryReportData);
+    const fetchDeliveryReport = async (setCellLoading) => {
+        try {
+            const res = await axios.get(`${url}Delivery`, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            });
+            setDailyReportData(res.data || []);
 
-    async function fetchDeliveryReport() {
-        const data = await getApiRequest(`${url}Delivery`, {
-            UserId: currentUser?.UserId,
-        });
-
-        if (data) {
-            setDailyReportData(data || []);
+            // Check if setCellLoading exists before calling it
+            if (typeof setCellLoading === "function") {
+                setCellLoading(null);
+            }
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again",
+                    type: "success",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                }).then(async function () {
+                    await handleSessionExpiration();
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+                // Check if setCellLoading exists before calling it
+                if (typeof setCellLoading === "function") {
+                    setCellLoading(null);
+                }
+            }
         }
-    }
+    };
 
     useEffect(() => {
         if (currentUser) {
@@ -660,19 +688,39 @@ export default function GtrsMain({
                         <div className="h-full">
                             <div className="rounded-lg h-full">
                                 <Routes>
-                                <Route path="/main" element={<MainPageGTRS user={userPermission} setUser={setUser} setSidebarElements={setSidebarElements} sidebarElements={sidebarElements} AToken={AToken} currentUser={currentUser}/>} />
+                                    <Route
+                                        path="/main"
+                                        element={
+                                            <MainPageGTRS
+                                                user={userPermission}
+                                                setUser={setUser}
+                                                setSidebarElements={
+                                                    setSidebarElements
+                                                }
+                                                sidebarElements={
+                                                    sidebarElements
+                                                }
+                                                AToken={AToken}
+                                                currentUser={currentUser}
+                                            />
+                                        }
+                                    />
                                     <Route
                                         path="/dashboard"
                                         element={
                                             <ProtectedRoute
-                                            permission={userPermission}
-                                            route="Dashboard_view"
-                                            element={<MainCharts
-                                                chartsData={chartsData}
-                                                safetyData={safetyData}
-                                                accData={dataFromChild}
-                                            />}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                                permission={userPermission}
+                                                route="Dashboard_view"
+                                                element={
+                                                    <MainCharts
+                                                        chartsData={chartsData}
+                                                        safetyData={safetyData}
+                                                        accData={dataFromChild}
+                                                    />
+                                                }
+                                                currentUser={currentUser}
+                                                setToken={setToken}
+                                                setCurrentUser={setCurrentUser}
                                             />
                                         }
                                     />
@@ -680,17 +728,25 @@ export default function GtrsMain({
                                         path="/consignments"
                                         element={
                                             <ProtectedRoute
-                                            permission={userPermission}
-                                            route="ConsignmetsReport_view"
-                                            element={<GtrsCons
-                                                accData={dataFromChild}
-                                                consData={consData}
-                                                filterValue={filtersCons}
-                                                setFilterValue={setFiltersCons}
-                                                minDate={minDate}
-                                                maxDate={maxDate}
-                                            />}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                                permission={userPermission}
+                                                route="ConsignmetsReport_view"
+                                                element={
+                                                    <GtrsCons
+                                                        accData={dataFromChild}
+                                                        consData={consData}
+                                                        filterValue={
+                                                            filtersCons
+                                                        }
+                                                        setFilterValue={
+                                                            setFiltersCons
+                                                        }
+                                                        minDate={minDate}
+                                                        maxDate={maxDate}
+                                                    />
+                                                }
+                                                currentUser={currentUser}
+                                                setToken={setToken}
+                                                setCurrentUser={setCurrentUser}
                                             />
                                         }
                                     />
@@ -698,13 +754,19 @@ export default function GtrsMain({
                                         path="/consignment-details"
                                         element={
                                             <ProtectedRoute
-                                            permission={userPermission}
-                                            route="ConsignmetsDetails_view"
-                                            element={<ConsDetails
-                                                url={url}
+                                                permission={userPermission}
+                                                route="ConsignmetsDetails_view"
+                                                element={
+                                                    <ConsDetails
+                                                        url={url}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                    />
+                                                }
                                                 currentUser={currentUser}
-                                            />}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                                setToken={setToken}
+                                                setCurrentUser={setCurrentUser}
                                             />
                                         }
                                     />
@@ -712,27 +774,35 @@ export default function GtrsMain({
                                         path="/performance"
                                         element={
                                             <ProtectedRoute
-                                            permission={userPermission}
-                                            route="Performance_view"
-                                            element={<ConsPerf
-                                                setSharedStartDate={
-                                                    setSharedStartDate
+                                                permission={userPermission}
+                                                route="Performance_view"
+                                                element={
+                                                    <ConsPerf
+                                                        setSharedStartDate={
+                                                            setSharedStartDate
+                                                        }
+                                                        setSharedEndDate={
+                                                            setSharedEndDate
+                                                        }
+                                                        oldestDate={oldestDate}
+                                                        latestDate={latestDate}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        accData={dataFromChild}
+                                                        PerfData={PerfData}
+                                                        EDate={EDate}
+                                                        setEDate={setEDate}
+                                                        SDate={SDate}
+                                                        setSDate={setSDate}
+                                                        userPermission={
+                                                            userPermission
+                                                        }
+                                                    />
                                                 }
-                                                setSharedEndDate={
-                                                    setSharedEndDate
-                                                }
-                                                oldestDate={oldestDate}
-                                                latestDate={latestDate}
                                                 currentUser={currentUser}
-                                                accData={dataFromChild}
-                                                PerfData={PerfData}
-                                                EDate={EDate}
-                                                setEDate={setEDate}
-                                                SDate={SDate}
-                                                setSDate={setSDate}
-                                                userPermission={userPermission}
-                                            />}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                                setToken={setToken}
+                                                setCurrentUser={setCurrentUser}
                                             />
                                         }
                                     />
@@ -740,37 +810,57 @@ export default function GtrsMain({
                                         path="/failed-consignments"
                                         element={
                                             <ProtectedRoute
-                                            permission={userPermission}
-                                            route="View_failedConsignment"
-                                            element={<FailedConsMain
-                                                oldestDate={oldestDate}
-                                                latestDate={latestDate}
-                                                setIncidentId={setIncidentId}
-                                                url={url}
-                                                filterValue={filtersFailed}
-                                                setFilterValue={
-                                                    setFiltersFailed
+                                                permission={userPermission}
+                                                route="View_failedConsignment"
+                                                element={
+                                                    <FailedConsMain
+                                                        oldestDate={oldestDate}
+                                                        latestDate={latestDate}
+                                                        setIncidentId={
+                                                            setIncidentId
+                                                        }
+                                                        url={url}
+                                                        filterValue={
+                                                            filtersFailed
+                                                        }
+                                                        setFilterValue={
+                                                            setFiltersFailed
+                                                        }
+                                                        failedReasons={
+                                                            failedReasons
+                                                        }
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        accData={dataFromChild}
+                                                        PerfData={PerfData}
+                                                        setactiveCon={
+                                                            setactiveCon
+                                                        }
+                                                        setLastIndex={
+                                                            setLastIndex
+                                                        }
+                                                        IDfilter={IDfilter}
+                                                        EDate={EDate}
+                                                        gtccrUrl={gtccrUrl}
+                                                        AToken={AToken}
+                                                        setEDate={setEDate}
+                                                        SDate={SDate}
+                                                        setSDate={setSDate}
+                                                        setPerfData={
+                                                            setPerfData
+                                                        }
+                                                        setFailedReasons={
+                                                            setFailedReasons
+                                                        }
+                                                        userPermission={
+                                                            userPermission
+                                                        }
+                                                    />
                                                 }
-                                                failedReasons={failedReasons}
                                                 currentUser={currentUser}
-                                                accData={dataFromChild}
-                                                PerfData={PerfData}
-                                                setactiveCon={setactiveCon}
-                                                setLastIndex={setLastIndex}
-                                                IDfilter={IDfilter}
-                                                EDate={EDate}
-                                                gtccrUrl={gtccrUrl}
-                                                AToken={AToken}
-                                                setEDate={setEDate}
-                                                SDate={SDate}
-                                                setSDate={setSDate}
-                                                setPerfData={setPerfData}
-                                                setFailedReasons={
-                                                    setFailedReasons
-                                                }
-                                                userPermission={userPermission}
-                                            />}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                                setToken={setToken}
+                                                setCurrentUser={setCurrentUser}
                                             />
                                         }
                                     />
@@ -778,19 +868,29 @@ export default function GtrsMain({
                                         path="/no-delivery"
                                         element={
                                             <ProtectedRoute
-                                            permission={userPermission}
-                                            route="NoDeliveryInfo_view"
-                                            element={<NoDelivery
-                                                url={url}
-                                                filterValue={filtersNoDelInfo}
-                                                setFilterValue={
-                                                    setFiltersNoDelInfo
+                                                permission={userPermission}
+                                                route="NoDeliveryInfo_view"
+                                                element={
+                                                    <NoDelivery
+                                                        url={url}
+                                                        filterValue={
+                                                            filtersNoDelInfo
+                                                        }
+                                                        setFilterValue={
+                                                            setFiltersNoDelInfo
+                                                        }
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        NoDelData={NoDelData}
+                                                        setNoDelData={
+                                                            setNoDelData
+                                                        }
+                                                    />
                                                 }
                                                 currentUser={currentUser}
-                                                NoDelData={NoDelData}
-                                                setNoDelData={setNoDelData}
-                                            />}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                                setToken={setToken}
+                                                setCurrentUser={setCurrentUser}
                                             />
                                         }
                                     />
@@ -798,21 +898,31 @@ export default function GtrsMain({
                                         path="/additional-charges"
                                         element={
                                             <ProtectedRoute
-                                            permission={userPermission}
-                                            route="AdditionalCharges_view"
-                                            element={<AdditionalCharges
-                                                url={url}
-                                                filterValue={filtersAddCharges}
-                                                setFilterValue={
-                                                    setFiltersAddCharges
+                                                permission={userPermission}
+                                                route="AdditionalCharges_view"
+                                                element={
+                                                    <AdditionalCharges
+                                                        url={url}
+                                                        filterValue={
+                                                            filtersAddCharges
+                                                        }
+                                                        setFilterValue={
+                                                            setFiltersAddCharges
+                                                        }
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        AdditionalData={
+                                                            AdditionalData
+                                                        }
+                                                        setAdditionalData={
+                                                            setAdditionalData
+                                                        }
+                                                    />
                                                 }
                                                 currentUser={currentUser}
-                                                AdditionalData={AdditionalData}
-                                                setAdditionalData={
-                                                    setAdditionalData
-                                                }
-                                            />}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                                setToken={setToken}
+                                                setCurrentUser={setCurrentUser}
                                             />
                                         }
                                     />
@@ -820,19 +930,29 @@ export default function GtrsMain({
                                         path="/driver-login"
                                         element={
                                             <ProtectedRoute
-                                            permission={userPermission}
-                                            route="DriverLogin_view"
-                                            element={<DriverLogin
-                                                url={url}
-                                                currentUser={currentUser}
-                                                DriverData={DriverData}
-                                                setDriverData={setDriverData}
-                                                filterValue={filtersDriver}
-                                                setFilterValue={
-                                                    setFiltersDriver
+                                                permission={userPermission}
+                                                route="DriverLogin_view"
+                                                element={
+                                                    <DriverLogin
+                                                        url={url}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        DriverData={DriverData}
+                                                        setDriverData={
+                                                            setDriverData
+                                                        }
+                                                        filterValue={
+                                                            filtersDriver
+                                                        }
+                                                        setFilterValue={
+                                                            setFiltersDriver
+                                                        }
+                                                    />
                                                 }
-                                            />}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                                currentUser={currentUser}
+                                                setToken={setToken}
+                                                setCurrentUser={setCurrentUser}
                                             />
                                         }
                                     />
@@ -840,33 +960,53 @@ export default function GtrsMain({
                                         path="/rdd"
                                         element={
                                             <ProtectedRoute
-                                            permission={userPermission}
-                                            route="View_RDD"
-                                            element={<RDDMain
-                                                oldestDate={oldestDate}
-                                                latestDate={latestDate}
-                                                setIncidentId={setIncidentId}
+                                                permission={userPermission}
+                                                route="View_RDD"
+                                                element={
+                                                    <RDDMain
+                                                        oldestDate={oldestDate}
+                                                        latestDate={latestDate}
+                                                        setIncidentId={
+                                                            setIncidentId
+                                                        }
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        userBody={userBody}
+                                                        url={url}
+                                                        filterValue={filtersRDD}
+                                                        setFilterValue={
+                                                            setFiltersRDD
+                                                        }
+                                                        accData={dataFromChild}
+                                                        rddData={rddData}
+                                                        setrddData={setrddData}
+                                                        debtorsData={
+                                                            debtorsData
+                                                        }
+                                                        setactiveCon={
+                                                            setactiveCon
+                                                        }
+                                                        setLastIndex={
+                                                            setLastIndex
+                                                        }
+                                                        EDate={EDate}
+                                                        setEDate={setEDate}
+                                                        SDate={SDate}
+                                                        AToken={AToken}
+                                                        setSDate={setSDate}
+                                                        rddReasons={rddReasons}
+                                                        setrddReasons={
+                                                            setrddReasons
+                                                        }
+                                                        userPermission={
+                                                            userPermission
+                                                        }
+                                                    />
+                                                }
                                                 currentUser={currentUser}
-                                                userBody={userBody}
-                                                url={url}
-                                                filterValue={filtersRDD}
-                                                setFilterValue={setFiltersRDD}
-                                                accData={dataFromChild}
-                                                rddData={rddData}
-                                                setrddData={setrddData}
-                                                debtorsData={debtorsData}
-                                                setactiveCon={setactiveCon}
-                                                setLastIndex={setLastIndex}
-                                                EDate={EDate}
-                                                setEDate={setEDate}
-                                                SDate={SDate}
-                                                AToken={AToken}
-                                                setSDate={setSDate}
-                                                rddReasons={rddReasons}
-                                                setrddReasons={setrddReasons}
-                                                userPermission={userPermission}
-                                            />}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                                setToken={setToken}
+                                                setCurrentUser={setCurrentUser}
                                             />
                                         }
                                     />
@@ -874,41 +1014,59 @@ export default function GtrsMain({
                                         path="/safety"
                                         element={
                                             <ProtectedRoute
-                                            permission={userPermission}
-                                            route="View_safety"
-                                            element={<SafetyRep
-                                                oldestDate={oldestDate}
-                                                latestDate={latestDate}
-                                                url={url}
-                                                AToken={AToken}
-                                                customerAccounts={
-                                                    customerAccounts
-                                                }
-                                                filterValue={filtersSafety}
-                                                setFilterValue={
-                                                    setFiltersSafety
-                                                }
-                                                setSafetyTypes={setSafetyTypes}
-                                                safetyTypes={safetyTypes}
-                                                safetyCauses={safetyCauses}
-                                                setSafetyCauses={
-                                                    setSafetyCauses
+                                                permission={userPermission}
+                                                route="View_safety"
+                                                element={
+                                                    <SafetyRep
+                                                        oldestDate={oldestDate}
+                                                        latestDate={latestDate}
+                                                        url={url}
+                                                        AToken={AToken}
+                                                        customerAccounts={
+                                                            customerAccounts
+                                                        }
+                                                        filterValue={
+                                                            filtersSafety
+                                                        }
+                                                        setFilterValue={
+                                                            setFiltersSafety
+                                                        }
+                                                        setSafetyTypes={
+                                                            setSafetyTypes
+                                                        }
+                                                        safetyTypes={
+                                                            safetyTypes
+                                                        }
+                                                        safetyCauses={
+                                                            safetyCauses
+                                                        }
+                                                        setSafetyCauses={
+                                                            setSafetyCauses
+                                                        }
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        safetyData={safetyData}
+                                                        accData={dataFromChild}
+                                                        setLastIndex={
+                                                            setLastIndex
+                                                        }
+                                                        DefaultEDate={EDate}
+                                                        DefaultSDate={SDate}
+                                                        safetyDataState={
+                                                            safetyDataState
+                                                        }
+                                                        setsafetyDataState={
+                                                            setsafetyDataState
+                                                        }
+                                                        userPermission={
+                                                            userPermission
+                                                        }
+                                                    />
                                                 }
                                                 currentUser={currentUser}
-                                                safetyData={safetyData}
-                                                accData={dataFromChild}
-                                                setLastIndex={setLastIndex}
-                                                DefaultEDate={EDate}
-                                                DefaultSDate={SDate}
-                                                safetyDataState={
-                                                    safetyDataState
-                                                }
-                                                setsafetyDataState={
-                                                    setsafetyDataState
-                                                }
-                                                userPermission={userPermission}
-                                            />}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                                setToken={setToken}
+                                                setCurrentUser={setCurrentUser}
                                             />
                                         }
                                     />
@@ -916,17 +1074,23 @@ export default function GtrsMain({
                                         path="/missing-pod"
                                         element={
                                             <ProtectedRoute
-                                            permission={userPermission}
-                                            route="MissingPOD_view"
-                                            element={<MissingPOD
-                                                filterValue={filtersMissingPOD}
-                                                setFilterValue={
-                                                    setFiltersMissingPOD
+                                                permission={userPermission}
+                                                route="MissingPOD_view"
+                                                element={
+                                                    <MissingPOD
+                                                        filterValue={
+                                                            filtersMissingPOD
+                                                        }
+                                                        setFilterValue={
+                                                            setFiltersMissingPOD
+                                                        }
+                                                        accData={dataFromChild}
+                                                        PerfData={PerfData}
+                                                    />
                                                 }
-                                                accData={dataFromChild}
-                                                PerfData={PerfData}
-                                            />}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                                currentUser={currentUser}
+                                                setToken={setToken}
+                                                setCurrentUser={setCurrentUser}
                                             />
                                         }
                                     />
@@ -934,61 +1098,103 @@ export default function GtrsMain({
                                         path="/kpi/holidays"
                                         element={
                                             <ProtectedRoute
-                                            permission={userPermission}
-                                            route="View_Holidays"
-                                            element={<Holidays
-                                                holidays={holidays}
-                                                filterValue={filtersHolidays}
-                                                setFilterValue={
-                                                    setFiltersHolidays
+                                                permission={userPermission}
+                                                route="View_Holidays"
+                                                element={
+                                                    <Holidays
+                                                        holidays={holidays}
+                                                        filterValue={
+                                                            filtersHolidays
+                                                        }
+                                                        setFilterValue={
+                                                            setFiltersHolidays
+                                                        }
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        setHolidays={
+                                                            setHolidays
+                                                        }
+                                                        url={url}
+                                                        AToken={AToken}
+                                                        userPermission={
+                                                            userPermission
+                                                        }
+                                                    />
                                                 }
                                                 currentUser={currentUser}
-                                                setHolidays={setHolidays}
-                                                url={url}
-                                                AToken={AToken}
-                                                userPermission={userPermission}
-                                            />}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                                setToken={setToken}
+                                                setCurrentUser={setCurrentUser}
                                             />
                                         }
                                     />
-                                    <Route
-                                        path="/kpi-reasons"
+                                    {/*<Route
+                                        path="/kpi/reasons"
                                         element={
                                             <ProtectedRoute
-                                            permission={userPermission}
-                                            route="View_kpiReasons"
-                                            element={<KPIReasons
-                                                url={url}
-                                                currentUser={currentUser}
-                                                kpireasonsData={kpireasonsData}
-                                                AToken={AToken}
-                                                setkpireasonsData={
-                                                    setkpireasonsData
+                                                permission={userPermission}
+                                                route="View_KPIReasons"
+                                                element={
+                                                    <Route
+                                                        path="/kpi-reasons"
+                                                        element={
+                                                            <KPIReasons
+                                                                url={url}
+                                                                currentUser={
+                                                                    currentUser
+                                                                }
+                                                                kpireasonsData={
+                                                                    kpireasonsData
+                                                                }
+                                                                AToken={AToken}
+                                                                setkpireasonsData={
+                                                                    setkpireasonsData
+                                                                }
+                                                                userPermission={
+                                                                    userPermission
+                                                                }
+                                                            />
+                                                        }
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        setToken={setToken}
+                                                        setCurrentUser={
+                                                            setCurrentUser
+                                                        }
+                                                    />
                                                 }
-                                                userPermission={userPermission}
-                                            />}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                                currentUser={currentUser}
+                                                setToken={setToken}
+                                                setCurrentUser={setCurrentUser}
                                             />
                                         }
-                                    />
+                                    />*/}
                                     <Route
                                         path="/transport"
                                         element={
                                             <ProtectedRoute
-                                            permission={userPermission}
-                                            route="View_Transport"
-                                            element={<TransportRep
-                                                accData={dataFromChild}
-                                                transportData={transportData}
-                                                filterValue={filtersTransport}
-                                                setFilterValue={
-                                                    setFiltersTransport
+                                                permission={userPermission}
+                                                route="View_Transport"
+                                                element={
+                                                    <TransportRep
+                                                        accData={dataFromChild}
+                                                        transportData={
+                                                            transportData
+                                                        }
+                                                        filterValue={
+                                                            filtersTransport
+                                                        }
+                                                        setFilterValue={
+                                                            setFiltersTransport
+                                                        }
+                                                        minDate={minDate}
+                                                        maxDate={maxDate}
+                                                    />
                                                 }
-                                                minDate={minDate}
-                                                maxDate={maxDate}
-                                            />}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                                currentUser={currentUser}
+                                                setToken={setToken}
+                                                setCurrentUser={setCurrentUser}
                                             />
                                         }
                                     />
@@ -996,23 +1202,37 @@ export default function GtrsMain({
                                         path="/kpi"
                                         element={
                                             <ProtectedRoute
-                                            permission={userPermission}
-                                            route="New_KPI_view"
-                                            element={<NewKPI
-                                                kpireasonsData={kpireasonsData}
-                                                KPIData={NewKPIData}
-                                                filterValue={filtersNewKPI}
-                                                setFilterValue={
-                                                    setFiltersNewKPI
+                                                permission={userPermission}
+                                                route="New_KPI_view"
+                                                element={
+                                                    <NewKPI
+                                                        kpireasonsData={
+                                                            kpireasonsData
+                                                        }
+                                                        KPIData={NewKPIData}
+                                                        filterValue={
+                                                            filtersNewKPI
+                                                        }
+                                                        setFilterValue={
+                                                            setFiltersNewKPI
+                                                        }
+                                                        setKPIData={
+                                                            setNewKPIData
+                                                        }
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        accData={dataFromChild}
+                                                        url={url}
+                                                        AToken={AToken}
+                                                        userPermission={
+                                                            userPermission
+                                                        }
+                                                    />
                                                 }
-                                                setKPIData={setNewKPIData}
                                                 currentUser={currentUser}
-                                                accData={dataFromChild}
-                                                url={url}
-                                                AToken={AToken}
-                                                userPermission={userPermission}
-                                            />}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                                setToken={setToken}
+                                                setCurrentUser={setCurrentUser}
                                             />
                                         }
                                     />
@@ -1020,22 +1240,34 @@ export default function GtrsMain({
                                         path="/kpi/transit-days"
                                         element={
                                             <ProtectedRoute
-                                            permission={userPermission}
-                                            route="View_NewTransitDays"
-                                            element={<NewTransitDays
-                                                setNewTransitDays={
-                                                    setNewTransitDays
+                                                permission={userPermission}
+                                                route="View_NewTransitDays"
+                                                element={
+                                                    <NewTransitDays
+                                                        setNewTransitDays={
+                                                            setNewTransitDays
+                                                        }
+                                                        setFilterValue={
+                                                            setFiltersNewTransit
+                                                        }
+                                                        newTransitDays={
+                                                            newTransitDays
+                                                        }
+                                                        filterValue={
+                                                            filtersNewTransit
+                                                        }
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        url={url}
+                                                        userPermission={
+                                                            userPermission
+                                                        }
+                                                    />
                                                 }
-                                                setFilterValue={
-                                                    setFiltersNewTransit
-                                                }
-                                                newTransitDays={newTransitDays}
-                                                filterValue={filtersNewTransit}
                                                 currentUser={currentUser}
-                                                url={url}
-                                                userPermission={userPermission}
-                                            />}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                                setToken={setToken}
+                                                setCurrentUser={setCurrentUser}
                                             />
                                         }
                                     />
@@ -1043,20 +1275,26 @@ export default function GtrsMain({
                                         path="/add-transit"
                                         element={
                                             <ProtectedRoute
-                                            permission={userPermission}
-                                            route="NewTransitDays_add"
-                                            element={<AddNewTransitDay
-                                                url={url}
+                                                permission={userPermission}
+                                                route="NewTransitDays_add"
+                                                element={
+                                                    <AddNewTransitDay
+                                                        url={url}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        setNewTransitDay={
+                                                            setNewTransitDay
+                                                        }
+                                                        setNewTransitDays={
+                                                            setNewTransitDays
+                                                        }
+                                                        AToken={AToken}
+                                                    />
+                                                }
                                                 currentUser={currentUser}
-                                                setNewTransitDay={
-                                                    setNewTransitDay
-                                                }
-                                                setNewTransitDays={
-                                                    setNewTransitDays
-                                                }
-                                                AToken={AToken}
-                                            />}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                                setToken={setToken}
+                                                setCurrentUser={setCurrentUser}
                                             />
                                         }
                                     />
@@ -1064,91 +1302,165 @@ export default function GtrsMain({
                                         path="/pack-report"
                                         element={
                                             <ProtectedRoute
-                                            permission={userPermission}
-                                            route="UnileverReport_View"
-                                            element={<GraphPresentation
-                                                url={url}
+                                                permission={userPermission}
+                                                route="UnileverReport_View"
+                                                element={
+                                                    <GraphPresentation
+                                                        url={url}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        AToken={AToken}
+                                                    />
+                                                }
                                                 currentUser={currentUser}
-                                                AToken={AToken}
-                                            />}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                                setToken={setToken}
+                                                setCurrentUser={setCurrentUser}
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path="/real-food-report"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermission}
+                                                route="RealFoodReport_View"
+                                                element={
+                                                    <RealFoodKPIPack
+                                                        url={url}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        AToken={AToken}
+                                                    />
+                                                }
+                                                currentUser={currentUser}
+                                                setToken={setToken}
+                                                setCurrentUser={setCurrentUser}
                                             />
                                         }
                                     />
                                     <Route
                                         path="/traffic-report"
-                                        element={ <ProtectedRoute
-                                            permission={userPermission}
-                                            route="TrafficReport_View"
-                                            element={<TrafficComp />}
-                                            />}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermission}
+                                                route="TrafficReport_View"
+                                                element={<TrafficComp />}
+                                            />
+                                        }
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
                                     />
                                     <Route
                                         path="/incident"
                                         element={
                                             <ProtectedRoute
-                                            permission={userPermission}
-                                            route="IncidentDetails_View"
-                                            element={<Incident
-                                                AToken={AToken}
-                                                gtccrUrl={gtccrUrl}
-                                                currentUser={currentUser}
-                                                userPermission={userPermission}
-                                            />}/>
+                                                permission={userPermission}
+                                                route="IncidentDetails_View"
+                                                element={
+                                                    <Incident
+                                                        AToken={AToken}
+                                                        gtccrUrl={gtccrUrl}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        userPermission={
+                                                            userPermission
+                                                        }
+                                                    />
+                                                }
+                                            />
                                         }
-                                        currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
+                                    />
+                                    {/* <Route
+                                        path="/consignment-tracking"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermission}
+                                                route="ConsignmentTracking_View"
+                                                element={
+                                                    <ConsTrack
+                                                        setFilterValue={
+                                                            setFiltersConsTrack
+                                                        }
+                                                        filterValue={
+                                                            filtersConsTrack
+                                                        }
+                                                    />
+                                                }
+                                            />
+                                        }
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
+                                    /> */}
+                                    <Route
+                                        path="/delivery-report"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermission}
+                                                route={[
+                                                    "DeliveryReport_View",
+                                                    "MetcashDeliveryReport_View",
+                                                    "WoolworthsDeliveryReport_View",
+                                                    "OtherDeliveryReport_View",
+                                                ]}
+                                                element={
+                                                    <DeliveryReportPage
+                                                        url={url}
+                                                        AToken={AToken}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        userPermission={
+                                                            userPermission
+                                                        }
+                                                        deliveryReportData={
+                                                            dailyReportData
+                                                        }
+                                                        fetchDeliveryReport={
+                                                            fetchDeliveryReport
+                                                        }
+                                                    />
+                                                }
+                                            />
+                                        }
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
+                                    />
+                                    <Route
+                                        path="/consignment-map"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermission}
+                                                route="ConsignmentMap_View"
+                                                element={<ConsMap />}
+                                            />
+                                        }
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
                                     />
                                     <Route
                                         path="/consignment-tracking"
                                         element={
                                             <ProtectedRoute
-                                            permission={userPermission}
-                                            route="ConsignmentTracking_View"
-                                            element={<ConsTrack
-                                                setFilterValue={
-                                                    setFiltersConsTrack
+                                                permission={userPermission}
+                                                route="View_Tracking2"
+                                                element={
+                                                    <NewConsignmentTracking />
                                                 }
-                                                filterValue={filtersConsTrack}
-                                            />}/>
+                                            />
                                         }
-                                        currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
-                                    />
-                                    <Route
-                                        path="/delivery-report"
-                                        element={
-                                            <ProtectedRoute
-                                            permission={userPermission}
-                                            route="DeliveryReport_View"
-                                            element={<DailyReportPage
-                                                url={url}
-                                                AToken={AToken}
-                                                currentUser={currentUser}
-                                                dailyReportData={
-                                                    dailyReportData
-                                                }
-                                                fetchDeliveryReport={
-                                                    fetchDeliveryReport
-                                                }
-                                            />}/>
-                                        }
-                                        currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
-                                    />
-                                    <Route
-                                        path="/consignment-map"
-                                        element={ <ProtectedRoute
-                                            permission={userPermission}
-                                            route="ConsignmentMap_View"
-                                            element={<ConsMap />}/>}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
-                                    />
-                                    <Route
-                                        path="/consignment-tracking-2"
-                                        element={ <ProtectedRoute
-                                            permission={userPermission}
-                                            route="View_Tracking2"
-                                            element={<NewConsignmentTracking />}/>}
-                                            currentUser={currentUser} setToken={setToken} setCurrentUser={setCurrentUser}
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
                                     />
                                     <Route
                                         path="/*"

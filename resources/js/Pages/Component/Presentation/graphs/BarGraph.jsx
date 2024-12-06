@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React from "react";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -12,9 +12,12 @@ import {
     LineController, // Import LineController
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import { useRef } from "react";
+import { useEffect } from "react";
+
+import { useState } from "react";
 import BarTable from "./BarTable";
 import InlineTable from "./InlineTable";
-
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -26,20 +29,19 @@ ChartJS.register(
     Title,
     LineController // Register LineController
 );
-
 function BarGraph({
     graphData,
     url,
+    AToken,
     originalgraphData,
     currentUser,
+    getReportData,
     selectedReceiver,
-    setGraphData,
-    updateData,
-    userPermission,
-    AToken,
 }) {
-    const chartRef = useRef(null);
 
+    // useEffect(() => {
+    //     getReportData();
+    // }, [graphData]);
     function generateMonthArrayFromJson(data) {
         const monthNames = [
             "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
@@ -63,7 +65,9 @@ function BarGraph({
         data.forEach((item) => {
             if (item.Record && item.Record.length > 0) {
                 const record = item.Record[0];
-                result.push(record[fieldLabel] !== undefined ? record[fieldLabel] : 0);
+                result.push(
+                    record[fieldLabel] !== undefined ? record[fieldLabel] : 0
+                );
             } else {
                 result.push(0);
             }
@@ -72,13 +76,15 @@ function BarGraph({
         return result;
     }
 
-    let colLabel = generateMonthArrayFromJson(originalgraphData);
-    let dataTotal = getFieldArrayFromJson(originalgraphData, "TotalCons");
-    let dataKPI = getFieldArrayFromJson(originalgraphData, "KpiBenchMark");
-    let dataOnTime = getFieldArrayFromJson(originalgraphData, "onTimePercentage");
-    let dataPOD = getFieldArrayFromJson(originalgraphData, "PODPercentage");
+    let colLabel = generateMonthArrayFromJson(graphData);
+    let dataTotal = getFieldArrayFromJson(graphData, "TotalCons");
+    let dataKPI = getFieldArrayFromJson(graphData, "KpiBenchMark");
+    let dataOnTime = getFieldArrayFromJson(graphData, "onTimePercentage");
+    let dataPOD = getFieldArrayFromJson(graphData, "PODPercentage");
 
-    const [chartData, setChartData] = useState({
+    const chartRef = useRef(null);
+
+    const data = {
         labels: colLabel,
         datasets: [
             {
@@ -119,7 +125,7 @@ function BarGraph({
                 yAxisID: "y-axis-line",
             },
         ],
-    });
+    };
 
     const options = {
         aspectRatio: 4,
@@ -242,16 +248,16 @@ function BarGraph({
     return (
         <div>
             {/* Charts */}
-            <Bar ref={chartRef} data={chartData} options={options} />
+            <Bar ref={chartRef} data={data} options={options} />
             {/* Table */}
             <InlineTable
-                updateLocalDataFromJson={updateLocalDataFromJson}
+                AToken={AToken}
+                getReportData={getReportData}
                 graphData={graphData}
+                originalgraphData={originalgraphData}
                 url={url}
                 currentUser={currentUser}
-                userPermission={userPermission}
                 selectedReceiver={selectedReceiver}
-                AToken={AToken}
             />
         </div>
     );

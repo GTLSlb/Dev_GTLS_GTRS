@@ -5,15 +5,28 @@ import TotalFailPODGraph from "./ReportTabs/TotalFailPODGraph";
 
 const MultiChartLine = ({ url, currentUser, AToken }) => {
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
-    const handleItemClick = (index) => {
-        setActiveComponentIndex(index);
-    };
+    const customers = [
+        {
+            value: 1,
+            label: "Unilever/ Metcash 12 Monthly Consignment",
+        },
+        {
+            value: 3,
+            label: "Unilever Monthly Consignment",
+        },
+        {
+            value: 2,
+            label: "Unilever/ Woolworth 12 Monthly Consignment",
+        },
+    ];
 
     let components = [
         <ConsignmentGraph
             url={url}
             currentUser={currentUser}
             AToken={AToken}
+            customers={customers}
+            CustomerId={1}
         />, // Graph and Table
         <TotalFailPODGraph />, // The 3 charts
     ];

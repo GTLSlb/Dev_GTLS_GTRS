@@ -1,33 +1,16 @@
-import AnimatedLoading from "@/Components/AnimatedLoading";
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import Select from "react-select";
 import BarGraph from "../graphs/BarGraph";
 
-function ConsignmentGraph({ url, currentUser, AToken, userPermission }) {
+function ConsignmentGraph({ url, currentUser, AToken, customers, CustomerId }) {
     const [graphData, setGraphData] = useState();
     const [originalgraphData, setGraphOriginalData] = useState();
     const [loading, setLoading] = useState(true);
-
-    const customers = [
-        {
-            value: 1,
-            label: "Unilever/ Metcash 12 Monthly Consignment",
-        },
-        {
-            value: 3,
-            label: "Unilever Monthly Consignment",
-        },
-        {
-            value: 2,
-            label: "Unilever/ Woolworth 12 Monthly Consignment",
-        },
-    ];
-
     const [selectedReceiver, setselectedReceiver] = useState(customers[0]);
-
     function addCalculatedFields(data) {
+        // console.log("here")
         data.forEach((item) => {
             if (item.Record && item.Record.length > 0) {
                 item.Record.forEach((record) => {
@@ -47,21 +30,21 @@ function ConsignmentGraph({ url, currentUser, AToken, userPermission }) {
         });
         return data;
     }
-
     function getReportData() {
         setLoading(true);
         axios
             .get(`${url}KpiPackRecord`, {
                 headers: {
                     UserId: currentUser.UserId,
-                    CustomerId: "1",
+                    CustomerId: CustomerId,
                     CustomerTypeId: selectedReceiver.value,
                     Authorization: `Bearer ${AToken}`,
                 },
             })
             .then((res) => {
                 setLoading(false);
-                const calculatedData = addCalculatedFields(res.data);
+                const calculatedData = addCalculatedFields(res.data); // it updates the data it self there's no need to update the state using calculated data
+
                 setGraphOriginalData(res.data);
                 setGraphData(res.data);
             })
@@ -123,15 +106,30 @@ function ConsignmentGraph({ url, currentUser, AToken, userPermission }) {
             // Add more styles for indicators container if necessary
         }),
         // Add or adjust other style functions as needed
-      };
-
+    };
 
     const handleReceiverSelectChange = (selectedOptions) => {
         setselectedReceiver(selectedOptions);
     };
 
+
     return loading ? (
-        <AnimatedLoading />
+        <div className="md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
+            <div className="flex items-center justify-center">
+                <div
+                    className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
+                ></div>
+                <div
+                    className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
+                ></div>
+                <div
+                    className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
+                ></div>
+            </div>
+            <div className="text-dark mt-4 font-bold">
+                Please wait while we get the data for you.
+            </div>
+        </div>
     ) : (
         <div>
             <div className="inline-block">
@@ -155,11 +153,13 @@ function ConsignmentGraph({ url, currentUser, AToken, userPermission }) {
                 <BarGraph
                     graphData={graphData}
                     url={url}
+                    CustomerId={CustomerId}
+                    AToken={AToken}
                     currentUser={currentUser}
-                    userPermission={userPermission}
                     selectedReceiver={selectedReceiver}
                     originalgraphData={originalgraphData}
-                    AToken={AToken}
+                    getReportData={getReportData}
+                    setGraphData={setGraphData}
                 />
             </div>
         </div>

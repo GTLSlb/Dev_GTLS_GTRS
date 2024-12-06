@@ -242,48 +242,79 @@ export function ProtectedRoute({
 }
 
 function checkUserPermission(permission, route) {
-    // Go over the flat permissions and check if the user has the required permission
-    return permission?.Features?.some((feature) => {
-        return feature.FunctionName == route;
-    });
+    if(typeof route == "string"){
+        // Go over the flat permissions and check if the user has the required permission
+        return permission?.Features?.some((feature) => {
+            return feature.FunctionName == route;
+        });
+    }else if(typeof route == "object"){
+        // Map over permissions and check if the user has the required permission
+        return permission?.Features?.some((feature) => {
+            return route?.includes(feature.FunctionName);
+        });
+    }
+
 }
 
 export function navigateToFirstAllowedPage({
     setSidebarElements,
     user,
     navigate,
-}) {
+  }) {
     let items = [];
-    let doesRouteExist = routes?.find((route) => route == window.location.pathname)
-    if(!doesRouteExist){
-        navigate("/notFound");
-    }else{
-        menu?.map((menuItem) => {
-            if (
-                user?.Features?.find(
-                    (item) => item?.FunctionName == menuItem?.feature
-                )
-            ) {
-                items.push({ ...menuItem, current: false });
-            }
+
+    // Check if the current route exists
+    const doesRouteExist = routes?.some((route) => route === window.location.pathname);
+
+    // If the route does not exist, navigate to notFound page
+    if (!doesRouteExist) {
+      navigate("/notFound");
+    } else {
+      // Filter allowed menu items based on user features
+      menu?.forEach((menuItem) => {
+        if (user?.Features?.some((item) => item?.FunctionName === menuItem?.feature)) {
+          items.push({ ...menuItem, current: false });
+        }
+      });
+
+      // Find the current menu item for the active route
+      const currentItem = items.find((item) => item.url === window.location.pathname);
+
+      if (currentItem) {
+        // Mark the current item as active
+        currentItem.current = true;
+
+        // Set the other items' `current` to false
+        items.forEach((item) => {
+          if (item.url !== window.location.pathname) {
+            item.current = false;
+          }
         });
 
-        if (items.length > 0) {
-            localStorage.getItem("current")
-                ? items.find((item) => item.id == localStorage.getItem("current"))
-                    ? items.find(
-                          (item) => item.id == localStorage.getItem("current")
-                      ).current = true
-                    : (items[0].current = true)
-                : (items[0].current = true);
-            items.find((item) => item.id == localStorage.getItem("current"))
-                ? navigate(
-                      items.find(
-                          (item) => item.id == localStorage.getItem("current")
-                      ).url
-                  )
-                : navigate(items[0].url);
+        // Navigate to the current item
+        navigate(currentItem.url);
+      } else if (items.length > 0) {
+        // Get the `current` item from localStorage, if it exists
+        const savedCurrentId = localStorage.getItem("current");
+
+        let firstItemToActivate;
+
+        if (savedCurrentId) {
+          firstItemToActivate = items.find((item) => item.id === savedCurrentId);
         }
-        setSidebarElements(items);
+
+        if (firstItemToActivate) {
+          firstItemToActivate.current = true;
+          navigate(firstItemToActivate.url);
+        } else {
+          items[0].current = true;
+          navigate(items[0].url);
+          window.location.pathname = items[0].url;
+        }
+      }
+
+      // Set the sidebar elements
+      setSidebarElements(items);
     }
-}
+  }
+

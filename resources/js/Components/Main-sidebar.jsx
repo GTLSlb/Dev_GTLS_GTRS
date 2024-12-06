@@ -18,7 +18,7 @@ import SupportModal from "@/Pages/Component/modals/SupportModal";
 import { PublicClientApplication } from "@azure/msal-browser";
 import { clearMSALLocalStorage } from "@/CommonFunctions";
 import Cookies from "js-cookie";
-
+import { useNavigate } from "react-router-dom";
 export default function MainSidebar({
     allowedApplications,
     setMobileMenuOpen,
@@ -83,13 +83,11 @@ export default function MainSidebar({
 
                     if (isMicrosoftLogin == "true") {
                         window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=${window.Laravel.appUrl}/login`;
-                        setToken(null);
-                        setCurrentUser(null);
                     } else {
                         window.location.href = `${window.Laravel.appUrl}/login`;
-                        setToken(null);
-                        setCurrentUser(null);
                     }
+                    setToken(null);
+                    setCurrentUser(null);
                 }
             })
             .catch((error) => {

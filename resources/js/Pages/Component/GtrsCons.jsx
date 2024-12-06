@@ -19,7 +19,7 @@ export default function GtrsCons({
     setFilterValue,
     accData,
 }) {
-    console.log(filterValue)
+
     window.moment = moment;
     const navigate = useNavigate();
     const [filteredData, setFilteredData] = useState(consData);
@@ -289,7 +289,7 @@ export default function GtrsCons({
                 gridRef.current.allColumns.forEach((column) => {
                   if (column.name === 'DespatchDate') {
                     // Clear filter for DespatchDate column using DataGrid API if available
-                    console.log(column.computedFilterValue);
+                    // console.log(column.computedFilterValue);
                     column.computedFilterValue.value={start: "", end: ""}
                     column.computedFilterValue.emptyValue = ""
                   }

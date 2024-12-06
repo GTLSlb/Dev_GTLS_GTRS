@@ -47,8 +47,8 @@ export default function TableStructure({
         {
             autoHide: true,
             alwaysShowTrack: true,
-            scrollThumbWidth: 10,
-            scrollThumbOverWidth: 10,
+            scrollThumbWidth: 6,
+            scrollThumbOverWidth: 6,
         }
     );
 

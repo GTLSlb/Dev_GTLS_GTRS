@@ -61,10 +61,6 @@ Route::get('/gtrs/main', function () {
     return Inertia::render('Layout');
 })->middleware(['custom.auth'])->name('landing.page');
 
-Route::get('/LandingPage', function () {
-    return Inertia::render('LandingPage');
-})->middleware(['custom.auth'])->name('landing.page');
-
 
 Route::get('/gtam', function () {
     return Inertia::render('GTAM');

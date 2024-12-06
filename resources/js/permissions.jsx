@@ -1,7 +1,6 @@
 import { toast } from "react-toastify";
 import swal from "sweetalert";
 
-
 export function AlertToast(msg, status) {
     if (status == 1) {
         toast.success(msg, {
@@ -49,7 +48,7 @@ export function canCalculateKPI(currentUser) {
     const targetPermissionName = "Kpi_calculate";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
 
 /**
@@ -63,7 +62,7 @@ export function canEditKPI(currentUser) {
     const targetPermissionName = "Kpi_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
 
 /**
@@ -77,7 +76,7 @@ export function canAddTransitDays(currentUser) {
     const targetPermissionName = "TransitDays_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
 
 /**
@@ -91,7 +90,7 @@ export function canAddNewTransitDays(currentUser) {
     const targetPermissionName = "NewTransitDays_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
 
 /**
@@ -105,9 +104,8 @@ export function canEditTransitDays(currentUser) {
     const targetPermissionName = "TransitDays_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
-
 
 /**
  * Checks if the user can add holidays based on their permissions for a specific page.
@@ -120,7 +118,7 @@ export function canAddHolidays(currentUser) {
     const targetPermissionName = "Holidays_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
 
 /**
@@ -134,7 +132,7 @@ export function canEditHolidays(currentUser) {
     const targetPermissionName = "Holidays_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
 
 /**
@@ -148,9 +146,8 @@ export function canAddKpiReasons(currentUser) {
     const targetPermissionName = "KpiReasons_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
-
 
 /**
  * Checks if the user can edit KPI Reasons based on their permissions for a specific page.
@@ -163,9 +160,8 @@ export function canEditKpiReasons(currentUser) {
     const targetPermissionName = "KpiReasons_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
-
 
 /**
  * Checks if the user can edit failed consignments based on their permissions for a specific page.
@@ -178,9 +174,8 @@ export function canEditFailedConsignments(currentUser) {
     const targetPermissionName = "FailedConsignments_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
-
 
 /**
  * Checks if the user can view failed consignments reasons based on their permissions for a specific page.
@@ -193,9 +188,8 @@ export function canViewFailedReasons(currentUser) {
     const targetPermissionName = "FailedReasons_view";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
-
 
 /**
  * Checks if the user can add failed consignments reasons based on their permissions for a specific page.
@@ -208,9 +202,8 @@ export function canAddFailedReasons(currentUser) {
     const targetPermissionName = "FailedReasons_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
-
 
 /**
  * Checks if the user can edit failed consignments reasons based on their permissions for a specific page.
@@ -223,7 +216,7 @@ export function canEditFailedReasons(currentUser) {
     const targetPermissionName = "FailedReasons_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
 
 /**
@@ -237,7 +230,7 @@ export function canViewInternal(currentUser) {
     const targetPermissionName = "IR_Internal";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature.FunctionName === targetPermissionName)? true : false;;
 }
 
 /**
@@ -251,9 +244,8 @@ export function canEditRDD(currentUser) {
     const targetPermissionName = "RDD_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
-
 
 /**
  * Checks if the user can view RDD reasons based on their permissions for a specific page.
@@ -266,9 +258,8 @@ export function canViewRDDReasons(currentUser) {
     const targetPermissionName = "RDDReasons_view";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
-
 
 /**
  * Checks if the user can add RDD reasons based on their permissions for a specific page.
@@ -281,9 +272,8 @@ export function canAddRDDReasons(currentUser) {
     const targetPermissionName = "RDDReasons_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
-
 
 /**
  * Checks if the user can edit RDD reasons based on their permissions for a specific page.
@@ -296,9 +286,8 @@ export function canEditRDDReasons(currentUser) {
     const targetPermissionName = "RDDReasons_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
-
 
 /**
  * Checks if the user can add Safety report based on their permissions for a specific page.
@@ -311,9 +300,8 @@ export function canAddSafetyReport(currentUser) {
     const targetPermissionName = "SafetyReport_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
-
 
 /**
  * Checks if the user can view Safety Type based on their permissions for a specific page.
@@ -326,9 +314,8 @@ export function canViewSafetyType(currentUser) {
     const targetPermissionName = "SafetyType_view";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
-
 
 /**
  * Checks if the user can edit Safety report based on their permissions for a specific page.
@@ -341,9 +328,8 @@ export function canEditSafetyReport(currentUser) {
     const targetPermissionName = "SafetyReport_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
-
 
 /**
  * Checks if the user can add Safety Type based on their permissions for a specific page.
@@ -356,9 +342,8 @@ export function canAddSafetyType(currentUser) {
     const targetPermissionName = "SafetyType_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
-
 
 /**
  * Checks if the user can edit Safety Type based on their permissions for a specific page.
@@ -371,10 +356,8 @@ export function canEditSafetyType(currentUser) {
     const targetPermissionName = "SafetyType_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName);
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
 }
-
-
 
 /**
  * Checks if the user can view Dashboard based on their permissions.
@@ -384,7 +367,7 @@ export function canEditSafetyType(currentUser) {
  */
 export function canViewDashboard(currentUser) {
     // Check for 'Dashboard_view' permission in the user's permissions array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === "Dashboard_view");
+    return currentUser?.Features?.find(feature => feature?.FunctionName === "Dashboard_view")? true : false;;
 }
 
 /**
@@ -395,7 +378,7 @@ export function canViewDashboard(currentUser) {
  */
 export function canViewConsignments(currentUser) {
     // Check for 'ConsignmetsReport_view' permission in the user's permissions array
-    return currentUser.permissions.includes("ConsignmetsReport_view");
+    return currentUser?.Features?.find(feature => feature?.FunctionName === "ConsignmetsReport_view") ? true : false;
 }
 
 /**
@@ -406,7 +389,7 @@ export function canViewConsignments(currentUser) {
  */
 export function canViewKPI(currentUser) {
     // Check for 'KPI_view' permission in the user's permissions array
-    return currentUser.permissions.includes("KPI_view");
+    return currentUser?.Features?.find(feature => feature?.FunctionName === "KPI_view")? true : false;;
 }
 
 /**
@@ -417,7 +400,7 @@ export function canViewKPI(currentUser) {
  */
 export function canViewPerformance(currentUser) {
     // Check for 'Performance_view' permission in the user's permissions array
-    return currentUser.permissions.includes("Performance_view");
+    return currentUser?.Features?.find(feature => feature?.FunctionName === "Performance_view")? true : false;;
 }
 
 /**
@@ -428,7 +411,7 @@ export function canViewPerformance(currentUser) {
  */
 export function canViewFailedConsignments(currentUser) {
     // Check for 'FailedConsignments_view' permission in the user's permissions array
-    return currentUser.permissions.includes("FailedConsignments_view");
+    return currentUser?.Features?.find(feature => feature?.FunctionName === "FailedConsignments_view")? true : false;;
 }
 
 /**
@@ -439,7 +422,7 @@ export function canViewFailedConsignments(currentUser) {
  */
 export function canViewRDD(currentUser) {
     // Check for 'RDD_view' permission in the user's permissions array
-    return currentUser.permissions.includes("RDD_view");
+    return currentUser?.Features?.find(feature => feature?.FunctionName === "RDD_view")? true : false;;
 }
 
 /**
@@ -450,7 +433,7 @@ export function canViewRDD(currentUser) {
  */
 export function canViewMissingPOD(currentUser) {
     // Check for 'MissingPOD_view' permission in the user's permissions array
-    return currentUser.permissions.includes("MissingPOD_view");
+    return currentUser?.Features?.find(feature => feature?.FunctionName === "MissingPOD_view")? true : false;;
 }
 
 /**
@@ -461,17 +444,84 @@ export function canViewMissingPOD(currentUser) {
  */
 export function canViewSafety(currentUser) {
     // Check for 'Safety_view' permission in the user's permissions array
-    return currentUser.permissions.includes("Safety_view");
+    return currentUser?.Features?.find(feature => feature?.FunctionName === "Safety_view")? true : false;;
 }
+
 /**
- * Checks if the user can view No Delivery Information Report based on their permissions.
+ * Checks if the user can view Delivery Report Comments based on their permissions.
  *
  * @param {Object} currentUser - The current user object with role and permissions.
- * @return {boolean} True if the user can view No Delivery Information Report, false otherwise.
+ * @return {boolean} True if the user can view Delivery Report Comments, false otherwise.
  */
-export function canViewNoDeliveryInfo(currentUser) {
-    // Check for 'NoDeliveryInfo_view' permission in the user's permissions array
-    return currentUser.permissions.includes("NoDeliveryInfo_view");
+export function canViewDeliveryReportComment(currentUser) {
+    // Check for 'DeliveryReportComments_View' permission in the user's permissions array
+    return currentUser?.Features?.find(feature => feature?.FunctionName === "DeliveryReportComments_View")? true : false;;
+}
+
+/**
+ * Checks if the user can edit Delivery Report Comments based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can edit Delivery Report Comments, false otherwise.
+ */
+export function canEditDeliveryReportComment(currentUser) {
+    // Define the specific permission
+    return currentUser?.Features?.find(feature => feature?.FunctionName === "DeliveryReportComments_View")? true : false;;
+}
+
+/**
+ * Checks if the user can add Delivery Report Comments based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can add Delivery Report Comments, false otherwise.
+ */
+export function canAddDeliveryReportComment(currentUser) {
+    // Define the specific permission
+    return currentUser?.Features?.find(feature => feature?.FunctionName === "DeliveryReportComment_add")? true : false;;
+}
+
+/**
+ * Checks if the user can view based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can view Delivery Report, false otherwise.
+ */
+export function canViewDeliveryReport(currentUser) {
+    // Define the specific permission
+    return currentUser?.Features?.find(feature => feature?.FunctionName === "DeliveryReport_View")? true : false;;
+}
+
+/**
+ * Checks if the user can view based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can view Metcash Delivery Report, false otherwise.
+ */
+export function canViewMetcashDeliveryReport(currentUser) {
+    // Define the specific permission
+    return currentUser?.Features?.find(feature => feature?.FunctionName === "MetcashDeliveryReport_View")? true : false;;
+}
+
+/**
+ * Checks if the user can view based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can view Woolworths Delivery Report, false otherwise.
+ */
+export function canViewWoolworthsDeliveryReport(currentUser) {
+    // Define the specific permission
+    return currentUser?.Features?.find(feature => feature?.FunctionName === "WoolworthsDeliveryReport_View")? true : false;;
+}
+
+/**
+ * Checks if the user can view based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can view Other Delivery Report, false otherwise.
+ */
+export function canViewOtherDeliveryReport(currentUser) {
+    // Define the specific permission
+    return currentUser?.Features?.find(feature => feature?.FunctionName === "OtherDeliveryReport_View")? true : false;;
 }
 
 /**
@@ -482,7 +532,7 @@ export function canViewNoDeliveryInfo(currentUser) {
  */
 export function canViewAdditionalCharges(currentUser) {
     // Check for 'AdditionalCharges_view' permission in the user's permissions array
-    return currentUser.permissions.includes("AdditionalCharges_view");
+    return currentUser?.Features?.find(feature => feature?.FunctionName === "AdditionalCharges_view")? true : false;;
 }
 
 /**
@@ -493,8 +543,11 @@ export function canViewAdditionalCharges(currentUser) {
  */
 export function canViewDriverLogin(currentUser) {
     // Check for 'DriverLogin_view' permission in the user's permissions array
-    return currentUser.permissions.includes("DriverLogin_view");
+    return currentUser?.Features?.find(feature => feature?.FunctionName === "DriverLogin_view")? true : false;;
 }
 
-
+export function canViewChart(currentUser, chartPermission) {
+    const targetPermissionName = chartPermission;
+    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+}
 
