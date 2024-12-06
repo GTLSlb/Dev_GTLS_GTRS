@@ -7,20 +7,20 @@ export default function Amount(item) {
                         FUELLEVY
                     </dt>
                     <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">
-                        {item.item["FUELLEVY"]}
+                        {item.item["FuelLevy"]}
                     </dd>
                     <dt className="text-sm font-medium text-gray-900">
                         NETT AMOUNT
                     </dt>
                     <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">
-                        {item.item["NETTAMOUNT"]}
+                        {item.item["NettAmount"]}
                     </dd>
 
                     <dt className="text-sm font-medium text-gray-900">
                         RATED AMOUNT
                     </dt>
                     <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">
-                        {item.item["RATEDAMOUNT"]}
+                        {item.item["RateAmount"]}
                     </dd>
                 </div>
             </dl>

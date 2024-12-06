@@ -6,23 +6,23 @@ export default function Reciever(item) {
                     <dt className="text-sm font-medium text-gray-900">
                     RECEIVER NAME
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['RECEIVERNAME']}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['ReceiverName']}</dd>
                     <dt className="text-sm font-medium text-gray-900">
                     RECEIVER SUBURB
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['RECEIVERSUBURB']}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['ReceiverSuburb']}</dd>
                     <dt className="text-sm font-medium text-gray-900">
                     RECEIVER REFERENCE
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['RECEIVER REFERENCE']}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['ReceiverReference']}</dd>
                     <dt className="text-sm font-medium text-gray-900">
                     RECEIVER ZONE
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['RECEIVERZONE']}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['ReceiverZone']}</dd>
                     <dt className="text-sm font-medium text-gray-900">
                     RECEIVER POSTCODE
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['RECEIVERPOSTCODE']}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['ReceiverPostcode']}</dd>
 
                 </div>
             </dl>
