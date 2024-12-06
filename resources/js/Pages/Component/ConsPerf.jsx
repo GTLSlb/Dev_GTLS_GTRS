@@ -338,10 +338,10 @@ export default function ConsPerf({
                     </div>
                 ))
             ) : (
-                <div class=" h-72 flex items-center justify-center mt-5">
-                    <div class="text-center flex justify-center flex-col">
+                <div className=" h-72 flex items-center justify-center mt-5">
+                    <div className="text-center flex justify-center flex-col">
                         <img src={notFound} alt="" className="w-52 h-auto " />
-                        <h1 class="text-3xl font-bold text-gray-900">
+                        <h1 className="text-3xl font-bold text-gray-900">
                             No Data Found
                         </h1>
                     </div>
