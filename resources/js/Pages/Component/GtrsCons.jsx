@@ -19,7 +19,7 @@ export default function GtrsCons({
     setFilterValue,
     accData,
 }) {
-    console.log(filterValue)
+    // console.log(filterValue)
     window.moment = moment;
     const navigate = useNavigate();
     const [filteredData, setFilteredData] = useState(consData);

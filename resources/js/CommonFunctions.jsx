@@ -267,7 +267,7 @@ export function navigateToFirstAllowedPage({
                 items.push({ ...menuItem, current: false });
             }
         });
-
+console.log(user?.Features)
         if (items.length > 0) {
             localStorage.getItem("current")
                 ? items.find((item) => item.id == localStorage.getItem("current"))

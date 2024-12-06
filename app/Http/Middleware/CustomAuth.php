@@ -2,16 +2,14 @@
 
 namespace App\Http\Middleware;
 
+use Closure;
+use Inertia\Inertia;
 use Illuminate\Auth\SessionGuard;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
-use Closure;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Log;
-use Inertia\Inertia;
+use Illuminate\Support\Facades\Http;
 
 class CustomAuth extends Middleware
 {
@@ -44,18 +42,56 @@ class CustomAuth extends Middleware
         return false;
     }
 
+    public function validateAccessToken($accessToken, $userId){
+        $url = $_ENV['GTAM_API_URL'] . 'Validate/Session';
+
+        $headers = [
+            'UserId' => $userId,
+            'Token' => $accessToken,
+        ];
+        $response = Http::withHeaders($headers)->get($url);
+        switch ($response->status()) {
+            case 200:
+                return true;
+            case 400:
+                // Handle unauthorized access
+                return false;
+            default:
+                // Handle other status codes
+                return false;
+        }
+    }
+
     public function handle($request, $next, ...$guards)
     {
+
         $hasSession = $request->hasSession();
         if ($hasSession) {
-            $sessionToken = $request->session()->token();
+
             $path = $request->path();
             $request->headers->set('X-CSRF-TOKEN', csrf_token());
-            if ($path == 'loginComp' || $path == 'login' || $path == 'loginapi' || $path == 'forgot-password' || $path == 'auth/azure' || $path == 'auth/azure/callback' || $path == 'microsoftToken' || $path == 'logoutWithoutRequest' || $path == 'gtrs/logoutWithoutReq'|| $path == 'logoutWithoutReq') {
-                return $next($request);
+
+            $accessToken = $_COOKIE['access_token'] ?? false;
+            $userId = $request->session()->get('user') ?? false;
+
+            // check if user's token is valid & is on login route
+            if(($path == 'loginComp' || $path == 'login' || $path == 'loginapi') && $userId && $accessToken){
+                $isValid = $this->validateAccessToken($accessToken, $userId['UserId']);
+                if(!$isValid){
+                    //redirect to login
+                    return redirect()->route('login');
+                }else{
+                    //stay inside the system
+                    return redirect($_ENV['REDIRECT_ROUTE']);
+                }
             }
-            if (!$request->session()->has('user')) {
-                return redirect()->route('login');
+            else{
+                if ($path == 'loginComp' || $path == 'login' || $path == 'loginapi' || $path == 'forgot-password' || $path == 'auth/azure' || $path == 'auth/azure/callback' || $path == 'microsoftToken' || $path == 'logoutWithoutRequest' || $path == 'gtrs/logoutWithoutReq'|| $path == 'logoutWithoutReq') {
+                    return $next($request);
+                }
+                if (!$request->session()->has('user')) {
+                    return redirect()->route('login');
+                }
             }
         } else {
             $path = $request->path();
