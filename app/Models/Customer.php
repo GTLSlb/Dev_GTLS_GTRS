@@ -22,9 +22,6 @@ class Customer extends User
      */
     protected $fillable = [
         'OwnerId',
-        'GroupId',
-        'GroupName',
-        'Accounts',
         'remember_token',
         'password',
         'UserId',
@@ -41,7 +38,6 @@ class Customer extends User
      * @var array<int, string>
      */
     protected $hidden = [
-        'Accounts',
         'password',
         'remember_token',
         'Email',

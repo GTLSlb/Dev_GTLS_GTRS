@@ -348,7 +348,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                         className="layout custom-grid"
                         layout={layout}
                         cols={cols}
-                        rowHeight={100}
+                        rowHeight={110}
                         width={1200}
                         isResizable={false}
                         isDraggable={!isMobile}

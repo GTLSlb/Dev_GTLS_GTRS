@@ -1203,7 +1203,7 @@ export default function GtrsMain({
                                         element={
                                             <ProtectedRoute
                                                 permission={userPermission}
-                                                route="New_KPI_view"
+                                                route="KPI_view"
                                                 element={
                                                     <NewKPI
                                                         kpireasonsData={
@@ -1241,7 +1241,7 @@ export default function GtrsMain({
                                         element={
                                             <ProtectedRoute
                                                 permission={userPermission}
-                                                route="View_NewTransitDays"
+                                                route="View_TransitDays"
                                                 element={
                                                     <NewTransitDays
                                                         setNewTransitDays={
@@ -1276,7 +1276,7 @@ export default function GtrsMain({
                                         element={
                                             <ProtectedRoute
                                                 permission={userPermission}
-                                                route="NewTransitDays_add"
+                                                route="TransitDays_add"
                                                 element={
                                                     <AddNewTransitDay
                                                         url={url}

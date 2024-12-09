@@ -10,6 +10,8 @@ import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
+import { forwardRef } from "react";
+import { useImperativeHandle } from "react";
 function TransportRep({
     transportData,
     minDate,
@@ -18,7 +20,7 @@ function TransportRep({
     setFilterValue,
     accData,
 }) {
-    const RDDTimeFilter = ({ filterValue, onChange }) => {
+    const RDDTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
         const [value, setValue] = useState(
             filterValue ? filterValue.value : ""
         );
@@ -50,6 +52,12 @@ function TransportRep({
             setValue(filterValue ? filterValue.value : "");
         }, [filterValue]);
 
+        useImperativeHandle(ref, () => ({
+            setValue: (newValue) => {
+                setValue(newValue);
+            },
+        }));
+
         return (
             <div className="flex gap-2 mx-1">
                 <input
@@ -60,22 +68,22 @@ function TransportRep({
                 />
                 <button onClick={handleClear}>
                     <svg
-                        tabindex="0"
-                        class="InovuaReactDataGrid__column-header__filter-settings-icon"
+                        tabIndex="0"
+                        className="InovuaReactDataGrid__column-header__filter-settings-icon"
                         width="14"
                         height="14"
                         viewBox="0 0 14 14"
                     >
                         <path
-                            fill-rule="evenodd"
+                            fillRule="evenodd"
                             d="M13.222 2H.778C.348 2 0 1.552 0 1s.348-1 .778-1h12.444c.43 0 .778.448.778 1s-.348 1-.778 1zM1.556 3.111l3.888 4.667v5.444c0 .43.349.778.778.778h1.556c.43 0 .778-.348.778-.778V7.778l3.888-4.667H1.556z"
                         ></path>
                     </svg>
                 </button>
             </div>
         );
-    };
-    const PickTimeFilter = ({ filterValue, onChange }) => {
+    });
+    const PickTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
         const [value, setValue] = useState(
             filterValue ? filterValue.value : ""
         );
@@ -107,6 +115,13 @@ function TransportRep({
             setValue(filterValue ? filterValue.value : "");
         }, [filterValue]);
 
+        // Expose the setValue method to the grid
+        useImperativeHandle(ref, () => ({
+            setValue: (newValue) => {
+                setValue(newValue || "");
+            },
+        }));
+
         return (
             <div className="flex gap-2 mx-1">
                 <input
@@ -117,22 +132,22 @@ function TransportRep({
                 />
                 <button onClick={handleClear}>
                     <svg
-                        tabindex="0"
-                        class="InovuaReactDataGrid__column-header__filter-settings-icon"
+                        tabIndex="0"
+                        className="InovuaReactDataGrid__column-header__filter-settings-icon"
                         width="14"
                         height="14"
                         viewBox="0 0 14 14"
                     >
                         <path
-                            fill-rule="evenodd"
+                            fillRule="evenodd"
                             d="M13.222 2H.778C.348 2 0 1.552 0 1s.348-1 .778-1h12.444c.43 0 .778.448.778 1s-.348 1-.778 1zM1.556 3.111l3.888 4.667v5.444c0 .43.349.778.778.778h1.556c.43 0 .778-.348.778-.778V7.778l3.888-4.667H1.556z"
                         ></path>
                     </svg>
                 </button>
             </div>
         );
-    };
-    const DeliveryTimeFilter = ({ filterValue, onChange }) => {
+    });
+    const DeliveryTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
         const [value, setValue] = useState(
             filterValue ? filterValue.value : ""
         );
@@ -164,6 +179,13 @@ function TransportRep({
             setValue(filterValue ? filterValue.value : "");
         }, [filterValue]);
 
+        // Expose the setValue method to the grid
+        useImperativeHandle(ref, () => ({
+            setValue: (newValue) => {
+                setValue(newValue || "");
+            },
+        }));
+
         return (
             <div className="flex gap-2 mx-1">
                 <input
@@ -174,21 +196,21 @@ function TransportRep({
                 />
                 <button onClick={handleClear}>
                     <svg
-                        tabindex="0"
-                        class="InovuaReactDataGrid__column-header__filter-settings-icon"
+                        tabIndex="0"
+                        className="InovuaReactDataGrid__column-header__filter-settings-icon"
                         width="14"
                         height="14"
                         viewBox="0 0 14 14"
                     >
                         <path
-                            fill-rule="evenodd"
+                            fillRule="evenodd"
                             d="M13.222 2H.778C.348 2 0 1.552 0 1s.348-1 .778-1h12.444c.43 0 .778.448.778 1s-.348 1-.778 1zM1.556 3.111l3.888 4.667v5.444c0 .43.349.778.778.778h1.556c.43 0 .778-.348.778-.778V7.778l3.888-4.667H1.556z"
                         ></path>
                     </svg>
                 </button>
             </div>
         );
-    };
+    });
     window.moment = moment;
     const [filteredData, setFilteredData] = useState(transportData);
     const [selected, setSelected] = useState({});

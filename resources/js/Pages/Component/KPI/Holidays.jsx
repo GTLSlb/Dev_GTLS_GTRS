@@ -12,6 +12,8 @@ import { getApiRequest } from "@/CommonFunctions";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import GtrsButton from "../GtrsButton";
+import { handleFilterTable } from "@/Components/utils/filterUtils";
+import { exportToExcel } from "@/Components/utils/excelUtils";
 
 window.moment = moment;
 export default function Holidays({
@@ -48,7 +50,6 @@ export default function Holidays({
         }
     }, []); // Empty dependency array ensures the effect runs only once
     const gridRef = useRef(null);
-
 
     async function fetchData() {
         const data = await getApiRequest(`${url}Holidays`, {
@@ -142,40 +143,210 @@ export default function Holidays({
     ]);
 
     useEffect(() => {
-        if(userPermission && canEditHolidays(userPermission)){
-            setColumns([
-                ...columns,
-                {
-                    name: "edit",
-                    header: "edit",
-                    headerAlign: "center",
-                    textAlign: "center",
-                    defaultWidth: 100,
-                    render: ({ value, data }) => {
-                        return (
-                            <div>
-                                {canEditHolidays(userPermission) ? (
-                                    <button
-                                        className={
-                                            "rounded text-blue-500 justify-center items-center  "
-                                        }
-                                        onClick={() => {
-                                            handleEditClick(data);
-                                        }}
-                                    >
-                                        <span className="flex gap-x-1">
-                                            <PencilIcon className="h-4" />
-                                            Edit
-                                        </span>
-                                    </button>
-                                ) : null}
-                            </div>
-                        );
+        if (holidayOptions && stateOptions) {
+            if (userPermission && canEditHolidays(userPermission)) {
+                setColumns([
+                    {
+                        name: "HolidayName",
+                        minWidth: 170,
+                        defaultFlex: 1,
+                        header: "Holiday Name",
+                        type: "string",
+                        headerAlign: "center",
+                        filterEditor: SelectFilter,
+                        filterEditorProps: {
+                            multiple: true,
+                            wrapMultiple: false,
+                            dataSource: holidayOptions,
+                        },
                     },
-                },
-            ])
+                    {
+                        name: "HolidayDate",
+                        defaultFlex: 1,
+                        minWidth: 230,
+                        header: "Holiday Date",
+                        headerAlign: "center",
+                        textAlign: "center",
+                        dateFormat: "DD-MM-YYYY",
+                        filterEditor: DateFilter,
+                        render: ({ value, cellProps }) => {
+                            return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                                "Invalid date"
+                                ? ""
+                                : moment(value).format("DD-MM-YYYY hh:mm A");
+                        },
+                    },
+                    {
+                        name: "HolidayState",
+                        defaultFlex: 1,
+                        minWidth: 170,
+                        header: "Holiday State",
+                        type: "string",
+                        headerAlign: "center",
+                        textAlign: "center",
+                        filterEditor: SelectFilter,
+                        filterEditorProps: {
+                            multiple: true,
+                            wrapMultiple: false,
+                            dataSource: stateOptions,
+                        },
+                    },
+                    {
+                        name: "HolidayDesc",
+                        header: "Description",
+                        minWidth: 170,
+                        defaultFlex: 1,
+                        headerAlign: "center",
+                        textAlign: "start",
+                        filterEditor: StringFilter,
+                    },
+                    {
+                        name: "HolidayStatus",
+                        minWidth: 170,
+                        header: "Status",
+                        defaultFlex: 1,
+                        headerAlign: "center",
+                        textAlign: "center",
+                        render: ({ value }) => {
+                            return value == 1 ? (
+                                <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                                    True
+                                </span>
+                            ) : (
+                                <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                                    false
+                                </span>
+                            );
+                        },
+                    },
+                    {
+                        name: "edit",
+                        header: "edit",
+                        headerAlign: "center",
+                        textAlign: "center",
+                        defaultWidth: 100,
+                        render: ({ value, data }) => {
+                            return (
+                                <div>
+                                    {canEditHolidays(userPermission) ? (
+                                        <button
+                                            className={
+                                                "rounded text-blue-500 justify-center items-center  "
+                                            }
+                                            onClick={() => {
+                                                handleEditClick(data);
+                                            }}
+                                        >
+                                            <span className="flex gap-x-1">
+                                                <PencilIcon className="h-4" />
+                                                Edit
+                                            </span>
+                                        </button>
+                                    ) : null}
+                                </div>
+                            );
+                        },
+                    },
+                ]);
+            } else {
+                setColumns([
+                    {
+                        name: "HolidayName",
+                        minWidth: 170,
+                        defaultFlex: 1,
+                        header: "Holiday Name",
+                        type: "string",
+                        headerAlign: "center",
+                        filterEditor: SelectFilter,
+                        filterEditorProps: {
+                            multiple: true,
+                            wrapMultiple: false,
+                            dataSource: holidayOptions,
+                        },
+                    },
+                    {
+                        name: "HolidayDate",
+                        defaultFlex: 1,
+                        minWidth: 230,
+                        header: "Holiday Date",
+                        headerAlign: "center",
+                        textAlign: "center",
+                        dateFormat: "DD-MM-YYYY",
+                        filterEditor: DateFilter,
+                        render: ({ value, cellProps }) => {
+                            return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                                "Invalid date"
+                                ? ""
+                                : moment(value).format("DD-MM-YYYY hh:mm A");
+                        },
+                    },
+                    {
+                        name: "HolidayState",
+                        defaultFlex: 1,
+                        minWidth: 170,
+                        header: "Holiday State",
+                        type: "string",
+                        headerAlign: "center",
+                        textAlign: "center",
+                        filterEditor: SelectFilter,
+                        filterEditorProps: {
+                            multiple: true,
+                            wrapMultiple: false,
+                            dataSource: stateOptions,
+                        },
+                    },
+                    {
+                        name: "HolidayDesc",
+                        header: "Description",
+                        minWidth: 170,
+                        defaultFlex: 1,
+                        headerAlign: "center",
+                        textAlign: "start",
+                        filterEditor: StringFilter,
+                    },
+                    {
+                        name: "HolidayStatus",
+                        minWidth: 170,
+                        header: "Status",
+                        defaultFlex: 1,
+                        headerAlign: "center",
+                        textAlign: "center",
+                        render: ({ value }) => {
+                            return value == 1 ? (
+                                <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                                    True
+                                </span>
+                            ) : (
+                                <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                                    false
+                                </span>
+                            );
+                        },
+                    },
+                ]);
+            }
         }
-    },[userPermission]);
+    }, [userPermission, holidayOptions, stateOptions]);
+
+    const handleDownloadExcel = () => {
+        const jsonData = handleFilterTable(gridRef, holidays);
+
+        const columnMapping = columns.reduce((acc, column) => {
+            acc[column.name] = column.header;
+            return acc;
+        }, {});
+
+        const customCellHandlers = {
+            HolidayStatus: (value) => (value === 1 ? true : false),
+        };
+
+        exportToExcel(
+            jsonData,
+            columnMapping,
+            "Holidays.xlsx",
+            customCellHandlers
+        );
+    };
 
     return (
         <div>
@@ -223,6 +394,7 @@ export default function Holidays({
                         id={"HolidayId"}
                         setSelected={setSelected}
                         gridRef={gridRef}
+                        handleDownloadExcel={handleDownloadExcel}
                         selected={selected}
                         tableDataElements={holidays}
                         filterValueElements={filterValue}

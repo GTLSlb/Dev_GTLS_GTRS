@@ -84,16 +84,11 @@ export default function ConsPerf({
         "Consignment No",
         "Consignment Status",
         "Account Name",
-        "POD",
         "KPI Datetime",
-        "POD Datetime",
         "Status",
-        "Loading Time",
         "Delivery Required Date",
         "Service",
-        "Total Quantity",
         "Delivered Date",
-        "Manifest No",
         "Total Weight",
         "Despatch Date",
         "Fuel levy",
@@ -324,7 +319,7 @@ export default function ConsPerf({
                             <h3 className="text-base font-semibold leading-6 text-gray-900">
                                 CONSIGNMENT NO. :{" "}
                                 <span className="text-goldd">
-                                    {item.CONSIGNMENTNUMBER}
+                                    {item.ConsignmentNo}
                                 </span>
                             </h3>
                         </div>
@@ -338,10 +333,10 @@ export default function ConsPerf({
                     </div>
                 ))
             ) : (
-                <div class=" h-72 flex items-center justify-center mt-5">
-                    <div class="text-center flex justify-center flex-col">
+                <div className=" h-72 flex items-center justify-center mt-5">
+                    <div className="text-center flex justify-center flex-col">
                         <img src={notFound} alt="" className="w-52 h-auto " />
-                        <h1 class="text-3xl font-bold text-gray-900">
+                        <h1 className="text-3xl font-bold text-gray-900">
                             No Data Found
                         </h1>
                     </div>

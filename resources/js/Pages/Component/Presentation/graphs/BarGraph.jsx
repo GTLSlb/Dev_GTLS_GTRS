@@ -33,8 +33,10 @@ function BarGraph({
     graphData,
     url,
     AToken,
+    CustomerId,
     originalgraphData,
     currentUser,
+    setGraphData,
     getReportData,
     selectedReceiver,
 }) {
@@ -253,10 +255,12 @@ function BarGraph({
             <InlineTable
                 AToken={AToken}
                 getReportData={getReportData}
+                CustomerId={CustomerId}
                 graphData={graphData}
                 originalgraphData={originalgraphData}
                 url={url}
                 currentUser={currentUser}
+                setGraphData={setGraphData}
                 selectedReceiver={selectedReceiver}
             />
         </div>
