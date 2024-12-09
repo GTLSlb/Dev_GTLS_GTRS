@@ -18,6 +18,7 @@ import {
     canViewWoolworthsDeliveryReport,
     canViewOtherDeliveryReport,
 } from "@/permissions";
+import { useNavigate } from "react-router-dom";
 
 export default function DeliveryReportPage({
     url,
@@ -26,14 +27,10 @@ export default function DeliveryReportPage({
     currentUser,
     userPermission,
     fetchDeliveryReport,
-    setActiveIndexGTRS,
-    setLastIndex,
-    setactiveCon,
 }) {
+    const navigate = useNavigate();
     const handleClick = (coindex) => {
-        setActiveIndexGTRS(3);
-        setLastIndex(21);
-        setactiveCon(coindex);
+        navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
     };
     const createNewLabelObjects = (data, fieldName) => {
         const uniqueLabels = new Set(); // To keep track of unique labels
