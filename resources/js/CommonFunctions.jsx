@@ -272,8 +272,21 @@ export function navigateToFirstAllowedPage({
     } else {
       // Filter allowed menu items based on user features
       menu?.forEach((menuItem) => {
-        if (user?.Features?.some((item) => item?.FunctionName === menuItem?.feature)) {
-          items.push({ ...menuItem, current: false });
+        if(menuItem.hasOwnProperty('options')){
+            menuItem.options.forEach((option) => {
+                if (user?.Features?.some((item) => item?.FunctionName === option?.feature)) {
+                  const existingItem = items.find((item) => item.name === menuItem.name);
+                  if (existingItem) {
+                    existingItem.options.push({ ...option, current: false });
+                  } else {
+                    items.push({ ...menuItem, current: false, options: [{ ...option, current: false }] });
+                  }
+                }
+              })
+        }else{
+            if(user?.Features?.some((item) => item?.FunctionName === menuItem?.feature)) {
+                items.push({ ...menuItem, current: false });
+            }
         }
       });
 

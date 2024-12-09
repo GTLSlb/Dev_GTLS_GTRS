@@ -82,7 +82,6 @@ const menu = [
             //     url: "/gtrs/kpi/reasons",
             // },
         ],
-        feature: "KPI_view",
     },
     {
         id: 4,
