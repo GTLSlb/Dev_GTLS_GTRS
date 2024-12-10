@@ -75,8 +75,8 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
         const handleResize = () => {
             if (window.innerWidth < 768) {
                 setCols(1);
-            } else if (window.innerWidth < 1200) {
-                setCols(2);
+            } else if (window.innerWidth < 1300) {
+                setCols(1);
             } else {
                 setCols(2);
             }
@@ -144,7 +144,6 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
         }),
         valueContainer: (provided) => ({
             ...provided,
-            width: "400px",
             maxHeight: "37px", // Set the maximum height for the value container
             overflow: "auto", // Enable scrolling if the content exceeds the maximum height
             // fontSize: '10px',
@@ -240,58 +239,60 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                 </div>
                 <div className="mt-3 w-full">
                     <div className="w-full relative px-2">
-                        <div className=" sm:border-gray-200 text-gray-400 flex flex-col md:flex-row gap-y-4 gap-x-2 2xl:items-center">
-                            <label
-                                htmlFor="last-name"
-                                className="inline-block text-sm font-medium leading-6 flex-item items-center"
-                            >
-                                Date From
-                            </label>
-                            <div className="sm:mt-0 md:px-4">
-                                <input
-                                    onKeyDown={(e) => e.preventDefault()}
-                                    type="date"
-                                    name="from-date"
-                                    value={SDate}
-                                    min={getOldestDespatchDate(chartsData)}
-                                    max={EDate}
-                                    onChange={handleStartDateChange}
-                                    id="from-date"
-                                    className="flex-item block w-full h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 lg:max-w-xs sm:text-sm sm:leading-6"
-                                />
+                        <div className=" grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6 gap-4">
+                            <div className="flex flex-col md:flex-row gap-4 md:items-center">
+                                <label
+                                    htmlFor="last-name"
+                                    className="inline-block text-sm font-medium leading-6 flex-item items-center"
+                                >
+                                    Date From
+                                </label>
+                                <div className="">
+                                    <input
+                                        onKeyDown={(e) => e.preventDefault()}
+                                        type="date"
+                                        name="from-date"
+                                        value={SDate}
+                                        min={getOldestDespatchDate(chartsData)}
+                                        max={EDate}
+                                        onChange={handleStartDateChange}
+                                        id="from-date"
+                                        className="flex-item block w-full h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 lg:max-w-xs sm:text-sm sm:leading-6"
+                                    />
+                                </div>
                             </div>
+                            <div className="flex flex-col md:flex-row gap-4 md:items-center">
+                                <label
+                                    htmlFor="last-name"
+                                    className="inline-block text-sm font-medium leading-6 flex-item"
+                                >
+                                    To
+                                </label>
 
-                            <label
-                                htmlFor="last-name"
-                                className="inline-block text-sm font-medium leading-6 flex-item"
-                            >
-                                To
-                            </label>
-
-                            <div className="mt-2 flex-item  sm:mt-0 md:px-4">
-                                <input
-                                    onKeyDown={(e) => e.preventDefault()}
-                                    type="date"
-                                    name="to-date"
-                                    min={SDate}
-                                    max={getLatestDespatchDate(chartsData)}
-                                    value={EDate}
-                                    onChange={handleEndDateChange}
-                                    id="to-date"
-                                    className="block w-full h-[36px]  rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 lg:max-w-xs sm:text-sm sm:leading-6"
-                                />
+                                <div className="">
+                                    <input
+                                        onKeyDown={(e) => e.preventDefault()}
+                                        type="date"
+                                        name="to-date"
+                                        min={SDate}
+                                        max={getLatestDespatchDate(chartsData)}
+                                        value={EDate}
+                                        onChange={handleEndDateChange}
+                                        id="to-date"
+                                        className="block w-full h-[36px]  rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 lg:max-w-xs sm:text-sm sm:leading-6"
+                                    />
+                                </div>
                             </div>
+                            <div className="flex flex-col md:flex-row gap-4 md:items-center xl:col-span-2 2xl:col-span-3">
+                                <label
+                                    htmlFor="last-name"
+                                    className=" text-sm font-medium text-gray-400"
+                                >
+                                    Receiver Name
+                                </label>
 
-                            <label
-                                htmlFor="last-name"
-                                className="hidden lg:block text-sm font-medium leading-6 text-gray-400 sm:pt-1.5 2xl:mr-5"
-                            >
-                                Receiver Name
-                            </label>
-
-                            <div className="hidden lg:inline-block">
-                                <div className=" flex items-center">
-                                    <div className="mt-2 w-full sm:mt-0 ">
+                                <div className=" flex items-center w-full">
+                                    <div className="w-full">
                                         <Select
                                             styles={customStyles}
                                             isMulti
@@ -301,13 +302,13 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                                             onChange={
                                                 handleReceiverSelectChange
                                             }
-                                            className="basic-multi-select text-red "
+                                            className="basic-multi-select w-full text-red "
                                             classNamePrefix="select"
                                         />
                                     </div>
                                 </div>
                             </div>
-                            <div className="ml-auto">
+                            <div className="xl:ml-auto flex items-center">
                                 <button
                                     className={`  items-center w-auto h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
                                     onClick={ResetLayout}
@@ -317,7 +318,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                             </div>
                         </div>
                     </div>
-                    <div className="lg:hidden px-2 py-3 w-full">
+                    {/* <div className="lg:hidden px-2 py-3 w-full">
                         <label
                             htmlFor="last-name"
                             className="block text-sm font-medium leading-6  text-gray-400 sm:pt-1.5 mr-5"
@@ -341,7 +342,7 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
                 {hasData ? (
                     <ReactGridLayout
