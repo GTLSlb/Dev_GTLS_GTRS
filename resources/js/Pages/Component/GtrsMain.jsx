@@ -669,13 +669,12 @@ export default function GtrsMain({
 
                     <main className="w-full overflow-y-auto">
                         <div
-                            style={{ marginBottom: "16px" }}
                             className="fixed left-0 top-20 z-10"
                         >
                             {broken && (
                                 <Button
                                     aria-label="chevron right icon"
-                                    className="rounded-none rounded-r bg-dark"
+                                    className="rounded-none rounded-r hover:opcacity-100 opacity-70 bg-dark"
                                     onClick={() => setToggled(!toggled)}
                                     isIconOnly
                                 >

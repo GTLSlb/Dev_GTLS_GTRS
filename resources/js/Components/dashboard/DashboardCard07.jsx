@@ -39,7 +39,7 @@ function DashboardCard07(props) {
                             <tr>
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
-                                        <div className="text-slate-800 text-sm">
+                                        <div className="text-slate-800 text-xs sm:text-sm">
                                             # of Receivers
                                         </div>
                                     </div>
@@ -53,7 +53,7 @@ function DashboardCard07(props) {
                             <tr>
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
-                                        <div className="text-slate-800 text-sm">
+                                        <div className="text-slate-800 text-xs sm:text-sm">
                                             Total Weight
                                         </div>
                                     </div>
@@ -68,7 +68,7 @@ function DashboardCard07(props) {
                             <tr>
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
-                                        <div className="text-slate-800 text-sm">
+                                        <div className="text-slate-800 text-xs sm:text-sm">
                                             Total Pallet Space
                                         </div>
                                     </div>
@@ -82,7 +82,7 @@ function DashboardCard07(props) {
                             <tr>
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
-                                        <div className="text-slate-800 text-sm">
+                                        <div className="text-slate-800 text-xs sm:text-sm">
                                             Total CHEP
                                         </div>
                                     </div>
@@ -96,7 +96,7 @@ function DashboardCard07(props) {
                             <tr>
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
-                                        <div className="text-slate-800 text-sm">
+                                        <div className="text-slate-800 text-xs sm:text-sm">
                                             Total LOSCAM
                                         </div>
                                     </div>
@@ -111,7 +111,7 @@ function DashboardCard07(props) {
                             <tr>
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
-                                        <div className="text-slate-800 text-sm">
+                                        <div className="text-slate-800 text-xs sm:text-sm">
                                             Total CUSTOMER OWN
                                         </div>
                                     </div>
@@ -126,7 +126,7 @@ function DashboardCard07(props) {
                             <tr>
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
-                                        <div className="text-slate-800 text-sm">
+                                        <div className="text-slate-800 text-xs sm:text-sm">
                                             Cost
                                         </div>
                                     </div>
@@ -140,7 +140,7 @@ function DashboardCard07(props) {
                             <tr>
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
-                                        <div className="text-slate-800 text-sm">
+                                        <div className="text-slate-800 text-xs sm:text-sm">
                                             Fuel Surcharge cost
                                         </div>
                                     </div>
@@ -154,7 +154,7 @@ function DashboardCard07(props) {
                             <tr>
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
-                                        <div className="text-slate-800 text-sm">
+                                        <div className="text-slate-800 text-xs sm:text-sm">
                                             Total No. Consignment Shipped
                                         </div>
                                     </div>
@@ -168,7 +168,7 @@ function DashboardCard07(props) {
                             <tr>
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
-                                        <div className="text-slate-800 text-sm">
+                                        <div className="text-slate-800 text-xs sm:text-sm">
                                             Total No. Consignment Pending
                                         </div>
                                     </div>
@@ -183,7 +183,7 @@ function DashboardCard07(props) {
                             <tr>
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
-                                        <div className="text-slate-800 text-sm">
+                                        <div className="text-slate-800 text-xs sm:text-sm">
                                             Total No. Consignment Delivered on
                                             time
                                         </div>
@@ -199,7 +199,7 @@ function DashboardCard07(props) {
                             <tr>
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
-                                        <div className="text-slate-800 text-sm">
+                                        <div className="text-slate-800 text-xs sm:text-sm">
                                             Total No. Consignment Not Delivered
                                             on time
                                         </div>
@@ -215,7 +215,7 @@ function DashboardCard07(props) {
                             <tr>
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
-                                        <div className="text-slate-800 text-sm">
+                                        <div className="text-slate-800 text-xs sm:text-sm">
                                             # of True PODs
                                         </div>
                                     </div>
@@ -229,7 +229,7 @@ function DashboardCard07(props) {
                             <tr>
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
-                                        <div className="text-slate-800 text-sm">
+                                        <div className="text-slate-800 text-xs sm:text-sm">
                                             % of True PODs
                                         </div>
                                     </div>
@@ -244,7 +244,7 @@ function DashboardCard07(props) {
                             <tr>
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
-                                        <div className="text-slate-800 text-sm">
+                                        <div className="text-slate-800 text-xs sm:text-sm">
                                             # of safety issues
                                         </div>
                                     </div>
