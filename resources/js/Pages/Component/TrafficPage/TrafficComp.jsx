@@ -259,8 +259,7 @@ function TraffiComp() {
         },
 
     ];
-
-    function handleFilterTable() {
+    function handleFilterTable(dataa) {
         // Get the selected columns or use all columns if none are selected
         let selectedColumns = Array.from(
             document.querySelectorAll('input[name="column"]:checked')
@@ -277,7 +276,7 @@ function TraffiComp() {
         );
 
         const filterValue = [];
-        datatoexport?.map((val) => {
+        dataa?.map((val) => {
             let isMatch = true;
             for (const col of selectedColVal) {
                 const { name, value, type, operator } = col;
@@ -634,8 +633,8 @@ function TraffiComp() {
         }
         return { selectedColumns: selectedColVal, filterValue: filterValue };
     }
-    function handleDownloadExcel() {
-        const jsonData = handleFilterTable();
+    function handleDownloadExcel(dataa) {
+        const jsonData = handleFilterTable(dataa);
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
@@ -788,7 +787,7 @@ function TraffiComp() {
             return response.json().then((data) => {
                 // const totalCount = data.pagination.total;
                 setDatatoexport(data);
-                handleDownloadExcel();
+                handleDownloadExcel(data);
             });
         });
     };

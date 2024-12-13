@@ -551,12 +551,6 @@ export const getFiltersFailed = (minDispatchDate, maxDispatchDate) => {
             value: "",
         },
         {
-            name: "POD",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
             name: "FailedReason",
             operator: "inlist",
             type: "select",
@@ -578,31 +572,6 @@ export const getFiltersFailed = (minDispatchDate, maxDispatchDate) => {
             name: "Reference",
             operator: "inlist",
             type: "select",
-            value: "",
-        },
-        {
-            name: "Department",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "Resolution",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "OccuredAt",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            value: "",
-        },
-        {
-            name: "Explanation",
-            operator: "contains",
-            type: "string",
             value: "",
         },
     ];
@@ -843,12 +812,6 @@ export const getFiltersPOD = (
             //     start: minDateDel,
             //     end: maxDateDel,
             // },
-        },
-        {
-            name: "POD",
-            operator: "contains",
-            type: "string",
-            value: "",
         },
     ];
 };
