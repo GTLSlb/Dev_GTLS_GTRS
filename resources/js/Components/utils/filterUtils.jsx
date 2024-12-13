@@ -38,12 +38,12 @@ export const handleFilterTable = (gridRef, filteredData) => {
                     case "contains":
                         conditionMet =
                             cellValue?.length > 0 &&
-                            valLowerCase.includes(cellValueLowerCase);
+                            valLowerCase?.includes(cellValueLowerCase);
                         break;
                     case "notContains":
                         conditionMet =
                             cellValue?.length > 0 &&
-                            !valLowerCase.includes(cellValueLowerCase);
+                            !valLowerCase?.includes(cellValueLowerCase);
                         break;
                     case "eq":
                         conditionMet =

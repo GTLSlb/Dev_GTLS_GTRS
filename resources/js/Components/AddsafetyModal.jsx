@@ -47,7 +47,7 @@ export default function SafetyModal({
         Resolution: modalResol,
         Reference: modalRefer,
         DebtorId: modalDebtorId,
-        OccuredAt: formattedDate,
+        OccuredAt: formattedDate === "Invalid Date" ? null : formattedDate,
     });
     useEffect(() => {
         setFormValues({
@@ -60,7 +60,7 @@ export default function SafetyModal({
             Explanation: modalExpl,
             Resolution: modalResol,
             Reference: modalRefer,
-            OccuredAt: formattedDate,
+            OccuredAt: formattedDate === "Invalid Date" ? null : formattedDate,
         });
     }, [
         id,
@@ -88,7 +88,7 @@ export default function SafetyModal({
             Explanation: modalExpl,
             Resolution: modalResol,
             Reference: modalRefer,
-            OccuredAt: formattedDate,
+            OccuredAt: formattedDate === "Invalid Date" ? null : formattedDate,
         });
         handleClose(); // Clear the input value
     };
