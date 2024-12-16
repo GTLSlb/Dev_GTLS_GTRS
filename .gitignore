@@ -19,3 +19,4 @@ yarn-error.log
 /.vscode
 *.pdf
 node_modules.zip
+test-reports
