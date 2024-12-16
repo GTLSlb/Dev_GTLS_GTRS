@@ -20,6 +20,7 @@ import TableStructure from "@/Components/TableStructure";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import swal from 'sweetalert';
 import axios from "axios";
+import { isDummyAccount } from "@/CommonFunctions";
 
 const report = [
     {
@@ -637,8 +638,7 @@ export default function AdditionalCharges({
                         className="underline text-blue-500 hover:cursor-pointer"
                         onClick={() => handleClick(data.ConsignmentId)}
                     >
-                        {" "}
-                        {value}
+                        {isDummyAccount(value)}
                     </span>
                 );
             },
@@ -651,6 +651,9 @@ export default function AdditionalCharges({
             textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "ReceiverReference",
@@ -660,6 +663,9 @@ export default function AdditionalCharges({
             textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "Quantity",

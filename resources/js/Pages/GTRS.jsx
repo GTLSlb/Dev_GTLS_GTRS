@@ -56,7 +56,7 @@ export default function Gtrs({
     const [customerAccounts, setCusomterAccounts] = useState();
     const userdata = currentUser;
     const [canAccess, setCanAccess] = useState(true);
-    const [dailyReportData, setDailyReportData] = useState([]);
+    const [deliveryReportData, setDeliveryReportData] = useState([]);
 
     const debtorIdsArray = userdata?.Accounts?.map((account) => {
         return { UserId: account.DebtorId };
@@ -88,7 +88,7 @@ export default function Gtrs({
                     resolve(parsedData);
                 });
                 parsedDataPromise.then((parsedData) => {
-                    setDailyReportData(parsedData || []);
+                    setDeliveryReportData(parsedData || []);
                 });
             })
             .catch((err) => {
@@ -117,7 +117,7 @@ export default function Gtrs({
                     console.log(err);
                 }
             });
-    }
+    };
 
     useEffect(() => {
         setUserBody(debtorIds);
@@ -166,49 +166,59 @@ export default function Gtrs({
                     console.log(err);
                 }
             });
-        axios
-            .get(`${gtamUrl}/Customer/Accounts`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setCusomterAccounts(parsedData || []);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+
+            axios
+                .get(`${gtamUrl}/Customer/Accounts`, {
+                    headers: {
+                        UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
+                    },
+                })
+                .then((res) => {
+                    const x = JSON.stringify(res.data);
+                    const parsedDataPromise = new Promise((resolve, reject) => {
+                        const parsedData = JSON.parse(x);
+                        resolve(parsedData);
                     });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
+                    parsedDataPromise.then((parsedData) => {
+                        // Remove duplicates based on DebtorId
+                        const uniqueAccounts = parsedData.reduce((acc, current) => {
+                            if (!acc.some(account => account.DebtorId.trim() === current.DebtorId.trim())) {
+                                acc.push(current);
+                            }
+                            return acc;
+                        }, []);
+                        
+                        setCusomterAccounts(uniqueAccounts || []);
+                    });
+                })
+                .catch((err) => {
+                    if (err.response && err.response.status === 401) {
+                        // Handle 401 error using SweetAlert
+                        swal({
+                            title: "Session Expired!",
+                            text: "Please login again",
+                            type: "success",
+                            icon: "info",
+                            confirmButtonText: "OK",
+                        }).then(function () {
+                            axios
+                                .post("/logoutAPI")
+                                .then((response) => {
+                                    if (response.status == 200) {
+                                        window.location.href = "/";
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.log(error);
+                                });
+                        });
+                    } else {
+                        // Handle other errors
+                        console.log(err);
+                    }
+                });
+            
         axios
             .get(`${gtrsUrl}/SafetyReport`, {
                 headers: {
@@ -493,7 +503,14 @@ export default function Gtrs({
             }
         }
     }, [user, loadingGtrs]);
-    if (consApi && reportApi && chartsApi && DebtorsApi && KPIReasonsApi && transportApi) {
+    if (
+        consApi &&
+        reportApi &&
+        chartsApi &&
+        DebtorsApi &&
+        KPIReasonsApi &&
+        transportApi
+    ) {
         setLoadingGtrs(true);
     }
 
@@ -546,7 +563,7 @@ export default function Gtrs({
                             PerfData={PerfData}
                             setPerfData={setPerfData}
                             fetchDeliveryReport={fetchDeliveryReport}
-                            dailyReportData={dailyReportData}
+                            deliveryReportData={deliveryReportData}
                         />
                     </div>
                 </div>

@@ -20,6 +20,7 @@ import axios from "axios";
 import swal from "sweetalert";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import NewKPIModalAddReason from "./KPI/NEWKPIModal";
+import { isDummyAccount } from "@/CommonFunctions";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -181,8 +182,11 @@ function NewKPI({
                 let conditionMet = false;
                 // Skip the filter condition if no filter is set (cellValue is null or empty)
                 if (
-                    (!cellValue || cellValue.length === 0 ) &&
-                    !(type === "number" && (operator === "empty" || cellValue === 0))
+                    (!cellValue || cellValue.length === 0) &&
+                    !(
+                        type === "number" &&
+                        (operator === "empty" || cellValue === 0)
+                    )
                 ) {
                     conditionMet = true;
                     continue;
@@ -243,9 +247,10 @@ function NewKPI({
                     switch (operator) {
                         case "eq":
                             conditionMet =
-                            (numericCellValue !== "" || numericCellValue === 0) &&
-                            (numericValue !== "" || numericValue === 0) &&
-                            numericValue == numericCellValue;
+                                (numericCellValue !== "" ||
+                                    numericCellValue === 0) &&
+                                (numericValue !== "" || numericValue === 0) &&
+                                numericValue == numericCellValue;
                             break;
                         case "neq":
                             conditionMet =
@@ -547,6 +552,14 @@ function NewKPI({
             MatchDel: "Pass/Fail",
         };
 
+        const fieldsToCheck = [
+            "ConsignmentNo",
+            "SenderName",
+            "SenderReference",
+            "SenderReference",
+            "ReceiverName",
+            "ReceiverReference",
+        ]; // for dummy data
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
@@ -610,6 +623,8 @@ function NewKPI({
                             (reason) => reason.ReasonId === person.ReasonId
                         );
                         acc[columnKey] = Reason?.ReasonName;
+                    } else if (fieldsToCheck.includes(columnKey)) {
+                        acc[column] = isDummyAccount(person[columnKey]);
                     } else {
                         acc[columnKey] = person[columnKey];
                     }
@@ -831,7 +846,7 @@ function NewKPI({
                         onClick={() => handleClick(data.ConsignmentId)}
                     >
                         {" "}
-                        {value}
+                        {isDummyAccount(value)}
                     </span>
                 );
             },
@@ -845,6 +860,9 @@ function NewKPI({
             textAlign: "center",
             filterEditor: StringFilter,
             defaultWidth: 200,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SenderReference",
@@ -855,6 +873,9 @@ function NewKPI({
             textAlign: "center",
             filterEditor: StringFilter,
             defaultWidth: 200,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SenderState",
@@ -880,6 +901,9 @@ function NewKPI({
             textAlign: "center",
             filterEditor: StringFilter,
             defaultWidth: 200,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "ReceiverReference",
@@ -890,6 +914,9 @@ function NewKPI({
             textAlign: "center",
             filterEditor: StringFilter,
             defaultWidth: 200,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "ReceiverState",

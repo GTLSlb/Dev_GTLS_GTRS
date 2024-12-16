@@ -1,18 +1,23 @@
-import { useState } from "react";
 import "../../../css/reactdatagrid.css";
 import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-
 import TableStructure from "@/Components/TableStructure";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import moment from "moment";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
-import ReactDataGrid from "@inovua/reactdatagrid-community";
-import { useEffect, useRef } from "react";
+import React, {
+    useState,
+    useEffect,
+    forwardRef,
+    useImperativeHandle,
+} from "react";
+import { useRef } from "react";
+import { isDummyAccount } from "@/CommonFunctions";
+
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -27,7 +32,7 @@ function TransportRep({
     setLastIndex,
     accData,
 }) {
-    const RDDTimeFilter = ({ filterValue, onChange }) => {
+    const RDDTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
         const [value, setValue] = useState(
             filterValue ? filterValue.value : ""
         );
@@ -59,6 +64,12 @@ function TransportRep({
             setValue(filterValue ? filterValue.value : "");
         }, [filterValue]);
 
+        useImperativeHandle(ref, () => ({
+            setValue: (newValue) => {
+                setValue(newValue);
+            },
+        }));
+
         return (
             <div className="flex gap-2 mx-1">
                 <input
@@ -69,22 +80,22 @@ function TransportRep({
                 />
                 <button onClick={handleClear}>
                     <svg
-                        tabindex="0"
-                        class="InovuaReactDataGrid__column-header__filter-settings-icon"
+                        tabIndex="0"
+                        className="InovuaReactDataGrid__column-header__filter-settings-icon"
                         width="14"
                         height="14"
                         viewBox="0 0 14 14"
                     >
                         <path
-                            fill-rule="evenodd"
+                            fillRule="evenodd"
                             d="M13.222 2H.778C.348 2 0 1.552 0 1s.348-1 .778-1h12.444c.43 0 .778.448.778 1s-.348 1-.778 1zM1.556 3.111l3.888 4.667v5.444c0 .43.349.778.778.778h1.556c.43 0 .778-.348.778-.778V7.778l3.888-4.667H1.556z"
                         ></path>
                     </svg>
                 </button>
             </div>
         );
-    };
-    const PickTimeFilter = ({ filterValue, onChange }) => {
+    });
+    const PickTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
         const [value, setValue] = useState(
             filterValue ? filterValue.value : ""
         );
@@ -116,6 +127,13 @@ function TransportRep({
             setValue(filterValue ? filterValue.value : "");
         }, [filterValue]);
 
+        // Expose the setValue method to the grid
+        useImperativeHandle(ref, () => ({
+            setValue: (newValue) => {
+                setValue(newValue || "");
+            },
+        }));
+
         return (
             <div className="flex gap-2 mx-1">
                 <input
@@ -126,22 +144,22 @@ function TransportRep({
                 />
                 <button onClick={handleClear}>
                     <svg
-                        tabindex="0"
-                        class="InovuaReactDataGrid__column-header__filter-settings-icon"
+                        tabIndex="0"
+                        className="InovuaReactDataGrid__column-header__filter-settings-icon"
                         width="14"
                         height="14"
                         viewBox="0 0 14 14"
                     >
                         <path
-                            fill-rule="evenodd"
+                            fillRule="evenodd"
                             d="M13.222 2H.778C.348 2 0 1.552 0 1s.348-1 .778-1h12.444c.43 0 .778.448.778 1s-.348 1-.778 1zM1.556 3.111l3.888 4.667v5.444c0 .43.349.778.778.778h1.556c.43 0 .778-.348.778-.778V7.778l3.888-4.667H1.556z"
                         ></path>
                     </svg>
                 </button>
             </div>
         );
-    };
-    const DeliveryTimeFilter = ({ filterValue, onChange }) => {
+    });
+    const DeliveryTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
         const [value, setValue] = useState(
             filterValue ? filterValue.value : ""
         );
@@ -173,6 +191,13 @@ function TransportRep({
             setValue(filterValue ? filterValue.value : "");
         }, [filterValue]);
 
+        // Expose the setValue method to the grid
+        useImperativeHandle(ref, () => ({
+            setValue: (newValue) => {
+                setValue(newValue || "");
+            },
+        }));
+
         return (
             <div className="flex gap-2 mx-1">
                 <input
@@ -183,21 +208,22 @@ function TransportRep({
                 />
                 <button onClick={handleClear}>
                     <svg
-                        tabindex="0"
-                        class="InovuaReactDataGrid__column-header__filter-settings-icon"
+                        tabIndex="0"
+                        className="InovuaReactDataGrid__column-header__filter-settings-icon"
                         width="14"
                         height="14"
                         viewBox="0 0 14 14"
                     >
                         <path
-                            fill-rule="evenodd"
+                            fillRule="evenodd"
                             d="M13.222 2H.778C.348 2 0 1.552 0 1s.348-1 .778-1h12.444c.43 0 .778.448.778 1s-.348 1-.778 1zM1.556 3.111l3.888 4.667v5.444c0 .43.349.778.778.778h1.556c.43 0 .778-.348.778-.778V7.778l3.888-4.667H1.556z"
                         ></path>
                     </svg>
                 </button>
             </div>
         );
-    };
+    });
+
     window.moment = moment;
     const [filteredData, setFilteredData] = useState(transportData);
     const [selected, setSelected] = useState({});
@@ -604,15 +630,6 @@ function TransportRep({
         const formattedDate = `${day}-${month}-${year}`;
         return formattedDate;
     }
-    function formatDate(date) {
-        // Check if the date is null, undefined, or invalid
-        if (!date || !moment(date, "YYYY-MM-DD", true).isValid()) {
-            return " ";
-        }
-
-        // Format the date to "DD-MM-YYYY"
-        return moment(date).format("DD-MM-YYYY");
-    }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
         const columnMapping = {
@@ -636,7 +653,12 @@ function TransportRep({
             DelayReason: "Delay Reason",
             TransportComments: "Transport Comments",
         };
-
+        const fieldsToCheck = [
+            "SenderName",
+            "CustomerName",
+            "CustomerPO",
+            "DeliveryNo",
+        ]; // for dummy data
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
@@ -679,6 +701,8 @@ function TransportRep({
                     } else if (columnKey === "ActualDeliveryTime") {
                         acc["Actual Delivery Time"] =
                             person["ActualDeliveryTime"];
+                    } else if (fieldsToCheck.includes(columnKey)) {
+                        acc[column] = isDummyAccount(person[columnKey]);
                     } else {
                         acc[columnMapping[columnKey] || columnKey] =
                             person[columnKey];
@@ -844,6 +868,9 @@ function TransportRep({
             filterEditor: StringFilter,
             headerAlign: "center",
             textAlign: "center",
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SenderState",
@@ -867,6 +894,9 @@ function TransportRep({
             filterEditor: StringFilter,
             headerAlign: "center",
             textAlign: "center",
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "CustomerPO",
@@ -876,6 +906,9 @@ function TransportRep({
             textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "DeliveryNo",
@@ -885,6 +918,9 @@ function TransportRep({
             textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "RddDate",
@@ -961,14 +997,14 @@ function TransportRep({
             header: "Pickup Date",
             headerAlign: "center",
             textAlign: "center",
-            defaultFlex: 1,
-            minWidth: 200,
+            defaultWidth: 170,
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
             filterEditorProps: {
                 minDate: minDate,
                 maxDate: maxDate,
             },
+            filterType: "date",
             render: ({ value, cellProps }) => {
                 return extractUTCFormattedDate(value);
             },
@@ -1076,15 +1112,16 @@ function TransportRep({
         // Filter the data based on the start and end date filters, selected receiver names, and chargeTo values
         const filtered = transportData.filter((item) => {
             const chargeToMatch =
-                (intArray?.length === 0 || intArray?.includes(item.ChargeToID)) &&
+                (intArray?.length === 0 ||
+                    intArray?.includes(item.ChargeToID)) &&
                 !excludedDebtorIds.includes(item.ChargeToID); // Exclude specified ChargeToIDs
-    
+
             return chargeToMatch;
         });
-    
+
         return filtered;
     };
-    
+
     useEffect(() => {
         setFilteredData(filterData());
     }, [accData]);

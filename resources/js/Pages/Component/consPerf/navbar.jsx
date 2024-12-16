@@ -45,13 +45,6 @@ export default function Navbar({ id, item,currentUser }) {
             role: ["1", "2", "3", "4", "5"],
         },
     ];
-
-    const [isActive, setIsActive] = useState(false);
-
-    //   const handleClick = () => {
-    //     setIsActive(!isActive);
-    //   };
-
     function classNames(...classes) {
         return classes.filter(Boolean).join(" ");
     }

@@ -7,17 +7,30 @@ import TotalFailPODGraph from "./ReportTabs/TotalFailPODGraph";
 
 const MultiChartLine = ({ url, currentUser, AToken }) => {
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
-    const handleItemClick = (index) => {
-        setActiveComponentIndex(index);
-    };
+    const customers = [
+        {
+            value: 1,
+            label: "Unilever/ Metcash 12 Monthly Consignment",
+        },
+        {
+            value: 3,
+            label: "Unilever Monthly Consignment",
+        },
+        {
+            value: 2,
+            label: "Unilever/ Woolworth 12 Monthly Consignment",
+        },
+    ];
 
     let components = [
         <ConsignmentGraph
             url={url}
             currentUser={currentUser}
             AToken={AToken}
+            customers={customers}
+            CustomerId={1}
         />, // Graph and Table
-        <TotalFailPODGraph />, // The 3 charts
+        // <TotalFailPODGraph />, // The 3 charts
     ];
 
     return (
@@ -25,7 +38,7 @@ const MultiChartLine = ({ url, currentUser, AToken }) => {
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto mt-6">
                     <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                        KPI Pack Report
+                       Unilever KPI Pack Report
                     </h1>
                 </div>
             </div>

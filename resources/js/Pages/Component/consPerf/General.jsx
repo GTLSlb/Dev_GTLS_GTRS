@@ -1,3 +1,4 @@
+import { isDummyAccount } from "@/CommonFunctions";
 import moment from "moment";
 
 export default function General({ item }) {
@@ -15,7 +16,7 @@ export default function General({ item }) {
                         ACCOUNT NAME
                     </dt>
                     <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">
-                        {item["ACCOUNTNUMBER"]}
+                        {isDummyAccount(item["ACCOUNTNUMBER"])}
                     </dd>
                     <dt className="text-sm font-medium text-gray-900">
                         KPI DATETIME

@@ -24,6 +24,7 @@ import {
     PlayCircleIcon,
 } from "@heroicons/react/20/solid";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
+import { isDummyAccount } from "@/CommonFunctions";
 
 const report = [
     {
@@ -694,8 +695,7 @@ export default function NoDelivery({
                         className="underline text-blue-500 hover:cursor-pointer"
                         onClick={() => handleClick(data.ConsignmentId)}
                     >
-                        {" "}
-                        {value}
+                        {isDummyAccount(value)}
                     </span>
                 );
             },
@@ -728,6 +728,9 @@ export default function NoDelivery({
             defaultWidth: 170,
             filterEditor: StringFilter,
             group: "senderInfo",
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SenderReference",
@@ -738,6 +741,9 @@ export default function NoDelivery({
             defaultWidth: 170,
             filterEditor: StringFilter,
             group: "senderInfo",
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "Send_Suburb",
@@ -792,6 +798,9 @@ export default function NoDelivery({
             defaultWidth: 170,
             filterEditor: StringFilter,
             group: "receiverInfo",
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "ReceiverReference",
@@ -802,6 +811,9 @@ export default function NoDelivery({
             defaultWidth: 170,
             filterEditor: StringFilter,
             group: "receiverInfo",
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "Del_Suburb",

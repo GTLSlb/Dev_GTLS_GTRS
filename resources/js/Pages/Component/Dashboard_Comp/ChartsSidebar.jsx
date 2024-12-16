@@ -14,7 +14,7 @@ import {
     ShieldCheckIcon,
     CameraIcon,
     DocumentTextIcon,
-    DocumentDuplicateIcon
+    DocumentDuplicateIcon,
 } from "@heroicons/react/24/solid";
 import "../../../../css/scroll.css";
 import TaskIcon from "@mui/icons-material/Task";
@@ -26,6 +26,7 @@ import {
     AccordionHeader,
     AccordionItem,
 } from "react-headless-accordion";
+import { isDummyAccountWithDummyData } from "@/CommonFunctions";
 
 const navigation = [
     {
@@ -177,11 +178,19 @@ const navigation = [
     },
     {
         id: 20,
-        name: "KPI Pack Report",
+        name: "Unilever KPI Pack",
         href: "#",
         icon: DocumentTextIcon,
         current: false,
         feature: "UnileverReport_View",
+    },
+    {
+        id: 22,
+        name: "Real Food KPI Pack",
+        href: "#",
+        icon: DocumentTextIcon,
+        current: false,
+        feature: "RealFoodReport_View",
     },
     {
         id: 21,
@@ -191,6 +200,7 @@ const navigation = [
         current: false,
         feature: "DeliveryReport_View",
     },
+
 ];
 
 function classNames(...classes) {
@@ -395,7 +405,7 @@ export default function ChartsSidebar({
                                         {showList && (
                                             <div className="text-left max-h-64 overflow-y-scroll mt-3 pt-1 pl-1 containerscroll">
                                                 {customerAccounts?.map(
-                                                    (option) => (
+                                                    (option,index) => (
                                                         <div
                                                             className="flex items-start"
                                                             key={
@@ -426,9 +436,10 @@ export default function ChartsSidebar({
                                                                 }
                                                                 className="ml-2"
                                                             >
-                                                                {
+                                                                {isDummyAccountWithDummyData(
+                                                                    `Account No.${index + 1} `,
                                                                     option.AccountNo
-                                                                }
+                                                                )}
                                                             </label>
                                                         </div>
                                                     )

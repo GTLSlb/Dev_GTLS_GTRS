@@ -8,8 +8,18 @@ import WoolworthsReports from "./WoolworthsReports";
 import OtherReports from "./OtherReports";
 import { EyeIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
+import { Spinner } from "@nextui-org/react";
+
 import { getFiltersDeliveryReport } from "@/Components/utils/filters";
-import { canAddDeliveryReportComment, canViewDailyReportComment, canViewMetcashDailyReport, canViewWoolworthsDeliveryReport, canViewOtherDailyReport } from "@/permissions";
+import {
+    canAddDeliveryReportComment,
+    canViewDailyReportComment,
+    canViewMetcashDailyReport,
+    canViewWoolworthsDeliveryReport,
+    canViewOtherDailyReport,
+} from "@/permissions";
+import { useRef } from "react";
+import { isDummyAccount } from "@/CommonFunctions";
 
 export default function DailyReportPage({
     url,
@@ -29,15 +39,19 @@ export default function DailyReportPage({
     const createNewLabelObjects = (data, fieldName) => {
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
-
+    
         // Map through the data and create new objects
         data?.forEach((item) => {
             const fieldValue = item[fieldName];
-
+    
             // Check if the label is not already included and is not null or empty
-            if (fieldValue && !uniqueLabels.has(fieldValue) && fieldValue?.trim() !== "") {
+            if (
+                fieldValue &&
+                !uniqueLabels.has(fieldValue) &&
+                fieldValue?.trim() !== ""
+            ) {
                 if (typeof fieldValue === "string") {
-                   uniqueLabels.add(fieldValue);
+                    uniqueLabels.add(fieldValue);
                     const newObject = {
                         id: fieldValue,
                         label: fieldValue,
@@ -46,28 +60,21 @@ export default function DailyReportPage({
                 }
             }
         });
-
+    
+        // Sort newData alphabetically by the label property
+        newData.sort((a, b) => a.label.localeCompare(b.label));
+    
         return newData;
     };
-    const [receiverZoneOptions, setReceiverZoneOptions] = useState([
-        {
-            id: "NSW",
-            label: "NSW",
-        },
-        {
-            id: "SA",
-            label: "SA",
-        },
-        {
-            id: "VIC",
-            label: "VIC",
-        },
-        {
-            id: "QLD",
-            label: "QLD",
-        },
-    ]);
-    const consStateOptions = createNewLabelObjects(dailyReportData, "ConsignmentStatus");
+    
+    const receiverZoneOptions = createNewLabelObjects(dailyReportData, "ReceiverZone");
+    const receiverStateOptions = createNewLabelObjects(dailyReportData, "ReceiverState");
+    const senderZoneOptions = createNewLabelObjects(dailyReportData, "SenderZone");
+    const senderStateOptions = createNewLabelObjects(dailyReportData,"SenderState")
+    const consStateOptions = createNewLabelObjects(
+        dailyReportData,
+        "ConsignmentStatus"
+    );
 
     const podAvlOptions = [
         {
@@ -77,129 +84,224 @@ export default function DailyReportPage({
         {
             id: false,
             label: "False",
-        }
+        },
     ];
-    const [senderZoneOptions, setSenderZoneOptions] = useState([
+
+
+    const [activeComponentIndex, setActiveComponentIndex] = useState(0);
+    const [cellLoading, setCellLoading] = useState(false);
+
+    const [filterValue, setFilterValue] = useState([
         {
-            id: "NSW",
-            label: "NSW",
+            name: "AccountNumber",
+            operator: "eq",
+            type: "string",
+            value: "",
         },
         {
-            id: "SA",
-            label: "SA",
+            name: "DespatchDateTime",
+            operator: "inrange",
+            type: "date",
         },
         {
-            id: "VIC",
-            label: "VIC",
+            name: "ConsignmentNo",
+            operator: "contains",
+            type: "string",
+            value: "",
         },
         {
-            id: "QLD",
-            label: "QLD",
+            name: "SenderName",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "SenderReference",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "SenderState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "SenderZone",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ReceiverName",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ReceiverReference",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ReceiverZone",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ReceiverState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ConsignmentStatus",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "DeliveryInstructions",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "POD",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "DeliveryRequiredDateTime",
+            operator: "inrange",
+            type: "date",
+        },
+        {
+            name: "DeliveredDateTime",
+            operator: "inrange",
+            type: "date",
+        },
+        {
+            name: "Comments",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
         },
     ]);
 
-    const [activeComponentIndex, setActiveComponentIndex] = useState(0);
-    const [filterValue, setFilterValue] = useState(
-        [
-            {
-                name: "AccountNumber",
-                operator: "eq",
-                type: "string",
-                value: "",
-            },
-            {
-                name: "DespatchDateTime",
-                operator: "inrange",
-                type: "date",
-            },
-            {
-                name: "ConsignmentNo",
-                operator: "contains",
-                type: "string",
-                value: "",
-            },
-            {
-                name: "SenderName",
-                operator: "contains",
-                type: "string",
-                value: "",
-            },
-            {
-                name: "SenderReference",
-                operator: "contains",
-                type: "string",
-                value: "",
-            },
-            {
-                name: "SenderState",
-                operator: "inlist",
-                type: "select",
-                value: null,
-                emptyValue: "",
-            },
-            {
-                name: "ReceiverName",
-                operator: "contains",
-                type: "string",
-                value: null,
-                emptyValue: "",
-            },
-            {
-                name: "ReceiverReference",
-                operator: "contains",
-                type: "string",
-                value: null,
-                emptyValue: "",
-            },
-            {
-                name: "ReceiverState",
-                operator: "inlist",
-                type: "select",
-                value: null,
-                emptyValue: "",
-            },
-            {
-                name: "ConsignmentStatus",
-                operator: "inlist",
-                type: "select",
-                value: null,
-                emptyValue: "",
-            },
-            {
-                name: "DeliveryInstructions",
-                operator: "contains",
-                type: "string",
-                value: "",
-                emptyValue: "",
-            },
-            {
-                name: "POD",
-                operator: "inlist",
-                type: "select",
-                value: null,
-                emptyValue: "",
-            },
-            {
-                name: "DeliveryRequiredDateTime",
-                operator: "inrange",
-                type: "date",
-
-            },
-            {
-                name: "DeliveredDateTime",
-                operator: "inrange",
-                type: "date",
-            },
-            {
-                name: "Comments",
-                operator: "contains",
-                type: "string",
-                value: "",
-                emptyValue: "",
-            },
-        ]
-    );
-
+    // useEffect(() => {
+    //     setFilterValue([
+    //         {
+    //             name: "AccountNumber",
+    //             operator: "eq",
+    //             type: "string",
+    //             value: "",
+    //         },
+    //         {
+    //             name: "DespatchDateTime",
+    //             operator: "inrange",
+    //             type: "date",
+    //         },
+    //         {
+    //             name: "ConsignmentNo",
+    //             operator: "contains",
+    //             type: "string",
+    //             value: "",
+    //         },
+    //         {
+    //             name: "SenderName",
+    //             operator: "contains",
+    //             type: "string",
+    //             value: "",
+    //         },
+    //         {
+    //             name: "SenderReference",
+    //             operator: "contains",
+    //             type: "string",
+    //             value: "",
+    //         },
+    //         {
+    //             name: "SenderState",
+    //             operator: "inlist",
+    //             type: "select",
+    //             value: null,
+    //             emptyValue: "",
+    //         },
+    //         {
+    //             name: "ReceiverName",
+    //             operator: "contains",
+    //             type: "string",
+    //             value: null,
+    //             emptyValue: "",
+    //         },
+    //         {
+    //             name: "ReceiverReference",
+    //             operator: "contains",
+    //             type: "string",
+    //             value: null,
+    //             emptyValue: "",
+    //         },
+    //         {
+    //             name: "ReceiverState",
+    //             operator: "inlist",
+    //             type: "select",
+    //             value: null,
+    //             emptyValue: "",
+    //         },
+    //         {
+    //             name: "ConsignmentStatus",
+    //             operator: "inlist",
+    //             type: "select",
+    //             value: null,
+    //             emptyValue: "",
+    //         },
+    //         {
+    //             name: "DeliveryInstructions",
+    //             operator: "contains",
+    //             type: "string",
+    //             value: "",
+    //             emptyValue: "",
+    //         },
+    //         {
+    //             name: "POD",
+    //             operator: "inlist",
+    //             type: "select",
+    //             value: null,
+    //             emptyValue: "",
+    //         },
+    //         {
+    //             name: "DeliveryRequiredDateTime",
+    //             operator: "inrange",
+    //             type: "date",
+    //         },
+    //         {
+    //             name: "DeliveredDateTime",
+    //             operator: "inrange",
+    //             type: "date",
+    //         },
+    //         {
+    //             name: "Comments",
+    //             operator: "contains",
+    //             type: "string",
+    //             value: "",
+    //             emptyValue: "",
+    //         },
+    //     ]);
+    // }, [activeComponentIndex]);
     const groups = [
         {
             name: "senderDetails",
@@ -216,23 +318,140 @@ export default function DailyReportPage({
     const [consId, setConsId] = useState(null);
     const [commentsData, setCommentsData] = useState(null);
 
-    const handleAddComment = (consId) => {
-        setConsId(consId);
-        setIsAddModalOpen(true);
-    };
-
-    useEffect(() => {
-        if (dailyReportData?.length > 0 && consId) {
-            setCommentsData(
-                dailyReportData.find((data) => data.ConsignmentID == consId)
-                    ?.Comments
-            );
-        }
-    }, [dailyReportData, consId]);
     const handleViewComments = (data) => {
         setCommentsData(data?.Comments);
         setConsId(data?.ConsignmentID);
         setIsViewModalOpen(true);
+    };
+
+    function CustomColumnEditor(props) {
+        const { value, onChange, onComplete, cellProps, onCancel } = props;
+
+        const [prvsComment, setPrvsComment] = useState(
+            value ? value[0].Comment : null
+        );
+        const [inputValue, setInputValue] = useState(prvsComment);
+        const [commentId, setCommentId] = useState(
+            value ? value[0].CommentId : null
+        );
+
+        // Create a ref for the textarea
+        const textareaRef = useRef(null);
+
+        // Focus the textarea when the component mounts
+        useEffect(() => {
+            if (textareaRef.current) {
+                textareaRef.current.focus();
+            }
+        }, []); // Empty dependency array ensures this runs once on mount
+
+        const onValueChange = (e) => {
+            let newValue = e.target.value;
+
+            setInputValue(newValue);
+            onChange(newValue);
+        };
+
+        const handleComplete = async () => {
+            setCellLoading(cellProps.data.ConsignmentID);
+            await axios
+                .post(
+                    `${url}Add/Delivery/Comment`,
+                    {
+                        CommentId: commentId,
+                        ConsId: cellProps.data.ConsignmentID,
+                        Comment: `${inputValue}`,
+                    },
+                    {
+                        headers: {
+                            UserId: currentUser.UserId,
+                            Authorization: `Bearer ${AToken}`,
+                        },
+                    }
+                )
+                .then((response) => {
+                    fetchDeliveryReport(setCellLoading);
+                })
+                .catch((error) => {
+                    // Handle error
+                    if (error.response && error.response.status === 401) {
+                        // Handle 401 error using SweetAlert
+                        swal({
+                            title: "Session Expired!",
+                            text: "Please login again",
+                            type: "success",
+                            icon: "info",
+                            confirmButtonText: "OK",
+                        }).then(async function () {
+                            axios
+                                .post("/logoutAPI")
+                                .then((response) => {
+                                    if (response.status === 200) {
+                                        window.location.href = "/";
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.log(error);
+                                });
+                        });
+                    } else {
+                        // Handle other errors
+                        console.log(error);
+                    }
+                });
+            onComplete(inputValue);
+        };
+
+        const handleKeyDown = (event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                handleComplete();
+                onCancel();
+            }
+        };
+
+        return (
+            canAddDeliveryReportComment(currentUser) && (
+                <>
+                    <textarea
+                        ref={textareaRef} // Attach the ref here
+                        style={{ width: "100%", maxHeight: "100%" }}
+                        type="text"
+                        value={inputValue}
+                        className="text-sm font-semibold placeholder:text-sm placeholder:font-light resize-none placeholder:text-gray-500"
+                        placeholder="Add a new comment"
+                        onBlur={onCancel}
+                        onChange={onValueChange}
+                        onKeyDown={handleKeyDown}
+                    />
+                </>
+            )
+        );
+    }
+
+    const GetLastValue = ({ inputString }) => {
+        const getLastValue = (str) => {
+            const values = str
+                .split(/\r?\n/)
+                .filter((value) => value.trim() !== "");
+
+            const lastValue = values[values.length - 1];
+            const count = values.length - 1;
+            if (values.length - 1 > 0) {
+                return (
+                    <div>
+                        {lastValue} + {count}{" "}
+                        {count == 1 ? "Comment" : "Comments"}
+                    </div>
+                );
+            } else if (lastValue == undefined) {
+                return "";
+            } else {
+                return `${lastValue}`;
+            }
+        };
+
+        return <div>{getLastValue(inputString)}</div>;
     };
 
     const columns = [
@@ -244,7 +463,7 @@ export default function DailyReportPage({
             filterEditor: StringFilter,
             defaultWidth: 200,
             render: ({ value }) => {
-                return <div>{value}</div>;
+                return isDummyAccount(value);
             },
         },
         {
@@ -281,8 +500,7 @@ export default function DailyReportPage({
                             className="underline text-blue-500 hover:cursor-pointer"
                             onClick={() => handleClick(data.ConsignmentID)}
                         >
-                            {" "}
-                            {value}
+                            {isDummyAccount(value)}
                         </span>
                     </div>
                 );
@@ -296,6 +514,9 @@ export default function DailyReportPage({
             textAlign: "center",
             defaultWidth: 200,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SenderReference",
@@ -305,9 +526,25 @@ export default function DailyReportPage({
             textAlign: "center",
             defaultWidth: 180,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SenderState",
+            header: "Sender State",
+            group: "senderDetails",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: senderStateOptions,
+            },
+        },
+        {
+            name: "SenderZone",
             header: "Sender Zone",
             group: "senderDetails",
             headerAlign: "center",
@@ -327,6 +564,9 @@ export default function DailyReportPage({
             textAlign: "center",
             defaultWidth: 200,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "ReceiverReference",
@@ -336,9 +576,25 @@ export default function DailyReportPage({
             textAlign: "center",
             defaultWidth: 180,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "ReceiverState",
+            header: "Receiver State",
+            group: "receiverDetails",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: receiverStateOptions,
+            },
+        },
+        {
+            name: "ReceiverZone",
             header: "Receiver Zone",
             group: "receiverDetails",
             headerAlign: "center",
@@ -381,8 +637,16 @@ export default function DailyReportPage({
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
             filterEditorProps: {
-                minDate: getMinMaxValue(dailyReportData, "DeliveryRequiredDateTime", 1),
-                maxDate: getMinMaxValue(dailyReportData, "DeliveryRequiredDateTime", 2),
+                minDate: getMinMaxValue(
+                    dailyReportData,
+                    "DeliveryRequiredDateTime",
+                    1
+                ),
+                maxDate: getMinMaxValue(
+                    dailyReportData,
+                    "DeliveryRequiredDateTime",
+                    2
+                ),
             },
             render: ({ value, cellProps }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
@@ -401,14 +665,20 @@ export default function DailyReportPage({
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
             filterEditorProps: {
-                minDate: getMinMaxValue(dailyReportData, "DeliveredDateTime", 1),
-                maxDate: getMinMaxValue(dailyReportData, "DeliveredDateTime", 2),
-
+                minDate: getMinMaxValue(
+                    dailyReportData,
+                    "DeliveredDateTime",
+                    1
+                ),
+                maxDate: getMinMaxValue(
+                    dailyReportData,
+                    "DeliveredDateTime",
+                    2
+                ),
             },
             render: ({ value, cellProps }) => {
                 return value
-                    ? moment(value).format("DD-MM-YYYY") ==
-                      "Invalid date"
+                    ? moment(value).format("DD-MM-YYYY") == "Invalid date"
                         ? ""
                         : moment(value).format("DD-MM-YYYY")
                     : "";
@@ -448,28 +718,41 @@ export default function DailyReportPage({
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 280,
+            editable: true,
             filterEditor: StringFilter,
+            editor: CustomColumnEditor,
+            // Add the getFilterValue function
+            getFilterValue: ({ data }) => {
+                if (data.Comments && data.Comments.length > 0) {
+                    return data.Comments[0].Comment;
+                }
+                return "";
+            },
             render: ({ value, data }) => {
                 return (
                     <div className="flex gap-4 items-center px-2">
-                        <div className="flex flex-col">
-                            {data?.hasOwnProperty("Comments") &&
-                                data?.Comments?.length > 0 &&
-                                data?.Comments?.slice(0, 2)?.map((item) => (
-                                    <div
-                                        key={item?.CommentId}
-                                        className="flex gap-2"
-                                    >
-                                        <span>
-                                            {moment(item?.AddedAt).format(
-                                                "DD-MM-YYYY"
-                                            )}{" "}
-                                            {", "}
-                                        </span>
-                                        <span>{item?.Comment}</span>
-                                    </div>
-                                ))}
-                        </div>
+                        {data.ConsignmentID == cellLoading ? (
+                            <div className="flex flex-col w-full">
+                                <div className=" inset-0 flex justify-center items-center bg-opacity-50">
+                                    <Spinner color="default" size="sm" />
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                {" "}
+                                {value ? (
+                                    <>
+                                        {value != "" ? (
+                                            <GetLastValue
+                                                inputString={value[0].Comment}
+                                            />
+                                        ) : (
+                                            ""
+                                        )}
+                                    </>
+                                ) : null}
+                            </>
+                        )}
                     </div>
                 );
             },
@@ -482,25 +765,18 @@ export default function DailyReportPage({
             defaultWidth: 200,
             render: ({ value, data }) => {
                 return (
-                    <div className="flex gap-4 items-center px-2">
-                       {canViewDailyReportComment(currentUser) && <span
+                    <div className="flex gap-4 items-center justify-center px-2">
+                        <span
                             className="underline text-blue-400 hover:cursor-pointer"
                             onClick={() => handleViewComments(data)}
                         >
-                            <EyeIcon className="h-5 w-5" />
-                        </span>}
-                       {canAddDeliveryReportComment(currentUser) && <span
-                            className="underline text-green-500 hover:cursor-pointer"
-                            onClick={() => handleAddComment(data.ConsignmentID)}
-                        >
-                            <PlusIcon className="h-5 w-5" />
-                        </span>}
+                            <EyeIcon className="h-5 w-5 text-goldt" />
+                        </span>
                     </div>
                 );
             },
         },
     ];
-
 
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -545,6 +821,7 @@ export default function DailyReportPage({
             url={url}
             AToken={AToken}
             consId={consId}
+            setCellLoading={setCellLoading}
             fetchData={fetchDeliveryReport}
             currentUser={currentUser}
             isViewModalOpen={isViewModalOpen}
@@ -561,6 +838,7 @@ export default function DailyReportPage({
             data={filteredWoolworthData}
             url={url}
             AToken={AToken}
+            setCellLoading={setCellLoading}
             consId={consId}
             fetchData={fetchDeliveryReport}
             currentUser={currentUser}
@@ -579,6 +857,7 @@ export default function DailyReportPage({
             url={url}
             AToken={AToken}
             consId={consId}
+            setCellLoading={setCellLoading}
             fetchData={fetchDeliveryReport}
             currentUser={currentUser}
             isViewModalOpen={isViewModalOpen}
@@ -598,47 +877,56 @@ export default function DailyReportPage({
             </div>
             <div className="w-full flex gap-4 items-center mt-4">
                 <ul className="flex space-x-0">
-                    {canViewMetcashDailyReport(currentUser) && <li
-                        className={`cursor-pointer ${
-                            activeComponentIndex === 0
-                                ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
-                                : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
-                        }`}
-                        onClick={() => setActiveComponentIndex(0)}
-                    >
-                        <div className="px-2"> Metcash</div>
-                    </li>}
-                    {canViewWoolworthsDeliveryReport(currentUser) && <li
-                        className={`cursor-pointer ${
-                            activeComponentIndex === 1
-                                ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
-                                : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
-                        }`}
-                        onClick={() => setActiveComponentIndex(1)}
-                    >
-                        <div className="px-2">Woolworths</div>
-                    </li>}
-                    {canViewOtherDailyReport(currentUser) && <li
-                        className={`cursor-pointer ${
-                            activeComponentIndex === 2
-                                ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
-                                : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
-                        }`}
-                        onClick={() => setActiveComponentIndex(2)}
-                    >
-                        <div className="px-2"> Other</div>
-                    </li>}
+                    {canViewMetcashDailyReport(currentUser) && (
+                        <li
+                            className={`cursor-pointer ${
+                                activeComponentIndex === 0
+                                    ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
+                                    : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
+                            }`}
+                            onClick={() => setActiveComponentIndex(0)}
+                        >
+                            <div className="px-2"> Metcash</div>
+                        </li>
+                    )}
+                    {canViewWoolworthsDeliveryReport(currentUser) && (
+                        <li
+                            className={`cursor-pointer ${
+                                activeComponentIndex === 1
+                                    ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
+                                    : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
+                            }`}
+                            onClick={() => setActiveComponentIndex(1)}
+                        >
+                            <div className="px-2">Woolworths</div>
+                        </li>
+                    )}
+                    {canViewOtherDailyReport(currentUser) && (
+                        <li
+                            className={`cursor-pointer ${
+                                activeComponentIndex === 2
+                                    ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
+                                    : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
+                            }`}
+                            onClick={() => setActiveComponentIndex(2)}
+                        >
+                            <div className="px-2"> Other</div>
+                        </li>
+                    )}
                 </ul>
             </div>
-            {
-                (activeComponentIndex == 0 && canViewMetcashDailyReport(currentUser))
-                 ? <div>{components[activeComponentIndex]}</div>
-                 : (activeComponentIndex == 1 && canViewWoolworthsDeliveryReport(currentUser))
-                 ? <div>{components[activeComponentIndex]}</div>
-                 : (activeComponentIndex == 2 && canViewOtherDailyReport(currentUser))
-                 ? <div>{components[activeComponentIndex]}</div>
-                 : <div></div>
-            }
+            {activeComponentIndex == 0 &&
+            canViewMetcashDailyReport(currentUser) ? (
+                <div>{components[activeComponentIndex]}</div>
+            ) : activeComponentIndex == 1 &&
+              canViewWoolworthsDeliveryReport(currentUser) ? (
+                <div>{components[activeComponentIndex]}</div>
+            ) : activeComponentIndex == 2 &&
+              canViewOtherDailyReport(currentUser) ? (
+                <div>{components[activeComponentIndex]}</div>
+            ) : (
+                <div></div>
+            )}
         </div>
     );
 }
