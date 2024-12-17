@@ -12,6 +12,7 @@ import { handleSessionExpiration } from "@/CommonFunctions";
 import NoAccess from "@/Components/NoAccess";
 import menu from "@/SidebarMenuItems";
 import { useNavigate } from "react-router-dom";
+import Logout from "@/Pages/Auth/Logout";
 
 export default function Sidebar(Boolean) {
     const [currentUser, setcurrentUser] = useState(null);
@@ -198,6 +199,7 @@ export default function Sidebar(Boolean) {
                                     path="/notFound"
                                     element={<NotFoundPage />}
                                 />
+                                <Route path="/logout" element={<Logout  currentUser={currentUser} setToken={setToken} setCurrentUser={setcurrentUser}/>} />
                                 <Route path="/no-access" element ={<NoAccess currentUser={currentUser} setToken={setToken} setCurrentUser={setcurrentUser}/>} />
                                 <Route path="/*" element={<NotFoundPage />} />
                             </Routes>
