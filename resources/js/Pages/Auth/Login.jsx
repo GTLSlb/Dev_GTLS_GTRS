@@ -283,7 +283,7 @@ export default function Login({ status, canResetPassword }) {
                             </div>
                         </form>
                         <ReCAPTCHA
-                            sitekey="6Lf30MEmAAAAAA4_iPf9gTM1VMNO9iSFKyaAC1P0"
+                            sitekey="6LexGKoqAAAAAAGChsMvFBOScJ71oRS88RkGgVm3"
                             onChange={handleRecaptchaChange}
                             onExpired={handleRecaptchaExpired}
                             className="mt-4 flex justify-center "
