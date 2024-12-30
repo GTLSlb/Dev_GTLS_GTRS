@@ -7,10 +7,8 @@ import { Routes, Route } from "react-router-dom";
 import NotFoundPage from "./NotFoundPage";
 import Login from "./Auth/Login";
 import AnimatedLoading from "@/Components/AnimatedLoading";
-import ForgotPassword from "./Auth/ForgotPassword";
 import { handleSessionExpiration } from "@/CommonFunctions";
 import NoAccess from "@/Components/NoAccess";
-import menu from "@/SidebarMenuItems";
 import { useNavigate } from "react-router-dom";
 import Logout from "@/Pages/Auth/Logout";
 

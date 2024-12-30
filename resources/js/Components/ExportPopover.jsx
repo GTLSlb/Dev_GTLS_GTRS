@@ -19,15 +19,15 @@ const ExportPopover = ({ columns, handleDownloadExcel, filteredData }) => {
         <Popover className="relative">
             <button onMouseEnter={handleMouseEnter}>
                 <Popover.Button
-                    className={`inline-flex items-center w-[5.5rem] h-[36px] rounded-md border ${
+                    className={`inline-flex items-center text-xs justify-center gap-1 w-[5.5rem] h-[36px] font-bold ${
                         filteredData?.length === 0
                             ? "bg-gray-300 cursor-not-allowed"
-                            : "bg-gray-800"
-                    } px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+                            : "font-medium rounded-lg dark:bg-gray-800 dark:hover:bg-gray-600"
+                    } px-2 py-2 text-white shadow-sm hover:bg-gray-400 focus:outline-none`}
                     disabled={filteredData?.length === 0}
                 >
                     Export
-                    <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
+                    <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
                 </Popover.Button>
             </button>
 

@@ -1,6 +1,7 @@
 import "./bootstrap";
 import "../css/app.css";
-
+import "../css/table.css";
+import "../css/sideBar.css";
 import { createRoot } from "react-dom/client";
 import ReactGA from "react-ga";
 import { createInertiaApp } from "@inertiajs/react";
