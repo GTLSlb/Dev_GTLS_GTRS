@@ -1,18 +1,12 @@
 import DashboardCard07 from "@/Components/dashboard/DashboardCard07";
 import BasicPieCharts from "@/Components/dashboard/DashboardCard13";
 import "../../../../css/dashboard.css";
-import { Fragment } from "react";
 import BasicColumnCharts from "./Dashboard_Charts/BasicColumnChart";
-import {
-    ChevronDownIcon,
-    ArrowsPointingOutIcon,
-} from "@heroicons/react/20/solid";
-import { Popover, Transition } from "@headlessui/react";
+import { ArrowsPointingOutIcon } from "@heroicons/react/20/solid";
 import Select from "react-select";
 // import ReactGridLayout from 'react-grid-layout';
 import RGL, { WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
-const ReactGridLayout = WidthProvider(RGL);
 import "react-resizable/css/styles.css";
 import { useState } from "react";
 import notFound from "../../../assets/pictures/NotFound.png";
@@ -35,13 +29,63 @@ import {
     getStateTotalWeights,
 } from "@/Components/utils/chartFunc";
 import AnimatedLoading from "@/Components/AnimatedLoading";
-import GtrsButton from "../GtrsButton";
-export default function MainCharts({ accData, safetyData, chartsData }) {
-    const [filteredSafety, setFilteredSafety] = useState(safetyData);
+const ReactGridLayout = WidthProvider(RGL);
 
+const customStyles = {
+    control: (provided) => ({
+        ...provided,
+        minHeight: "unset",
+        height: "auto",
+        // Add more styles here as needed
+    }),
+    option: (provided, state) => ({
+        ...provided,
+        color: "black",
+        // Add more styles here as needed
+    }),
+    multiValue: (provided) => ({
+        ...provided,
+        width: "30%",
+        overflow: "hidden",
+        height: "20px",
+    }),
+    valueContainer: (provided) => ({
+        ...provided,
+        maxHeight: "37px", // Set the maximum height for the value container
+        overflow: "auto", // Enable scrolling if the content exceeds the maximum height
+        // fontSize: '10px',
+    }),
+    inputContainer: (provided) => ({
+        ...provided,
+        height: "100px",
+    }),
+    multiValueLabel: (provided) => ({
+        ...provided,
+        whiteSpace: "nowrap", // Prevent text wrapping
+        overflow: "hidden",
+        textOverflow: "ellipsis", // Display ellipsis when text overflows
+        fontSize: "10px",
+        // Add more styles here as needed
+    }),
+    // Add more style functions here as needed
+};
+
+export default function MainCharts({
+    accData,
+    safetyData,
+    chartsData,
+    sideBarToggle,
+}) {
+    const [filteredSafety, setFilteredSafety] = useState(safetyData);
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const [cols, setCols] = useState(2);
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
     const [EDate, setEDate] = useState(getLatestDespatchDate(chartsData));
     const [filteredData, setFilteredData] = useState([chartsData]);
+    const [selectedReceiver, setselectedReceiver] = useState([]);
+    const [gridKey, setGridKey] = useState("sidebar-open");
+
+    const [hasData, setHasData] = useState(true);
     useEffect(() => {
         setFilteredData(chartsData);
     }, []);
@@ -70,25 +114,6 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
             { i: "card14", x: 0, y: 4, w: 1, h: 3 },
         ]);
     };
-    const [cols, setCols] = useState(2);
-    useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth < 768) {
-                setCols(1);
-            } else if (window.innerWidth < 1300) {
-                setCols(1);
-            } else {
-                setCols(2);
-            }
-        };
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
-    }, []);
-    const [selectedReceiver, setselectedReceiver] = useState([]);
-
     const handleStartDateChange = (event) => {
         const value = event.target.value;
         setSDate(value);
@@ -99,7 +124,6 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
         setEDate(value);
         filterData(SDate, value, selectedReceiver);
     };
-    const [hasData, setHasData] = useState(true);
     const uniqueReceiverNames = Array.from(
         new Set(chartsData.map((item) => item.ReceiverName))
     );
@@ -123,46 +147,6 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                 )
         );
     };
-
-    const customStyles = {
-        control: (provided) => ({
-            ...provided,
-            minHeight: "unset",
-            height: "auto",
-            // Add more styles here as needed
-        }),
-        option: (provided, state) => ({
-            ...provided,
-            color: "black",
-            // Add more styles here as needed
-        }),
-        multiValue: (provided) => ({
-            ...provided,
-            width: "30%",
-            overflow: "hidden",
-            height: "20px",
-        }),
-        valueContainer: (provided) => ({
-            ...provided,
-            maxHeight: "37px", // Set the maximum height for the value container
-            overflow: "auto", // Enable scrolling if the content exceeds the maximum height
-            // fontSize: '10px',
-        }),
-        inputContainer: (provided) => ({
-            ...provided,
-            height: "100px",
-        }),
-        multiValueLabel: (provided) => ({
-            ...provided,
-            whiteSpace: "nowrap", // Prevent text wrapping
-            overflow: "hidden",
-            textOverflow: "ellipsis", // Display ellipsis when text overflows
-            fontSize: "10px",
-            // Add more styles here as needed
-        }),
-        // Add more style functions here as needed
-    };
-
     const filterData = (startDate, endDate) => {
         const selectedReceiverNames = selectedReceiver.map(
             (receiver) => receiver.value
@@ -209,10 +193,27 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
         setFilteredData(filtered);
         setHasData(hasData);
     };
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 768) {
+                setCols(1);
+            } else if (window.innerWidth < 1300) {
+                setCols(1);
+            } else {
+                setCols(2);
+            }
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
+
     useEffect(() => {
         filterData(SDate, EDate);
     }, [accData, selectedReceiver]);
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
     useEffect(() => {
         // Update the layout when cols change
@@ -221,11 +222,21 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                 return {
                     ...item,
                     x: index % cols, // Distribute the divs evenly between x=0 and x=1
-                    w: item.w, // Set the width to cols for the first div, and 1 for others
+                    w: sideBarToggle ? item.w : Math.min(item.w, 1), // Set the width to cols for the first div, and 1 for others
                 };
             })
         );
-    }, [cols]);
+    }, [cols, sideBarToggle]);
+
+    useEffect(() => {
+        // Introduce a delay before changing the key
+        const timeout = setTimeout(() => {
+            setGridKey(sideBarToggle ? "sidebar-open" : "sidebar-closed");
+        }, 300); // Delay in milliseconds (e.g., 300ms)
+
+        // Cleanup timeout on unmount or when sideBarToggle changes
+        return () => clearTimeout(timeout);
+    }, [sideBarToggle]);
 
     if (chartsData.length > 0) {
         return (
@@ -318,34 +329,10 @@ export default function MainCharts({ accData, safetyData, chartsData }) {
                             </div>
                         </div>
                     </div>
-                    {/* <div className="lg:hidden px-2 py-3 w-full">
-                        <label
-                            htmlFor="last-name"
-                            className="block text-sm font-medium leading-6  text-gray-400 sm:pt-1.5 mr-5"
-                        >
-                            Receiver Name
-                        </label>
-
-                        <div className="inline-block w-full">
-                            <div className=" flex items-center">
-                                <div className="mt-2 w-full sm:mt-0 ">
-                                    <Select
-                                        styles={customStyles}
-                                        isMulti
-                                        name="colors"
-                                        value={selectedReceiver}
-                                        options={getFilteredOptions()}
-                                        onChange={handleReceiverSelectChange}
-                                        className="basic-multi-select text-red "
-                                        classNamePrefix="select"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div> */}
                 </div>
                 {hasData ? (
                     <ReactGridLayout
+                        key={gridKey} // Change key to force re-render
                         className="layout custom-grid"
                         layout={layout}
                         cols={cols}

@@ -1,6 +1,6 @@
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useState, useMemo } from "react";
 import ExportPopover from "./ExportPopover";
 
 export default function TableStructure({
@@ -21,25 +21,23 @@ export default function TableStructure({
     rowHeight,
     id,
 }) {
-    const [tableData, setTableData] = useState(tableDataElements);
-    const [currentPage, setCurrentPage] = useState(4);
+    // 1) Memoize columns and data
+    const columns = useMemo(() => columnsElements, [columnsElements]);
+    const tableData = useMemo(() => tableDataElements, [tableDataElements]);
+    const filterTypes = useMemo(
+        () => filterTypesElements,
+        [filterTypesElements]
+    );
+
+    // 2) State for filterValue and groups if needed
     const [filters, setFilters] = useState(filterValueElements);
-    const [selectedRows, setSelectedRows] = useState();
     const [groups, setGroups] = useState(groupsElements);
-    const [columns, setColumns] = useState(columnsElements);
-    const [filterTypes, setfilterTypes] = useState(filterTypesElements);
+    const [selectedRows, setSelectedRows] = useState();
 
-    useEffect(() => {
-        setTableData(tableDataElements);
-    }, [tableDataElements]);
-
+    // Keep your useEffect that updates filter state if needed
     useEffect(() => {
         setFilters(filterValueElements);
     }, [filterValueElements]);
-
-    useEffect(() => {
-        setColumns(columnsElements);
-    }, [columnsElements]);
 
     const scrollProps = Object.assign(
         {},
@@ -64,6 +62,7 @@ export default function TableStructure({
 
     const gridStyle = { minHeight: 600 };
 
+    // 3) On filter change
     const onFilterValueChange = useCallback(
         (filterValue) => {
             setFilterValueElements(filterValue);
@@ -154,8 +153,15 @@ export default function TableStructure({
         return () => {
             document.body.removeEventListener("click", handleClick);
         };
-    }, [columns, gridRef]);
+    }, [columns]);
 
+    // Define columns
+    const fakecolumns = [
+        { name: "id", header: "ID", defaultWidth: 50 },
+        { name: "name", header: "Name", flex: 1 },
+        { name: "age", header: "Age", defaultWidth: 100 },
+        { name: "country", header: "Country", flex: 1 },
+    ];
     return (
         <div className="">
             <div className="sm:flex sm:items-center mt-3">
@@ -180,10 +186,10 @@ export default function TableStructure({
                         handle={(ref) =>
                             (gridRef.current = ref ? ref.current : [])
                         }
-                        className={"rounded-lg shadow-lg overflow-hidden"}
+                        className="rounded-lg shadow-lg overflow-hidden"
                         pagination
                         rowStyle={rowStyle}
-                        rowHeight={rowHeight ? rowHeight : 40}
+                        rowHeight={rowHeight ?? 40}
                         filterTypes={filterTypes}
                         scrollProps={scrollProps}
                         showColumnMenuTool={false}
@@ -194,8 +200,9 @@ export default function TableStructure({
                         style={gridStyle}
                         onFilterValueChange={onFilterValueChange}
                         defaultFilterValue={filters}
-                        columns={columns}
                         groups={groups}
+                        // Use the real columns here, no more fakecolumns
+                        columns={columns}
                         dataSource={tableData}
                     />
                 ) : (

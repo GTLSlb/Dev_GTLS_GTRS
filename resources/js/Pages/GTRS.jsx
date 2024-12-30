@@ -7,10 +7,8 @@ import MainNavbar from "@/Components/Main-navbar";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import GtrsMain from "./Component/GtrsMain";
 import { Routes, Route } from "react-router-dom";
-import MainPageGTRS from "@/Pages/MainPageGTRS";
-import {navigateToFirstAllowedPage} from "@/CommonFunctions";
+import { navigateToFirstAllowedPage } from "@/CommonFunctions";
 import { useNavigate } from "react-router-dom";
-import menu from "@/SidebarMenuItems";
 export default function Gtrs({
     user,
     setToken,
