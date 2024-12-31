@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
-3;
+import { useState, useEffect, useCallback } from "react";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import {
-    ChevronDownIcon,
-    EyeIcon,
+    ChevronDownIcon
 } from "@heroicons/react/24/outline";
 import { saveAs } from "file-saver";
 import ExcelJS from "exceljs";
@@ -15,6 +13,7 @@ import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import EventModal from "./EventModal";
 import { useRef } from "react";
+3;
 const gtrsWebUrl = window.Laravel.gtrsWeb;
 
 const columnMapping = {

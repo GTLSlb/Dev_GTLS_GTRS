@@ -1,5 +1,5 @@
 import MainCharts from "./Dashboard_Comp/MainCharts";
-import React, { useState } from "react";
+import { useState } from "react";
 import GtrsCons from "./GtrsCons";
 import ConsPerf from "./ConsPerf";
 import NoDelivery from "./NoDelivery";
@@ -11,7 +11,6 @@ import FailedConsMain from "./FailedConsignments/FailedConsMain";
 import MissingPOD from "./MissingPOD";
 import { useEffect } from "react";
 import Holidays from "./KPI/Holidays";
-import KPIReasons from "./KPI/KPIReasons";
 import TransportRep from "./TransportRep";
 import NewKPI from "./KPI/NewKPI";
 import NewTransitDays from "./KPI/NewTransitDays";
@@ -19,14 +18,13 @@ import AddNewTransitDay from "./KPI/AddNewTransitDay";
 import GraphPresentation from "./Presentation/GraphPresentation";
 import DeliveryReportPage from "./ReportsPage/DeliveryReportPage";
 import Incident from "./Incident/Incident";
-import { getApiRequest, ProtectedRoute } from "@/CommonFunctions";
+import { ProtectedRoute } from "@/CommonFunctions";
 import {
     getLatestDespatchDate,
     getMinMaxValue,
     getOldestDespatchDate,
 } from "@/Components/utils/dateUtils";
 import TrafficComp from "./TrafficPage/TrafficComp";
-import ConsTrack from "./ConsignmentTracking/ConsTrack";
 import CollapseSidebar from "./CollapseSidebar";
 import { Button } from "@nextui-org/react";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
@@ -99,6 +97,7 @@ export default function GtrsMain({
     const [EDate, setEDate] = useState(getLatestDespatchDate(consData));
     const oldestDate = getOldestDespatchDate(consData);
     const latestDate = getLatestDespatchDate(consData);
+    const [collapsed, setCollapsed] = useState(false);
     const [dataFromChild, setDataFromChild] = useState(null);
     const [newtransitDay, setNewTransitDay] = useState(null);
     const [incidentId, setIncidentId] = useState(null);
@@ -657,6 +656,8 @@ export default function GtrsMain({
                         setBroken={setBroken}
                         rtl={rtl}
                         toggled={toggled}
+                        collapsed={collapsed}
+                        setCollapsed={setCollapsed}
                         setToggled={setToggled}
                         sidebarElements={sidebarElements}
                         setSidebarElements={setSidebarElements}
@@ -667,7 +668,7 @@ export default function GtrsMain({
                         user={userPermission}
                     />
 
-                    <main className="w-full overflow-y-auto">
+                    <main className="w-full overflow-y-auto ">
                         <div
                             className="fixed left-0 top-20 z-10"
                         >
@@ -712,6 +713,7 @@ export default function GtrsMain({
                                                 route="Dashboard_view"
                                                 element={
                                                     <MainCharts
+                                                        sideBarToggle={collapsed}
                                                         chartsData={chartsData}
                                                         safetyData={safetyData}
                                                         accData={dataFromChild}

@@ -6,18 +6,13 @@ import {
     ExclamationTriangleIcon,
     NoSymbolIcon,
     CurrencyDollarIcon,
-    UserIcon,
-    CircleStackIcon,
-    ClockIcon,
-    ChevronDownIcon,
-    ShieldCheckIcon,
+    UserIcon, ClockIcon, ShieldCheckIcon,
     CameraIcon,
     DocumentTextIcon,
-    ClipboardDocumentIcon,
+    ClipboardDocumentIcon
 } from "@heroicons/react/24/solid";
 import TaskIcon from "@mui/icons-material/Task";
 import ReportIcon from "@mui/icons-material/Report";
-import { MapPinIcon } from "@heroicons/react/20/solid";
 
 const menu = [
     {
@@ -102,15 +97,6 @@ const menu = [
         url: "/gtrs/failed-consignments",
     },
     {
-        id: 16,
-        name: "Transport Report",
-        href: "#",
-        icon: TaskIcon,
-        current: false,
-        feature: "View_Transport",
-        url: "/gtrs/transport",
-    },
-    {
         id: 9,
         name: "RDD",
         href: "#",
@@ -129,6 +115,42 @@ const menu = [
         url: "/gtrs/missing-pod",
     },
     {
+        id: 16,
+        name: "Transport Report",
+        href: "#",
+        icon: TaskIcon,
+        current: false,
+        feature: "View_Transport",
+        url: "/gtrs/transport",
+    },
+    {
+        id: 24,
+        name: "Delivery Report",
+        href: "#",
+        icon: ClipboardDocumentIcon,
+        current: false,
+        feature: "DeliveryReport_View",
+        url: "/gtrs/delivery-report",
+    },
+    {
+        id: 20,
+        name: "Unilever KPI Pack",
+        href: "#",
+        icon: DocumentTextIcon,
+        current: false,
+        feature: "UnileverReport_View",
+        url: "/gtrs/pack-report",
+    },
+    {
+        id: 26,
+        name: "Real Food KPI Pack",
+        href: "#",
+        icon: DocumentTextIcon,
+        current: false,
+        feature: "RealFoodReport_View",
+        url: "/gtrs/real-food-report",
+    },
+    {
         id: 10,
         name: "Safety",
         href: "#",
@@ -136,15 +158,6 @@ const menu = [
         current: false,
         feature: "View_safety",
         url: "/gtrs/safety",
-    },
-    {
-        id: 6,
-        name: "No Delivery info.",
-        href: "#",
-        icon: NoSymbolIcon,
-        current: false,
-        feature: "NoDeliveryInfo_view",
-        url: "/gtrs/no-delivery",
     },
     {
         id: 7,
@@ -156,6 +169,15 @@ const menu = [
         url: "/gtrs/additional-charges",
     },
     {
+        id: 6,
+        name: "No Delivery info.",
+        href: "#",
+        icon: NoSymbolIcon,
+        current: false,
+        feature: "NoDeliveryInfo_view",
+        url: "/gtrs/no-delivery",
+    },
+    {
         id: 8,
         name: "Driver Login",
         href: "#",
@@ -163,15 +185,6 @@ const menu = [
         current: false,
         feature: "DriverLogin_view",
         url: "/gtrs/driver-login",
-    },
-    {
-        id: 20,
-        name: "Unilever KPI Pack",
-        href: "#",
-        icon: DocumentTextIcon,
-        current: false,
-        feature: "UnileverReport_View",
-        url: "/gtrs/pack-report",
     },
     {
         id: 21,
@@ -199,24 +212,6 @@ const menu = [
         current: false,
         feature: "View_Tracking2",
         url: "/gtrs/consignment-tracking",
-    },
-    {
-        id: 24,
-        name: "Delivery Report",
-        href: "#",
-        icon: ClipboardDocumentIcon,
-        current: false,
-        feature: "DeliveryReport_View",
-        url: "/gtrs/delivery-report",
-    },
-    {
-        id: 26,
-        name: "Real Food KPI Pack",
-        href: "#",
-        icon: DocumentTextIcon,
-        current: false,
-        feature: "RealFoodReport_View",
-        url: "/gtrs/real-food-report",
     },
 
 ];
