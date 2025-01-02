@@ -48,6 +48,8 @@ const customStyles = {
         width: "30%",
         overflow: "hidden",
         height: "20px",
+        display: "flex",
+        justifyContent: "space-between",
     }),
     valueContainer: (provided) => ({
         ...provided,
@@ -83,6 +85,7 @@ export default function MainCharts({
     const [EDate, setEDate] = useState(getLatestDespatchDate(chartsData));
     const [filteredData, setFilteredData] = useState([chartsData]);
     const [selectedReceiver, setselectedReceiver] = useState([]);
+    const [dataWithoutReceiver, setDataWithoutReceiver] = useState([]);
     const [gridKey, setGridKey] = useState("sidebar-open");
 
     const [hasData, setHasData] = useState(true);
@@ -125,7 +128,7 @@ export default function MainCharts({
         filterData(SDate, value, selectedReceiver);
     };
     const uniqueReceiverNames = Array.from(
-        new Set(chartsData.map((item) => item.ReceiverName))
+        new Set(dataWithoutReceiver.map((item) => item.ReceiverName))
     );
     const handleReceiverSelectChange = (selectedOptions) => {
         setselectedReceiver(selectedOptions);
@@ -147,6 +150,7 @@ export default function MainCharts({
                 )
         );
     };
+
     const filterData = (startDate, endDate) => {
         const selectedReceiverNames = selectedReceiver.map(
             (receiver) => receiver.value
@@ -166,6 +170,24 @@ export default function MainCharts({
         } else {
             setFilteredSafety(safetyData);
         }
+        const filteredDataWithoutReceiver = chartsData.filter((item) => {
+            const itemDate = new Date(item.DespatchDate);
+            const filterStartDate = new Date(startDate);
+            const filterEndDate = new Date(endDate);
+            filterStartDate.setHours(0);
+            filterEndDate.setSeconds(59);
+            filterEndDate.setMinutes(59);
+            filterEndDate.setHours(23);
+
+            const chargeToMatch =
+                intArray?.length === 0 || intArray?.includes(item.ChargeToId);
+
+            return (
+                itemDate >= filterStartDate &&
+                itemDate <= filterEndDate &&
+                chargeToMatch
+            );
+        })
         const filtered = chartsData.filter((item) => {
             const isIncluded =
                 selectedReceiverNames.length === 0 ||
@@ -190,6 +212,7 @@ export default function MainCharts({
             );
         });
         const hasData = filtered?.length > 0;
+        setDataWithoutReceiver(filteredDataWithoutReceiver);
         setFilteredData(filtered);
         setHasData(hasData);
     };
@@ -313,7 +336,7 @@ export default function MainCharts({
                                             onChange={
                                                 handleReceiverSelectChange
                                             }
-                                            className="basic-multi-select w-full text-red "
+                                            className="basic-multi-select w-full"
                                             classNamePrefix="select"
                                         />
                                     </div>
