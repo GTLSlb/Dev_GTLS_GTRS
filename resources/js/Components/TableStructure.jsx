@@ -22,7 +22,16 @@ export default function TableStructure({
     id,
 }) {
     // 1) Memoize columns and data
+
     const columns = useMemo(() => columnsElements, [columnsElements]);
+    const filters = useMemo(() => filterValueElements, [filterValueElements]);
+    const groups = useMemo(() => groupsElements, [groupsElements]);
+
+    const rowStyle = useCallback(({ data }) => {
+        const colorMap = { ca: "#7986cb", uk: "#ef9a9a" };
+        return { color: colorMap[data?.country] || "inherit" };
+    }, []);
+
     const tableData = useMemo(() => tableDataElements, [tableDataElements]);
     const filterTypes = useMemo(
         () => filterTypesElements,
@@ -30,14 +39,12 @@ export default function TableStructure({
     );
 
     // 2) State for filterValue and groups if needed
-    const [filters, setFilters] = useState(filterValueElements);
-    const [groups, setGroups] = useState(groupsElements);
-    const [selectedRows, setSelectedRows] = useState();
+    const [selectedRows] = useState();
 
     // Keep your useEffect that updates filter state if needed
-    useEffect(() => {
-        setFilters(filterValueElements);
-    }, [filterValueElements]);
+    // useEffect(() => {
+    //     setFilters(filterValueElements);
+    // }, [filterValueElements]);
 
     const scrollProps = Object.assign(
         {},
@@ -50,19 +57,8 @@ export default function TableStructure({
         }
     );
 
-    const rowStyle = ({ data }) => {
-        const colorMap = {
-            ca: "#7986cb",
-            uk: "#ef9a9a",
-        };
-        return {
-            color: colorMap[data.country],
-        };
-    };
-
     const gridStyle = { minHeight: 600 };
 
-    // 3) On filter change
     const onFilterValueChange = useCallback(
         (filterValue) => {
             setFilterValueElements(filterValue);
@@ -155,6 +151,10 @@ export default function TableStructure({
         };
     }, [columns]);
 
+
+    const TableStructure = () => {
+        
+    }
     return (
         <div className="">
             <div className="sm:flex sm:items-center mt-3">
@@ -173,15 +173,18 @@ export default function TableStructure({
                 </div>
             </div>
             <div className="py-5">
-                {tableData ? (
+                {tableDataElements ? (
                     <ReactDataGrid
+                        virtualized
+                        key={"persistend-grid"}
                         idProperty={id}
-                        handle={(ref) =>
-                            (gridRef.current = ref ? ref.current : [])
-                        }
+                        // handle={(ref) =>
+                        //     (gridRef.current = ref ? ref.current : [])
+                        // }
                         className="rounded-lg shadow-lg overflow-hidden"
                         pagination
-                        rowStyle={rowStyle}
+                        defaultPageSize={20}
+                        defaultLimit={20}
                         rowHeight={rowHeight ?? 40}
                         filterTypes={filterTypes}
                         scrollProps={scrollProps}
@@ -194,7 +197,6 @@ export default function TableStructure({
                         onFilterValueChange={onFilterValueChange}
                         defaultFilterValue={filters}
                         groups={groups}
-                        // Use the real columns here, no more fakecolumns
                         columns={columns}
                         dataSource={tableData}
                     />
