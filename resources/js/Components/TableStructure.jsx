@@ -155,13 +155,6 @@ export default function TableStructure({
         };
     }, [columns]);
 
-    // Define columns
-    const fakecolumns = [
-        { name: "id", header: "ID", defaultWidth: 50 },
-        { name: "name", header: "Name", flex: 1 },
-        { name: "age", header: "Age", defaultWidth: 100 },
-        { name: "country", header: "Country", flex: 1 },
-    ];
     return (
         <div className="">
             <div className="sm:flex sm:items-center mt-3">

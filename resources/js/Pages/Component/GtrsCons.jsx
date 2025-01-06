@@ -9,8 +9,8 @@ import { useEffect, useRef } from "react";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
+import { renderConsDetailsLink } from "@/CommonFunctions";
 import { useNavigate } from "react-router-dom";
-import CustomDateFilter from "@/Components/TableComp/CustomDateFilter";
 export default function GtrsCons({
     consData,
     minDate,
@@ -18,16 +18,11 @@ export default function GtrsCons({
     filterValue,
     setFilterValue,
     accData,
+    userPermission,
 }) {
-
     window.moment = moment;
     const navigate = useNavigate();
     const [filteredData, setFilteredData] = useState(consData);
-    const handleClick = (coindex) => {
-        navigate("/gtrs/consignment-details", {
-            state: { activeCons: coindex },
-        });
-    };
     const [selected, setSelected] = useState({});
 
     const gridRef = useRef(null);
@@ -90,14 +85,11 @@ export default function GtrsCons({
             headerAlign: "center",
             textAlign: "center",
             render: ({ value, data }) => {
-                return (
-                    <span
-                        className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => handleClick(data.ConsignmentId)}
-                    >
-                        {" "}
-                        {value}
-                    </span>
+                return renderConsDetailsLink(
+                    userPermission,
+                    value,
+                    data.ConsignmentId,
+                    navigate
                 );
             },
         },
@@ -282,43 +274,46 @@ export default function GtrsCons({
 
     useEffect(() => {
         const observer = new MutationObserver((mutations) => {
-          const menu = document.querySelector('.inovua-react-toolkit-menu__table');
-          if (menu) {
-            const handleClick = (event) => {
-              if (event.target.textContent === 'Clear all') {
-                gridRef.current.allColumns.forEach((column) => {
-                  if (column.name === 'DespatchDate') {
-                    // Clear filter for DespatchDate column using DataGrid API if available
-                    // console.log(column.computedFilterValue);
-                    column.computedFilterValue.value={start: "", end: ""}
-                    column.computedFilterValue.emptyValue = ""
-                  }
-                });
-                // Re-render columns state to reflect the cleared filter
-                setColumns((cols) => [...cols]);
-              }
-            };
-            menu.addEventListener('click', handleClick);
+            const menu = document.querySelector(
+                ".inovua-react-toolkit-menu__table"
+            );
+            if (menu) {
+                const handleClick = (event) => {
+                    if (event.target.textContent === "Clear all") {
+                        gridRef.current.allColumns.forEach((column) => {
+                            if (column.name === "DespatchDate") {
+                                // Clear filter for DespatchDate column using DataGrid API if available
+                                // console.log(column.computedFilterValue);
+                                column.computedFilterValue.value = {
+                                    start: "",
+                                    end: "",
+                                };
+                                column.computedFilterValue.emptyValue = "";
+                            }
+                        });
+                        // Re-render columns state to reflect the cleared filter
+                        setColumns((cols) => [...cols]);
+                    }
+                };
+                menu.addEventListener("click", handleClick);
 
-
-            // Cleanup to prevent multiple listeners
-            return () => {
-                menu.removeEventListener('click', handleClick);
-            };
-          }
+                // Cleanup to prevent multiple listeners
+                return () => {
+                    menu.removeEventListener("click", handleClick);
+                };
+            }
         });
 
         observer.observe(document.body, {
-          childList: true,
-          subtree: true,
+            childList: true,
+            subtree: true,
         });
 
         // Cleanup observer on component unmount
         return () => {
             observer.disconnect();
         };
-      }, [columns]);
-
+    }, [columns]);
 
     const filterData = () => {
         const intArray = accData?.map((str) => {
@@ -340,25 +335,23 @@ export default function GtrsCons({
 
     const renderTable = useCallback(() => {
         return (
-        <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
-          <TableStructure
-            handleDownloadExcel={handleDownloadExcel}
-            title={"Consignments"}
-            id={"ConsignmentId"}
-            setSelected={setSelected}
-            gridRef={gridRef}
-            selected={selected}
-            tableDataElements={filteredData}
-            filterValueElements={filterValue}
-            setFilterValueElements={setFilterValue}
-            groupsElements={groups}
-            columnsElements={columns}
-          />
-        </div>
-      );
+            <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
+                <TableStructure
+                    handleDownloadExcel={handleDownloadExcel}
+                    title={"Consignments"}
+                    id={"ConsignmentId"}
+                    setSelected={setSelected}
+                    gridRef={gridRef}
+                    selected={selected}
+                    tableDataElements={filteredData}
+                    filterValueElements={filterValue}
+                    setFilterValueElements={setFilterValue}
+                    groupsElements={groups}
+                    columnsElements={columns}
+                />
+            </div>
+        );
     }, [columns, filteredData]);
 
-    return (
-        renderTable()
-    );
+    return renderTable();
 }

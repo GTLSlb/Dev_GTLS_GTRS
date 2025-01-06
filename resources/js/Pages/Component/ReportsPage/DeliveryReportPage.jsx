@@ -1,22 +1,18 @@
-import React, { useState, useEffect } from "react";
-import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
-import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
-import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
-import moment from "moment";
-import MetcashReports from "./MetcashReports";
-import WoolworthsReports from "./WoolworthsReports";
-import OtherReports from "./OtherReports";
-import { EyeIcon, PencilIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
+import { EyeIcon } from "@heroicons/react/20/solid";
+import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
+import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
+import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import { Spinner } from "@nextui-org/react";
+import moment from "moment";
+import { useEffect, useState } from "react";
+import MetcashReports from "./MetcashReports";
+import OtherReports from "./OtherReports";
+import WoolworthsReports from "./WoolworthsReports";
 
-import { getFiltersDeliveryReport } from "@/Components/utils/filters";
+import { renderConsDetailsLink } from "@/CommonFunctions";
 import {
-    canAddDeliveryReportComment,
-    canEditDeliveryReportComment,
-    canViewMetcashDeliveryReport,
-    canViewWoolworthsDeliveryReport,
-    canViewOtherDeliveryReport,
+    canAddDeliveryReportComment, canViewMetcashDeliveryReport, canViewOtherDeliveryReport, canViewWoolworthsDeliveryReport
 } from "@/permissions";
 import { useNavigate } from "react-router-dom";
 
@@ -29,9 +25,6 @@ export default function DeliveryReportPage({
     fetchDeliveryReport,
 }) {
     const navigate = useNavigate();
-    const handleClick = (coindex) => {
-        navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
-    };
     const createNewLabelObjects = (data, fieldName) => {
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
@@ -503,16 +496,11 @@ export default function DeliveryReportPage({
             filterEditor: StringFilter,
             defaultWidth: 200,
             render: ({ value, data }) => {
-                return (
-                    <div>
-                        <span
-                            className="underline text-blue-500 hover:cursor-pointer"
-                            onClick={() => handleClick(data.ConsignmentID)}
-                        >
-                            {" "}
-                            {value}
-                        </span>
-                    </div>
+                return renderConsDetailsLink(
+                    userPermission,
+                    value,
+                    data.ConsignmentId,
+                    navigate
                 );
             },
         },
@@ -755,7 +743,7 @@ export default function DeliveryReportPage({
         },
         {
             name: "Actions",
-            header: "Actions",
+            header: "Show all comments",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 200,

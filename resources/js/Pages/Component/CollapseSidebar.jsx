@@ -458,8 +458,8 @@ export default function CollapseSidebar({
                                                                     className={classNames(
                                                                         menuItem.current
                                                                             ? "bg-gray-300 text-gray-900"
-                                                                            : "text-gray-700 hover:bg-gray-500 hover:text-white",
-                                                                        "group flex flex-row justify-between items-center px-2 py-2 text-sm font-medium rounded-md w-full"
+                                                                            : "text-gray-600 hover:bg-gray-500 hover:text-white",
+                                                                        "group flex flex-row justify-between items-center px-2 py-2 text-sm rounded-md w-full"
                                                                     )}
                                                                 >
                                                                     <div className="flex items-center">
@@ -518,7 +518,7 @@ export default function CollapseSidebar({
                                                                                     option.current
                                                                                         ? "bg-gray-300"
                                                                                         : "",
-                                                                                    "p-2 font-semibold hover:bg-gray-300 rounded text-left text-dark text-xs"
+                                                                                    "p-2 font-semibold hover:bg-gray-300 rounded text-left text-gray-600 text-xs"
                                                                                 )}
                                                                             >
                                                                                 {

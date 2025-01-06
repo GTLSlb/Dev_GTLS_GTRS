@@ -23,7 +23,7 @@ const ExportPopover = ({ columns, handleDownloadExcel, filteredData }) => {
                         filteredData?.length === 0
                             ? "bg-gray-300 cursor-not-allowed"
                             : "font-medium rounded-lg dark:bg-gray-800 dark:hover:bg-gray-600"
-                    } px-2 py-2 text-white shadow-sm hover:bg-gray-400 focus:outline-none`}
+                    } px-2 py-2 text-white shadow-sm hover:bg-gray-400 focus:outline-none rounded-lg`}
                     disabled={filteredData?.length === 0}
                 >
                     Export

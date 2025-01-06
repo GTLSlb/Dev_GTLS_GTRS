@@ -11,7 +11,7 @@ import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
-import { formatDateToExcel } from "@/CommonFunctions";
+import { formatDateToExcel, renderConsDetailsLink } from "@/CommonFunctions";
 import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 
@@ -33,12 +33,7 @@ export default function FailedCons({
         setReason(reason);
         setIsModalOpen(!isModalOpen);
     };
-    // const data = PerfData.filter((obj) => obj.STATUS === "FAIL");
-    const handleClick = (coindex) => {
-        navigate("/gtrs/consignment-details", {
-            state: { activeCons: coindex },
-        });
-    };
+
     const excludedDebtorIds = [1514, 364, 247, 246, 245, 244];
     const [data, setData] = useState(
         PerfData?.filter(
@@ -105,14 +100,11 @@ export default function FailedCons({
             group: "personalInfo",
             filterEditor: StringFilter,
             render: ({ value, data }) => {
-                return (
-                    <span
-                        className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => handleClick(data.ConsignmentID)}
-                    >
-                        {" "}
-                        {value}
-                    </span>
+                return renderConsDetailsLink(
+                    userPermission,
+                    value,
+                    data.ConsignmentId,
+                    navigate
                 );
             },
         },

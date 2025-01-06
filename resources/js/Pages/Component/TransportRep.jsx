@@ -266,17 +266,30 @@ function TransportRep({
             PickupDate: (value) => (value ? new Date(value) : null),
             ActualDeliveryDate: (value) => (value ? new Date(value) : null),
         };
-
+        const formatted = [
+            {
+                field: "RddDate",
+                format: "dd-mm-yyyy",
+            },
+            {
+                field: "PickupDate",
+                format: "dd-mm-yyyy",
+            },
+            {
+                field: "ActualDeliveryDate",
+                format: "dd-mm-yyyy",
+            },
+        ];
         // Call the exportToExcel function with the column mapping and custom cell handlers
         exportToExcel(
             jsonData,
             columnMapping,
             "Transport-Report.xlsx",
             customCellHandlers,
-            ["RddDate", "PickupDate", "ActualDeliveryDate"]
+            ["RddDate", "PickupDate", "ActualDeliveryDate"],
+            formatted
         );
     };
-
 
     const minRDDDate = getMinMaxValue(transportData, "RDD", 1);
     const maxRDDDate = getMinMaxValue(transportData, "RDD", 2);

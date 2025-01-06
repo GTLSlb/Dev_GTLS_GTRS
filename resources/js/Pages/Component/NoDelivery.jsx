@@ -8,6 +8,7 @@ import TableStructure from "@/Components/TableStructure";
 import {
     formatDateToExcel,
     getApiRequest,
+    renderConsDetailsLink,
 } from "@/CommonFunctions";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
@@ -15,6 +16,7 @@ import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import { canViewDetails } from "@/permissions";
 
 export default function NoDelivery({
     NoDelData,
@@ -22,10 +24,12 @@ export default function NoDelivery({
     filterValue,
     setFilterValue,
     currentUser,
+    userPermission,
     url,
 }) {
     window.moment = moment;
     const navigate = useNavigate();
+
     const [isFetching, setIsFetching] = useState();
     useEffect(() => {
         if (NoDelData === null || NoDelData === undefined) {
@@ -44,9 +48,6 @@ export default function NoDelivery({
             setIsFetching(false);
         }
     }
-    const handleClick = (coindex) => {
-        navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
-    };
 
     const gridRef = useRef(null);
     const handleDownloadExcel = () => {
@@ -122,15 +123,13 @@ export default function NoDelivery({
             textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
+
             render: ({ value, data }) => {
-                return (
-                    <span
-                        className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => handleClick(data.ConsignmentID)}
-                    >
-                        {" "}
-                        {value}
-                    </span>
+                return renderConsDetailsLink(
+                    userPermission,
+                    value,
+                    data,
+                    navigate
                 );
             },
         },
@@ -341,9 +340,7 @@ export default function NoDelivery({
     return (
         <div>
             {/* <Sidebar /> */}
-            {isFetching && (
-                <AnimatedLoading />
-            )}
+            {isFetching && <AnimatedLoading />}
             {!isFetching && (
                 <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
                     <TableStructure

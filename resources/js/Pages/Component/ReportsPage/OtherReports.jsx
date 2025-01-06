@@ -52,7 +52,12 @@ export default function OtherReports({
             DeliveryRequiredDateTime: (value) => formatDateToExcel(value),
             DeliveredDateTime: (value) => formatDateToExcel(value),
             Comments: (value) =>
-                value?.map((item) => `${formatDate(item.AddedAt)}, ${item.Comment}`).join("\n")
+                value
+                    ?.map(
+                        (item) => `${formatDate(item.AddedAt)}, ${item.Comment}`
+                    )
+                    .join("\n"),
+            POD: (value) => (value ? value : "FALSE"),
         };
 
         // Call the `exportToExcel` function
@@ -61,7 +66,11 @@ export default function OtherReports({
             columnMapping, // Dynamic column mapping from columns
             "Unilever-Others-Reports.xlsx", // Export file name
             customCellHandlers, // Custom handlers for formatting cells
-            ["DespatchDateTime", "DeliveryRequiredDateTime", "DeliveredDateTime"]
+            [
+                "DespatchDateTime",
+                "DeliveryRequiredDateTime",
+                "DeliveredDateTime",
+            ]
         );
     }
 

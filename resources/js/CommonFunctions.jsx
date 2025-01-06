@@ -1,12 +1,11 @@
-import swal from "sweetalert";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import Cookies from "js-cookie";
-import { PublicClientApplication } from "@azure/msal-browser";
-import { AlertToast } from "./permissions";
+import routes from "@/GTRSRoutes";
 import NoAccessRedirect from "@/Pages/NoAccessRedirect";
 import menu from "@/SidebarMenuItems";
-import routes from "@/GTRSRoutes";
+import { PublicClientApplication } from "@azure/msal-browser";
+import Cookies from "js-cookie";
+import "react-toastify/dist/ReactToastify.css";
+import swal from "sweetalert";
+import { AlertToast, canViewDetails } from "./permissions";
 
 const msalConfig = {
     auth: {
@@ -229,105 +228,151 @@ export const formatDateToExcel = (dateValue) => {
     );
 };
 
-export function ProtectedRoute({
-    permission,
-    route,
-    element,
-    currentUser,
-    setToken,
-    setcurrentUser,
-}) {
+export function formatDateFromExcelWithNoTime(dateValue) {
+    const date = new Date(dateValue);
+
+    if (isNaN(date.getTime())) {
+        return ""; // Return empty string if invalid date
+    }
+
+    const utcDate = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+    return utcDate / 86400000 + 25569;
+}
+
+export function ProtectedRoute({ permission, route, element }) {
     const userHasPermission = checkUserPermission(permission, route);
     return userHasPermission ? element : <NoAccessRedirect />;
 }
 
 function checkUserPermission(permission, route) {
-    if(typeof route == "string"){
+    if (typeof route == "string") {
         // Go over the flat permissions and check if the user has the required permission
         return permission?.Features?.some((feature) => {
             return feature.FunctionName == route;
         });
-    }else if(typeof route == "object"){
+    } else if (typeof route == "object") {
         // Map over permissions and check if the user has the required permission
         return permission?.Features?.some((feature) => {
             return route?.includes(feature.FunctionName);
         });
     }
-
 }
 
 export function navigateToFirstAllowedPage({
     setSidebarElements,
     user,
     navigate,
-  }) {
+}) {
     let items = [];
 
     // Check if the current route exists
-    const doesRouteExist = routes?.some((route) => route === window.location.pathname);
-
+    const doesRouteExist = routes?.some(
+        (route) => route === window.location.pathname
+    );
     // If the route does not exist, navigate to notFound page
     if (!doesRouteExist) {
-      navigate("/notFound");
+        navigate("/notFound");
     } else {
-      // Filter allowed menu items based on user features
-      menu?.forEach((menuItem) => {
-        if(menuItem.hasOwnProperty('options')){
-            menuItem.options.forEach((option) => {
-                if (user?.Features?.some((item) => item?.FunctionName === option?.feature)) {
-                  const existingItem = items.find((item) => item.name === menuItem.name);
-                  if (existingItem) {
-                    existingItem.options.push({ ...option, current: false });
-                  } else {
-                    items.push({ ...menuItem, current: false, options: [{ ...option, current: false }] });
-                  }
+        // Filter allowed menu items based on user features
+        menu?.forEach((menuItem) => {
+            if (menuItem.hasOwnProperty("options")) {
+                menuItem.options.forEach((option) => {
+                    if (
+                        user?.Features?.some(
+                            (item) => item?.FunctionName === option?.feature
+                        )
+                    ) {
+                        const existingItem = items.find(
+                            (item) => item.name === menuItem.name
+                        );
+                        if (existingItem) {
+                            existingItem.options.push({
+                                ...option,
+                                current: false,
+                            });
+                        } else {
+                            items.push({
+                                ...menuItem,
+                                current: false,
+                                options: [{ ...option, current: false }],
+                            });
+                        }
+                    }
+                });
+            } else {
+                if (
+                    user?.Features?.some(
+                        (item) => item?.FunctionName === menuItem?.feature
+                    )
+                ) {
+                    items.push({ ...menuItem, current: false });
                 }
-              })
-        }else{
-            if(user?.Features?.some((item) => item?.FunctionName === menuItem?.feature)) {
-                items.push({ ...menuItem, current: false });
             }
-        }
-      });
-
-      // Find the current menu item for the active route
-      const currentItem = items.find((item) => item.url === window.location.pathname);
-
-      if (currentItem) {
-        // Mark the current item as active
-        currentItem.current = true;
-
-        // Set the other items' `current` to false
-        items.forEach((item) => {
-          if (item.url !== window.location.pathname) {
-            item.current = false;
-          }
         });
 
-        // Navigate to the current item
-        navigate(currentItem.url);
-      } else if (items.length > 0) {
-        // Get the `current` item from localStorage, if it exists
-        const savedCurrentId = localStorage.getItem("current");
+        // Find the current menu item for the active route
+        const currentItem = items.find(
+            (item) => item.url === window.location.pathname
+        );
 
-        let firstItemToActivate;
+        if (currentItem) {
+            // Mark the current item as active
+            currentItem.current = true;
 
-        if (savedCurrentId) {
-          firstItemToActivate = items.find((item) => item.id === savedCurrentId);
+            // Set the other items' `current` to false
+            items.forEach((item) => {
+                if (item.url !== window.location.pathname) {
+                    item.current = false;
+                }
+            });
+
+            // Navigate to the current item
+            navigate(currentItem.url);
+        } else if (items.length > 0) {
+            // Get the `current` item from localStorage, if it exists
+            const savedCurrentId = localStorage.getItem("current");
+
+            let firstItemToActivate;
+
+            if (savedCurrentId) {
+                firstItemToActivate = items.find(
+                    (item) => item.id === savedCurrentId
+                );
+            }
+
+            if (firstItemToActivate) {
+                firstItemToActivate.current = true;
+                navigate(firstItemToActivate.url);
+            } else {
+                items[0].current = true;
+                navigate(items[0].url);
+                window.location.pathname = items[0].url;
+            }
         }
 
-        if (firstItemToActivate) {
-          firstItemToActivate.current = true;
-          navigate(firstItemToActivate.url);
-        } else {
-          items[0].current = true;
-          navigate(items[0].url);
-          window.location.pathname = items[0].url;
-        }
-      }
-
-      // Set the sidebar elements
-      setSidebarElements(items);
+        // Set the sidebar elements
+        setSidebarElements(items);
     }
-  }
+}
 
+export function renderConsDetailsLink(userPermission, text, value, navigate) {
+    const handleClick = () => {
+        navigate("/gtrs/consignment-details", {
+            state: { activeCons: value },
+        });
+    };
+
+    if (canViewDetails(userPermission)) {
+        return (
+            <span
+                className="underline text-blue-500 hover:cursor-pointer"
+                onClick={() => handleClick(value)}
+            >
+                {" "}
+                {text}
+            </span>
+        );
+    } else {
+        return <span className=""> {text}</span>;
+    }
+}

@@ -187,7 +187,7 @@ export default function MainCharts({
                 itemDate <= filterEndDate &&
                 chargeToMatch
             );
-        })
+        });
         const filtered = chartsData.filter((item) => {
             const isIncluded =
                 selectedReceiverNames.length === 0 ||
@@ -354,96 +354,111 @@ export default function MainCharts({
                     </div>
                 </div>
                 {hasData ? (
-                    <ReactGridLayout
-                        key={gridKey} // Change key to force re-render
-                        className="layout custom-grid"
-                        layout={layout}
-                        cols={cols}
-                        rowHeight={110}
-                        width={1200}
-                        isResizable={false}
-                        isDraggable={!isMobile}
-                        autoSize={true}
-                        onLayoutChange={(layout) => setLayout(layout)}
-                        dragEnterChild="drag-over"
-                        dragLeaveChild="drag-out"
-                        // onLayoutChange={(layout) => setLayout(layout)}
-                    >
-                        {/* Place your components with drag-and-drop functionality */}
-                        <div key="card02" className="relative drag-over">
-                            {" "}
-                            <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                            <DashboardCard07
-                                InfoData={calculateStatistics(
-                                    filteredData,
-                                    filteredSafety
-                                )}
-                            />{" "}
-                        </div>
-                        <div key="card06" className="relative">
-                            {" "}
-                            <ArrowsPointingOutIcon className=" absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                            <MultiChartLine
-                                chartData={getMonthlyData(filteredData)}
-                                chartTitle={"Spend By State"}
-                            />{" "}
-                        </div>
-                        <div key="card12" className="relative">
-                            {" "}
-                            <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                            <BasicColumnCharts
-                                chartData={getMonthlyRecordCounts(filteredData)}
-                                chartTitle={" Consignment By Month"}
-                            />{" "}
-                        </div>
-                        <div key="card04" className="relative">
-                            {" "}
-                            <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                            <BasicPieCharts
-                                chartData={getConsStatusCounter(filteredData)}
-                                chartTitle={"Consignment Status"}
-                            />{" "}
-                        </div>
-                        <div key="card08" className="relative">
-                            {" "}
-                            <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                            <DoubleBarChart
-                                chartData={getPODCounts(filteredData)}
-                                chartTitle={"POD True vs False"}
-                            />{" "}
-                        </div>
-                        <div key="card03" className="relative">
-                            {" "}
-                            <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                            <BasicPieCharts
-                                chartData={getPODCountsByState(filteredData)}
-                                chartTitle={"POD Status By State"}
-                            />{" "}
-                        </div>
-                        <div key="card03_2">
-                            <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                            <BasicColumnCharts
-                                chartData={getStateRecordCounts(filteredData)}
-                                chartTitle={" Consignments By state"}
-                            />{" "}
-                        </div>
-                        <div key="card13" className="relative">
-                            {" "}
-                            <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                            <BasicColumnCharts
-                                chartData={getStateTotalWeights(filteredData)}
-                                chartTitle={" Weight By state"}
-                            />{" "}
-                        </div>
-                        <div key="card14" className="relative">
-                            {" "}
-                            <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                            <BasicPieCharts
-                                chartData={getKPIStatusCounter(filteredData)}
-                                chartTitle={"KPI Status"}
-                            />{" "}
-                        </div>
-                    </ReactGridLayout>
+                    <div className="layout-container">
+                        {" "}
+                        <ReactGridLayout
+                            key={gridKey} // Change key to force re-render
+                            className="layout custom-grid"
+                            layout={layout}
+                            cols={cols}
+                            rowHeight={110}
+                            width={1200}
+                            isResizable={false}
+                            isDraggable={!isMobile}
+                            autoSize={true}
+                            onLayoutChange={(layout) => setLayout(layout)}
+                            dragEnterChild="drag-over"
+                            dragLeaveChild="drag-out"
+                            // onLayoutChange={(layout) => setLayout(layout)}
+                        >
+                            {/* Place your components with drag-and-drop functionality */}
+                            <div key="card02" className="relative drag-over">
+                                {" "}
+                                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
+                                <DashboardCard07
+                                    InfoData={calculateStatistics(
+                                        filteredData,
+                                        filteredSafety
+                                    )}
+                                />{" "}
+                            </div>
+                            <div key="card06" className="relative">
+                                {" "}
+                                <ArrowsPointingOutIcon className=" absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
+                                <MultiChartLine
+                                    chartData={getMonthlyData(filteredData)}
+                                    chartTitle={"Spend By State"}
+                                />{" "}
+                            </div>
+                            <div key="card12" className="relative">
+                                {" "}
+                                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
+                                <BasicColumnCharts
+                                    chartData={getMonthlyRecordCounts(
+                                        filteredData
+                                    )}
+                                    chartTitle={" Consignment By Month"}
+                                />{" "}
+                            </div>
+                            <div key="card04" className="relative">
+                                {" "}
+                                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
+                                <BasicPieCharts
+                                    chartData={getConsStatusCounter(
+                                        filteredData
+                                    )}
+                                    chartTitle={"Consignment Status"}
+                                />{" "}
+                            </div>
+                            <div key="card08" className="relative">
+                                {" "}
+                                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
+                                <DoubleBarChart
+                                    chartData={getPODCounts(filteredData)}
+                                    chartTitle={"POD True vs False"}
+                                />{" "}
+                            </div>
+                            <div key="card03" className="relative">
+                                {" "}
+                                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
+                                <BasicPieCharts
+                                    chartData={getPODCountsByState(
+                                        filteredData
+                                    )}
+                                    chartTitle={"POD Status By State"}
+                                />{" "}
+                            </div>
+                            <div key="card03_2">
+                                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
+                                <BasicColumnCharts
+                                    chartData={getStateRecordCounts(
+                                        filteredData
+                                    )}
+                                    chartTitle={" Consignments By state"}
+                                />{" "}
+                            </div>
+                            <div key="card13" className="relative">
+                                {" "}
+                                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
+                                <BasicColumnCharts
+                                    chartData={getStateTotalWeights(
+                                        filteredData
+                                    )}
+                                    chartTitle={" Weight By state"}
+                                />{" "}
+                            </div>
+                            <div key="card14" className="relative">
+                                {" "}
+                                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
+                                <BasicPieCharts
+                                    chartData={getKPIStatusCounter(
+                                        filteredData
+                                    )}
+                                    chartTitle={"KPI Status"}
+                                />{" "}
+                            </div>
+                        </ReactGridLayout>
+                    </div>
                 ) : (
                     <div className=" h-72 flex items-center justify-center mt-5">
                         <div className="text-center flex justify-center flex-col">

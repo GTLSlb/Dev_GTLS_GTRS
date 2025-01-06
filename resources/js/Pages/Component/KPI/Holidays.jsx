@@ -91,12 +91,12 @@ export default function Holidays({
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
             render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
+                return moment(value).format("DD-MM-YYYY") === "Invalid date"
                     ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+                    : moment(value).format("DD-MM-YYYY");
             },
         },
+
         {
             name: "HolidayState",
             defaultFlex: 1,
@@ -170,10 +170,10 @@ export default function Holidays({
                         dateFormat: "DD-MM-YYYY",
                         filterEditor: DateFilter,
                         render: ({ value, cellProps }) => {
-                            return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                            return moment(value).format("DD-MM-YYYY") ==
                                 "Invalid date"
                                 ? ""
-                                : moment(value).format("DD-MM-YYYY hh:mm A");
+                                : moment(value).format("DD-MM-YYYY");
                         },
                     },
                     {
@@ -221,7 +221,7 @@ export default function Holidays({
                     },
                     {
                         name: "edit",
-                        header: "edit",
+                        header: "Edit",
                         headerAlign: "center",
                         textAlign: "center",
                         defaultWidth: 100,
@@ -274,10 +274,10 @@ export default function Holidays({
                         dateFormat: "DD-MM-YYYY",
                         filterEditor: DateFilter,
                         render: ({ value, cellProps }) => {
-                            return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                            return moment(value).format("DD-MM-YYYY") ==
                                 "Invalid date"
                                 ? ""
-                                : moment(value).format("DD-MM-YYYY hh:mm A");
+                                : moment(value).format("DD-MM-YYYY");
                         },
                     },
                     {
@@ -347,7 +347,27 @@ export default function Holidays({
             customCellHandlers
         );
     };
-
+    const additionalButtons = (
+        <div>
+            {canAddHolidays(userPermission) ? (
+                <div>
+                    {showAdd ? (
+                        <GtrsButton
+                            name={"Cancel"}
+                            onClick={ToggleShow}
+                            className="w-[5.5rem] h-[36px]"
+                        />
+                    ) : (
+                        <GtrsButton
+                            name={"Add holiday"}
+                            onClick={ToggleShow}
+                            className="w-[5.5rem] h-[36px]"
+                        />
+                    )}
+                </div>
+            ) : null}
+        </div>
+    );
     return (
         <div>
             {isFetching ? (
@@ -359,21 +379,6 @@ export default function Holidays({
                             <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
                                 Holidays
                             </h1>
-                            {canAddHolidays(userPermission) ? (
-                                <div>
-                                    {showAdd ? (
-                                        <GtrsButton
-                                            name={"Cancel"}
-                                            onClick={ToggleShow}
-                                        />
-                                    ) : (
-                                        <GtrsButton
-                                            name={"Add holiday"}
-                                            onClick={ToggleShow}
-                                        />
-                                    )}
-                                </div>
-                            ) : null}
                         </div>
                     </div>
                     {showAdd ? (
@@ -394,6 +399,7 @@ export default function Holidays({
                         id={"HolidayId"}
                         setSelected={setSelected}
                         gridRef={gridRef}
+                        additionalButtons={additionalButtons}
                         handleDownloadExcel={handleDownloadExcel}
                         selected={selected}
                         tableDataElements={holidays}

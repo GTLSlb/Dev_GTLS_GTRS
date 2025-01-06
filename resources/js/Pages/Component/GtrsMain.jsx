@@ -669,9 +669,7 @@ export default function GtrsMain({
                     />
 
                     <main className="w-full overflow-y-auto ">
-                        <div
-                            className="fixed left-0 top-20 z-10"
-                        >
+                        <div className="fixed left-0 top-20 z-10">
                             {broken && (
                                 <Button
                                     aria-label="chevron right icon"
@@ -713,7 +711,9 @@ export default function GtrsMain({
                                                 route="Dashboard_view"
                                                 element={
                                                     <MainCharts
-                                                        sideBarToggle={collapsed}
+                                                        sideBarToggle={
+                                                            collapsed
+                                                        }
                                                         chartsData={chartsData}
                                                         safetyData={safetyData}
                                                         accData={dataFromChild}
@@ -743,6 +743,9 @@ export default function GtrsMain({
                                                         }
                                                         minDate={minDate}
                                                         maxDate={maxDate}
+                                                        userPermission={
+                                                            userPermission
+                                                        }
                                                     />
                                                 }
                                                 currentUser={currentUser}
@@ -756,7 +759,7 @@ export default function GtrsMain({
                                         element={
                                             <ProtectedRoute
                                                 permission={userPermission}
-                                                route="ConsignmetsDetails_view"
+                                                route="ConsignmentsDetails_view"
                                                 element={
                                                     <ConsDetails
                                                         url={url}
@@ -887,6 +890,9 @@ export default function GtrsMain({
                                                         setNoDelData={
                                                             setNoDelData
                                                         }
+                                                        userPermission={
+                                                            userPermission
+                                                        }
                                                     />
                                                 }
                                                 currentUser={currentUser}
@@ -918,6 +924,9 @@ export default function GtrsMain({
                                                         }
                                                         setAdditionalData={
                                                             setAdditionalData
+                                                        }
+                                                        userPermission={
+                                                            userPermission
                                                         }
                                                     />
                                                 }
@@ -1087,6 +1096,9 @@ export default function GtrsMain({
                                                         }
                                                         accData={dataFromChild}
                                                         PerfData={PerfData}
+                                                        userPermission={
+                                                            userPermission
+                                                        }
                                                     />
                                                 }
                                                 currentUser={currentUser}

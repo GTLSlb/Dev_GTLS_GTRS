@@ -1,9 +1,9 @@
-import { useState } from "react";
-import axios from "axios";
-import swal from "sweetalert";
+import { getApiRequest, handleSessionExpiration } from "@/CommonFunctions";
 import { AlertToast } from "@/permissions";
-import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
+import axios from "axios";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import swal from "sweetalert";
 import GtrsButton from "../GtrsButton";
 
 function AddNewTransitDay({
@@ -81,7 +81,6 @@ function AddNewTransitDay({
         location?.state?.newTransitDay?.CustomerTypeId || null
     );
 
-
     async function fetchData() {
         const data = await getApiRequest(`${url}TransitNew`, {
             UserId: currentUser?.UserId,
@@ -123,11 +122,12 @@ function AddNewTransitDay({
                 },
             })
             .then((res) => {
+                AlertToast("Saved successfully", 1);
                 fetchData();
                 setNewTransitDay(null);
                 navigate(-1);
                 setIsLoading(false);
-                AlertToast("Saved successfully", 1);
+                
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
@@ -157,12 +157,15 @@ function AddNewTransitDay({
         <div className="p-8">
             <div className="shadow bg-white p-6 rounded-lg ">
                 <form onSubmit={AddTransit}>
-                    <p className="font-bold text-lg">{ object ? "Edit " : "Add " } Transit</p>
+                    <p className="font-bold text-lg">
+                        {object ? "Edit " : "Add "} Transit
+                    </p>
                     <div className="border-b mt-2" />
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-5 items-center py-4">
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label htmlFor="CustomerId" className="block w-48">
                                 Customer Name:
+                                <span className="text-red-500 text-sm">*</span>
                             </label>
                             <select
                                 id="CustomerId"
@@ -194,6 +197,9 @@ function AddNewTransitDay({
                                     className="block w-48"
                                 >
                                     Customer Type:
+                                    <span className="text-red-500 text-sm">
+                                        *
+                                    </span>
                                 </label>
                                 <select
                                     id="SafetyType"
@@ -276,6 +282,7 @@ function AddNewTransitDay({
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label htmlFor="SenderState" className="block w-48">
                                 Sender State:
+                                <span className="text-red-500 text-sm">*</span>
                             </label>
                             <select
                                 id="SenderState"
@@ -306,6 +313,7 @@ function AddNewTransitDay({
                                 className="block w-48"
                             >
                                 Receiver State:
+                                <span className="text-red-500 text-sm">*</span>
                             </label>
                             <select
                                 id="ReceiverState"
@@ -338,9 +346,26 @@ function AddNewTransitDay({
                                 name="name"
                                 id="SenderPostCode"
                                 defaultValue={
-                                    object ? object.SenderPostCode : null
+                                    object ? object.SenderPostCode : ""
                                 }
+                                min="0"
                                 className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
+                                onInput={(e) => {
+                                    const value = e.target.value;
+                                    if (value < 0) {
+                                        e.target.value = 0; // Reset to 0 if a negative value is entered
+                                    }
+                                }}
+                                onKeyDown={(e) => {
+                                    // Prevent negative symbol and exponential input
+                                    if (
+                                        e.key === "-" ||
+                                        e.key === "e" ||
+                                        e.key === "E"
+                                    ) {
+                                        e.preventDefault();
+                                    }
+                                }}
                             />
                         </div>
 
@@ -357,6 +382,23 @@ function AddNewTransitDay({
                                 }
                                 id="ReceiverPostCode"
                                 className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
+                                min={0}
+                                onInput={(e) => {
+                                    const value = e.target.value;
+                                    if (value < 0) {
+                                        e.target.value = 0; // Reset to 0 if a negative value is entered
+                                    }
+                                }}
+                                onKeyDown={(e) => {
+                                    // Prevent negative symbol and exponential input
+                                    if (
+                                        e.key === "-" ||
+                                        e.key === "e" ||
+                                        e.key === "E"
+                                    ) {
+                                        e.preventDefault();
+                                    }
+                                }}
                             />
                         </div>
 
@@ -386,6 +428,7 @@ function AddNewTransitDay({
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label htmlFor="name" className="block  w-48">
                                 Transit Time:{" "}
+                                <span className="text-red-500 text-sm">*</span>
                             </label>
                             <input
                                 type="number"
@@ -394,6 +437,23 @@ function AddNewTransitDay({
                                 id="TransitTime"
                                 required
                                 className="rounded sm:w-96 max-w-lg bg-gray-50 border border-gray-300 h-7"
+                                min={0}
+                                onInput={(e) => {
+                                    const value = e.target.value;
+                                    if (value < 0) {
+                                        e.target.value = 0; // Reset to 0 if a negative value is entered
+                                    }
+                                }}
+                                onKeyDown={(e) => {
+                                    // Prevent negative symbol and exponential input
+                                    if (
+                                        e.key === "-" ||
+                                        e.key === "e" ||
+                                        e.key === "E"
+                                    ) {
+                                        e.preventDefault();
+                                    }
+                                }}
                             />
                         </div>
                     </div>

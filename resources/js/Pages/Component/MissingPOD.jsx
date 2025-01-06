@@ -8,13 +8,14 @@ import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
-import { formatDateToExcel } from "@/CommonFunctions";
+import { formatDateToExcel, renderConsDetailsLink } from "@/CommonFunctions";
 import { useNavigate } from "react-router-dom";
 
 export default function MissingPOD({
     PerfData,
     filterValue,
     setFilterValue,
+    userPermission,
     accData,
 }) {
     window.moment = moment;
@@ -27,13 +28,11 @@ export default function MissingPOD({
     const maxDateArrive = getMinMaxValue(PerfData, "ArrivedDatetime", 2);
     const minDateDel = getMinMaxValue(PerfData, "DeliveredDate", 1);
     const maxDateDel = getMinMaxValue(PerfData, "DeliveredDate", 2);
-    // const data = PerfData.filter((obj) => obj.STATUS === "FAIL");
-    const handleClick = (coindex) => {
-        navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
-    };
+
     const falsePodOnly = PerfData.filter(function (entry) {
         return entry.POD === false;
     });
+    
     const [data, setData] = useState(falsePodOnly);
     const [filteredData, setFilteredData] = useState(data);
     const filterData = () => {
@@ -115,14 +114,11 @@ export default function MissingPOD({
             defaultWidth: 170,
             filterEditor: StringFilter,
             render: ({ value, data }) => {
-                return (
-                    <span
-                        className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => handleClick(data.ConsignmentID)}
-                    >
-                        {" "}
-                        {value}
-                    </span>
+                return renderConsDetailsLink(
+                    userPermission,
+                    value,
+                    data.ConsignmentId,
+                    navigate
                 );
             },
         },

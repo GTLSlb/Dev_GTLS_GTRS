@@ -51,26 +51,23 @@ function NewTransitDays({
         },
     ];
 
-    // const receiverStateOptions = createNewLabelObjects(
-    //     newTransitDays,
-    //     "ReceiverState"
-    // );
-    // const senderStateOptions = createNewLabelObjects(
-    //     newTransitDays,
-    //     "SenderState"
-    // );
-    
     const [senderStateOptions, setSenderStateOptions] = useState();
     const [receiverStateOptions, setReceiverStateOptions] = useState();
     useEffect(() => {
         if (newTransitDays) {
-            const updatedSenderStateOptions = createNewLabelObjects(newTransitDays, "SenderState");
-            const updatedReceiverStateOptions = createNewLabelObjects(newTransitDays, "ReceiverState");
-            
+            const updatedSenderStateOptions = createNewLabelObjects(
+                newTransitDays,
+                "SenderState"
+            );
+            const updatedReceiverStateOptions = createNewLabelObjects(
+                newTransitDays,
+                "ReceiverState"
+            );
+
             setSenderStateOptions(updatedSenderStateOptions);
             setReceiverStateOptions(updatedReceiverStateOptions);
         }
-    }, [newTransitDays]); 
+    }, [newTransitDays]);
     const customers = getUniqueCustomers(newTransitDays);
     function getUniqueCustomers(data) {
         // Create a Set to store unique customer names
@@ -120,8 +117,8 @@ function NewTransitDays({
     }
     const [columns, setColumns] = useState([]);
     useEffect(() => {
-        if(senderStateOptions && receiverStateOptions) {
-            if(canEditTransitDays(userPermission)){
+        if (senderStateOptions && receiverStateOptions) {
+            if (canEditTransitDays(userPermission)) {
                 setColumns([
                     {
                         name: "CustomerName",
@@ -241,177 +238,143 @@ function NewTransitDays({
                         render: ({ value, data }) => {
                             return (
                                 <div>
-                                        <button
-                                            className={
-                                                "rounded text-blue-500 justify-center items-center  "
-                                            }
-                                            onClick={() => {
-                                                handleEditClick(data);
-                                            }}
-                                        >
-                                            <span className="flex gap-x-1">
-                                                <PencilIcon className="h-4" />
-                                                Edit
-                                            </span>
-                                        </button>
+                                    <button
+                                        className={
+                                            "rounded text-blue-500 justify-center items-center  "
+                                        }
+                                        onClick={() => {
+                                            handleEditClick(data);
+                                        }}
+                                    >
+                                        <span className="flex gap-x-1">
+                                            <PencilIcon className="h-4" />
+                                            Edit
+                                        </span>
+                                    </button>
                                 </div>
                             );
                         },
                     },
-                ])
-            }else{
+                ]);
+            } else {
                 setColumns([
-                {
-                    name: "CustomerName",
-                    header: "Customer Name",
-                    type: "string",
-                    headerAlign: "center",
-                    minWidth: 170,
-                    defaultFlex: 1,
-                    textAlign: "center",
-                    filterEditor: SelectFilter,
-                    filterEditorProps: {
-                        multiple: false,
-                        wrapMultiple: false,
-                        dataSource: customers,
+                    {
+                        name: "CustomerName",
+                        header: "Customer Name",
+                        type: "string",
+                        headerAlign: "center",
+                        minWidth: 170,
+                        defaultFlex: 1,
+                        textAlign: "center",
+                        filterEditor: SelectFilter,
+                        filterEditorProps: {
+                            multiple: false,
+                            wrapMultiple: false,
+                            dataSource: customers,
+                        },
                     },
-                },
-                {
-                    name: "CustomerTypeId",
-                    header: "Customer Type",
-                    type: "string",
-                    headerAlign: "center",
-                    textAlign: "center",
-                    minWidth: 170,
-                    defaultFlex: 1,
-                    filterEditor: SelectFilter,
-                    filterEditorProps: {
-                        multiple: false,
-                        wrapMultiple: false,
-                        dataSource: types,
+                    {
+                        name: "CustomerTypeId",
+                        header: "Customer Type",
+                        type: "string",
+                        headerAlign: "center",
+                        textAlign: "center",
+                        minWidth: 170,
+                        defaultFlex: 1,
+                        filterEditor: SelectFilter,
+                        filterEditorProps: {
+                            multiple: false,
+                            wrapMultiple: false,
+                            dataSource: types,
+                        },
+                        render: ({ value, data }) => {
+                            return <div>{data.CustomerType}</div>;
+                        },
                     },
-                    render: ({ value, data }) => {
-                        return <div>{data.CustomerType}</div>;
+                    {
+                        name: "SenderState",
+                        header: "Sender State",
+                        type: "string",
+                        group: "senderDetails",
+                        headerAlign: "center",
+                        textAlign: "center",
+                        minWidth: 170,
+                        defaultFlex: 1,
+                        filterEditor: SelectFilter,
+                        filterEditorProps: {
+                            multiple: true,
+                            wrapMultiple: false,
+                            dataSource: senderStateOptions,
+                        },
                     },
-                },
-                {
-                    name: "SenderState",
-                    header: "Sender State",
-                    type: "string",
-                    group: "senderDetails",
-                    headerAlign: "center",
-                    textAlign: "center",
-                    minWidth: 170,
-                    defaultFlex: 1,
-                    filterEditor: SelectFilter,
-                    filterEditorProps: {
-                        multiple: true,
-                        wrapMultiple: false,
-                        dataSource: senderStateOptions,
+                    {
+                        name: "SenderPostCode",
+                        header: "Sender PostCode",
+                        type: "number",
+                        headerAlign: "center",
+                        group: "senderDetails",
+                        minWidth: 170,
+                        defaultFlex: 1,
+                        textAlign: "center",
+                        filterEditor: NumberFilter,
                     },
-                },
-                {
-                    name: "SenderPostCode",
-                    header: "Sender PostCode",
-                    type: "number",
-                    headerAlign: "center",
-                    group: "senderDetails",
-                    minWidth: 170,
-                    defaultFlex: 1,
-                    textAlign: "center",
-                    filterEditor: NumberFilter,
-                },
-                {
-                    name: "ReceiverName",
-                    header: "Receiver Name",
-                    type: "string",
-                    group: "receiverDetails",
-                    headerAlign: "center",
-                    minWidth: 170,
-                    defaultFlex: 1,
-                    textAlign: "center",
-                    filterEditor: StringFilter,
-                },
-                {
-                    name: "ReceiverState",
-                    header: "Receiver State",
-                    group: "receiverDetails",
-                    type: "string",
-                    headerAlign: "center",
-                    textAlign: "center",
-                    minWidth: 170,
-                    defaultFlex: 1,
-                    filterEditor: SelectFilter,
-                    filterEditorProps: {
-                        multiple: true,
-                        wrapMultiple: false,
-                        dataSource: receiverStateOptions,
+                    {
+                        name: "ReceiverName",
+                        header: "Receiver Name",
+                        type: "string",
+                        group: "receiverDetails",
+                        headerAlign: "center",
+                        minWidth: 170,
+                        defaultFlex: 1,
+                        textAlign: "center",
+                        filterEditor: StringFilter,
                     },
-                },
-                {
-                    name: "ReceiverPostCode",
-                    header: "Receiver PostCode",
-                    type: "number",
-                    headerAlign: "center",
-                    group: "receiverDetails",
-                    minWidth: 170,
-                    defaultFlex: 1,
-                    textAlign: "center",
-                    filterEditor: NumberFilter,
-                },
-                {
-                    name: "TransitTime",
-                    header: "Transit Time",
-                    type: "number",
-                    headerAlign: "center",
-                    minWidth: 170,
-                    defaultFlex: 1,
-                    textAlign: "center",
-                    filterEditor: NumberFilter,
-                }
-            ])
+                    {
+                        name: "ReceiverState",
+                        header: "Receiver State",
+                        group: "receiverDetails",
+                        type: "string",
+                        headerAlign: "center",
+                        textAlign: "center",
+                        minWidth: 170,
+                        defaultFlex: 1,
+                        filterEditor: SelectFilter,
+                        filterEditorProps: {
+                            multiple: true,
+                            wrapMultiple: false,
+                            dataSource: receiverStateOptions,
+                        },
+                    },
+                    {
+                        name: "ReceiverPostCode",
+                        header: "Receiver PostCode",
+                        type: "number",
+                        headerAlign: "center",
+                        group: "receiverDetails",
+                        minWidth: 170,
+                        defaultFlex: 1,
+                        textAlign: "center",
+                        filterEditor: NumberFilter,
+                    },
+                    {
+                        name: "TransitTime",
+                        header: "Transit Time",
+                        type: "number",
+                        headerAlign: "center",
+                        minWidth: 170,
+                        defaultFlex: 1,
+                        textAlign: "center",
+                        filterEditor: NumberFilter,
+                    },
+                ]);
             }
-            
         }
-    },[receiverStateOptions,senderStateOptions])
-   
+    }, [receiverStateOptions, senderStateOptions]);
+
     useEffect(() => {
         fetchData();
     }, []);
-    // useEffect(() => {
-    //     if(userPermission && canEditTransitDays(userPermission)){
-    //         setColumns([
-    //             ...columns,
-    //             {
-    //                 name: "edit",
-    //                 header: "Edit",
-    //                 headerAlign: "center",
-    //                 textAlign: "center",
-    //                 minWidth: 170,
-    //                 defaultFlex: 1,
-    //                 render: ({ value, data }) => {
-    //                     return (
-    //                         <div>
-    //                                 <button
-    //                                     className={
-    //                                         "rounded text-blue-500 justify-center items-center  "
-    //                                     }
-    //                                     onClick={() => {
-    //                                         handleEditClick(data);
-    //                                     }}
-    //                                 >
-    //                                     <span className="flex gap-x-1">
-    //                                         <PencilIcon className="h-4" />
-    //                                         Edit
-    //                                     </span>
-    //                                 </button>
-    //                         </div>
-    //                     );
-    //                 },
-    //             },
-    //         ]);
-    //     }
-    // },[userPermission])
+
     useEffect(() => {
         setFilteredData(newTransitDays);
     }, [newTransitDays]);
@@ -435,6 +398,8 @@ function NewTransitDays({
 
         const customCellHandlers = {
             TransitTime: (value) => (value ? `${value} days` : ""),
+            CustomerTypeId: (value, item) =>
+                value ? `${item.CustomerType}` : "",
         };
 
         exportToExcel(

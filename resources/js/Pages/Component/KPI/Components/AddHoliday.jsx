@@ -101,7 +101,7 @@ export default function AddHoliday({
     }
 
     return (
-        <div className="shadow bg-white p-6 rounded-lg ">
+        <div className="shadow bg-white p-6 rounded-lg">
             <form onSubmit={AddHoliday}>
                 <p className="font-bold text-lg">{object ? "Edit " : "Add "} Holiday</p>
                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-5 gap-y-5 items-center py-4">
@@ -258,6 +258,7 @@ export default function AddHoliday({
                     <GtrsButton
                         disabled={isLoading}
                         name={object ? "Edit" : "Create"}
+                        className="w-[5.5rem] h-[36px]"
                         type={"submit"}
                     />
                 </div>

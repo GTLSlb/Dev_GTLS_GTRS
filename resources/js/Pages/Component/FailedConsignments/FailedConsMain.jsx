@@ -8,27 +8,14 @@ import AnimatedLoading from "@/Components/AnimatedLoading";
 export default function FailedConsMain({
     url,
     PerfData,
-    setPerfData,
-    setActiveIndexGTRS,
-    gtccrUrl,
-    setLastIndex,
-    setactiveCon,
     filterValue,
     setFilterValue,
-    IDfilter,
-    setIncidentId,
     currentUser,
     userPermission,
     accData,
-    EDate,
-    setEDate,
     AToken,
-    SDate,
-    setSDate,
     failedReasons,
     setFailedReasons,
-    oldestDate,
-    latestDate,
 }) {
     const [isFetching, setIsfetching] = useState();
 
