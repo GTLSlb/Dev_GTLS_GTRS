@@ -1,20 +1,16 @@
-import React, { useState, useEffect, useCallback } from "react";
-3;
-import ReactDataGrid from "@inovua/reactdatagrid-community";
-import "@inovua/reactdatagrid-community/index.css";
-import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
-import {
-    ChevronDownIcon,
-    EyeIcon,
-} from "@heroicons/react/24/outline";
-import { saveAs } from "file-saver";
-import ExcelJS from "exceljs";
-import axios from "axios";
-import { useDisclosure } from "@nextui-org/react";
-import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
+import {
+    ChevronDownIcon
+} from "@heroicons/react/24/outline";
+import ReactDataGrid from "@inovua/reactdatagrid-community";
+import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
+import "@inovua/reactdatagrid-community/index.css";
+import { useDisclosure } from "@nextui-org/react";
+import axios from "axios";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import EventModal from "./EventModal";
-import { useRef } from "react";
 const gtrsWebUrl = window.Laravel.gtrsWeb;
 
 const columnMapping = {
@@ -30,7 +26,7 @@ const columnMapping = {
     advice: "Advice",
     information: "More information",
 };
-const loadData = ({ skip, limit, sortInfo, filterValue }) => {
+const loadData = async ({ skip, limit, sortInfo, filterValue }) => {
     const url =
         `${gtrsWebUrl}get-positions` +
         "?skip=" +
@@ -42,13 +38,11 @@ const loadData = ({ skip, limit, sortInfo, filterValue }) => {
         "&filterBy=" +
         JSON.stringify(filterValue);
 
-    return fetch(url).then((response) => {
-        const totalCount = response.headers.get("X-Total-Count");
-        return response.json().then((data) => {
-            // const totalCount = data.pagination.total;
-            return Promise.resolve({ data, count: parseInt(totalCount) });
-        });
-    });
+    const response = await fetch(url);
+    const totalCount = response.headers.get("X-Total-Count");
+    const data = await response.json();
+    console.log(data);
+    return await Promise.resolve({ data, count: parseInt(totalCount) });
 };
 
 const defaultFilterValue = [
@@ -71,6 +65,13 @@ const defaultFilterValue = [
         emptyValue: "",
     },
     {
+        name: "hours_difference",
+        type: "date",
+        operator: "eq",
+        value: "",
+        emptyValue: "",
+    },
+    {
         name: "road_name",
         type: "string",
         operator: "contains",
@@ -86,7 +87,7 @@ const defaultFilterValue = [
     { name: "information", type: "string", operator: "contains", value: "" },
 ];
 
-function TraffiComp() {
+function TrafficComp() {
     function formatTime(hours) {
         const years = Math.floor(hours / (24 * 30 * 12));
         const months = Math.floor((hours % (24 * 30 * 12)) / (24 * 30));
@@ -777,19 +778,17 @@ function TraffiComp() {
             setExportLoading(false);
         });
     }
-    const getexceldata = ({ skip, limit, sortInfo, filterValue }) => {
+    const getexceldata = async ({ skip, limit, sortInfo, filterValue }) => {
         setExportLoading(true)
         const url =
             `${gtrsWebUrl}get-positions`;
 
-        return fetch(url).then((response) => {
-            const totalCount = response.headers.get("X-Total-Count");
-            return response.json().then((data) => {
-                // const totalCount = data.pagination.total;
-                setDatatoexport(data);
-                handleDownloadExcel(data);
-            });
-        });
+        const response = await fetch(url);
+        const totalCount = response.headers.get("X-Total-Count");
+        const data = await response.json();
+        // const totalCount = data.pagination.total;
+        setDatatoexport(data);
+        handleDownloadExcel(data);
     };
 
     const [filterValue, setFilterValue] = useState(defaultFilterValue);
@@ -897,4 +896,4 @@ function TraffiComp() {
     );
 }
 
-export default TraffiComp;
+export default TrafficComp;
