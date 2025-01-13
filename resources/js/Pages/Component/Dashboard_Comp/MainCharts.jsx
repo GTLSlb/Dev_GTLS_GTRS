@@ -93,8 +93,8 @@ export default function MainCharts({
         setFilteredData(chartsData);
     }, []);
     const [layout, setLayout] = useState([
-        { i: "card02", x: 0, y: 0, w: 1, h: 5 }, //Information
-        { i: "card06", x: 2, y: 0, w: 1, h: 5 }, // Spend By month
+        { i: "card02", x: 0, y: 0, w: 1, h: 4.5 }, //Information
+        { i: "card06", x: 2, y: 0, w: 1, h: 4.5 }, // Spend By month
         { i: "card04", x: 0, y: 2, w: 1, h: 3 }, //Consignment Status
         { i: "card12", x: 2, y: 0, w: 1, h: 3 }, // Consignment By Month
         { i: "card08", x: 0, y: 2, w: 1, h: 3 }, // Pod True Vs False
@@ -106,8 +106,8 @@ export default function MainCharts({
     const ResetLayout = () => {
         // Filter the options based on the selected receivers
         setLayout([
-            { i: "card02", x: 0, y: 0, w: 1, h: 5 }, //Information
-            { i: "card06", x: 2, y: 0, w: 1, h: 5 }, // Spend By month
+            { i: "card02", x: 0, y: 0, w: 1, h: 4.5 }, //Information
+            { i: "card06", x: 2, y: 0, w: 1, h: 4.5 }, // Spend By month
             { i: "card04", x: 0, y: 2, w: 1, h: 3 }, //Consignment Status
             { i: "card12", x: 2, y: 0, w: 1, h: 3 }, // Consignment By Month
             { i: "card08", x: 0, y: 2, w: 1, h: 3 }, // Pod True Vs False
