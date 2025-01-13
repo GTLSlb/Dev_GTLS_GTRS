@@ -1,38 +1,9 @@
-import MainCharts from "./Dashboard_Comp/MainCharts";
-import React, { useState } from "react";
-import GtrsCons from "./GtrsCons";
-import ConsPerf from "./ConsPerf";
-import NoDelivery from "./NoDelivery";
-import AdditionalCharges from "./AdditionalCharges";
-import DriverLogin from "./DriverLogin";
-import SafetyRep from "./safetyRep";
-import RDDMain from "./RDD/RDDMain";
-import FailedConsMain from "./FailedConsignments/FailedConsMain";
-import MissingPOD from "./MissingPOD";
-import { useEffect } from "react";
-import Holidays from "./KPI/Holidays";
-import KPIReasons from "./KPI/KPIReasons";
-import TransportRep from "./TransportRep";
-import NewKPI from "./KPI/NewKPI";
-import NewTransitDays from "./KPI/NewTransitDays";
-import AddNewTransitDay from "./KPI/AddNewTransitDay";
-import GraphPresentation from "./Presentation/GraphPresentation";
-import DeliveryReportPage from "./ReportsPage/DeliveryReportPage";
-import Incident from "./Incident/Incident";
-import { getApiRequest, ProtectedRoute } from "@/CommonFunctions";
+import { ProtectedRoute } from "@/CommonFunctions";
 import {
     getLatestDespatchDate,
     getMinMaxValue,
-    getOldestDespatchDate,
+    getOldestDespatchDate
 } from "@/Components/utils/dateUtils";
-import TrafficComp from "./TrafficPage/TrafficComp";
-import ConsTrack from "./ConsignmentTracking/ConsTrack";
-import CollapseSidebar from "./CollapseSidebar";
-import { Button } from "@nextui-org/react";
-import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
-import ConsMap from "./TrafficPage/ConsMap";
-import { Routes, Route } from "react-router-dom";
-import NotFoundRedirect from "../NotFoundRedirect";
 import {
     getFiltersAddCharges,
     getFiltersCons,
@@ -46,12 +17,38 @@ import {
     getFiltersPOD,
     getFiltersRDD,
     getFiltersSafety,
-    getFiltersTransport,
+    getFiltersTransport
 } from "@/Components/utils/filters";
+import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
+import { Button } from "@nextui-org/react";
+import { useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
 import ConsDetails from "../ConsDetails";
-import NewConsignmentTracking from "./New Consignment Tracking/NewConsignmentTracking";
 import MainPageGTRS from "../MainPageGTRS";
+import NotFoundRedirect from "../NotFoundRedirect";
+import AdditionalCharges from "./AdditionalCharges";
+import CollapseSidebar from "./CollapseSidebar";
+import ConsPerf from "./ConsPerf";
+import MainCharts from "./Dashboard_Comp/MainCharts";
+import DriverLogin from "./DriverLogin";
+import FailedConsMain from "./FailedConsignments/FailedConsMain";
+import GtrsCons from "./GtrsCons";
+import Incident from "./Incident/Incident";
+import AddNewTransitDay from "./KPI/AddNewTransitDay";
+import Holidays from "./KPI/Holidays";
+import NewKPI from "./KPI/NewKPI";
+import NewTransitDays from "./KPI/NewTransitDays";
+import MissingPOD from "./MissingPOD";
+import NewConsignmentTracking from "./New Consignment Tracking/NewConsignmentTracking";
+import NoDelivery from "./NoDelivery";
+import GraphPresentation from "./Presentation/GraphPresentation";
+import RDDMain from "./RDD/RDDMain";
 import RealFoodKPIPack from "./RealFoodKPIPack/RealFoodKPIPack";
+import DeliveryReportPage from "./ReportsPage/DeliveryReportPage";
+import SafetyRep from "./safetyRep";
+import ConsMap from "./TrafficPage/ConsMap";
+import TrafficComp from "./TrafficPage/TrafficComp";
+import TransportRep from "./TransportRep";
 
 export default function GtrsMain({
     setCusomterAccounts,

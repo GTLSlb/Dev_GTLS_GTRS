@@ -19,7 +19,7 @@ import ConsIcon from "@/assets/icons/ConsIcon.png";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import List from "@mui/icons-material/List";
 import HelpCenterRounded from "@mui/icons-material/HelpCenterRounded";
-import {ToastContainer} from 'react-toastify'
+import { ToastContainer } from "react-toastify";
 import {
     SelectItem,
     Divider,
@@ -151,7 +151,7 @@ function NewConsignmentTracking() {
             .catch((error) => {
                 setLoading(false);
                 console.log(error);
-                AlertToast(error.response.data.message , 2);
+                AlertToast(error.response.data.message, 2);
             });
     };
 
@@ -441,7 +441,10 @@ function NewConsignmentTracking() {
                         <div className=" border-2 bg-white h-full p-5 rounded-md overflow-auto">
                             <div className=" font-bold flex justify-between items-center">
                                 <div>
-                                    <div className="text-xs text-zinc-500"> Consignment No</div>
+                                    <div className="text-xs text-zinc-500">
+                                        {" "}
+                                        Consignment No
+                                    </div>
                                     <div>
                                         {
                                             consignmentDetails
