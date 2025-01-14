@@ -188,6 +188,28 @@ export default function ConsDetails({ url, currentUser }) {
                         />
                     )}
 
+                    {Consignment[0].ConsReferences && (
+                        <div className="overflow-hidden mx-3 mt-8 bg-white shadow sm:rounded-xl shadow-lg  mx-auto">
+                            <div className="px-4 pb-3 sm:px-6">
+                                <div className="px-4 py-5 sm:px-6">
+                                    <h3 className="text-base font-semibold leading-6 text-gray-900">
+                                        References
+                                    </h3>
+                                </div>
+                                <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
+                                    <dl className="sm:divide-y sm:divide-gray-200">
+                                        <div className="py-4 sm:grid sm:grid-cols-1 sm:gap-4 sm:py-5 sm:px-6">
+                                            <dt className="text-sm font-medium text-gray-900">
+                                                {Consignment[0].ConsReferences.map(
+                                                    (item) => item.Value
+                                                ).join(", ")}
+                                            </dt>
+                                        </div>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     {Consignment[0].SenderReciever && (
                         <SenderReceiverDetails
                             senderReceiver={Consignment[0].SenderReciever}
