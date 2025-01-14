@@ -94,8 +94,7 @@ export default function AdditionalCharges({
                 return renderConsDetailsLink(
                     userPermission,
                     value,
-                    data.ConsignmentId,
-                    navigate
+                    data.ConsignmentID
                 );
             },
         },

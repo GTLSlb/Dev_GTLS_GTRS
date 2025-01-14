@@ -15,6 +15,7 @@ const ExportPopover = ({ columns, handleDownloadExcel, filteredData }) => {
             }, 1000);
         }
     };
+
     return (
         <Popover className="relative">
             <button onMouseEnter={handleMouseEnter}>
@@ -22,8 +23,8 @@ const ExportPopover = ({ columns, handleDownloadExcel, filteredData }) => {
                     className={`inline-flex items-center text-xs justify-center gap-1 w-[5.5rem] h-[36px] font-bold ${
                         filteredData?.length === 0
                             ? "bg-gray-300 cursor-not-allowed"
-                            : "font-medium rounded-lg dark:bg-gray-800 dark:hover:bg-gray-600"
-                    } px-2 py-2 text-white shadow-sm hover:bg-gray-400 focus:outline-none rounded-lg`}
+                            : "font-medium rounded-lg bg-gray-800 hover:bg-gray-400"
+                    } px-2 py-2 text-white shadow-sm focus:outline-none rounded-lg`}
                     disabled={filteredData?.length === 0}
                 >
                     Export
@@ -50,7 +51,7 @@ const ExportPopover = ({ columns, handleDownloadExcel, filteredData }) => {
                     <div className="max-w-md flex-auto overflow-hidden rounded-lg bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
                         <div className="p-4">
                             <div className="mt-2 flex flex-col">
-                                {columns.map(({ name, header }) => (
+                                {columns.filter((column) => column.name.toLowerCase() !== "actions" && column.name.toLowerCase() !== "edit").map(({ name, header }) => (
                                     <label key={name}>
                                         <input
                                             type="checkbox"

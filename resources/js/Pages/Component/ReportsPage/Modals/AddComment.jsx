@@ -105,9 +105,9 @@ export default function AddComment({
             ariaHideApp={false}
             isOpen={isOpen}
             className="fixed inset-0 flex items-center justify-center "
-            overlayClassName="fixed inset-0 bg-black bg-opacity-60"
+            overlayClassName="fixed inset-0 bg-black bg-opacity-60 z-50"
         >
-            <div className="bg-white w-[40%] rounded-lg shadow-lg py-6 px-8">
+            <div className="bg-white w-[80%] lg:w-[45%] rounded-lg shadow-lg py-6 px-8">
                 <div className="flex justify-between border-b-1 border-[#D5D5D5]">
                     <h2 className="text-2xl font-bold mb-4">
                         {"Add New Comment"}

@@ -88,8 +88,7 @@ export default function GtrsCons({
                 return renderConsDetailsLink(
                     userPermission,
                     value,
-                    data.ConsignmentId,
-                    navigate
+                    data.ConsignmentId
                 );
             },
         },
@@ -283,7 +282,6 @@ export default function GtrsCons({
                         gridRef.current.allColumns.forEach((column) => {
                             if (column.name === "DespatchDate") {
                                 // Clear filter for DespatchDate column using DataGrid API if available
-                                // console.log(column.computedFilterValue);
                                 column.computedFilterValue.value = {
                                     start: "",
                                     end: "",

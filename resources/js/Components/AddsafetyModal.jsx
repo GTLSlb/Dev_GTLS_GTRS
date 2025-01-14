@@ -146,7 +146,7 @@ export default function SafetyModal({
             ariaHideApp={false}
             isOpen={isOpen}
             className="fixed inset-0 flex items-center justify-center "
-            overlayClassName="fixed inset-0 bg-black bg-opacity-60"
+            overlayClassName="fixed inset-0 bg-black bg-opacity-60 z-50"
         >
             <div className="bg-white w-96 2xl:w-[28%] rounded-lg shadow-lg p-6 ">
                 <div className="flex justify-end">
@@ -242,8 +242,9 @@ export default function SafetyModal({
                             </label>
                             <select
                                 id="DebtorId"
+
                                 name="DebtorId"
-                                className="w-full border border-gray-300 rounded px-3 py-2"
+                                className="w-full border border-gray-300 rounded px-3 py-2 max-h-[40px] overflow-auto"
                                 defaultValue={modalDebtorId}
                                 value={formValues.DebtorId}
                                 onChange={handleChange}

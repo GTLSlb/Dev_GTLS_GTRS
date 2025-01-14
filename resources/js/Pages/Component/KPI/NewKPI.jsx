@@ -96,7 +96,6 @@ function NewKPI({
         })
     );
 
-    // console.log(KPIData[0])
     const filterData = () => {
         const intArray = accData?.map((str) => {
             const intValue = parseInt(str);
@@ -255,8 +254,7 @@ function NewKPI({
                 return renderConsDetailsLink(
                     userPermission,
                     value,
-                    data.ConsignmentId,
-                    navigate
+                    data.ConsignmentId
                 );
             },
         },
@@ -666,7 +664,7 @@ function NewKPI({
                 />
             </div>
         );
-    }, [newColumns, accData, filteredData]);
+    }, [newColumns, accData, filteredData, loading]);
 
     return (
         <div>

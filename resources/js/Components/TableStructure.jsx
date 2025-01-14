@@ -22,7 +22,6 @@ export default function TableStructure({
     id,
 }) {
     // 1) Memoize columns and data
-
     const columns = useMemo(() => columnsElements, [columnsElements]);
     const filters = useMemo(() => filterValueElements, [filterValueElements]);
     const groups = useMemo(() => groupsElements, [groupsElements]);
@@ -153,7 +152,7 @@ export default function TableStructure({
 
 
     const TableStructure = () => {
-        
+
     }
     return (
         <div className="">
@@ -178,9 +177,9 @@ export default function TableStructure({
                         virtualized
                         key={"persistend-grid"}
                         idProperty={id}
-                        // handle={(ref) =>
-                        //     (gridRef.current = ref ? ref.current : [])
-                        // }
+                        handle={(ref) =>
+                            (gridRef.current = ref ? ref.current : [])
+                        }
                         className="rounded-lg shadow-lg overflow-hidden"
                         pagination
                         defaultPageSize={20}

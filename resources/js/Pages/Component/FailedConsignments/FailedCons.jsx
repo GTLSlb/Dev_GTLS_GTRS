@@ -11,7 +11,7 @@ import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
-import { formatDateToExcel, renderConsDetailsLink } from "@/CommonFunctions";
+import { formatDateToExcel, renderConsDetailsLink, renderIncidentDetailsLink } from "@/CommonFunctions";
 import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 
@@ -103,8 +103,7 @@ export default function FailedCons({
                 return renderConsDetailsLink(
                     userPermission,
                     value,
-                    data.ConsignmentId,
-                    navigate
+                    data.ConsignmentID
                 );
             },
         },
@@ -116,18 +115,10 @@ export default function FailedCons({
             headerAlign: "center",
             textAlign: "center",
             render: ({ value, data }) => {
-                return (
-                    <span
-                        className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => {
-                            navigate("/gtrs/incident", {
-                                state: { incidentId: data.IncidentId },
-                            });
-                        }}
-                    >
-                        {" "}
-                        {value}
-                    </span>
+                return renderIncidentDetailsLink(
+                    userPermission,
+                    value,
+                    data.IncidentId
                 );
             },
             filterEditor: StringFilter,

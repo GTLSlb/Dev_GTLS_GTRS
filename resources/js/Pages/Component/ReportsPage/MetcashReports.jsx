@@ -73,7 +73,7 @@ export default function MetcashReports({
             ]
         );
     }
-    console.log(data);
+
     return (
         <div>
             {filterValue && data && (

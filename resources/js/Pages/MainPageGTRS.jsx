@@ -7,7 +7,6 @@ export default function MainPageGTRS({sidebarElements, user, currentUser, AToken
     // useEffect(() => {
     //     if(user){
     //        navigateToFirstAllowedPage({setSidebarElements, user, navigate})
-    //        console.log(navigateToFirstAllowedPage({setSidebarElements, user, navigate}))
     //     }
     // },[user])
 

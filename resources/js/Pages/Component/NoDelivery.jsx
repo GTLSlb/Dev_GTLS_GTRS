@@ -128,8 +128,7 @@ export default function NoDelivery({
                 return renderConsDetailsLink(
                     userPermission,
                     value,
-                    data,
-                    navigate
+                    data
                 );
             },
         },

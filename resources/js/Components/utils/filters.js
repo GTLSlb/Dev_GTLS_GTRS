@@ -450,6 +450,17 @@ export const getFiltersHolidays = (minDateHol, maxDateHol) => {
     ];
 };
 
+export const getFiltersKPIReasons = () => {
+    return [
+        {
+            name: "ReasonName",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+    ];
+};
+
 export const getFiltersFailed = (minDispatchDate, maxDispatchDate) => {
     return [
         {

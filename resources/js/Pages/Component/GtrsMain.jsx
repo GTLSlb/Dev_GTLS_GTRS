@@ -40,6 +40,7 @@ import {
     getFiltersHolidays,
     getFiltersKPI,
     getFiltersNewTransit,
+    getFiltersKPIReasons,
     getFiltersNoDelInfo,
     getFiltersPOD,
     getFiltersRDD,
@@ -50,6 +51,7 @@ import ConsDetails from "../ConsDetails";
 import NewConsignmentTracking from "./New Consignment Tracking/NewConsignmentTracking";
 import MainPageGTRS from "../MainPageGTRS";
 import RealFoodKPIPack from "./RealFoodKPIPack/RealFoodKPIPack";
+import KPIReasons from "./KPI/KPIReasons";
 
 export default function GtrsMain({
     setCusomterAccounts,
@@ -153,6 +155,9 @@ export default function GtrsMain({
     );
     const [filtersHolidays, setFiltersHolidays] = useState(
         getFiltersHolidays(minDateHol, maxDateHol)
+    );
+    const [filtersKPIReasons, setFiltersKPIReasons] = useState(
+        getFiltersKPIReasons()
     );
     const [filtersFailed, setFiltersFailed] = useState(
         getFiltersFailed(minDispatchDate, maxDispatchDate)
@@ -1141,39 +1146,33 @@ export default function GtrsMain({
                                             />
                                         }
                                     />
-                                    {/*<Route
+                                    <Route
                                         path="/kpi/reasons"
                                         element={
                                             <ProtectedRoute
                                                 permission={userPermission}
                                                 route="View_KPIReasons"
                                                 element={
-                                                    <Route
-                                                        path="/kpi-reasons"
-                                                        element={
-                                                            <KPIReasons
-                                                                url={url}
-                                                                currentUser={
-                                                                    currentUser
-                                                                }
-                                                                kpireasonsData={
-                                                                    kpireasonsData
-                                                                }
-                                                                AToken={AToken}
-                                                                setkpireasonsData={
-                                                                    setkpireasonsData
-                                                                }
-                                                                userPermission={
-                                                                    userPermission
-                                                                }
-                                                            />
+                                                    <KPIReasons
+                                                        url={url}
+                                                        filterValue={
+                                                            filtersKPIReasons
+                                                        }
+                                                        setFilterValue={
+                                                            setFiltersKPIReasons
                                                         }
                                                         currentUser={
                                                             currentUser
                                                         }
-                                                        setToken={setToken}
-                                                        setCurrentUser={
-                                                            setCurrentUser
+                                                        kpireasonsData={
+                                                            kpireasonsData
+                                                        }
+                                                        AToken={AToken}
+                                                        setkpireasonsData={
+                                                            setkpireasonsData
+                                                        }
+                                                        userPermission={
+                                                            userPermission
                                                         }
                                                     />
                                                 }
@@ -1182,7 +1181,10 @@ export default function GtrsMain({
                                                 setCurrentUser={setCurrentUser}
                                             />
                                         }
-                                    />*/}
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
+                                    />
                                     <Route
                                         path="/transport"
                                         element={

@@ -32,7 +32,7 @@ export default function MissingPOD({
     const falsePodOnly = PerfData.filter(function (entry) {
         return entry.POD === false;
     });
-    
+
     const [data, setData] = useState(falsePodOnly);
     const [filteredData, setFilteredData] = useState(data);
     const filterData = () => {
@@ -117,8 +117,7 @@ export default function MissingPOD({
                 return renderConsDetailsLink(
                     userPermission,
                     value,
-                    data.ConsignmentId,
-                    navigate
+                    data.ConsignmentID
                 );
             },
         },

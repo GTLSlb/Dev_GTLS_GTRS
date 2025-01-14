@@ -144,8 +144,7 @@ export default function RDDTable({
                 return renderConsDetailsLink(
                     userPermission,
                     value,
-                    data.ConsignmentId,
-                    navigate
+                    data.ConsignmentId
                 );
             },
         },

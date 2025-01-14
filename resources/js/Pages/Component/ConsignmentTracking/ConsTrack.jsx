@@ -29,7 +29,7 @@ function ConsTrack({
             .get(`${gtrsWebUrl}/conswithevents`)
             .then((response) => setFilteredData(response.data))
             .catch((err) => {
-                console.log("Error", err);
+                console.log(err);
                 setFilteredData([])
             });
     }, []);
@@ -85,7 +85,7 @@ function ConsTrack({
         });
         return newData;
     };
-    console.log(filteredData);
+
     const [receiverStateOptions, setReceiverStateOptions] = useState(
         createNewLabelObjects(filteredData, "SenderState") || []
     );

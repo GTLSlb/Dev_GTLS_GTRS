@@ -4,13 +4,13 @@ export const handleFilterTable = (gridRef, filteredData) => {
         document.querySelectorAll('input[name="column"]:checked')
     ).map((checkbox) => checkbox.value);
 
-    let allHeaderColumns = gridRef.current.visibleColumns.map((column) => ({
+    let allHeaderColumns = gridRef != null &&gridRef?.current?.visibleColumns.map((column) => ({
         name: column.name,
         value: column.computedFilterValue?.value,
         type: column.computedFilterValue?.type,
         operator: column.computedFilterValue?.operator,
     }));
-    let selectedColVal = allHeaderColumns.filter(
+    let selectedColVal = allHeaderColumns?.filter(
         (col) => col.name !== "edit"
     );
     const filterValue = [];

@@ -84,10 +84,10 @@ export default function ViewComments({
         <ReactModal
             ariaHideApp={false}
             isOpen={isOpen}
-            className="fixed inset-0 flex items-center justify-center "
-            overlayClassName="fixed inset-0 bg-black bg-opacity-60"
+            className="fixed inset-0 flex items-center justify-center w-full"
+            overlayClassName="fixed inset-0 bg-black bg-opacity-60 z-50"
         >
-            <div className="bg-white w-[40%] rounded-lg shadow-lg py-6 px-8">
+            <div className="bg-white w-[80%] lg:w-[45%] rounded-lg shadow-lg py-6 px-8">
                 <div className="flex justify-between pb-4 border-b-1 border-[#D5D5D5]">
                     <h2 className="text-2xl font-bold text-gray-500">Comments</h2>
                     <button
@@ -115,15 +115,15 @@ export default function ViewComments({
                         <div className="max-h-[21rem] overflow-auto pr-1 containerscroll">
                             {data?.map((c, index) => (
                                 <div className="flex flex-col gap-4 border-b-1 border-[#D5D5D5] py-3">
-                                    <div className="flex pr-2">
-                                        <div className="w-[95%]">
+                                    <div className="flex flex-col gap-1 pr-2">
+                                        <div>
                                         {isEditing && editIndx === index
                                             ? <textarea type="text" className="border-[#D5D5D5] rounded-lg w-full" defaultValue={c?.Comment} value={comment} onChange={(e)=>{setComment(e.target.value)}} />
                                             :<p>{c?.Comment}</p>
                                         }
                                         </div>
                                         {isEditing && editIndx === index
-                                            ? <div className="flex mt-auto gap-4 ml-3 text-sm h-[1.6rem]">
+                                            ? <div className="flex self-end mt-auto gap-4 ml-3 text-sm h-[1.6rem]">
                                                 <button onClick={()=>{setIsEditing(false); setCommentId(null); setEditIndx(null)}} disabled={isLoading} className="text-gray-500">Cancel</button>
                                                 {
                                                     isLoading

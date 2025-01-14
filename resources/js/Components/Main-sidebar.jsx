@@ -233,9 +233,9 @@ export default function MainSidebar({
                                     <span className="mt-2">Support</span>
                                 </button>
                             </a>
-                            <button onClick={ ()=>window.location.href= '/logout'}>
                                 <ResponsiveNavLink
                                     as="button"
+                                    onClick={() => window.location.href= '/logout'}
                                     className="flex flex-col hover:bg-gray-900 hover:text-white"
                                 >
                                     <ArrowRightOnRectangleIcon className="w-7 ml-2 text-gray-400" />
@@ -243,7 +243,6 @@ export default function MainSidebar({
                                         LOGOUT
                                     </span>
                                 </ResponsiveNavLink>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -432,9 +431,9 @@ export default function MainSidebar({
                                             </span>
                                         </button>
                                     </a>
-                                    <button onClick={() => window.location.href= '/logout'}>
                                         <ResponsiveNavLink
                                             as="button"
+                                            onClick={() => window.location.href= '/logout'}
                                             className="flex flex-col hover:bg-gray-900 hover:text-white w-8 h-14"
                                         >
                                             <ArrowRightOnRectangleIcon className="w-7 ml-2 text-gray-400" />
@@ -442,7 +441,6 @@ export default function MainSidebar({
                                                 LOGOUT
                                             </span>
                                         </ResponsiveNavLink>
-                                    </button>
                                 </div>
                             </Dialog.Panel>
                         </Transition.Child>

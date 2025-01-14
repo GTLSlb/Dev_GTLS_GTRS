@@ -222,7 +222,6 @@ export default function ConsPerf({
         });
     }
 
-    console.log(filteredData)
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
             <div className="sm:flex sm:items-center">

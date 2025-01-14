@@ -9,7 +9,6 @@ import { useEffect, useState } from "react";
 import MetcashReports from "./MetcashReports";
 import OtherReports from "./OtherReports";
 import WoolworthsReports from "./WoolworthsReports";
-
 import { renderConsDetailsLink } from "@/CommonFunctions";
 import {
     canAddDeliveryReportComment, canViewMetcashDeliveryReport, canViewOtherDeliveryReport, canViewWoolworthsDeliveryReport
@@ -499,8 +498,7 @@ export default function DeliveryReportPage({
                 return renderConsDetailsLink(
                     userPermission,
                     value,
-                    data.ConsignmentId,
-                    navigate
+                    data.ConsignmentID
                 );
             },
         },
@@ -860,6 +858,7 @@ export default function DeliveryReportPage({
             commentsData={commentsData}
         />,
     ];
+
     return (
         <div className="min-h-full px-8">
             <div className="sm:flex-auto mt-6">

@@ -5,8 +5,8 @@ import { PublicClientApplication } from "@azure/msal-browser";
 import Cookies from "js-cookie";
 import "react-toastify/dist/ReactToastify.css";
 import swal from "sweetalert";
-import { AlertToast, canViewDetails } from "./permissions";
-
+import { AlertToast, canViewDetails, canViewIncidentDetails } from "./permissions";
+import { Link } from "react-router-dom";
 const msalConfig = {
     auth: {
         clientId: "05f70999-6ca7-4ee8-ac70-f2d136c50288",
@@ -235,7 +235,11 @@ export function formatDateFromExcelWithNoTime(dateValue) {
         return ""; // Return empty string if invalid date
     }
 
-    const utcDate = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+    const utcDate = Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate()
+    );
     return utcDate / 86400000 + 25569;
 }
 
@@ -355,24 +359,34 @@ export function navigateToFirstAllowedPage({
     }
 }
 
-export function renderConsDetailsLink(userPermission, text, value, navigate) {
-    const handleClick = () => {
-        navigate("/gtrs/consignment-details", {
-            state: { activeCons: value },
-        });
-    };
-
+export function renderConsDetailsLink(userPermission, text, value) {
     if (canViewDetails(userPermission)) {
         return (
-            <span
+            <Link
+                to={`/gtrs/consignment-details`}
+                state={{ activeCons: value }}
                 className="underline text-blue-500 hover:cursor-pointer"
-                onClick={() => handleClick(value)}
             >
-                {" "}
                 {text}
-            </span>
+            </Link>
         );
     } else {
         return <span className=""> {text}</span>;
+    }
+}
+
+export function renderIncidentDetailsLink(userPermission, text, value) {
+    if (canViewIncidentDetails(userPermission)) {
+        return (
+            <Link
+                to={`/gtrs/incident`}
+                state={{ incidentId: value }}
+                className="underline text-blue-500 hover:cursor-pointer"
+            >
+                {text}
+            </Link>
+        );
+    } else {
+        return <span className="">{text}</span>;
     }
 }

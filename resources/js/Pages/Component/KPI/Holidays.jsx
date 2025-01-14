@@ -14,6 +14,7 @@ import AnimatedLoading from "@/Components/AnimatedLoading";
 import GtrsButton from "../GtrsButton";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
+import {ToastContainer} from 'react-toastify';
 
 window.moment = moment;
 export default function Holidays({
@@ -48,16 +49,17 @@ export default function Holidays({
             setIsFetching(true);
             fetchData();
         }
-    }, []); // Empty dependency array ensures the effect runs only once
-    const gridRef = useRef(null);
+    }, []);
 
+    const gridRef = useRef(null);
     async function fetchData() {
         const data = await getApiRequest(`${url}Holidays`, {
             UserId: currentUser?.UserId,
         });
 
         if (data) {
-            setHolidays(data);
+            const sortedHolidays = data.sort((a, b) => b.HolidayDate.localeCompare(a.HolidayDate));
+            setHolidays(sortedHolidays);
             setIsFetching(false);
         }
     }
@@ -351,13 +353,7 @@ export default function Holidays({
         <div>
             {canAddHolidays(userPermission) ? (
                 <div>
-                    {showAdd ? (
-                        <GtrsButton
-                            name={"Cancel"}
-                            onClick={ToggleShow}
-                            className="w-[5.5rem] h-[36px]"
-                        />
-                    ) : (
+                    {!showAdd && (
                         <GtrsButton
                             name={"Add holiday"}
                             onClick={ToggleShow}
@@ -370,6 +366,8 @@ export default function Holidays({
     );
     return (
         <div>
+            {/* Added this for toast container to show */}
+            <ToastContainer />
             {isFetching ? (
                 <AnimatedLoading />
             ) : (
@@ -392,6 +390,7 @@ export default function Holidays({
                             setHoliday={setHoliday}
                             setShowAdd={setShowAdd}
                             fetchData={fetchData}
+                            closeModal={ToggleShow}
                         />
                     ) : null}
 

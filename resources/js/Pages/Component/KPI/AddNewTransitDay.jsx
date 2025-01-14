@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import GtrsButton from "../GtrsButton";
-
+import { ToastContainer } from "react-toastify";
 function AddNewTransitDay({
     url,
     currentUser,
@@ -127,7 +127,6 @@ function AddNewTransitDay({
                 setNewTransitDay(null);
                 navigate(-1);
                 setIsLoading(false);
-                
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
@@ -155,22 +154,27 @@ function AddNewTransitDay({
     }
     return (
         <div className="p-8">
-            <div className="shadow bg-white p-6 rounded-lg ">
+            {/* Added this for toast container to show */}
+            <ToastContainer />
+            <div className="shadow bg-white p-4 lg:p-6 rounded-lg">
                 <form onSubmit={AddTransit}>
                     <p className="font-bold text-lg">
                         {object ? "Edit " : "Add "} Transit
                     </p>
-                    <div className="border-b mt-2" />
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-5 items-center py-4">
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="CustomerId" className="block w-48">
+                    <div className="border-b my-2" />
+                    <div className="flex flex-col gap-5">
+                        <div className="col-span-2 flex flex-col lg:flex-row items-center gap-x-2 w-full">
+                            <label
+                                htmlFor="CustomerId"
+                                className="block w-full lg:w-48"
+                            >
                                 Customer Name:
                                 <span className="text-red-500 text-sm">*</span>
                             </label>
                             <select
                                 id="CustomerId"
                                 name="CustomerId"
-                                className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
+                                className="w-full border border-gray-300 rounded px-3 py-2"
                                 value={selectedCustomer}
                                 onChange={(e) => {
                                     setSelectedCustomer(e.target.value);
@@ -194,7 +198,7 @@ function AddNewTransitDay({
                             <div className="col-span-2 flex items-center gap-x-2">
                                 <label
                                     htmlFor="SafetyType"
-                                    className="block w-48"
+                                    className="block w-full lg:w-48"
                                 >
                                     Customer Type:
                                     <span className="text-red-500 text-sm">
@@ -204,7 +208,7 @@ function AddNewTransitDay({
                                 <select
                                     id="SafetyType"
                                     name="SafetyType"
-                                    className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
+                                    className="w-full border border-gray-300 rounded px-3 py-2"
                                     value={selectedType}
                                     onChange={(e) => {
                                         setSelectedType(e.target.value);
@@ -231,14 +235,14 @@ function AddNewTransitDay({
                             <div className="col-span-2 flex items-center gap-x-2">
                                 <label
                                     htmlFor="SafetyType"
-                                    className="block w-48"
+                                    className="block w-full lg:w-48"
                                 >
                                     Customer Type:
                                 </label>
                                 <select
                                     id="SafetyType"
                                     name="SafetyType"
-                                    className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
+                                    className="w-full border border-gray-300 rounded px-3 py-2"
                                     value={selectedType}
                                     onChange={(e) => {
                                         setSelectedType(e.target.value);
@@ -260,211 +264,258 @@ function AddNewTransitDay({
                                     })}
                                 </select>
                             </div>
-                        ) : (
-                            <div className="col-span-2"></div>
-                        )}
+                        ) : null}
 
-                        {/* Sender Title Border  */}
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <div className="flex flex-col">
-                                <p className="font-bold text-lg">Sender</p>
+                        <div className="grid grid-cols-2 gap-5 w-full">
+                            {/* Sender Title Border  */}
+                            <div className="flex flex-col col-span-2 lg:col-span-1">
+                                <div className="flex flex-col">
+                                    <p className="font-bold text-lg">Sender</p>
+                                </div>
+
+                                <div className="flex flex-col gap-2 lg:gap-5">
+                                    {/* Sender State  */}
+                                    <div className="flex flex-col lg:flex-row items-center gap-x-2">
+                                        <label
+                                            htmlFor="SenderState"
+                                            className="block w-full lg:w-48"
+                                        >
+                                            Sender State:
+                                            <span className="text-red-500 text-sm">
+                                                *
+                                            </span>
+                                        </label>
+                                        <select
+                                            id="SenderState"
+                                            name="SenderState"
+                                            className="w-full border border-gray-300 rounded px-3 py-2"
+                                            value={selectedSstate}
+                                            onChange={(e) => {
+                                                setSelectedSstate(
+                                                    e.target.value
+                                                );
+                                            }}
+                                            required
+                                        >
+                                            <option value="">
+                                                --Select a State--
+                                            </option>
+
+                                            {states?.map((state) => {
+                                                return (
+                                                    <option
+                                                        key={state.id}
+                                                        value={state.id}
+                                                    >
+                                                        {state.label}
+                                                    </option>
+                                                );
+                                            })}
+                                        </select>
+                                    </div>
+
+                                    {/* Sender PostCode  */}
+                                    <div className="flex flex-col lg:flex-row items-center">
+                                        <label
+                                            htmlFor="name"
+                                            className="block w-full lg:w-48"
+                                        >
+                                            Sender PostCode:{" "}
+                                        </label>
+                                        <input
+                                            type="number"
+                                            name="name"
+                                            id="SenderPostCode"
+                                            defaultValue={
+                                                object
+                                                    ? object.SenderPostCode
+                                                    : ""
+                                            }
+                                            min="0"
+                                            className="rounded w-full bg-gray-50 border border-gray-300 h-7"
+                                            onInput={(e) => {
+                                                const value = e.target.value;
+                                                if (value < 0) {
+                                                    e.target.value = 0; // Reset to 0 if a negative value is entered
+                                                }
+                                            }}
+                                            onKeyDown={(e) => {
+                                                // Prevent negative symbol and exponential input
+                                                if (
+                                                    e.key === "-" ||
+                                                    e.key === "e" ||
+                                                    e.key === "E"
+                                                ) {
+                                                    e.preventDefault();
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Receiver Title Border  */}
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <div className="flex flex-col">
+                            {/* Receiver Title Border  */}
+                            <div className="flex flex-col col-span-2 lg:col-span-1">
                                 <p className="font-bold text-lg">Receiver</p>
-                            </div>
-                        </div>
 
-                        {/* Sender State  */}
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="SenderState" className="block w-48">
-                                Sender State:
-                                <span className="text-red-500 text-sm">*</span>
-                            </label>
-                            <select
-                                id="SenderState"
-                                name="SenderState"
-                                className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
-                                value={selectedSstate}
-                                onChange={(e) => {
-                                    setSelectedSstate(e.target.value);
-                                }}
-                                required
-                            >
-                                <option value="">--Select a State--</option>
+                                <div className="flex flex-col gap-2 lg:gap-5">
+                                    {/* Receiver State  */}
+                                    <div className="flex flex-col lg:flex-row items-center gap-x-2">
+                                        <label
+                                            htmlFor="ReceiverState"
+                                            className="block w-full lg:w-48"
+                                        >
+                                            Receiver State:
+                                            <span className="text-red-500 text-sm">
+                                                *
+                                            </span>
+                                        </label>
+                                        <select
+                                            id="ReceiverState"
+                                            name="ReceiverState"
+                                            className="w-full border border-gray-300 rounded px-3 py-2"
+                                            value={selectedRstate}
+                                            onChange={(e) => {
+                                                setSelectedRstate(
+                                                    e.target.value
+                                                );
+                                            }}
+                                            required
+                                        >
+                                            <option value="">
+                                                --Select a State--
+                                            </option>
 
-                                {states?.map((state) => {
-                                    return (
-                                        <option key={state.id} value={state.id}>
-                                            {state.label}
-                                        </option>
-                                    );
-                                })}
-                            </select>
-                        </div>
+                                            {states?.map((state) => {
+                                                return (
+                                                    <option
+                                                        key={state.id}
+                                                        value={state.id}
+                                                    >
+                                                        {state.label}
+                                                    </option>
+                                                );
+                                            })}
+                                        </select>
+                                    </div>
 
-                        {/* Receiver State  */}
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <label
-                                htmlFor="ReceiverState"
-                                className="block w-48"
-                            >
-                                Receiver State:
-                                <span className="text-red-500 text-sm">*</span>
-                            </label>
-                            <select
-                                id="ReceiverState"
-                                name="ReceiverState"
-                                className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
-                                value={selectedRstate}
-                                onChange={(e) => {
-                                    setSelectedRstate(e.target.value);
-                                }}
-                                required
-                            >
-                                <option value="">--Select a State--</option>
+                                    {/* Receiver PostCode  */}
+                                    <div className="flex flex-col lg:flex-row items-center gap-x-2">
+                                        <label
+                                            htmlFor="name"
+                                            className="block w-full lg:w-48"
+                                        >
+                                            Receiver PostCode:{" "}
+                                        </label>
+                                        <input
+                                            type="number"
+                                            name="name"
+                                            defaultValue={
+                                                object
+                                                    ? object.ReceiverPostCode
+                                                    : ""
+                                            }
+                                            id="ReceiverPostCode"
+                                            className="rounded w-full bg-gray-50 border border-gray-300 h-7"
+                                            min={0}
+                                            onInput={(e) => {
+                                                const value = e.target.value;
+                                                if (value < 0) {
+                                                    e.target.value = 0; // Reset to 0 if a negative value is entered
+                                                }
+                                            }}
+                                            onKeyDown={(e) => {
+                                                // Prevent negative symbol and exponential input
+                                                if (
+                                                    e.key === "-" ||
+                                                    e.key === "e" ||
+                                                    e.key === "E"
+                                                ) {
+                                                    e.preventDefault();
+                                                }
+                                            }}
+                                        />
+                                    </div>
 
-                                {states?.map((state) => {
-                                    return (
-                                        <option key={state.id} value={state.id}>
-                                            {state.label}
-                                        </option>
-                                    );
-                                })}
-                            </select>
-                        </div>
-                        {/* Sender PostCode  */}
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="name" className="block w-48 ">
-                                Sender PostCode:{" "}
-                            </label>
-                            <input
-                                type="number"
-                                name="name"
-                                id="SenderPostCode"
-                                defaultValue={
-                                    object ? object.SenderPostCode : ""
-                                }
-                                min="0"
-                                className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
-                                onInput={(e) => {
-                                    const value = e.target.value;
-                                    if (value < 0) {
-                                        e.target.value = 0; // Reset to 0 if a negative value is entered
-                                    }
-                                }}
-                                onKeyDown={(e) => {
-                                    // Prevent negative symbol and exponential input
-                                    if (
-                                        e.key === "-" ||
-                                        e.key === "e" ||
-                                        e.key === "E"
-                                    ) {
-                                        e.preventDefault();
-                                    }
-                                }}
-                            />
-                        </div>
-
-                        {/* Receiver PostCode  */}
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="name" className="block w-48">
-                                Receiver PostCode:{" "}
-                            </label>
-                            <input
-                                type="number"
-                                name="name"
-                                defaultValue={
-                                    object ? object.ReceiverPostCode : ""
-                                }
-                                id="ReceiverPostCode"
-                                className="rounded sm:w-96 bg-gray-50 border border-gray-300 h-7"
-                                min={0}
-                                onInput={(e) => {
-                                    const value = e.target.value;
-                                    if (value < 0) {
-                                        e.target.value = 0; // Reset to 0 if a negative value is entered
-                                    }
-                                }}
-                                onKeyDown={(e) => {
-                                    // Prevent negative symbol and exponential input
-                                    if (
-                                        e.key === "-" ||
-                                        e.key === "e" ||
-                                        e.key === "E"
-                                    ) {
-                                        e.preventDefault();
-                                    }
-                                }}
-                            />
-                        </div>
-
-                        <div className="col-span-2 flex items-center gap-x-2"></div>
-
-                        {/* Receiver Name  */}
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="name" className="block w-48 ">
-                                Receiver Name:{" "}
-                            </label>
-                            <input
-                                type="text"
-                                name="name"
-                                defaultValue={object ? object.ReceiverName : ""}
-                                id="ReceiverName"
-                                className="rounded sm:w-96 max-w-lg bg-gray-50 border border-gray-300 h-7"
-                            />
-                        </div>
-
-                        {/* Sender Title Border  */}
-                        <div className="col-span-4 flex items-center gap-x-2">
-                            <div className="flex flex-col">
-                                <p className="font-bold text-lg">Transit</p>
+                                    {/* Receiver Name  */}
+                                    <div className="flex flex-col lg:flex-row items-center gap-x-2">
+                                        <label
+                                            htmlFor="name"
+                                            className="block w-full lg:w-48 "
+                                        >
+                                            Receiver Name:{" "}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            defaultValue={
+                                                object
+                                                    ? object.ReceiverName
+                                                    : ""
+                                            }
+                                            id="ReceiverName"
+                                            className="rounded w-full max-w-lg bg-gray-50 border border-gray-300 h-7"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         {/* Transit Time  */}
-                        <div className="col-span-2 flex items-center gap-x-2">
-                            <label htmlFor="name" className="block  w-48">
-                                Transit Time:{" "}
-                                <span className="text-red-500 text-sm">*</span>
-                            </label>
-                            <input
-                                type="number"
-                                defaultValue={object ? object.TransitTime : ""}
-                                name="TransitTime"
-                                id="TransitTime"
-                                required
-                                className="rounded sm:w-96 max-w-lg bg-gray-50 border border-gray-300 h-7"
-                                min={0}
-                                onInput={(e) => {
-                                    const value = e.target.value;
-                                    if (value < 0) {
-                                        e.target.value = 0; // Reset to 0 if a negative value is entered
+                        <div className="flex flex-col gap-2 lg:gap-5">
+                            <div className="flex flex-col">
+                                <p className="font-bold text-lg">Transit</p>
+                            </div>
+
+                            <div className="flex flex-col lg:flex-row items-center gap-x-2">
+                                <label
+                                    htmlFor="name"
+                                    className="block w-full lg:w-48"
+                                >
+                                    Transit Time:{" "}
+                                    <span className="text-red-500 text-sm">
+                                        *
+                                    </span>
+                                </label>
+                                <input
+                                    type="number"
+                                    defaultValue={
+                                        object ? object.TransitTime : ""
                                     }
-                                }}
-                                onKeyDown={(e) => {
-                                    // Prevent negative symbol and exponential input
-                                    if (
-                                        e.key === "-" ||
-                                        e.key === "e" ||
-                                        e.key === "E"
-                                    ) {
-                                        e.preventDefault();
-                                    }
-                                }}
-                            />
+                                    name="TransitTime"
+                                    id="TransitTime"
+                                    required
+                                    className="rounded w-full max-w-lg bg-gray-50 border border-gray-300 h-7"
+                                    min={0}
+                                    onInput={(e) => {
+                                        const value = e.target.value;
+                                        if (value < 0) {
+                                            e.target.value = 0; // Reset to 0 if a negative value is entered
+                                        }
+                                    }}
+                                    onKeyDown={(e) => {
+                                        // Prevent negative symbol and exponential input
+                                        if (
+                                            e.key === "-" ||
+                                            e.key === "e" ||
+                                            e.key === "E"
+                                        ) {
+                                            e.preventDefault();
+                                        }
+                                    }}
+                                />
+                            </div>
                         </div>
                     </div>
-                    <div className="flex w-full gap-x-2 justify-end">
+                    <div className="flex w-full gap-x-2 mt-4 justify-end">
                         <GtrsButton
                             name={"Cancel"}
                             onClick={CancelHandle}
+                            className={"py-4"}
                             type={"button"}
                         />{" "}
                         <GtrsButton
-                            name={object ? "Edit" : "Create"}
+                            name={object ? "Edit" : "Add"}
+                            className={"py-4"}
                             type={"submit"}
                         />
                     </div>

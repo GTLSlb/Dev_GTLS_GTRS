@@ -4,7 +4,7 @@ import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import { useState, useEffect, useRef } from "react";
 import TableStructure from "@/Components/TableStructure";
 import { PencilIcon } from "@heroicons/react/20/solid";
-import { canAddNewTransitDays, canEditTransitDays } from "@/permissions";
+import { AlertToast, canAddNewTransitDays, canEditTransitDays } from "@/permissions";
 import { getApiRequest } from "@/CommonFunctions";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
@@ -34,7 +34,8 @@ function NewTransitDays({
         });
 
         if (data) {
-            setNewTransitDays(data);
+            const sortedTransit = data.sort((a, b) => b.AddedAt.localeCompare(a.AddedAt));
+            setNewTransitDays(sortedTransit);
             setIsFetching(false);
         }
     }

@@ -195,7 +195,7 @@ export default function CollapseSidebar({
             transition: "color 0.3s ease", // Smooth transition for color changes
         }),
     };
-    
+
 
     const handleClick = (id, item) => {
         const updatedElements = sidebarElements?.map((element) => {
@@ -289,7 +289,7 @@ export default function CollapseSidebar({
 
     return (
         sidebarElements?.length > 0 && (
-            <div className="h-full relative z-20">
+            <div className="h-full relative z-30">
                 <Sidebar
                     collapsed={collapsed} // collapsed the menu
                     toggled={toggled}
