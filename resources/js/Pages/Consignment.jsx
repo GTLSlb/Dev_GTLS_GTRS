@@ -202,6 +202,8 @@ export default function ConsignmentD({
             width = 100;
         }
 
+
+
     if (!Consignment) {
         return (
             <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
@@ -506,7 +508,30 @@ export default function ConsignmentD({
                     ) : (
                         ""
                     )}
-
+                    {Consignment[0].ConsReferences ? (
+                        <div className="overflow-hidden mx-3 mt-8 bg-white shadow sm:rounded-xl shadow-lg  mx-auto">
+                            <div className="px-4 pb-3 sm:px-6">
+                                <div className="px-4 py-5 sm:px-6">
+                                    <h3 className="text-base font-semibold leading-6 text-gray-900">
+                                        References
+                                    </h3>
+                                </div>
+                                <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
+                                    <dl className="sm:divide-y sm:divide-gray-200">
+                                        <div className="py-4 sm:grid sm:grid-cols-1 sm:gap-4 sm:py-5 sm:px-6">
+                                            <dt className="text-sm font-medium text-gray-900">
+                                                {Consignment[0].ConsReferences.map(
+                                                    (item) => item.Value
+                                                ).join(", ")}
+                                            </dt>
+                                        </div>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        ""
+                    )}
                     {Consignment[0].SenderReciever ? (
                         <div className="overflow-hidden mx-3 mt-8 bg-white shadow sm:rounded-xl shadow-lg  mx-auto">
                             <div className="px-4 py-5 sm:px-6">
@@ -863,30 +888,6 @@ export default function ConsignmentD({
                     ) : (
                         ""
                     )}
-                    {/* <div className="overflow-hidden mx-3 mt-8 bg-white shadow sm:rounded-xl shadow-lg  mx-auto">
-                            <div className="px-4 pb-3 sm:px-6">
-                                <div className="px-4 py-5 sm:px-6">
-                                    <h3 className="text-base font-semibold leading-6 text-gray-900">
-                                        POD Details
-                                    </h3>
-                                </div>
-                                <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
-                                    <dl className="sm:divide-y sm:divide-gray-200">
-                                        <div className="py-4 sm:grid sm:grid-cols-6 sm:gap-4 sm:py-5 sm:px-6">
-                                            <dt className="text-sm font-medium text-gray-500 col-span-3">
-                                                file.pdf
-                                            </dt>
-                                            <dd className="mt-1 text-sm text-gray-900  sm:mt-0 col-span-2">
-                                                Download
-                                            </dd>
-                                            <dt className="text-sm font-medium text-gray-500">
-                                                Click to enlarge
-                                            </dt>
-                                        </div>
-                                    </dl>
-                                </div>
-                                </div>
-                            </div> */}
                 </div>
             </div>
         );
