@@ -59,7 +59,7 @@ export default function Logout({ currentUser, setToken, setCurrentUser }) {
 
     return (
         <div className="h-screen w-full flex justify-center items-center bg-gradient-to-br from-gray-500 to-goldd">
-            <div className="py-10 bg-white flex flex-col items-center justify-center rounded-md border border-white w-[28%]">
+            <div className="py-10 px-4 bg-white flex flex-col items-center justify-center rounded-md border border-white w-[85%] sm:w-[45%] lg:w-[28%]">
                 <div className="pt-10 pb-14">
                     <LogoutSVG className="fill-goldd h-8 w-8" />
                 </div>

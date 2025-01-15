@@ -12,7 +12,7 @@ const routes = [
     "/gtrs/add-transit",
     "/gtrs/incident",
     "/gtrs/kpi/holidays",
-    "gtrs/kpi/reasons",
+    "/gtrs/kpi/reasons",
     "/gtrs/performance",
     "/gtrs/failed-consignments",
     "/gtrs/transport",

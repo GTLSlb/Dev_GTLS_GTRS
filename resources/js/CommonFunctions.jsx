@@ -315,9 +315,7 @@ export function navigateToFirstAllowedPage({
         });
 
         // Find the current menu item for the active route
-        const currentItem = items.find(
-            (item) => item.url === window.location.pathname
-        );
+        const currentItem = findItemByURL(items, window.location.pathname);
 
         if (currentItem) {
             // Mark the current item as active
@@ -327,6 +325,11 @@ export function navigateToFirstAllowedPage({
             items.forEach((item) => {
                 if (item.url !== window.location.pathname) {
                     item.current = false;
+                }
+                // Check if the item has options
+                if (item.options) {
+                    // Check if any of the options are current
+                    item.current = item.options.some((option) => option.current);
                 }
             });
 
@@ -358,6 +361,21 @@ export function navigateToFirstAllowedPage({
         setSidebarElements(items);
     }
 }
+
+function findItemByURL(items, url) {
+    for (const item of items) {
+      if (item.url === url) {
+        return item;
+      }
+      if (item.options) {
+        const option = findItemByURL(item.options, url);
+        if (option) {
+          return option;
+        }
+      }
+    }
+    return null;
+  }
 
 export function renderConsDetailsLink(userPermission, text, value) {
     if (canViewDetails(userPermission)) {

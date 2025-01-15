@@ -4,7 +4,7 @@ import "@inovua/reactdatagrid-community/index.css";
 import axios from "axios";
 import "../../../../../css/graphTable.css";
 import { AlertToast } from "@/permissions";
-import {ToastContainer,toast} from 'react-toastify'
+import {ToastContainer,toast} from 'react-toastify';
 
 // Component
 function InlineTable({

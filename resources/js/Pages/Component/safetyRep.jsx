@@ -6,6 +6,7 @@ import AddSafetyType from "./safetyComp/AddSafety/safetyTypes/AddSafetyType";
 import { canViewSafetyType } from "@/permissions";
 import { getApiRequest } from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import { ToastContainer } from 'react-toastify';
 
 export default function SafetyRep({
     accData,
@@ -213,6 +214,8 @@ export default function SafetyRep({
     }, [userPermission]);
     return (
         <div>
+            {/* Added toast container since it wasn't showing */}
+            <ToastContainer />
             {isFetching || isFetchingCauses || isFetchingTypes ? (
                 <AnimatedLoading />
             ) : (

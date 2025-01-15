@@ -14,6 +14,8 @@ import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import moment from "moment";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ToastContainer } from 'react-toastify';
+import { AlertToast } from "@/permissions";
 
 export default function SafetyRepTable({
     currentPageRep,
@@ -44,6 +46,7 @@ export default function SafetyRepTable({
     const [checked, setChecked] = useState(false);
     const [indeterminate, setIndeterminate] = useState(false);
     const [selectedRecords, setselectedRecords] = useState([]);
+    const [isSuccessfull, setIsSuccessfull] = useState(false);
     useLayoutEffect(() => {
         const isIndeterminate =
             selectedRecords?.length > 0 &&
@@ -412,8 +415,16 @@ export default function SafetyRepTable({
         <div></div>
     );
 
+    useEffect(() => {
+        if(isSuccessfull){
+            AlertToast("Saved Successfully", 1);
+            setIsSuccessfull(false);
+        }
+    },[isSuccessfull])
     return (
         <div>
+            {/* Added toast container since it wasn't showing */}
+            <ToastContainer />
             <div className=" w-full bg-smooth pb-20">
                 {!newColumns ? (
                     <AnimatedLoading />
@@ -444,6 +455,7 @@ export default function SafetyRepTable({
             />
             <SafetyModal
                 url={url}
+                setIsSuccessfull={setIsSuccessfull}
                 AToken={AToken}
                 customerAccounts={debtorsOptions}
                 safetyTypes={safetyTypes}

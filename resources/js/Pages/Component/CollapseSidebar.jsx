@@ -328,7 +328,7 @@ export default function CollapseSidebar({
                                     {currentUser.FirstName}{" "}
                                     {currentUser.LastName}
                                 </p>
-                                <p className="text-xs truncate w-32">
+                                <p className="text-xs truncate w-36">
                                     {currentUser.Email}
                                 </p>
                             </div>
@@ -336,6 +336,7 @@ export default function CollapseSidebar({
                                 isIconOnly
                                 className="bg-zinc-300 hover:bg-zinc-200"
                                 aria-label="Like"
+                                size="sm"
                                 onClick={() => {
                                     setIsOpen(false);
                                     setCollapsed(!collapsed);
@@ -350,7 +351,7 @@ export default function CollapseSidebar({
                                 >
                                     <KeyboardDoubleArrowRightIcon
                                         className={
-                                            collapsed ? "w-5 h-5" : "w-5 h-5"
+                                            collapsed ? "p-[2px] w-2 h-2" : "p-[2px] w-2 h-2"
                                         }
                                     />
                                 </div>
