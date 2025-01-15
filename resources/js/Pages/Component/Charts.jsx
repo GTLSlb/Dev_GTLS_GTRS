@@ -229,6 +229,13 @@ export default function charts({
             value: null,
             emptyValue: "",
         },
+        {
+            name: "ConsReferences",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
     ]);
     const [filtersTransport, setFiltersTransport] = useState([
         {

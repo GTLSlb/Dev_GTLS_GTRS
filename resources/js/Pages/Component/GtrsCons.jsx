@@ -419,6 +419,7 @@ export default function GtrsCons({
             ReceiverSuburb: "Receiver Suburb",
             ReceiverReference: "Receiver Reference",
             ReceiverZone: "Receiver Zone",
+            ConsReferences: "Consignment References",
         };
         const fieldsToCheck = [
             "AccountName",
@@ -454,6 +455,10 @@ export default function GtrsCons({
                         } else {
                             acc[column] = "";
                         }
+                    } else if (columnKey === "ConsReferences") {
+                        acc[column] = person[columnKey]
+                            .map((item) => item.Value)
+                            .join(", ");
                     } else if (fieldsToCheck.includes(columnKey)) {
                         acc[column] = isDummyAccount(person[columnKey]);
                     } else {
@@ -479,7 +484,7 @@ export default function GtrsCons({
             pattern: "solid",
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
-        headerRow.alignment = { horizontal: "center" };
+        headerRow.alignment = { horizontal: "left" };
 
         // Add the data to the worksheet
         data.forEach((rowData) => {
@@ -488,6 +493,7 @@ export default function GtrsCons({
             // Apply date format to the Despatch Date column
             const despatchDateIndex =
                 newSelectedColumns.indexOf("Despatch Date");
+
             if (despatchDateIndex !== -1) {
                 const cell = row.getCell(despatchDateIndex + 1); // +1 because ExcelJS is 1-based indexing
                 cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
@@ -495,7 +501,7 @@ export default function GtrsCons({
         });
 
         // Set column widths
-        const columnWidths = newSelectedColumns.map(() => 15); // Set width of each column
+        const columnWidths = newSelectedColumns.map(() => 25); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: newSelectedColumns[index],
@@ -777,6 +783,31 @@ export default function GtrsCons({
                 );
             },
         },
+        {
+            name: "ConsReferences",
+            header: "Consignment References",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 200,
+            filterEditor: StringFilter,
+
+            getFilterValue: ({ data }) => {
+                if (data.ConsReferences && data.ConsReferences.length > 0) {
+                    // Join all reference values into a single string for filtering
+                    return data.ConsReferences.map(ref => ref.Value).join(", ");
+                }
+                return "";
+            },
+            render: ({ value }) => {
+                const result =
+                    Array.isArray(value) && value.length > 0
+                        ? `${value[0].Value || ""}${
+                              value.length > 1 ? "..." : ""
+                          }` // Extract the first Value and add "..." if there's more
+                        : ""; // Return an empty string if `x` is not an array or empty
+                return isDummyAccount(result);
+            },
+        },
     ]);
     const filterData = () => {
         const intArray = accData?.map((str) => {
@@ -983,6 +1014,15 @@ export default function GtrsCons({
                                                 className="text-dark rounded focus:ring-goldd"
                                             />{" "}
                                             POD
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
+                                                value="ConsReferences"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            Consignment References
                                         </label>
                                     </div>
                                 </div>
