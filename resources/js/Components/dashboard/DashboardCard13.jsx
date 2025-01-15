@@ -5,6 +5,7 @@ import { Pie } from "@ant-design/plots";
 const BasicPieCharts = (props) => {
     const chartTitle = props.chartTitle;
     const chartData = props.chartData;
+    const labelContent = props.labelContent;
     const [data, setData] = useState([]);
     useEffect(() => {
         setData(chartData);
@@ -28,7 +29,7 @@ const BasicPieCharts = (props) => {
         label: {
             type: "spider",
             labelHeight: 30,
-            content: "{name} - {value} - {percentage}",
+            content: labelContent ? labelContent : "{name} - {value} - {percentage}",
             style: {
                 fontSize: 12,
               },
