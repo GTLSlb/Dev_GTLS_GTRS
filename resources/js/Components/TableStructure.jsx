@@ -150,10 +150,6 @@ export default function TableStructure({
         };
     }, [columns]);
 
-
-    const TableStructure = () => {
-
-    }
     return (
         <div className="">
             <div className="sm:flex sm:items-center mt-3">
