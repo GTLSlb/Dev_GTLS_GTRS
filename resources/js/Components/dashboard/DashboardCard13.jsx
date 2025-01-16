@@ -5,7 +5,31 @@ import { Pie } from "@ant-design/plots";
 const BasicPieCharts = (props) => {
     const chartTitle = props.chartTitle;
     const chartData = props.chartData;
+    const labelContent = props.labelContent;
     const [data, setData] = useState([]);
+    const [legendPosition, setLegendPosition] = useState("right");
+
+    const totalValue = chartData.reduce((acc, curr) => acc + curr.value, 0);
+
+    const updateLegendPosition = () => {
+        if (window.innerWidth <= 1550) {
+            setLegendPosition("bottom"); // Laptop screen or smaller
+        } else {
+            setLegendPosition("right"); // Larger screens
+        }
+    };
+    useEffect(() => {
+        // Update legend position on load
+        updateLegendPosition();
+
+        // Add event listener for screen resize
+        window.addEventListener("resize", updateLegendPosition);
+
+        // Clean up the event listener
+        return () => {
+            window.removeEventListener("resize", updateLegendPosition);
+        };
+    }, [window.innerWidth]);
     useEffect(() => {
         setData(chartData);
     }, [chartData]);
@@ -28,10 +52,27 @@ const BasicPieCharts = (props) => {
         label: {
             type: "spider",
             labelHeight: 30,
-            content: "{name} - {value} - {percentage}",
+            content: labelContent
+                ? labelContent
+                : "{name} - {value} - {percentage}",
             style: {
                 fontSize: 12,
-              },
+                textAlign: "center",
+                lineHeight: 16, // Adjust line height to improve wrapping
+                wordBreak: "break-word", // Allow word wrapping
+            },
+        },
+        tooltip: {
+            formatter: (datum) => {
+                return {
+                    name: datum.label,
+                    value: `${((datum.value / totalValue) * 100).toFixed(2)}%`, // Display percentage
+                };
+            },
+        },
+        legend: {
+            position: legendPosition,
+            layout: legendPosition === "bottom" ? "horizontal" : "vertical",
         },
         interactions: [
             {
@@ -47,9 +88,6 @@ const BasicPieCharts = (props) => {
             <header className="px-5 py-4 border-b border-slate-100">
                 <h2 className="font-semibold text-slate-800">{chartTitle}</h2>
             </header>
-            {/*  <div className="">
-                
-            </div> */}
             <Pie {...config} className="p-4" />
         </div>
     );

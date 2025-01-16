@@ -126,3 +126,24 @@ export const isDummyAccountWithDummyData = (dummy, value) => {
         return value
     }
 };
+
+
+/**
+ * Format the value as a comma-separated string with decimal places.
+ *
+ * @param {number} value - The value to be formatted.
+ * @return {string} - The formatted value.
+ */
+
+export const formatNumberWithCommas = (value) => {
+    if (value % 1 === 0) {
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    } else {
+        const roundedValue = parseFloat(value).toFixed(2);
+        const parts = roundedValue.split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return parts.join(".");
+    }
+};
+
+

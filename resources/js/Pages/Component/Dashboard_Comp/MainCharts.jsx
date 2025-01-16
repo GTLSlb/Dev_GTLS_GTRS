@@ -77,15 +77,16 @@ export default function MainCharts({
         setFilteredData(chartsData);
     }, []);
     const [layout, setLayout] = useState([
-        { i: "card02", x: 0, y: 0, w: 1, h: 5 }, //Information
-        { i: "card06", x: 2, y: 0, w: 1, h: 5 }, // Spend By month
-        { i: "card04", x: 0, y: 2, w: 1, h: 3 }, //Consignment Status
-        { i: "card12", x: 2, y: 0, w: 1, h: 3 }, // Consignment By Month
-        { i: "card08", x: 0, y: 2, w: 1, h: 3 }, // Pod True Vs False
-        { i: "card03", x: 2, y: 2, w: 1, h: 3 }, // Pod Status
-        { i: "card03_2", x: 0, y: 4, w: 1, h: 3 },
-        { i: "card13", x: 2, y: 4, w: 1, h: 3 },
-        { i: "card14", x: 0, y: 4, w: 1, h: 3 },
+        { i: "card01", x: 0, y: 0, w: 1, h: 5 }, //Information
+        { i: "card02", x: 2, y: 0, w: 1, h: 5 }, // Spend By month
+        { i: "card03", x: 0, y: 2, w: 1, h: 3 }, //Consignment Status
+        { i: "card11", x: 0, y: 2, w: 1, h: 3 }, //Consignment Status
+        { i: "card04", x: 2, y: 0, w: 1, h: 3 }, // Consignment By Month
+        { i: "card05", x: 0, y: 2, w: 1, h: 3 }, // Pod True Vs False
+        { i: "card06", x: 2, y: 2, w: 1, h: 3 }, // Pod Status
+        { i: "card07", x: 0, y: 4, w: 1, h: 3 },
+        { i: "card09", x: 2, y: 4, w: 1, h: 3 },
+        { i: "card10", x: 0, y: 4, w: 1, h: 3 },
     ]);
     const [cols, setCols] = useState(2);
     useEffect(() => {
@@ -198,6 +199,33 @@ export default function MainCharts({
             }
         }
 
+        return counter;
+    };
+    const getKPIPerformanceCounter = (data) => {
+        const counter = [];
+    
+        for (const item of data) {
+            let consStatus = item.ConsStatus;
+    
+            if (consStatus === "PENDING") {
+                continue;
+            }
+
+            if (consStatus === "PASS") {
+                consStatus = "Delivered on Time"; 
+            } else if (consStatus === "FAIL") {
+                consStatus = "Not Delivered on Time"; 
+            }
+    
+            const existingStatus = counter.find((obj) => obj.label === consStatus);
+    
+            if (existingStatus) {
+                existingStatus.value++;
+            } else {
+                counter.push({ label: consStatus, value: 1 });
+            }
+        }
+    
         return counter;
     };
     const getKPIStatusCounter = (data) => {
@@ -523,40 +551,40 @@ export default function MainCharts({
     const ResetLayout = () => {
         // Filter the options based on the selected receivers
         setLayout([
-            { i: "card02", x: 0, y: 0, w: 1, h: 5 }, //Information
-            { i: "card06", x: 2, y: 0, w: 1, h: 5 }, // Spend By month
-            { i: "card04", x: 0, y: 2, w: 1, h: 3 }, //Consignment Status
-            { i: "card12", x: 2, y: 0, w: 1, h: 3 }, // Consignment By Month
-            { i: "card08", x: 0, y: 2, w: 1, h: 3 }, // Pod True Vs False
-            { i: "card03", x: 2, y: 2, w: 1, h: 3 }, // Pod Status
-            { i: "card03_2", x: 0, y: 4, w: 1, h: 3 },
-            { i: "card13", x: 2, y: 4, w: 1, h: 3 },
+            { i: "card01", x: 0, y: 0, w: 1, h: 5 }, //Information
+            { i: "card02", x: 2, y: 0, w: 1, h: 5 }, // Spend By month
+            { i: "card03", x: 0, y: 2, w: 1, h: 3 }, //Consignment Status
+            { i: "card04", x: 2, y: 0, w: 1, h: 3 }, // Consignment By Month
+            { i: "card05", x: 0, y: 2, w: 1, h: 3 }, // Pod True Vs False
+            { i: "card06", x: 2, y: 2, w: 1, h: 3 }, // Pod Status
+            { i: "card07", x: 0, y: 4, w: 1, h: 3 },
+            { i: "card09", x: 2, y: 4, w: 1, h: 3 },
         ]);
     };
     const PODFirst = () => {
         // Filter the options based on the selected receivers
         setLayout([
-            { i: "card02", x: 0, y: 0, w: 1, h: 5 }, //Information
-            { i: "card06", x: 2, y: 0, w: 1, h: 5 }, // Spend By month
-            { i: "card04", x: 0, y: 2, w: 1, h: 3 }, //Consignment Status
-            { i: "card12", x: 2, y: 0, w: 1, h: 3 }, // Consignment By Month
-            { i: "card08", x: 0, y: -2, w: 1, h: 3 }, // Pod True Vs False
-            { i: "card03", x: 2, y: -2, w: 1, h: 3 }, // Pod Status
-            { i: "card03_2", x: 0, y: 4, w: 1, h: 3 },
-            { i: "card13", x: 2, y: 4, w: 1, h: 3 },
+            { i: "card01", x: 0, y: 0, w: 1, h: 5 }, //Information
+            { i: "card02", x: 2, y: 0, w: 1, h: 5 }, // Spend By month
+            { i: "card03", x: 0, y: 2, w: 1, h: 3 }, //Consignment Status
+            { i: "card04", x: 2, y: 0, w: 1, h: 3 }, // Consignment By Month
+            { i: "card05", x: 0, y: -2, w: 1, h: 3 }, // Pod True Vs False
+            { i: "card06", x: 2, y: -2, w: 1, h: 3 }, // Pod Status
+            { i: "card07", x: 0, y: 4, w: 1, h: 3 },
+            { i: "card09", x: 2, y: 4, w: 1, h: 3 },
         ]);
     };
     const ConsignmentsFirst = () => {
         // Filter the options based on the selected receivers
         setLayout([
-            { i: "card02", x: 0, y: 2, w: 1, h: 4.5 }, //Information
-            { i: "card06", x: 2, y: 0, w: 1, h: 4.5 }, // Spend By month
-            { i: "card04", x: 0, y: 0, w: 1, h: 4.5 }, //Consignment Status
-            { i: "card12", x: 2, y: -2, w: 1, h: 4.5 }, // Consignment By Month
-            { i: "card08", x: 0, y: 2, w: 1, h: 3 }, // Pod True Vs False
-            { i: "card03", x: 2, y: 2, w: 1, h: 3 }, // Pod Status
-            { i: "card03_2", x: 0, y: 4, w: 1, h: 3 },
-            { i: "card13", x: 2, y: 4, w: 1, h: 3 },
+            { i: "card01", x: 0, y: 2, w: 1, h: 4.5 }, //Information
+            { i: "card02", x: 2, y: 0, w: 1, h: 4.5 }, // Spend By month
+            { i: "card03", x: 0, y: 0, w: 1, h: 4.5 }, //Consignment Status
+            { i: "card04", x: 2, y: -2, w: 1, h: 4.5 }, // Consignment By Month
+            { i: "card05", x: 0, y: 2, w: 1, h: 3 }, // Pod True Vs False
+            { i: "card06", x: 2, y: 2, w: 1, h: 3 }, // Pod Status
+            { i: "card07", x: 0, y: 4, w: 1, h: 3 },
+            { i: "card09", x: 2, y: 4, w: 1, h: 3 },
         ]);
     };
     useEffect(() => {
@@ -754,7 +782,7 @@ export default function MainCharts({
                         // onLayoutChange={(layout) => setLayout(layout)}
                     >
                         {/* Place your components with drag-and-drop functionality */}
-                        <div key="card02" className="relative drag-over">
+                        <div key="card01" className="relative drag-over">
                             {" "}
                             <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                             <DashboardCard07
@@ -762,7 +790,7 @@ export default function MainCharts({
                             />{" "}
                         </div>
 
-                        <div key="card06" className="relative">
+                        <div key="card02" className="relative">
                             {" "}
                             <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                             <MultiChartLine
@@ -770,7 +798,27 @@ export default function MainCharts({
                                 chartTitle={"Spend By State"}
                             />{" "}
                         </div>
-                        <div key="card12" className="relative">
+                        <div key="card03" className="relative">
+                            {" "}
+                            <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
+                            <BasicPieCharts
+                                chartData={getKPIPerformanceCounter(
+                                    filteredData
+                                )}
+                                labelContent="{name} - {percentage}"
+                                chartTitle={"On Time Performance"}
+                            />{" "}
+                        </div>
+                        <div key="card11" className="relative">
+                            {" "}
+                            <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
+                            <BasicPieCharts
+                                chartData={getConsStatusCounter(filteredData)}
+                                labelContent="{name} - {percentage}"
+                                chartTitle={"Consignment Status"}
+                            />{" "}
+                        </div>
+                        <div key="card04" className="relative">
                             {" "}
                             <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                             <BasicColumnCharts
@@ -778,15 +826,14 @@ export default function MainCharts({
                                 chartTitle={" Consignment By Month"}
                             />{" "}
                         </div>
-                        <div key="card04" className="relative">
-                            {" "}
+                        <div key="card07">
                             <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                            <BasicPieCharts
-                                chartData={getConsStatusCounter(filteredData)}
-                                chartTitle={"Consignment Status"}
+                            <BasicColumnCharts
+                                chartData={getStateRecordCounts(filteredData)}
+                                chartTitle={" Consignments By state"}
                             />{" "}
                         </div>
-                        <div key="card08" className="relative">
+                        <div key="card05" className="relative">
                             {" "}
                             <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                             <DoubleBarChart
@@ -794,7 +841,7 @@ export default function MainCharts({
                                 chartTitle={"POD True vs False"}
                             />{" "}
                         </div>
-                        <div key="card03" className="relative">
+                        <div key="card06" className="relative">
                             {" "}
                             <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                             <BasicPieCharts
@@ -802,14 +849,7 @@ export default function MainCharts({
                                 chartTitle={"POD Status By State"}
                             />{" "}
                         </div>
-                        <div key="card03_2">
-                            <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                            <BasicColumnCharts
-                                chartData={getStateRecordCounts(filteredData)}
-                                chartTitle={" Consignments By state"}
-                            />{" "}
-                        </div>
-                        <div key="card13" className="relative">
+                        <div key="card09" className="relative">
                             {" "}
                             <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                             <BasicColumnCharts
@@ -817,7 +857,7 @@ export default function MainCharts({
                                 chartTitle={" Weight By state"}
                             />{" "}
                         </div>
-                        <div key="card14" className="relative">
+                        <div key="card10" className="relative">
                             {" "}
                             <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                             <BasicPieCharts
