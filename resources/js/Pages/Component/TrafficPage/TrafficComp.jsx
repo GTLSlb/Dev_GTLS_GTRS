@@ -2,9 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
-import {
-    ChevronDownIcon
-} from "@heroicons/react/24/outline";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { saveAs } from "file-saver";
 import ExcelJS from "exceljs";
 import axios from "axios";
@@ -56,6 +54,12 @@ const defaultFilterValue = [
     { name: "event_type", type: "string", operator: "contains", value: "" },
     { name: "description", type: "string", operator: "contains", value: "" },
     {
+        name: "hours_difference",
+        type: "string",
+        operator: "contains",
+        value: "",
+    },
+    {
         name: "start_date",
         type: "date",
         operator: "eq",
@@ -86,36 +90,6 @@ const defaultFilterValue = [
 ];
 
 function TraffiComp() {
-    function formatTime(hours) {
-        const years = Math.floor(hours / (24 * 30 * 12));
-        const months = Math.floor((hours % (24 * 30 * 12)) / (24 * 30));
-        const days = Math.floor((hours % (24 * 30)) / 24);
-        const remainingHours = hours % 24;
-
-        const parts = [];
-
-        if (years > 0) {
-            parts.push(`${years} year${years > 1 ? "s" : ""}`);
-        }
-        if (months > 0) {
-            parts.push(`${months} month${months > 1 ? "s" : ""}`);
-        }
-        if (days > 0) {
-            parts.push(`${days} day${days > 1 ? "s" : ""}`);
-        }
-        if (remainingHours > 0) {
-            parts.push(
-                `${remainingHours} hour${remainingHours > 1 ? "s" : ""}`
-            );
-        }
-
-        if (parts.length === 0) {
-            return null;
-        } else if (parts.length > 1) {
-            return parts[0];
-        }
-        // return parts.join(" and ");
-    }
     const gridRef = useRef(null);
     const gridStyle = { minHeight: 550, marginTop: 10 };
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -232,7 +206,7 @@ function TraffiComp() {
             textAlign: "center",
             defaultWidth: 170,
             render: ({ value }) => {
-                return formatTime(value);
+                return value;
             },
         },
         {
@@ -256,8 +230,8 @@ function TraffiComp() {
             textAlign: "center",
             defaultWidth: 170,
         },
-
     ];
+
     function handleFilterTable(dataa) {
         // Get the selected columns or use all columns if none are selected
         let selectedColumns = Array.from(
@@ -632,6 +606,7 @@ function TraffiComp() {
         }
         return { selectedColumns: selectedColVal, filterValue: filterValue };
     }
+
     function handleDownloadExcel(dataa) {
         const jsonData = handleFilterTable(dataa);
         const selectedColumns = jsonData?.selectedColumns.map(
@@ -776,13 +751,15 @@ function TraffiComp() {
             setExportLoading(false);
         });
     }
-    const getexceldata = ({ skip, limit, sortInfo, filterValue }) => {
-        setExportLoading(true)
+    const getexceldata = (filterValue) => {
+        setExportLoading(true);
         const url =
-            `${gtrsWebUrl}get-positions`;
+            `${gtrsWebUrl}get-positions` +
+            "?filterBy=" +
+            JSON.stringify(filterValue);
 
         return fetch(url).then((response) => {
-            const totalCount = response.headers.get("X-Total-Count");
+            // const totalCount = response.headers.get("X-Total-Count");
             return response.json().then((data) => {
                 // const totalCount = data.pagination.total;
                 setDatatoexport(data);
@@ -796,6 +773,91 @@ function TraffiComp() {
     const dataSource = useCallback(loadData, []);
     const [hoverMessage, setHoverMessage] = useState("");
     const [isMessageVisible, setMessageVisible] = useState(false);
+
+    useEffect(() => {
+        const handleClick = (event) => {
+            const target = event.target;
+            const textContent = target.textContent.trim();
+            let columnHeader;
+            // Handle filter settings button click
+            if (
+                target.closest(
+                    ".InovuaReactDataGrid__column-header__filter-settings"
+                )
+            ) {
+                // Find the header element by navigating up the DOM structure
+                const headerElement = target
+                    .closest(
+                        ".InovuaReactDataGrid__column-header__resize-wrapper"
+                    )
+                    ?.querySelector(
+                        ".InovuaReactDataGrid__column-header__content"
+                    );
+
+                columnHeader = headerElement
+                    ? headerElement.textContent.trim()
+                    : null;
+            }
+
+            // Proceed with menu-specific actions only if the menu exists
+            const menu = document.querySelector(
+                ".inovua-react-toolkit-menu__table"
+            );
+            if (menu) {
+                const handleClick = (event) => {
+                    const target = event.target;
+                    const textContent = target.textContent.trim();
+
+                    if (textContent === "Clear all") {
+                        // Handle "Clear all" action
+                        gridRef.current.allColumns.forEach((column) => {
+                            if (
+                                column.computedFilterValue &&
+                                column.computedFilterValue.type === "date"
+                            ) {
+                                // Clear date filters
+                                column.computedFilterValue.value = null;
+                                column.computedFilterValue.operator = "eq";
+                                column.computedFilterValue.emptyValue = "";
+                            }
+                        });
+                        // Re-render columns state to reflect the cleared filters
+                        setColumns((cols) => [...cols]);
+                    } else if (textContent === "Clear") {
+                        const column = gridRef.current.allColumns.find(
+                            (col) =>
+                                col.header === columnHeader &&
+                                col.computedFilterValue?.type === "date"
+                        );
+                        if (column && column.computedFilterValue) {
+                            // Clear the filter for this specific date column
+                            column.computedFilterValue.value = null;
+                            column.computedFilterValue.operator = "eq";
+                            column.computedFilterValue.emptyValue = "";
+
+                            // Re-render columns state to reflect the cleared filter
+                            setColumns((cols) => [...cols]);
+                        }
+                    }
+                };
+
+                menu.addEventListener("click", handleClick);
+
+                // Cleanup to prevent multiple listeners
+                return () => {
+                    menu.removeEventListener("click", handleClick);
+                };
+            }
+        };
+
+        // Attach the event listener to document body to capture all clicks
+        document.body.addEventListener("click", handleClick);
+
+        // Cleanup to prevent multiple listeners
+        return () => {
+            document.body.removeEventListener("click", handleClick);
+        };
+    }, [columns]);
 
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
@@ -859,7 +921,11 @@ function TraffiComp() {
                                 </div>
                                 <div className="grid grid-cols-1 divide-x divide-gray-900/5 bg-gray-50">
                                     <button
-                                        onClick={getexceldata}
+                                        // onClick={getexceldata(filterValue)}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            getexceldata(filterValue);
+                                        }}
                                         disabled={exportLoading}
                                         className="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100"
                                     >
