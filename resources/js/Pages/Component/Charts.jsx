@@ -25,6 +25,7 @@ import GraphPresentation from "./Presentation/GraphPresentation";
 import DailyReportPage from "./ReportsPage/DeliveryReportPage";
 import Cookies from "js-cookie";
 import RealFoodKPIPack from "./RealFoodKPIPack/RealFoodKPIPack";
+import ProductStockTable from "./Products/ProductStockTable";
 
 export default function charts({
     setCusomterAccounts,
@@ -2279,6 +2280,7 @@ export default function charts({
             setLastIndex={setLastIndex}
         />,
         <RealFoodKPIPack url={url} currentUser={currentUser} AToken={AToken} />,
+        <ProductStockTable url={url} currentUser={currentUser} AToken={AToken} />
     ];
     return (
         <div className="">
@@ -2319,7 +2321,7 @@ export default function charts({
                                 className="relative h-full"
                                 style={{ minHeight: "36rem" }}
                             >
-                                <div className="absolute inset-0 rounded-lg">
+                                <div className="">
                                     {components[activeIndexGTRS]}
                                 </div>
                             </div>
