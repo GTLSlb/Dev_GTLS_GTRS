@@ -31,6 +31,7 @@ import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import ConsMap from "./TrafficPage/ConsMap";
 import { Routes, Route } from "react-router-dom";
 import NotFoundRedirect from "../NotFoundRedirect";
+import {ToastContainer} from 'react-toastify';
 import {
     getFiltersAddCharges,
     getFiltersCons,
@@ -653,6 +654,8 @@ export default function GtrsMain({
 
     return (
         <div className="h-full">
+            {/* Added toast container since it wasn't showing */}
+            <ToastContainer />
             <div className="h-full">
                 {/* Left sidebar & main wrapper */}
                 <div className=" h-full flex">

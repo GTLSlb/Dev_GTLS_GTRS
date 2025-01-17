@@ -478,6 +478,7 @@ export default function SafetyRepTable({
                 userPermission={userPermission}
                 buttonAction={buttonAction}
                 updateLocalData={updateLocalData}
+                fetchData={fetchData}
             />
         </div>
     );

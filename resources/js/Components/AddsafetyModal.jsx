@@ -7,6 +7,7 @@ import swal from "sweetalert";
 import { handleSessionExpiration } from "@/CommonFunctions";
 import Select from "react-select";
 import {ToastContainer} from 'react-toastify';
+import { AlertToast } from "@/permissions";
 
 export default function SafetyModal({
     isOpen,
@@ -27,7 +28,8 @@ export default function SafetyModal({
     updateLocalData,
     currentUser,
     safetyTypes,
-    setIsSuccessfull
+    setIsSuccessfull,
+    fetchData
 }) {
     const date = new Date(modalOccuredAt);
     const formattedDate = date?.toLocaleDateString("en-CA");
@@ -118,9 +120,11 @@ export default function SafetyModal({
                 }
             );
 
+            fetchData();
             updateLocalData(id, formValues);
             setSuccess(true);
             setIsSuccessfull(true);
+            AlertToast("Saved Successfully", 1);
             setTimeout(() => {
                 handleClose();
                 SetIsLoading(false);
