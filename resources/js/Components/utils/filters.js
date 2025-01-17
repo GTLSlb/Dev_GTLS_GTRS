@@ -108,6 +108,13 @@ export const getFiltersCons = (minDate, maxDate) => {
             value: null,
             emptyValue: "",
         },
+        {
+            name: "ConsReferences",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
     ];
 };
 

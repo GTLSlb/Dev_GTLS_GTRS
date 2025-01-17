@@ -43,6 +43,13 @@ export default function GtrsCons({
                           25569 // Excel date serial number
                     : "";
             },
+            ConsReferences: (value) => {
+                if (value && value.length > 0) {
+                    // Join all reference values into a single string for filtering
+                    return value.map((ref) => ref.Value).join(", ");
+                }
+                return "";
+            },
         };
         // Call the exportToExcel function
         exportToExcel(
@@ -267,6 +274,30 @@ export default function GtrsCons({
                         false
                     </span>
                 );
+            },
+        },
+        {
+            name: "ConsReferences",
+            header: "Consignment References",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 200,
+            filterEditor: StringFilter,
+            getFilterValue: ({ data }) => {
+                if (data.ConsReferences && data.ConsReferences.length > 0) {
+                    // Join all reference values into a single string for filtering
+                    return data.ConsReferences.map(ref => ref.Value).join(", ");
+                }
+                return "";
+            },
+            render: ({ value }) => {
+                const result =
+                    Array.isArray(value) && value.length > 0
+                        ? `${value[0].Value || ""}${
+                              value.length > 1 ? "..." : ""
+                          }` // Extract the first Value and add "..." if there's more
+                        : ""; // Return an empty string if `x` is not an array or empty
+                return result;
             },
         },
     ]);

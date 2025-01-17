@@ -52,6 +52,7 @@ import NewConsignmentTracking from "./New Consignment Tracking/NewConsignmentTra
 import MainPageGTRS from "../MainPageGTRS";
 import RealFoodKPIPack from "./RealFoodKPIPack/RealFoodKPIPack";
 import KPIReasons from "./KPI/KPIReasons";
+import ProductStockTable from "./ProductStock/ProductStockTable";
 
 export default function GtrsMain({
     setCusomterAccounts,
@@ -1392,28 +1393,6 @@ export default function GtrsMain({
                                         setToken={setToken}
                                         setCurrentUser={setCurrentUser}
                                     />
-                                    {/* <Route
-                                        path="/consignment-tracking"
-                                        element={
-                                            <ProtectedRoute
-                                                permission={userPermission}
-                                                route="ConsignmentTracking_View"
-                                                element={
-                                                    <ConsTrack
-                                                        setFilterValue={
-                                                            setFiltersConsTrack
-                                                        }
-                                                        filterValue={
-                                                            filtersConsTrack
-                                                        }
-                                                    />
-                                                }
-                                            />
-                                        }
-                                        currentUser={currentUser}
-                                        setToken={setToken}
-                                        setCurrentUser={setCurrentUser}
-                                    /> */}
                                     <Route
                                         path="/delivery-report"
                                         element={
@@ -1470,6 +1449,27 @@ export default function GtrsMain({
                                                 route="View_Tracking2"
                                                 element={
                                                     <NewConsignmentTracking />
+                                                }
+                                            />
+                                        }
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
+                                    />
+                                    <Route
+                                        path="/SOH"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermission}
+                                                route="StockReport_View"
+                                                element={
+                                                    <ProductStockTable
+                                                        url={url}
+                                                        AToken={AToken}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                    />
                                                 }
                                             />
                                         }

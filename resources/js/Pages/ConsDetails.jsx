@@ -17,7 +17,6 @@ export default function ConsDetails({ url, currentUser }) {
     const navigate = useNavigate();
     const location = useLocation();
 
-
     useEffect(() => {
         const handleScrollToTop = () => {
             window.scrollTo({
@@ -196,7 +195,7 @@ export default function ConsDetails({ url, currentUser }) {
                     ) : (
                         ""
                     )}
-                    
+
                     {Consignment[0].SenderReciever && (
                         <SenderReceiverDetails
                             senderReceiver={Consignment[0].SenderReciever}

@@ -9,7 +9,8 @@ import {
     UserIcon, ClockIcon, ShieldCheckIcon,
     CameraIcon,
     DocumentTextIcon,
-    ClipboardDocumentIcon
+    ClipboardDocumentIcon,
+    RectangleStackIcon
 } from "@heroicons/react/24/solid";
 import TaskIcon from "@mui/icons-material/Task";
 import ReportIcon from "@mui/icons-material/Report";
@@ -213,7 +214,15 @@ const menu = [
         feature: "View_Tracking2",
         url: "/gtrs/consignment-tracking",
     },
-
+    {
+        id: 27,
+        name: "SOH Report",
+        href: "#",
+        icon: RectangleStackIcon,
+        current: false,
+        feature: "StockReport_View",
+        url: "/gtrs/SOH",
+    },
 ];
 
 export default menu;
