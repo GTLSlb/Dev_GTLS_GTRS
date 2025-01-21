@@ -277,6 +277,12 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
                 return <div className="truncate">{cellValue}</div>;
             case "SerialNo":
                 return <div className="truncate">{cellValue}</div>;
+            case "HandlingUOM":
+                return <div className="truncate">{cellValue}</div>;
+            case "BatchNo":
+                return <div className="truncate">{cellValue}</div>;
+            case "ProductCode":
+                return <div className="truncate">{cellValue}</div>;
             case "DateRequirementDate":
                 return (
                     <div className="truncate">
