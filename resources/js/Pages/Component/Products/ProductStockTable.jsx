@@ -197,9 +197,9 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
 
     // Filtered data based on the filter input
     const filteredData = React.useMemo(() => {
-        // Filter rows based on ProductCode
+        // Step 1: Filter rows based on ProductCode
         let filtered = groupedData.filter((item) => {
-            if (item.isItemRow || item.isTotalRow) {
+            if (item.isItemRow) {
                 return String(item.ProductCode)
                     .toLowerCase()
                     .includes(filterValue.toLowerCase());
@@ -207,10 +207,9 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
             return true; // Keep separator rows
         });
 
-        // Apply Debtor filter if a debtor is selected
+        // Step 2: Apply Debtor filter if a debtor is selected
         if (selectedDebtor.size > 0) {
             filtered = filtered.filter((item) => {
-                // Apply filter only for item or total rows; keep separator rows
                 if (item.isItemRow) {
                     return item.DebtorId == selectedDebtor.currentKey;
                 }
@@ -218,10 +217,9 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
             });
         }
 
-        // Apply Branch filter if a branch is selected
+        // Step 3: Apply Branch filter if a branch is selected
         if (selectedBranch.size > 0) {
             filtered = filtered.filter((item) => {
-                // Apply filter only for item or total rows; keep separator rows
                 if (item.isItemRow) {
                     return item.WarehouseID == selectedBranch.currentKey;
                 }
@@ -229,27 +227,52 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
             });
         }
 
-        filtered = filtered.filter((row, index, arr) => {
-            if (row.isTotalRow) {
-                const prevRow = arr[index - 1];
-                return prevRow && prevRow.isItemRow; // Only include total row if the previous row is an item row
+        // Step 4: Regroup filtered data by ProductId to calculate totals
+        const recalculatedGroups = filtered.reduce((acc, item) => {
+            if (item.isItemRow) {
+                if (!acc[item.ProductId]) {
+                    acc[item.ProductId] = {
+                        ...item,
+                        items: [],
+                        totalQuantity: 0,
+                        totalPallets: 0,
+                    };
+                }
+                acc[item.ProductId].items.push(item);
+                acc[item.ProductId].totalQuantity += item.quantity || 0;
+                acc[item.ProductId].totalPallets += 1; // Count items for pallets
             }
-            return true; // Keep all other rows
-        });
-        setPage(1);
-        setDisplayCount(rowsPerPage);
-        setHasMore(true);
-        // Remove consecutive separator rows
-        return filtered.filter((row, index, arr) => {
-            if (row.isSeparatorRow) {
-                const prevRow = arr[index - 1];
-                return !(prevRow && prevRow.isSeparatorRow); // Exclude if previous row is also a separator
-            }
-            return true;
-        });
-    }, [groupedData, filterValue, selectedDebtor, selectedBranch]);
+            return acc;
+        }, {});
 
-    console.log(filteredData);
+        // Step 5: Flatten groups into rows with recalculated totals
+        return Object.values(recalculatedGroups).flatMap(
+            (group, groupIndex) => {
+                let rowIndex = groupIndex * 1000; // Start index for each group (e.g., 1000 per group to ensure uniqueness)
+                let rows = group.items.map((item) => ({
+                    ...item,
+                    isItemRow: true,
+                    index: rowIndex++,
+                }));
+
+                // Add total row for each group
+                rows.push({
+                    ProductId: group.ProductId,
+                    ProductCode: group.ProductCode,
+                    ProductDescription: group.ProductDescription,
+                    quantity: group.totalQuantity,
+                    PalletTotal: group.totalPallets,
+                    index: rowIndex++,
+                    isTotalRow: true,
+                });
+
+                // Add separator row
+                rows.push({ isSeparatorRow: true, index: rowIndex++ });
+
+                return rows;
+            }
+        );
+    }, [groupedData, filterValue, selectedDebtor, selectedBranch]);
 
     const groupedByDebtorAndBranch = React.useMemo(() => {
         // Initialize the result object
@@ -295,8 +318,6 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
 
         return result;
     }, [filteredData]);
-
-    console.log(groupedByDebtorAndBranch);
 
     const renderCell = useCallback((item, columnKey) => {
         // Handle special cases first
@@ -379,14 +400,16 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
 
     const onClear = React.useCallback(() => {
         setFilterValue("");
-        setPage(1);
+        setDisplayCount(30)
+        setHasMore(true)
     }, []);
 
     function onClearAll() {
         setFilterValue("");
         setSelectedBranch(new Set());
         setSelectedDebtor(new Set());
-        setPage(1);
+        setDisplayCount(30)
+        setHasMore(true)
     }
 
     const displayedData = useMemo(
