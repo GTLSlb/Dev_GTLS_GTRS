@@ -36,6 +36,7 @@ export default function Login({ }) {
             appDomain={appDomain}
             redirectURL="/main"
             loginURL="/loginComp"
+            microsoftURL="/microsoftToken"
             googlekey={googleKey}
             gtamURl={gtamURl}
             pca={pca}
