@@ -244,7 +244,8 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
             }
             return acc;
         }, {});
-
+        setDisplayCount(30)
+        setHasMore(true)
         // Step 5: Flatten groups into rows with recalculated totals
         return Object.values(recalculatedGroups).flatMap(
             (group, groupIndex) => {
