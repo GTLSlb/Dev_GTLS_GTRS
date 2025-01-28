@@ -1257,16 +1257,16 @@
         },
         {
             "name": "gtls/loginstory",
-            "version": "v1.0.5",
+            "version": "v1.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/MiraCh-gtls/loginStory.git",
-                "reference": "f54173c5ccecdb60a7d16c077114162e0d3b7238"
+                "reference": "47f4a89691b27558f83869bbf9de83feb3bfcaf7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/MiraCh-gtls/loginStory/zipball/f54173c5ccecdb60a7d16c077114162e0d3b7238",
-                "reference": "f54173c5ccecdb60a7d16c077114162e0d3b7238",
+                "url": "https://api.github.com/repos/MiraCh-gtls/loginStory/zipball/47f4a89691b27558f83869bbf9de83feb3bfcaf7",
+                "reference": "47f4a89691b27558f83869bbf9de83feb3bfcaf7",
                 "shasum": ""
             },
             "type": "library",
@@ -1289,9 +1289,9 @@
             "description": "[]",
             "support": {
                 "issues": "https://github.com/MiraCh-gtls/loginStory/issues",
-                "source": "https://github.com/MiraCh-gtls/loginStory/tree/v1.0.5"
+                "source": "https://github.com/MiraCh-gtls/loginStory/tree/v1.0.6"
             },
-            "time": "2024-12-17T07:21:52+00:00"
+            "time": "2025-01-22T07:36:19+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",

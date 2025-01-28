@@ -26,6 +26,7 @@ import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import { PencilIcon } from "@heroicons/react/20/solid";
 
 function NewKPI({
     url,
@@ -461,6 +462,57 @@ function NewKPI({
                 ) : null;
             },
         },
+        {
+            name: "ReasonId",
+            header: "KPI Reason",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 200,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: false,
+                wrapMultiple: false,
+                dataSource: reasonOptions,
+            },
+
+            render: ({ value }) => {
+                return  (
+                    <div>
+                        <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-0.5 text-sm font-medium text-gray-800">
+                            {kpireasonsData?.find((reason) => reason.ReasonId === value)?.ReasonName || ""}
+                        </span>
+                    </div>
+                );
+            },
+        },
+        {
+            name: "edit",
+            header: "Edit",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 100,
+            render: ({ value, data }) => {
+                return (
+                    <div>
+                        {canEditKPI(userPermission) ? (
+                            <button
+                                className={
+                                    "rounded text-blue-500 justify-center items-center  "
+                                }
+                                onClick={() => {
+                                    handleEditClick(data);
+                                }}
+                            >
+                                <span className="flex gap-x-1">
+                                    <PencilIcon className="h-4" />
+                                    Edit
+                                </span>
+                            </button>
+                        ) : null}
+                    </div>
+                );
+            },
+        }
     ];
     const newArray = columns.slice(0, -1);
     const [newColumns, setNewColumns] = useState([]);
