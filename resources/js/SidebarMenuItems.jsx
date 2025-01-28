@@ -14,6 +14,7 @@ import {
     CameraIcon,
     DocumentTextIcon,
     ClipboardDocumentIcon,
+    RectangleStackIcon,
 } from "@heroicons/react/24/solid";
 import TaskIcon from "@mui/icons-material/Task";
 import ReportIcon from "@mui/icons-material/Report";
@@ -219,7 +220,15 @@ const menu = [
         feature: "RealFoodReport_View",
         url: "/gtrs/real-food-report",
     },
-
+    {
+        id: 27,
+        name: "SOH Report",
+        href: "#",
+        icon: RectangleStackIcon,
+        current: false,
+        feature: "StockReport_View",
+        url: "/gtrs/SOH",
+    },
 ];
 
 export default menu;

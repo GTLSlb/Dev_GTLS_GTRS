@@ -49,6 +49,7 @@ import SafetyRep from "./safetyRep";
 import ConsMap from "./TrafficPage/ConsMap";
 import TrafficComp from "./TrafficPage/TrafficComp";
 import TransportRep from "./TransportRep";
+import ProductStockTable from "./ProductStock/ProductStockTable";
 
 export default function GtrsMain({
     setCusomterAccounts,
@@ -1461,6 +1462,27 @@ export default function GtrsMain({
                                     <Route
                                         path="/*"
                                         element={<NotFoundRedirect />}
+                                    />
+                                    <Route
+                                        path="/SOH"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermission}
+                                                route="StockReport_View"
+                                                element={
+                                                    <ProductStockTable
+                                                        url={url}
+                                                        AToken={AToken}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                    />
+                                                }
+                                            />
+                                        }
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
                                     />
                                 </Routes>
                             </div>
