@@ -1,12 +1,24 @@
+import React, { useCallback, useEffect, useState } from "react";
 import {
-    Input, Select,
+    Table,
+    TableHeader,
+    TableColumn,
+    TableBody,
+    TableRow,
+    TableCell,
+    Input,
+    Button,
+    Pagination,
+    Select,
     SelectItem,
-    Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow
+    Spinner,
 } from "@nextui-org/react";
+import { useMemo } from "react";
+import { useRef } from "react";
 import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
 import moment from "moment/moment";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 export const SearchIcon = (props) => {
     return (
         <svg
@@ -56,7 +68,7 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`${url}SOH`, {
+            const response = await axios.get(`${url}/SOH`, {
                 headers: {
                     UserId: currentUser.UserId,
                     Authorization: `Bearer ${AToken}`,
@@ -120,7 +132,7 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
     const columns = [
         { name: "Product Code", uid: "ProductCode" },
         { name: "Description", uid: "ProductDescription" },
-        { name: "Debtor Name", uid: "DebtorName" },
+        { name: "Account Name", uid: "DebtorName" },
         { name: "Branch Name", uid: "BranchName" },
         { name: "Weight", uid: "Weight" },
         { name: "Quantity", uid: "quantity" },
@@ -135,6 +147,12 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
         { name: "Date", uid: "DateRequirementDate" },
     ];
 
+    const groupedColumns = [
+        { name: "Account Name", uid: "DebtorName" },
+        { name: "Branch Name", uid: "BranchName" },
+        { name: "Total Pallets", uid: "Total" },
+    ];
+
     // Group data by ProductId
     const groupedData = React.useMemo(() => {
         const groups = productsData.reduce((acc, item) => {
@@ -146,7 +164,6 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
                 (acc[item.ProductId].totalQuantity || 0) + item.quantity;
             return acc;
         }, {});
-
         return Object.values(groups).flatMap((group, groupIndex) => {
             let rowIndex = groupIndex * 1000; // Start index for each group (e.g., 1000 per group to ensure uniqueness)
 
@@ -164,6 +181,7 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
                     ProductDescription: group.ProductDescription,
                     DebtorName: "",
                     quantity: group.totalQuantity,
+                    PalletTotal: group.items.length, // Use the count of items in the group
                     BatchNo: "",
                     isTotalRow: true,
                     index: rowIndex++, // Increment index for the total row
@@ -179,9 +197,9 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
 
     // Filtered data based on the filter input
     const filteredData = React.useMemo(() => {
-        // Filter rows based on ProductCode
+        // Step 1: Filter rows based on ProductCode
         let filtered = groupedData.filter((item) => {
-            if (item.isItemRow || item.isTotalRow) {
+            if (item.isItemRow) {
                 return String(item.ProductCode)
                     .toLowerCase()
                     .includes(filterValue.toLowerCase());
@@ -189,10 +207,9 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
             return true; // Keep separator rows
         });
 
-        // Apply Debtor filter if a debtor is selected
+        // Step 2: Apply Debtor filter if a debtor is selected
         if (selectedDebtor.size > 0) {
             filtered = filtered.filter((item) => {
-                // Apply filter only for item or total rows; keep separator rows
                 if (item.isItemRow) {
                     return item.DebtorId == selectedDebtor.currentKey;
                 }
@@ -200,10 +217,9 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
             });
         }
 
-        // Apply Branch filter if a branch is selected
+        // Step 3: Apply Branch filter if a branch is selected
         if (selectedBranch.size > 0) {
             filtered = filtered.filter((item) => {
-                // Apply filter only for item or total rows; keep separator rows
                 if (item.isItemRow) {
                     return item.WarehouseID == selectedBranch.currentKey;
                 }
@@ -211,26 +227,98 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
             });
         }
 
-        filtered = filtered.filter((row, index, arr) => {
-            if (row.isTotalRow) {
-                const prevRow = arr[index - 1];
-                return prevRow && prevRow.isItemRow; // Only include total row if the previous row is an item row
+        // Step 4: Regroup filtered data by ProductId to calculate totals
+        const recalculatedGroups = filtered.reduce((acc, item) => {
+            if (item.isItemRow) {
+                if (!acc[item.ProductId]) {
+                    acc[item.ProductId] = {
+                        ...item,
+                        items: [],
+                        totalQuantity: 0,
+                        totalPallets: 0,
+                    };
+                }
+                acc[item.ProductId].items.push(item);
+                acc[item.ProductId].totalQuantity += item.quantity || 0;
+                acc[item.ProductId].totalPallets += 1; // Count items for pallets
             }
-            return true; // Keep all other rows
-        });
-        setPage(1);
-        setDisplayCount(rowsPerPage);
-        setHasMore(true);
-        // Remove consecutive separator rows
-        return filtered.filter((row, index, arr) => {
-            if (row.isSeparatorRow) {
-                const prevRow = arr[index - 1];
-                return !(prevRow && prevRow.isSeparatorRow); // Exclude if previous row is also a separator
+            return acc;
+        }, {});
+        setDisplayCount(30)
+        setHasMore(true)
+        // Step 5: Flatten groups into rows with recalculated totals
+        return Object.values(recalculatedGroups).flatMap(
+            (group, groupIndex) => {
+                let rowIndex = groupIndex * 1000; // Start index for each group (e.g., 1000 per group to ensure uniqueness)
+                let rows = group.items.map((item) => ({
+                    ...item,
+                    isItemRow: true,
+                    index: rowIndex++,
+                }));
+
+                // Add total row for each group
+                rows.push({
+                    ProductId: group.ProductId,
+                    ProductCode: group.ProductCode,
+                    ProductDescription: group.ProductDescription,
+                    quantity: group.totalQuantity,
+                    PalletTotal: group.totalPallets,
+                    index: rowIndex++,
+                    isTotalRow: true,
+                });
+
+                // Add separator row
+                rows.push({ isSeparatorRow: true, index: rowIndex++ });
+
+                return rows;
             }
-            return true;
-        });
+        );
     }, [groupedData, filterValue, selectedDebtor, selectedBranch]);
-    console.log(filteredData);
+
+    const groupedByDebtorAndBranch = React.useMemo(() => {
+        // Initialize the result object
+        const result = [];
+
+        // Group data by DebtorId
+        const groupedByDebtor = filteredData.reduce((acc, item) => {
+            // Skip separator or total rows
+            if (item.isSeparatorRow || item.isTotalRow) return acc;
+
+            if (!acc[item.DebtorId]) {
+                acc[item.DebtorId] = {
+                    Debtor: item.DebtorId,
+                    DebtorName: item.DebtorName,
+                    data: {}, // Initialize an object to group by branch
+                };
+            }
+
+            // Group data by branch within each debtor
+            if (!acc[item.DebtorId].data[item.WarehouseID]) {
+                acc[item.DebtorId].data[item.WarehouseID] = {
+                    branch: item.WarehouseID,
+                    branchName: item.BranchName,
+                    total: 0, // Initialize total pallet count for this branch
+                };
+            }
+
+            // Increment the total for the current branch
+            acc[item.DebtorId].data[item.WarehouseID].total += 1; // Count 1 pallet per item
+
+            return acc;
+        }, {});
+
+        // Transform the grouped data into the desired array format
+        for (const debtorId in groupedByDebtor) {
+            const debtor = groupedByDebtor[debtorId];
+            result.push({
+                Debtor: debtor.Debtor,
+                DebtorName: debtor.DebtorName,
+                data: Object.values(debtor.data), // Convert branch object into an array
+            });
+        }
+
+        return result;
+    }, [filteredData]);
 
     const renderCell = useCallback((item, columnKey) => {
         // Handle special cases first
@@ -238,7 +326,13 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
             if (columnKey === "quantity") {
                 return (
                     <strong className="truncate">
-                        Total: {item.quantity.toLocaleString()}
+                        Total Quantity: {item.quantity.toLocaleString()}
+                    </strong>
+                );
+            } else if (columnKey === "ProductCode") {
+                return (
+                    <strong className="truncate">
+                        Total Pallets: {item.PalletTotal.toLocaleString()}
                     </strong>
                 );
             }
@@ -267,18 +361,24 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
                 return <div className="truncate">{cellValue}</div>;
             case "SerialNo":
                 return <div className="truncate">{cellValue}</div>;
+            case "HandlingUOM":
+                return <div className="truncate">{cellValue}</div>;
+            case "BatchNo":
+                return <div className="truncate">{cellValue}</div>;
+            case "ProductCode":
+                return <div className="truncate">{cellValue}</div>;
             case "DateRequirementDate":
                 return (
                     <div className="truncate">
                         {moment(
                             cellValue?.replace("T", " "),
                             "YYYY-MM-DD HH:mm:ss"
-                        ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
+                        ).format("DD-MM-YYYY") == "Invalid date"
                             ? ""
                             : moment(
                                   cellValue?.replace("T", " "),
                                   "YYYY-MM-DD HH:mm:ss"
-                              ).format("DD-MM-YYYY HH:mm A")}
+                              ).format("DD-MM-YYYY")}
                     </div>
                 );
             default:
@@ -286,10 +386,32 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
         }
     }, []);
 
+    const renderGroupedCell = (item, columnKey) => {
+        switch (columnKey) {
+            case "DebtorName":
+                return <strong>{item.DebtorName}</strong>;
+            case "BranchName":
+                return item.BranchName || "";
+            case "Total":
+                return item.Total?.toLocaleString() || "0";
+            default:
+                return null;
+        }
+    };
+
     const onClear = React.useCallback(() => {
         setFilterValue("");
-        setPage(1);
+        setDisplayCount(30)
+        setHasMore(true)
     }, []);
+
+    function onClearAll() {
+        setFilterValue("");
+        setSelectedBranch(new Set());
+        setSelectedDebtor(new Set());
+        setDisplayCount(30)
+        setHasMore(true)
+    }
 
     const displayedData = useMemo(
         () => filteredData.slice(0, displayCount),
@@ -310,6 +432,147 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
         hasMore,
         onLoadMore: LoadMore,
     });
+
+    function handleDownloadExcel() {
+        // Map your column headers (key-value pairs for renaming)
+        const columnMapping = {
+            ProductCode: "Product Code",
+            ProductDescription: "Description",
+            DebtorName: "Account Name",
+            BranchName: "Branch Name",
+            Weight: "Weight",
+            Quantity: "Quantity",
+            BatchNo: "Batch No",
+            HandlingUOM: "Handling UOM",
+            HandlingType: "Handling Type",
+            PickPutUOM: "Pick/Put UOM",
+            LicensePlate: "License Plate",
+            SerialNo: "Serial No",
+            Location: "Location",
+            DateReqType: "Date Req. Type",
+            DateRequirementDate: "Date",
+        };
+
+        const palletSummaryColumns = [
+            "Account Name",
+            "Branch Name",
+            "Total Pallets",
+        ];
+
+        // Map `filteredData` into table-ready rows for the first sheet
+        const sohReportData = filteredData.map((item) => {
+            if (item.isTotalRow) {
+                // Handle the total row explicitly
+                return Object.keys(columnMapping).map((key) => {
+                    if (key === "Quantity") {
+                        return `Total Quantity: ${
+                            item.quantity?.toLocaleString() || 0
+                        }`;
+                    }
+                    if (key === "ProductCode") {
+                        return `Total Pallets: ${
+                            item.PalletTotal?.toLocaleString() || 0
+                        }`;
+                    }
+                    // Leave other columns blank for the total row
+                    return "";
+                });
+            }
+
+            // Handle normal rows
+            return Object.keys(columnMapping).map((key) => {
+                if (key === "DateRequirementDate") {
+                    // Format dates
+                    return moment(
+                        item["DateRequirementDate"]?.replace("T", " "),
+                        "YYYY-MM-DD HH:mm:ss"
+                    ).format("DD-MM-YYYY") == "Invalid date"
+                        ? ""
+                        : moment(
+                              item["DateRequirementDate"]?.replace("T", " "),
+                              "YYYY-MM-DD HH:mm:ss"
+                          ).format("DD-MM-YYYY");
+                }
+                if (key === "Quantity") {
+                    // Format numeric values
+                    return item["quantity"]
+                        ? item["quantity"].toLocaleString()
+                        : "";
+                }
+                // Return the item's value for other fields
+                return item[key] || "";
+            });
+        });
+        // Map `groupedByDebtorAndBranch` into rows for the second sheet
+        const palletSummaryData = groupedByDebtorAndBranch.flatMap((debtor) =>
+            debtor.data.map((branch) => [
+                debtor.DebtorName,
+                branch.branchName,
+                branch.total,
+            ])
+        );
+
+        // Create a new workbook
+        const workbook = new ExcelJS.Workbook();
+
+        // Add the first worksheet: SOH Report
+        const sohSheet = workbook.addWorksheet("SOH Report");
+        sohSheet.addRow(Object.values(columnMapping)); // Add the header row
+        sohReportData.forEach((row, rowIndex) => {
+            const worksheetRow = sohSheet.addRow(row);
+
+            if (filteredData[rowIndex]?.isTotalRow) {
+                // Apply bold styling to total rows
+                worksheetRow.eachCell((cell) => {
+                    cell.font = { bold: true }; // Make text bold
+                });
+            }
+
+            if (filteredData[rowIndex]?.isSeparatorRow) {
+                // Apply styling for separator rows
+                worksheetRow.eachCell((cell) => {
+                    cell.fill = {
+                        type: "pattern",
+                        pattern: "solid",
+                        fgColor: { argb: "FFCCCCCC" }, // Light gray background (#CCCCCC)
+                    };
+                    cell.font = { bold: true }; // Optional: Make text bold
+                    cell.alignment = { horizontal: "center" }; // Optional: Center text
+                });
+            }
+        });
+
+        // Style the header row of the first sheet
+        sohSheet.getRow(1).font = { bold: true };
+        sohSheet.getRow(1).fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFE2B540" }, // Yellow background
+        };
+        sohSheet.columns.forEach((column) => (column.width = 20)); // Set column widths
+
+        // Add the second worksheet: Pallets Summary
+        const palletSummarySheet = workbook.addWorksheet("Pallets Summary");
+        palletSummarySheet.addRow(palletSummaryColumns); // Add the header row
+        palletSummaryData.forEach((row) => palletSummarySheet.addRow(row)); // Add data rows
+
+        // Style the header row of the second sheet
+        palletSummarySheet.getRow(1).font = { bold: true };
+        palletSummarySheet.getRow(1).fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFE2B540" }, // Yellow background
+        };
+        palletSummarySheet.columns.forEach((column) => (column.width = 20)); // Set column widths
+
+        // Generate and download the Excel file
+        workbook.xlsx.writeBuffer().then((buffer) => {
+            const blob = new Blob([buffer], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+            saveAs(blob, "SOH_Report.xlsx");
+        });
+    }
 
     return (
         <div>
@@ -332,11 +595,30 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
                 </div>
             ) : (
                 <div className="p-5 flex flex-col gap-5">
-                    <div>
+                    <div className="flex smitems-center flex-col sm:flex-row justify-between gap-5">
                         <h1 className="text-2xl font-bold text-dark">
                             SOH Report
                         </h1>
+                        <div className="flex gap-4">
+                            <Button
+                                className="bg-gray-800 text-white"
+                                onClick={() => onClearAll()}
+                                radius="sm"
+                                size="md"
+                            >
+                                Clear Filter
+                            </Button>
+                            <Button
+                                className="bg-gray-800 text-white"
+                                onClick={() => handleDownloadExcel()}
+                                radius="sm"
+                                size="md"
+                            >
+                                Export
+                            </Button>
+                        </div>
                     </div>
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
                         <Input
                             isClearable
@@ -352,21 +634,24 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
                             value={filterValue}
                             onChange={(e) => setFilterValue(e.target.value)}
                         />
-                        <Select
-                            classNames={{ trigger: "bg-white" }}
-                            label="Debtor"
-                            size="sm"
-                            placeholder=" "
-                            selectedKeys={selectedDebtor}
-                            variant="bordered"
-                            onSelectionChange={setSelectedDebtor}
-                        >
-                            {debtors.map((item) => (
-                                <SelectItem key={item.DebtorId}>
-                                    {item.DebtorName}
-                                </SelectItem>
-                            ))}
-                        </Select>
+                        {debtors.length > 0 && (
+                            <Select
+                                classNames={{ trigger: "bg-white" }}
+                                label="Account"
+                                size="sm"
+                                placeholder=" "
+                                selectedKeys={selectedDebtor}
+                                variant="bordered"
+                                onSelectionChange={setSelectedDebtor}
+                            >
+                                {debtors.map((item) => (
+                                    <SelectItem key={item.DebtorId}>
+                                        {item.DebtorName}
+                                    </SelectItem>
+                                ))}
+                            </Select>
+                        )}
+
                         <Select
                             classNames={{ trigger: "bg-white" }}
                             label="Branch"
@@ -399,7 +684,7 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
                         aria-label="Product Stock Table"
                         classNames={{
                             wrapper:
-                                "containerscroll !p-0 border-[10px] border-white max-h-[700px]",
+                                "containerscroll !p-0 border-[10px] border-white max-h-[650px]",
                             thead: "[&>tr]:first:shadow-none",
                             th: "bg-gray-200",
                         }}
@@ -411,7 +696,10 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
                                 </TableColumn>
                             )}
                         </TableHeader>
-                        <TableBody items={displayedData}>
+                        <TableBody
+                            items={displayedData}
+                            emptyContent={"No data found"}
+                        >
                             {(item) => (
                                 <TableRow
                                     key={item.index}
@@ -438,6 +726,50 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
                                         </TableCell>
                                     )}
                                 </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+
+                    <div>
+                        <h1 className="text-2xl font-bold text-dark">
+                            Pallets Summary
+                        </h1>
+                    </div>
+
+                    <Table
+                        isStriped
+                        aria-label="Grouped Debtor and Branch Table"
+                        classNames={{
+                            wrapper:
+                                "containerscroll !p-0 border-[10px] border-white max-h-[700px]",
+                            thead: "[&>tr]:first:shadow-none",
+                            th: "bg-gray-200",
+                        }}
+                    >
+                        <TableHeader columns={groupedColumns}>
+                            {(column) => (
+                                <TableColumn key={column.uid}>
+                                    {column.name}
+                                </TableColumn>
+                            )}
+                        </TableHeader>
+                        <TableBody emptyContent={"No data found"}>
+                            {groupedByDebtorAndBranch.map((debtor) =>
+                                debtor.data.map((branch, index) => (
+                                    <TableRow
+                                        key={`${debtor.Debtor}-${branch.branch}-${index}`}
+                                    >
+                                        <TableCell>
+                                            {index === 0
+                                                ? debtor.DebtorName
+                                                : debtor.DebtorName}
+                                        </TableCell>
+                                        <TableCell>
+                                            {branch.branchName}
+                                        </TableCell>
+                                        <TableCell>{branch.total}</TableCell>
+                                    </TableRow>
+                                ))
                             )}
                         </TableBody>
                     </Table>
