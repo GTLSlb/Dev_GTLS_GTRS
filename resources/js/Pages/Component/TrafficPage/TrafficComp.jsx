@@ -144,13 +144,13 @@ function TraffiComp() {
     }
 
     const columns = [
-        {
-            name: "event_id",
-            header: "event_id",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-        },
+        // {
+        //     name: "event_id",
+        //     header: "event_id",
+        //     headerAlign: "center",
+        //     textAlign: "center",
+        //     defaultWidth: 170,
+        // },
         {
             name: "api_source",
             header: "State",
