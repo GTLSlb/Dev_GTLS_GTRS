@@ -459,6 +459,17 @@ export function canViewDeliveryReportComment(currentUser) {
 }
 
 /**
+ * Checks if the user can view Delivery Report Comments Table based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can view Delivery Report Comments Table, false otherwise.
+ */
+export function canViewDeliveryReportCommentTable(currentUser) {
+    // Check for 'DeliveryReportComments_View' permission in the user's permissions array
+    return currentUser?.Features?.find(feature => feature?.FunctionName === "DeliveryReportCommentsTable_View")? true : false;;
+}
+
+/**
  * Checks if the user can edit Delivery Report Comments based on their permissions.
  *
  * @param {Object} currentUser - The current user object with role and permissions.

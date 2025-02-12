@@ -188,7 +188,28 @@ export default function ChartsSidebar({
             href: "#",
             icon: ClipboardDocumentIcon,
             current: false,
-            feature: "DailyReport_View",
+            feature: "DeliveryReport_View",
+            url: "/gtrs/delivery-report",
+            options: [
+                {
+                    id: 28,
+                    name: "Delivery Report",
+                    href: "#",
+                    current: false,
+                    icon: ClipboardDocumentCheckIcon,
+                    feature: "DeliveryReport_View",
+                    url: "/gtrs/delivery-report",
+                },
+                {
+                    id: 29,
+                    name: "Delivery Report Comments",
+                    href: "#",
+                    current: false,
+                    icon: ClipboardDocumentCheckIcon,
+                    feature: "DeliveryReportCommentsTable_View",
+                    url: "/gtrs/delivery-report/comments",
+                },
+            ]
         },
     ];
 

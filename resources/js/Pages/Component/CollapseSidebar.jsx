@@ -222,7 +222,7 @@ export default function CollapseSidebar({
                 if (element.options) {
                     return {
                         ...element,
-                        current: true,
+                        current: element.options.find((option) => option.id == id) ? true : false,
                         options: element.options.map((option) => {
                             if (option.id == id) {
                                 return { ...option, current: true };
@@ -242,11 +242,15 @@ export default function CollapseSidebar({
                 if (element.options) {
                 return {
                     ...element,
-                    current: false,
+                    current:  element.options.find((option) => option.id == id) ? true : false,
                     ...(element.options
                         ? {
                               options: element.options.map((option) => {
-                                  return { ...option, current: false };
+                                    if (option.id == id) {
+                                        return { ...option, current: true };
+                                    } else {
+                                        return { ...option, current: false };
+                                    }
                               }),
                           }
                         : {}),

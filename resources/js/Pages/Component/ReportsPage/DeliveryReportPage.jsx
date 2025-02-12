@@ -9,8 +9,7 @@ import OtherReports from "./OtherReports";
 import { EyeIcon, PencilIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { Spinner } from "@nextui-org/react";
-
-import { getFiltersDeliveryReport } from "@/Components/utils/filters";
+import ComboBox from "@/Components/ComboBox";
 import {
     canAddDeliveryReportComment,
     canEditDeliveryReportComment,
@@ -27,6 +26,7 @@ export default function DeliveryReportPage({
     currentUser,
     userPermission,
     fetchDeliveryReport,
+    deliveryCommentsOptions,
 }) {
     const navigate = useNavigate();
     const handleClick = (coindex) => {
@@ -354,7 +354,9 @@ export default function DeliveryReportPage({
         };
 
         const handleComplete = async (event) => {
-            setCellLoading(cellProps.data.ConsignmentID);
+            console.log('commentId', commentId)
+            if(inputValue !== ""){
+                setCellLoading(cellProps.data.ConsignmentID);
             await axios
                 .post(
                     `${url}Add/Delivery/Comment`,
@@ -400,7 +402,8 @@ export default function DeliveryReportPage({
                         console.log(error);
                     }
                 });
-            onComplete(inputValue);
+                onComplete(inputValue);
+            }
         };
 
         const handleKeyDown = (event) => {
@@ -413,7 +416,7 @@ export default function DeliveryReportPage({
         return (
             canAddDeliveryReportComment(userPermission) && (
                 <>
-                    <textarea
+                    {/* <textarea
                         style={{ width: "100%", maxHeight: "100%" }}
                         type={"text"}
                         value={inputValue}
@@ -423,7 +426,8 @@ export default function DeliveryReportPage({
                         onBlurCapture={onCancel}
                         onChange={onValueChange}
                         onKeyDown={handleKeyDown}
-                    />
+                    /> */}
+                    <ComboBox idField={"CommentId"} valueField={"Comment"} addFunction={handleComplete} inputValue={inputValue} options={deliveryCommentsOptions} onKeyDown={handleKeyDown} setInputValue={setInputValue} setCommentId={setCommentId}/>
                 </>
             )
         );

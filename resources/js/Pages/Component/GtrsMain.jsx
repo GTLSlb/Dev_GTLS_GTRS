@@ -45,6 +45,7 @@ import GraphPresentation from "./Presentation/GraphPresentation";
 import RDDMain from "./RDD/RDDMain";
 import RealFoodKPIPack from "./RealFoodKPIPack/RealFoodKPIPack";
 import DeliveryReportPage from "./ReportsPage/DeliveryReportPage";
+import DeliveryReportCommentsPage from "./ReportsPage/CommentsTableView/DeliveryReportCommentsPage";
 import SafetyRep from "./safetyRep";
 import ConsMap from "./TrafficPage/ConsMap";
 import TrafficComp from "./TrafficPage/TrafficComp";
@@ -79,6 +80,8 @@ export default function GtrsMain({
     setCurrentUser,
     setUser,
     deliveryReportData,
+    deliveryReportComments,
+    fetchDeliveryReportCommentsData,
 }) {
     window.moment = moment;
     const [KPIData, setKPIData] = useState([]);
@@ -497,6 +500,7 @@ export default function GtrsMain({
     useEffect(() => {
         if (currentUser) {
             fetchDeliveryReport();
+            fetchDeliveryReportCommentsData();
         }
     }, [currentUser]);
 
@@ -1422,6 +1426,37 @@ export default function GtrsMain({
                                                         }
                                                         fetchDeliveryReport={
                                                             fetchDeliveryReport
+                                                        }
+                                                        deliveryCommentsOptions={deliveryReportComments}
+                                                    />
+                                                }
+                                            />
+                                        }
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
+                                    />
+                                    <Route
+                                        path="/delivery-report/comments"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermission}
+                                                route={'DeliveryReportCommentsTable_View'}
+                                                element={
+                                                    <DeliveryReportCommentsPage
+                                                        url={url}
+                                                        AToken={AToken}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        userPermission={
+                                                            userPermission
+                                                        }
+                                                        data={
+                                                            deliveryReportComments
+                                                        }
+                                                        fetchDeliveryReportCommentsData={
+                                                            fetchDeliveryReportCommentsData
                                                         }
                                                     />
                                                 }
