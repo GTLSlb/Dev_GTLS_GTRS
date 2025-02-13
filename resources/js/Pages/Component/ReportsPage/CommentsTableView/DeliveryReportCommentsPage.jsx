@@ -35,12 +35,12 @@ export default function DeliveryReportCommentsPage({
     const statusOptions =
         [
             {
-                id: 'ACTIVE',
-                label: 'ACTIVE',
+                id: 1,
+                label: 'Active',
             },
             {
-                id: 'INACTIVE',
-                label: 'INACTIVE',
+                id: 0,
+                label: 'Inactive',
             }
         ];
     const [filterValue, setFilterValue] = useState([
@@ -51,17 +51,11 @@ export default function DeliveryReportCommentsPage({
             value: "",
         },
         {
-            name: "StatusName",
+            name: "CommentStatus",
             operator: "inlist",
             type: "select",
             value: null,
             emptyValue: "",
-        },
-        {
-            name: "Actions",
-            operator: "contains",
-            type: "string",
-            value: "",
         },
     ]);
 
