@@ -4,7 +4,7 @@ import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 
 const filter = createFilterOptions();
 
-export default function ComboBox({idField, valueField, addFunction, inputValue, options, setInputValue, onKeyDown, setCommentId}) {
+export default function ComboBox({idField, valueField, onChange, inputValue, options, setInputValue, onKeyDown, onCancel}) {
   const [value, setValue] = useState(null);
 
   useEffect(()=>{
@@ -14,30 +14,7 @@ export default function ComboBox({idField, valueField, addFunction, inputValue, 
     <Autocomplete
       value={value}
       onKeyDown={onKeyDown}
-      onChange={(e)=>{
-        if(e.target.textContent === `Add "${inputValue}"`){
-            setValue(e.target.textContent)
-            setCommentId(null)
-        // addFunction()
-        }else{
-            setValue(e.target.textContent)
-        }
-
-      }}
-    //   onChange={(event, newValue) => {
-    //     if (typeof newValue === 'string') {
-    //       setValue({
-    //         title: newValue,
-    //       });
-    //     } else if (newValue && newValue.inputValue) {
-    //       // Create a new value from the user input
-    //       setValue({
-    //         title: newValue.inputValue,
-    //       });
-    //     } else {
-    //       setValue(newValue);
-    //     }
-    //   }}
+      onChange={(e, newValue)=>onChange(e, newValue)}
       filterOptions={(options, params) => {
         const filtered = filter(options, params);
 
@@ -55,6 +32,8 @@ export default function ComboBox({idField, valueField, addFunction, inputValue, 
       }}
       selectOnFocus
       clearOnBlur
+      onBlur={onCancel}
+      onBlurCapture={onCancel}
       handleHomeEndKeys
       id="combo-box"
       options={options}
@@ -74,7 +53,7 @@ export default function ComboBox({idField, valueField, addFunction, inputValue, 
       renderOption={(props, option) => {
         const { key, ...optionProps } = props;
            return (
-          <li key={option[idField]} {...optionProps}>
+          <li key={option[idField]} id={option[idField]} {...optionProps}>
             {option[valueField]}
           </li>
         );

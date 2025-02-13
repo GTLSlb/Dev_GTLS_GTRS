@@ -1,5 +1,5 @@
 import ReactModal from "react-modal";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "../../../../../css/scroll.css";
 import moment from "moment";
 import { PencilIcon } from "@heroicons/react/20/solid";
@@ -9,6 +9,7 @@ import { handleSessionExpiration } from '@/CommonFunctions';
 import {
     Spinner,
 } from "@nextui-org/react";
+import ComboBox from "@/Components/ComboBox";
 
 export default function ViewComments({
     isOpen,
@@ -19,24 +20,89 @@ export default function ViewComments({
     fetchData,
     currentUser,
     commentsData,
+    deliveryCommentsOptions,
+    fetchDeliveryReportCommentsData,
 }) {
 
     const [ data, setData] = useState([]);
     const [ comment, setComment] = useState(null);
+    const [ deliveryCommentId, setDeliveryCommentId] = useState(null);
     const [ commentId, setCommentId] = useState(null);
     const [ isEditing, setIsEditing] = useState(false);
     const [ editIndx, setEditIndx] = useState(null);
     const [ isLoading, setIsLoading] = useState(false);
-
+    const [newCommentValue, setNewCommentValue] = useState('');
     useEffect(() => {
        setData(commentsData);
     },[commentsData])
 
-    const handleSubmit = async () => {
+    const handleKeyDown = (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            handleSubmit();
+        }
+    };
+
+
+    // Add Comment to list not to delivery table
+    function AddComment(value, commentId) {
+        const inputValues = {
+            CommentId: null,
+            Comment: value,
+            StatusId: 1,
+        };
+        setIsLoading(true);
+        axios
+            .post(`${url}Add/Comment`, inputValues, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            })
+            .then((res) => {
+                fetchDeliveryReportCommentsData();
+                setShouldAddComment(false);
+            })
+            .catch((err) => {
+                setIsLoading(false);
+                if (err.response && err.response.status === 401) {
+                    // Handle 401 error using SweetAlert
+                    swal({
+                      title: 'Session Expired!',
+                      text: "Please login again",
+                      type: 'success',
+                      icon: "info",
+                      confirmButtonText: 'OK'
+                    }).then(async function () {
+                        await handleSessionExpiration();
+                    });
+                  } else {
+                    // Handle other errors
+                    console.log(err);
+                  }
+            });
+    }
+    const [shouldAddComment, setShouldAddComment] = useState(false);
+    const [addedComment, setAddedComment] = useState(false);
+    const onSelectComment = (e, newValue)=>{
+        if(typeof newValue?.CommentId == 'string' && newValue?.CommentId !== ''){
+            if(e.target.textContent === `Add "${newValue?.CommentId}"`){
+                // Adding a new comment to the list not to the consignment
+                setNewCommentValue(newValue?.CommentId?.trim())
+                setShouldAddComment(true)
+
+            }
+        }else{
+            // Adding a new comment to the consignment
+            setCommentId(newValue.CommentId)
+        }
+    }
+
+    const AddCommentToConsignment = async (newValue) => {
         let formValues = {
-            "CommentId": commentId,
+            "DeliveryCommentId": deliveryCommentId,
             "ConsId": consId,
-            "Comment": comment
+            "CommentId": newValue ? newValue : commentId
         };
         try {
             setIsLoading(true);
@@ -54,6 +120,8 @@ export default function ViewComments({
                     setComment(null);
                     setIsEditing(false);
                     setEditIndx(null);
+                    setShouldAddComment(false);
+                    setAddedComment(true);
                 }, 1000);
             })
         } catch (error) {
@@ -75,10 +143,31 @@ export default function ViewComments({
                 console.log(error);
             }
             console.log(error);
-            setError("Error occurred while saving the data. Please try again."); // Set the error message
         }
-    };
+    }
 
+    const addCommentToConsignmentCallback = useCallback((newValue) => {
+        if(!addedComment){AddCommentToConsignment(newValue)}
+      }, [commentId, addedComment]);
+
+      useEffect(() => {
+        if (deliveryCommentsOptions?.length > 0 && newCommentValue !== '') {
+          const newValue = deliveryCommentsOptions?.find((item) => item.Comment === newCommentValue);
+          if (newValue && newValue?.Comment === newCommentValue) {
+            setCommentId(newValue?.CommentId);
+            addCommentToConsignmentCallback(newValue?.CommentId);
+          }
+        }
+      }, [deliveryCommentsOptions, newCommentValue]);
+
+      const handleSubmit = async () => {
+        if (shouldAddComment) {
+          setAddedComment(false);
+          AddComment(newCommentValue);
+        } else {
+          AddCommentToConsignment()
+        }
+      };
 
     return (
         <ReactModal
@@ -118,13 +207,14 @@ export default function ViewComments({
                                     <div className="flex pr-2">
                                         <div className="w-[95%]">
                                         {isEditing && editIndx === index
-                                            ? <textarea type="text" className="border-[#D5D5D5] rounded-lg w-full" defaultValue={c?.Comment} value={comment} onChange={(e)=>{setComment(e.target.value)}} />
+                                            ? <ComboBox idField={"CommentId"} valueField={"Comment"} onChange={onSelectComment} inputValue={comment} options={deliveryCommentsOptions} onKeyDown={handleKeyDown} setInputValue={setComment}/>
+                                            //<textarea type="text" className="border-[#D5D5D5] rounded-lg w-full" defaultValue={c?.Comment} value={comment} onChange={(e)=>{setComment(e.target.value)}} />
                                             :<p>{c?.Comment}</p>
                                         }
                                         </div>
                                         {isEditing && editIndx === index
                                             ? <div className="flex mt-auto gap-4 ml-3 text-sm h-[1.6rem]">
-                                                <button onClick={()=>{setIsEditing(false); setCommentId(null); setEditIndx(null)}} disabled={isLoading} className="text-gray-500">Cancel</button>
+                                                <button onClick={()=>{setIsEditing(false); setDeliveryCommentId(null); setEditIndx(null)}} disabled={isLoading} className="text-gray-500">Cancel</button>
                                                 {
                                                     isLoading
                                                     ? <div className=" inset-0 flex justify-center items-center bg-opacity-50">
@@ -133,7 +223,7 @@ export default function ViewComments({
                                                     : <button className="bg-gray-800 w-16 text-white font-bold rounded" onClick={()=>handleSubmit()}>Save</button>
                                                 }
                                             </div>
-                                            : <PencilIcon onClick={()=>{setIsEditing(true); setCommentId(c?.CommentId);setComment(c?.Comment); setEditIndx(index)}} className="w-5 h-5 text-sky-500 ml-auto hover:cursor-pointer hover:text-sky-500/70"/>
+                                            : <PencilIcon onClick={()=>{setIsEditing(true); setComment(c); setDeliveryCommentId(c?.DeliveryCommentId); setCommentId(c?.CommentId); setEditIndx(index)}} className="w-5 h-5 text-sky-500 ml-auto hover:cursor-pointer hover:text-sky-500/70"/>
                                         }
                                     </div>
                                     <p className="text-gray-400 text-sm font-light">{moment(c?.AddedAt).format("DD-MM-YYYY hh:mm A")}</p>

@@ -1,10 +1,4 @@
 import { useState } from "react";
-import { Fragment } from "react";
-import { Listbox, Transition } from "@headlessui/react";
-import {
-    CheckIcon,
-    ChevronDownIcon,
-} from "@heroicons/react/20/solid";
 import { useEffect } from "react";
 import swal from "sweetalert";
 import axios from "axios";
@@ -50,7 +44,7 @@ export default function AddCommentToList({
         const inputValues = {
             CommentId: object ? object.CommentId : null,
             Comment: document.getElementById("Comment").value,
-            CommentStatus: isChecked ? 1 : 2,
+            StatusId: isChecked ? 1 : 0,
         };
         axios
             .post(`${url}Add/Comment`, inputValues, {
@@ -89,7 +83,7 @@ export default function AddCommentToList({
     }
 
     return (
-        <div className="shadow bg-white p-6 rounded-lg ">
+        <div className="mt-6 shadow bg-white p-6 rounded-lg ">
             <form onSubmit={AddComment}>
                 <p className="font-bold text-lg">{object ? "Edit " : "Add "} Comment</p>
                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-5 gap-y-5 items-center py-4">
@@ -114,7 +108,7 @@ export default function AddCommentToList({
                             type="checkbox"
                             checked={isChecked}
                             onChange={handleCheckboxChange}
-                            id="CommentStatus"
+                            id="StatusId"
                             className="rounded text-green-500 focus:ring-green-300"
                         />
                     </div>

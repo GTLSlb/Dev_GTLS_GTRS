@@ -27,6 +27,7 @@ export default function DeliveryReportPage({
     userPermission,
     fetchDeliveryReport,
     deliveryCommentsOptions,
+    fetchDeliveryReportCommentsData,
 }) {
     const navigate = useNavigate();
     const handleClick = (coindex) => {
@@ -328,42 +329,85 @@ export default function DeliveryReportPage({
                     ?.Comments
             );
         }
-    }, [deliveryReportData, consId]);
+    }, [deliveryReportData, consId, deliveryCommentsOptions]);
+
     const handleViewComments = (data) => {
         setCommentsData(data?.Comments);
         setConsId(data?.ConsignmentID);
         setIsViewModalOpen(true);
     };
 
+    const [newCommentValue, setNewCommentValue] = useState('');
+    // Add Comment to list not to delivery table
+    function AddComment(value, commentId) {
+        const inputValues = {
+            CommentId: null,
+            Comment: value,
+            StatusId: 1,
+        };
+        axios
+            .post(`${url}Add/Comment`, inputValues, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            })
+            .then((res) => {
+                fetchDeliveryReportCommentsData();
+            })
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                    // Handle 401 error using SweetAlert
+                    swal({
+                      title: 'Session Expired!',
+                      text: "Please login again",
+                      type: 'success',
+                      icon: "info",
+                      confirmButtonText: 'OK'
+                    }).then(async function () {
+                        await handleSessionExpiration();
+                    });
+                  } else {
+                    // Handle other errors
+                    console.log(err);
+                  }
+            });
+    }
+
     function CustomColumnEditor(props) {
         const { value, onChange, onComplete, cellProps, onCancel } = props; // Destructure relevant props
 
-        const [prvsComment, setPrvsComment] = useState(
-            value ? value[0].Comment : null
-        );
-        const [inputValue, setInputValue] = useState(prvsComment);
-        const [commentId, setCommentId] = useState(
-            value ? value[0].CommentId : null
-        );
+        const [deliveryCommentId, setDeliveryCommentId] = useState(null);
+        const [defaultDeliveryComment, setDefaultDeliveryComment] = useState(value && value?.length > 0 ? value[0]: null);
+        useEffect(() => {
+            if(deliveryCommentsOptions?.length > 0 && newCommentValue !== ''){
+                const newValue = deliveryCommentsOptions?.find((item) => item.Comment === newCommentValue);
+                if(newValue && newValue?.Comment === newCommentValue){
+                    handleComplete(newValue?.CommentId)
+                }
+            }
+        },[deliveryCommentsOptions, newCommentValue])
 
-        const onValueChange = (e) => {
-            let newValue = e.target.value;
-
-            setInputValue(newValue);
-            onChange(newValue);
-        };
-
-        const handleComplete = async (event) => {
-            console.log('commentId', commentId)
-            if(inputValue !== ""){
+        const onSelectComment = (e, newValue, value)=>{
+                if(e.target.textContent === `Add "${value}"`){
+                    // Adding a new comment to the list not to the consignment
+                    setNewCommentValue(value)
+                    AddComment(value)
+                }else{
+                    // Adding a new comment to the consignment
+                    handleComplete(newValue.CommentId)
+                }
+        }
+        const handleComplete = async (commentId) => {
+            if(commentId !== null){
                 setCellLoading(cellProps.data.ConsignmentID);
             await axios
                 .post(
                     `${url}Add/Delivery/Comment`,
                     {
-                        CommentId: commentId,
+                        DeliveryCommentId: deliveryCommentId,
                         ConsId: cellProps.data.ConsignmentID,
-                        Comment: `${inputValue}`,
+                        CommentId: commentId,
                     },
                     {
                         headers: {
@@ -373,6 +417,7 @@ export default function DeliveryReportPage({
                     }
                 )
                 .then((response) => {
+                    setNewCommentValue('');
                     fetchDeliveryReport(setCellLoading);
                 })
                 .catch((error) => {
@@ -402,7 +447,7 @@ export default function DeliveryReportPage({
                         console.log(error);
                     }
                 });
-                onComplete(inputValue);
+                onComplete(deliveryCommentId);
             }
         };
 
@@ -427,7 +472,7 @@ export default function DeliveryReportPage({
                         onChange={onValueChange}
                         onKeyDown={handleKeyDown}
                     /> */}
-                    <ComboBox idField={"CommentId"} valueField={"Comment"} addFunction={handleComplete} inputValue={inputValue} options={deliveryCommentsOptions} onKeyDown={handleKeyDown} setInputValue={setInputValue} setCommentId={setCommentId}/>
+                    <ComboBox onCancel={onCancel}  idField={"CommentId"} valueField={"Comment"} onChange={onSelectComment} inputValue={defaultDeliveryComment} options={deliveryCommentsOptions} onKeyDown={handleKeyDown} setInputValue={setDefaultDeliveryComment}/>
                 </>
             )
         );
@@ -838,6 +883,8 @@ export default function DeliveryReportPage({
             isAddModalOpen={isAddModalOpen}
             handleAddModalClose={handleAddClose}
             commentsData={commentsData}
+            deliveryCommentsOptions={deliveryCommentsOptions}
+            fetchDeliveryReportCommentsData={fetchDeliveryReportCommentsData}
         />,
         <WoolworthsReports
             filterValue={filterValue}
@@ -856,6 +903,8 @@ export default function DeliveryReportPage({
             isAddModalOpen={isAddModalOpen}
             handleAddModalClose={handleAddClose}
             commentsData={commentsData}
+            deliveryCommentsOptions={deliveryCommentsOptions}
+            fetchDeliveryReportCommentsData={fetchDeliveryReportCommentsData}
         />,
         <OtherReports
             filterValue={filterValue}
@@ -874,6 +923,8 @@ export default function DeliveryReportPage({
             isAddModalOpen={isAddModalOpen}
             handleAddModalClose={handleAddClose}
             commentsData={commentsData}
+            deliveryCommentsOptions={deliveryCommentsOptions}
+            fetchDeliveryReportCommentsData={fetchDeliveryReportCommentsData}
         />,
     ];
     return (

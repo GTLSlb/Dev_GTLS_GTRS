@@ -77,7 +77,7 @@ function NoAccess({currentUser, setToken, setCurrentUser}) {
                 <div className="text-3xl ">You have no access to this page</div>
 
                 <GtrsButton
-                    name={` ${isLoading ? <Spinner color="white" size="xs" /> : "Logout"}`}
+                    name={` ${isLoading ? "Loging Out..." : "Logout"}`}
                     onClick={() => handleLogout()}
                     className="mt-6 py-4"
                 />

@@ -25,36 +25,24 @@ export default function DeliveryReportCommentsPage({
         setShowAdd(!showAdd);
         setSelectedComment(data);
     };
-    const createNewLabelObjects = (data, fieldName) => {
-        const uniqueLabels = new Set(); // To keep track of unique labels
-        const newData = [];
 
-        // Map through the data and create new objects
-        data?.forEach((item) => {
-            const fieldValue = item[fieldName];
-
-            // Check if the label is not already included and is not null or empty
-            if (
-                fieldValue &&
-                !uniqueLabels.has(fieldValue) &&
-                fieldValue?.trim() !== ""
-            ) {
-                if (typeof fieldValue === "string") {
-                    uniqueLabels.add(fieldValue);
-                    const newObject = {
-                        id: fieldValue,
-                        label: fieldValue,
-                    };
-                    newData.push(newObject);
-                }
+    const scrollIntoView = ()=>{
+        const button = document.getElementById('addSection');
+        if(button){
+            button.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+        }
+    }
+    const statusOptions =
+        [
+            {
+                id: 'ACTIVE',
+                label: 'ACTIVE',
+            },
+            {
+                id: 'INACTIVE',
+                label: 'INACTIVE',
             }
-        });
-
-        return newData;
-    };
-    const [statusOptions, setStatusOptions] = useState(
-        createNewLabelObjects(data, "StatusName")
-    );
+        ];
     const [filterValue, setFilterValue] = useState([
         {
             name: "Comment",
@@ -91,7 +79,7 @@ export default function DeliveryReportCommentsPage({
             },
         },
         {
-            name: "StatusName",
+            name: "CommentStatus",
             header: "Status",
             headerAlign: "center",
             textAlign: "center",
@@ -101,6 +89,17 @@ export default function DeliveryReportCommentsPage({
                 multiple: true,
                 wrapMultiple: false,
                 dataSource: statusOptions,
+            },
+            render: ({ value }) => {
+                return value == 1 ? (
+                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                        Active
+                    </span>
+                ) : (
+                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                        Inactive
+                    </span>
+                );
             },
         },
         {
@@ -114,7 +113,7 @@ export default function DeliveryReportCommentsPage({
                     <div className="flex gap-4 items-center justify-center px-2">
                         <span
                             className="underline text-blue-400 hover:cursor-pointer"
-                            onClick={() => handleComment(data)}
+                            onClick={() => {handleComment(data); scrollIntoView();}}
                         >
                             <PencilIcon className="h-5 w-5 text-blue-500" />
                         </span>
@@ -131,7 +130,7 @@ export default function DeliveryReportCommentsPage({
                 onClick={() => {
                     handleComment(null);
                 }}
-                className="w-[5.2rem] h-[35px]"
+                className="w-[5rem] h-[35px]"
             />
         ) : (
             <GtrsButton
@@ -139,7 +138,7 @@ export default function DeliveryReportCommentsPage({
                 onClick={() => {
                     handleComment(null);
                 }}
-                className="w-[5.2rem] h-[35px]"
+                className="w-[5rem] h-[35px]"
             />
         )
     ) : null;
@@ -181,21 +180,18 @@ export default function DeliveryReportCommentsPage({
     }
     return (
         <div className="min-h-full px-8">
-            <div className="sm:flex-auto mt-6">
-                <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                    Delivery Report Comments List
-                </h1>
-            </div>
             {showAdd && (
-                <AddCommentToList
-                    selectedComment={selectedComment}
-                    setSelectedComment={setSelectedComment}
-                    url={url}
-                    AToken={AToken}
-                    currentUser={currentUser}
-                    fetchData={fetchDeliveryReportCommentsData}
-                    setShowAdd={setShowAdd}
-                />
+                <div id="addSection">
+                    <AddCommentToList
+                        selectedComment={selectedComment}
+                        setSelectedComment={setSelectedComment}
+                        url={url}
+                        AToken={AToken}
+                        currentUser={currentUser}
+                        fetchData={fetchDeliveryReportCommentsData}
+                        setShowAdd={setShowAdd}
+                    />
+                </div>
             )}
             <div className="">
                 <TableStructure
@@ -204,6 +200,7 @@ export default function DeliveryReportCommentsPage({
                     handleDownloadExcel={handleDownloadExcel}
                     setSelected={setSelected}
                     gridRef={gridRef}
+                    title={"Delivery Report Comments List"}
                     selected={selected}
                     setFilterValueElements={setFilterValue}
                     tableDataElements={data}
