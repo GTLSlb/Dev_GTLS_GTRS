@@ -15,6 +15,7 @@ import {
     CameraIcon,
     DocumentTextIcon,
     DocumentDuplicateIcon,
+    RectangleStackIcon,
 } from "@heroicons/react/24/solid";
 import "../../../../css/scroll.css";
 import TaskIcon from "@mui/icons-material/Task";
@@ -200,7 +201,14 @@ const navigation = [
         current: false,
         feature: "DeliveryReport_View",
     },
-
+    {
+        id: 23,
+        name: "SOH Report",
+        href: "#",
+        icon: RectangleStackIcon,
+        current: false,
+        feature: "StockReport_View",
+    },
 ];
 
 function classNames(...classes) {
