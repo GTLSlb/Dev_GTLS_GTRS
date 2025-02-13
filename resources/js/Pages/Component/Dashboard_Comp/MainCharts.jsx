@@ -27,6 +27,9 @@ export default function MainCharts({
     chartsData,
     currentUser,
 }) {
+
+    const shuttleDebtorIds = [1514, 244];
+
     const [filteredSafety, setFilteredSafety] = useState(safetyData);
 
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
@@ -137,6 +140,7 @@ export default function MainCharts({
             ConsStatus,
             POD,
             FuelLevy,
+            ChargeToId,
         } of data) {
             uniqueReceivers.add(ReceiverName);
             totalWeight += TottalWeight;
@@ -150,7 +154,11 @@ export default function MainCharts({
             if (ConsStatus === "PASS") {
                 totalNoConsPassed++;
             } else if (ConsStatus === "FAIL") {
-                totalConsFailed++;
+                if (shuttleDebtorIds.includes(ChargeToId)) {
+                    totalNoConsPassed++;
+                } else {
+                    totalConsFailed++;
+                }
             } else if (ConsStatus === "PENDING") {
                 totalConsPending++;
             }
@@ -184,10 +192,63 @@ export default function MainCharts({
     };
     const getConsStatusCounter = (data) => {
         const counter = [];
+      
+        for (const item of data) {
+          let consStatus = item.ConsStatus;
+          const chargeToId = item.ChargeToId;
+      
+          // If consStatus is FAIL but chargeToId is in shuttleDebtorIds => treat it as PASS
+          if (consStatus === "FAIL" && shuttleDebtorIds.includes(chargeToId)) {
+            consStatus = "PASS";
+          }
+      
+          // Convert PASS/FAIL to more descriptive strings
+          if (consStatus === "PASS") {
+            consStatus = "PASS";
+          } else if (consStatus === "FAIL") {
+            consStatus = "FAIL";
+          }
+      
+          const existingStatus = counter.find((obj) => obj.label === consStatus);
+      
+          if (existingStatus) {
+            existingStatus.value++;
+          } else {
+            counter.push({ label: consStatus, value: 1 });
+          }
+        }
+      
+        return counter;
+      };
+    const getKPIPerformanceCounter = (data) => {
+        const counter = [];
 
         for (const item of data) {
-            const consStatus = item.ConsStatus;
+            let consStatus = item.ConsStatus;
+            const chargeToId = item.ChargeToId;
 
+            // Skip if status is PENDING
+            if (consStatus === "PENDING") {
+                continue;
+            }
+
+            // If consStatus is FAIL but chargeToId is in shuttleDebtorIds,
+            // treat it as PASS ("Delivered on Time").
+            if (
+                consStatus === "FAIL" &&
+                shuttleDebtorIds.includes(chargeToId)
+            ) {
+                consStatus = "Delivered on Time";
+            }
+
+            // Convert PASS/FAIL to more descriptive strings
+            if (consStatus === "PASS") {
+                consStatus = "Delivered on Time";
+            } else if (consStatus === "FAIL") {
+                consStatus = "Not Delivered on Time";
+            }
+
+            // Find existing status in the counter array
             const existingStatus = counter.find(
                 (obj) => obj.label === consStatus
             );
@@ -201,33 +262,7 @@ export default function MainCharts({
 
         return counter;
     };
-    const getKPIPerformanceCounter = (data) => {
-        const counter = [];
-    
-        for (const item of data) {
-            let consStatus = item.ConsStatus;
-    
-            if (consStatus === "PENDING") {
-                continue;
-            }
 
-            if (consStatus === "PASS") {
-                consStatus = "Delivered on Time"; 
-            } else if (consStatus === "FAIL") {
-                consStatus = "Not Delivered on Time"; 
-            }
-    
-            const existingStatus = counter.find((obj) => obj.label === consStatus);
-    
-            if (existingStatus) {
-                existingStatus.value++;
-            } else {
-                counter.push({ label: consStatus, value: 1 });
-            }
-        }
-    
-        return counter;
-    };
     const getKPIStatusCounter = (data) => {
         const counter = [];
         for (const item of data) {
