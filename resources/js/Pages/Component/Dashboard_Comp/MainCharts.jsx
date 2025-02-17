@@ -27,13 +27,13 @@ export default function MainCharts({
     chartsData,
     currentUser,
 }) {
-
     const shuttleDebtorIds = [1514, 244];
 
     const [filteredSafety, setFilteredSafety] = useState(safetyData);
 
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
     const [EDate, setEDate] = useState(getLatestDespatchDate(chartsData));
+
     function getOldestDespatchDate(data) {
         // Filter out elements with invalid 'CreatedDate' values
         const validData = data?.filter((item) =>
@@ -109,7 +109,7 @@ export default function MainCharts({
         };
     }, []);
     const [selectedReceiver, setselectedReceiver] = useState([]);
-
+    const [selectedStates, setSelectedStates] = useState([]);
     const calculateStatistics = (data) => {
         let safetyCounter = 0;
         const uniqueReceivers = new Set();
@@ -192,34 +192,39 @@ export default function MainCharts({
     };
     const getConsStatusCounter = (data) => {
         const counter = [];
-      
+
         for (const item of data) {
-          let consStatus = item.ConsStatus;
-          const chargeToId = item.ChargeToId;
-      
-          // If consStatus is FAIL but chargeToId is in shuttleDebtorIds => treat it as PASS
-          if (consStatus === "FAIL" && shuttleDebtorIds.includes(chargeToId)) {
-            consStatus = "PASS";
-          }
-      
-          // Convert PASS/FAIL to more descriptive strings
-          if (consStatus === "PASS") {
-            consStatus = "PASS";
-          } else if (consStatus === "FAIL") {
-            consStatus = "FAIL";
-          }
-      
-          const existingStatus = counter.find((obj) => obj.label === consStatus);
-      
-          if (existingStatus) {
-            existingStatus.value++;
-          } else {
-            counter.push({ label: consStatus, value: 1 });
-          }
+            let consStatus = item.ConsStatus;
+            const chargeToId = item.ChargeToId;
+
+            // If consStatus is FAIL but chargeToId is in shuttleDebtorIds => treat it as PASS
+            if (
+                consStatus === "FAIL" &&
+                shuttleDebtorIds.includes(chargeToId)
+            ) {
+                consStatus = "PASS";
+            }
+
+            // Convert PASS/FAIL to more descriptive strings
+            if (consStatus === "PASS") {
+                consStatus = "PASS";
+            } else if (consStatus === "FAIL") {
+                consStatus = "FAIL";
+            }
+
+            const existingStatus = counter.find(
+                (obj) => obj.label === consStatus
+            );
+
+            if (existingStatus) {
+                existingStatus.value++;
+            } else {
+                counter.push({ label: consStatus, value: 1 });
+            }
         }
-      
+
         return counter;
-      };
+    };
     const getKPIPerformanceCounter = (data) => {
         const counter = [];
 
@@ -470,14 +475,22 @@ export default function MainCharts({
     const uniqueReceiverNames = Array.from(
         new Set(chartsData.map((item) => item.ReceiverName))
     );
+    const uniqueStates = Array.from(
+        new Set(chartsData.map((item) => item.ReceiverState))
+    );
+    const statesOptions = uniqueStates.map((name, index) => ({
+        value: name,
+        label: isDummyAccountWithDummyData(`Receiver No.${index + 1} `, name),
+    }));
+
     const handleReceiverSelectChange = (selectedOptions) => {
         setselectedReceiver(selectedOptions);
-        // filterData(SDate, EDate, selectedReceiver);
     };
     const receiverOptions = uniqueReceiverNames.map((name, index) => ({
         value: name,
         label: isDummyAccountWithDummyData(`Receiver No.${index + 1} `, name),
     }));
+
     function filterReportsByDebtorId(safetyData, debtorIds) {
         return safetyData.filter((data) => debtorIds.includes(data.DebtorId));
     }
@@ -508,6 +521,7 @@ export default function MainCharts({
             width: "30%",
             overflow: "hidden",
             height: "20px",
+            justifyContent: "space-between",
         }),
         valueContainer: (provided) => ({
             ...provided,
@@ -534,6 +548,9 @@ export default function MainCharts({
         const selectedReceiverNames = selectedReceiver.map(
             (receiver) => receiver.value
         );
+        const selectedReceiverStates = selectedStates.map(
+            (state) => state.value
+        );
         const intArray = accData?.map((str) => {
             const intValue = parseInt(str);
             return isNaN(intValue) ? 0 : intValue;
@@ -556,6 +573,9 @@ export default function MainCharts({
                 selectedReceiverNames.length === 0 ||
                 selectedReceiverNames?.includes(item.ReceiverName);
 
+            const isInState =
+                selectedReceiverStates.length === 0 ||
+                selectedReceiverStates?.includes(item.ReceiverState);
             const itemDate = new Date(item.DespatchDate);
             const filterStartDate = new Date(startDate);
             const filterEndDate = new Date(endDate);
@@ -571,7 +591,8 @@ export default function MainCharts({
                 itemDate >= filterStartDate &&
                 itemDate <= filterEndDate &&
                 isIncluded &&
-                chargeToMatch
+                chargeToMatch &&
+                isInState
             );
         });
         const hasData = filtered?.length > 0;
@@ -580,7 +601,7 @@ export default function MainCharts({
     };
     useEffect(() => {
         filterData(SDate, EDate);
-    }, [accData, selectedReceiver]);
+    }, [accData, selectedReceiver, selectedStates]);
     // const isMobile = useMediaQuery({ query: "(max-width: 1080px)" });
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     const ResetLayout = () => {
@@ -647,70 +668,98 @@ export default function MainCharts({
                 </div>
                 <div className="mt-3 w-full">
                     <div className="w-full relative px-2">
-                        <div className=" sm:border-gray-200 text-gray-400 flex flex-col md:flex-row gap-y-4 gap-x-2 2xl:items-center">
-                            <label
-                                htmlFor="last-name"
-                                className="inline-block text-sm font-medium leading-6 flex-item items-center"
-                            >
-                                Date From
-                            </label>
-                            <div className="sm:mt-0 md:px-4">
-                                <input
-                                    onKeyDown={(e) => e.preventDefault()}
-                                    type="date"
-                                    name="from-date"
-                                    value={SDate}
-                                    min={getOldestDespatchDate(chartsData)}
-                                    max={EDate}
-                                    onChange={handleStartDateChange}
-                                    id="from-date"
-                                    className="flex-item block w-full h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 lg:max-w-xs sm:text-sm sm:leading-6"
-                                />
+                        <div className=" sm:border-gray-200 text-gray-400 gap-y-4 gap-x-2">
+                            <div className="lg:flex items-center">
+                                <label
+                                    htmlFor="last-name"
+                                    className="inline-block text-sm font-medium leading-6 flex-item items-center"
+                                >
+                                    Date From
+                                </label>
+                                <div className="sm:mt-0 md:px-4">
+                                    <input
+                                        onKeyDown={(e) => e.preventDefault()}
+                                        type="date"
+                                        name="from-date"
+                                        value={SDate}
+                                        min={getOldestDespatchDate(chartsData)}
+                                        max={EDate}
+                                        onChange={handleStartDateChange}
+                                        id="from-date"
+                                        className="flex-item block w-full h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 lg:max-w-xs sm:text-sm sm:leading-6"
+                                    />
+                                </div>
+
+                                <label
+                                    htmlFor="last-name"
+                                    className="inline-block text-sm font-medium leading-6 flex-item"
+                                >
+                                    To
+                                </label>
+
+                                <div className="mt-2 flex-item  sm:mt-0 md:px-4">
+                                    <input
+                                        onKeyDown={(e) => e.preventDefault()}
+                                        type="date"
+                                        name="to-date"
+                                        min={SDate}
+                                        max={getLatestDespatchDate(chartsData)}
+                                        value={EDate}
+                                        onChange={handleEndDateChange}
+                                        id="to-date"
+                                        className="block w-full h-[36px]  rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 lg:max-w-xs sm:text-sm sm:leading-6"
+                                    />
+                                </div>
                             </div>
 
-                            <label
-                                htmlFor="last-name"
-                                className="inline-block text-sm font-medium leading-6 flex-item"
-                            >
-                                To
-                            </label>
+                            <div className="lg:flex items-center gap-5 mt-2">
+                                <label
+                                    htmlFor="last-name"
+                                    className=" text-sm font-medium leading-6 text-gray-400 sm:pt-1.5 2xl:mr-5"
+                                >
+                                    Receiver Name
+                                </label>
 
-                            <div className="mt-2 flex-item  sm:mt-0 md:px-4">
-                                <input
-                                    onKeyDown={(e) => e.preventDefault()}
-                                    type="date"
-                                    name="to-date"
-                                    min={SDate}
-                                    max={getLatestDespatchDate(chartsData)}
-                                    value={EDate}
-                                    onChange={handleEndDateChange}
-                                    id="to-date"
-                                    className="block w-full h-[36px]  rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 lg:max-w-xs sm:text-sm sm:leading-6"
-                                />
-                            </div>
+                                <div className="">
+                                    <div className=" flex items-center">
+                                        <div className="mt-2 w-full sm:mt-0 ">
+                                            <Select
+                                                styles={customStyles}
+                                                isMulti
+                                                name="colors"
+                                                value={selectedReceiver}
+                                                options={getFilteredOptions()}
+                                                onChange={
+                                                    handleReceiverSelectChange
+                                                }
+                                                className="basic-multi-select"
+                                                classNamePrefix="select"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
 
-                            <label
-                                htmlFor="last-name"
-                                className="hidden lg:block text-sm font-medium leading-6 text-gray-400 sm:pt-1.5 2xl:mr-5"
-                            >
-                                Receiver Name
-                            </label>
+                                <label
+                                    htmlFor="last-name"
+                                    className=" text-sm font-medium leading-6 text-gray-400 sm:pt-1.5 2xl:mr-5"
+                                >
+                                    State
+                                </label>
 
-                            <div className="hidden lg:inline-block">
-                                <div className=" flex items-center">
-                                    <div className="mt-2 w-full sm:mt-0 ">
-                                        <Select
-                                            styles={customStyles}
-                                            isMulti
-                                            name="colors"
-                                            value={selectedReceiver}
-                                            options={getFilteredOptions()}
-                                            onChange={
-                                                handleReceiverSelectChange
-                                            }
-                                            className="basic-multi-select text-red "
-                                            classNamePrefix="select"
-                                        />
+                                <div className="">
+                                    <div className=" flex items-center">
+                                        <div className="mt-2 w-full sm:mt-0 ">
+                                            <Select
+                                                styles={customStyles}
+                                                isMulti
+                                                name="colors"
+                                                value={selectedStates}
+                                                options={statesOptions}
+                                                onChange={setSelectedStates}
+                                                className="basic-multi-select  lg:w-3/4"
+                                                classNamePrefix="select"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -773,31 +822,6 @@ export default function MainCharts({
                                     </Popover.Panel>
                                 </Transition>
                             </Popover>
-                        </div>
-                    </div>
-                    <div className="lg:hidden px-2 py-3 w-full">
-                        <label
-                            htmlFor="last-name"
-                            className="block text-sm font-medium leading-6  text-gray-400 sm:pt-1.5 mr-5"
-                        >
-                            Receiver Name
-                        </label>
-
-                        <div className="inline-block w-full">
-                            <div className=" flex items-center">
-                                <div className="mt-2 w-full sm:mt-0 ">
-                                    <Select
-                                        styles={customStyles}
-                                        isMulti
-                                        name="colors"
-                                        value={selectedReceiver}
-                                        options={getFilteredOptions()}
-                                        onChange={handleReceiverSelectChange}
-                                        className="basic-multi-select text-red "
-                                        classNamePrefix="select"
-                                    />
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
