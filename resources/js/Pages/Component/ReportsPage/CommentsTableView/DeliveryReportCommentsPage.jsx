@@ -46,7 +46,7 @@ export default function DeliveryReportCommentsPage({
     const [filterValue, setFilterValue] = useState([
         {
             name: "Comment",
-            operator: "eq",
+            operator: "contains",
             type: "string",
             value: "",
         },
