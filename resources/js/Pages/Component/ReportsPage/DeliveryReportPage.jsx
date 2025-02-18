@@ -26,8 +26,7 @@ export default function DeliveryReportPage({
     currentUser,
     userPermission,
     fetchDeliveryReport,
-    deliveryCommentsOptions,
-    fetchDeliveryReportCommentsData,
+    deliveryReportComments,
 }) {
     const navigate = useNavigate();
     const handleClick = (coindex) => {
@@ -35,6 +34,7 @@ export default function DeliveryReportPage({
             state: { activeCons: coindex },
         });
     };
+    const [deliveryCommentsOptions, setDeliveryCommentsOptions] = useState(deliveryReportComments);
     const createNewLabelObjects = (data, fieldName) => {
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
@@ -91,7 +91,7 @@ export default function DeliveryReportPage({
     ];
 
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
-    const [cellLoading, setCellLoading] = useState(false);
+    const [cellLoading, setCellLoading] = useState(null);
 
     const [filterValue, setFilterValue] = useState([
         {
@@ -338,13 +338,52 @@ export default function DeliveryReportPage({
     const [newCommentValue, setNewCommentValue] = useState("");
     const [addedComment, setAddedComment] = useState(true);
 
-    // Add Comment to list not to delivery table
-    function AddComment(value, commentId) {
+    const fetchDeliveryReportCommentsData = async () => {
+        try {
+            const res = await axios.get(`${url}Delivery/Comments`, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            });
+            setDeliveryCommentsOptions(res.data || []);
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again",
+                    type: "success",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                }).then(async function () {
+                    await handleSessionExpiration();
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+            }
+        }
+    };
+
+
+    function CustomColumnEditor(props) {
+        const { value, onChange, onComplete, cellProps, onCancel } = props; // Destructure relevant props
+
+        const [deliveryCommentId, setDeliveryCommentId] = useState(null);
+        const [defaultDeliveryComment, setDefaultDeliveryComment] = useState(
+            value && value?.length > 0 ? [value[0]] : []
+        );
+
+            // Add Comment to list not to delivery table
+    function AddComment(value, CommentValue) {
+        setCellLoading(cellProps.data.ConsignmentID);
         const inputValues = {
             CommentId: null,
             Comment: value,
             StatusId: 1,
         };
+
         axios
             .post(`${url}Add/Comment`, inputValues, {
                 headers: {
@@ -352,8 +391,83 @@ export default function DeliveryReportPage({
                     Authorization: `Bearer ${AToken}`,
                 },
             })
-            .then((res) => {
-                fetchDeliveryReportCommentsData();
+            .then(async () => {
+                await axios
+                    .get(`${url}Delivery/Comments`, {
+                        headers: {
+                            UserId: currentUser.UserId,
+                            Authorization: `Bearer ${AToken}`,
+                        },
+                    })
+                    .then((res) => {
+                        setDeliveryCommentsOptions(res.data);
+                        if (res.data?.length > 0 && CommentValue !== "") {
+                            const newValue = res.data?.find(
+                                (item) => item.Comment === CommentValue
+                            );
+                            if (
+                                newValue &&
+                                newValue?.Comment === CommentValue
+                            ) {
+                                axios
+                                    .post(
+                                        `${url}Add/Delivery/Comment`,
+                                        {
+                                            DeliveryCommentId:
+                                                deliveryCommentId,
+                                            ConsId: cellProps.data
+                                                .ConsignmentID,
+                                            CommentId: newValue?.CommentId,
+                                        },
+                                        {
+                                            headers: {
+                                                UserId: currentUser.UserId,
+                                                Authorization: `Bearer ${AToken}`,
+                                            },
+                                        }
+                                    )
+                                    .then((response) => {
+                                        fetchDeliveryReport(setCellLoading);
+                                        setAddedComment(true);
+                                        setNewCommentValue("");
+                                    })
+                                    .catch((error) => {
+                                        // Handle error
+                                        if (
+                                            error.response &&
+                                            error.response.status === 401
+                                        ) {
+                                            // Handle 401 error using SweetAlert
+                                            swal({
+                                                title: "Session Expired!",
+                                                text: "Please login again",
+                                                type: "success",
+                                                icon: "info",
+                                                confirmButtonText: "OK",
+                                            }).then(async function () {
+                                                axios
+                                                    .post("/logoutAPI")
+                                                    .then((response) => {
+                                                        if (
+                                                            response.status ==
+                                                            200
+                                                        ) {
+                                                            window.location.href =
+                                                                "/";
+                                                        }
+                                                    })
+                                                    .catch((error) => {
+                                                        console.log(error);
+                                                    });
+                                            });
+                                        } else {
+                                            // Handle other errors
+                                            console.log(error);
+                                        }
+                                    });
+                            }
+                        }
+                    });
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
@@ -373,47 +487,42 @@ export default function DeliveryReportPage({
                 }
             });
     }
-
-    function CustomColumnEditor(props) {
-        const { value, onChange, onComplete, cellProps, onCancel } = props; // Destructure relevant props
-
-        const [deliveryCommentId, setDeliveryCommentId] = useState(null);
-        const [defaultDeliveryComment, setDefaultDeliveryComment] = useState(
-            value && value?.length > 0 ? [value[0]] : []
-        );
         const onLoseFocus = () => {
             handleAddMultiComments();
-            onCancel();
+            if (newCommentValue == "") {
+                onCancel();
+            }
         };
         const addCommentToConsignmentCallback = useCallback(
             (newValue) => {
                 if (!addedComment) {
-                    handleComplete(newValue);
+                    handleComplete(newValue, false);
                 }
             },
             [addedComment]
         );
 
-        useEffect(() => {
-            if (deliveryCommentsOptions?.length > 0 && newCommentValue !== "") {
-                const newValue = deliveryCommentsOptions?.find(
-                    (item) => item.Comment === newCommentValue
-                );
-                if (newValue && newValue?.Comment === newCommentValue) {
-                    addCommentToConsignmentCallback(newValue?.CommentId);
-                }
-            }
-        }, [deliveryCommentsOptions, newCommentValue]);
-
         const [event, setEvent] = useState(null);
+        const [isAddingNewComment, setIsAddingNewComment] = useState(true);
         const [newCommentsArr, setNewCommentsArr] = useState([]);
 
         const onSelectComment = (e, newValue, value) => {
             setEvent(e);
             setNewCommentsArr(newValue);
         };
-        const handleComplete = async (commentId) => {
-            if (commentId !== null) {
+        useEffect(() => {
+            if (deliveryCommentsOptions?.length > 0 && newCommentValue !== "") {
+                const newValue = deliveryCommentsOptions?.find(
+                    (item) => item.Comment === newCommentValue
+                );
+                if (newValue && newValue?.Comment === newCommentValue) {
+                    // setAddedComment(false);
+                    addCommentToConsignmentCallback(newValue?.CommentId);
+                }
+            }
+        }, [deliveryCommentsOptions, newCommentValue]);
+        const handleComplete = async (commentId, IsAddingNewComm) => {
+            if (commentId !== null && !IsAddingNewComm) {
                 setCellLoading(cellProps.data.ConsignmentID);
                 await axios
                     .post(
@@ -431,7 +540,6 @@ export default function DeliveryReportPage({
                         }
                     )
                     .then((response) => {
-                        setNewCommentValue("");
                         fetchDeliveryReport(setCellLoading);
                         setAddedComment(true);
                     })
@@ -476,13 +584,17 @@ export default function DeliveryReportPage({
                             `Add "${item?.CommentId}"`
                         ) {
                             // Adding a new comment to the list not to the consignment
+                            setIsAddingNewComment(true)
                             setNewCommentValue(item?.CommentId?.trim());
                             setAddedComment(false);
-                            AddComment(item?.CommentId);
+                            AddComment(item?.CommentId, item?.CommentId?.trim());
+
                         } else {
                             // Adding a new comment to the consignment
                             setAddedComment(true);
-                            handleComplete(item?.CommentId);
+                            setIsAddingNewComment(false)
+                            setNewCommentValue("");
+                            handleComplete(item?.CommentId, false);
                         }
                         i++;
                     }
@@ -495,11 +607,14 @@ export default function DeliveryReportPage({
                         // Adding a new comment to the list not to the consignment
                         setNewCommentValue(check?.trim());
                         setAddedComment(false);
-                        AddComment(check);
+                        setIsAddingNewComment(true)
+                        AddComment(check, check?.trim());
                     } else {
                         // Adding a new comment to the consignment
                         setAddedComment(true);
-                        handleComplete(check);
+                        setIsAddingNewComment(false)
+                        setNewCommentValue("");
+                        handleComplete(check, false);
                     }
                 }
             }
@@ -516,7 +631,7 @@ export default function DeliveryReportPage({
             canAddDeliveryReportComment(userPermission) && (
                 <>
                     <ComboBox
-                        onCancel={onLoseFocus}
+                        onCancel={() => {}}
                         idField={"CommentId"}
                         valueField={"Comment"}
                         onChange={onSelectComment}
@@ -533,29 +648,17 @@ export default function DeliveryReportPage({
         );
     }
 
-    const GetLastValue = ({ inputString }) => {
-        const getLastValue = (str) => {
-            const values = str
-                .split(/\r?\n/)
-                .filter((value) => value.trim() !== "");
+    const GetLastValue = ({ comments }) => {
+        function getLatestElement(arr) {
+            return arr.reduce((latest, current) => {
+              const latestDate = new Date(latest.AddedAt);
+              const currentDate = new Date(current.AddedAt);
+              return currentDate > latestDate ? current : latest;
+            }, arr[0]);
+          }
 
-            const lastValue = values[values.length - 1];
-
-            const count = values.length - 1;
-            if (values.length - 1 > 0) {
-                return (
-                    <div>
-                        {lastValue} + {count}{" "}
-                        {count == 1 ? "Comment" : "Comments"}
-                    </div>
-                );
-            } else {
-                return `${lastValue}`;
-            }
-        };
-
-        return inputString != "" ? (
-            <div>{getLastValue(inputString)}</div>
+        return comments?.length > 0 ? (
+            <div>{getLatestElement(comments)?.Comment}</div>
         ) : null;
     };
 
@@ -846,7 +949,7 @@ export default function DeliveryReportPage({
                                     <>
                                         {value != "" ? (
                                             <GetLastValue
-                                                inputString={value[0].Comment}
+                                                comments={data?.Comments}
                                             />
                                         ) : null}
                                     </>
