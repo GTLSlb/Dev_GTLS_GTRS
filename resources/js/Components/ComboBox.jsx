@@ -4,40 +4,43 @@ import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 
 const filter = createFilterOptions();
 
-export default function ComboBox({idField, valueField, addFunction, inputValue, options, setInputValue, onKeyDown, setCommentId}) {
-  const [value, setValue] = useState(null);
-console.log(options)
-  useEffect(()=>{
-    setValue(inputValue)
-  },[])
+export default function ComboBox({idField, valueField, onChange, inputValue, options, setInputValue, onKeyDown, onCancel, isMulti}) {
+  const [value, setValue] = useState(isMulti? [] : null);
+
+  useEffect(() => {
+    if(!isMulti && inputValue){
+        setValue(inputValue)
+    }
+  },[inputValue])
+
   return (
     <Autocomplete
       value={value}
+      defaultValue={isMulti? [] : inputValue}
       onKeyDown={onKeyDown}
-      onChange={(e)=>{
-        if(e.target.textContent === `Add "${inputValue}"`){
-            setValue(e.target.textContent)
-            setCommentId(null)
-        // addFunction()
-        }else{
-            setValue(e.target.textContent)
-        }
-
+      multiple={isMulti}
+      sx={{
+        width: '300px',
+        height: '30px',
       }}
-    //   onChange={(event, newValue) => {
-    //     if (typeof newValue === 'string') {
-    //       setValue({
-    //         title: newValue,
-    //       });
-    //     } else if (newValue && newValue.inputValue) {
-    //       // Create a new value from the user input
-    //       setValue({
-    //         title: newValue.inputValue,
-    //       });
-    //     } else {
-    //       setValue(newValue);
-    //     }
-    //   }}
+      renderTags={(value, getTagProps) =>
+        value.map((option, index) => (
+          <span
+            key={option.CommentId}
+            {...getTagProps({ index })}
+            style={{
+              display: 'inline-block',
+              width: '80px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {option.Comment}
+          </span>
+        ))
+      }
+      onChange={(e, newValue)=>{onChange(e, newValue); setValue(newValue)}}
       filterOptions={(options, params) => {
         const filtered = filter(options, params);
 
@@ -55,10 +58,10 @@ console.log(options)
       }}
       selectOnFocus
       clearOnBlur
+      onBlur={onCancel}
       handleHomeEndKeys
       id="combo-box"
       options={options}
-      defaultValue={inputValue}
       getOptionLabel={(option) => {
         // Value selected with enter, right from the input
         if (typeof option === 'string') {
@@ -74,12 +77,11 @@ console.log(options)
       renderOption={(props, option) => {
         const { key, ...optionProps } = props;
            return (
-          <li key={option[idField]} {...optionProps}>
+          <li key={option[idField]} id={option[idField]} {...optionProps}>
             {option[valueField]}
           </li>
         );
       }}
-      sx={{ width: 300 }}
       freeSolo
       renderInput={(params) => (
         <TextField {...params} />

@@ -266,101 +266,76 @@ export function navigateToFirstAllowedPage({
     setSidebarElements,
     user,
     navigate,
-}) {
+  }) {
     let items = [];
 
     // Check if the current route exists
-    const doesRouteExist = routes?.some(
-        (route) => route === window.location.pathname
-    );
+    const doesRouteExist = routes?.some((route) => route === window.location.pathname);
+
     // If the route does not exist, navigate to notFound page
     if (!doesRouteExist) {
-        navigate("/notFound");
+      navigate("/notFound");
     } else {
-        // Filter allowed menu items based on user features
-        menu?.forEach((menuItem) => {
-            if (menuItem.hasOwnProperty("options")) {
-                menuItem.options.forEach((option) => {
-                    if (
-                        user?.Features?.some(
-                            (item) => item?.FunctionName === option?.feature
-                        )
-                    ) {
-                        const existingItem = items.find(
-                            (item) => item.name === menuItem.name
-                        );
-                        if (existingItem) {
-                            existingItem.options.push({
-                                ...option,
-                                current: false,
-                            });
-                        } else {
-                            items.push({
-                                ...menuItem,
-                                current: false,
-                                options: [{ ...option, current: false }],
-                            });
-                        }
-                    }
-                });
-            } else {
-                if (
-                    user?.Features?.some(
-                        (item) => item?.FunctionName === menuItem?.feature
-                    )
-                ) {
-                    items.push({ ...menuItem, current: false });
+      // Filter allowed menu items based on user features
+      menu?.forEach((menuItem) => {
+        if(menuItem.hasOwnProperty('options')){
+            menuItem.options.forEach((option) => {
+                if (user?.Features?.some((item) => item?.FunctionName === option?.feature)) {
+                  const existingItem = items.find((item) => item.name === menuItem.name);
+                  if (existingItem) {
+                    existingItem.options.push({ ...option, current: false });
+                  } else {
+                    items.push({ ...menuItem, current: false, options: [{ ...option, current: false }] });
+                  }
                 }
-            }
-        });
-
-        // Find the current menu item for the active route
-        const currentItem = findItemByURL(items, window.location.pathname);
-
-        if (currentItem) {
-            // Mark the current item as active
-            currentItem.current = true;
-
-            // Set the other items' `current` to false
-            items.forEach((item) => {
-                if (item.url !== window.location.pathname) {
-                    item.current = false;
-                }
-                // Check if the item has options
-                if (item.options) {
-                    // Check if any of the options are current
-                    item.current = item.options.some((option) => option.current);
-                }
-            });
-
-            // Navigate to the current item
-            navigate(currentItem.url);
-        } else if (items.length > 0) {
-            // Get the `current` item from localStorage, if it exists
-            const savedCurrentId = localStorage.getItem("current");
-
-            let firstItemToActivate;
-
-            if (savedCurrentId) {
-                firstItemToActivate = items.find(
-                    (item) => item.id === savedCurrentId
-                );
-            }
-
-            if (firstItemToActivate) {
-                firstItemToActivate.current = true;
-                navigate(firstItemToActivate.url);
-            } else {
-                items[0].current = true;
-                navigate(items[0].url);
-                window.location.pathname = items[0].url;
+              })
+        }else{
+            if(user?.Features?.some((item) => item?.FunctionName === menuItem?.feature)) {
+                items.push({ ...menuItem, current: false });
             }
         }
+      });
 
-        // Set the sidebar elements
-        setSidebarElements(items);
+      // Find the current menu item for the active route
+      const currentItem = items.find((item) => item.url === window.location.pathname);
+
+      if (currentItem) {
+        // Mark the current item as active
+        currentItem.current = true;
+
+        // Set the other items' `current` to false
+        items.forEach((item) => {
+          if (item.url !== window.location.pathname) {
+            item.current = false;
+          }
+        });
+
+        // Navigate to the current item
+        navigate(currentItem.url);
+      } else if (items.length > 0) {
+        // Get the `current` item from localStorage, if it exists
+        const savedCurrentId = localStorage.getItem("current");
+
+        let firstItemToActivate;
+
+        if (savedCurrentId) {
+          firstItemToActivate = items.find((item) => item.id === savedCurrentId);
+        }
+
+        if (firstItemToActivate) {
+          firstItemToActivate.current = true;
+          navigate(firstItemToActivate.url);
+        } else {
+          items[0].current = true;
+          navigate(items[0].url);
+          window.location.pathname = items[0].url;
+        }
+      }
+
+      // Set the sidebar elements
+      setSidebarElements(items);
     }
-}
+  }
 
 function findItemByURL(items, url) {
     for (const item of items) {

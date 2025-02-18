@@ -132,6 +132,26 @@ const menu = [
         current: false,
         feature: "DeliveryReport_View",
         url: "/gtrs/delivery-report",
+        options: [
+            {
+                id: 28,
+                name: "Delivery Report",
+                href: "#",
+                current: false,
+                icon: ClipboardDocumentCheckIcon,
+                feature: "DeliveryReport_View",
+                url: "/gtrs/delivery-report",
+            },
+            {
+                id: 29,
+                name: "Delivery Report Comments",
+                href: "#",
+                current: false,
+                icon: ClipboardDocumentCheckIcon,
+                feature: "DeliveryReportCommentsTable_View",
+                url: "/gtrs/delivery-report/comments",
+            },
+        ]
     },
     {
         id: 20,

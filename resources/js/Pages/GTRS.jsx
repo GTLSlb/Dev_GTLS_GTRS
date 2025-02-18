@@ -104,11 +104,44 @@ export default function Gtrs({
             });
     };
 
+    const [deliveryReportComments, setDeliveryReportComments] = useState([]);
+    const fetchDeliveryReportCommentsData = async (setCellLoading) => {
+        try {
+            const res = await axios.get(`${gtrsUrl}Delivery/Comments`, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            });
+            setDeliveryReportComments(res.data || []);
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again",
+                    type: "success",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                }).then(async function () {
+                    await handleSessionExpiration();
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+                // Check if setCellLoading exists before calling it
+                if (typeof setCellLoading === "function") {
+                    setCellLoading(null);
+                }
+            }
+        }
+    };
     useEffect(() => {
         if (AToken != null && currentUser) {
             setUserBody(debtorIds);
             setLoadingGtrs(false);
             fetchDeliveryReport();
+            fetchDeliveryReportCommentsData();
             const urls = [
                 {
                     url: `${gtrsUrl}/Dashboard`,
@@ -247,6 +280,8 @@ export default function Gtrs({
                                                 setSidebarElements
                                             }
                                             deliveryReportData ={deliveryReportData}
+                                            deliveryReportComments={deliveryReportComments}
+                                            fetchDeliveryReportCommentsData={fetchDeliveryReportCommentsData}
                                         />
                                     </div>
                                 </div>

@@ -32,6 +32,7 @@ import ConsMap from "./TrafficPage/ConsMap";
 import { Routes, Route } from "react-router-dom";
 import NotFoundRedirect from "../NotFoundRedirect";
 import {ToastContainer} from 'react-toastify';
+import DeliveryReportCommentsPage from "./ReportsPage/CommentsTableView/DeliveryReportCommentsPage";
 import {
     getFiltersAddCharges,
     getFiltersCons,
@@ -83,6 +84,8 @@ export default function GtrsMain({
     setCurrentUser,
     setUser,
     deliveryReportData,
+    deliveryReportComments,
+    fetchDeliveryReportCommentsData,
 }) {
     window.moment = moment;
     const [KPIData, setKPIData] = useState([]);
@@ -505,6 +508,7 @@ export default function GtrsMain({
     useEffect(() => {
         if (currentUser) {
             fetchDeliveryReport();
+            fetchDeliveryReportCommentsData();
         }
     }, [currentUser]);
 
@@ -1422,6 +1426,36 @@ export default function GtrsMain({
                                                         }
                                                         fetchDeliveryReport={
                                                             fetchDeliveryReport
+                                                        }
+                                                    />
+                                                }
+                                            />
+                                        }
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
+                                    />
+                                    <Route
+                                        path="/delivery-report/comments"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermission}
+                                                route={'DeliveryReportCommentsTable_View'}
+                                                element={
+                                                    <DeliveryReportCommentsPage
+                                                        url={url}
+                                                        AToken={AToken}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        userPermission={
+                                                            userPermission
+                                                        }
+                                                        data={
+                                                            deliveryReportComments
+                                                        }
+                                                        fetchDeliveryReportCommentsData={
+                                                            fetchDeliveryReportCommentsData
                                                         }
                                                     />
                                                 }

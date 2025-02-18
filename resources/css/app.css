@@ -7,7 +7,7 @@
 }
 
 .input-field[type=email] {
-  border: 0px !important; 
+  border: 0px !important;
 }
 
 .login-dropdown-option:hover{
@@ -34,6 +34,40 @@
   opacity: 0;
   transform: translateX(100%);
 }
+
+.css-1wuilmg-MuiAutocomplete-root
+.MuiInputBase-root
+.InovuaReactDataGrid__cell .InovuaReactDataGrid__celltr{
+    padding: 0px !important;
+}
+
+.MuiOutlinedInput-root{
+    width: 90% !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    height: 30px !important;
+    justify-content: start !important;
+    overflow-y: hidden !important;
+    overflow-x: scroll !important;
+}
+
+.css-1wuilmg-MuiAutocomplete-root
+.MuiOutlinedInput-root .MuiAutocomplete-input{
+    padding: 0px 0px 0px 6px !important;
+    height: 30px !important;
+}
+
+.MuiAutocomplete-input:hover{
+  border: 0px solid #e2b540 !important;
+}
+
+.css-1d3z3hw-MuiOutlinedInput-notchedOutline{
+  border: 0px solid #e2b540 !important;
+}
+
+.InovuaReactDataGrid__cell {
+    width: 200px;
+  }
 
 
 .cookie-popup {
