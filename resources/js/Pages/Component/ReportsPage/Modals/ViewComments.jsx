@@ -207,7 +207,7 @@ export default function ViewComments({
                                     <div className="flex pr-2">
                                         <div className="w-[95%]">
                                         {isEditing && editIndx === index
-                                            ? <ComboBox idField={"CommentId"} valueField={"Comment"} onChange={onSelectComment} inputValue={comment} options={deliveryCommentsOptions} onKeyDown={handleKeyDown} setInputValue={setComment}/>
+                                            ? <ComboBox idField={"CommentId"} valueField={"Comment"} onChange={onSelectComment} inputValue={comment} options={deliveryCommentsOptions.filter((item) => item.CommentStatus == 1)} isMulti={false} onKeyDown={handleKeyDown} setInputValue={setComment}/>
                                             //<textarea type="text" className="border-[#D5D5D5] rounded-lg w-full" defaultValue={c?.Comment} value={comment} onChange={(e)=>{setComment(e.target.value)}} />
                                             :<p>{c?.Comment}</p>
                                         }

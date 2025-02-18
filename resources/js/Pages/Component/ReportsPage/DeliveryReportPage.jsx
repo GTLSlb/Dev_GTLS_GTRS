@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
@@ -31,7 +31,9 @@ export default function DeliveryReportPage({
 }) {
     const navigate = useNavigate();
     const handleClick = (coindex) => {
-        navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
+        navigate("/gtrs/consignment-details", {
+            state: { activeCons: coindex },
+        });
     };
     const createNewLabelObjects = (data, fieldName) => {
         const uniqueLabels = new Set(); // To keep track of unique labels
@@ -60,22 +62,18 @@ export default function DeliveryReportPage({
 
         return newData;
     };
-    const [receiverZoneOptions, setReceiverZoneOptions] = useState(createNewLabelObjects(
-        deliveryReportData,
-        "ReceiverZone"
-    ));
-    const [senderZoneOptions, setSenderZoneOptions] = useState(createNewLabelObjects(
-        deliveryReportData,
-        "SenderZone"
-    ));
-    const [receiverStateOptions, setReceiverStateOptions] = useState(createNewLabelObjects(
-        deliveryReportData,
-        "ReceiverState"
-    ));
-    const [senderStateOptions, setSenderStateOptions] = useState(createNewLabelObjects(
-        deliveryReportData,
-        "SenderState"
-    ));
+    const [receiverZoneOptions, setReceiverZoneOptions] = useState(
+        createNewLabelObjects(deliveryReportData, "ReceiverZone")
+    );
+    const [senderZoneOptions, setSenderZoneOptions] = useState(
+        createNewLabelObjects(deliveryReportData, "SenderZone")
+    );
+    const [receiverStateOptions, setReceiverStateOptions] = useState(
+        createNewLabelObjects(deliveryReportData, "ReceiverState")
+    );
+    const [senderStateOptions, setSenderStateOptions] = useState(
+        createNewLabelObjects(deliveryReportData, "SenderState")
+    );
     const consStateOptions = createNewLabelObjects(
         deliveryReportData,
         "ConsignmentStatus"
@@ -337,7 +335,9 @@ export default function DeliveryReportPage({
         setIsViewModalOpen(true);
     };
 
-    const [newCommentValue, setNewCommentValue] = useState('');
+    const [newCommentValue, setNewCommentValue] = useState("");
+    const [addedComment, setAddedComment] = useState(true);
+
     // Add Comment to list not to delivery table
     function AddComment(value, commentId) {
         const inputValues = {
@@ -359,18 +359,18 @@ export default function DeliveryReportPage({
                 if (err.response && err.response.status === 401) {
                     // Handle 401 error using SweetAlert
                     swal({
-                      title: 'Session Expired!',
-                      text: "Please login again",
-                      type: 'success',
-                      icon: "info",
-                      confirmButtonText: 'OK'
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
                     }).then(async function () {
                         await handleSessionExpiration();
                     });
-                  } else {
+                } else {
                     // Handle other errors
                     console.log(err);
-                  }
+                }
             });
     }
 
@@ -378,101 +378,156 @@ export default function DeliveryReportPage({
         const { value, onChange, onComplete, cellProps, onCancel } = props; // Destructure relevant props
 
         const [deliveryCommentId, setDeliveryCommentId] = useState(null);
-        const [defaultDeliveryComment, setDefaultDeliveryComment] = useState(value && value?.length > 0 ? value[0]: null);
+        const [defaultDeliveryComment, setDefaultDeliveryComment] = useState(
+            value && value?.length > 0 ? [value[0]] : []
+        );
+        const onLoseFocus = () => {
+            handleAddMultiComments();
+            onCancel();
+        };
+        const addCommentToConsignmentCallback = useCallback(
+            (newValue) => {
+                if (!addedComment) {
+                    handleComplete(newValue);
+                }
+            },
+            [addedComment]
+        );
+
         useEffect(() => {
-            if(deliveryCommentsOptions?.length > 0 && newCommentValue !== ''){
-                const newValue = deliveryCommentsOptions?.find((item) => item.Comment === newCommentValue);
-                if(newValue && newValue?.Comment === newCommentValue){
-                    handleComplete(newValue?.CommentId)
+            if (deliveryCommentsOptions?.length > 0 && newCommentValue !== "") {
+                const newValue = deliveryCommentsOptions?.find(
+                    (item) => item.Comment === newCommentValue
+                );
+                if (newValue && newValue?.Comment === newCommentValue) {
+                    addCommentToConsignmentCallback(newValue?.CommentId);
                 }
             }
-        },[deliveryCommentsOptions, newCommentValue])
+        }, [deliveryCommentsOptions, newCommentValue]);
 
-        const onSelectComment = (e, newValue, value)=>{
-                if(e.target.textContent === `Add "${value}"`){
-                    // Adding a new comment to the list not to the consignment
-                    setNewCommentValue(value)
-                    AddComment(value)
-                }else{
-                    // Adding a new comment to the consignment
-                    handleComplete(newValue.CommentId)
-                }
-        }
+        const [event, setEvent] = useState(null);
+        const [newCommentsArr, setNewCommentsArr] = useState([]);
+
+        const onSelectComment = (e, newValue, value) => {
+            setEvent(e);
+            setNewCommentsArr(newValue);
+        };
         const handleComplete = async (commentId) => {
-            if(commentId !== null){
+            if (commentId !== null) {
                 setCellLoading(cellProps.data.ConsignmentID);
-            await axios
-                .post(
-                    `${url}Add/Delivery/Comment`,
-                    {
-                        DeliveryCommentId: deliveryCommentId,
-                        ConsId: cellProps.data.ConsignmentID,
-                        CommentId: commentId,
-                    },
-                    {
-                        headers: {
-                            UserId: currentUser.UserId,
-                            Authorization: `Bearer ${AToken}`,
+                await axios
+                    .post(
+                        `${url}Add/Delivery/Comment`,
+                        {
+                            DeliveryCommentId: deliveryCommentId,
+                            ConsId: cellProps.data.ConsignmentID,
+                            CommentId: commentId,
                         },
-                    }
-                )
-                .then((response) => {
-                    setNewCommentValue('');
-                    fetchDeliveryReport(setCellLoading);
-                })
-                .catch((error) => {
-                    // Handle error
-                    if (error.response && error.response.status === 401) {
-                        // Handle 401 error using SweetAlert
-                        swal({
-                            title: "Session Expired!",
-                            text: "Please login again",
-                            type: "success",
-                            icon: "info",
-                            confirmButtonText: "OK",
-                        }).then(async function () {
-                            axios
-                                .post("/logoutAPI")
-                                .then((response) => {
-                                    if (response.status == 200) {
-                                        window.location.href = "/";
-                                    }
-                                })
-                                .catch((error) => {
-                                    console.log(error);
-                                });
-                        });
-                    } else {
-                        // Handle other errors
-                        console.log(error);
-                    }
-                });
-                onComplete(deliveryCommentId);
+                        {
+                            headers: {
+                                UserId: currentUser.UserId,
+                                Authorization: `Bearer ${AToken}`,
+                            },
+                        }
+                    )
+                    .then((response) => {
+                        setNewCommentValue("");
+                        fetchDeliveryReport(setCellLoading);
+                        setAddedComment(true);
+                    })
+                    .catch((error) => {
+                        // Handle error
+                        if (error.response && error.response.status === 401) {
+                            // Handle 401 error using SweetAlert
+                            swal({
+                                title: "Session Expired!",
+                                text: "Please login again",
+                                type: "success",
+                                icon: "info",
+                                confirmButtonText: "OK",
+                            }).then(async function () {
+                                axios
+                                    .post("/logoutAPI")
+                                    .then((response) => {
+                                        if (response.status == 200) {
+                                            window.location.href = "/";
+                                        }
+                                    })
+                                    .catch((error) => {
+                                        console.log(error);
+                                    });
+                            });
+                        } else {
+                            // Handle other errors
+                            console.log(error);
+                        }
+                    });
             }
         };
 
+        const handleAddMultiComments = () => {
+            if (event != null) {
+                if (Array.isArray(newCommentsArr)) {
+                    let i = 0;
+                    while (i < newCommentsArr.length) {
+                        const item = newCommentsArr[i];
+                        if (
+                            event.target.textContent ===
+                            `Add "${item?.CommentId}"`
+                        ) {
+                            // Adding a new comment to the list not to the consignment
+                            setNewCommentValue(item?.CommentId?.trim());
+                            setAddedComment(false);
+                            AddComment(item?.CommentId);
+                        } else {
+                            // Adding a new comment to the consignment
+                            setAddedComment(true);
+                            handleComplete(item?.CommentId);
+                        }
+                        i++;
+                    }
+                } else {
+                    const check =
+                        typeof newCommentsArr == "string"
+                            ? newCommentsArr
+                            : newCommentsArr?.CommentId;
+                    if (event.target.textContent === `Add "${check}"`) {
+                        // Adding a new comment to the list not to the consignment
+                        setNewCommentValue(check?.trim());
+                        setAddedComment(false);
+                        AddComment(check);
+                    } else {
+                        // Adding a new comment to the consignment
+                        setAddedComment(true);
+                        handleComplete(check);
+                    }
+                }
+            }
+        };
         const handleKeyDown = (event) => {
             if (event.key === "Enter" && !event.shiftKey) {
                 event.preventDefault();
-                handleComplete();
+                event.stopPropagation();
+                onLoseFocus();
             }
         };
 
         return (
             canAddDeliveryReportComment(userPermission) && (
                 <>
-                    {/* <textarea
-                        style={{ width: "100%", maxHeight: "100%" }}
-                        type={"text"}
-                        value={inputValue}
-                        className="text-sm font-semibold placeholder:text-sm placeholder:font-light resize-none placeholder:text-gray-500"
-                        placeholder="Add a new comment"
-                        onBlur={onCancel}
-                        onBlurCapture={onCancel}
-                        onChange={onValueChange}
+                    <ComboBox
+                        onCancel={onLoseFocus}
+                        idField={"CommentId"}
+                        valueField={"Comment"}
+                        onChange={onSelectComment}
+                        isMulti={true}
+                        inputValue={defaultDeliveryComment}
+                        options={deliveryCommentsOptions.filter(
+                            (item) => item.CommentStatus == 1
+                        )}
                         onKeyDown={handleKeyDown}
-                    /> */}
-                    <ComboBox onCancel={onCancel}  idField={"CommentId"} valueField={"Comment"} onChange={onSelectComment} inputValue={defaultDeliveryComment} options={deliveryCommentsOptions} onKeyDown={handleKeyDown} setInputValue={setDefaultDeliveryComment}/>
+                        setInputValue={setDefaultDeliveryComment}
+                    />
                 </>
             )
         );
@@ -856,15 +911,16 @@ export default function DeliveryReportPage({
     }, [deliveryReportData]);
 
     useEffect(() => {
-        if(userPermission){
-            canViewMetcashDeliveryReport(userPermission) ? (
-                setActiveComponentIndex(0)
-            ) : canViewWoolworthsDeliveryReport(userPermission) ? (
-                setActiveComponentIndex(1)
-            ) : canViewOtherDeliveryReport(userPermission) ? (
-                setActiveComponentIndex(2)
-            ) : null}
-    },[userPermission])
+        if (userPermission) {
+            canViewMetcashDeliveryReport(userPermission)
+                ? setActiveComponentIndex(0)
+                : canViewWoolworthsDeliveryReport(userPermission)
+                ? setActiveComponentIndex(1)
+                : canViewOtherDeliveryReport(userPermission)
+                ? setActiveComponentIndex(2)
+                : null;
+        }
+    }, [userPermission]);
     let components = [
         <MetcashReports
             filterValue={filterValue}

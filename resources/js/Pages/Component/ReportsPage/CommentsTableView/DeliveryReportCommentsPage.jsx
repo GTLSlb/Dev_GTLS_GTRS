@@ -21,8 +21,8 @@ export default function DeliveryReportCommentsPage({
     const [selected, setSelected] = useState([]);
     const [showAdd, setShowAdd] = useState(false);
     const [selectedComment, setSelectedComment] = useState(null);
-    const handleComment = (data) => {
-        setShowAdd(!showAdd);
+    const handleComment = (data, show) => {
+        setShowAdd(show);
         setSelectedComment(data);
     };
 
@@ -107,7 +107,7 @@ export default function DeliveryReportCommentsPage({
                     <div className="flex gap-4 items-center justify-center px-2">
                         <span
                             className="underline text-blue-400 hover:cursor-pointer"
-                            onClick={() => {handleComment(data); scrollIntoView();}}
+                            onClick={() => {handleComment(data, true); scrollIntoView();}}
                         >
                             <PencilIcon className="h-5 w-5 text-blue-500" />
                         </span>
@@ -122,7 +122,7 @@ export default function DeliveryReportCommentsPage({
             <GtrsButton
                 name={"Cancel"}
                 onClick={() => {
-                    handleComment(null);
+                    handleComment(null, false);
                 }}
                 className="w-[5rem] h-[35px]"
             />
@@ -130,7 +130,7 @@ export default function DeliveryReportCommentsPage({
             <GtrsButton
                 name={"Add +"}
                 onClick={() => {
-                    handleComment(null);
+                    handleComment(null, true);
                 }}
                 className="w-[5rem] h-[35px]"
             />

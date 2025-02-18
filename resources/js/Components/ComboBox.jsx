@@ -4,17 +4,43 @@ import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 
 const filter = createFilterOptions();
 
-export default function ComboBox({idField, valueField, onChange, inputValue, options, setInputValue, onKeyDown, onCancel}) {
-  const [value, setValue] = useState(null);
+export default function ComboBox({idField, valueField, onChange, inputValue, options, setInputValue, onKeyDown, onCancel, isMulti}) {
+  const [value, setValue] = useState(isMulti? [] : null);
 
-  useEffect(()=>{
-    setValue(inputValue)
-  },[])
+  useEffect(() => {
+    if(!isMulti && inputValue){
+        setValue(inputValue)
+    }
+  },[inputValue])
+
   return (
     <Autocomplete
       value={value}
+      defaultValue={isMulti? [] : inputValue}
       onKeyDown={onKeyDown}
-      onChange={(e, newValue)=>onChange(e, newValue)}
+      multiple={isMulti}
+      sx={{
+        width: '300px',
+        height: '30px',
+      }}
+      renderTags={(value, getTagProps) =>
+        value.map((option, index) => (
+          <span
+            key={option.CommentId}
+            {...getTagProps({ index })}
+            style={{
+              display: 'inline-block',
+              width: '80px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {option.Comment}
+          </span>
+        ))
+      }
+      onChange={(e, newValue)=>{onChange(e, newValue); setValue(newValue)}}
       filterOptions={(options, params) => {
         const filtered = filter(options, params);
 
@@ -33,11 +59,9 @@ export default function ComboBox({idField, valueField, onChange, inputValue, opt
       selectOnFocus
       clearOnBlur
       onBlur={onCancel}
-      onBlurCapture={onCancel}
       handleHomeEndKeys
       id="combo-box"
       options={options}
-      defaultValue={inputValue}
       getOptionLabel={(option) => {
         // Value selected with enter, right from the input
         if (typeof option === 'string') {
@@ -58,7 +82,6 @@ export default function ComboBox({idField, valueField, onChange, inputValue, opt
           </li>
         );
       }}
-      sx={{ width: 300 }}
       freeSolo
       renderInput={(params) => (
         <TextField {...params} />
