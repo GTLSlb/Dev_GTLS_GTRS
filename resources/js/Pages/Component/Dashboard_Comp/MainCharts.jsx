@@ -80,8 +80,8 @@ export default function MainCharts({
         setFilteredData(chartsData);
     }, []);
     const [layout, setLayout] = useState([
-        { i: "card01", x: 0, y: 0, w: 1, h: 5 }, //Information
-        { i: "card02", x: 2, y: 0, w: 1, h: 5 }, // Spend By month
+        { i: "card01", x: 0, y: 0, w: 1, h: 4.6 }, //Information
+        { i: "card02", x: 2, y: 0, w: 1, h: 4.6 }, // Spend By month
         { i: "card03", x: 0, y: 2, w: 1, h: 3 }, //Consignment Status
         { i: "card11", x: 0, y: 2, w: 1, h: 3 }, //Consignment Status
         { i: "card04", x: 2, y: 0, w: 1, h: 3 }, // Consignment By Month
