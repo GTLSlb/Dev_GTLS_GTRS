@@ -18,7 +18,7 @@ export default function AddCommentToList({
     setShowAdd,
     fetchData,
 }) {
-    const [isChecked, setIsChecked] = useState(false);
+    const [isChecked, setIsChecked] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [object, setObject] = useState();
 
