@@ -1,4 +1,4 @@
-import { canAddKpiReasons } from "@/permissions";
+import { canAddDeliveryReportCommentTableView, canEditDeliveryReportCommentTableView } from "@/permissions";
 import React from "react";
 import { useEffect, useState, useRef } from "react";
 import TableStructure from "@/Components/TableStructure";
@@ -105,19 +105,19 @@ export default function DeliveryReportCommentsPage({
             render: ({ value, data }) => {
                 return (
                     <div className="flex gap-4 items-center justify-center px-2">
-                        <span
+                        {canEditDeliveryReportCommentTableView(userPermission) ? <span
                             className="underline text-blue-400 hover:cursor-pointer"
                             onClick={() => {handleComment(data, true); scrollIntoView();}}
                         >
                             <PencilIcon className="h-5 w-5 text-blue-500" />
-                        </span>
+                        </span> : null}
                     </div>
                 );
             },
         },
     ];
 
-    const additionalButtons = canAddNewTransitDays(userPermission) ? (
+    const additionalButtons = canAddDeliveryReportCommentTableView(userPermission) ? (
         showAdd ? (
             <GtrsButton
                 name={"Cancel"}

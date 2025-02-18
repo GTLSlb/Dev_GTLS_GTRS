@@ -470,6 +470,36 @@ export function canViewDeliveryReportCommentTable(currentUser) {
 }
 
 /**
+ * Checks if the user can edit Delivery Report Comments in Table View based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can edit Delivery Report Comments, false otherwise.
+ */
+export function canEditDeliveryReportCommentTableView(currentUser) {
+    // Define the specific permission
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "DeliveryReportCommentsTable_Edit"
+    )
+        ? true
+        : false;
+}
+
+/**
+ * Checks if the user can add Delivery Report Comments in Table View based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can add Delivery Report Comments, false otherwise.
+ */
+export function canAddDeliveryReportCommentTableView(currentUser) {
+    // Define the specific permission
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "DeliveryReportCommentsTable_Add"
+    )
+        ? true
+        : false;
+}
+
+/**
  * Checks if the user can edit Delivery Report Comments based on their permissions.
  *
  * @param {Object} currentUser - The current user object with role and permissions.
