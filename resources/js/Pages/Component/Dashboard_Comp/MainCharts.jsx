@@ -33,7 +33,6 @@ export default function MainCharts({
 
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
     const [EDate, setEDate] = useState(getLatestDespatchDate(chartsData));
-    const [filteredStates, setFilteredStates] = useState([]);
     const [filteredReceivers, setFilteredReceivers] = useState([]);
     function getOldestDespatchDate(data) {
         // Filter out elements with invalid 'CreatedDate' values
@@ -479,6 +478,14 @@ export default function MainCharts({
     const uniqueStates = Array.from(
         new Set(chartsData.map((item) => item.ReceiverState))
     );
+    const statesOptions = uniqueStates.map((name, index) => ({
+        value: name,
+        label: isDummyAccountWithDummyData(`State No.${index + 1} `, name),
+    }));
+    const handleReceiverStateChange = (selectedOptions) => {
+        setselectedReceiver([]);
+        setSelectedStates(selectedOptions);
+    };
     const handleReceiverSelectChange = (selectedOptions) => {
         setselectedReceiver(selectedOptions);
     };
@@ -528,12 +535,8 @@ export default function MainCharts({
         // Add more style functions here as needed
     };
     const filterData = (startDate, endDate) => {
-        const selectedReceiverNames = selectedReceiver.map(
-            (receiver) => receiver.value
-        );
-        const selectedReceiverStates = selectedStates.map(
-            (state) => state.value
-        );
+        const selectedReceiverNames = selectedReceiver.map((r) => r.value);
+        const selectedReceiverStates = selectedStates.map((s) => s.value);
 
         const intArray = accData?.map((str) => {
             const intValue = parseInt(str);
@@ -541,78 +544,72 @@ export default function MainCharts({
         });
 
         if (intArray) {
-            if (intArray.length === 0) {
-                setFilteredSafety(safetyData);
-            } else {
-                setFilteredSafety(
-                    filterReportsByDebtorId(safetyData, intArray)
-                );
-            }
+            setFilteredSafety(
+                intArray.length === 0
+                    ? safetyData
+                    : filterReportsByDebtorId(safetyData, intArray)
+            );
         } else {
             setFilteredSafety(safetyData);
         }
 
-        // Filter data based on selected receivers, states, and date range
-        const filtered = chartsData.filter((item) => {
-            const isIncluded =
-                selectedReceiverNames.length === 0 ||
-                selectedReceiverNames.includes(item.ReceiverName);
+        // Convert date inputs into comparable Date objects
+        const filterStartDate = new Date(startDate);
+        const filterEndDate = new Date(endDate);
+        filterStartDate.setHours(0, 0, 0, 0);
+        filterEndDate.setHours(23, 59, 59, 999);
+
+        // **Single pass through chartsData to filter both data and receivers**
+        const filtered = [];
+        const receiversSet = new Set();
+
+        chartsData.forEach((item) => {
+            const itemDate = new Date(item.DespatchDate);
             const isInState =
                 selectedReceiverStates.length === 0 ||
                 selectedReceiverStates.includes(item.ReceiverState);
-
-            const itemDate = new Date(item.DespatchDate);
-            const filterStartDate = new Date(startDate);
-            const filterEndDate = new Date(endDate);
-            filterStartDate.setHours(0);
-            filterEndDate.setSeconds(59);
-            filterEndDate.setMinutes(59);
-            filterEndDate.setHours(23);
-
             const chargeToMatch =
                 intArray?.length === 0 || intArray?.includes(item.ChargeToId);
 
-            return (
+            // Apply filters for main dataset
+            if (
                 itemDate >= filterStartDate &&
                 itemDate <= filterEndDate &&
-                isIncluded &&
+                chargeToMatch &&
+                isInState &&
+                (selectedReceiverNames.length === 0 ||
+                    selectedReceiverNames.includes(item.ReceiverName))
+            ) {
+                filtered.push(item);
+            }
+
+            // Collect possible receivers for the dropdown (ignore receiver filter here)
+            if (
+                itemDate >= filterStartDate &&
+                itemDate <= filterEndDate &&
                 chargeToMatch &&
                 isInState
-            );
+            ) {
+                receiversSet.add(item.ReceiverName);
+            }
         });
 
-        const hasData = filtered.length > 0;
         setFilteredData(filtered);
-        setHasData(hasData);
+        setHasData(filtered.length > 0);
 
-        // **Dynamically update available states based on selected receivers**
-        const updatedStates =
-            filtered.length > 0
-                ? Array.from(
-                      new Set(filtered.map((item) => item.ReceiverState))
-                  )
-                : uniqueStates;
+        // Ensure the selected receivers are always included in the dropdown
+        selectedReceiverNames.forEach((name) => receiversSet.add(name));
 
-        const updatedStatesOptions = updatedStates.map((name, index) => ({
-            value: name,
-            label: isDummyAccountWithDummyData(`State No.${index + 1} `, name),
-        }));
-
-        setFilteredStates(updatedStatesOptions);
-
-        // **Dynamically update available receivers based on selected states**
-        const updatedReceivers =
-            filtered.length > 0
-                ? Array.from(new Set(filtered.map((item) => item.ReceiverName)))
-                : uniqueReceiverNames;
-
-        const updatedReceiverOptions = updatedReceivers.map((name, index) => ({
-            value: name,
-            label: isDummyAccountWithDummyData(
-                `Receiver No.${index + 1} `,
-                name
-            ),
-        }));
+        // Convert Set to an array for dropdown options
+        const updatedReceiverOptions = Array.from(receiversSet).map(
+            (name, index) => ({
+                value: name,
+                label: isDummyAccountWithDummyData(
+                    `Receiver No.${index + 1} `,
+                    name
+                ),
+            })
+        );
 
         setFilteredReceivers(updatedReceiverOptions);
     };
@@ -747,8 +744,10 @@ export default function MainCharts({
                                                     isMulti
                                                     name="colors"
                                                     value={selectedStates}
-                                                    options={filteredStates}
-                                                    onChange={setSelectedStates}
+                                                    options={statesOptions}
+                                                    onChange={
+                                                        handleReceiverStateChange
+                                                    }
                                                     className="basic-multi-select w-full"
                                                     classNamePrefix="select"
                                                 />
@@ -756,16 +755,15 @@ export default function MainCharts({
                                         </div>
                                     </div>
                                 </div>
-
-                                <div className="lg:flex lg:w-1/2 items-center flex-1">
+                                <div className="lg:flex lg:w-1/2 items-center">
                                     <label
                                         htmlFor="last-name"
-                                        className=" text-sm font-medium leading-6 text-gray-400 sm:pt-1.5 2xl:mr-5 flex-1"
+                                        className=" text-sm font-medium leading-6 text-gray-400 sm:pt-1.5 2xl:mr-5"
                                     >
-                                        Receiver Name
+                                        Receiver
                                     </label>
 
-                                    <div className="w-full flex-1">
+                                    <div className="w-full">
                                         <div className=" flex items-center">
                                             <div className="mt-2 w-full sm:mt-0 ">
                                                 <Select
@@ -777,7 +775,7 @@ export default function MainCharts({
                                                     onChange={
                                                         handleReceiverSelectChange
                                                     }
-                                                    className="basic-multi-select"
+                                                    className="basic-multi-select w-full"
                                                     classNamePrefix="select"
                                                 />
                                             </div>
