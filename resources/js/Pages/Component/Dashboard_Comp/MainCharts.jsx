@@ -33,7 +33,8 @@ export default function MainCharts({
 
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
     const [EDate, setEDate] = useState(getLatestDespatchDate(chartsData));
-
+    const [filteredStates, setFilteredStates] = useState([]);
+    const [filteredReceivers, setFilteredReceivers] = useState([]);
     function getOldestDespatchDate(data) {
         // Filter out elements with invalid 'CreatedDate' values
         const validData = data?.filter((item) =>
@@ -478,31 +479,13 @@ export default function MainCharts({
     const uniqueStates = Array.from(
         new Set(chartsData.map((item) => item.ReceiverState))
     );
-    const statesOptions = uniqueStates.map((name, index) => ({
-        value: name,
-        label: isDummyAccountWithDummyData(`Receiver No.${index + 1} `, name),
-    }));
-
     const handleReceiverSelectChange = (selectedOptions) => {
         setselectedReceiver(selectedOptions);
     };
-    const receiverOptions = uniqueReceiverNames.map((name, index) => ({
-        value: name,
-        label: isDummyAccountWithDummyData(`Receiver No.${index + 1} `, name),
-    }));
 
     function filterReportsByDebtorId(safetyData, debtorIds) {
         return safetyData.filter((data) => debtorIds.includes(data.DebtorId));
     }
-    const getFilteredOptions = () => {
-        // Filter the options based on the selected receivers
-        return receiverOptions.filter(
-            (option) =>
-                !selectedReceiver.find(
-                    (receiver) => receiver.value === option.value
-                )
-        );
-    };
 
     const customStyles = {
         control: (provided) => ({
@@ -551,12 +534,14 @@ export default function MainCharts({
         const selectedReceiverStates = selectedStates.map(
             (state) => state.value
         );
+
         const intArray = accData?.map((str) => {
             const intValue = parseInt(str);
             return isNaN(intValue) ? 0 : intValue;
         });
+
         if (intArray) {
-            if (intArray && intArray?.length === 0) {
+            if (intArray.length === 0) {
                 setFilteredSafety(safetyData);
             } else {
                 setFilteredSafety(
@@ -567,15 +552,15 @@ export default function MainCharts({
             setFilteredSafety(safetyData);
         }
 
-        // Filter the data based on the start and end date filters, selected receiver names, and chargeTo values
+        // Filter data based on selected receivers, states, and date range
         const filtered = chartsData.filter((item) => {
             const isIncluded =
                 selectedReceiverNames.length === 0 ||
-                selectedReceiverNames?.includes(item.ReceiverName);
-
+                selectedReceiverNames.includes(item.ReceiverName);
             const isInState =
                 selectedReceiverStates.length === 0 ||
-                selectedReceiverStates?.includes(item.ReceiverState);
+                selectedReceiverStates.includes(item.ReceiverState);
+
             const itemDate = new Date(item.DespatchDate);
             const filterStartDate = new Date(startDate);
             const filterEndDate = new Date(endDate);
@@ -595,10 +580,43 @@ export default function MainCharts({
                 isInState
             );
         });
-        const hasData = filtered?.length > 0;
+
+        const hasData = filtered.length > 0;
         setFilteredData(filtered);
         setHasData(hasData);
+
+        // **Dynamically update available states based on selected receivers**
+        const updatedStates =
+            filtered.length > 0
+                ? Array.from(
+                      new Set(filtered.map((item) => item.ReceiverState))
+                  )
+                : uniqueStates;
+
+        const updatedStatesOptions = updatedStates.map((name, index) => ({
+            value: name,
+            label: isDummyAccountWithDummyData(`State No.${index + 1} `, name),
+        }));
+
+        setFilteredStates(updatedStatesOptions);
+
+        // **Dynamically update available receivers based on selected states**
+        const updatedReceivers =
+            filtered.length > 0
+                ? Array.from(new Set(filtered.map((item) => item.ReceiverName)))
+                : uniqueReceiverNames;
+
+        const updatedReceiverOptions = updatedReceivers.map((name, index) => ({
+            value: name,
+            label: isDummyAccountWithDummyData(
+                `Receiver No.${index + 1} `,
+                name
+            ),
+        }));
+
+        setFilteredReceivers(updatedReceiverOptions);
     };
+
     useEffect(() => {
         filterData(SDate, EDate);
     }, [accData, selectedReceiver, selectedStates]);
@@ -713,52 +731,56 @@ export default function MainCharts({
                             </div>
 
                             <div className="lg:flex items-center gap-5 mt-2">
-                                <label
-                                    htmlFor="last-name"
-                                    className=" text-sm font-medium leading-6 text-gray-400 sm:pt-1.5 2xl:mr-5"
-                                >
-                                    Receiver Name
-                                </label>
+                                <div className="lg:flex lg:w-1/2 items-center">
+                                    <label
+                                        htmlFor="last-name"
+                                        className=" text-sm font-medium leading-6 text-gray-400 sm:pt-1.5 2xl:mr-5"
+                                    >
+                                        State
+                                    </label>
 
-                                <div className="">
-                                    <div className=" flex items-center">
-                                        <div className="mt-2 w-full sm:mt-0 ">
-                                            <Select
-                                                styles={customStyles}
-                                                isMulti
-                                                name="colors"
-                                                value={selectedReceiver}
-                                                options={getFilteredOptions()}
-                                                onChange={
-                                                    handleReceiverSelectChange
-                                                }
-                                                className="basic-multi-select"
-                                                classNamePrefix="select"
-                                            />
+                                    <div className="w-full">
+                                        <div className=" flex items-center">
+                                            <div className="mt-2 w-full sm:mt-0 ">
+                                                <Select
+                                                    styles={customStyles}
+                                                    isMulti
+                                                    name="colors"
+                                                    value={selectedStates}
+                                                    options={filteredStates}
+                                                    onChange={setSelectedStates}
+                                                    className="basic-multi-select w-full"
+                                                    classNamePrefix="select"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <label
-                                    htmlFor="last-name"
-                                    className=" text-sm font-medium leading-6 text-gray-400 sm:pt-1.5 2xl:mr-5"
-                                >
-                                    State
-                                </label>
+                                <div className="lg:flex lg:w-1/2 items-center flex-1">
+                                    <label
+                                        htmlFor="last-name"
+                                        className=" text-sm font-medium leading-6 text-gray-400 sm:pt-1.5 2xl:mr-5 flex-1"
+                                    >
+                                        Receiver Name
+                                    </label>
 
-                                <div className="">
-                                    <div className=" flex items-center">
-                                        <div className="mt-2 w-full sm:mt-0 ">
-                                            <Select
-                                                styles={customStyles}
-                                                isMulti
-                                                name="colors"
-                                                value={selectedStates}
-                                                options={statesOptions}
-                                                onChange={setSelectedStates}
-                                                className="basic-multi-select  lg:w-3/4"
-                                                classNamePrefix="select"
-                                            />
+                                    <div className="w-full flex-1">
+                                        <div className=" flex items-center">
+                                            <div className="mt-2 w-full sm:mt-0 ">
+                                                <Select
+                                                    styles={customStyles}
+                                                    isMulti
+                                                    name="colors"
+                                                    value={selectedReceiver}
+                                                    options={filteredReceivers}
+                                                    onChange={
+                                                        handleReceiverSelectChange
+                                                    }
+                                                    className="basic-multi-select"
+                                                    classNamePrefix="select"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
