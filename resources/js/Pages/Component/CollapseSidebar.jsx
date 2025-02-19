@@ -223,11 +223,15 @@ export default function CollapseSidebar({
                 if (element.options) {
                     return {
                         ...element,
-                        current: false,
+                        current:  element.options.find((option) => option.id == id) ? true : false,
                         ...(element.options
                             ? {
                                   options: element.options.map((option) => {
-                                      return { ...option, current: false };
+                                        if (option.id == id) {
+                                            return { ...option, current: true };
+                                        } else {
+                                            return { ...option, current: false };
+                                        }
                                   }),
                               }
                             : {}),
@@ -241,6 +245,7 @@ export default function CollapseSidebar({
                 }
             }
         });
+
         handleSelectOnClick();
         setSidebarElements(updatedElements);
         localStorage.setItem("current", JSON.stringify(id));

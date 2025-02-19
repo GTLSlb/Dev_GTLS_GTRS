@@ -1427,6 +1427,10 @@ export default function GtrsMain({
                                                         fetchDeliveryReport={
                                                             fetchDeliveryReport
                                                         }
+                                                        deliveryReportComments={deliveryReportComments}
+                                                        fetchDeliveryReportCommentsDataGTRS={
+                                                            fetchDeliveryReportCommentsData
+                                                        }
                                                     />
                                                 }
                                             />

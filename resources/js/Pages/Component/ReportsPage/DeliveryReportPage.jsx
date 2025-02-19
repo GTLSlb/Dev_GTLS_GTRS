@@ -27,6 +27,7 @@ export default function DeliveryReportPage({
     userPermission,
     fetchDeliveryReport,
     deliveryReportComments,
+    fetchDeliveryReportCommentsDataGTRS,
 }) {
     const navigate = useNavigate();
     const handleClick = (coindex) => {
@@ -347,6 +348,7 @@ export default function DeliveryReportPage({
                 },
             });
             setDeliveryCommentsOptions(res.data || []);
+            fetchDeliveryReportCommentsDataGTRS();
         } catch (err) {
             if (err.response && err.response.status === 401) {
                 // Handle 401 error using SweetAlert
@@ -428,6 +430,7 @@ export default function DeliveryReportPage({
                                     )
                                     .then((response) => {
                                         fetchDeliveryReport(setCellLoading);
+                                        fetchDeliveryReportCommentsDataGTRS();
                                         setAddedComment(true);
                                         setNewCommentValue("");
                                     })
@@ -637,9 +640,9 @@ export default function DeliveryReportPage({
                         onChange={onSelectComment}
                         isMulti={true}
                         inputValue={defaultDeliveryComment}
-                        options={deliveryCommentsOptions?.length > 0 ?  deliveryCommentsOptions?.filter(
+                        options={deliveryCommentsOptions?.filter(
                             (item) => item.CommentStatus == 1
-                        ) : []}
+                        )}
                         onKeyDown={handleKeyDown}
                         setInputValue={setDefaultDeliveryComment}
                     />

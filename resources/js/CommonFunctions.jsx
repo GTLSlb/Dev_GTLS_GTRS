@@ -298,8 +298,25 @@ export function navigateToFirstAllowedPage({
 
       // Find the current menu item for the active route
       const currentItem = items.find((item) => item.url === window.location.pathname);
+      // Get the `current` item from localStorage, if it exists
+      const savedCurrentId = localStorage.getItem("current");
+      let firstItemToActivate;
 
-      if (currentItem) {
+      // Navigate to the current item
+      if(savedCurrentId){
+        firstItemToActivate = items.find((item) => item.id === savedCurrentId);
+          if (firstItemToActivate) {
+            firstItemToActivate.current = true;
+            // Set the other items' `current` to false
+            items.forEach((item) => {
+                if (item.url !== window.location.pathname) {
+                  item.current = false;
+                }
+              });
+            navigate(firstItemToActivate.url);
+          }
+      }
+      else if (currentItem) {
         // Mark the current item as active
         currentItem.current = true;
 
@@ -310,26 +327,12 @@ export function navigateToFirstAllowedPage({
           }
         });
 
-        // Navigate to the current item
+        // Navigate to the first item
         navigate(currentItem.url);
       } else if (items.length > 0) {
-        // Get the `current` item from localStorage, if it exists
-        const savedCurrentId = localStorage.getItem("current");
-
-        let firstItemToActivate;
-
-        if (savedCurrentId) {
-          firstItemToActivate = items.find((item) => item.id === savedCurrentId);
-        }
-
-        if (firstItemToActivate) {
-          firstItemToActivate.current = true;
-          navigate(firstItemToActivate.url);
-        } else {
           items[0].current = true;
           navigate(items[0].url);
           window.location.pathname = items[0].url;
-        }
       }
 
       // Set the sidebar elements
