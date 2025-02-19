@@ -640,7 +640,7 @@ export default function DeliveryReportPage({
                         onChange={onSelectComment}
                         isMulti={true}
                         inputValue={defaultDeliveryComment}
-                        options={deliveryCommentsOptions.filter(
+                        options={deliveryCommentsOptions?.filter(
                             (item) => item.CommentStatus == 1
                         )}
                         onKeyDown={handleKeyDown}
