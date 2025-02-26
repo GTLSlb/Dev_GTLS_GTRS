@@ -8,7 +8,7 @@ import AnimatedLoading from "@/Components/AnimatedLoading";
 import GtrsMain from "./Component/GtrsMain";
 import { Routes, Route } from "react-router-dom";
 import MainPageGTRS from "@/Pages/MainPageGTRS";
-import {navigateToFirstAllowedPage} from "@/CommonFunctions";
+import { navigateToFirstAllowedPage } from "@/CommonFunctions";
 import { useNavigate } from "react-router-dom";
 import menu from "@/SidebarMenuItems";
 export default function Gtrs({
@@ -60,99 +60,44 @@ export default function Gtrs({
         debtorIds = currentUser.UserId;
     }
 
-    const fetchDeliveryReport = () => {
-        axios
-            .get(`${gtrsUrl}Delivery`, {
+
+    const [deliveryReportComments, setDeliveryReportComments] = useState([]);
+
+    const fetchDeliveryReportCommentsData = async (setCellLoading) => {
+        try {
+            const res = await axios.get(`${gtrsUrl}Delivery/Comments`, {
                 headers: {
                     UserId: currentUser.UserId,
                     Authorization: `Bearer ${AToken}`,
                 },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setDeliveryReportData(parsedData || []);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
             });
-    };
-
-    const [deliveryReportComments, setDeliveryReportComments] = useState(
-        [
-            { Comment: 'The Shawshank Redemption', CommentId: 1994, CommentStatus: 1, StatusName: "Active" },
-            { Comment: 'The Godfather', CommentId: 1972, CommentStatus: 2, StatusName: "Inactive" },
-            { Comment: 'The Godfather: Part II', CommentId: 1974, CommentStatus: 1, StatusName: "Active" },
-            { Comment: 'The Dark Knight', CommentId: 2008, CommentStatus: 1, StatusName: "Active" },
-            { Comment: '12 Angry Men', CommentId: 1957, CommentStatus: 1, StatusName: "Active" },
-            { Comment: "Schindler's List", CommentId: 1993, CommentStatus: 2, StatusName: "Inactive" },
-            { Comment: 'Pulp Fiction', CommentId: 1994, CommentStatus: 1, StatusName: "Active" },
-        ]
-    );
-    const fetchDeliveryReportCommentsData = async (setCellLoading) => {
-        // try {
-        //     const res = await axios.get(`${gtrsUrl}Delivery`, {
-        //         headers: {
-        //             UserId: currentUser.UserId,
-        //             Authorization: `Bearer ${AToken}`,
-        //         },
-        //     });
-        //     setDeliveryReportComments(res.data || []);
-        // } catch (err) {
-        //     if (err.response && err.response.status === 401) {
-        //         // Handle 401 error using SweetAlert
-        //         swal({
-        //             title: "Session Expired!",
-        //             text: "Please login again",
-        //             type: "success",
-        //             icon: "info",
-        //             confirmButtonText: "OK",
-        //         }).then(async function () {
-        //             await handleSessionExpiration();
-        //         });
-        //     } else {
-        //         // Handle other errors
-        //         console.log(err);
-        //         // Check if setCellLoading exists before calling it
-        //         if (typeof setCellLoading === "function") {
-        //             setCellLoading(null);
-        //         }
-        //     }
-        // }
+            setDeliveryReportComments(res.data || []);
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again",
+                    type: "success",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                }).then(async function () {
+                    await handleSessionExpiration();
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+                // Check if setCellLoading exists before calling it
+                if (typeof setCellLoading === "function") {
+                    setCellLoading(null);
+                }
+            }
+        }
     };
     useEffect(() => {
         if (AToken != null && currentUser) {
             setUserBody(debtorIds);
             setLoadingGtrs(false);
-            fetchDeliveryReport();
             fetchDeliveryReportCommentsData();
             const urls = [
                 {
@@ -213,13 +158,12 @@ export default function Gtrs({
         }
     }, [currentUser, loadingGtrs]);
 
-
     const navigate = useNavigate();
     useEffect(() => {
-        if(user){
-           navigateToFirstAllowedPage({setSidebarElements, user, navigate})
+        if (user) {
+            navigateToFirstAllowedPage({ setSidebarElements, user, navigate });
         }
-    },[user])
+    }, [user]);
     if (
         consApi &&
         reportApi &&
@@ -291,9 +235,15 @@ export default function Gtrs({
                                             setSidebarElements={
                                                 setSidebarElements
                                             }
-                                            deliveryReportData ={deliveryReportData}
-                                            deliveryReportComments={deliveryReportComments}
-                                            fetchDeliveryReportCommentsData={fetchDeliveryReportCommentsData}
+                                            deliveryReportData={
+                                                deliveryReportData
+                                            }
+                                            deliveryReportComments={
+                                                deliveryReportComments
+                                            }
+                                            fetchDeliveryReportCommentsData={
+                                                fetchDeliveryReportCommentsData
+                                            }
                                         />
                                     </div>
                                 </div>

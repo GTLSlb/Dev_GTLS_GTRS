@@ -1,23 +1,28 @@
-import React, { useState, useEffect } from "react";
-import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
-import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
-import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import { HotTable } from "@handsontable/react-wrapper";
+import { registerAllModules } from "handsontable/registry";
+// import "handsontable/styles/handsontable.css";
+// import "handsontable/styles/ht-theme-main.css";
+import "handsontable/styles/handsontable.min.css";
+import "handsontable/styles/ht-theme-horizon.css";
+import "handsontable/styles/ht-theme-main.min.css";
 import moment from "moment";
-import MetcashReports from "./MetcashReports";
-import WoolworthsReports from "./WoolworthsReports";
-import OtherReports from "./OtherReports";
-import { EyeIcon, PencilIcon, PlusIcon } from "@heroicons/react/20/solid";
-import { getMinMaxValue } from "@/Components/utils/dateUtils";
-import { Spinner } from "@nextui-org/react";
-import ComboBox from "@/Components/ComboBox";
+import axios from "axios";
+import { Button, Spinner } from "@nextui-org/react";
+import { EyeIcon } from "@heroicons/react/20/solid";
+import { useNavigate } from "react-router-dom";
+
+registerAllModules();
+
 import {
     canAddDeliveryReportComment,
     canEditDeliveryReportComment,
     canViewMetcashDeliveryReport,
     canViewWoolworthsDeliveryReport,
     canViewOtherDeliveryReport,
+    AlertToast,
 } from "@/permissions";
-import { useNavigate } from "react-router-dom";
+import swal from "sweetalert";
 
 export default function DeliveryReportPage({
     url,
@@ -29,853 +34,366 @@ export default function DeliveryReportPage({
     deliveryCommentsOptions,
 }) {
     const navigate = useNavigate();
-    const handleClick = (coindex) => {
-        navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
-    };
-    const createNewLabelObjects = (data, fieldName) => {
-        const uniqueLabels = new Set(); // To keep track of unique labels
-        const newData = [];
+    const hotTableRef = useRef(null);
+    const [isLoading,setIsLoading] = useState(false)
 
-        // Map through the data and create new objects
-        data?.forEach((item) => {
-            const fieldValue = item[fieldName];
+    const buttonClickCallback = () => {
+        const hot = hotTableRef.current?.hotInstance;
+        const exportPlugin = hot?.getPlugin("exportFile");
 
-            // Check if the label is not already included and is not null or empty
-            if (
-                fieldValue &&
-                !uniqueLabels.has(fieldValue) &&
-                fieldValue?.trim() !== ""
-            ) {
-                if (typeof fieldValue === "string") {
-                    uniqueLabels.add(fieldValue);
-                    const newObject = {
-                        id: fieldValue,
-                        label: fieldValue,
-                    };
-                    newData.push(newObject);
-                }
-            }
+        exportPlugin?.downloadFile("csv", {
+            bom: false,
+            columnDelimiter: ",",
+            columnHeaders: true,
+            exportHiddenColumns: true,
+            exportHiddenRows: true,
+            fileExtension: "csv",
+            filename: "Handsontable-CSV-file_[YYYY]-[MM]-[DD]",
+            mimeType: "text/csv",
+            rowDelimiter: "\r\n",
+            rowHeaders: false,
         });
-
-        return newData;
     };
-    const [receiverZoneOptions, setReceiverZoneOptions] = useState(createNewLabelObjects(
-        deliveryReportData,
-        "ReceiverZone"
-    ));
-    const [senderZoneOptions, setSenderZoneOptions] = useState(createNewLabelObjects(
-        deliveryReportData,
-        "SenderZone"
-    ));
-    const [receiverStateOptions, setReceiverStateOptions] = useState(createNewLabelObjects(
-        deliveryReportData,
-        "ReceiverState"
-    ));
-    const [senderStateOptions, setSenderStateOptions] = useState(createNewLabelObjects(
-        deliveryReportData,
-        "SenderState"
-    ));
-    const consStateOptions = createNewLabelObjects(
-        deliveryReportData,
-        "ConsignmentStatus"
-    );
 
-    const podAvlOptions = [
-        {
-            id: true,
-            label: "True",
-        },
-        {
-            id: false,
-            label: "False",
-        },
-    ];
+    // Navigation when clicking a consignment number
+    const handleClick = (consignmentID) => {
+        navigate("/gtrs/consignment-details", {
+            state: { activeCons: consignmentID },
+        });
+    };
 
-    const [activeComponentIndex, setActiveComponentIndex] = useState(0);
-    const [cellLoading, setCellLoading] = useState(false);
-
-    const [filterValue, setFilterValue] = useState([
-        {
-            name: "AccountNumber",
-            operator: "eq",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "DespatchDateTime",
-            operator: "inrange",
-            type: "date",
-        },
-        {
-            name: "ConsignmentNo",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "SenderName",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "SenderReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "SenderState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "SenderZone",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "ReceiverName",
-            operator: "contains",
-            type: "string",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "ReceiverReference",
-            operator: "contains",
-            type: "string",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "ReceiverState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "ReceiverZone",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "ConsignmentStatus",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "DeliveryInstructions",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "POD",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "DeliveryRequiredDateTime",
-            operator: "inrange",
-            type: "date",
-        },
-        {
-            name: "DeliveredDateTime",
-            operator: "inrange",
-            type: "date",
-        },
-        {
-            name: "Comments",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-    ]);
-
-    useEffect(() => {
-        setFilterValue([
-            {
-                name: "AccountNumber",
-                operator: "eq",
-                type: "string",
-                value: "",
-            },
-            {
-                name: "DespatchDateTime",
-                operator: "inrange",
-                type: "date",
-            },
-            {
-                name: "ConsignmentNo",
-                operator: "contains",
-                type: "string",
-                value: "",
-            },
-            {
-                name: "SenderName",
-                operator: "contains",
-                type: "string",
-                value: "",
-            },
-            {
-                name: "SenderReference",
-                operator: "contains",
-                type: "string",
-                value: "",
-            },
-            {
-                name: "SenderState",
-                operator: "inlist",
-                type: "select",
-                value: null,
-                emptyValue: "",
-            },
-            {
-                name: "ReceiverName",
-                operator: "contains",
-                type: "string",
-                value: null,
-                emptyValue: "",
-            },
-            {
-                name: "ReceiverReference",
-                operator: "contains",
-                type: "string",
-                value: null,
-                emptyValue: "",
-            },
-            {
-                name: "ReceiverState",
-                operator: "inlist",
-                type: "select",
-                value: null,
-                emptyValue: "",
-            },
-            {
-                name: "ConsignmentStatus",
-                operator: "inlist",
-                type: "select",
-                value: null,
-                emptyValue: "",
-            },
-            {
-                name: "DeliveryInstructions",
-                operator: "contains",
-                type: "string",
-                value: "",
-                emptyValue: "",
-            },
-            {
-                name: "POD",
-                operator: "inlist",
-                type: "select",
-                value: null,
-                emptyValue: "",
-            },
-            {
-                name: "DeliveryRequiredDateTime",
-                operator: "inrange",
-                type: "date",
-            },
-            {
-                name: "DeliveredDateTime",
-                operator: "inrange",
-                type: "date",
-            },
-            {
-                name: "Comments",
-                operator: "contains",
-                type: "string",
-                value: "",
-                emptyValue: "",
-            },
-        ]);
-    }, [activeComponentIndex]);
-    const groups = [
-        {
-            name: "senderDetails",
-            header: "Sender Details",
-            headerAlign: "center",
-        },
-        {
-            name: "receiverDetails",
-            header: "Receiver Details",
-            headerAlign: "center",
-        },
-    ];
-
-    const [consId, setConsId] = useState(null);
+    // States for modals and comment details
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [commentsData, setCommentsData] = useState(null);
-
-    useEffect(() => {
-        if (deliveryReportData?.length > 0 && consId) {
-            setCommentsData(
-                deliveryReportData.find((data) => data.ConsignmentID == consId)
-                    ?.Comments
-            );
-        }
-    }, [deliveryReportData, consId]);
+    const [consId, setConsId] = useState(null);
     const handleViewComments = (data) => {
         setCommentsData(data?.Comments);
         setConsId(data?.ConsignmentID);
         setIsViewModalOpen(true);
     };
-
-    function CustomColumnEditor(props) {
-        const { value, onChange, onComplete, cellProps, onCancel } = props; // Destructure relevant props
-
-        const [prvsComment, setPrvsComment] = useState(
-            value ? value[0].Comment : null
-        );
-        const [inputValue, setInputValue] = useState(prvsComment);
-        const [commentId, setCommentId] = useState(
-            value ? value[0].CommentId : null
-        );
-
-        const onValueChange = (e) => {
-            let newValue = e.target.value;
-
-            setInputValue(newValue);
-            onChange(newValue);
-        };
-
-        const handleComplete = async (event) => {
-            console.log('commentId', commentId)
-            if(inputValue !== ""){
-                setCellLoading(cellProps.data.ConsignmentID);
-            await axios
-                .post(
-                    `${url}Add/Delivery/Comment`,
-                    {
-                        CommentId: commentId,
-                        ConsId: cellProps.data.ConsignmentID,
-                        Comment: `${inputValue}`,
-                    },
-                    {
-                        headers: {
-                            UserId: currentUser.UserId,
-                            Authorization: `Bearer ${AToken}`,
-                        },
-                    }
-                )
-                .then((response) => {
-                    fetchDeliveryReport(setCellLoading);
-                })
-                .catch((error) => {
-                    // Handle error
-                    if (error.response && error.response.status === 401) {
-                        // Handle 401 error using SweetAlert
-                        swal({
-                            title: "Session Expired!",
-                            text: "Please login again",
-                            type: "success",
-                            icon: "info",
-                            confirmButtonText: "OK",
-                        }).then(async function () {
-                            axios
-                                .post("/logoutAPI")
-                                .then((response) => {
-                                    if (response.status == 200) {
-                                        window.location.href = "/";
-                                    }
-                                })
-                                .catch((error) => {
-                                    console.log(error);
-                                });
-                        });
-                    } else {
-                        // Handle other errors
-                        console.log(error);
-                    }
-                });
-                onComplete(inputValue);
-            }
-        };
-
-        const handleKeyDown = (event) => {
-            if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault();
-                handleComplete();
-            }
-        };
-
-        return (
-            canAddDeliveryReportComment(userPermission) && (
-                <>
-                    {/* <textarea
-                        style={{ width: "100%", maxHeight: "100%" }}
-                        type={"text"}
-                        value={inputValue}
-                        className="text-sm font-semibold placeholder:text-sm placeholder:font-light resize-none placeholder:text-gray-500"
-                        placeholder="Add a new comment"
-                        onBlur={onCancel}
-                        onBlurCapture={onCancel}
-                        onChange={onValueChange}
-                        onKeyDown={handleKeyDown}
-                    /> */}
-                    <ComboBox idField={"CommentId"} valueField={"Comment"} addFunction={handleComplete} inputValue={inputValue} options={deliveryCommentsOptions} onKeyDown={handleKeyDown} setInputValue={setInputValue} setCommentId={setCommentId}/>
-                </>
-            )
-        );
-    }
-
-    const GetLastValue = ({ inputString }) => {
-        const getLastValue = (str) => {
-            const values = str
-                .split(/\r?\n/)
-                .filter((value) => value.trim() !== "");
-
-            const lastValue = values[values.length - 1];
-
-            const count = values.length - 1;
-            if (values.length - 1 > 0) {
-                return (
-                    <div>
-                        {lastValue} + {count}{" "}
-                        {count == 1 ? "Comment" : "Comments"}
-                    </div>
-                );
-            } else {
-                return `${lastValue}`;
-            }
-        };
-
-        return inputString != "" ? (
-            <div>{getLastValue(inputString)}</div>
-        ) : null;
-    };
-
-    const columns = [
-        {
-            name: "AccountNumber",
-            header: "Account Number",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: StringFilter,
-            defaultWidth: 200,
-            render: ({ value }) => {
-                return <div>{value}</div>;
-            },
-        },
-        {
-            name: "DespatchDateTime",
-            header: "Despatch date",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultFlex: 1,
-            minWidth: 200,
-            dateFormat: "DD-MM-YYYY",
-            filterEditor: DateFilter,
-            filterEditorProps: {
-                minDate: getMinMaxValue(
-                    deliveryReportData,
-                    "DespatchDateTime",
-                    1
-                ),
-                maxDate: getMinMaxValue(
-                    deliveryReportData,
-                    "DespatchDateTime",
-                    2
-                ),
-            },
-            render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
-            },
-        },
-        {
-            name: "ConsignmentNo",
-            header: "Consignment Number",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: StringFilter,
-            defaultWidth: 200,
-            render: ({ value, data }) => {
-                return (
-                    <div>
-                        <span
-                            className="underline text-blue-500 hover:cursor-pointer"
-                            onClick={() => handleClick(data.ConsignmentID)}
-                        >
-                            {" "}
-                            {value}
-                        </span>
-                    </div>
-                );
-            },
-        },
-        {
-            name: "SenderName",
-            header: "Sender Name",
-            group: "senderDetails",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 200,
-            filterEditor: StringFilter,
-        },
-        {
-            name: "SenderReference",
-            header: "Sender Reference",
-            group: "senderDetails",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 180,
-            filterEditor: StringFilter,
-        },
-        {
-            name: "SenderState",
-            header: "Sender State",
-            group: "senderDetails",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: senderStateOptions,
-            },
-        },
-        {
-            name: "SenderZone",
-            header: "Sender Zone",
-            group: "senderDetails",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: senderZoneOptions,
-            },
-        },
-        {
-            name: "ReceiverName",
-            header: "Receiver Name",
-            group: "receiverDetails",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 200,
-            filterEditor: StringFilter,
-        },
-        {
-            name: "ReceiverReference",
-            header: "Receiver Reference",
-            group: "receiverDetails",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 180,
-            filterEditor: StringFilter,
-        },
-        {
-            name: "ReceiverState",
-            header: "Receiver State",
-            group: "receiverDetails",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: receiverStateOptions,
-            },
-        },
-        {
-            name: "ReceiverZone",
-            header: "Receiver Zone",
-            group: "receiverDetails",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: receiverZoneOptions,
-            },
-        },
-        {
-            name: "ConsignmentStatus",
-            header: "Consignment Status",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: consStateOptions,
-            },
-        },
-        {
-            name: "DeliveryInstructions",
-            header: "Special Instructions",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-        },
-        {
-            name: "DeliveryRequiredDateTime",
-            header: "Delivery Required DateTime",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultFlex: 1,
-            minWidth: 200,
-            dateFormat: "DD-MM-YYYY",
-            filterEditor: DateFilter,
-            filterEditorProps: {
-                minDate: getMinMaxValue(
-                    deliveryReportData,
-                    "DeliveryRequiredDateTime",
-                    1
-                ),
-                maxDate: getMinMaxValue(
-                    deliveryReportData,
-                    "DeliveryRequiredDateTime",
-                    2
-                ),
-            },
-            render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
-            },
-        },
-        {
-            name: "DeliveredDateTime",
-            header: "Delivered DateTime",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultFlex: 1,
-            minWidth: 200,
-            dateFormat: "DD-MM-YYYY",
-            filterEditor: DateFilter,
-            filterEditorProps: {
-                minDate: getMinMaxValue(
-                    deliveryReportData,
-                    "DeliveredDateTime",
-                    1
-                ),
-                maxDate: getMinMaxValue(
-                    deliveryReportData,
-                    "DeliveredDateTime",
-                    2
-                ),
-            },
-            render: ({ value, cellProps }) => {
-                return value
-                    ? moment(value).format("DD-MM-YYYY") == "Invalid date"
-                        ? ""
-                        : moment(value).format("DD-MM-YYYY")
-                    : "";
-            },
-        },
-        {
-            name: "POD",
-            header: "POD Avl",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: podAvlOptions,
-            },
-            render: ({ value, data }) => {
-                return (
-                    <div>
-                        {data?.POD ? (
-                            <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                                True
-                            </span>
-                        ) : (
-                            <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                                false
-                            </span>
-                        )}
-                    </div>
-                );
-            },
-        },
-        {
-            name: "Comments",
-            header: "Comments",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 280,
-            editable: true,
-            filterEditor: StringFilter,
-            editor: CustomColumnEditor,
-            // Add the getFilterValue function
-            getFilterValue: ({ data }) => {
-                if (data.Comments && data.Comments.length > 0) {
-                    return data.Comments[0].Comment;
-                }
-                return "";
-            },
-            render: ({ value, data }) => {
-                return (
-                    <div className="flex gap-4 items-center px-2">
-                        {data.ConsignmentID == cellLoading ? (
-                            <div className="flex flex-col w-full">
-                                <div className=" inset-0 flex justify-center items-center bg-opacity-50">
-                                    <Spinner color="default" size="sm" />
-                                </div>
-                            </div>
-                        ) : (
-                            <>
-                                {" "}
-                                {value ? (
-                                    <>
-                                        {value != "" ? (
-                                            <GetLastValue
-                                                inputString={value[0].Comment}
-                                            />
-                                        ) : null}
-                                    </>
-                                ) : null}
-                            </>
-                        )}
-                    </div>
-                );
-            },
-        },
-        {
-            name: "Actions",
-            header: "Actions",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 200,
-            render: ({ value, data }) => {
-                return (
-                    <div className="flex gap-4 items-center justify-center px-2">
-                        <span
-                            className="underline text-blue-400 hover:cursor-pointer"
-                            onClick={() => handleViewComments(data)}
-                        >
-                            <EyeIcon className="h-5 w-5 text-goldt" />
-                        </span>
-                    </div>
-                );
-            },
-        },
-    ];
-
-    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const handleAddClose = () => {
-        setIsAddModalOpen(false);
-    };
     const handleViewClose = () => {
         setIsViewModalOpen(false);
         setCommentsData(null);
     };
+
+    // Tab (report type) state
+    const [activeComponentIndex, setActiveComponentIndex] = useState(0);
+    // Used to show a spinner in the cell when saving changes
+    const [cellLoading, setCellLoading] = useState(null);
+
+    // Compute filtered data sets based on CustomerTypeId
     const [filteredMetcashData, setFilteredMetcashData] = useState(
-        deliveryReportData?.filter((item) => item?.CustomerTypeId == 1)
+        deliveryReportData?.filter((item) => item?.CustomerTypeId === 1) || []
     );
     const [filteredWoolworthData, setFilteredWoolworthData] = useState(
-        deliveryReportData?.filter((item) => item?.CustomerTypeId == 2)
+        deliveryReportData?.filter((item) => item?.CustomerTypeId === 2) || []
     );
     const [filteredOtherData, setFilteredOtherData] = useState(
-        deliveryReportData?.filter((item) => item?.CustomerTypeId == 3)
+        deliveryReportData?.filter((item) => item?.CustomerTypeId === 3) || []
     );
+
     useEffect(() => {
         if (deliveryReportData?.length > 0) {
             setFilteredMetcashData(
-                deliveryReportData?.filter((item) => item?.CustomerTypeId == 1)
+                deliveryReportData.filter((item) => item?.CustomerTypeId === 1)
             );
             setFilteredWoolworthData(
-                deliveryReportData?.filter((item) => item?.CustomerTypeId == 2)
+                deliveryReportData.filter((item) => item?.CustomerTypeId === 2)
             );
             setFilteredOtherData(
-                deliveryReportData?.filter((item) => item?.CustomerTypeId == 3)
+                deliveryReportData.filter((item) => item?.CustomerTypeId === 3)
             );
         }
     }, [deliveryReportData]);
 
+    // Set the active tab based on permissions
     useEffect(() => {
-        if(userPermission){
-            canViewMetcashDeliveryReport(userPermission) ? (
-                setActiveComponentIndex(0)
-            ) : canViewWoolworthsDeliveryReport(userPermission) ? (
-                setActiveComponentIndex(1)
-            ) : canViewOtherDeliveryReport(userPermission) ? (
-                setActiveComponentIndex(2)
-            ) : null}
-    },[userPermission])
-    let components = [
-        <MetcashReports
-            filterValue={filterValue}
-            setFilterValue={setFilterValue}
-            groups={groups}
-            columns={columns}
-            data={filteredMetcashData}
-            url={url}
-            AToken={AToken}
-            consId={consId}
-            setCellLoading={setCellLoading}
-            fetchData={fetchDeliveryReport}
-            currentUser={currentUser}
-            isViewModalOpen={isViewModalOpen}
-            handleViewModalClose={handleViewClose}
-            isAddModalOpen={isAddModalOpen}
-            handleAddModalClose={handleAddClose}
-            commentsData={commentsData}
-        />,
-        <WoolworthsReports
-            filterValue={filterValue}
-            setFilterValue={setFilterValue}
-            groups={groups}
-            columns={columns}
-            data={filteredWoolworthData}
-            url={url}
-            AToken={AToken}
-            setCellLoading={setCellLoading}
-            consId={consId}
-            fetchData={fetchDeliveryReport}
-            currentUser={currentUser}
-            isViewModalOpen={isViewModalOpen}
-            handleViewModalClose={handleViewClose}
-            isAddModalOpen={isAddModalOpen}
-            handleAddModalClose={handleAddClose}
-            commentsData={commentsData}
-        />,
-        <OtherReports
-            filterValue={filterValue}
-            setFilterValue={setFilterValue}
-            groups={groups}
-            columns={columns}
-            data={filteredOtherData}
-            url={url}
-            AToken={AToken}
-            consId={consId}
-            setCellLoading={setCellLoading}
-            fetchData={fetchDeliveryReport}
-            currentUser={currentUser}
-            isViewModalOpen={isViewModalOpen}
-            handleViewModalClose={handleViewClose}
-            isAddModalOpen={isAddModalOpen}
-            handleAddModalClose={handleAddClose}
-            commentsData={commentsData}
-        />,
+        if (userPermission) {
+            if (canViewMetcashDeliveryReport(userPermission)) {
+                setActiveComponentIndex(0);
+            } else if (canViewWoolworthsDeliveryReport(userPermission)) {
+                setActiveComponentIndex(1);
+            } else if (canViewOtherDeliveryReport(userPermission)) {
+                setActiveComponentIndex(2);
+            }
+        }
+    }, [userPermission]);
+
+    // Determine the current data set to show
+    const tableData = useMemo(() => {
+        if (activeComponentIndex === 0) return filteredMetcashData;
+        if (activeComponentIndex === 1) return filteredWoolworthData;
+        if (activeComponentIndex === 2) return filteredOtherData;
+        return [];
+    }, [
+        activeComponentIndex,
+        filteredMetcashData,
+        filteredWoolworthData,
+        filteredOtherData,
+    ]);
+
+    /* ---------------------------
+     Handsontable Renderers
+  --------------------------- */
+
+    /* ---------------------------
+     Handsontable Columns Setup
+  --------------------------- */
+    const handleButtonClick = (rowData) => {
+        // alert(`Action clicked for Consignment: ${rowData.ConsignmentNo}`);
+        // Example: Navigate to details page
+        navigate("/gtrs/consignment-details", {
+            state: { activeCons: rowData.ConsignmentID },
+        });
+    };
+
+    // 📌 Custom Button Renderer
+    const buttonRenderer = (
+        instance,
+        td,
+        row,
+        col,
+        prop,
+        value,
+        cellProperties
+    ) => {
+        td.innerHTML = ""; // Clear existing content
+
+        // Create container div for buttons
+        const buttonContainer = document.createElement("div");
+        buttonContainer.className = "flex space-x-2 w-[15rem]"; // Tailwind for spacing
+
+        // 🔍 View Button
+        const viewButton = document.createElement("button");
+        viewButton.className =
+            "flex items-center gap-2 px-3 py-1 bg-blue-500 text-white rounded shadow-md hover:bg-blue-600 transition";
+        viewButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25M8.25 9V5.25M15.75 5.25V4.5a2.25 2.25 0 00-4.5 0v.75M8.25 5.25V4.5a2.25 2.25 0 00-4.5 0v.75"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9h-7.5a4.5 4.5 0 00-4.5 4.5v4.5a2.25 2.25 0 002.25 2.25h11.25a2.25 2.25 0 002.25-2.25v-4.5a4.5 4.5 0 00-4.5-4.5z"></path>
+        </svg> View`;
+        viewButton.onclick = () => {
+            const rowData = instance.getSourceDataAtRow(row);
+            handleButtonClick(rowData);
+        };
+
+        // 🗑️ Delete Button
+        const deleteButton = document.createElement("button");
+        deleteButton.className =
+            "flex items-center gap-2 px-3 py-1 bg-red-500 text-white rounded shadow-md hover:bg-red-600 transition";
+        deleteButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
+        </svg> Delete`;
+        deleteButton.onclick = () => {
+            const rowData = instance.getSourceDataAtRow(row);
+            alert(`Deleting consignment: ${rowData.ConsignmentNo}`);
+            // TODO: Implement actual delete logic
+        };
+
+        // Append buttons to container
+        buttonContainer.appendChild(viewButton);
+        buttonContainer.appendChild(deleteButton);
+
+        // Append container to cell
+        td.appendChild(buttonContainer);
+
+        return td;
+    };
+
+    const hotColumns = [
+        {
+            data: "AccountNumber",
+            title: "Account Number",
+            type: "text",
+            readOnly: true,
+        },
+        
+        {
+            data: "Comment",
+            title: "Comments",
+            type: "autocomplete",
+            source: deliveryCommentsOptions
+                .filter((item) => item.CommentStatus === 1) // Filter only where CommentStatus is 1
+                .map((item) => item.Comment), // Extract only the Comment values
+            strict: false,
+        },
+        {
+            data: "DespatchDateTime",
+            title: "Despatch Date",
+            type: "date",
+            editor: false,
+        },
+        {
+            data: "ConsignmentNo",
+            title: "Consignment Number",
+            type: "text",
+            editor: false,
+        },
+        {
+            data: "SenderName",
+            title: "Sender Name",
+            type: "text",
+            editor: false,
+        },
+        {
+            data: "SenderReference",
+            title: "Sender Reference",
+            type: "text",
+            editor: false,
+        },
+        {
+            data: "SenderState",
+            title: "Sender State",
+            type: "text",
+            editor: false,
+        },
+        {
+            data: "SenderZone",
+            title: "Sender Zone",
+            type: "text",
+            editor: false,
+        },
+        {
+            data: "ReceiverName",
+            title: "Receiver Name",
+            type: "text",
+            editor: false,
+        },
+        {
+            data: "ReceiverReference",
+            title: "Receiver Reference",
+            type: "text",
+            editor: false,
+        },
+        {
+            data: "ReceiverState",
+            title: "Receiver State",
+            type: "text",
+            editor: false,
+        },
+        {
+            data: "ReceiverZone",
+            title: "Receiver Zone",
+            type: "text",
+            editor: false,
+        },
+        {
+            data: "ConsignmentStatus",
+            title: "Consignment Status",
+            type: "text",
+            editor: false,
+        },
+        {
+            data: "DeliveryInstructions",
+            title: "Special Instructions",
+            type: "text",
+            editor: false,
+        },
+        {
+            data: "DeliveryRequiredDateTime",
+            title: "Delivery Required DateTime",
+            type: "date",
+            editor: false,
+        },
+        {
+            data: "DeliveredDateTime",
+            title: "Delivered DateTime",
+            type: "date",
+            editor: false,
+        },
+        {
+            data: "POD",
+            title: "POD Avl",
+            type: "checkbox",
+            editor: false,
+        },
     ];
+
+    /* ---------------------------
+     Handsontable Change Handler
+     (Used for saving comment edits)
+  --------------------------- */
+    const [changedRows, setChangedRows] = useState([]); // Stores changed rows
+
+    // 📌 Track only modified rows
+    const handleAfterChange = (changes, source) => {
+        if (source === "loadData" || !changes) return;
+    
+        setChangedRows((prevChanges) => {
+            let updatedChanges = [...prevChanges]; // Keep existing changes as an array
+    
+            changes.forEach(([row, prop, oldValue, newValue]) => {
+                if (newValue !== oldValue) {
+                    const rowData = hotTableRef.current.hotInstance.getSourceDataAtRow(row);
+                    
+                    // Check if row already exists in the array
+                    const existingIndex = updatedChanges.findIndex(
+                        (item) => item.ConsignmentID === rowData.ConsignmentID
+                    );
+    
+                    if (existingIndex > -1) {
+                        // Update the existing entry
+                        updatedChanges[existingIndex] = {
+                            ...updatedChanges[existingIndex],
+                            Comment: newValue, // Only store changed field
+                        };
+                    } else {
+                        // Add new entry to array
+                        updatedChanges.push({
+                            ...rowData,
+                            Comment: newValue, // Only store changed field
+                        });
+                    }
+                }
+            });
+    
+            return updatedChanges;
+        });
+    };
+
+    function SaveComments() {
+        setIsLoading(true);
+        const inputValues = changedRows?.map(item => ({
+            DeliveryCommentId: item.DeliveryCommentId ? item.DeliveryCommentId : null, 
+            ConsId: item.ConsignmentID, // Rename ConsignmentID to ConsId
+            Comment: item.Comment // Keep the Comment field as is
+        }));
+        axios
+            .post(`${url}Add/Delivery/Single/Comment`, inputValues, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            })
+            .then((res) => {
+                setChangedRows([]);
+                setIsLoading(false);
+                AlertToast("Saved successfully", 1);
+            })
+            .catch((err) => {
+                AlertToast("Something went wrong", 2);
+
+                if (err.response && err.response.status === 401) {
+                    // Handle 401 error using SweetAlert
+                    swal({
+                      title: 'Session Expired!',
+                      text: "Please login again",
+                      type: 'success',
+                      icon: "info",
+                      confirmButtonText: 'OK'
+                    }).then(async function () {
+                        await handleSessionExpiration();
+                    });
+                  } else {
+                    // Handle other errors
+                    console.log(err);
+                    setIsLoading(false);
+                  }
+            });
+    }
+
+    /* ---------------------------
+     Render Component
+  --------------------------- */
     return (
         <div className="min-h-full px-8">
             <div className="sm:flex-auto mt-6">
@@ -894,7 +412,7 @@ export default function DeliveryReportPage({
                             }`}
                             onClick={() => setActiveComponentIndex(0)}
                         >
-                            <div className="px-2"> Metcash</div>
+                            <div className="px-2">Metcash</div>
                         </li>
                     )}
                     {canViewWoolworthsDeliveryReport(userPermission) && (
@@ -918,22 +436,71 @@ export default function DeliveryReportPage({
                             }`}
                             onClick={() => setActiveComponentIndex(2)}
                         >
-                            <div className="px-2"> Other</div>
+                            <div className="px-2">Other</div>
                         </li>
                     )}
                 </ul>
             </div>
-            {activeComponentIndex == 0 &&
-            canViewMetcashDeliveryReport(userPermission) ? (
-                <div>{components[activeComponentIndex]}</div>
-            ) : activeComponentIndex == 1 &&
-              canViewWoolworthsDeliveryReport(userPermission) ? (
-                <div>{components[activeComponentIndex]}</div>
-            ) : activeComponentIndex == 2 &&
-              canViewOtherDeliveryReport(userPermission) ? (
-                <div>{components[activeComponentIndex]}</div>
-            ) : (
-                <div></div>
+            <div className="my-1 flex w-full items-center gap-3 justify-end">
+                <Button
+                    className="bg-dark text-white px-4 py-2"
+                    onClick={() => SaveComments()}
+                    isDisabled={changedRows.length === 0}
+                    size="sm"
+                >
+                   Save
+                </Button>
+                <Button
+                    className="bg-dark text-white px-4 py-2"
+                    onClick={() => buttonClickCallback()}
+                    size="sm"
+                >
+                    Download CSV
+                </Button>
+            </div>
+
+            <div id="" className="ht-theme-main">
+                <HotTable
+                    ref={hotTableRef}
+                    data={tableData}
+                    colHeaders={hotColumns.map((col) => col.title)}
+                    columns={hotColumns}
+                    width="100%"
+                    height={"600px"}
+                    manualColumnMove={true}
+                    licenseKey="non-commercial-and-evaluation"
+                    rowHeaders={true}
+                    afterChange={handleAfterChange}
+                    autoWrapRow={true}
+                    manualColumnResize={true}
+                    autoWrapCol={true}
+                    filters={true} // ✅ Enable filtering
+                    dropdownMenu={true} // ✅ Show dropdown for filtering
+                    columnSorting={true} // ✅ Enable sorting
+                    contextMenu={true}
+                />
+            </div>
+
+            {isViewModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30">
+                    <div className="bg-white p-6 rounded shadow-lg">
+                        <h2 className="text-lg font-bold mb-4">Comments</h2>
+                        <div className="mb-4">
+                            {commentsData || "No comments"}
+                        </div>
+                        <button
+                            className="px-4 py-2 bg-blue-500 text-white rounded"
+                            onClick={handleViewClose}
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
+            {cellLoading && (
+                <div className="absolute inset-0 flex justify-center items-center">
+                    <Spinner color="default" size="sm" />
+                </div>
             )}
         </div>
     );

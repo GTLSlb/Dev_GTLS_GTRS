@@ -459,10 +459,10 @@ export default function GtrsMain({
         setEDate(formatDate(val.end));
     }, [filtersMissingPOD]);
 
-    const [dailyReportData, setDailyReportData] = useState(deliveryReportData);
+    const [dailyReportData, setDailyReportData] = useState();
     const fetchDeliveryReport = async (setCellLoading) => {
         try {
-            const res = await axios.get(`${url}Delivery`, {
+            const res = await axios.get(`${url}DeliveryReport`, {
                 headers: {
                     UserId: currentUser.UserId,
                     Authorization: `Bearer ${AToken}`,
