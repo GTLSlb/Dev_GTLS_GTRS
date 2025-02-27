@@ -35,7 +35,7 @@ export default function DeliveryReportPage({
 }) {
     const navigate = useNavigate();
     const hotTableRef = useRef(null);
-    const [isLoading,setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(false);
 
     const buttonClickCallback = () => {
         const hot = hotTableRef.current?.hotInstance;
@@ -198,7 +198,7 @@ export default function DeliveryReportPage({
 
         return td;
     };
-
+    const cars = ["BMW", "Chrysler", "Nissan", "Suzuki", "Toyota", "Volvo"];
     const hotColumns = [
         {
             data: "AccountNumber",
@@ -206,15 +206,26 @@ export default function DeliveryReportPage({
             type: "text",
             readOnly: true,
         },
-        
+        // {
+        //     data: "Comment",
+        //     type: 'autocomplete',
+        //     source: cars,
+        //     strict: true,
+        //   },
         {
             data: "Comment",
             title: "Comments",
-            type: "autocomplete",
-            source: deliveryCommentsOptions
-                .filter((item) => item.CommentStatus === 1) // Filter only where CommentStatus is 1
-                .map((item) => item.Comment), // Extract only the Comment values
+            type: "select",
+            selectOptions:
+                deliveryCommentsOptions?.length > 0
+                    ? deliveryCommentsOptions
+                          .filter((item) => item.CommentStatus === 1)
+                          .map((item) => item.Comment)
+                    : ["Loading..."],
             strict: false,
+            wordWrap: true, // ✅ Enable text wrapping
+            width: 400, // Set a reasonable column width
+            allowInvalid: false,
         },
         {
             data: "DespatchDateTime",
@@ -286,6 +297,7 @@ export default function DeliveryReportPage({
             data: "DeliveryInstructions",
             title: "Special Instructions",
             type: "text",
+            width: 400,
             editor: false,
         },
         {
@@ -315,47 +327,99 @@ export default function DeliveryReportPage({
     const [changedRows, setChangedRows] = useState([]); // Stores changed rows
 
     // 📌 Track only modified rows
+    // const handleAfterChange = (changes, source) => {
+    //     if (source === "loadData" || !changes) return;
+
+    //     setChangedRows((prevChanges) => {
+    //         let updatedChanges = [...prevChanges]; // Keep existing changes as an array
+
+    //         changes.forEach(([row, prop, oldValue, newValue]) => {
+    //             if (newValue !== oldValue) {
+    //                 const rowData =
+    //                     hotTableRef.current.hotInstance.getSourceDataAtRow(row);
+
+    //                 // Check if row already exists in the array
+    //                 const existingIndex = updatedChanges.findIndex(
+    //                     (item) => item.ConsignmentID === rowData.ConsignmentID
+    //                 );
+
+    //                 if (existingIndex > -1) {
+    //                     // Update the existing entry
+    //                     updatedChanges[existingIndex] = {
+    //                         ...updatedChanges[existingIndex],
+    //                         Comment: newValue, // Only store changed field
+    //                     };
+    //                 } else {
+    //                     // Add new entry to array
+    //                     updatedChanges.push({
+    //                         ...rowData,
+    //                         Comment: newValue, // Only store changed field
+    //                     });
+    //                 }
+    //             }
+    //         });
+
+    //         return updatedChanges;
+    //     });
+    // };
     const handleAfterChange = (changes, source) => {
         if (source === "loadData" || !changes) return;
-    
+
+        console.log("🔍 Changes detected:", changes);
+
         setChangedRows((prevChanges) => {
-            let updatedChanges = [...prevChanges]; // Keep existing changes as an array
-    
+            let updatedChanges = [...prevChanges]; // Clone the existing changes array
+
             changes.forEach(([row, prop, oldValue, newValue]) => {
                 if (newValue !== oldValue) {
-                    const rowData = hotTableRef.current.hotInstance.getSourceDataAtRow(row);
-                    
-                    // Check if row already exists in the array
+                    const hotInstance = hotTableRef.current?.hotInstance;
+                    if (!hotInstance) {
+                        console.error("❌ Handsontable instance is undefined!");
+                        return updatedChanges;
+                    }
+
+                    const rowData = hotInstance.getSourceDataAtRow(row);
+                    console.log("Row data before change:", rowData);
+                    console.log("Row data after change:", rowData);
+                    if (!rowData || !rowData.ConsignmentID) {
+                        console.warn(
+                            "⚠️ Row data is undefined or missing ConsignmentID!",
+                            rowData
+                        );
+                        return updatedChanges;
+                    }
+
                     const existingIndex = updatedChanges.findIndex(
                         (item) => item.ConsignmentID === rowData.ConsignmentID
                     );
-    
-                    if (existingIndex > -1) {
-                        // Update the existing entry
-                        updatedChanges[existingIndex] = {
-                            ...updatedChanges[existingIndex],
-                            Comment: newValue, // Only store changed field
-                        };
-                    } else {
-                        // Add new entry to array
-                        updatedChanges.push({
-                            ...rowData,
-                            Comment: newValue, // Only store changed field
-                        });
-                    }
+
+                    // if (existingIndex > -1) {
+                    //     updatedChanges[existingIndex] = {
+                    //         ...updatedChanges[existingIndex],
+                    //         Comment: newValue,
+                    //     };
+                    // } else {
+                    //     updatedChanges.push({
+                    //         ...rowData,
+                    //         Comment: newValue,
+                    //     });
+                    // }
                 }
             });
-    
-            return updatedChanges;
+
+            console.log("✅ Updated changedRows:", updatedChanges);
+            return updatedChanges; // Ensure we return a new array
         });
     };
 
     function SaveComments() {
         setIsLoading(true);
-        const inputValues = changedRows?.map(item => ({
-            DeliveryCommentId: item.DeliveryCommentId ? item.DeliveryCommentId : null, 
+        const inputValues = changedRows?.map((item) => ({
+            DeliveryCommentId: item.DeliveryCommentId
+                ? item.DeliveryCommentId
+                : null,
             ConsId: item.ConsignmentID, // Rename ConsignmentID to ConsId
-            Comment: item.Comment // Keep the Comment field as is
+            Comment: item.Comment, // Keep the Comment field as is
         }));
         axios
             .post(`${url}Add/Delivery/Single/Comment`, inputValues, {
@@ -375,25 +439,33 @@ export default function DeliveryReportPage({
                 if (err.response && err.response.status === 401) {
                     // Handle 401 error using SweetAlert
                     swal({
-                      title: 'Session Expired!',
-                      text: "Please login again",
-                      type: 'success',
-                      icon: "info",
-                      confirmButtonText: 'OK'
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
                     }).then(async function () {
                         await handleSessionExpiration();
                     });
-                  } else {
+                } else {
                     // Handle other errors
                     console.log(err);
                     setIsLoading(false);
-                  }
+                }
             });
     }
 
     /* ---------------------------
      Render Component
   --------------------------- */
+
+    useEffect(() => {
+        if (hotTableRef.current) {
+            setTimeout(() => {
+                hotTableRef.current.hotInstance.render();
+            }, 100); // ✅ Delays the render to fix autocomplete initialization
+        }
+    }, []);
     return (
         <div className="min-h-full px-8">
             <div className="sm:flex-auto mt-6">
@@ -448,7 +520,7 @@ export default function DeliveryReportPage({
                     isDisabled={changedRows.length === 0}
                     size="sm"
                 >
-                   Save
+                    Save
                 </Button>
                 <Button
                     className="bg-dark text-white px-4 py-2"
@@ -458,28 +530,32 @@ export default function DeliveryReportPage({
                     Download CSV
                 </Button>
             </div>
-
-            <div id="" className="ht-theme-main">
-                <HotTable
-                    ref={hotTableRef}
-                    data={tableData}
-                    colHeaders={hotColumns.map((col) => col.title)}
-                    columns={hotColumns}
-                    width="100%"
-                    height={"600px"}
-                    manualColumnMove={true}
-                    licenseKey="non-commercial-and-evaluation"
-                    rowHeaders={true}
-                    afterChange={handleAfterChange}
-                    autoWrapRow={true}
-                    manualColumnResize={true}
-                    autoWrapCol={true}
-                    filters={true} // ✅ Enable filtering
-                    dropdownMenu={true} // ✅ Show dropdown for filtering
-                    columnSorting={true} // ✅ Enable sorting
-                    contextMenu={true}
-                />
-            </div>
+            {tableData && deliveryCommentsOptions && (
+                <div id="" className="ht-theme-main">
+                    <HotTable
+                        ref={hotTableRef}
+                        data={tableData}
+                        colHeaders={hotColumns.map((col) => col.title)}
+                        columns={hotColumns}
+                        width="100%"
+                        height={"600px"}
+                        manualColumnMove={true}
+                        licenseKey="non-commercial-and-evaluation"
+                        rowHeaders={true}
+                        afterChange={handleAfterChange}
+                        autoWrapRow={true}
+                        manualColumnResize={true}
+                        autoWrapCol={true}
+                        filters={true} // ✅ Enable filtering
+                        dropdownMenu={true} // ✅ Show dropdown for filtering
+                        columnSorting={true} // ✅ Enable sorting
+                        contextMenu={true}
+                        settings={{
+                            useTheme: null, // ✅ Ensures Handsontable doesn’t depend on a missing theme
+                        }}
+                    />
+                </div>
+            )}
 
             {isViewModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30">
