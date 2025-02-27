@@ -213,21 +213,6 @@ export default function DeliveryReportPage({
         //     strict: true,
         //   },
         {
-            data: "Comment",
-            title: "Comments",
-            type: "select",
-            selectOptions:
-                deliveryCommentsOptions?.length > 0
-                    ? deliveryCommentsOptions
-                          .filter((item) => item.CommentStatus === 1)
-                          .map((item) => item.Comment)
-                    : ["Loading..."],
-            strict: false,
-            wordWrap: true, // ✅ Enable text wrapping
-            width: 400, // Set a reasonable column width
-            allowInvalid: false,
-        },
-        {
             data: "DespatchDateTime",
             title: "Despatch Date",
             type: "date",
@@ -311,6 +296,21 @@ export default function DeliveryReportPage({
             title: "Delivered DateTime",
             type: "date",
             editor: false,
+        },
+        {
+            data: "Comment",
+            title: "Comments",
+            type: "select",
+            selectOptions:
+                deliveryCommentsOptions?.length > 0
+                    ? deliveryCommentsOptions
+                          .filter((item) => item.CommentStatus === 1)
+                          .map((item) => item.Comment)
+                    : ["Loading..."],
+            strict: false,
+            wordWrap: true, // ✅ Enable text wrapping
+            width: 400, // Set a reasonable column width
+            allowInvalid: false,
         },
         {
             data: "POD",
