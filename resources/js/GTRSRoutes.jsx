@@ -27,6 +27,7 @@ const routes = [
     "/gtrs/consignment-tracking",
     // "/gtrs/consignment-tracking-2",
     "/gtrs/delivery-report",
+    "/gtrs/excel-delivery-report",
     "/gtrs/delivery-report/comments",
     "/gtrs/real-food-report",
 ]

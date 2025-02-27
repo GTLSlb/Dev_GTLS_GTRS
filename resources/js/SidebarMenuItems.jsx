@@ -221,6 +221,15 @@ const menu = [
                 url: "/gtrs/delivery-report",
             },
             {
+                id: 30,
+                name: "Excel Delivery Report",
+                href: "#",
+                current: false,
+                icon: ClipboardDocumentCheckIcon,
+                feature: "DeliveryReport_View",
+                url: "/gtrs/excel-delivery-report",
+            },
+            {
                 id: 29,
                 name: "Delivery Report Comments",
                 href: "#",

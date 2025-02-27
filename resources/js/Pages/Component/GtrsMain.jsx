@@ -2,7 +2,7 @@ import { ProtectedRoute } from "@/CommonFunctions";
 import {
     getLatestDespatchDate,
     getMinMaxValue,
-    getOldestDespatchDate
+    getOldestDespatchDate,
 } from "@/Components/utils/dateUtils";
 import {
     getFiltersAddCharges,
@@ -17,7 +17,7 @@ import {
     getFiltersPOD,
     getFiltersRDD,
     getFiltersSafety,
-    getFiltersTransport
+    getFiltersTransport,
 } from "@/Components/utils/filters";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import { Button } from "@nextui-org/react";
@@ -45,6 +45,7 @@ import GraphPresentation from "./Presentation/GraphPresentation";
 import RDDMain from "./RDD/RDDMain";
 import RealFoodKPIPack from "./RealFoodKPIPack/RealFoodKPIPack";
 import DeliveryReportPage from "./ReportsPage/DeliveryReportPage";
+import ExcelDeliveryReport from "./ReportsPage/ExcelDeliveryReport";
 import DeliveryReportCommentsPage from "./ReportsPage/CommentsTableView/DeliveryReportCommentsPage";
 import SafetyRep from "./safetyRep";
 import ConsMap from "./TrafficPage/ConsMap";
@@ -461,7 +462,7 @@ export default function GtrsMain({
 
     const [dailyReportData, setDailyReportData] = useState(deliveryReportData);
     const fetchDeliveryReport = async (setCellLoading) => {
-        console.log('fetching')
+        console.log("fetching");
         try {
             const res = await axios.get(`${url}Delivery`, {
                 headers: {
@@ -498,9 +499,47 @@ export default function GtrsMain({
         }
     };
 
+    const [excelDailyReportData, setExcelDailyReportData] = useState();
+    const fetchExcelDeliveryReportData = async (setCellLoading) => {
+        try {
+            const res = await axios.get(`${url}DeliveryReport`, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            });
+            setExcelDailyReportData(res.data || []);
+
+            // Check if setCellLoading exists before calling it
+            if (typeof setCellLoading === "function") {
+                setCellLoading(null);
+            }
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again",
+                    type: "success",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                }).then(async function () {
+                    await handleSessionExpiration();
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+                // Check if setCellLoading exists before calling it
+                if (typeof setCellLoading === "function") {
+                    setCellLoading(null);
+                }
+            }
+        }
+    };
     useEffect(() => {
         if (currentUser) {
             fetchDeliveryReport();
+            fetchExcelDeliveryReportData();
             fetchDeliveryReportCommentsData();
         }
     }, [currentUser]);
@@ -671,9 +710,7 @@ export default function GtrsMain({
                     />
 
                     <main className="w-full overflow-y-auto">
-                        <div
-                            className="fixed left-0 top-20 z-10"
-                        >
+                        <div className="fixed left-0 top-20 z-10">
                             {broken && (
                                 <Button
                                     aria-label="chevron right icon"
@@ -1428,8 +1465,50 @@ export default function GtrsMain({
                                                         fetchDeliveryReport={
                                                             fetchDeliveryReport
                                                         }
-                                                        deliveryReportComments={deliveryReportComments}
-                                                        fetchDeliveryReportCommentsDataGTRS={fetchDeliveryReportCommentsData}
+                                                        deliveryReportComments={
+                                                            deliveryReportComments
+                                                        }
+                                                        fetchDeliveryReportCommentsDataGTRS={
+                                                            fetchDeliveryReportCommentsData
+                                                        }
+                                                    />
+                                                }
+                                            />
+                                        }
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
+                                    />
+                                    <Route
+                                        path="/excel-delivery-report"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermission}
+                                                route={[
+                                                    "DeliveryReport_View",
+                                                    "MetcashDeliveryReport_View",
+                                                    "WoolworthsDeliveryReport_View",
+                                                    "OtherDeliveryReport_View",
+                                                ]}
+                                                element={
+                                                    <ExcelDeliveryReport
+                                                        url={url}
+                                                        AToken={AToken}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        userPermission={
+                                                            userPermission
+                                                        }
+                                                        deliveryReportData={
+                                                            excelDailyReportData
+                                                        }
+                                                        fetchDeliveryReport={
+                                                            fetchExcelDeliveryReportData
+                                                        }
+                                                        deliveryCommentsOptions={
+                                                            deliveryReportComments
+                                                        }
                                                     />
                                                 }
                                             />
@@ -1443,7 +1522,9 @@ export default function GtrsMain({
                                         element={
                                             <ProtectedRoute
                                                 permission={userPermission}
-                                                route={'DeliveryReportCommentsTable_View'}
+                                                route={
+                                                    "DeliveryReportCommentsTable_View"
+                                                }
                                                 element={
                                                     <DeliveryReportCommentsPage
                                                         url={url}
