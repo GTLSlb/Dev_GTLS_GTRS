@@ -256,6 +256,38 @@ function checkUserPermission(permission, route) {
 
 }
 
+function findCurrentItem(items, id, navigate, setSidebarElements) {
+    const updatedElements = items?.map((element) => {
+        if (element.options) {
+            return {
+                ...element,
+                current:  element.options.find((option) => option.id == id) ? true : false,
+                ...(element.options
+                    ? {
+                          options: element.options.map((option) => {
+                                if (option.id == id) {
+                                    navigate(option.url);
+                                    return { ...option, current: true };
+                                } else {
+                                    return { ...option, current: false };
+                                }
+                          }),
+                      }
+                    : {}),
+            };
+        } else {
+            if (element.id === id) {
+                navigate(element.url);
+                return { ...element, current: true };
+            } else {
+                return { ...element, current: false };
+            }
+        }
+      });
+      console.log(id, updatedElements);
+      setSidebarElements(updatedElements);
+}
+
 export function navigateToFirstAllowedPage({
     setSidebarElements,
     user,
@@ -291,39 +323,25 @@ export function navigateToFirstAllowedPage({
       });
 
       // Find the current menu item for the active route
-      const currentItem = items.find((item) => item.url === window.location.pathname);
+      const currentItem = items.find((item) => {
+        if (item.options) {
+          return item.options.some((option) => option.url === window.location.pathname);
+        } else {
+          return item.url === window.location.pathname;
+        }
+      });
+
       // Get the `current` item from localStorage, if it exists
       const savedCurrentId = localStorage.getItem("current");
-      let firstItemToActivate;
 
       // Navigate to the current item
-      if(savedCurrentId){
-        firstItemToActivate = items.find((item) => item.id === savedCurrentId);
-          if (firstItemToActivate) {
-            firstItemToActivate.current = true;
-            // Set the other items' `current` to false
-            items.forEach((item) => {
-                if (item.url !== window.location.pathname) {
-                  item.current = false;
-                }
-              });
-            navigate(firstItemToActivate.url);
-          }
-      }
-      else if (currentItem) {
-        // Mark the current item as active
-        currentItem.current = true;
+      if (currentItem) {
+        console.log(currentItem);
+        findCurrentItem(items, currentItem?.id, navigate, setSidebarElements);
 
-        // Set the other items' `current` to false
-        items.forEach((item) => {
-          if (item.url !== window.location.pathname) {
-            item.current = false;
-          }
-        });
-
-        // Navigate to the first item
-        navigate(currentItem.url);
-      } else if (items.length > 0) {
+      } else if(savedCurrentId){
+        findCurrentItem(items, savedCurrentId, navigate, setSidebarElements);
+      }else if (items.length > 0) {
           items[0].current = true;
           navigate(items[0].url);
           window.location.pathname = items[0].url;
