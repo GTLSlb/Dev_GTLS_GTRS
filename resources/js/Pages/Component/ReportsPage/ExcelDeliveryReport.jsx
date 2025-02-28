@@ -11,6 +11,7 @@ import axios from "axios";
 import { Button, Spinner } from "@nextui-org/react";
 import { EyeIcon } from "@heroicons/react/20/solid";
 import { useNavigate } from "react-router-dom";
+import {ToastContainer,toast} from 'react-toastify'
 
 registerAllModules();
 
@@ -467,6 +468,8 @@ export default function ExcelDeliveryReport({
     }, []);
     return (
         <div className="min-h-full px-8">
+            {/* Added toast container since it wasn't showing */}
+            <ToastContainer />
             <div className="sm:flex-auto mt-6">
                 <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
                     Unilever Delivery Report
