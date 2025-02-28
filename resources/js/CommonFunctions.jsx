@@ -257,6 +257,7 @@ function checkUserPermission(permission, route) {
 }
 
 function findCurrentItem(items, id, navigate, setSidebarElements) {
+    let targetElement = null;
     const updatedElements = items?.map((element) => {
         if (element.options) {
             return {
@@ -266,7 +267,7 @@ function findCurrentItem(items, id, navigate, setSidebarElements) {
                     ? {
                           options: element.options.map((option) => {
                                 if (option.id == id) {
-                                    navigate(option.url);
+                                    targetElement = option;
                                     return { ...option, current: true };
                                 } else {
                                     return { ...option, current: false };
@@ -277,15 +278,15 @@ function findCurrentItem(items, id, navigate, setSidebarElements) {
             };
         } else {
             if (element.id === id) {
-                navigate(element.url);
+                targetElement = element;
                 return { ...element, current: true };
             } else {
                 return { ...element, current: false };
             }
         }
       });
-      console.log(id, updatedElements);
       setSidebarElements(updatedElements);
+      navigate(targetElement?.url);
 }
 
 export function navigateToFirstAllowedPage({
@@ -336,7 +337,6 @@ export function navigateToFirstAllowedPage({
 
       // Navigate to the current item
       if (currentItem) {
-        console.log(currentItem);
         findCurrentItem(items, currentItem?.id, navigate, setSidebarElements);
 
       } else if(savedCurrentId){

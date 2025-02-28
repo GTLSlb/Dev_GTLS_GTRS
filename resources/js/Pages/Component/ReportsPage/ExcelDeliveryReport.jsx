@@ -300,8 +300,8 @@ export default function ExcelDeliveryReport({
         {
             data: "Comment",
             title: "Comments",
-            type: "select",
-            selectOptions:
+            type: "autocomplete",
+            source:
                 deliveryCommentsOptions?.length > 0
                     ? deliveryCommentsOptions
                           .filter((item) => item.CommentStatus === 1)
@@ -310,7 +310,6 @@ export default function ExcelDeliveryReport({
             strict: false,
             wordWrap: true, // ✅ Enable text wrapping
             width: 400, // Set a reasonable column width
-            allowInvalid: false,
         },
         {
             data: "POD",
