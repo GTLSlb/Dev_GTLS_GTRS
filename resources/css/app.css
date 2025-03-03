@@ -41,7 +41,7 @@
     display: flex !important;
     flex-wrap: nowrap !important;
     height: 30px !important;
-    justify-content: start !important;
+    justify-content: flex-start !important;
     overflow-y: hidden !important;
     overflow-x: scroll !important;
 }
