@@ -4,6 +4,7 @@ import swal from "sweetalert";
 import axios from "axios";
 import { handleSessionExpiration } from '@/CommonFunctions';
 import GtrsButton from "../../GtrsButton";
+import ReactModal from "react-modal";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -17,6 +18,7 @@ export default function AddCommentToList({
     setSelectedComment,
     setShowAdd,
     fetchData,
+    isOpen,
 }) {
     const [isChecked, setIsChecked] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
@@ -83,12 +85,18 @@ export default function AddCommentToList({
     }
 
     return (
-        <div className="mt-6 shadow bg-white p-6 rounded-lg ">
+        <ReactModal
+            ariaHideApp={false}
+            isOpen={isOpen}
+            className="fixed inset-0 flex items-center justify-center"
+            overlayClassName="fixed inset-0 bg-black bg-opacity-60 z-50"
+        >
+        <div className="mt-6 w-[90%] min-h-[20%] md:w-[75%] lg:w-[45%] bg-white p-6 rounded-lg">
             <form onSubmit={AddComment}>
                 <p className="font-bold text-lg">{object ? "Edit " : "Add "} Comment</p>
-                <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-5 gap-y-5 items-center py-4">
-                    <div className="col-span-2 flex items-center gap-x-2">
-                        <label htmlFor="name" className="block w-32 ">
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-5 items-center py-4">
+                    <div className="col-span-2 flex flex-col sm:flex-row sm:items-center gap-x-2 py-3 sm:py-7">
+                        <label htmlFor="name" className="block w-full sm:w-32">
                             Comment:{" "}
                         </label>
                         <input
@@ -97,10 +105,10 @@ export default function AddCommentToList({
                             name="name"
                             id="Comment"
                             defaultValue={object ? object.Comment : ""}
-                            className="rounded w-96 bg-gray-50 border border-gray-300 h-7"
+                            className="rounded w-full sm:w-96 bg-gray-50 border border-gray-300 h-7"
                         />
                     </div>
-                    <div className=" flex items-center gap-x-2">
+                    <div className="flex items-center gap-x-2">
                         <label htmlFor="name" className="block  ">
                             Status:{" "}
                         </label>
@@ -113,7 +121,13 @@ export default function AddCommentToList({
                         />
                     </div>
                 </div>
-                <div className="flex w-full justify-end">
+                <div className="flex w-full justify-end gap-x-3">
+                    <GtrsButton
+                        disabled={isLoading}
+                        name={"Cancel"}
+                        type={"button"}
+                        onClick={() => setShowAdd(false)}
+                    />
                     <GtrsButton
                         disabled={isLoading}
                         name={object ? "Edit" : "Create"}
@@ -122,5 +136,6 @@ export default function AddCommentToList({
                 </div>
             </form>
         </div>
+        </ReactModal>
     );
 }
