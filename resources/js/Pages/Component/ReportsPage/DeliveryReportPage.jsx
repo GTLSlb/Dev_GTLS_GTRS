@@ -582,10 +582,20 @@ export default function DeliveryReportPage({
                     let i = 0;
                     while (i < newCommentsArr.length) {
                         const item = newCommentsArr[i];
-                        if (
+                        // Check if the user is pressing on the "Add" button only works for when adding 1 options
+                        // If adding multiple options, check if the option is already in the list if not add it
+                        const isAddingNewComment =
                             event.target.textContent ===
                             `Add "${item?.CommentId}"`
-                        ) {
+                                ? true
+                                : deliveryCommentsOptions.find(
+                                      (item) =>
+                                          item.Comment?.toString()?.trim() ===
+                                          item.CommentId?.toString()?.trim()
+                                  )
+                                ? false
+                                : true;
+                        if (isAddingNewComment) {
                             // Adding a new comment to the list not to the consignment
                             setIsAddingNewComment(true)
                             setNewCommentValue(item?.CommentId?.trim());

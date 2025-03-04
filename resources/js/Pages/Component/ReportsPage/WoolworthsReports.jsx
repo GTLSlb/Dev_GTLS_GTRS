@@ -25,6 +25,7 @@ export default function WoolworthsReports({
     handleAddModalClose,
     commentsData,
     deliveryCommentsOptions,
+    fetchDeliveryReportCommentsData,
 }) {
     const gridRef = useRef(null);
     const [selected, setSelected] = useState([]);
@@ -112,6 +113,7 @@ export default function WoolworthsReports({
                 currentUser={currentUser}
                 commentsData={commentsData}
                 deliveryCommentsOptions={deliveryCommentsOptions}
+                fetchDeliveryReportCommentsData={fetchDeliveryReportCommentsData}
             />
         </div>
     );
