@@ -39,13 +39,11 @@ const BasicColumnCharts = (props) => {
             plot.on("element:click", (event) => {
                 const { data } = event.data;
 
-                if (chartTitle === "Consignment By Month") {
-                    setChartFilter((prev) => ({
-                        ...prev,
-                        dateStart: "27-09-2024",
-                        dateEnd: "27-08-2024",
-                    }));
-                }
+                setChartFilter((prev) => ({
+                    ...prev,
+                    dateStart: "27-09-2024",
+                    dateEnd: "27-08-2024",
+                }));
 
                 setShowTable(true);
                 // alert(`You clicked on ${data.label} with value ${data.value}`);

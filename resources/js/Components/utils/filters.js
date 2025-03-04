@@ -1664,8 +1664,8 @@ export const getFiltersChartsTable = (chartFilter) => {
             operator: "inrange",
             type: "date",
             value: {
-                start: minDate,
-                end: maxDate,
+                start: chartFilter?.dateStart,
+                end: chartFilter?.dateEnd,
             },
         },
         {
