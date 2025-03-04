@@ -49,7 +49,7 @@ export default function ExcelDeliveryReport({
             exportHiddenColumns: true,
             exportHiddenRows: true,
             fileExtension: "csv",
-            filename: "Handsontable-CSV-file_[YYYY]-[MM]-[DD]",
+            filename: "DeliveryReport_[YYYY]-[MM]-[DD]",
             mimeType: "text/csv",
             rowDelimiter: "\r\n",
             rowHeaders: false,
@@ -199,90 +199,109 @@ export default function ExcelDeliveryReport({
 
         return td;
     };
-    const cars = ["BMW", "Chrysler", "Nissan", "Suzuki", "Toyota", "Volvo"];
+
+    const dateRenderer = (instance, td, row, col, prop, value, cellProperties) => {
+        // If the cell has a value, format it
+        if (value) {
+            td.innerText = moment(value).format("DD/MM/YYYY"); // Change format here
+        } else {
+            td.innerText = ""; // If no value, keep it empty
+        }
+    
+        td.classList.add("htRight"); // Align text to the right
+        return td;
+    };
     const hotColumns = [
         {
             data: "AccountNumber",
             title: "Account Number",
             type: "text",
             readOnly: true,
+            editor: false,
         },
-        // {
-        //     data: "Comment",
-        //     type: 'autocomplete',
-        //     source: cars,
-        //     strict: true,
-        //   },
         {
             data: "DespatchDateTime",
             title: "Despatch Date",
             type: "date",
+            readOnly: true,
             editor: false,
+            renderer: dateRenderer,
         },
         {
             data: "ConsignmentNo",
             title: "Consignment Number",
             type: "text",
+            readOnly: true,
             editor: false,
         },
         {
             data: "SenderName",
             title: "Sender Name",
             type: "text",
+            readOnly: true,
             editor: false,
         },
         {
             data: "SenderReference",
             title: "Sender Reference",
             type: "text",
+            readOnly: true,
             editor: false,
         },
         {
             data: "SenderState",
             title: "Sender State",
             type: "text",
+            readOnly: true,
             editor: false,
         },
         {
             data: "SenderZone",
             title: "Sender Zone",
             type: "text",
+            readOnly: true,
             editor: false,
         },
         {
             data: "ReceiverName",
             title: "Receiver Name",
             type: "text",
+            readOnly: true,
             editor: false,
         },
         {
             data: "ReceiverReference",
             title: "Receiver Reference",
             type: "text",
+            readOnly: true,
             editor: false,
         },
         {
             data: "ReceiverState",
             title: "Receiver State",
             type: "text",
+            readOnly: true,
             editor: false,
         },
         {
             data: "ReceiverZone",
             title: "Receiver Zone",
             type: "text",
+            readOnly: true,
             editor: false,
         },
         {
             data: "ConsignmentStatus",
             title: "Consignment Status",
             type: "text",
+            readOnly: true,
             editor: false,
         },
         {
             data: "DeliveryInstructions",
             title: "Special Instructions",
             type: "text",
+            readOnly: true,
             width: 400,
             editor: false,
         },
@@ -290,13 +309,17 @@ export default function ExcelDeliveryReport({
             data: "DeliveryRequiredDateTime",
             title: "Delivery Required DateTime",
             type: "date",
+            readOnly: true,
             editor: false,
+            renderer: dateRenderer, // ✅ Applies the custom renderer
         },
         {
             data: "DeliveredDateTime",
             title: "Delivered DateTime",
             type: "date",
+            readOnly: true,
             editor: false,
+            renderer: dateRenderer,
         },
         {
             data: "Comment",
@@ -315,57 +338,16 @@ export default function ExcelDeliveryReport({
         {
             data: "POD",
             title: "POD Avl",
+            readOnly: true,
             type: "checkbox",
             editor: false,
         },
     ];
 
-    /* ---------------------------
-     Handsontable Change Handler
-     (Used for saving comment edits)
-  --------------------------- */
     const [changedRows, setChangedRows] = useState([]); // Stores changed rows
 
-    // 📌 Track only modified rows
-    // const handleAfterChange = (changes, source) => {
-    //     if (source === "loadData" || !changes) return;
-
-    //     setChangedRows((prevChanges) => {
-    //         let updatedChanges = [...prevChanges]; // Keep existing changes as an array
-
-    //         changes.forEach(([row, prop, oldValue, newValue]) => {
-    //             if (newValue !== oldValue) {
-    //                 const rowData =
-    //                     hotTableRef.current.hotInstance.getSourceDataAtRow(row);
-
-    //                 // Check if row already exists in the array
-    //                 const existingIndex = updatedChanges.findIndex(
-    //                     (item) => item.ConsignmentID === rowData.ConsignmentID
-    //                 );
-
-    //                 if (existingIndex > -1) {
-    //                     // Update the existing entry
-    //                     updatedChanges[existingIndex] = {
-    //                         ...updatedChanges[existingIndex],
-    //                         Comment: newValue, // Only store changed field
-    //                     };
-    //                 } else {
-    //                     // Add new entry to array
-    //                     updatedChanges.push({
-    //                         ...rowData,
-    //                         Comment: newValue, // Only store changed field
-    //                     });
-    //                 }
-    //             }
-    //         });
-
-    //         return updatedChanges;
-    //     });
-    // };
     const handleAfterChange = (changes, source) => {
         if (source === "loadData" || !changes) return;
-
-        console.log("🔍 Changes detected:", changes);
 
         setChangedRows((prevChanges) => {
             let updatedChanges = [...prevChanges]; // Clone the existing changes array
@@ -379,8 +361,6 @@ export default function ExcelDeliveryReport({
                     }
 
                     const rowData = hotInstance.getSourceDataAtRow(row);
-                    console.log("Row data before change:", rowData);
-                    console.log("Row data after change:", rowData);
                     if (!rowData || !rowData.ConsignmentID) {
                         console.warn(
                             "⚠️ Row data is undefined or missing ConsignmentID!",
@@ -406,8 +386,6 @@ export default function ExcelDeliveryReport({
                     }
                 }
             });
-
-            console.log("✅ Updated changedRows:", updatedChanges);
             return updatedChanges; // Ensure we return a new array
         });
     };
@@ -455,20 +433,15 @@ export default function ExcelDeliveryReport({
             });
     }
 
-    /* ---------------------------
-     Render Component
-  --------------------------- */
-
     useEffect(() => {
         if (hotTableRef.current) {
             setTimeout(() => {
                 hotTableRef.current.hotInstance.render();
-            }, 100); // ✅ Delays the render to fix autocomplete initialization
+            }, 100); 
         }
     }, []);
     return (
         <div className="min-h-full px-8">
-            {/* Added toast container since it wasn't showing */}
             <ToastContainer />
             <div className="sm:flex-auto mt-6">
                 <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
@@ -533,7 +506,7 @@ export default function ExcelDeliveryReport({
                 </Button>
             </div>
             {tableData && deliveryCommentsOptions && (
-                <div id="" className="ht-theme-main pb-10">
+                <div id="" className="ht-theme-main mt-4 pb-10">
                     <HotTable
                         ref={hotTableRef}
                         data={tableData}
