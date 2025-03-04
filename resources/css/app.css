@@ -420,3 +420,15 @@ html {
   .handsontable {
     scrollbar-color: unset !important;
 }
+
+/* ✅ Hide the datepicker dropdown only for the "Delivered DateTime" column */
+.htCore td.no-arrow-column {
+  background-image: none !important; /* Removes dropdown icon */
+  position: relative;
+}
+
+/* ✅ Also hide the dropdown calendar if clicked */
+.htCore td.no-arrow-column .htDatepickerHolder {
+  display: none !important;
+}
+
