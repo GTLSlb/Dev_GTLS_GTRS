@@ -93,7 +93,7 @@ export default function ViewComments({
                 setIsEditing(false)
                 setNewCommentValue(newValue?.CommentId?.trim())
                 setShouldAddComment(true)
-
+                AddComment(newValue?.CommentId?.trim());
             }
         }else{
             // Adding a new comment to the consignment
