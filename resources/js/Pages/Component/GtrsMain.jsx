@@ -461,7 +461,6 @@ export default function GtrsMain({
 
     const [dailyReportData, setDailyReportData] = useState(deliveryReportData);
     const fetchDeliveryReport = async (setCellLoading) => {
-        console.log('fetching')
         try {
             const res = await axios.get(`${url}Delivery`, {
                 headers: {

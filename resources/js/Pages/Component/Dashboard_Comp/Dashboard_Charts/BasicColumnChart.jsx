@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Column } from "@ant-design/plots";
 
 const BasicColumnCharts = (props) => {
-    const chartData = props.chartData;
-    const chartTitle = props.chartTitle;
+    const { chartTitle, chartData, setShowTable, setChartFilter } = props;
     const [data, setData] = useState([]);
     useEffect(() => {
         setData(chartData);
@@ -35,6 +34,22 @@ const BasicColumnCharts = (props) => {
             value: {
                 alias: "Counter",
             },
+        },
+        onReady: (plot) => {
+            plot.on("element:click", (event) => {
+                const { data } = event.data;
+
+                if (chartTitle === "Consignment By Month") {
+                    setChartFilter((prev) => ({
+                        ...prev,
+                        dateStart: "27-09-2024",
+                        dateEnd: "27-08-2024",
+                    }));
+                }
+
+                setShowTable(true);
+                // alert(`You clicked on ${data.label} with value ${data.value}`);
+            });
         },
     };
 

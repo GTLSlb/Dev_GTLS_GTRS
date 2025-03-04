@@ -1559,3 +1559,121 @@ export const getFiltersDeliveryReport = (minDate, maxDate) => {
         },
     ];
 };
+
+export const getFiltersChartsTable = (chartFilter) => {
+    return [
+        {
+            name: "consid",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "ChargeToId",
+            operator: "eq",
+            type: "number",
+            value: null,
+        },
+        {
+            name: "ReceiverName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "ReceiverState",
+            operator: "inlist",
+            type: "select",
+            value: chartFilter?.ReceiverState,
+            emptyValue: "",
+        },
+        {
+            name: "TotalQuantity",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "TottalWeight",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "TotalPalletSpace",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "TotalChep",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "TotalLoscam",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "TotalCustomerOwn",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "NetAmount",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "FuelLevy",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "ConsStatus",
+            operator: "inlist",
+            type: "select",
+            value: chartFilter?.consStatus,
+            emptyValue: "",
+        },
+        {
+            name: "POD",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "DespatchDate",
+            operator: "inrange",
+            type: "date",
+            value: {
+                start: minDate,
+                end: maxDate,
+            },
+        },
+        {
+            name: "MatchDel",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+    ];
+};
