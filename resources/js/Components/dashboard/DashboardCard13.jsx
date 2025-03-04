@@ -94,9 +94,11 @@ const BasicPieCharts = (props) => {
                 const { data } = event.data;
 
                 if (chartTitle === "On Time Performance") {
+                    const value =
+                        data.label === "Delivered on Time" ? "PASS" : "FAIL";
                     setChartFilter((prev) => ({
                         ...prev,
-                        consStatus: data.label,
+                        consStatus: value,
                     }));
                 } else if (chartTitle === "Consignment Status") {
                     setChartFilter((prev) => ({
@@ -107,11 +109,18 @@ const BasicPieCharts = (props) => {
                     setChartFilter((prev) => ({
                         ...prev,
                         ReceiverState: data.label,
+                        PODValue: [true],
                     }));
-                } else if ( chartTitle === "KPI Status"){
+                } else if (chartTitle === "KPI Status") {
+                    const value =
+                        data.label === "Pass"
+                            ? 1
+                            : data.label === "N/A"
+                            ? 0
+                            : 2;
                     setChartFilter((prev) => ({
                         ...prev,
-                        MatchDel: data.label,
+                        MatchDel: [value],
                     }));
                 }
 

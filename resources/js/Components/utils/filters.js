@@ -1654,9 +1654,9 @@ export const getFiltersChartsTable = (chartFilter) => {
         },
         {
             name: "POD",
-            operator: "contains",
-            type: "string",
-            value: null,
+            operator: "inlist",
+            type: "select",
+            value: chartFilter?.PODValue?.length > 0 ? chartFilter?.PODValue : null,
             emptyValue: "",
         },
         {
@@ -1670,9 +1670,9 @@ export const getFiltersChartsTable = (chartFilter) => {
         },
         {
             name: "MatchDel",
-            operator: "eq",
-            type: "number",
-            value: "",
+            operator: "inlist",
+            type: "select",
+            value: chartFilter?.MatchDel ? chartFilter?.MatchDel : null,
             emptyValue: "",
         },
     ];

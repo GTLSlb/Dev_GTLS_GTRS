@@ -57,11 +57,10 @@ function Charts({
             width={1200}
             isResizable={false}
             isDraggable={!isMobile}
-            autoSize={true}
-            onLayoutChange={(layout) => setLayout(layout)}
-            dragEnterChild="drag-over"
-            dragLeaveChild="drag-out"
+            // autoSize={true}
             // onLayoutChange={(layout) => setLayout(layout)}
+            // dragEnterChild="drag-over"
+            // dragLeaveChild="drag-out"
         >
             <div key="card01" className="relative drag-over">
                 {" "}
@@ -87,7 +86,17 @@ function Charts({
                     setChartFilter={setChartFilter}
                 />{" "}
             </div>
-            <div key="card11" className="relative">
+            <div key="card04" className="relative">
+                {" "}
+                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
+                <BasicColumnCharts
+                    chartData={getMonthlyRecordCounts(filteredData)}
+                    chartTitle={"Consignment By Month"}
+                    setShowTable={setShowTable}
+                    setChartFilter={setChartFilter}
+                />{" "}
+            </div>
+            <div key="card05" className="relative">
                 {" "}
                 <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                 <BasicPieCharts
@@ -98,32 +107,18 @@ function Charts({
                     setChartFilter={setChartFilter}
                 />{" "}
             </div>
-            <div key="card04" className="relative">
-                {" "}
-                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                <BasicColumnCharts
-                    chartData={getMonthlyRecordCounts(filteredData)}
-                    chartTitle={" Consignment By Month"}
-                    setShowTable={setShowTable}
-                    setChartFilter={setChartFilter}
-                />{" "}
-            </div>
-            <div key="card07">
-                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                <BasicColumnCharts
-                    chartData={getStateRecordCounts(filteredData)}
-                    chartTitle={" Consignments By state"}
-                />{" "}
-            </div>
-            <div key="card05" className="relative">
+
+            <div key="card06" className="relative">
                 {" "}
                 <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                 <DoubleBarChart
                     chartData={getPODCounts(filteredData)}
                     chartTitle={"POD True vs False"}
+                    setShowTable={setShowTable}
+                    setChartFilter={setChartFilter}
                 />{" "}
             </div>
-            <div key="card06" className="relative">
+            <div key="card07" className="relative">
                 {" "}
                 <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                 <BasicPieCharts
@@ -133,14 +128,27 @@ function Charts({
                     setChartFilter={setChartFilter}
                 />{" "}
             </div>
-            <div key="card09" className="relative">
+            <div key="card08" className="relative">
                 {" "}
                 <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                 <BasicColumnCharts
                     chartData={getStateTotalWeights(filteredData)}
-                    chartTitle={" Weight By state"}
+                    chartTitle={"Weight By state"}
+                    setShowTable={setShowTable}
+                    setChartFilter={setChartFilter}
                 />{" "}
             </div>
+
+            <div key="card09">
+                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
+                <BasicColumnCharts
+                    chartData={getStateRecordCounts(filteredData)}
+                    chartTitle={"Consignments By state"}
+                    setShowTable={setShowTable}
+                    setChartFilter={setChartFilter}
+                />{" "}
+            </div>
+
             <div key="card10" className="relative">
                 {" "}
                 <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />

@@ -39,11 +39,30 @@ const BasicColumnCharts = (props) => {
             plot.on("element:click", (event) => {
                 const { data } = event.data;
 
-                setChartFilter((prev) => ({
-                    ...prev,
-                    dateStart: "27-09-2024",
-                    dateEnd: "27-08-2024",
-                }));
+                if (chartTitle === "Consignment By Month") {
+                    const [year, month] = data.data.split("-");
+                    const startDate = `01-${month}-${year}`;
+                    const endDate = new Date(year, month, 0)
+                        .toISOString()
+                        .split("T")[0]
+                        .split("-")
+                        .reverse()
+                        .join("-");
+
+                    setChartFilter((prev) => ({
+                        ...prev,
+                        dateStart: startDate,
+                        dateEnd: endDate,
+                    }));
+                } else if (
+                    chartTitle === "Weight By state" ||
+                    chartTitle === "Consignments By state"
+                ) {
+                    setChartFilter((prev) => ({
+                        ...prev,
+                        ReceiverState: data.data,
+                    }));
+                }
 
                 setShowTable(true);
                 // alert(`You clicked on ${data.label} with value ${data.value}`);

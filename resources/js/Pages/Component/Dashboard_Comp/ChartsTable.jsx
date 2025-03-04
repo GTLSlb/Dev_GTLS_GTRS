@@ -3,6 +3,7 @@ import { getFiltersChartsTable } from "@/Components/utils/filters";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
+import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import React from "react";
 import { useRef } from "react";
@@ -20,6 +21,30 @@ function ChartsTable({
         getFiltersChartsTable(chartFilter)
     );
 
+    const podAvlOptions = [
+        {
+            id: true,
+            label: "True",
+        },
+        {
+            id: false,
+            label: "False",
+        },
+    ];
+    const matchDelOptions = [
+        {
+            id: 2,
+            label: "Fail",
+        },
+        {
+            id: 1,
+            label: "Pass",
+        },
+        {
+            id: 0,
+            label: "N/A",
+        },
+    ];
     const [columns] = useState([
         {
             name: "consid",
@@ -148,11 +173,30 @@ function ChartsTable({
         {
             name: "POD",
             header: "POD",
-            type: "boolean",
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 100,
-            filterEditor: StringFilter,
+            defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: podAvlOptions,
+            },
+            render: ({ value, data }) => {
+                return (
+                    <div>
+                        {data?.POD ? (
+                            <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                                True
+                            </span>
+                        ) : (
+                            <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                                false
+                            </span>
+                        )}
+                    </div>
+                );
+            },
         },
         {
             name: "MatchDel",
@@ -160,7 +204,25 @@ function ChartsTable({
             type: "number",
             headerAlign: "center",
             textAlign: "center",
-            filterEditor: NumberFilter,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: matchDelOptions,
+            },
+            render: ({ value, data }) => {
+                return (
+                    <div>
+                        {value == 0 ? (
+                            <span className="">N/A</span>
+                        ) : value == 1 ? (
+                            <span className="">Pass</span>
+                        ) : (
+                            <span className="">Fail</span>
+                        )}
+                    </div>
+                );
+            },
         },
     ]);
 
@@ -179,6 +241,7 @@ function ChartsTable({
             </button>
         );
     };
+
     const renderTable = useCallback(() => {
         return (
             <div className="px-4 sm:px-6 lg:px-0 w-full bg-smooth">

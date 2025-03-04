@@ -74,13 +74,13 @@ export default function MainCharts({ accData, chartsData, sideBarToggle }) {
         { i: "card01", x: 0, y: 0, w: 1, h: 4.2 },
         { i: "card02", x: 2, y: 0, w: 1, h: 4.2 },
         { i: "card03", x: 0, y: 2, w: 1, h: 3 },
-        { i: "card11", x: 0, y: 2, w: 1, h: 3 },
-        { i: "card04", x: 2, y: 0, w: 1, h: 3 },
-        { i: "card05", x: 0, y: 2, w: 1, h: 3 },
-        { i: "card06", x: 2, y: 2, w: 1, h: 3 },
-        { i: "card07", x: 0, y: 4, w: 1, h: 3 },
+        { i: "card04", x: 0, y: 2, w: 1, h: 3 },
+        { i: "card05", x: 2, y: 0, w: 1, h: 3 },
+        { i: "card06", x: 0, y: 2, w: 1, h: 3 },
+        { i: "card07", x: 2, y: 2, w: 1, h: 3 },
+        { i: "card08", x: 0, y: 4, w: 1, h: 3 },
         { i: "card09", x: 2, y: 4, w: 1, h: 3 },
-        { i: "card10", x: 0, y: 4, w: 1, h: 3 },
+        { i: "card10", x: 2, y: 4, w: 1, h: 3 },
     ]);
     const ResetLayout = () => {
         // Filter the options based on the selected receivers
@@ -88,13 +88,13 @@ export default function MainCharts({ accData, chartsData, sideBarToggle }) {
             { i: "card01", x: 0, y: 0, w: 1, h: 4.2 },
             { i: "card02", x: 2, y: 0, w: 1, h: 4.2 },
             { i: "card03", x: 0, y: 2, w: 1, h: 3 },
-            { i: "card11", x: 0, y: 2, w: 1, h: 3 },
-            { i: "card04", x: 2, y: 0, w: 1, h: 3 },
-            { i: "card05", x: 0, y: 2, w: 1, h: 3 },
-            { i: "card06", x: 2, y: 2, w: 1, h: 3 },
-            { i: "card07", x: 0, y: 4, w: 1, h: 3 },
+            { i: "card04", x: 0, y: 2, w: 1, h: 3 },
+            { i: "card05", x: 2, y: 0, w: 1, h: 3 },
+            { i: "card06", x: 0, y: 2, w: 1, h: 3 },
+            { i: "card07", x: 2, y: 2, w: 1, h: 3 },
+            { i: "card08", x: 0, y: 4, w: 1, h: 3 },
             { i: "card09", x: 2, y: 4, w: 1, h: 3 },
-            { i: "card10", x: 0, y: 4, w: 1, h: 3 },
+            { i: "card10", x: 2, y: 4, w: 1, h: 3 },
         ]);
     };
     const handleStartDateChange = (event) => {
@@ -208,6 +208,8 @@ export default function MainCharts({ accData, chartsData, sideBarToggle }) {
         ReceiverState: "",
         dateStart: "",
         dateEnd: "",
+        MatchDel: "",
+        PODValue: [],
     });
 
     if (chartsData.length > 0) {
