@@ -41,12 +41,31 @@
     padding: 0px !important;
 }
 
+.htDimmed {
+    color: black !important;
+  }
+
+  .handsontable {
+    scrollbar-color: unset !important;
+}
+
+/* ✅ Hide the datepicker dropdown only for the "Delivered DateTime" column */
+.htCore td.no-arrow-column {
+  background-image: none !important; /* Removes dropdown icon */
+  position: relative;
+}
+
+/* ✅ Also hide the dropdown calendar if clicked */
+.htCore td.no-arrow-column .htDatepickerHolder {
+  display: none !important;
+}
+
 .MuiOutlinedInput-root{
     width: 90% !important;
     display: flex !important;
     flex-wrap: nowrap !important;
     height: 30px !important;
-    justify-content: start !important;
+    justify-content: flex-start !important;
     overflow-y: hidden !important;
     overflow-x: scroll !important;
 }
