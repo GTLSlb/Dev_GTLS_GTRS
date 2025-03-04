@@ -84,13 +84,16 @@ export default function ViewComments({
     }
     const [shouldAddComment, setShouldAddComment] = useState(false);
     const [addedComment, setAddedComment] = useState(false);
+    const [isDisabled, setIsDisabled] = useState(false);
     const onSelectComment = (e, newValue)=>{
         if(typeof newValue?.CommentId == 'string' && newValue?.CommentId !== ''){
             if(e.target.textContent === `Add "${newValue?.CommentId}"`){
                 // Adding a new comment to the list not to the consignment
+                setIsDisabled(true)
+                setIsEditing(false)
                 setNewCommentValue(newValue?.CommentId?.trim())
                 setShouldAddComment(true)
-
+                AddComment(newValue?.CommentId?.trim());
             }
         }else{
             // Adding a new comment to the consignment
@@ -122,6 +125,7 @@ export default function ViewComments({
                     setEditIndx(null);
                     setShouldAddComment(false);
                     setAddedComment(true);
+                    setIsDisabled(false);
                 }, 1000);
             })
         } catch (error) {
@@ -207,14 +211,14 @@ export default function ViewComments({
                                     <div className="flex pr-2">
                                         <div className="w-[95%]">
                                         {isEditing && editIndx === index
-                                            ? <ComboBox idField={"CommentId"} valueField={"Comment"} onChange={onSelectComment} inputValue={comment} options={deliveryCommentsOptions?.filter((item) => item.CommentStatus == 1)} isMulti={false} onKeyDown={handleKeyDown} setInputValue={setComment}/>
+                                            ? <ComboBox idField={"CommentId"} valueField={"Comment"} onChange={onSelectComment} inputValue={comment} options={deliveryCommentsOptions?.filter((item) => item.CommentStatus == 1)} isDisabled={false} isMulti={false} onKeyDown={handleKeyDown} setInputValue={setComment}/>
                                             //<textarea type="text" className="border-[#D5D5D5] rounded-lg w-full" defaultValue={c?.Comment} value={comment} onChange={(e)=>{setComment(e.target.value)}} />
-                                            :<p>{c?.Comment}</p>
+                                            :<p>{editIndx === index && comment != null && isDisabled ? comment : c?.Comment}</p>
                                         }
                                         </div>
                                         {isEditing && editIndx === index
                                             ? <div className="flex mt-auto gap-4 ml-3 text-sm h-[1.6rem]">
-                                                <button onClick={()=>{setIsEditing(false); setDeliveryCommentId(null); setEditIndx(null)}} disabled={isLoading} className="text-gray-500">Cancel</button>
+                                                <button onClick={()=>{setIsEditing(false); setDeliveryCommentId(null); setIsDisabled(false); setEditIndx(null)}} disabled={isLoading} className="text-gray-500">Cancel</button>
                                                 {
                                                     isLoading
                                                     ? <div className=" inset-0 flex justify-center items-center bg-opacity-50">

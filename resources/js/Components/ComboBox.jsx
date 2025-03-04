@@ -4,7 +4,7 @@ import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 
 const filter = createFilterOptions();
 
-export default function ComboBox({idField, valueField, onChange, inputValue, options, setInputValue, onKeyDown, onCancel, isMulti}) {
+export default function ComboBox({idField, valueField, onChange, inputValue, options, setInputValue, onKeyDown, onCancel, isMulti, isDisabled}) {
   const [value, setValue] = useState(isMulti? [] : null);
 
   useEffect(() => {
@@ -40,6 +40,7 @@ export default function ComboBox({idField, valueField, onChange, inputValue, opt
           </span>
         ))
       }
+      disabled={isDisabled}
       onChange={(e, newValue)=>{onChange(e, newValue); setValue(newValue)}}
       filterOptions={(options, params) => {
         const filtered = filter(options, params);

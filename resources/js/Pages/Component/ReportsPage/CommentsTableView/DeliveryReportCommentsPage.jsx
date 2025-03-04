@@ -69,7 +69,7 @@ export default function DeliveryReportCommentsPage({
             filterEditor: StringFilter,
             defaultWidth: 200,
             render: ({ value }) => {
-                return <div>{value}</div>;
+                return <div className="flex text-left">{value}</div>;
             },
         },
         {
@@ -86,11 +86,11 @@ export default function DeliveryReportCommentsPage({
             },
             render: ({ value }) => {
                 return value == 1 ? (
-                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-xs font-medium text-green-800">
                         Active
                     </span>
                 ) : (
-                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                    <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
                         Inactive
                     </span>
                 );
@@ -184,12 +184,13 @@ export default function DeliveryReportCommentsPage({
                         currentUser={currentUser}
                         fetchData={fetchDeliveryReportCommentsData}
                         setShowAdd={setShowAdd}
+                        isOpen={showAdd}
                     />
                 </div>
             )}
             <div className="">
                 <TableStructure
-                    rowHeight={50}
+                    rowHeight={40}
                     id={"CommentId"}
                     handleDownloadExcel={handleDownloadExcel}
                     setSelected={setSelected}
