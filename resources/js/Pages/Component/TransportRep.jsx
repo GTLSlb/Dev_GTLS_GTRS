@@ -782,10 +782,9 @@ function TransportRep({
         }
     };
     const createNewLabelObjects = (data, fieldName) => {
-        let id = 1; // Initialize the ID
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
-
+    
         // Map through the data and create new objects
         data.forEach((item) => {
             const fieldValue = item[fieldName];
@@ -799,8 +798,11 @@ function TransportRep({
                 newData.push(newObject);
             }
         });
-        return newData;
+    
+        // Sort the array alphabetically by label
+        return newData.sort((a, b) => a.label.localeCompare(b.label));
     };
+    
     function getMinMaxValue(data, fieldName, identifier) {
         // Check for null safety
         if (!data || !Array.isArray(data) || data.length === 0) {

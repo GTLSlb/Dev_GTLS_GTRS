@@ -85,21 +85,7 @@ export default function DriverLogin({
                 }
             });
     };
-    const tableRef = useRef(null);
-    const headers = [
-        "Name",
-        "Device Code",
-        "Smart SCAN",
-        "Smart SCAN Freight",
-        "Smart SCAN Version",
-        "Description",
-        "Last Active UTC",
-        "VLink",
-        "Software Version",
-        "Device Sim Type",
-        "Device Model",
-        "Device Makes",
-    ];
+
     const gridRef = useRef(null);
 
     function handleFilterTable() {
@@ -565,28 +551,9 @@ export default function DriverLogin({
         });
     }
 
-
     const [selected, setSelected] = useState([]);
 
-    const filterIcon = (className) => {
-        return (
-            <svg
-                className={className}
-                enable-background="new 0 0 24 24"
-                height="24px"
-                viewBox="0 0 24 24"
-                width="24px"
-            >
-                <g>
-                    <path d="M0,0h24 M24,24H0" fill="none" />
-                    <path d="M7,6h10l-5.01,6.3L7,6z M4.25,5.61C6.27,8.2,10,13,10,13v6c0,0.55,0.45,1,1,1h2c0.55,0,1-0.45,1-1v-6 c0,0,3.72-4.8,5.74-7.39C20.25,4.95,19.78,4,18.95,4H5.04C4.21,4,3.74,4.95,4.25,5.61z" />
-                    <path d="M0,0h24v24H0V0z" fill="none" />
-                </g>
-            </svg>
-        );
-    };
     const createNewLabelObjects = (data, fieldName) => {
-        let id = 1; // Initialize the ID (Note: This ID is initialized but not used in the provided code)
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
 
@@ -608,8 +575,9 @@ export default function DriverLogin({
                 newData.push(newObject);
             }
         });
-        return newData;
+        return newData.sort((a, b) => a.label.localeCompare(b.label));
     };
+    
     const reference = createNewLabelObjects(DriverData, "DeviceCode");
     const version = createNewLabelObjects(
         DriverData,

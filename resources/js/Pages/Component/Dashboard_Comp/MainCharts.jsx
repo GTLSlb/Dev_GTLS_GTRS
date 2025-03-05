@@ -21,6 +21,7 @@ import MultiChartLine from "./Dashboard_Charts/MultiLineChart";
 import DoubleBarChart from "./Dashboard_Charts/DoublBarChart";
 import { canViewChart } from "@/permissions";
 import { isDummyAccountWithDummyData } from "@/CommonFunctions";
+import { useCallback } from "react";
 export default function MainCharts({
     accData,
     safetyData,
@@ -92,22 +93,31 @@ export default function MainCharts({
         { i: "card10", x: 0, y: 4, w: 1, h: 3 },
     ]);
     const [cols, setCols] = useState(2);
-    useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth < 768) {
-                setCols(1);
-            } else if (window.innerWidth < 1200) {
-                setCols(2);
-            } else {
-                setCols(2);
-            }
-        };
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
+
+    const handleResize = useCallback(() => {
+        if (window.innerWidth < 768) {
+            setCols(1);
+        } else if (window.innerWidth < 1200) {
+            setCols(2);
+        } else {
+            setCols(2);
+        }
     }, []);
+
+    useEffect(() => {
+        handleResize();
+
+        const resizeListener = () => {
+            clearTimeout(window.resizeTimer);
+            window.resizeTimer = setTimeout(handleResize, 200);
+        };
+
+        window.addEventListener("resize", resizeListener);
+        return () => {
+            window.removeEventListener("resize", resizeListener);
+        };
+    }, [handleResize]);
+
     const [selectedReceiver, setselectedReceiver] = useState([]);
     const [selectedStates, setSelectedStates] = useState([]);
     const calculateStatistics = (data) => {
@@ -877,6 +887,7 @@ export default function MainCharts({
                                 chartTitle={"Spend By State"}
                             />{" "}
                         </div>
+
                         <div key="card03" className="relative">
                             {" "}
                             <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
@@ -884,19 +895,21 @@ export default function MainCharts({
                                 chartData={getKPIPerformanceCounter(
                                     filteredData
                                 )}
-                                labelContent="{name} - {percentage}"
+                                labelContent="{percentage}"
                                 chartTitle={"On Time Performance"}
                             />{" "}
                         </div>
+
                         <div key="card11" className="relative">
                             {" "}
                             <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                             <BasicPieCharts
                                 chartData={getConsStatusCounter(filteredData)}
-                                labelContent="{name} - {percentage}"
+                                labelContent="{percentage}"
                                 chartTitle={"Consignment Status"}
                             />{" "}
                         </div>
+
                         <div key="card04" className="relative">
                             {" "}
                             <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
@@ -905,6 +918,7 @@ export default function MainCharts({
                                 chartTitle={" Consignment By Month"}
                             />{" "}
                         </div>
+
                         <div key="card07">
                             <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                             <BasicColumnCharts
@@ -912,6 +926,7 @@ export default function MainCharts({
                                 chartTitle={" Consignments By state"}
                             />{" "}
                         </div>
+
                         <div key="card05" className="relative">
                             {" "}
                             <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
@@ -920,6 +935,7 @@ export default function MainCharts({
                                 chartTitle={"POD True vs False"}
                             />{" "}
                         </div>
+
                         <div key="card06" className="relative">
                             {" "}
                             <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
@@ -928,6 +944,7 @@ export default function MainCharts({
                                 chartTitle={"POD Status By State"}
                             />{" "}
                         </div>
+
                         <div key="card09" className="relative">
                             {" "}
                             <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
@@ -936,7 +953,8 @@ export default function MainCharts({
                                 chartTitle={" Weight By state"}
                             />{" "}
                         </div>
-                        <div key="card10" className="relative">
+                        
+                        <div key="card10" className="relative hidden">
                             {" "}
                             <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                             <BasicPieCharts

@@ -1,16 +1,11 @@
-import React from "react";
 import { useLayoutEffect, useRef, useState } from "react";
-import ReactPaginate from "react-paginate";
-import { useDownloadExcel, downloadExcel } from "react-export-table-to-excel";
 import { PencilIcon } from "@heroicons/react/24/outline";
-import notFound from "../../../assets/pictures/NotFound.png";
 import ExcelJS from "exceljs";
 import moment from "moment";
 import { Fragment } from "react";
-import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { Popover, Transition } from "@headlessui/react";
-import { ChevronDownIcon, EyeIcon } from "@heroicons/react/20/solid";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 import SafetyModal from "@/Components/AddsafetyModal";
 import { useEffect } from "react";
@@ -19,7 +14,6 @@ import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import TableStructure from "@/Components/TableStructure";
-import ReactDataGrid from "@inovua/reactdatagrid-community";
 import { canAddSafetyReport, canEditSafetyReport } from "@/permissions";
 import { isDummyAccount } from "@/CommonFunctions";
 
@@ -475,7 +469,7 @@ export default function SafetyRepTable({
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-    
+
         const columnMapping = {
             SafetyType: "Safety Type",
             ConsNo: "Cons No",
@@ -492,7 +486,7 @@ export default function SafetyRepTable({
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
-    
+
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
@@ -500,14 +494,15 @@ export default function SafetyRepTable({
                 if (columnKey) {
                     if (columnKey === "SafetyType") {
                         const Reason = safetyTypes?.find(
-                            (reason) => reason.SafetyTypeId === person.SafetyType
+                            (reason) =>
+                                reason.SafetyTypeId === person.SafetyType
                         );
                         acc[columnKey] = Reason?.SafetyTypeName;
                     } else if (columnKey === "DebtorId") {
                         const Reason = customerAccounts?.find(
                             (reason) => reason.DebtorId == person.DebtorId
                         );
-                        
+
                         acc[columnKey] = isDummyAccount(Reason?.AccountNo);
                     } else if (columnKey === "OccuredAt") {
                         const date = new Date(person[columnKey]);
@@ -515,7 +510,7 @@ export default function SafetyRepTable({
                             acc[columnKey] =
                                 (date.getTime() -
                                     date.getTimezoneOffset() * 60000) /
-                                86400000 +
+                                    86400000 +
                                 25569; // Convert to Excel date serial number
                         } else {
                             acc[columnKey] = "";
@@ -540,13 +535,13 @@ export default function SafetyRepTable({
                 return acc;
             }, {})
         );
-    
+
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
-    
+
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
-    
+
         // Apply custom styles to the header row
         const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
@@ -556,33 +551,33 @@ export default function SafetyRepTable({
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
         headerRow.alignment = { horizontal: "center" };
-    
+
         // Add the data to the worksheet
         data.forEach((rowData) => {
             const row = worksheet.addRow(Object.values(rowData));
-    
+
             // Apply date format to the OccuredAt column
             const occuredAtIndex = newSelectedColumns.indexOf("Occured At");
             if (occuredAtIndex !== -1) {
                 const cell = row.getCell(occuredAtIndex + 1);
-                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
         });
-    
+
         // Set column widths
         const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
         }));
-    
+
         // Generate the Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
             // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-    
+
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "Safety-Report.xlsx");
         });
@@ -677,7 +672,6 @@ export default function SafetyRepTable({
         }
     };
     const createNewLabelObjects = (data, fieldName) => {
-        let id = 1; // Initialize the ID
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
 
@@ -694,26 +688,35 @@ export default function SafetyRepTable({
                 newData.push(newObject);
             }
         });
-        return newData;
+
+        // Sort the array alphabetically by label
+        return newData.sort((a, b) => a.label.localeCompare(b.label));
     };
+
     const stateOptions = createNewLabelObjects(safetyData, "State");
 
-    const safetyTypeOptions = safetyTypes.map((reason) => ({
-        id: reason.SafetyTypeId,
-        label: reason.SafetyTypeName,
-    }));
-    const debtorsOptions = customerAccounts.map((reason) => ({
-        id: parseInt(reason.DebtorId.trim(), 10), // Convert id to integer and remove any whitespace
-        label: isDummyAccount(reason.AccountNo),
-    }));
+    const safetyTypeOptions = safetyTypes
+        .map((reason) => ({
+            id: reason.SafetyTypeId,
+            label: reason.SafetyTypeName,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by label
+
+    const debtorsOptions = customerAccounts
+        .map((reason) => ({
+            id: parseInt(reason.DebtorId.trim(), 10), // Convert id to integer and remove any whitespace
+            label: isDummyAccount(reason.AccountNo),
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically by label
+
     const referenceOptions = [
-        {
-            id: 1,
-            label: "Internal",
-        },
         {
             id: 2,
             label: "External",
+        },
+        {
+            id: 1,
+            label: "Internal",
         },
     ];
     const columns = [
@@ -765,11 +768,12 @@ export default function SafetyRepTable({
             render: ({ value }) => {
                 return (
                     <div>
-                    {isDummyAccount(customerAccounts?.find(
-                        (customer) => customer.DebtorId == value
-                    )?.AccountNo)}
-                </div>
-                
+                        {isDummyAccount(
+                            customerAccounts?.find(
+                                (customer) => customer.DebtorId == value
+                            )?.AccountNo
+                        )}
+                    </div>
                 );
             },
         },

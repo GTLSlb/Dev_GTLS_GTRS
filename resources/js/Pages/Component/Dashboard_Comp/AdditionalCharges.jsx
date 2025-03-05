@@ -1,44 +1,19 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useEffect } from "react";
-import ReactPaginate from "react-paginate";
-import notFound from "../../../assets/pictures/NotFound.png";
-import { useDownloadExcel, downloadExcel } from "react-export-table-to-excel";
 import { Fragment } from "react";
 import moment from "moment";
 import ExcelJS from "exceljs";
 import { Popover, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
-import BoolFilter from "@inovua/reactdatagrid-community/BoolFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
-import Button from "@inovua/reactdatagrid-community/packages/Button";
 import TableStructure from "@/Components/TableStructure";
-import ReactDataGrid from "@inovua/reactdatagrid-community";
 import swal from 'sweetalert';
 import axios from "axios";
 import { isDummyAccount } from "@/CommonFunctions";
-
-const report = [
-    {
-        ConsignmentId: 275576,
-        ConsignmentNo: "FOR100312",
-        SenderName: "INDUSTRIAL STEEL",
-        ReceiverName: "R AND A CONCRETING",
-        FromState: "QLD",
-        ToState: "VIC",
-        POD: true,
-        MatchTransit: false,
-        MatchRdd: false,
-    },
-    // More people...
-];
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
 
 export default function AdditionalCharges({
     AdditionalData,
@@ -117,20 +92,7 @@ export default function AdditionalCharges({
                 }
               });
     };
-    const [filteredData, setFilteredData] = useState(AdditionalData);
-    const tableRef = useRef(null);
-    const headers = [
-        "Consignment No",
-        "Quantity",
-        "Total Charge",
-        "Code Ref",
-        "Description Ref",
-        "Fuel Levy Amount Ref",
-        "Despatch DateTime",
-        "Name",
-        "Description",
-        "Code",
-    ];
+
     const gridRef = useRef(null);
     function handleFilterTable() {
         // Get the selected columns or use all columns if none are selected
@@ -602,11 +564,10 @@ export default function AdditionalCharges({
     const maxDate = getMinMaxValue(AdditionalData, "DespatchDateTime", 2);
     
     const createNewLabelObjects = (data, fieldName) => {
-        let id = 1; // Initialize the ID
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
+    
         // Map through the data and create new objects
-        if(data?.length>0){
         data?.forEach((item) => {
             const fieldValue = item[fieldName];
             // Check if the label is not already included
@@ -618,9 +579,12 @@ export default function AdditionalCharges({
                 };
                 newData.push(newObject);
             }
-        });}
-        return newData;
+        });
+    
+        // Sort the array alphabetically by label
+        return newData.sort((a, b) => a.label.localeCompare(b.label));
     };
+    
     const reference = createNewLabelObjects(AdditionalData, "CodeRef");
     const name = createNewLabelObjects(AdditionalData, "Name");
     const description = createNewLabelObjects(AdditionalData, "Description");

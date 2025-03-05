@@ -54,7 +54,7 @@ const BasicPieCharts = (props) => {
             labelHeight: 30,
             content: labelContent
                 ? labelContent
-                : "{name} - {value} - {percentage}",
+                : "{value} - {percentage}",
             style: {
                 fontSize: 12,
                 textAlign: "center",
