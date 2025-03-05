@@ -48,7 +48,11 @@ export function canCalculateKPI(currentUser) {
     const targetPermissionName = "Kpi_calculate";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -62,7 +66,11 @@ export function canEditKPI(currentUser) {
     const targetPermissionName = "Kpi_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -76,7 +84,11 @@ export function canAddTransitDays(currentUser) {
     const targetPermissionName = "TransitDays_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -90,7 +102,11 @@ export function canAddNewTransitDays(currentUser) {
     const targetPermissionName = "NewTransitDays_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -104,7 +120,11 @@ export function canEditTransitDays(currentUser) {
     const targetPermissionName = "TransitDays_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -118,7 +138,11 @@ export function canAddHolidays(currentUser) {
     const targetPermissionName = "Holidays_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -132,7 +156,11 @@ export function canEditHolidays(currentUser) {
     const targetPermissionName = "Holidays_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -146,7 +174,11 @@ export function canAddKpiReasons(currentUser) {
     const targetPermissionName = "KpiReasons_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -160,7 +192,11 @@ export function canEditKpiReasons(currentUser) {
     const targetPermissionName = "KpiReasons_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -174,7 +210,11 @@ export function canEditFailedConsignments(currentUser) {
     const targetPermissionName = "FailedConsignments_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -188,7 +228,11 @@ export function canViewFailedReasons(currentUser) {
     const targetPermissionName = "FailedReasons_view";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -202,7 +246,11 @@ export function canAddFailedReasons(currentUser) {
     const targetPermissionName = "FailedReasons_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -216,7 +264,11 @@ export function canEditFailedReasons(currentUser) {
     const targetPermissionName = "FailedReasons_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -230,7 +282,11 @@ export function canViewInternal(currentUser) {
     const targetPermissionName = "IR_Internal";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -244,7 +300,11 @@ export function canEditRDD(currentUser) {
     const targetPermissionName = "RDD_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -258,7 +318,11 @@ export function canViewRDDReasons(currentUser) {
     const targetPermissionName = "RDDReasons_view";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -272,7 +336,11 @@ export function canAddRDDReasons(currentUser) {
     const targetPermissionName = "RDDReasons_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -286,7 +354,11 @@ export function canEditRDDReasons(currentUser) {
     const targetPermissionName = "RDDReasons_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -300,7 +372,11 @@ export function canAddSafetyReport(currentUser) {
     const targetPermissionName = "SafetyReport_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -314,7 +390,11 @@ export function canViewSafetyType(currentUser) {
     const targetPermissionName = "SafetyType_view";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -328,7 +408,11 @@ export function canEditSafetyReport(currentUser) {
     const targetPermissionName = "SafetyReport_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -342,7 +426,11 @@ export function canAddSafetyType(currentUser) {
     const targetPermissionName = "SafetyType_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -356,7 +444,11 @@ export function canEditSafetyType(currentUser) {
     const targetPermissionName = "SafetyType_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -367,7 +459,11 @@ export function canEditSafetyType(currentUser) {
  */
 export function canViewDashboard(currentUser) {
     // Check for 'Dashboard_view' permission in the user's permissions array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === "Dashboard_view")? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "Dashboard_view"
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -378,7 +474,11 @@ export function canViewDashboard(currentUser) {
  */
 export function canViewConsignments(currentUser) {
     // Check for 'ConsignmetsReport_view' permission in the user's permissions array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === "ConsignmetsReport_view") ? true : false;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "ConsignmetsReport_view"
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -389,7 +489,11 @@ export function canViewConsignments(currentUser) {
  */
 export function canViewKPI(currentUser) {
     // Check for 'KPI_view' permission in the user's permissions array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === "KPI_view")? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "KPI_view"
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -400,7 +504,11 @@ export function canViewKPI(currentUser) {
  */
 export function canViewPerformance(currentUser) {
     // Check for 'Performance_view' permission in the user's permissions array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === "Performance_view")? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "Performance_view"
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -411,7 +519,11 @@ export function canViewPerformance(currentUser) {
  */
 export function canViewFailedConsignments(currentUser) {
     // Check for 'FailedConsignments_view' permission in the user's permissions array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === "FailedConsignments_view")? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "FailedConsignments_view"
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -422,7 +534,11 @@ export function canViewFailedConsignments(currentUser) {
  */
 export function canViewRDD(currentUser) {
     // Check for 'RDD_view' permission in the user's permissions array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === "RDD_view")? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "RDD_view"
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -433,7 +549,11 @@ export function canViewRDD(currentUser) {
  */
 export function canViewMissingPOD(currentUser) {
     // Check for 'MissingPOD_view' permission in the user's permissions array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === "MissingPOD_view")? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "MissingPOD_view"
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -444,7 +564,11 @@ export function canViewMissingPOD(currentUser) {
  */
 export function canViewSafety(currentUser) {
     // Check for 'Safety_view' permission in the user's permissions array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === "Safety_view")? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "Safety_view"
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -455,7 +579,11 @@ export function canViewSafety(currentUser) {
  */
 export function canViewDeliveryReportComment(currentUser) {
     // Check for 'DeliveryReportComments_View' permission in the user's permissions array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === "DeliveryReportComments_View")? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "DeliveryReportComments_View"
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -466,7 +594,12 @@ export function canViewDeliveryReportComment(currentUser) {
  */
 export function canViewDeliveryReportCommentTable(currentUser) {
     // Check for 'DeliveryReportComments_View' permission in the user's permissions array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === "DeliveryReportCommentsTable_View")? true : false;;
+    return currentUser?.Features?.find(
+        (feature) =>
+            feature?.FunctionName === "DeliveryReportCommentsTable_View"
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -478,7 +611,8 @@ export function canViewDeliveryReportCommentTable(currentUser) {
 export function canEditDeliveryReportCommentTableView(currentUser) {
     // Define the specific permission
     return currentUser?.Features?.find(
-        (feature) => feature?.FunctionName === "DeliveryReportCommentsTable_Edit"
+        (feature) =>
+            feature?.FunctionName === "DeliveryReportCommentsTable_Edit"
     )
         ? true
         : false;
@@ -507,7 +641,11 @@ export function canAddDeliveryReportCommentTableView(currentUser) {
  */
 export function canEditDeliveryReportComment(currentUser) {
     // Define the specific permission
-    return currentUser?.Features?.find(feature => feature?.FunctionName === "DeliveryReportComments_View")? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "DeliveryReportComments_View"
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -518,7 +656,11 @@ export function canEditDeliveryReportComment(currentUser) {
  */
 export function canAddDeliveryReportComment(currentUser) {
     // Define the specific permission
-    return currentUser?.Features?.find(feature => feature?.FunctionName === "DeliveryReportComment_add")? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "DeliveryReportComment_add"
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -529,7 +671,11 @@ export function canAddDeliveryReportComment(currentUser) {
  */
 export function canViewDeliveryReport(currentUser) {
     // Define the specific permission
-    return currentUser?.Features?.find(feature => feature?.FunctionName === "DeliveryReport_View")? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "DeliveryReport_View"
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -540,7 +686,11 @@ export function canViewDeliveryReport(currentUser) {
  */
 export function canViewMetcashDeliveryReport(currentUser) {
     // Define the specific permission
-    return currentUser?.Features?.find(feature => feature?.FunctionName === "MetcashDeliveryReport_View")? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "MetcashDeliveryReport_View"
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -551,7 +701,11 @@ export function canViewMetcashDeliveryReport(currentUser) {
  */
 export function canViewWoolworthsDeliveryReport(currentUser) {
     // Define the specific permission
-    return currentUser?.Features?.find(feature => feature?.FunctionName === "WoolworthsDeliveryReport_View")? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "WoolworthsDeliveryReport_View"
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -562,7 +716,11 @@ export function canViewWoolworthsDeliveryReport(currentUser) {
  */
 export function canViewOtherDeliveryReport(currentUser) {
     // Define the specific permission
-    return currentUser?.Features?.find(feature => feature?.FunctionName === "OtherDeliveryReport_View")? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "OtherDeliveryReport_View"
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -573,7 +731,11 @@ export function canViewOtherDeliveryReport(currentUser) {
  */
 export function canViewAdditionalCharges(currentUser) {
     // Check for 'AdditionalCharges_view' permission in the user's permissions array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === "AdditionalCharges_view")? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "AdditionalCharges_view"
+    )
+        ? true
+        : false;
 }
 
 /**
@@ -584,11 +746,46 @@ export function canViewAdditionalCharges(currentUser) {
  */
 export function canViewDriverLogin(currentUser) {
     // Check for 'DriverLogin_view' permission in the user's permissions array
-    return currentUser?.Features?.find(feature => feature?.FunctionName === "DriverLogin_view")? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "DriverLogin_view"
+    )
+        ? true
+        : false;
 }
 
 export function canViewChart(currentUser, chartPermission) {
     const targetPermissionName = chartPermission;
-    return currentUser?.Features?.find(feature => feature?.FunctionName === targetPermissionName)? true : false;;
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === targetPermissionName
+    )
+        ? true
+        : false;
 }
 
+/**
+ * Checks if the user can view Consignment Details based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can view Consignment Details, false otherwise.
+ */
+export function canViewDetails(currentUser) {
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "ConsignmentsDetails_view"
+    )
+        ? true
+        : false;
+}
+
+/**
+ * Checks if the user can view Consignment Details based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can view Consignment Details, false otherwise.
+ */
+export function canViewIncidentDetails(currentUser) {
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "View_IncidentDetails"
+    )
+        ? true
+        : false;
+}

@@ -338,6 +338,7 @@ export default function GtrsCons({
         setFilteredData(filterData());
     }, [accData]);
 
+
     const renderTable = useCallback(() => {
         return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">

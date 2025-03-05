@@ -1,13 +1,12 @@
-import swal from "sweetalert";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import Cookies from "js-cookie";
-import { PublicClientApplication } from "@azure/msal-browser";
-import { AlertToast } from "./permissions";
+import routes from "@/GTRSRoutes";
 import NoAccessRedirect from "@/Pages/NoAccessRedirect";
 import menu from "@/SidebarMenuItems";
-import routes from "@/GTRSRoutes";
-
+import { PublicClientApplication } from "@azure/msal-browser";
+import Cookies from "js-cookie";
+import "react-toastify/dist/ReactToastify.css";
+import swal from "sweetalert";
+import { AlertToast, canViewDetails, canViewIncidentDetails } from "./permissions";
+import { Link } from "react-router-dom";
 const msalConfig = {
     auth: {
         clientId: "05f70999-6ca7-4ee8-ac70-f2d136c50288",
@@ -229,31 +228,38 @@ export const formatDateToExcel = (dateValue) => {
     );
 };
 
-export function ProtectedRoute({
-    permission,
-    route,
-    element,
-    currentUser,
-    setToken,
-    setcurrentUser,
-}) {
+export function formatDateFromExcelWithNoTime(dateValue) {
+    const date = new Date(dateValue);
+
+    if (isNaN(date.getTime())) {
+        return ""; // Return empty string if invalid date
+    }
+
+    const utcDate = Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate()
+    );
+    return utcDate / 86400000 + 25569;
+}
+
+export function ProtectedRoute({ permission, route, element }) {
     const userHasPermission = checkUserPermission(permission, route);
     return userHasPermission ? element : <NoAccessRedirect />;
 }
 
 function checkUserPermission(permission, route) {
-    if(typeof route == "string"){
+    if (typeof route == "string") {
         // Go over the flat permissions and check if the user has the required permission
         return permission?.Features?.some((feature) => {
             return feature.FunctionName == route;
         });
-    }else if(typeof route == "object"){
+    } else if (typeof route == "object") {
         // Map over permissions and check if the user has the required permission
         return permission?.Features?.some((feature) => {
             return route?.includes(feature.FunctionName);
         });
     }
-
 }
 
 function findCurrentItem(items, id, navigate, setSidebarElements) {
@@ -352,3 +358,66 @@ export function navigateToFirstAllowedPage({
     }
   }
 
+function findItemByURL(items, url) {
+    for (const item of items) {
+      if (item.url === url) {
+        return item;
+      }
+      if (item.options) {
+        const option = findItemByURL(item.options, url);
+        if (option) {
+          return option;
+        }
+      }
+    }
+    return null;
+  }
+
+export function renderConsDetailsLink(userPermission, text, value) {
+    if (canViewDetails(userPermission)) {
+        return (
+            <Link
+                to={`/gtrs/consignment-details`}
+                state={{ activeCons: value }}
+                className="underline text-blue-500 hover:cursor-pointer"
+            >
+                {text}
+            </Link>
+        );
+    } else {
+        return <span className=""> {text}</span>;
+    }
+}
+
+export function renderIncidentDetailsLink(userPermission, text, value) {
+    if (canViewIncidentDetails(userPermission)) {
+        return (
+            <Link
+                to={`/gtrs/incident`}
+                state={{ incidentId: value }}
+                className="underline text-blue-500 hover:cursor-pointer"
+            >
+                {text}
+            </Link>
+        );
+    } else {
+        return <span className="">{text}</span>;
+    }
+}
+
+/**
+ * Format the value as a comma-separated string with decimal places.
+ *
+ * @param {number} value - The value to be formatted.
+ * @return {string} - The formatted value.
+ */
+export const formatNumberWithCommas = (value) => {
+    if (value % 1 === 0) {
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    } else {
+        const roundedValue = parseFloat(value).toFixed(2);
+        const parts = roundedValue.split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return parts.join(".");
+    }
+};

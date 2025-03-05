@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Column } from "@ant-design/plots";
 
 const BasicColumnCharts = (props) => {
-    const chartData = props.chartData;
-    const chartTitle = props.chartTitle;
+    const { chartTitle, chartData, setShowTable, setChartFilter } = props;
     const [data, setData] = useState([]);
     useEffect(() => {
         setData(chartData);
@@ -35,6 +34,39 @@ const BasicColumnCharts = (props) => {
             value: {
                 alias: "Counter",
             },
+        },
+        onReady: (plot) => {
+            plot.on("element:click", (event) => {
+                const { data } = event.data;
+
+                if (chartTitle === "Consignment By Month") {
+                    const [year, month] = data.data.split("-");
+                    const startDate = `01-${month}-${year}`;
+                    const endDate = new Date(year, month, 0)
+                        .toISOString()
+                        .split("T")[0]
+                        .split("-")
+                        .reverse()
+                        .join("-");
+
+                    setChartFilter((prev) => ({
+                        ...prev,
+                        dateStart: startDate,
+                        dateEnd: endDate,
+                    }));
+                } else if (
+                    chartTitle === "Weight By state" ||
+                    chartTitle === "Consignments By state"
+                ) {
+                    setChartFilter((prev) => ({
+                        ...prev,
+                        ReceiverState: data.data,
+                    }));
+                }
+
+                setShowTable(true);
+                // alert(`You clicked on ${data.label} with value ${data.value}`);
+            });
         },
     };
 
