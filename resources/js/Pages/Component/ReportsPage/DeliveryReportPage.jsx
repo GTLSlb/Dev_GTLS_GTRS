@@ -16,8 +16,10 @@ import {
     canViewMetcashDeliveryReport,
     canViewWoolworthsDeliveryReport,
     canViewOtherDeliveryReport,
+    AlertToast,
 } from "@/permissions";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 
 export default function DeliveryReportPage({
     url,
@@ -403,14 +405,16 @@ export default function DeliveryReportPage({
                             },
                         })
                         .then((res) => {
+                            const extracted = CommentValue.split('"')[1] || CommentValue;
                             setDeliveryCommentsOptions(res.data);
                             if (res.data?.length > 0 && CommentValue !== "") {
                                 const newValue = res.data?.find(
-                                    (item) => item.Comment === CommentValue
+                                    (item) => item.Comment === extracted
                                 );
+
                                 if (
                                     newValue &&
-                                    newValue?.Comment === CommentValue
+                                    newValue?.Comment === extracted
                                 ) {
                                     axios
                                         .post(
@@ -434,6 +438,7 @@ export default function DeliveryReportPage({
                                             fetchDeliveryReportCommentsDataGTRS();
                                             setAddedComment(true);
                                             setNewCommentValue("");
+                                            AlertToast("Saved successfully", 1);
                                         })
                                         .catch((error) => {
                                             // Handle error
@@ -546,6 +551,7 @@ export default function DeliveryReportPage({
                     .then((response) => {
                         fetchDeliveryReport(setCellLoading);
                         setAddedComment(true);
+                        setCellLoading(null);
                     })
                     .catch((error) => {
                         // Handle error
@@ -599,12 +605,13 @@ export default function DeliveryReportPage({
                         if (isAddingNewComment) {
                             // Adding a new comment to the list not to the consignment
                             setIsAddingNewComment(true);
-                            setNewCommentValue(item?.CommentId?.trim());
-                            setAddedComment(false);
-                            AddComment(
-                                item?.CommentId,
-                                item?.CommentId?.trim()
+                            setNewCommentValue(
+                                typeof item?.CommentId === "string"
+                                    ? item.CommentId.trim()
+                                    : String(item?.CommentId)
                             );
+                            setAddedComment(false);
+                            AddComment(item?.CommentId, item?.Comment?.trim());
                         } else {
                             // Adding a new comment to the consignment
                             setAddedComment(true);
@@ -1105,6 +1112,7 @@ export default function DeliveryReportPage({
     ];
     return (
         <div className="min-h-full px-8">
+            <ToastContainer />
             <div className="sm:flex-auto mt-6">
                 <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
                     Unilever Delivery Report

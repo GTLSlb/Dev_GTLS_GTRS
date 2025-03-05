@@ -166,11 +166,13 @@ export default function TableStructure({
                 </div>
                 <div className="flex gap-2">
                     {additionalButtons}
-                    <ExportPopover
-                        columns={columnsElements}
-                        handleDownloadExcel={handleDownloadExcel}
-                        filteredData={tableDataElements}
-                    />
+                    {handleDownloadExcel && (
+                        <ExportPopover
+                            columns={columnsElements}
+                            handleDownloadExcel={handleDownloadExcel}
+                            filteredData={tableDataElements}
+                        />
+                    )}
                 </div>
             </div>
             <div className="py-5">

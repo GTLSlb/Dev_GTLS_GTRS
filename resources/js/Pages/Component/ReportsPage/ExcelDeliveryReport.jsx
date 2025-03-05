@@ -11,7 +11,7 @@ import axios from "axios";
 import { Button, Spinner } from "@nextui-org/react";
 import { EyeIcon } from "@heroicons/react/20/solid";
 import { useNavigate } from "react-router-dom";
-import {ToastContainer,toast} from 'react-toastify'
+import { ToastContainer, toast } from "react-toastify";
 
 registerAllModules();
 
@@ -200,15 +200,23 @@ export default function ExcelDeliveryReport({
         return td;
     };
 
-    const dateRenderer = (instance, td, row, col, prop, value, cellProperties) => {
+    const dateRenderer = (
+        instance,
+        td,
+        row,
+        col,
+        prop,
+        value,
+        cellProperties
+    ) => {
         // If the cell has a value, format it
         if (value) {
             td.innerText = moment(value).format("DD/MM/YYYY"); // Change format here
         } else {
             td.innerText = ""; // If no value, keep it empty
         }
-    
-        td.classList.add("htRight"); // Align text to the right
+
+        td.classList.add("htLeft"); // Align text to the right
         return td;
     };
     const hotColumns = [
@@ -437,9 +445,26 @@ export default function ExcelDeliveryReport({
         if (hotTableRef.current) {
             setTimeout(() => {
                 hotTableRef.current.hotInstance.render();
-            }, 100); 
+            }, 100);
         }
     }, []);
+    const handleSaveShortcut = (event) => {
+        if (event.ctrlKey && event.key === "s") {
+            event.preventDefault(); // ✅ Prevent browser's default "Save Page" action
+            if (changedRows.length > 0) {
+                SaveComments(); // ✅ Call your save function here
+            }
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener("keydown", handleSaveShortcut);
+
+        return () => {
+            document.removeEventListener("keydown", handleSaveShortcut);
+        };
+    }, [changedRows]);
+
     return (
         <div className="min-h-full px-8">
             <ToastContainer />
@@ -524,7 +549,7 @@ export default function ExcelDeliveryReport({
                         filters={true} // ✅ Enable filtering
                         dropdownMenu={true} // ✅ Show dropdown for filtering
                         columnSorting={true} // ✅ Enable sorting
-                        contextMenu={true}
+                        // contextMenu={true}
                         settings={{
                             useTheme: null, // ✅ Ensures Handsontable doesn’t depend on a missing theme
                         }}

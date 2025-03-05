@@ -1,4 +1,7 @@
-import { canAddDeliveryReportCommentTableView, canEditDeliveryReportCommentTableView } from "@/permissions";
+import {
+    canAddDeliveryReportCommentTableView,
+    canEditDeliveryReportCommentTableView,
+} from "@/permissions";
 import React from "react";
 import { useEffect, useState, useRef } from "react";
 import TableStructure from "@/Components/TableStructure";
@@ -26,23 +29,26 @@ export default function DeliveryReportCommentsPage({
         setSelectedComment(data);
     };
 
-    const scrollIntoView = ()=>{
-        const button = document.getElementById('addSection');
-        if(button){
-            button.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+    const scrollIntoView = () => {
+        const button = document.getElementById("addSection");
+        if (button) {
+            button.scrollIntoView({
+                behavior: "smooth",
+                block: "end",
+                inline: "nearest",
+            });
         }
-    }
-    const statusOptions =
-        [
-            {
-                id: 1,
-                label: 'Active',
-            },
-            {
-                id: 0,
-                label: 'Inactive',
-            }
-        ];
+    };
+    const statusOptions = [
+        {
+            id: 1,
+            label: "Active",
+        },
+        {
+            id: 0,
+            label: "Inactive",
+        },
+    ];
     const [filterValue, setFilterValue] = useState([
         {
             name: "Comment",
@@ -105,36 +111,35 @@ export default function DeliveryReportCommentsPage({
             render: ({ value, data }) => {
                 return (
                     <div className="flex gap-4 items-center justify-center px-2">
-                        {canEditDeliveryReportCommentTableView(userPermission) ? <span
-                            className="underline text-blue-400 hover:cursor-pointer"
-                            onClick={() => {handleComment(data, true); scrollIntoView();}}
-                        >
-                            <PencilIcon className="h-5 w-5 text-blue-500" />
-                        </span> : null}
+                        {canEditDeliveryReportCommentTableView(
+                            userPermission
+                        ) ? (
+                            <span
+                                className="underline text-blue-400 hover:cursor-pointer"
+                                onClick={() => {
+                                    handleComment(data, true);
+                                    scrollIntoView();
+                                }}
+                            >
+                                <PencilIcon className="h-5 w-5 text-blue-500" />
+                            </span>
+                        ) : null}
                     </div>
                 );
             },
         },
     ];
 
-    const additionalButtons = canAddDeliveryReportCommentTableView(userPermission) ? (
-        showAdd ? (
-            <GtrsButton
-                name={"Cancel"}
-                onClick={() => {
-                    handleComment(null, false);
-                }}
-                className="w-[5rem] h-[35px]"
-            />
-        ) : (
-            <GtrsButton
-                name={"Add +"}
-                onClick={() => {
-                    handleComment(null, true);
-                }}
-                className="w-[5rem] h-[35px]"
-            />
-        )
+    const additionalButtons = canAddDeliveryReportCommentTableView(
+        userPermission
+    ) ? (
+        <GtrsButton
+            name={"Add +"}
+            onClick={() => {
+                handleComment(null, true);
+            }}
+            className="w-[5rem] h-[35px]"
+        />
     ) : null;
 
     function handleDownloadExcel() {
@@ -192,7 +197,6 @@ export default function DeliveryReportCommentsPage({
                 <TableStructure
                     rowHeight={40}
                     id={"CommentId"}
-                    handleDownloadExcel={handleDownloadExcel}
                     setSelected={setSelected}
                     gridRef={gridRef}
                     title={"Delivery Report Comments List"}
