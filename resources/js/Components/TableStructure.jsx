@@ -26,11 +26,6 @@ export default function TableStructure({
     const filters = useMemo(() => filterValueElements, [filterValueElements]);
     const groups = useMemo(() => groupsElements, [groupsElements]);
 
-    const rowStyle = useCallback(({ data }) => {
-        const colorMap = { ca: "#7986cb", uk: "#ef9a9a" };
-        return { color: colorMap[data?.country] || "inherit" };
-    }, []);
-
     const tableData = useMemo(() => tableDataElements, [tableDataElements]);
     const filterTypes = useMemo(
         () => filterTypesElements,
@@ -39,12 +34,6 @@ export default function TableStructure({
 
     // 2) State for filterValue and groups if needed
     const [selectedRows] = useState();
-
-    // Keep your useEffect that updates filter state if needed
-    // useEffect(() => {
-    //     setFilters(filterValueElements);
-    // }, [filterValueElements]);
-
     const scrollProps = Object.assign(
         {},
         ReactDataGrid.defaultProps.scrollProps,
@@ -173,7 +162,7 @@ export default function TableStructure({
                 {tableDataElements ? (
                     <ReactDataGrid
                         virtualized
-                        key={"persistend-grid"}
+                        key={"persistend-grid"+title}
                         idProperty={id}
                         handle={(ref) =>
                             (gridRef.current = ref ? ref.current : [])
@@ -195,7 +184,7 @@ export default function TableStructure({
                         defaultFilterValue={filters}
                         groups={groups}
                         columns={columns}
-                        dataSource={tableData}
+                        dataSource={tableDataElements}
                     />
                 ) : (
                     <div className="h-64 flex items-center justify-center mt-10">

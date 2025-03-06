@@ -186,7 +186,8 @@ export default function CollapseSidebar({
                 ),
                 color: themes[theme].menu.hover.color,
             },
-            "&:hover .label-class": { // Assuming the label has a class named 'label-class'
+            "&:hover .label-class": {
+                // Assuming the label has a class named 'label-class'
                 color: themes[theme].menu.hover.labelColor,
             },
         },
@@ -196,52 +197,31 @@ export default function CollapseSidebar({
         }),
     };
 
-
     const handleClick = (id, item) => {
         const updatedElements = sidebarElements?.map((element) => {
-            if (id == 12 || id == 13 || id == 14 || id == 17 || id == 18) {
-                if (element.options) {
-                    return {
-                        ...element,
-                        current: true,
-                        options: element.options.map((option) => {
-                            if (option.id == id) {
-                                return { ...option, current: true };
-                            } else {
-                                return { ...option, current: false };
-                            }
-                        }),
-                    };
-                } else {
-                    if (element.id === id) {
-                        return { ...element, current: true };
-                    } else {
-                        return { ...element, current: false };
-                    }
-                }
+            if (element.options) {
+                return {
+                    ...element,
+                    current: element.options.find((option) => option.id == id)
+                        ? true
+                        : false,
+                    ...(element.options
+                        ? {
+                              options: element.options.map((option) => {
+                                  if (option.id == id) {
+                                      return { ...option, current: true };
+                                  } else {
+                                      return { ...option, current: false };
+                                  }
+                              }),
+                          }
+                        : {}),
+                };
             } else {
-                if (element.options) {
-                    return {
-                        ...element,
-                        current:  element.options.find((option) => option.id == id) ? true : false,
-                        ...(element.options
-                            ? {
-                                  options: element.options.map((option) => {
-                                        if (option.id == id) {
-                                            return { ...option, current: true };
-                                        } else {
-                                            return { ...option, current: false };
-                                        }
-                                  }),
-                              }
-                            : {}),
-                    };
+                if (element.id === id) {
+                    return { ...element, current: true };
                 } else {
-                    if (element.id === id) {
-                        return { ...element, current: true };
-                    } else {
-                        return { ...element, current: false };
-                    }
+                    return { ...element, current: false };
                 }
             }
         });
@@ -356,7 +336,9 @@ export default function CollapseSidebar({
                                 >
                                     <KeyboardDoubleArrowRightIcon
                                         className={
-                                            collapsed ? "p-[2px] w-2 h-2" : "p-[2px] w-2 h-2"
+                                            collapsed
+                                                ? "p-[2px] w-2 h-2"
+                                                : "p-[2px] w-2 h-2"
                                         }
                                     />
                                 </div>
@@ -387,9 +369,7 @@ export default function CollapseSidebar({
                                                         (option) => (
                                                             <div
                                                                 className="flex items-start"
-                                                                key={
-                                                                    option.DebtorId
-                                                                }
+                                                                key={`${option.DebtorId}-${option.AccountNo}-${index}`}
                                                             >
                                                                 <input
                                                                     type="checkbox"

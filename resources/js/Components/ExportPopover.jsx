@@ -18,7 +18,7 @@ const ExportPopover = ({ columns, handleDownloadExcel, filteredData }) => {
 
     return (
         <Popover className="relative">
-            <button onMouseEnter={handleMouseEnter}>
+            <div onMouseEnter={handleMouseEnter}>
                 <Popover.Button
                     className={`inline-flex items-center text-xs justify-center gap-1 w-[5.5rem] h-[36px] font-bold ${
                         filteredData?.length === 0
@@ -30,7 +30,7 @@ const ExportPopover = ({ columns, handleDownloadExcel, filteredData }) => {
                     Export
                     <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
                 </Popover.Button>
-            </button>
+            </div>
 
             {isMessageVisible && (
                 <div className="absolute top-9.5 text-center left-0 md:-left-14 w-[9rem] right-0 bg-red-200 text-dark z-10 text-xs py-2 px-4 rounded-md opacity-100 transition-opacity duration-300">
