@@ -33,13 +33,9 @@ const DoubleBarChart = (props) => {
                 if (chartTitle === "POD True vs False") {
                     const [year, month] = data.monthYear.split("-");
                     const startDate = `01-${month}-${year}`;
-                    const endDate = new Date(year, month, 0)
-                        .toISOString()
-                        .split("T")[0]
-                        .split("-")
-                        .reverse()
-                        .join("-");
-
+                    const lastDay = new Date(year, month, 0).getDate(); // Correctly gets the last day of the month
+                    const endDate = `${lastDay}-${month}-${year}`; // Formats it as "DD-MM-YYYY"
+                
                     setChartFilter((prev) => ({
                         ...prev,
                         dateStart: startDate,
