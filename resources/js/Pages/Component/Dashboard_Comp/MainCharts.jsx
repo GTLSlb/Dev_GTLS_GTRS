@@ -227,139 +227,166 @@ export default function MainCharts({
                         </h1>
                     </div>
                 </div>
-                <div className="mt-3 w-full">
-                    <div className="w-full relative px-2">
-                        <div className=" sm:border-gray-200 text-gray-400 gap-y-4 gap-x-2 w-full">
-                            <div className="lg:flex items-center">
-                                <label
-                                    htmlFor="last-name"
-                                    className="inline-block text-sm font-medium leading-6 flex-item items-center"
-                                >
-                                    Date From
-                                </label>
-                                <div className="sm:mt-0 md:px-4">
-                                    <input
-                                        onKeyDown={(e) => e.preventDefault()}
-                                        type="date"
-                                        name="from-date"
-                                        value={SDate}
-                                        min={getOldestDespatchDate(chartsData)}
-                                        max={EDate}
-                                        onChange={handleStartDateChange}
-                                        id="from-date"
-                                        className="flex-item block w-full h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 lg:max-w-xs sm:text-sm sm:leading-6"
-                                    />
-                                </div>
 
-                                <label
-                                    htmlFor="last-name"
-                                    className="inline-block text-sm font-medium leading-6 flex-item"
-                                >
-                                    To
-                                </label>
-
-                                <div className="mt-2 flex-item  sm:mt-0 md:px-4">
-                                    <input
-                                        onKeyDown={(e) => e.preventDefault()}
-                                        type="date"
-                                        name="to-date"
-                                        min={SDate}
-                                        max={getLatestDespatchDate(chartsData)}
-                                        value={EDate}
-                                        onChange={handleEndDateChange}
-                                        id="to-date"
-                                        className="block w-full h-[36px]  rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 lg:max-w-xs sm:text-sm sm:leading-6"
-                                    />
-                                </div>
-                            </div>
-                            <div className="lg:flex items-center gap-5 mt-2">
-                                <div className="lg:flex lg:w-full items-center">
-                                    <label
-                                        htmlFor="last-name"
-                                        className=" text-sm font-medium leading-6 text-gray-400 sm:pt-1.5 2xl:mr-5"
-                                    >
-                                        State
-                                    </label>
-
-                                    <div className="w-full">
-                                        <div className=" flex items-center">
-                                            <div className="mt-2 w-full sm:mt-0 ">
-                                                <Select
-                                                    styles={customStyles}
-                                                    isMulti
-                                                    name="colors"
-                                                    value={selectedStates}
-                                                    options={statesOptions}
-                                                    onChange={
-                                                        handleReceiverStateChange
-                                                    }
-                                                    className="basic-multi-select w-full"
-                                                    classNamePrefix="select"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="lg:flex lg:w-full items-center">
-                                    <label
-                                        htmlFor="last-name"
-                                        className=" text-sm font-medium leading-6 text-gray-400 sm:pt-1.5 2xl:mr-5"
-                                    >
-                                        Receiver
-                                    </label>
-
-                                    <div className="w-full">
-                                        <div className=" flex items-center">
-                                            <div className="mt-2 w-full sm:mt-0 ">
-                                                <Select
-                                                    styles={customStyles}
-                                                    isMulti
-                                                    name="colors"
-                                                    value={selectedReceiver}
-                                                    options={filteredReceivers}
-                                                    onChange={
-                                                        handleReceiverSelectChange
-                                                    }
-                                                    className="basic-multi-select w-full"
-                                                    classNamePrefix="select"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="xl:ml-auto w-1/4 flex justify-end">
-                                    <button
-                                        className={`items-center w-auto h-[36px] rounded-md border bg-gray-800 px-4 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
-                                        onClick={ResetLayout}
-                                    >
-                                        Reset layout
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 {hasData ? (
                     showTable ? (
                         <div>
                             <ChartsTable
-                                chartsData={chartsData}
+                                chartsData={filteredData}
                                 setShowTable={setShowTable}
                                 chartFilter={chartFilter}
                                 setChartFilter={setChartFilter}
                             />
                         </div>
                     ) : (
-                        <div className="layout-container">
-                            <Charts
-                                layout={layout}
-                                filteredData={filteredData}
-                                gridKey={gridKey}
-                                setLayout={setLayout}
-                                setShowTable={setShowTable}
-                                setChartFilter={setChartFilter}
-                            />
-                        </div>
+                        <>
+                            <div className="mt-3 w-full">
+                                <div className="w-full relative px-2">
+                                    <div className=" sm:border-gray-200 text-gray-400 gap-y-4 gap-x-2 w-full">
+                                        <div className="lg:flex items-center">
+                                            <label
+                                                htmlFor="last-name"
+                                                className="inline-block text-sm font-medium leading-6 flex-item items-center"
+                                            >
+                                                Date From
+                                            </label>
+                                            <div className="sm:mt-0 md:px-4">
+                                                <input
+                                                    onKeyDown={(e) =>
+                                                        e.preventDefault()
+                                                    }
+                                                    type="date"
+                                                    name="from-date"
+                                                    value={SDate}
+                                                    min={getOldestDespatchDate(
+                                                        chartsData
+                                                    )}
+                                                    max={EDate}
+                                                    onChange={
+                                                        handleStartDateChange
+                                                    }
+                                                    id="from-date"
+                                                    className="flex-item block w-full h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 lg:max-w-xs sm:text-sm sm:leading-6"
+                                                />
+                                            </div>
+
+                                            <label
+                                                htmlFor="last-name"
+                                                className="inline-block text-sm font-medium leading-6 flex-item"
+                                            >
+                                                To
+                                            </label>
+
+                                            <div className="mt-2 flex-item  sm:mt-0 md:px-4">
+                                                <input
+                                                    onKeyDown={(e) =>
+                                                        e.preventDefault()
+                                                    }
+                                                    type="date"
+                                                    name="to-date"
+                                                    min={SDate}
+                                                    max={getLatestDespatchDate(
+                                                        chartsData
+                                                    )}
+                                                    value={EDate}
+                                                    onChange={
+                                                        handleEndDateChange
+                                                    }
+                                                    id="to-date"
+                                                    className="block w-full h-[36px]  rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 lg:max-w-xs sm:text-sm sm:leading-6"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="lg:flex items-center gap-5 mt-2">
+                                            <div className="lg:flex lg:w-full items-center">
+                                                <label
+                                                    htmlFor="last-name"
+                                                    className=" text-sm font-medium leading-6 text-gray-400 sm:pt-1.5 2xl:mr-5"
+                                                >
+                                                    State
+                                                </label>
+
+                                                <div className="w-full">
+                                                    <div className=" flex items-center">
+                                                        <div className="mt-2 w-full sm:mt-0 ">
+                                                            <Select
+                                                                styles={
+                                                                    customStyles
+                                                                }
+                                                                isMulti
+                                                                name="colors"
+                                                                value={
+                                                                    selectedStates
+                                                                }
+                                                                options={
+                                                                    statesOptions
+                                                                }
+                                                                onChange={
+                                                                    handleReceiverStateChange
+                                                                }
+                                                                className="basic-multi-select w-full"
+                                                                classNamePrefix="select"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="lg:flex lg:w-full items-center">
+                                                <label
+                                                    htmlFor="last-name"
+                                                    className=" text-sm font-medium leading-6 text-gray-400 sm:pt-1.5 2xl:mr-5"
+                                                >
+                                                    Receiver
+                                                </label>
+
+                                                <div className="w-full">
+                                                    <div className=" flex items-center">
+                                                        <div className="mt-2 w-full sm:mt-0 ">
+                                                            <Select
+                                                                styles={
+                                                                    customStyles
+                                                                }
+                                                                isMulti
+                                                                name="colors"
+                                                                value={
+                                                                    selectedReceiver
+                                                                }
+                                                                options={
+                                                                    filteredReceivers
+                                                                }
+                                                                onChange={
+                                                                    handleReceiverSelectChange
+                                                                }
+                                                                className="basic-multi-select w-full"
+                                                                classNamePrefix="select"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="xl:ml-auto w-1/4 flex justify-end">
+                                                <button
+                                                    className={`hidden items-center w-auto h-[36px] rounded-md border bg-gray-800 px-4 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+                                                    onClick={ResetLayout}
+                                                >
+                                                    Reset layout
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="layout-container">
+                                <Charts
+                                    layout={layout}
+                                    filteredData={filteredData}
+                                    gridKey={gridKey}
+                                    setLayout={setLayout}
+                                    setShowTable={setShowTable}
+                                    setChartFilter={setChartFilter}
+                                />
+                            </div>
+                        </>
                     )
                 ) : (
                     <div className=" h-72 flex items-center justify-center mt-5">

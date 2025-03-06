@@ -1,6 +1,9 @@
+import { formatDateToExcel } from "@/CommonFunctions";
 import TableStructure from "@/Components/TableStructure";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
+import { exportToExcel } from "@/Components/utils/excelUtils";
 import { getFiltersChartsTable } from "@/Components/utils/filters";
+import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
@@ -8,6 +11,7 @@ import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import React from "react";
 import { useRef } from "react";
+import { useEffect } from "react";
 import { useCallback } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -41,27 +45,22 @@ function ChartsTable({
         },
     ];
 
-    const matchDelOptions = [
-        {
-            id: 2,
-            label: "Fail",
-        },
-        {
-            id: 1,
-            label: "Pass",
-        },
-        {
-            id: 0,
-            label: "N/A",
-        },
-    ];
+    const DebtorNamesOptions = createNewLabelObjects(chartsData, "DebtorName");
+    const ConsStatusOptions = createNewLabelObjects(chartsData, "ConsStatus");
+    const ReceiverNamesOptions = createNewLabelObjects(
+        chartsData,
+        "ReceiverName"
+    );
+    const ReceiverStatesOptions = createNewLabelObjects(
+        chartsData,
+        "ReceiverState"
+    );
 
-    const DebtorNamesOptions = createNewLabelObjects(chartsData, "DebtorName")  
-    const ReceiverNamesOptions = createNewLabelObjects(chartsData, "ReceiverName")
-    const ReceiverStatesOptions = createNewLabelObjects(chartsData, "ReceiverState")
-
-    const SenderNamesOptions = createNewLabelObjects(chartsData, "SenderName")
-    const SenderStatesOptions = createNewLabelObjects(chartsData, "SenderState")
+    const SenderNamesOptions = createNewLabelObjects(chartsData, "SenderName");
+    const SenderStatesOptions = createNewLabelObjects(
+        chartsData,
+        "SenderState"
+    );
 
     const [columns] = useState([
         {
@@ -83,23 +82,6 @@ function ChartsTable({
                         {value}
                     </span>
                 );
-            },
-        },
-        {
-            name: "DespatchDate",
-            header: "Despatch date",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultFlex: 1,
-            minWidth: 200,
-            dateFormat: "DD-MM-YYYY",
-            filterable: true,
-            filterEditor: DateFilter,
-            render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
             },
         },
         {
@@ -172,48 +154,25 @@ function ChartsTable({
             },
         },
         {
-            name: "TotalQuantity",
-            header: "Total Quantity",
-            type: "number",
+            name: "DespatchDate",
+            header: "Despatch date",
             headerAlign: "center",
             textAlign: "center",
-            filterEditor: NumberFilter,
+            defaultFlex: 1,
+            minWidth: 200,
+            dateFormat: "DD-MM-YYYY",
+            filterable: true,
+            filterEditor: DateFilter,
+            render: ({ value, cellProps }) => {
+                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                    "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A");
+            },
         },
         {
             name: "TottalWeight",
             header: "Total Weight",
-            type: "number",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: NumberFilter,
-        },
-        {
-            name: "TotalPalletSpace",
-            header: "Total Pallet Space",
-            type: "number",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: NumberFilter,
-        },
-        {
-            name: "TotalChep",
-            header: "Total Chep",
-            type: "number",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: NumberFilter,
-        },
-        {
-            name: "TotalLoscam",
-            header: "Total Loscam",
-            type: "number",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: NumberFilter,
-        },
-        {
-            name: "TotalCustomerOwn",
-            header: "Total Customer Own",
             type: "number",
             headerAlign: "center",
             textAlign: "center",
@@ -228,20 +187,36 @@ function ChartsTable({
             filterEditor: NumberFilter,
         },
         {
-            name: "FuelLevy",
-            header: "Fuel Levy",
-            type: "number",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: NumberFilter,
-        },
-        {
             name: "ConsStatus",
             header: "Consignment Status",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
-            filterEditor: StringFilter,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: ConsStatusOptions,
+            },
+            render: ({ value, data }) => {
+                return (
+                    <div>
+                        {value == "PASS" ? (
+                            <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                                Pass
+                            </span>
+                        ) : value == "FAIL" ? (
+                            <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                                Fail
+                            </span>
+                        ) : (
+                            <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-0.5 text-sm font-medium text-gray-800">
+                                Pending
+                            </span>
+                        )}
+                    </div>
+                );
+            },
         },
         {
             name: "POD",
@@ -271,32 +246,6 @@ function ChartsTable({
                 );
             },
         },
-        {
-            name: "MatchDel",
-            header: "Match Del",
-            type: "number",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: matchDelOptions,
-            },
-            render: ({ value, data }) => {
-                return (
-                    <div>
-                        {value == 0 ? (
-                            <span className="">N/A</span>
-                        ) : value == 1 ? (
-                            <span className="">Pass</span>
-                        ) : (
-                            <span className="">Fail</span>
-                        )}
-                    </div>
-                );
-            },
-        },
     ]);
 
     const showCharts = () => {
@@ -315,11 +264,35 @@ function ChartsTable({
         );
     };
 
+    function handleDownloadExcel() {
+        const jsonData = handleFilterTable(gridRef, chartsData);
+
+        // Dynamically create column mapping from the `columns` array
+        const columnMapping = columns.reduce((acc, column) => {
+            acc[column.name] = column.header;
+            return acc;
+        }, {});
+
+        // Define custom cell handlers
+        const customCellHandlers = {
+            DespatchDate: (value) => formatDateToExcel(value),
+        };
+
+        // Call the `exportToExcel` function
+        exportToExcel(
+            jsonData, // Filtered data
+            columnMapping, // Dynamic column mapping from columns
+            "Dashboard-Data.xlsx", // Export file name
+            customCellHandlers, // Custom handlers for formatting cells
+            ["DespatchDate"]
+        );
+    }
+
     const renderTable = useCallback(() => {
         return (
             <div className="px-4 sm:px-6 lg:px-0 w-full bg-smooth">
                 <TableStructure
-                    // handleDownloadExcel={handleDownloadExcel}
+                    handleDownloadExcel={handleDownloadExcel}
                     title={backButton()}
                     id={"ConsignmentId"}
                     // setSelected={setSelected}
