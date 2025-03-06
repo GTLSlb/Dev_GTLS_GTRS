@@ -55,14 +55,19 @@ const customStyles = {
     // Add more style functions here as needed
 };
 
-export default function MainCharts({ accData, chartsData, sideBarToggle }) {
+export default function MainCharts({
+    accData,
+    chartsData,
+    sideBarToggle,
+    showTable,
+    setShowTable,
+}) {
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
     const [EDate, setEDate] = useState(getLatestDespatchDate(chartsData));
     const [filteredData, setFilteredData] = useState([chartsData]);
     const [selectedReceiver, setselectedReceiver] = useState([]);
     const [selectedStates, setSelectedStates] = useState([]);
     const [filteredReceivers, setFilteredReceivers] = useState([]);
-    const [showTable, setShowTable] = useState(false);
 
     const [gridKey, setGridKey] = useState("sidebar-open");
     const [hasData, setHasData] = useState(true);

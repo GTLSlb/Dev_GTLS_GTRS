@@ -22,5 +22,5 @@ export const createNewLabelObjects = (data, fieldName) => {
             newData.push(newObject);
         }
     });
-    return newData;
+    return newData.sort((a, b) => a.label.localeCompare(b.label));
 };

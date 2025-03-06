@@ -1563,24 +1563,23 @@ export const getFiltersDeliveryReport = (minDate, maxDate) => {
 export const getFiltersChartsTable = (chartFilter) => {
     return [
         {
-            name: "consid",
-            operator: "eq",
-            type: "number",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "ChargeToId",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-        {
-            name: "ReceiverName",
+            name: "ConsignmentNo",
             operator: "contains",
             type: "string",
             value: "",
             emptyValue: "",
+        },
+        {
+            name: "DebtorName",
+            operator: "inlist",
+            type: "select",
+            value: null,
+        },
+        {
+            name: "ReceiverName",
+            operator: "inlist",
+            type: "select",
+            value: null,
         },
         {
             name: "ReceiverState",
@@ -1588,6 +1587,18 @@ export const getFiltersChartsTable = (chartFilter) => {
             type: "select",
             value: chartFilter?.ReceiverState,
             emptyValue: "",
+        },
+        {
+            name: "SenderName",
+            operator: "inlist",
+            type: "select",
+            value: null,
+        },
+        {
+            name: "SenderState",
+            operator: "inlist",
+            type: "select",
+            value: null,
         },
         {
             name: "TotalQuantity",
@@ -1656,7 +1667,10 @@ export const getFiltersChartsTable = (chartFilter) => {
             name: "POD",
             operator: "inlist",
             type: "select",
-            value: chartFilter?.PODValue?.length > 0 ? chartFilter?.PODValue : null,
+            value:
+                chartFilter?.PODValue?.length > 0
+                    ? chartFilter?.PODValue
+                    : null,
             emptyValue: "",
         },
         {

@@ -63,7 +63,6 @@ function Charts({
             // dragLeaveChild="drag-out"
         >
             <div key="card01" className="relative drag-over">
-                {" "}
                 <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                 <DashboardCard07 InfoData={calculateStatistics(filteredData)} />{" "}
             </div>
@@ -80,7 +79,7 @@ function Charts({
                 <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                 <BasicPieCharts
                     chartData={getKPIPerformanceCounter(filteredData)}
-                    labelContent="{name} - {percentage}"
+                    labelContent="{value} - {percentage}"
                     chartTitle={"On Time Performance"}
                     setShowTable={setShowTable}
                     setChartFilter={setChartFilter}
@@ -101,7 +100,7 @@ function Charts({
                 <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                 <BasicPieCharts
                     chartData={getConsStatusCounter(filteredData)}
-                    labelContent="{name} - {percentage}"
+                    labelContent="{value} - {percentage}"
                     chartTitle={"Consignment Status"}
                     setShowTable={setShowTable}
                     setChartFilter={setChartFilter}
@@ -124,6 +123,7 @@ function Charts({
                 <BasicPieCharts
                     chartData={getPODCountsByState(filteredData)}
                     chartTitle={"POD Status By State"}
+                    labelContent="{value} - {percentage}"
                     setShowTable={setShowTable}
                     setChartFilter={setChartFilter}
                 />{" "}
@@ -155,6 +155,7 @@ function Charts({
                 <BasicPieCharts
                     chartData={getKPIStatusCounter(filteredData)}
                     chartTitle={"KPI Status"}
+                    labelContent="{value} - {percentage}"
                     setShowTable={setShowTable}
                     setChartFilter={setChartFilter}
                 />{" "}

@@ -1,4 +1,5 @@
 import TableStructure from "@/Components/TableStructure";
+import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { getFiltersChartsTable } from "@/Components/utils/filters";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
@@ -9,6 +10,7 @@ import React from "react";
 import { useRef } from "react";
 import { useCallback } from "react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 function ChartsTable({
     chartsData,
     setShowTable,
@@ -21,6 +23,13 @@ function ChartsTable({
         getFiltersChartsTable(chartFilter)
     );
 
+    const navigate = useNavigate();
+    const handleClick = (coindex) => {
+        navigate("/gtrs/consignment-details", {
+            state: { activeCons: coindex },
+        });
+    };
+
     const podAvlOptions = [
         {
             id: true,
@@ -31,6 +40,7 @@ function ChartsTable({
             label: "False",
         },
     ];
+
     const matchDelOptions = [
         {
             id: 2,
@@ -45,14 +55,35 @@ function ChartsTable({
             label: "N/A",
         },
     ];
+
+    const DebtorNamesOptions = createNewLabelObjects(chartsData, "DebtorName")  
+    const ReceiverNamesOptions = createNewLabelObjects(chartsData, "ReceiverName")
+    const ReceiverStatesOptions = createNewLabelObjects(chartsData, "ReceiverState")
+
+    const SenderNamesOptions = createNewLabelObjects(chartsData, "SenderName")
+    const SenderStatesOptions = createNewLabelObjects(chartsData, "SenderState")
+
     const [columns] = useState([
         {
-            name: "consid",
-            header: "Cons ID",
+            name: "ConsignmentNo",
+            header: "Consignment Number",
             group: "personalInfo",
             headerAlign: "center",
             textAlign: "center",
+            defaultFlex: 1,
+            minWidth: 200,
             filterEditor: StringFilter,
+            render: ({ value, data }) => {
+                return (
+                    <span
+                        className="underline text-blue-500 hover:cursor-pointer"
+                        onClick={() => handleClick(data.consid)}
+                    >
+                        {" "}
+                        {value}
+                    </span>
+                );
+            },
         },
         {
             name: "DespatchDate",
@@ -72,13 +103,17 @@ function ChartsTable({
             },
         },
         {
-            name: "ChargeToId",
-            header: "Charge To ID",
+            name: "DebtorName",
+            header: "Debtor Name",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
-            type: "number",
-            filterEditor: NumberFilter,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: DebtorNamesOptions,
+            },
         },
         {
             name: "ReceiverName",
@@ -87,7 +122,12 @@ function ChartsTable({
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
-            filterEditor: StringFilter,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: ReceiverNamesOptions,
+            },
         },
         {
             name: "ReceiverState",
@@ -96,7 +136,40 @@ function ChartsTable({
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
-            filterEditor: StringFilter,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: ReceiverStatesOptions,
+            },
+        },
+        {
+            name: "SenderName",
+            header: "Sender Name",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: SenderNamesOptions,
+            },
+        },
+        {
+            name: "SenderState",
+            header: "Sender State",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: SenderStatesOptions,
+            },
         },
         {
             name: "TotalQuantity",
