@@ -266,7 +266,7 @@ export default function CollapseSidebar({
         });
         handleSelectOnClick();
         setSidebarElements(updatedElements);
-        localStorage.setItem("current", JSON.stringify(id));
+        localStorage.setItem("current_URL", JSON.stringify(id));
         navigate(item.url);
     };
 

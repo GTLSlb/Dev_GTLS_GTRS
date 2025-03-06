@@ -339,7 +339,7 @@ export function navigateToFirstAllowedPage({
       });
 
       // Get the `current` item from localStorage, if it exists
-      const savedCurrentId = localStorage.getItem("current");
+      const savedCurrentId = localStorage.getItem("current_URL");
 
       // Navigate to the current item
       if (currentItem) {
