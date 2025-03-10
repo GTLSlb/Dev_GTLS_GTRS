@@ -20,6 +20,7 @@ export default function GtrsCons({
     accData,
     userPermission,
 }) {
+
     window.moment = moment;
     const navigate = useNavigate();
     const [filteredData, setFilteredData] = useState(consData);

@@ -60,9 +60,10 @@ const BasicPieCharts = (props) => {
         label: {
             type: "spider",
             labelHeight: 30,
-            content: labelContent
-                ? labelContent
-                : "{name} - {value} - {percentage}",
+            // content: labelContent
+            //     ? labelContent
+            //     : "{name} - {value} - {percentage}",
+            content: (data) => `${data.value.toLocaleString()} (${(data.value / totalValue * 100).toFixed(2)}%)`,
             style: {
                 fontSize: 12,
                 textAlign: "center",

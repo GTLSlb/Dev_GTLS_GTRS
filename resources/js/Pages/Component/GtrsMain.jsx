@@ -768,6 +768,9 @@ export default function GtrsMain({
                                                         setChartName={
                                                             setChartName
                                                         }
+                                                        userPermission={
+                                                            userPermission
+                                                        }
                                                     />
                                                 }
                                                 currentUser={currentUser}
@@ -794,6 +797,9 @@ export default function GtrsMain({
                                                         }
                                                         minDate={minDate}
                                                         maxDate={maxDate}
+                                                        userPermission={
+                                                            userPermission
+                                                        }
                                                     />
                                                 }
                                                 currentUser={currentUser}
@@ -807,7 +813,7 @@ export default function GtrsMain({
                                         element={
                                             <ProtectedRoute
                                                 permission={userPermission}
-                                                route="ConsignmetsDetails_view"
+                                                route="ConsignmentsDetails_view"
                                                 element={
                                                     <ConsDetails
                                                         url={url}
@@ -938,6 +944,9 @@ export default function GtrsMain({
                                                         setNoDelData={
                                                             setNoDelData
                                                         }
+                                                        userPermission={
+                                                            userPermission
+                                                        }
                                                     />
                                                 }
                                                 currentUser={currentUser}
@@ -969,6 +978,9 @@ export default function GtrsMain({
                                                         }
                                                         setAdditionalData={
                                                             setAdditionalData
+                                                        }
+                                                        userPermission={
+                                                            userPermission
                                                         }
                                                     />
                                                 }
@@ -1138,6 +1150,9 @@ export default function GtrsMain({
                                                         }
                                                         accData={dataFromChild}
                                                         PerfData={PerfData}
+                                                        userPermission={
+                                                            userPermission
+                                                        }
                                                     />
                                                 }
                                                 currentUser={currentUser}

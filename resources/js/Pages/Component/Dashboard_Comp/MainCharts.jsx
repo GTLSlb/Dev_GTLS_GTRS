@@ -63,6 +63,7 @@ export default function MainCharts({
     setShowTable,
     chartName,
     setChartName,
+    userPermission
 }) {
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
     const [EDate, setEDate] = useState(getLatestDespatchDate(chartsData));
@@ -232,6 +233,7 @@ export default function MainCharts({
                                 setChartFilter={setChartFilter}
                                 chartName={chartName}
                                 setChartName={setChartName}
+                                userPermission={userPermission}
                             />
                         </div>
                     ) : (
