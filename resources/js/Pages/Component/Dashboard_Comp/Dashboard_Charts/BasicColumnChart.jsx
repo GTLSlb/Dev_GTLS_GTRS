@@ -2,7 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Column } from "@ant-design/plots";
 
 const BasicColumnCharts = (props) => {
-    const { chartTitle, chartData, setShowTable, setChartFilter } = props;
+    const {
+        chartTitle,
+        chartData,
+        setShowTable,
+        setChartFilter,
+        setChartName,
+    } = props;
     const [data, setData] = useState([]);
     useEffect(() => {
         setData(chartData);
@@ -39,12 +45,13 @@ const BasicColumnCharts = (props) => {
             plot.on("element:click", (event) => {
                 const { data } = event.data;
 
+                setChartName(chartTitle);
                 if (chartTitle === "Consignment By Month") {
                     const [year, month] = data.data.split("-");
                     const startDate = `01-${month}-${year}`;
                     const lastDay = new Date(year, month, 0).getDate(); // Correctly gets the last day of the month
                     const endDate = `${lastDay}-${month}-${year}`; // Formats it as "DD-MM-YYYY"
-                
+
                     setChartFilter((prev) => ({
                         ...prev,
                         dateStart: startDate,

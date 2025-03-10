@@ -2,7 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Column } from "@ant-design/plots";
 
 const DoubleBarChart = (props) => {
-    const { chartTitle, chartData, setShowTable, setChartFilter } = props;
+    const {
+        chartTitle,
+        chartData,
+        setShowTable,
+        setChartFilter,
+        setChartName,
+    } = props;
 
     const [data, setData] = useState([]);
     useEffect(() => {
@@ -35,7 +41,8 @@ const DoubleBarChart = (props) => {
                     const startDate = `01-${month}-${year}`;
                     const lastDay = new Date(year, month, 0).getDate(); // Correctly gets the last day of the month
                     const endDate = `${lastDay}-${month}-${year}`; // Formats it as "DD-MM-YYYY"
-                
+
+                    setChartName(chartTitle);
                     setChartFilter((prev) => ({
                         ...prev,
                         dateStart: startDate,

@@ -20,6 +20,7 @@ export default function TableStructure({
     selected,
     rowHeight,
     id,
+    HeaderContent,
 }) {
     const [tableData, setTableData] = useState(tableDataElements);
     const [currentPage, setCurrentPage] = useState(4);
@@ -164,6 +165,7 @@ export default function TableStructure({
                         {title}
                     </h1>
                 </div>
+
                 <div className="flex gap-2">
                     {additionalButtons}
                     {handleDownloadExcel && (
@@ -174,6 +176,9 @@ export default function TableStructure({
                         />
                     )}
                 </div>
+            </div>
+            <div className="">
+                <div>{HeaderContent}</div>
             </div>
             <div className="py-5">
                 {tableData ? (

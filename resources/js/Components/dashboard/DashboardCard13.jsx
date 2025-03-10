@@ -9,6 +9,7 @@ const BasicPieCharts = (props) => {
         labelContent,
         setShowTable,
         setChartFilter,
+        setChartName,
     } = props;
     const [data, setData] = useState([]);
     const [legendPosition, setLegendPosition] = useState("right");
@@ -93,9 +94,12 @@ const BasicPieCharts = (props) => {
             plot.on("element:click", (event) => {
                 const { data } = event.data;
 
+                setChartName(chartTitle);
                 if (chartTitle === "On Time Performance") {
                     const value =
                         data.label === "Delivered on Time" ? "PASS" : "FAIL";
+                    
+                    
                     setChartFilter((prev) => ({
                         ...prev,
                         consStatus: value,

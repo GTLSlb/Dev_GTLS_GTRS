@@ -148,7 +148,6 @@ function DashboardCard07(props) {
                                 </td>
                                 <td className="px-1">
                                     <div className=" text-sm text-right">
-                                        {console.log(data)}
                                         ${formatNumberWithCommas(data.fuelLevy)}{" "}
                                     </div>
                                 </td>

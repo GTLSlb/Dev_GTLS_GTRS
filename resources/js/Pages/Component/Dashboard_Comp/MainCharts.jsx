@@ -61,6 +61,8 @@ export default function MainCharts({
     sideBarToggle,
     showTable,
     setShowTable,
+    chartName,
+    setChartName,
 }) {
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
     const [EDate, setEDate] = useState(getLatestDespatchDate(chartsData));
@@ -220,14 +222,6 @@ export default function MainCharts({
     if (chartsData.length > 0) {
         return (
             <div className=" px-4 sm:px-6 pb-4 bg-smooth">
-                <div className="sm:flex sm:items-center">
-                    <div className="sm:flex-auto md:mt-6">
-                        <h1 className="text-2xl py-2 px-2 font-extrabold text-gray-600">
-                            Dashboard
-                        </h1>
-                    </div>
-                </div>
-
                 {hasData ? (
                     showTable ? (
                         <div>
@@ -236,10 +230,19 @@ export default function MainCharts({
                                 setShowTable={setShowTable}
                                 chartFilter={chartFilter}
                                 setChartFilter={setChartFilter}
+                                chartName={chartName}
+                                setChartName={setChartName}
                             />
                         </div>
                     ) : (
                         <>
+                            <div className="sm:flex sm:items-center">
+                                <div className="sm:flex-auto md:mt-6">
+                                    <h1 className="text-2xl py-2 px-2 font-extrabold text-gray-600">
+                                        Dashboard
+                                    </h1>
+                                </div>
+                            </div>
                             <div className="mt-3 w-full">
                                 <div className="w-full relative px-2">
                                     <div className=" sm:border-gray-200 text-gray-400 gap-y-4 gap-x-2 w-full">
@@ -384,6 +387,7 @@ export default function MainCharts({
                                     setLayout={setLayout}
                                     setShowTable={setShowTable}
                                     setChartFilter={setChartFilter}
+                                    setChartName={setChartName}
                                 />
                             </div>
                         </>

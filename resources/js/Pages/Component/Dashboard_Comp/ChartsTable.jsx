@@ -5,24 +5,31 @@ import { exportToExcel } from "@/Components/utils/excelUtils";
 import { getFiltersChartsTable } from "@/Components/utils/filters";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
+
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import React from "react";
-import { useRef } from "react";
 import { useEffect } from "react";
+import { useRef } from "react";
 import { useCallback } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import TableStats from "./TableStats";
+
 function ChartsTable({
     chartsData,
     setShowTable,
     chartFilter,
     setChartFilter,
+    chartName,
+    setChartName,
 }) {
     const gridRef = useRef(null);
     const [selected] = useState({});
+
+    const [consSummary, setConsSummary] = useState([]);
     const [filtersValue, setFiltersValue] = useState(
         getFiltersChartsTable(chartFilter)
     );
@@ -250,17 +257,27 @@ function ChartsTable({
 
     const showCharts = () => {
         setChartFilter(getFiltersChartsTable());
+        setChartName("Dashboard");
         setShowTable(false);
     };
 
     const backButton = () => {
         return (
-            <button
-                className={`flex gap-2 items-center w-auto h-[36px] rounded-md  border bg-gray-800 px-4 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-none`}
-                onClick={showCharts}
-            >
-                <ChevronLeftIcon className="h-4 w-4" /> Back
-            </button>
+            <>
+                <div className="sm:flex sm:items-center">
+                    <div className="sm:flex-auto md:mt-2">
+                        <h1 className="text-2xl py-2 px-2 font-extrabold text-gray-600">
+                            {chartName || "Dashboard Chart"}
+                        </h1>
+                    </div>
+                </div>
+                <button
+                    className={`flex gap-2 mt-5 items-center w-auto h-[36px] rounded-md  border bg-gray-800 px-4 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-none`}
+                    onClick={showCharts}
+                >
+                    <ChevronLeftIcon className="h-4 w-4" /> Back
+                </button>
+            </>
         );
     };
 
@@ -288,6 +305,63 @@ function ChartsTable({
         );
     }
 
+    const HeaderContent = () => {
+        return (
+            <div className="flex items-center gap-3">
+                <TableStats consSummary={consSummary} />
+            </div>
+        );
+    };
+
+    useEffect(() => {
+        const jsonData = handleFilterTable(gridRef, chartsData);
+        const getConsignmentSummary = (consignments) => {
+            if (!Array.isArray(consignments))
+                return {
+                    receiverState: [],
+                    totalWeight: 0,
+                    totalCost: 0,
+                    totalConsignments: 0,
+                    totalPODTrue: 0,
+                };
+
+            // Use Set to extract unique ReceiverState values
+            const uniqueStates = new Set(
+                consignments.map((consignment) => consignment.ReceiverState)
+            );
+
+            // Calculate total weight
+            const totalWeight = consignments.reduce(
+                (sum, consignment) => sum + (consignment.TottalWeight || 0),
+                0
+            );
+
+            // Calculate total cost
+            const totalCost = consignments.reduce(
+                (sum, consignment) => sum + (consignment.NetAmount || 0),
+                0
+            );
+
+            // Count total consignments
+            const totalConsignments = consignments.length;
+
+            // Count total POD that are true
+            const totalPODTrue = consignments.filter(
+                (consignment) => consignment.POD === true
+            ).length;
+
+            // Convert Set to array and sort alphabetically
+            return {
+                receiverState: [...uniqueStates].sort(),
+                totalWeight,
+                totalCost,
+                totalConsignments,
+                totalPODTrue,
+            };
+        };
+
+        setConsSummary(getConsignmentSummary(jsonData.filterValue));
+    }, [filtersValue]);
     const renderTable = useCallback(() => {
         return (
             <div className="px-4 sm:px-6 lg:px-0 w-full bg-smooth">
@@ -295,6 +369,7 @@ function ChartsTable({
                     handleDownloadExcel={handleDownloadExcel}
                     title={backButton()}
                     id={"ConsignmentId"}
+                    HeaderContent={HeaderContent()}
                     // setSelected={setSelected}
                     gridRef={gridRef}
                     selected={selected}
@@ -305,7 +380,7 @@ function ChartsTable({
                 />
             </div>
         );
-    }, [columns, filtersValue, chartsData]);
+    }, [columns, filtersValue, chartsData, consSummary]);
 
     return renderTable();
 }

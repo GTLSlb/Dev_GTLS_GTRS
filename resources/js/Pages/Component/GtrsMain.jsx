@@ -688,8 +688,8 @@ export default function GtrsMain({
         });
     }, [sharedEndDate, sharedStartDate]);
 
-    const [showTable, setShowTable] = useState(false);
-
+    const [showTable, setShowTable] = useState(true);
+    const [chartName, setChartName] = useState("");
     return (
         <div className="h-full">
             <div className="h-full">
@@ -757,7 +757,13 @@ export default function GtrsMain({
                                                         safetyData={safetyData}
                                                         accData={dataFromChild}
                                                         showTable={showTable}
-                                                        setShowTable={setShowTable}
+                                                        setShowTable={
+                                                            setShowTable
+                                                        }
+                                                        chartName={chartName}
+                                                        setChartName={
+                                                            setChartName
+                                                        }
                                                     />
                                                 }
                                                 currentUser={currentUser}

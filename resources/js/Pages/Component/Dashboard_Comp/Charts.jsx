@@ -27,6 +27,7 @@ function Charts({
     setLayout,
     setShowTable,
     setChartFilter,
+    setChartName,
 }) {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     const [cols, setCols] = useState(2);
@@ -83,6 +84,7 @@ function Charts({
                     chartTitle={"On Time Performance"}
                     setShowTable={setShowTable}
                     setChartFilter={setChartFilter}
+                    setChartName={setChartName}
                 />{" "}
             </div>
             <div key="card04" className="relative">
@@ -93,6 +95,7 @@ function Charts({
                     chartTitle={"Consignment By Month"}
                     setShowTable={setShowTable}
                     setChartFilter={setChartFilter}
+                    setChartName={setChartName}
                 />{" "}
             </div>
             <div key="card05" className="relative">
@@ -104,6 +107,7 @@ function Charts({
                     chartTitle={"Consignment Status"}
                     setShowTable={setShowTable}
                     setChartFilter={setChartFilter}
+                    setChartName={setChartName}
                 />{" "}
             </div>
 
@@ -115,6 +119,7 @@ function Charts({
                     chartTitle={"POD True vs False"}
                     setShowTable={setShowTable}
                     setChartFilter={setChartFilter}
+                    setChartName={setChartName}
                 />{" "}
             </div>
             <div key="card07" className="relative">
@@ -126,6 +131,7 @@ function Charts({
                     labelContent="{value} - {percentage}"
                     setShowTable={setShowTable}
                     setChartFilter={setChartFilter}
+                    setChartName={setChartName}
                 />{" "}
             </div>
             <div key="card08" className="relative">
@@ -136,6 +142,7 @@ function Charts({
                     chartTitle={"Weight By state"}
                     setShowTable={setShowTable}
                     setChartFilter={setChartFilter}
+                    setChartName={setChartName}
                 />{" "}
             </div>
 
@@ -149,7 +156,7 @@ function Charts({
                 />{" "}
             </div>
 
-            <div key="card10" className="relative">
+            <div key="card10" className="relative hidden">
                 {" "}
                 <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                 <BasicPieCharts
