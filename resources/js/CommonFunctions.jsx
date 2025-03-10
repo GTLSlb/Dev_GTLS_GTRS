@@ -1,4 +1,5 @@
 import routes from "@/GTRSRoutes";
+import routes from "@/GTRSRoutes";
 import NoAccessRedirect from "@/Pages/NoAccessRedirect";
 import menu from "@/SidebarMenuItems";
 import { PublicClientApplication } from "@azure/msal-browser";

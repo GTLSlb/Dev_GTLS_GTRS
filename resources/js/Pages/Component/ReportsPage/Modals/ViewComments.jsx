@@ -92,7 +92,7 @@ export default function ViewComments({
                 setIsDisabled(true)
                 setIsEditing(false)
                 setNewCommentValue(newValue?.CommentId?.trim())
-                setShouldAddComment(true)
+                setShouldAddComment(true);
                 AddComment(newValue?.CommentId?.trim());
             }
         }else{

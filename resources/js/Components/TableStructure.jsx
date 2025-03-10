@@ -1,6 +1,6 @@
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useState, useMemo } from "react";
 import ExportPopover from "./ExportPopover";
 
 export default function TableStructure({
@@ -22,26 +22,19 @@ export default function TableStructure({
     id,
     HeaderContent,
 }) {
-    const [tableData, setTableData] = useState(tableDataElements);
-    const [currentPage, setCurrentPage] = useState(4);
-    const [filters, setFilters] = useState(filterValueElements);
-    const [selectedRows, setSelectedRows] = useState();
-    const [groups, setGroups] = useState(groupsElements);
-    const [columns, setColumns] = useState(columnsElements);
-    const [filterTypes, setfilterTypes] = useState(filterTypesElements);
+    // 1) Memoize columns and data
+    const columns = useMemo(() => columnsElements, [columnsElements]);
+    const filters = useMemo(() => filterValueElements, [filterValueElements]);
+    const groups = useMemo(() => groupsElements, [groupsElements]);
 
-    useEffect(() => {
-        setTableData(tableDataElements);
-    }, [tableDataElements]);
+    const tableData = useMemo(() => tableDataElements, [tableDataElements]);
+    const filterTypes = useMemo(
+        () => filterTypesElements,
+        [filterTypesElements]
+    );
 
-    useEffect(() => {
-        setFilters(filterValueElements);
-    }, [filterValueElements]);
-
-    useEffect(() => {
-        setColumns(columnsElements);
-    }, [columnsElements]);
-
+    // 2) State for filterValue and groups if needed
+    const [selectedRows] = useState();
     const scrollProps = Object.assign(
         {},
         ReactDataGrid.defaultProps.scrollProps,
@@ -52,16 +45,6 @@ export default function TableStructure({
             scrollThumbOverWidth: 6,
         }
     );
-
-    const rowStyle = ({ data }) => {
-        const colorMap = {
-            ca: "#7986cb",
-            uk: "#ef9a9a",
-        };
-        return {
-            color: colorMap[data.country],
-        };
-    };
 
     const gridStyle = { minHeight: 600 };
 
@@ -155,7 +138,7 @@ export default function TableStructure({
         return () => {
             document.body.removeEventListener("click", handleClick);
         };
-    }, [columns, gridRef]);
+    }, [columns]);
 
     return (
         <div className="">
@@ -181,16 +164,19 @@ export default function TableStructure({
                 <div>{HeaderContent}</div>
             </div>
             <div className="py-5">
-                {tableData ? (
+                {tableDataElements ? (
                     <ReactDataGrid
+                        virtualized
+                        key={"persistend-grid"+title}
                         idProperty={id}
                         handle={(ref) =>
                             (gridRef.current = ref ? ref.current : [])
                         }
-                        className={"rounded-lg shadow-lg overflow-hidden"}
+                        className="rounded-lg shadow-lg overflow-hidden"
                         pagination
-                        rowStyle={rowStyle}
-                        rowHeight={rowHeight ? rowHeight : 40}
+                        defaultPageSize={20}
+                        defaultLimit={20}
+                        rowHeight={rowHeight ?? 40}
                         filterTypes={filterTypes}
                         scrollProps={scrollProps}
                         showColumnMenuTool={false}
@@ -201,9 +187,9 @@ export default function TableStructure({
                         style={gridStyle}
                         onFilterValueChange={onFilterValueChange}
                         defaultFilterValue={filters}
-                        columns={columns}
                         groups={groups}
-                        dataSource={tableData}
+                        columns={columns}
+                        dataSource={tableDataElements}
                     />
                 ) : (
                     <div className="h-64 flex items-center justify-center mt-10">

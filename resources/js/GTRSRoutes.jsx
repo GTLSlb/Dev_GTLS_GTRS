@@ -12,6 +12,7 @@ const routes = [
     "/gtrs/add-transit",
     "/gtrs/incident",
     "/gtrs/kpi/holidays",
+    "/gtrs/kpi/reasons",
     "/gtrs/performance",
     "/gtrs/failed-consignments",
     "/gtrs/transport",
@@ -25,11 +26,12 @@ const routes = [
     "/gtrs/traffic-report",
     "/gtrs/consignment-map",
     "/gtrs/consignment-tracking",
-    // "/gtrs/consignment-tracking-2",
     "/gtrs/delivery-report",
     "/gtrs/excel-delivery-report",
     "/gtrs/delivery-report/comments",
     "/gtrs/real-food-report",
+    "/gtrs/excel-delivery-report",
+    "/gtrs/delivery-report/comments",
 ]
 
 export default routes

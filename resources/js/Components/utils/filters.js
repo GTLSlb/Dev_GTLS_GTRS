@@ -108,6 +108,13 @@ export const getFiltersCons = (minDate, maxDate) => {
             value: null,
             emptyValue: "",
         },
+        {
+            name: "ConsReferences",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
     ];
 };
 
@@ -445,6 +452,17 @@ export const getFiltersHolidays = (minDateHol, maxDateHol) => {
             name: "HolidayDesc",
             operator: "contains",
             type: "string",
+            value: "",
+        },
+    ];
+};
+
+export const getFiltersKPIReasons = () => {
+    return [
+        {
+            name: "ReasonName",
+            operator: "inlist",
+            type: "select",
             value: "",
         },
     ];

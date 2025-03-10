@@ -171,7 +171,7 @@ export function canEditHolidays(currentUser) {
  */
 export function canAddKpiReasons(currentUser) {
     // Define the specific permission to check for adding KPI Reasons
-    const targetPermissionName = "KpiReasons_add";
+    const targetPermissionName = "KPIReasons_add";
 
     // Check if the page is found and if the specified permission is present in its Features array
     return currentUser?.Features?.find(
@@ -189,7 +189,7 @@ export function canAddKpiReasons(currentUser) {
  */
 export function canEditKpiReasons(currentUser) {
     // Define the specific permission to check for editing KPI Reasons
-    const targetPermissionName = "KpiReasons_edit";
+    const targetPermissionName = "KPIReasons_edit";
 
     // Check if the page is found and if the specified permission is present in its Features array
     return currentUser?.Features?.find(
@@ -664,6 +664,35 @@ export function canAddDeliveryReportComment(currentUser) {
 }
 
 /**
+ * Checks if the user can edit Delivery Report Comments in Table View based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can edit Delivery Report Comments, false otherwise.
+ */
+export function canEditDeliveryReportCommentTableView(currentUser) {
+    // Define the specific permission
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "DeliveryReportCommentsTable_Edit"
+    )
+        ? true
+        : false;
+}
+
+/**
+ * Checks if the user can add Delivery Report Comments in Table View based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can add Delivery Report Comments, false otherwise.
+ */
+export function canAddDeliveryReportCommentTableView(currentUser) {
+    // Define the specific permission
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "DeliveryReportCommentsTable_Add"
+    )
+        ? true
+        : false;
+}
+/**
  * Checks if the user can view based on their permissions.
  *
  * @param {Object} currentUser - The current user object with role and permissions.
@@ -771,6 +800,33 @@ export function canViewChart(currentUser, chartPermission) {
 export function canViewDetails(currentUser) {
     return currentUser?.Features?.find(
         (feature) => feature?.FunctionName === "ConsignmentsDetails_view"
+    )
+        ? true
+        : false;
+}
+
+/**
+ * Checks if the user can view Consignment Details based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can view Consignment Details, false otherwise.
+ */
+export function canViewDetails(currentUser) {
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "ConsignmentsDetails_view"
+    )
+        ? true
+        : false;
+}
+/**
+ * Checks if the user can view Consignment Details based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can view Consignment Details, false otherwise.
+ */
+export function canViewIncidentDetails(currentUser) {
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "View_IncidentDetails"
     )
         ? true
         : false;

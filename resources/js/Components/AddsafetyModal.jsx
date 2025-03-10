@@ -4,9 +4,10 @@ import axios from "axios";
 import { useEffect } from "react";
 import "../../css/scroll.css";
 import swal from "sweetalert";
-import { handleSessionExpiration } from '@/CommonFunctions';
-
-const placeholder = "test";
+import { handleSessionExpiration } from "@/CommonFunctions";
+import Select from "react-select";
+import {ToastContainer} from 'react-toastify';
+import { AlertToast } from "@/permissions";
 
 export default function SafetyModal({
     isOpen,
@@ -27,6 +28,8 @@ export default function SafetyModal({
     updateLocalData,
     currentUser,
     safetyTypes,
+    setIsSuccessfull,
+    fetchData
 }) {
     const date = new Date(modalOccuredAt);
     const formattedDate = date?.toLocaleDateString("en-CA");
@@ -95,7 +98,11 @@ export default function SafetyModal({
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
     const handleChange = (e) => {
-        setFormValues({ ...formValues, [e.target.name]: e.target.value });
+        if (e.hasOwnProperty("target")) {
+            setFormValues({ ...formValues, [e.target.name]: e.target.value });
+        } else {
+            setFormValues({ ...formValues, DebtorId: e.id });
+        }
     };
     formValues.ReportId = id;
     const handleSubmit = async (event) => {
@@ -113,8 +120,11 @@ export default function SafetyModal({
                 }
             );
 
+            fetchData();
             updateLocalData(id, formValues);
             setSuccess(true);
+            setIsSuccessfull(true);
+            AlertToast("Saved Successfully", 1);
             setTimeout(() => {
                 handleClose();
                 SetIsLoading(false);
@@ -122,6 +132,7 @@ export default function SafetyModal({
             }, 1000);
         } catch (error) {
             SetIsLoading(false);
+            setIsSuccessfull(false);
             // Handle error
             if (error.response && error.response.status === 401) {
                 // Handle 401 error using SweetAlert
@@ -141,13 +152,55 @@ export default function SafetyModal({
             setError("Error occurred while saving the data. Please try again."); // Set the error message
         }
     };
+    const customStyles = {
+        control: (provided) => ({
+            ...provided,
+            minHeight: "unset",
+            height: "auto",
+            // Add more styles here as needed
+        }),
+        option: (provided, state) => ({
+            ...provided,
+            color: "black",
+            // Add more styles here as needed
+        }),
+        multiValue: (provided) => ({
+            ...provided,
+            width: "30%",
+            overflow: "hidden",
+            height: "20px",
+            display: "flex",
+            justifyContent: "space-between",
+        }),
+        valueContainer: (provided) => ({
+            ...provided,
+            maxHeight: "37px", // Set the maximum height for the value container
+            overflow: "auto", // Enable scrolling if the content exceeds the maximum height
+            // fontSize: '10px',
+        }),
+        inputContainer: (provided) => ({
+            ...provided,
+            height: "100px",
+        }),
+        multiValueLabel: (provided) => ({
+            ...provided,
+            whiteSpace: "nowrap", // Prevent text wrapping
+            overflow: "hidden",
+            textOverflow: "ellipsis", // Display ellipsis when text overflows
+            fontSize: "10px",
+            // Add more styles here as needed
+        }),
+        // Add more style functions here as needed
+    };
     return (
         <ReactModal
             ariaHideApp={false}
             isOpen={isOpen}
             className="fixed inset-0 flex items-center justify-center "
-            overlayClassName="fixed inset-0 bg-black bg-opacity-60"
+            overlayClassName="fixed inset-0 bg-black bg-opacity-60 z-50"
         >
+            {/* Added toast container since it wasn't showing */}
+            <ToastContainer />
             <div className="bg-white w-96 2xl:w-[28%] rounded-lg shadow-lg p-6 ">
                 <div className="flex justify-end">
                     <button
@@ -240,31 +293,24 @@ export default function SafetyModal({
                             <label htmlFor="SafetyType" className="block mb-2">
                                 Account Name:
                             </label>
-                            <select
-                                id="DebtorId"
-                                name="DebtorId"
-                                className="w-full border border-gray-300 rounded px-3 py-2"
-                                defaultValue={modalDebtorId}
-                                value={formValues.DebtorId}
+                            <Select
+                                styles={customStyles}
+                                name="colors"
+                                value={customerAccounts.find(
+                                    (account) =>
+                                        account.id === formValues.DebtorId
+                                )}
+                                options={customerAccounts}
                                 onChange={handleChange}
-                                required
-                            >
-                                <option value="">
-                                    --Please choose an option--
-                                </option>
-
-                                {customerAccounts?.map((customer) => {
-                                    return (
-                                        <option
-                                            className="text-base"
-                                            key={customer.id}
-                                            value={customer.id}
-                                        >
-                                            {customer.label}
-                                        </option>
-                                    );
-                                })}
-                            </select>
+                                getOptionValue={(option) =>
+                                    option.id.toString() || ""
+                                }
+                                placeholder="--Please choose an option--"
+                                maxMenuHeight={180}
+                                defaultValue={modalDebtorId}
+                                className="basic-multi-select w-full"
+                                classNamePrefix="select"
+                            />
                         </div>
                         <div className="mb-4">
                             <label htmlFor="MainCause" className="block mb-2">

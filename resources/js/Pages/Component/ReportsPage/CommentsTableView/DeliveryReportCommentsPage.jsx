@@ -195,7 +195,7 @@ export default function DeliveryReportCommentsPage({
             )}
             <div className="">
                 <TableStructure
-                    rowHeight={40}
+                    rowHeight={36}
                     id={"CommentId"}
                     setSelected={setSelected}
                     gridRef={gridRef}

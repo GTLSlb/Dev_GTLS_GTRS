@@ -1,28 +1,32 @@
-export const handleFilterTable = (gridRef, filteredData) => {
+export function handleFilterTable(dataa) {
     // Get the selected columns or use all columns if none are selected
     let selectedColumns = Array.from(
         document.querySelectorAll('input[name="column"]:checked')
     ).map((checkbox) => checkbox.value);
 
-    let allHeaderColumns = gridRef != null &&gridRef?.current?.visibleColumns.map((column) => ({
+    let allHeaderColumns = gridRef.current.visibleColumns.map((column) => ({
         name: column.name,
         value: column.computedFilterValue?.value,
         type: column.computedFilterValue?.type,
         operator: column.computedFilterValue?.operator,
     }));
-    let selectedColVal = allHeaderColumns?.filter(
-        (col) => col.name !== "edit"
-    );
+    let selectedColVal = allHeaderColumns.filter((col) => col.name !== "edit");
+
     const filterValue = [];
-    filteredData?.map((val) => {
+    dataa?.map((val) => {
         let isMatch = true;
         for (const col of selectedColVal) {
             const { name, value, type, operator } = col;
             const cellValue = value;
-            const typeValue = type;
             let conditionMet = false;
             // Skip the filter condition if no filter is set (cellValue is null or empty)
-            if (!cellValue || cellValue.length === 0) {
+            if (
+                (!cellValue || cellValue.length === 0) &&
+                !(
+                    type === "number" &&
+                    (operator === "empty" || cellValue === 0)
+                )
+            ) {
                 conditionMet = true;
                 continue;
             }
@@ -34,12 +38,12 @@ export const handleFilterTable = (gridRef, filteredData) => {
                     case "contains":
                         conditionMet =
                             cellValue?.length > 0 &&
-                            valLowerCase?.includes(cellValueLowerCase);
+                            valLowerCase.includes(cellValueLowerCase);
                         break;
                     case "notContains":
                         conditionMet =
                             cellValue?.length > 0 &&
-                            !valLowerCase?.includes(cellValueLowerCase);
+                            !valLowerCase.includes(cellValueLowerCase);
                         break;
                     case "eq":
                         conditionMet =
@@ -78,15 +82,21 @@ export const handleFilterTable = (gridRef, filteredData) => {
                 switch (operator) {
                     case "eq":
                         conditionMet =
-                            numericCellValue != "" &&
-                            numericValue != "" &&
-                            numericValue === numericCellValue;
+                            (numericCellValue !== "" ||
+                                numericCellValue === 0) &&
+                            (numericValue !== "" || numericValue === 0) &&
+                            numericValue == numericCellValue;
                         break;
                     case "neq":
                         conditionMet =
                             numericCellValue != "" &&
                             numericValue != "" &&
                             numericValue !== numericCellValue;
+                        break;
+                    case "empty":
+                        conditionMet =
+                            Number.isNaN(numericCellValue) &&
+                            Number.isNaN(numericValue);
                         break;
                     case "gt":
                         conditionMet =
@@ -161,7 +171,7 @@ export const handleFilterTable = (gridRef, filteredData) => {
                 switch (operator) {
                     case "eq":
                         conditionMet =
-                            (cellValue?.length > 0 || cellValue >= 0) &&
+                            cellValue?.length > 0 &&
                             cellValueLowerCase === valLowerCase;
                         break;
                     case "neq":
@@ -172,21 +182,11 @@ export const handleFilterTable = (gridRef, filteredData) => {
                         break;
                     case "inlist":
                         const listValues = Array.isArray(value)
-                            ? value.map((v) =>
-                                  typeof v === "string"
-                                      ? v.toLowerCase()
-                                      : String(v)
-                              )
-                            : [
-                                  typeof value === "string"
-                                      ? value.toLowerCase()
-                                      : String(value),
-                              ];
-
+                            ? value.map((v) => v.toLowerCase())
+                            : [value?.toLowerCase()];
                         conditionMet =
                             cellValue?.length > 0 &&
                             listValues.includes(valLowerCase);
-
                         break;
                     case "notinlist":
                         const listValuesNotIn = Array.isArray(value)
@@ -200,7 +200,7 @@ export const handleFilterTable = (gridRef, filteredData) => {
                 }
             } else if (type === "date") {
                 const dateValue = moment(
-                    val[col.name]?.replace("T", " "),
+                    val[col.name].replace("T", " "),
                     "YYYY-MM-DD HH:mm:ss"
                 );
                 const hasStartDate =
@@ -341,4 +341,149 @@ export const handleFilterTable = (gridRef, filteredData) => {
         });
     }
     return { selectedColumns: selectedColVal, filterValue: filterValue };
-};
+}
+
+export function handleDownloadExcel(dataa) {
+    const jsonData = handleFilterTable(dataa);
+    const selectedColumns = jsonData?.selectedColumns.map(
+        (column) => column.name
+    );
+    const newSelectedColumns = selectedColumns.map(
+        (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
+    );
+
+    const filterValue = jsonData?.filterValue;
+    const data = filterValue.map((person) =>
+        selectedColumns.reduce((acc, column) => {
+            const columnKey = column.replace(/\s+/g, "");
+            if (columnKey) {
+                if (person[columnKey] === true) {
+                    acc[columnKey] = "true";
+                } else if (person[columnKey] === false) {
+                    acc[columnKey] = "false";
+                } else if (
+                    ["DispatchDate", "DeliveryDate", "RDD"].includes(
+                        columnKey
+                    )
+                ) {
+                    const date = new Date(person[columnKey]);
+                    if (!isNaN(date)) {
+                        acc[column] =
+                            (date.getTime() -
+                                date.getTimezoneOffset() * 60000) /
+                                86400000 +
+                            25569; // Convert to Excel date serial number
+                    } else {
+                        acc[column] = "";
+                    }
+                } else if (columnKey == "CalculatedDelDate") {
+                    const date = new Date(person[columnKey]);
+                    if (!isNaN(date)) {
+                        acc[column] =
+                            (date.getTime() -
+                                date.getTimezoneOffset() * 60000) /
+                                86400000 +
+                            25569; // Convert to Excel date serial number
+                    } else {
+                        acc[column] = "";
+                    }
+                } else if (columnKey === "MatchRdd") {
+                    if (person[columnKey] === 3) {
+                        acc[columnKey] = "Pending";
+                    } else if (person[columnKey] === 1) {
+                        acc[columnKey] = "True";
+                    } else if (person[columnKey] === 2) {
+                        acc[columnKey] = "False";
+                    }
+                } else if (columnKey === "MatchDel") {
+                    if (person[columnKey] == 0) {
+                        acc[columnKey] = "";
+                    } else if (person[columnKey] == 1) {
+                        acc[columnKey] = "PASS";
+                    } else if (person[columnKey] == 2) {
+                        acc[columnKey] = "FAIL";
+                    }
+                } else if (columnKey === "ReasonId") {
+                    const Reason = kpireasonsData?.find(
+                        (reason) => reason.ReasonId === person.ReasonId
+                    );
+                    acc[columnKey] = Reason?.ReasonName;
+                } else {
+                    acc[columnKey] = person[columnKey];
+                }
+            } else {
+                acc[columnKey] = person[columnKey];
+            }
+            return acc;
+        }, {})
+    );
+
+    // Create a new workbook
+    const workbook = new ExcelJS.Workbook();
+
+    // Add a worksheet to the workbook
+    const worksheet = workbook.addWorksheet("Sheet1");
+
+    // Apply custom styles to the new header row
+    const headerRow = worksheet.addRow(newSelectedColumns);
+    headerRow.font = { bold: true };
+    headerRow.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
+    };
+    headerRow.alignment = { horizontal: "center" };
+
+    data.forEach((rowData) => {
+        const row = worksheet.addRow(Object.values(rowData));
+        // Apply date format to the Dispatch Date column
+        const dispatchDateIndex =
+            newSelectedColumns.indexOf("Dispatch Date");
+        if (dispatchDateIndex !== -1) {
+            const cell = row.getCell(dispatchDateIndex + 1);
+            cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+        }
+
+        // Apply date format to the Delivery Date column
+        const deliveryDateIndex =
+            newSelectedColumns.indexOf("Delivery Date");
+        if (deliveryDateIndex !== -1) {
+            const cell = row.getCell(deliveryDateIndex + 1);
+            cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+        }
+
+        // Apply date format to the RDD column
+        const RDDDateIndex = newSelectedColumns.indexOf("RDD");
+        if (RDDDateIndex !== -1) {
+            const cell = row.getCell(RDDDateIndex + 1);
+            cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+        }
+        // Apply date format to the RDD column
+        const CalculatedDateIndex = newSelectedColumns.indexOf(
+            "Calculated Delivery Date"
+        );
+        if (CalculatedDateIndex !== -1) {
+            const cell = row.getCell(CalculatedDateIndex + 1);
+            cell.numFmt = "dd-mm-yyyy";
+        }
+    });
+
+    // Set column widths
+    const columnWidths = selectedColumns.map(() => 20); // Set width of each column
+    worksheet.columns = columnWidths.map((width, index) => ({
+        width,
+        key: selectedColumns[index],
+    }));
+
+    // Generate the Excel file
+    workbook.xlsx.writeBuffer().then((buffer) => {
+        // Convert the buffer to a Blob
+        const blob = new Blob([buffer], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        // Save the file using FileSaver.js or alternative method
+        saveAs(blob, "Traffic-report.xlsx");
+        setExportLoading(false);
+    });
+}

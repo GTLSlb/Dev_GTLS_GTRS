@@ -54,7 +54,12 @@ export default function WoolworthsReports({
             DeliveryRequiredDateTime: (value) => formatDateToExcel(value),
             DeliveredDateTime: (value) => formatDateToExcel(value),
             Comments: (value) =>
-                value?.map((item) => `${formatDate(item.AddedAt)}, ${item.Comment}`).join("\n")
+                value
+                    ?.map(
+                        (item) => `${formatDate(item.AddedAt)}, ${item.Comment}`
+                    )
+                    .join("\n"),
+            POD: (value) => (value ? value : "FALSE"),
         };
 
         // Call the `exportToExcel` function

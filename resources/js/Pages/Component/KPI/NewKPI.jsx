@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback  } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import moment from "moment";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
@@ -14,9 +14,11 @@ import swal from "sweetalert";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import NewKPIModalAddReason from "./NEWKPIModal";
 import {
+    formatDateFromExcelWithNoTime,
     formatDateToExcel,
     getApiRequest,
     handleSessionExpiration,
+    renderConsDetailsLink,
 } from "@/CommonFunctions";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
@@ -24,6 +26,7 @@ import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import { PencilIcon } from "@heroicons/react/20/solid";
 
 function NewKPI({
     url,
@@ -38,6 +41,7 @@ function NewKPI({
     kpireasonsData,
 }) {
     window.moment = moment;
+    const navigate = useNavigate;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isFetching, setIsFetching] = useState();
@@ -84,12 +88,6 @@ function NewKPI({
         }
     }
 
-    const navigate = useNavigate();
-    const handleClick = (coindex) => {
-        navigate("/gtrs/consignment-details", {
-            state: { activeCons: coindex },
-        });
-    };
     const [filteredData, setFilteredData] = useState(
         KPIData.map((item) => {
             if (item?.TransitDays) {
@@ -117,12 +115,11 @@ function NewKPI({
             }
             return item;
         });
-
         return filteredKPI;
     };
+
     useEffect(() => {
-        let filteredData = filterData()
-        setFilteredData(filteredData);
+        setFilteredData(filterData());
         setReceiverStateOptions(
             createNewLabelObjects(filteredData, "ReceiverState")
         );
@@ -163,15 +160,22 @@ function NewKPI({
             DispatchDate: (value) => formatDateToExcel(value),
             DeliveryDate: (value) => formatDateToExcel(value),
             RDD: (value) => formatDateToExcel(value),
-            CalculatedDelDate: (value) => formatDateToExcel(value),
+            CalculatedDelDate: (value) => formatDateFromExcelWithNoTime(value),
         };
 
+        const formatted = [
+            {
+                field: "CalculatedDelDate",
+                format: "dd-mm-yyyy",
+            },
+        ];
         exportToExcel(
             jsonData,
             columnMapping,
             "KPI_Report.xlsx",
             customCellHandlers,
-            ["DispatchDate", "DeliveryDate", "RDD", "CalculatedDelDate"]
+            ["DispatchDate", "DeliveryDate", "RDD", "CalculatedDelDate"],
+            formatted
         );
     };
 
@@ -248,14 +252,10 @@ function NewKPI({
             group: "personalInfo",
             filterEditor: StringFilter,
             render: ({ value, data }) => {
-                return (
-                    <span
-                        className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => handleClick(data.ConsignmentId)}
-                    >
-                        {" "}
-                        {value}
-                    </span>
+                return renderConsDetailsLink(
+                    userPermission,
+                    value,
+                    data.ConsignmentId
                 );
             },
         },
@@ -462,6 +462,57 @@ function NewKPI({
                 ) : null;
             },
         },
+        {
+            name: "ReasonId",
+            header: "KPI Reason",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 200,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: false,
+                wrapMultiple: false,
+                dataSource: reasonOptions,
+            },
+
+            render: ({ value }) => {
+                return  (
+                    <div>
+                        <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-0.5 text-sm font-medium text-gray-800">
+                            {kpireasonsData?.find((reason) => reason.ReasonId === value)?.ReasonName || ""}
+                        </span>
+                    </div>
+                );
+            },
+        },
+        {
+            name: "edit",
+            header: "Edit",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 100,
+            render: ({ value, data }) => {
+                return (
+                    <div>
+                        {canEditKPI(userPermission) ? (
+                            <button
+                                className={
+                                    "rounded text-blue-500 justify-center items-center  "
+                                }
+                                onClick={() => {
+                                    handleEditClick(data);
+                                }}
+                            >
+                                <span className="flex gap-x-1">
+                                    <PencilIcon className="h-4" />
+                                    Edit
+                                </span>
+                            </button>
+                        ) : null}
+                    </div>
+                );
+            },
+        }
     ];
     const newArray = columns.slice(0, -1);
     const [newColumns, setNewColumns] = useState([]);
@@ -475,20 +526,35 @@ function NewKPI({
     }, []);
 
     useEffect(() => {
-        if (receiverStateOptions?.length > 0 && senderStateOptions?.length > 0) {
-          setNewColumns((prevColumns) => {
-            return prevColumns.map((column) => {
-              if (column.name === "SenderState") {
-                return { ...column, filterEditorProps: { ...column.filterEditorProps, dataSource: senderStateOptions } };
-              }
-              if(column.name === "ReceiverState"){
-                return { ...column, filterEditorProps: { ...column.filterEditorProps, dataSource: receiverStateOptions } };
-              }
-              return column;
+        if (
+            receiverStateOptions?.length > 0 &&
+            senderStateOptions?.length > 0
+        ) {
+            setNewColumns((prevColumns) => {
+                return prevColumns.map((column) => {
+                    if (column.name === "SenderState") {
+                        return {
+                            ...column,
+                            filterEditorProps: {
+                                ...column.filterEditorProps,
+                                dataSource: senderStateOptions,
+                            },
+                        };
+                    }
+                    if (column.name === "ReceiverState") {
+                        return {
+                            ...column,
+                            filterEditorProps: {
+                                ...column.filterEditorProps,
+                                dataSource: receiverStateOptions,
+                            },
+                        };
+                    }
+                    return column;
+                });
             });
-          });
         }
-      }, [receiverStateOptions, senderStateOptions]);
+    }, [receiverStateOptions, senderStateOptions]);
 
     const [statusMessage, setStatusMessage] = useState("");
     const messageDisplayTime = 3000; // Time in milliseconds (3000ms = 3 seconds)
@@ -600,7 +666,7 @@ function NewKPI({
     );
 
     const additionalButtons = (
-        <div>
+        <div className="flex items-center space-x-2">
             {statusMessage && (
                 <LottieComponent
                     animationData={Success}
@@ -633,24 +699,24 @@ function NewKPI({
     const renderTable = useCallback(() => {
         return (
             <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-            <TableStructure
-                gridRef={gridRef}
-                handleDownloadExcel={handleDownloadExcel}
-                title={"KPI Report"}
-                additionalButtons={additionalButtons}
-                id={"ConsignmentId"}
-                setSelected={setSelected}
-                selected={selected}
-                filterTypesElements={customFilterTypes}
-                groupsElements={groups}
-                tableDataElements={filteredData}
-                filterValueElements={filterValue}
-                setFilterValueElements={setFilterValue}
-                columnsElements={newColumns}
-            />
-        </div>
+                <TableStructure
+                    gridRef={gridRef}
+                    handleDownloadExcel={handleDownloadExcel}
+                    title={"KPI Report"}
+                    additionalButtons={additionalButtons}
+                    id={"ConsignmentId"}
+                    setSelected={setSelected}
+                    selected={selected}
+                    filterTypesElements={customFilterTypes}
+                    groupsElements={groups}
+                    tableDataElements={filteredData}
+                    filterValueElements={filterValue}
+                    setFilterValueElements={setFilterValue}
+                    columnsElements={newColumns}
+                />
+            </div>
         );
-      }, [newColumns]);
+    }, [newColumns, accData, filteredData, loading]);
 
     return (
         <div>

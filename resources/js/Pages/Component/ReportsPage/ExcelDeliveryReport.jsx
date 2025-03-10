@@ -527,7 +527,7 @@ export default function ExcelDeliveryReport({
                     onClick={() => buttonClickCallback()}
                     size="sm"
                 >
-                    Download CSV
+                    Export
                 </Button>
             </div>
             {tableData && deliveryCommentsOptions && (

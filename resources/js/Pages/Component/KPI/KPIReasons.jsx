@@ -1,12 +1,15 @@
-import { canAddKpiReasons } from "@/permissions";
-import React from "react";
-import { useEffect, useState } from "react";
-import SmallTableKPI from "./Components/KPISmallTable";
-import swal from "sweetalert";
 import axios from "axios";
-import { handleSessionExpiration } from '@/CommonFunctions';
-import GtrsButton from "../GtrsButton";
-
+import swal from "sweetalert";
+import GtrsButton from "@/Pages/Component/GtrsButton";
+import { PencilIcon } from "@heroicons/react/20/solid";
+import SmallTableKPI from "./Components/KPISmallTable";
+import TableStructure from "@/Components/TableStructure";
+import { canAddKpiReasons, canEditKpiReasons } from "@/permissions";
+import { createNewLabelObjects } from "@/Components/utils/dataUtils";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
+import AddKPIReason from "./Components/AddKPIReason";
+import { ToastContainer } from "react-toastify";
 export default function KPIReasons({
     url,
     currentUser,
@@ -14,16 +17,114 @@ export default function KPIReasons({
     userPermission,
     kpireasonsData,
     setkpireasonsData,
+    filterValue,
+    setFilterValue,
 }) {
     function fromModel() {
         return 3;
     }
     const addurl = `${url}Add/KpiReason`;
+
+    const gridRef = useRef(null);
     const [editIndex, setEditIndex] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
     const [filteredData, setFilteredData] = useState(kpireasonsData);
     const [showAddRow, setShowAddRow] = useState(false);
+    const [selectedReason, setSelectedReason] = useState(false);
     const [filterText, setFilterText] = useState("");
+    const reasonNameOptions = createNewLabelObjects(
+        kpireasonsData,
+        "ReasonName"
+    );
+
+    const [selected, setSelected] = useState([]);
+    const handleEditClick = (object) => {
+        setSelectedReason(object);
+        if (!showAddRow) {
+            setShowAddRow(true);
+        }
+    };
+    function ToggleShow() {
+        setShowAddRow(!showAddRow);
+        setSelectedReason(null);
+    }
+    const [columns, setColumns] = useState([
+        {
+            name: "ReasonName",
+            minWidth: 170,
+            defaultFlex: 1,
+            header: "Reason Name",
+            type: "string",
+            headerAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: reasonNameOptions,
+            },
+        },
+        {
+            name: "ReasonStatus",
+            minWidth: 170,
+            header: "Status",
+            defaultFlex: 1,
+            headerAlign: "center",
+            textAlign: "center",
+            render: ({ value }) => {
+                return value == 1 ? (
+                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                        Active
+                    </span>
+                ) : (
+                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                        Inactive
+                    </span>
+                );
+            },
+        },
+    ]);
+
+    const additionalButtons = (
+        <div>
+            {canAddKpiReasons(userPermission) ? (
+                <div className="flex flex-col sm:flex-row gap-x-5 gap-y-3">
+                    <div className="col-span-2">
+                        {!showAddRow && (
+                            <GtrsButton
+                                name="Add Reason"
+                                onClick={() => {
+                                    setEditIndex(null);
+                                    setShowAddRow(!showAddRow);
+                                }}
+                                disabled={showAddRow}
+                                className="w-full py-4"
+                            />
+                        )}
+                    </div>
+                </div>
+            ) : null}
+        </div>
+    );
+
+    const handleDownloadExcel = () => {
+        const jsonData = handleFilterTable(gridRef, holidays);
+
+        const columnMapping = columns.reduce((acc, column) => {
+            acc[column.name] = column.header;
+            return acc;
+        }, {});
+
+        const customCellHandlers = {
+            HolidayStatus: (value) => (value === 1 ? true : false),
+        };
+
+        exportToExcel(
+            jsonData,
+            columnMapping,
+            "KPIReasons.xlsx",
+            customCellHandlers
+        );
+    };
 
     const handleFilterChange = (e) => {
         const searchText = e.target.value;
@@ -68,8 +169,17 @@ export default function KPIReasons({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(async function () {
-                        await handleSessionExpiration();
+                    }).then(function () {
+                        axios
+                            .post("/logoutAPI")
+                            .then((response) => {
+                                if (response.status == 200) {
+                                    window.location.href = "/";
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
                     });
                 } else {
                     // Handle other errors
@@ -79,13 +189,138 @@ export default function KPIReasons({
     }
     const dynamicHeaders = [
         { label: "Reason", key: "ReasonName" },
-        { label: "Status", key: "ReasonStatus" },
+        { label: "Status", key: "Status" },
     ];
+    // useEffect(() => {
+    //     setFilteredData(kpireasonsData);
+    // }, [kpireasonsData]);
+
     useEffect(() => {
-        setFilteredData(kpireasonsData);
-    }, [kpireasonsData]);
+        if (kpireasonsData?.length > 0 && reasonNameOptions) {
+            if (userPermission && canEditKpiReasons(userPermission)) {
+                setColumns([
+                    {
+                        name: "ReasonName",
+                        minWidth: 170,
+                        defaultFlex: 1,
+                        header: "Reason Name",
+                        type: "string",
+                        headerAlign: "center",
+                        filterEditor: SelectFilter,
+                        filterEditorProps: {
+                            multiple: true,
+                            wrapMultiple: false,
+                            dataSource: reasonNameOptions,
+                        },
+                    },
+                    {
+                        name: "ReasonStatus",
+                        minWidth: 170,
+                        header: "Status",
+                        defaultFlex: 1,
+                        headerAlign: "center",
+                        textAlign: "center",
+                        render: ({ value }) => {
+                            return value == 1 ? (
+                                <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                                    Active
+                                </span>
+                            ) : (
+                                <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                                    Inactive
+                                </span>
+                            );
+                        },
+                    },
+                    {
+                        name: "edit",
+                        header: "Edit",
+                        headerAlign: "center",
+                        textAlign: "center",
+                        defaultWidth: 100,
+                        render: ({ value, data }) => {
+                            return (
+                                <div>
+                                    {canEditKpiReasons(userPermission) ? (
+                                        <button
+                                            className={
+                                                "rounded text-blue-500 justify-center items-center  "
+                                            }
+                                            onClick={() => {
+                                                handleEditClick(data);
+                                            }}
+                                        >
+                                            <span className="flex gap-x-1">
+                                                <PencilIcon className="h-4" />
+                                                Edit
+                                            </span>
+                                        </button>
+                                    ) : null}
+                                </div>
+                            );
+                        },
+                    },
+                ]);
+            } else {
+                setColumns([
+                    {
+                        name: "ReasonName",
+                        minWidth: 170,
+                        defaultFlex: 1,
+                        header: "Reason Name",
+                        type: "string",
+                        headerAlign: "center",
+                        filterEditor: SelectFilter,
+                        filterEditorProps: {
+                            multiple: true,
+                            wrapMultiple: false,
+                            dataSource: reasonNameOptions,
+                        },
+                    },
+                    {
+                        name: "ReasonStatus",
+                        minWidth: 170,
+                        header: "Status",
+                        defaultFlex: 1,
+                        headerAlign: "center",
+                        textAlign: "center",
+                        render: ({ value }) => {
+                            return value == 1 ? (
+                                <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                                    Active
+                                </span>
+                            ) : (
+                                <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                                    Inactive
+                                </span>
+                            );
+                        },
+                    },
+                ]);
+            }
+        }
+    }, [userPermission, reasonNameOptions, kpireasonsData]);
+
+    const renderTable = useCallback(() => {
+        return (
+            <TableStructure
+                id={"ReasonId"}
+                setSelected={setSelected}
+                gridRef={gridRef}
+                additionalButtons={additionalButtons}
+                handleDownloadExcel={handleDownloadExcel}
+                selected={selected}
+                tableDataElements={kpireasonsData}
+                filterValueElements={filterValue}
+                setFilterValueElements={setFilterValue}
+                columnsElements={columns}
+            />
+        );
+    }, [columns, kpireasonsData]);
     return (
         <div className="">
+            {/* Added this for toast container to show */}
+            <ToastContainer />
             <div className="p-8">
                 <div className="flex gap-x-1">
                     <h1 className="font-bold text-dark text-xl">Reasons</h1>{" "}
@@ -93,8 +328,8 @@ export default function KPIReasons({
                         ({kpireasonsData?.length})
                     </p>
                 </div>
-                <div className="flex justify-between flex-col sm:flex-row gap-y-3 my-5">
-                    <div className="">
+                {/*<div className="flex justify-between flex-col sm:flex-row gap-y-3 my-5">
+                     <div className="">
                         <div className="relative border rounded">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -155,7 +390,6 @@ export default function KPIReasons({
                     setShowAddRow={setShowAddRow}
                     objects={filteredData}
                     currentUser={currentUser}
-                    userPermission={userPermission}
                     editIndex={editIndex}
                     setEditIndex={setEditIndex}
                     getfunction={getKPIReasons}
@@ -164,7 +398,21 @@ export default function KPIReasons({
                     addurl={addurl}
                     currentPage={currentPage}
                     setCurrentPage={setCurrentPage}
-                />
+                /> */}
+                {showAddRow ? (
+                    <AddKPIReason
+                        selectedReason={selectedReason}
+                        url={url}
+                        AToken={AToken}
+                        currentUser={currentUser}
+                        userPermission={userPermission}
+                        setSelectedReason={setSelectedReason}
+                        setShowAdd={setShowAddRow}
+                        fetchData={getKPIReasons}
+                        closeModal={ToggleShow}
+                    />
+                ) : null}
+                {renderTable()}
             </div>
         </div>
     );

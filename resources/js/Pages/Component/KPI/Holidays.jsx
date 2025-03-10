@@ -14,6 +14,7 @@ import AnimatedLoading from "@/Components/AnimatedLoading";
 import GtrsButton from "../GtrsButton";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
+import {ToastContainer} from 'react-toastify';
 
 window.moment = moment;
 export default function Holidays({
@@ -48,16 +49,17 @@ export default function Holidays({
             setIsFetching(true);
             fetchData();
         }
-    }, []); // Empty dependency array ensures the effect runs only once
-    const gridRef = useRef(null);
+    }, []);
 
+    const gridRef = useRef(null);
     async function fetchData() {
         const data = await getApiRequest(`${url}Holidays`, {
             UserId: currentUser?.UserId,
         });
 
         if (data) {
-            setHolidays(data);
+            const sortedHolidays = data.sort((a, b) => b.HolidayDate.localeCompare(a.HolidayDate));
+            setHolidays(sortedHolidays);
             setIsFetching(false);
         }
     }
@@ -91,12 +93,12 @@ export default function Holidays({
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
             render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
+                return moment(value).format("DD-MM-YYYY") === "Invalid date"
                     ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+                    : moment(value).format("DD-MM-YYYY");
             },
         },
+
         {
             name: "HolidayState",
             defaultFlex: 1,
@@ -176,10 +178,10 @@ export default function Holidays({
                         dateFormat: "DD-MM-YYYY",
                         filterEditor: DateFilter,
                         render: ({ value, cellProps }) => {
-                            return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                            return moment(value).format("DD-MM-YYYY") ==
                                 "Invalid date"
                                 ? ""
-                                : moment(value).format("DD-MM-YYYY hh:mm A");
+                                : moment(value).format("DD-MM-YYYY");
                         },
                     },
                     {
@@ -227,7 +229,7 @@ export default function Holidays({
                     },
                     {
                         name: "edit",
-                        header: "edit",
+                        header: "Edit",
                         headerAlign: "center",
                         textAlign: "center",
                         defaultWidth: 100,
@@ -281,10 +283,10 @@ export default function Holidays({
                         dateFormat: "DD-MM-YYYY",
                         filterEditor: DateFilter,
                         render: ({ value, cellProps }) => {
-                            return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                            return moment(value).format("DD-MM-YYYY") ==
                                 "Invalid date"
                                 ? ""
-                                : moment(value).format("DD-MM-YYYY hh:mm A");
+                                : moment(value).format("DD-MM-YYYY");
                         },
                     },
                     {
@@ -354,26 +356,25 @@ export default function Holidays({
             customCellHandlers
         );
     };
-    const additionalButtons = canAddHolidays(userPermission) ? (
+    const additionalButtons = (
         <div>
-            {showAdd ? (
-                <GtrsButton
-                    name={"Cancel"}
-                    onClick={ToggleShow}
-                    className="w-[5rem] h-[35px]"
-                />
-            ) : (
-                <GtrsButton
-                    name={"Add +"}
-                    onClick={ToggleShow}
-                    className="w-[5rem] h-[35px]"
-                />
-            )}
+            {canAddHolidays(userPermission) ? (
+                <div>
+                    {!showAdd && (
+                        <GtrsButton
+                            name={"Add holiday"}
+                            onClick={ToggleShow}
+                            className="w-[5.5rem] h-[36px]"
+                        />
+                    )}
+                </div>
+            ) : null}
         </div>
-    ) : null;
-
+    );
     return (
         <div>
+            {/* Added this for toast container to show */}
+            <ToastContainer />
             {isFetching ? (
                 <AnimatedLoading />
             ) : (
@@ -390,6 +391,7 @@ export default function Holidays({
                             setHoliday={setHoliday}
                             setShowAdd={setShowAdd}
                             fetchData={fetchData}
+                            closeModal={ToggleShow}
                         />
                         </div>
                     ) : null}
@@ -399,13 +401,13 @@ export default function Holidays({
                         title={"Holidays"}
                         setSelected={setSelected}
                         gridRef={gridRef}
+                        additionalButtons={additionalButtons}
                         handleDownloadExcel={handleDownloadExcel}
                         selected={selected}
                         tableDataElements={holidays}
                         filterValueElements={filterValue}
                         setFilterValueElements={setFilterValue}
                         columnsElements={columns}
-                        additionalButtons={additionalButtons}
                     />
                 </div>
             )}

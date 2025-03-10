@@ -221,6 +221,7 @@ export default function ConsPerf({
             saveAs(blob, "Performance-Report.xlsx");
         });
     }
+
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
             <div className="sm:flex sm:items-center">

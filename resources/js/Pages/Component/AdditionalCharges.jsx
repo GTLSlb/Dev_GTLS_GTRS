@@ -9,6 +9,7 @@ import TableStructure from "@/Components/TableStructure";
 import {
     formatDateToExcel,
     getApiRequest,
+    renderConsDetailsLink,
 } from "@/CommonFunctions";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
@@ -22,15 +23,13 @@ export default function AdditionalCharges({
     setAdditionalData,
     filterValue,
     setFilterValue,
+    userPermission,
     currentUser,
     url,
 }) {
     window.moment = moment;
     const navigate = useNavigate();
     const [isFetching, setIsFetching] = useState();
-    const handleClick = (coindex) => {
-        navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
-    };
     useEffect(() => {
         if (AdditionalData === null || AdditionalData === undefined) {
             setIsFetching(true);
@@ -92,14 +91,10 @@ export default function AdditionalCharges({
             defaultWidth: 170,
             filterEditor: StringFilter,
             render: ({ value, data }) => {
-                return (
-                    <span
-                        className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => handleClick(data.ConsignmentID)}
-                    >
-                        {" "}
-                        {value}
-                    </span>
+                return renderConsDetailsLink(
+                    userPermission,
+                    value,
+                    data.ConsignmentID
                 );
             },
         },
@@ -231,9 +226,7 @@ export default function AdditionalCharges({
     return (
         <div>
             {/* <Sidebar /> */}
-            {isFetching && (
-                <AnimatedLoading />
-            )}
+            {isFetching && <AnimatedLoading />}
             {!isFetching && (
                 <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
                     <TableStructure

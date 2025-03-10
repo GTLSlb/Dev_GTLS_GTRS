@@ -12,7 +12,7 @@ import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
-import { formatDateToExcel } from "@/CommonFunctions";
+import { formatDateToExcel, renderConsDetailsLink } from "@/CommonFunctions";
 import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 
@@ -43,9 +43,6 @@ export default function RDDTable({
         });
         // Update the state with the modified local data
         setrddData(updatedData);
-    };
-    const handleClick = (coindex) => {
-        navigate("/gtrs/consignment-details", { state: { activeCons: coindex } });
     };
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [filteredData, setFilteredData] = useState(rddData);
@@ -144,14 +141,10 @@ export default function RDDTable({
             defaultWidth: 170,
             filterEditor: StringFilter,
             render: ({ value, data }) => {
-                return (
-                    <span
-                        className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => handleClick(data.ConsignmentId)}
-                    >
-                        {" "}
-                        {value}
-                    </span>
+                return renderConsDetailsLink(
+                    userPermission,
+                    value,
+                    data.ConsignmentId
                 );
             },
         },

@@ -1,21 +1,21 @@
-import React from "react";
-import { useLayoutEffect, useRef, useState } from "react";
-import { PencilIcon } from "@heroicons/react/24/outline";
-import moment from "moment";
-import SafetyModal from "@/Components/AddsafetyModal";
-import { useEffect } from "react";
-import DescriptionModal from "@/Components/DescriptionModal";
-import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
-import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
-import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
-import TableStructure from "@/Components/TableStructure";
-import { canAddSafetyReport, canEditSafetyReport } from "@/permissions";
-import { getMinMaxValue } from "@/Components/utils/dateUtils";
-import { createNewLabelObjects } from "@/Components/utils/dataUtils";
-import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { formatDateToExcel } from "@/CommonFunctions";
-import { exportToExcel } from "@/Components/utils/excelUtils";
+import SafetyModal from "@/Components/AddsafetyModal";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import DescriptionModal from "@/Components/DescriptionModal";
+import TableStructure from "@/Components/TableStructure";
+import { createNewLabelObjects } from "@/Components/utils/dataUtils";
+import { getMinMaxValue } from "@/Components/utils/dateUtils";
+import { exportToExcel } from "@/Components/utils/excelUtils";
+import { handleFilterTable } from "@/Components/utils/filterUtils";
+import { canAddSafetyReport, canEditSafetyReport } from "@/permissions";
+import { PencilIcon } from "@heroicons/react/24/outline";
+import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
+import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
+import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
+import moment from "moment";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ToastContainer } from 'react-toastify';
+import { AlertToast } from "@/permissions";
 
 export default function SafetyRepTable({
     currentPageRep,
@@ -46,6 +46,7 @@ export default function SafetyRepTable({
     const [checked, setChecked] = useState(false);
     const [indeterminate, setIndeterminate] = useState(false);
     const [selectedRecords, setselectedRecords] = useState([]);
+    const [isSuccessfull, setIsSuccessfull] = useState(false);
     useLayoutEffect(() => {
         const isIndeterminate =
             selectedRecords?.length > 0 &&
@@ -351,7 +352,7 @@ export default function SafetyRepTable({
         },
         {
             name: "edit",
-            header: "edit",
+            header: "Edit",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 100,
@@ -414,8 +415,16 @@ export default function SafetyRepTable({
         <div></div>
     );
 
+    useEffect(() => {
+        if(isSuccessfull){
+            AlertToast("Saved Successfully", 1);
+            setIsSuccessfull(false);
+        }
+    },[isSuccessfull])
     return (
         <div>
+            {/* Added toast container since it wasn't showing */}
+            <ToastContainer />
             <div className=" w-full bg-smooth pb-20">
                 {!newColumns ? (
                     <AnimatedLoading />
@@ -446,6 +455,7 @@ export default function SafetyRepTable({
             />
             <SafetyModal
                 url={url}
+                setIsSuccessfull={setIsSuccessfull}
                 AToken={AToken}
                 customerAccounts={debtorsOptions}
                 safetyTypes={safetyTypes}
@@ -468,6 +478,7 @@ export default function SafetyRepTable({
                 userPermission={userPermission}
                 buttonAction={buttonAction}
                 updateLocalData={updateLocalData}
+                fetchData={fetchData}
             />
         </div>
     );

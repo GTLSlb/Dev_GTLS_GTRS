@@ -10,6 +10,7 @@ import swal from "sweetalert";
 import axios from "axios";
 import { handleSessionExpiration } from '@/CommonFunctions';
 import GtrsButton from "../../GtrsButton";
+import { AlertToast } from "@/permissions";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -25,6 +26,7 @@ export default function AddHoliday({
     setHoliday,
     setShowAdd,
     fetchData,
+    closeModal
 }) {
     const [selected, setSelected] = useState(states[0]);
     const [isChecked, setIsChecked] = useState(false);
@@ -76,11 +78,9 @@ export default function AddHoliday({
                 fetchData();
                 setShowAdd(false);
                 setIsLoading(false);
-                // AlertToast("Saved successfully", 1);
+                AlertToast("Saved successfully", 1);
             })
             .catch((err) => {
-                // AlertToast("Something went wrong", 2);
-
                 if (err.response && err.response.status === 401) {
                     // Handle 401 error using SweetAlert
                     swal({
@@ -96,12 +96,13 @@ export default function AddHoliday({
                     // Handle other errors
                     console.log(err);
                     setIsLoading(false);
+                    AlertToast("Something went wrong", 2);
                   }
             });
     }
 
     return (
-        <div className="shadow bg-white p-6 rounded-lg ">
+        <div className="shadow bg-white p-6 rounded-lg">
             <form onSubmit={AddHoliday}>
                 <p className="font-bold text-lg">{object ? "Edit " : "Add "} Holiday</p>
                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-5 gap-y-5 items-center py-4">
@@ -254,10 +255,18 @@ export default function AddHoliday({
                         />
                     </div>
                 </div>
-                <div className="flex w-full justify-end">
+                <div className="flex w-full gap-x-3 justify-end">
                     <GtrsButton
                         disabled={isLoading}
-                        name={object ? "Edit" : "Create"}
+                        name={"Cancel"}
+                        className="w-[5.5rem] h-[36px]"
+                        type={"button"}
+                        onClick={closeModal}
+                    />
+                    <GtrsButton
+                        disabled={isLoading}
+                        name={object ? "Edit" : "Add"}
+                        className="w-[5.5rem] h-[36px]"
                         type={"submit"}
                     />
                 </div>

@@ -26,7 +26,6 @@ export default function Login({ }) {
     const appDomain = window.Laravel.appDomain;
     const backToHomeURL = window.Laravel.backToHomeURL;
     const googleKey = window.Laravel.googleKey;
-    
     useEffect(() => {
         clearMSALLocalStorage();
     }, []);
@@ -37,6 +36,7 @@ export default function Login({ }) {
             appDomain={appDomain}
             redirectURL="/main"
             loginURL="/loginComp"
+            microsoftURL="/microsoftToken"
             googlekey={googleKey}
             gtamURl={gtamURl}
             pca={pca}

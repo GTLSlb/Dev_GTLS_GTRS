@@ -6,6 +6,7 @@ import AddSafetyType from "./safetyComp/AddSafety/safetyTypes/AddSafetyType";
 import { canViewSafetyType } from "@/permissions";
 import { getApiRequest } from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import { ToastContainer } from 'react-toastify';
 
 export default function SafetyRep({
     accData,
@@ -73,7 +74,7 @@ export default function SafetyRep({
     const [isDataEdited, setDataEdited] = useState(false);
     const [isFetching, setIsFetching] = useState();
     const [isFetchingTypes, setIsFetchingTypes] = useState();
-    const [isFetchingCauses, setIsFetchingCauses] = useState(); 
+    const [isFetchingCauses, setIsFetchingCauses] = useState();
 
     useEffect(() => {
         if (safetyDataState.length === 0) {
@@ -167,7 +168,7 @@ export default function SafetyRep({
         setFilteredData(filtered);
         setCurrentPage(0);
     };
-    
+
     let components = [
         <SafetyRepTable
             url={url}
@@ -213,6 +214,8 @@ export default function SafetyRep({
     }, [userPermission]);
     return (
         <div>
+            {/* Added toast container since it wasn't showing */}
+            <ToastContainer />
             {isFetching || isFetchingCauses || isFetchingTypes ? (
                 <AnimatedLoading />
             ) : (
@@ -276,7 +279,7 @@ export default function SafetyRep({
                         <div className="w-full relative">
                             <div className=" sm:border-gray-200 text-gray-400 flex flex-col md:flex-row gap-y-4 gap-x-2 md:items-center">
                                 {activeComponentIndex === 1 && (
-                                    <div className="flex">
+                                    <div className="flex flex-col sm:flex-row sm:gap-3 lg:gap-0 pb-4">
                                         {" "}
                                         <label
                                             htmlFor="last-name"
@@ -303,7 +306,7 @@ export default function SafetyRep({
                                         </div>
                                         <label
                                             htmlFor="last-name"
-                                            className="inline-block text-sm font-medium leading-6 flex-item"
+                                            className="inline-block text-sm font-medium leading-6 mt-2 sm:mt-0 flex-item"
                                         >
                                             To
                                         </label>

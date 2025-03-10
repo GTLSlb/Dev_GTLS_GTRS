@@ -285,30 +285,3 @@ export function getPODCountsByState(data) {
 
     return podCountsByState;
 }
-
-export const getKPIPerformanceCounter = (data) => {
-    const counter = [];
-
-    for (const item of data) {
-        let consStatus = item.ConsStatus;
-
-        if (consStatus === "PENDING") {
-            continue;
-        }
-        if (consStatus === "PASS") {
-            consStatus = "Delivered on Time"; 
-        } else if (consStatus === "FAIL") {
-            consStatus = "Not Delivered on Time"; 
-        }
-
-        const existingStatus = counter.find((obj) => obj.label === consStatus);
-
-        if (existingStatus) {
-            existingStatus.value++;
-        } else {
-            counter.push({ label: consStatus, value: 1 });
-        }
-    }
-
-    return counter;
-};
