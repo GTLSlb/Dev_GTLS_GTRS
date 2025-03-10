@@ -1,5 +1,4 @@
 import routes from "@/GTRSRoutes";
-import routes from "@/GTRSRoutes";
 import NoAccessRedirect from "@/Pages/NoAccessRedirect";
 import menu from "@/SidebarMenuItems";
 import { PublicClientApplication } from "@azure/msal-browser";
@@ -40,7 +39,7 @@ export async function handleSessionExpiration() {
         .then(async (response) => {
             if (response.status === 200) {
                 const isMicrosoftLogin = Cookies.get("msal.isMicrosoftLogin");
-
+                localStorage.removeItem("current_URL");
                 // Clear MSAL-related data from localStorage
                 clearMSALLocalStorage();
                 Cookies.remove("access_token");

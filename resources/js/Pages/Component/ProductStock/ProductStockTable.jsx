@@ -19,6 +19,7 @@ import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
 import moment from "moment/moment";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import { getApiRequest } from "@/CommonFunctions";
 export const SearchIcon = (props) => {
     return (
         <svg
@@ -63,69 +64,41 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
     const [hasMore, setHasMore] = React.useState(true);
 
     useEffect(() => {
-        fetchData();
-    }, []);
-
-    const fetchData = async () => {
-        try {
-            const response = await axios.get(`${url}/SOH`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
+        async function fetchData() {
+            const data = await getApiRequest(`${url}SOH`, {
+                UserId: currentUser?.UserId,
             });
-
-            // Convert TransitDays to string
-            setProductsData(response.data);
-            const debtorList = Array.from(
-                new Map(
-                    response.data.map((item) => [
-                        item.DebtorId,
-                        {
-                            DebtorId: item.DebtorId,
-                            DebtorName: item.DebtorName,
-                        },
-                    ])
-                ).values()
-            );
-            setDebtors(debtorList);
-            const branchlist = Array.from(
-                new Map(
-                    response.data.map((item) => [
-                        item.WarehouseID,
-                        {
-                            BranchId: item.WarehouseID,
-                            BranchName: item.BranchName,
-                        },
-                    ])
-                ).values()
-            );
-            setBranches(branchlist);
-        } catch (error) {
-            if (error.response && error.response.status === 401) {
-                swal({
-                    title: "Session Expired!",
-                    text: "Please login again",
-                    type: "error",
-                    icon: "info",
-                    confirmButtonText: "OK",
-                }).then(() => {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                            if (response.status === 200) {
-                                window.location.href = "/";
-                            }
-                        })
-                        .catch((error) => {
-                            console.error(error);
-                        });
-                });
-            } else {
-                console.error(error);
+    
+            if (data) {
+                setProductsData(data);
+                const debtorList = Array.from(
+                    new Map(
+                        response.data.map((item) => [
+                            item.DebtorId,
+                            {
+                                DebtorId: item.DebtorId,
+                                DebtorName: item.DebtorName,
+                            },
+                        ])
+                    ).values()
+                );
+                setDebtors(debtorList);
+                const branchlist = Array.from(
+                    new Map(
+                        response.data.map((item) => [
+                            item.WarehouseID,
+                            {
+                                BranchId: item.WarehouseID,
+                                BranchName: item.BranchName,
+                            },
+                        ])
+                    ).values()
+                );
+                setBranches(branchlist);
             }
         }
-    };
+        fetchData();
+    }, []);
 
     const [filterValue, setFilterValue] = React.useState("");
 
@@ -244,8 +217,8 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
             }
             return acc;
         }, {});
-        setDisplayCount(30)
-        setHasMore(true)
+        setDisplayCount(30);
+        setHasMore(true);
         // Step 5: Flatten groups into rows with recalculated totals
         return Object.values(recalculatedGroups).flatMap(
             (group, groupIndex) => {
@@ -401,16 +374,16 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
 
     const onClear = React.useCallback(() => {
         setFilterValue("");
-        setDisplayCount(30)
-        setHasMore(true)
+        setDisplayCount(30);
+        setHasMore(true);
     }, []);
 
     function onClearAll() {
         setFilterValue("");
         setSelectedBranch(new Set());
         setSelectedDebtor(new Set());
-        setDisplayCount(30)
-        setHasMore(true)
+        setDisplayCount(30);
+        setHasMore(true);
     }
 
     const displayedData = useMemo(

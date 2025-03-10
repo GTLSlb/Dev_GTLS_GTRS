@@ -688,8 +688,10 @@ export default function GtrsMain({
         });
     }, [sharedEndDate, sharedStartDate]);
 
-    const [showTable, setShowTable] = useState(true);
+    const [showTable, setShowTable] = useState(false);
     const [chartName, setChartName] = useState("");
+    const [collapsed, setCollapsed] = useState(false);
+
     return (
         <div className="h-full">
             <div className="h-full">
@@ -701,6 +703,8 @@ export default function GtrsMain({
                         rtl={rtl}
                         toggled={toggled}
                         setToggled={setToggled}
+                        collapsed={collapsed}
+                        setCollapsed={setCollapsed}
                         sidebarElements={sidebarElements}
                         setSidebarElements={setSidebarElements}
                         setCusomterAccounts={setCusomterAccounts}

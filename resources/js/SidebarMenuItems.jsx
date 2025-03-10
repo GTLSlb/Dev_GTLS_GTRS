@@ -10,7 +10,7 @@ import {
     CameraIcon,
     DocumentTextIcon,
     ClipboardDocumentIcon,
-    RectangleStackIcon,
+    RectangleStackIcon
 } from "@heroicons/react/24/solid";
 import TaskIcon from "@mui/icons-material/Task";
 import ReportIcon from "@mui/icons-material/Report";
@@ -242,53 +242,6 @@ const menu = [
         current: false,
         feature: "View_Tracking2",
         url: "/gtrs/consignment-tracking",
-    },
-    {
-        id: 27,
-        name: "SOH Report",
-        href: "#",
-        icon: RectangleStackIcon,
-        current: false,
-        feature: "DeliveryReport_View",
-        url: "/gtrs/delivery-report",
-        options: [
-            {
-                id: 28,
-                name: "Delivery Report",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "DeliveryReport_View",
-                url: "/gtrs/delivery-report",
-            },
-            {
-                id: 30,
-                name: "Excel Delivery Report",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "DeliveryReport_View",
-                url: "/gtrs/excel-delivery-report",
-            },
-            {
-                id: 29,
-                name: "Delivery Report Comments",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "DeliveryReportCommentsTable_View",
-                url: "/gtrs/delivery-report/comments",
-            },
-        ]
-    },
-    {
-        id: 26,
-        name: "Real Food KPI Pack",
-        href: "#",
-        icon: DocumentTextIcon,
-        current: false,
-        feature: "RealFoodReport_View",
-        url: "/gtrs/real-food-report",
     },
     {
         id: 27,
