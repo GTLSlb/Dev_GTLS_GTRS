@@ -221,6 +221,13 @@ export default function ExcelDeliveryReport({
     };
     const hotColumns = [
         {
+            data: "ConsignmentNo",
+            title: "Consignment Number",
+            type: "text",
+            readOnly: true,
+            editor: false,
+        },
+        {
             data: "AccountNumber",
             title: "Account Number",
             type: "text",
@@ -234,13 +241,6 @@ export default function ExcelDeliveryReport({
             readOnly: true,
             editor: false,
             renderer: dateRenderer,
-        },
-        {
-            data: "ConsignmentNo",
-            title: "Consignment Number",
-            type: "text",
-            readOnly: true,
-            editor: false,
         },
         {
             data: "SenderName",
@@ -537,6 +537,7 @@ export default function ExcelDeliveryReport({
                         data={tableData}
                         colHeaders={hotColumns.map((col) => col.title)}
                         columns={hotColumns}
+                        fixedColumnsStart={1}
                         width="100%"
                         height={"600px"}
                         manualColumnMove={true}
