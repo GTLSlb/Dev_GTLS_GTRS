@@ -688,7 +688,6 @@ export default function GtrsMain({
         });
     }, [sharedEndDate, sharedStartDate]);
 
-    const [showTable, setShowTable] = useState(false);
     const [chartName, setChartName] = useState("");
     const [collapsed, setCollapsed] = useState(false);
 
@@ -760,10 +759,6 @@ export default function GtrsMain({
                                                         chartsData={chartsData}
                                                         safetyData={safetyData}
                                                         accData={dataFromChild}
-                                                        showTable={showTable}
-                                                        setShowTable={
-                                                            setShowTable
-                                                        }
                                                         chartName={chartName}
                                                         setChartName={
                                                             setChartName

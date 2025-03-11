@@ -59,8 +59,6 @@ export default function MainCharts({
     accData,
     chartsData,
     sideBarToggle,
-    showTable,
-    setShowTable,
     chartName,
     setChartName,
     userPermission
@@ -219,6 +217,8 @@ export default function MainCharts({
         MatchDel: "",
         PODValue: [],
     });
+
+    const [showTable, setShowTable] = useState(false);
 
     if (chartsData.length > 0) {
         return (
