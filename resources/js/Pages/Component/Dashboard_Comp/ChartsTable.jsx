@@ -1,4 +1,4 @@
-import { formatDateToExcel } from "@/CommonFunctions";
+import { formatDateToExcel, renderConsDetailsLink } from "@/CommonFunctions";
 import TableStructure from "@/Components/TableStructure";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
@@ -10,12 +10,10 @@ import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
-import React from "react";
 import { useEffect } from "react";
 import { useRef } from "react";
 import { useCallback } from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import TableStats from "./TableStats";
 
 function ChartsTable({
@@ -25,6 +23,7 @@ function ChartsTable({
     setChartFilter,
     chartName,
     setChartName,
+    userPermission
 }) {
     const gridRef = useRef(null);
     const [selected] = useState({});
@@ -33,13 +32,6 @@ function ChartsTable({
     const [filtersValue, setFiltersValue] = useState(
         getFiltersChartsTable(chartFilter)
     );
-
-    const navigate = useNavigate();
-    const handleClick = (coindex) => {
-        navigate("/gtrs/consignment-details", {
-            state: { activeCons: coindex },
-        });
-    };
 
     const podAvlOptions = [
         {
@@ -80,14 +72,10 @@ function ChartsTable({
             minWidth: 200,
             filterEditor: StringFilter,
             render: ({ value, data }) => {
-                return (
-                    <span
-                        className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => handleClick(data.consid)}
-                    >
-                        {" "}
-                        {value}
-                    </span>
+                return renderConsDetailsLink(
+                    userPermission,
+                    value,
+                    data.consid
                 );
             },
         },

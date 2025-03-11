@@ -36,7 +36,7 @@ function NoAccess({currentUser, setToken, setCurrentUser}) {
             .post("/composerLogout", credentials)
             .then((response) => {
                 if (response.status === 200 && response.data.status === 200) {
-                    localStorage.removeItem('current');
+                    localStorage.removeItem('current_URL');
                     const isMicrosoftLogin = Cookies.get(
                         "msal.isMicrosoftLogin"
                     );

@@ -688,7 +688,6 @@ export default function GtrsMain({
         });
     }, [sharedEndDate, sharedStartDate]);
 
-    const [showTable, setShowTable] = useState(false);
     const [chartName, setChartName] = useState("");
     const [collapsed, setCollapsed] = useState(false);
 
@@ -760,13 +759,12 @@ export default function GtrsMain({
                                                         chartsData={chartsData}
                                                         safetyData={safetyData}
                                                         accData={dataFromChild}
-                                                        showTable={showTable}
-                                                        setShowTable={
-                                                            setShowTable
-                                                        }
                                                         chartName={chartName}
                                                         setChartName={
                                                             setChartName
+                                                        }
+                                                        userPermission={
+                                                            userPermission
                                                         }
                                                     />
                                                 }
@@ -794,6 +792,9 @@ export default function GtrsMain({
                                                         }
                                                         minDate={minDate}
                                                         maxDate={maxDate}
+                                                        userPermission={
+                                                            userPermission
+                                                        }
                                                     />
                                                 }
                                                 currentUser={currentUser}
@@ -807,7 +808,7 @@ export default function GtrsMain({
                                         element={
                                             <ProtectedRoute
                                                 permission={userPermission}
-                                                route="ConsignmetsDetails_view"
+                                                route="ConsignmentsDetails_view"
                                                 element={
                                                     <ConsDetails
                                                         url={url}
@@ -938,6 +939,9 @@ export default function GtrsMain({
                                                         setNoDelData={
                                                             setNoDelData
                                                         }
+                                                        userPermission={
+                                                            userPermission
+                                                        }
                                                     />
                                                 }
                                                 currentUser={currentUser}
@@ -969,6 +973,9 @@ export default function GtrsMain({
                                                         }
                                                         setAdditionalData={
                                                             setAdditionalData
+                                                        }
+                                                        userPermission={
+                                                            userPermission
                                                         }
                                                     />
                                                 }
@@ -1138,6 +1145,9 @@ export default function GtrsMain({
                                                         }
                                                         accData={dataFromChild}
                                                         PerfData={PerfData}
+                                                        userPermission={
+                                                            userPermission
+                                                        }
                                                     />
                                                 }
                                                 currentUser={currentUser}

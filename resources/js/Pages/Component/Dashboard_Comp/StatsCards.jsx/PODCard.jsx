@@ -15,7 +15,8 @@ function PODCard({ totalPODTrue, totalCount }) {
             <Divider />
             <CardBody>
                 <p className="w-full text-left text-sm flex items-center">
-                    {totalPODTrue} / {formatNumberWithCommas(podPercentage)} %
+                    {formatNumberWithCommas(totalPODTrue)} /
+                    {formatNumberWithCommas(podPercentage)} %
                 </p>
             </CardBody>
         </Card>
