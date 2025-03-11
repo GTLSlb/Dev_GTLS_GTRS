@@ -119,6 +119,10 @@ export default function ExcelDeliveryReport({
             }
         }
     }, [userPermission]);
+    
+    useEffect(() => {
+        clearAllFilters();
+    }, [activeComponentIndex]);
 
     // Determine the current data set to show
     const tableData = useMemo(() => {
@@ -465,6 +469,15 @@ export default function ExcelDeliveryReport({
         };
     }, [changedRows]);
 
+    const clearAllFilters = () => {
+        const hotInstance = hotTableRef.current?.hotInstance;
+        if (hotInstance) {
+            const filtersPlugin = hotInstance.getPlugin("filters");
+            filtersPlugin.clearConditions(); // Clears all filter conditions
+            filtersPlugin.filter(); // Reapplies filters (removes them)
+        }
+    };
+
     return (
         <div className="min-h-full px-8">
             <ToastContainer />
@@ -521,6 +534,13 @@ export default function ExcelDeliveryReport({
                     size="sm"
                 >
                     Save
+                </Button>
+                <Button
+                    className="bg-dark text-white px-4 py-2"
+                    size="sm"
+                    onClick={clearAllFilters}
+                >
+                    Clear
                 </Button>
                 <Button
                     className="bg-dark text-white px-4 py-2"
