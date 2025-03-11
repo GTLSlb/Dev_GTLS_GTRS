@@ -769,7 +769,7 @@ export function canViewChart(currentUser, chartPermission) {
  */
 export function canViewDetails(currentUser) {
     return currentUser?.Features?.find(
-        (feature) => feature?.FunctionName === "ConsignmentsDetails_view"
+        (feature) => feature?.FunctionName == "ConsignmentsDetails_view"
     )
         ? true
         : false;

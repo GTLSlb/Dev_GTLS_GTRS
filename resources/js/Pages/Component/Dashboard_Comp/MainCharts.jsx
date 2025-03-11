@@ -59,10 +59,9 @@ export default function MainCharts({
     accData,
     chartsData,
     sideBarToggle,
-    showTable,
-    setShowTable,
     chartName,
     setChartName,
+    userPermission
 }) {
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
     const [EDate, setEDate] = useState(getLatestDespatchDate(chartsData));
@@ -219,6 +218,8 @@ export default function MainCharts({
         PODValue: [],
     });
 
+    const [showTable, setShowTable] = useState(false);
+
     if (chartsData.length > 0) {
         return (
             <div className=" px-4 sm:px-6 pb-4 bg-smooth">
@@ -232,6 +233,7 @@ export default function MainCharts({
                                 setChartFilter={setChartFilter}
                                 chartName={chartName}
                                 setChartName={setChartName}
+                                userPermission={userPermission}
                             />
                         </div>
                     ) : (

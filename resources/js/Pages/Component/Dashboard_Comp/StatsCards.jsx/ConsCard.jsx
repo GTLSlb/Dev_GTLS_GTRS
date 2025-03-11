@@ -1,5 +1,6 @@
 import { Card, CardHeader, CardBody, Divider } from "@nextui-org/react";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import { formatNumberWithCommas } from "@/CommonFunctions";
 function ConsCard({ totalCount }) {
     return (
         <Card className="min-w-[190px] max-w-[400px]">
@@ -12,7 +13,7 @@ function ConsCard({ totalCount }) {
             <Divider />
             <CardBody>
                 <p className="w-full text-left text-sm flex items-center">
-                    {totalCount}
+                    {formatNumberWithCommas(totalCount)}
                 </p>
             </CardBody>
         </Card>
