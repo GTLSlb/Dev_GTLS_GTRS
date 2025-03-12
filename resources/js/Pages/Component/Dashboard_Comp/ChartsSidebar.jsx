@@ -197,6 +197,32 @@ const navigation = [
         id: 21,
         name: "Delivery Report",
         href: "#",
+        options: [
+            {
+                id: 24,
+                name: "Delivery Report",
+                href: "#",
+                current: false,
+                icon: DocumentDuplicateIcon,
+                feature: "DeliveryReport_View",
+            },
+            {
+                id: 25,
+                name: "Excel Delivery Report",
+                href: "#",
+                current: false,
+                icon: DocumentDuplicateIcon,
+                feature: "ExcelTable_View",
+            },
+            {
+                id: 26,
+                name: "Comments",
+                href: "#",
+                current: false,
+                icon: DocumentDuplicateIcon,
+                feature: "CommentsTable_View",
+            },
+        ],
         icon: DocumentDuplicateIcon,
         current: false,
         feature: "DeliveryReport_View",
@@ -314,8 +340,9 @@ export default function ChartsSidebar({
         });
         setSidebarElements(updatedElements);
     };
-    const filterNavigation = (navigation, user) => {
-        return navigation.filter((navItem) => {
+    const filterNavigation = (navigationitems, user) => {
+        return navigationitems.filter((navItem) => {
+            
             // Check if the navigation item has sub-options
             if (navItem.options) {
                 // Filter options based on user permissions
@@ -345,7 +372,7 @@ export default function ChartsSidebar({
         });
     };
 
-    const filteredNavigation = filterNavigation(navigation, currentUser);
+    const filteredNavigation = filterNavigation(sidebarElements, currentUser);
     useEffect(() => {
         setSidebarElements(filteredNavigation);
         setActiveIndexGTRS(filteredNavigation[0]?.id);

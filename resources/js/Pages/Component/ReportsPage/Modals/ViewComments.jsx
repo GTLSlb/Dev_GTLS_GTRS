@@ -1,12 +1,15 @@
 import ReactModal from "react-modal";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "../../../../../css/scroll.css";
 import moment from "moment";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import swal from "sweetalert";
 import axios from "axios";
-import { Spinner } from "@nextui-org/react";
-import { canEditDeliveryReportComment } from "@/permissions";
+import { handleSessionExpiration } from '@/CommonFunctions';
+import {
+    Spinner,
+} from "@nextui-org/react";
+import ComboBox from "@/Components/ComboBox";
 
 export default function ViewComments({
     isOpen,
@@ -17,81 +20,114 @@ export default function ViewComments({
     fetchData,
     currentUser,
     commentsData,
-    setCellLoading,
+    deliveryCommentsOptions,
+    fetchDeliveryReportCommentsData,
 }) {
-    const [data, setData] = useState([]);
-    const [comment, setComment] = useState(null);
-    const [commentId, setCommentId] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
 
+    const [ data, setData] = useState([]);
+    const [ comment, setComment] = useState(null);
+    const [ deliveryCommentId, setDeliveryCommentId] = useState(null);
+    const [ commentId, setCommentId] = useState(null);
+    const [ isEditing, setIsEditing] = useState(false);
+    const [ editIndx, setEditIndx] = useState(null);
+    const [ isLoading, setIsLoading] = useState(false);
+    const [newCommentValue, setNewCommentValue] = useState('');
     useEffect(() => {
-        if (commentsData) {
-            setData(commentsData);
-            setComment(
-                commentsData[0]?.Comment?.split("\n")?.reverse()?.join("\n")
-            );
-            setCommentId(commentsData[0]?.CommentId);
-        }
-    }, [commentsData]);
+       setData(commentsData);
+    },[commentsData])
 
-    const onValueChange = (e) => {
-        let newValue = e.target.value;
-        setComment(newValue); // Update the local state
+    const handleKeyDown = (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            handleSubmit();
+        }
     };
 
-    function convertUtcToUserTimezone(utcDateString) {
-        // Create a Date object from the UTC date string
-        const utcDate = new Date(utcDateString);
 
-        // Get the current user's timezone
-        const targetTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-        const formatter = new Intl.DateTimeFormat("en-US", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            timeZone: targetTimezone,
-        });
-
-        const convertedDate = formatter.format(utcDate);
-        return convertedDate;
+    // Add Comment to list not to delivery table
+    function AddComment(value, commentId) {
+        const inputValues = {
+            CommentId: null,
+            Comment: value,
+            StatusId: 1,
+        };
+        setIsLoading(true);
+        axios
+            .post(`${url}Add/Comment`, inputValues, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            })
+            .then((res) => {
+                fetchDeliveryReportCommentsData();
+                setShouldAddComment(false);
+            })
+            .catch((err) => {
+                setIsLoading(false);
+                if (err.response && err.response.status === 401) {
+                    // Handle 401 error using SweetAlert
+                    swal({
+                      title: 'Session Expired!',
+                      text: "Please login again",
+                      type: 'success',
+                      icon: "info",
+                      confirmButtonText: 'OK'
+                    }).then(async function () {
+                        await handleSessionExpiration();
+                    });
+                  } else {
+                    // Handle other errors
+                    console.log(err);
+                  }
+            });
+    }
+    const [shouldAddComment, setShouldAddComment] = useState(false);
+    const [addedComment, setAddedComment] = useState(false);
+    const [isDisabled, setIsDisabled] = useState(false);
+    const onSelectComment = (e, newValue)=>{
+        if(typeof newValue?.CommentId == 'string' && newValue?.CommentId !== ''){
+            if(e.target.textContent === `Add "${newValue?.CommentId}"`){
+                // Adding a new comment to the list not to the consignment
+                setIsDisabled(true)
+                setIsEditing(false)
+                setNewCommentValue(newValue?.CommentId?.trim())
+                setShouldAddComment(true);
+                AddComment(newValue?.CommentId?.trim());
+            }
+        }else{
+            // Adding a new comment to the consignment
+            setCommentId(newValue.CommentId)
+        }
     }
 
-    const handleSubmit = async () => {
-        const values = comment
-            .split(/\r?\n/)
-            .filter((value) => value.trim() !== "");
-        const reversedValues = values.reverse().join("\n");
-
+    const AddCommentToConsignment = async (newValue) => {
         let formValues = {
-            CommentId: commentId,
-            ConsId: consId,
-            Comment: reversedValues,
+            "DeliveryCommentId": deliveryCommentId,
+            "ConsId": consId,
+            "CommentId": newValue ? newValue : commentId
         };
-
         try {
             setIsLoading(true);
-            setCellLoading(consId);
-            await axios
-                .post(`${url}Add/Delivery/Comment`, formValues, {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
-                    },
-                })
-                .then((response) => {
-                    fetchData(setCellLoading);
-                    setTimeout(() => {
-                        setIsLoading(false);
-                        setCommentId(null);
-                        setComment(null);
-                    }, 1000);
 
-                    handleClose();
-                });
+            const response = await axios.post(`${url}Add/Delivery/Comment`, formValues, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            }).then((response) => {
+                fetchData();
+                setTimeout(() => {
+                    setIsLoading(false);
+                    setCommentId(null);
+                    setComment(null);
+                    setIsEditing(false);
+                    setEditIndx(null);
+                    setShouldAddComment(false);
+                    setAddedComment(true);
+                    setIsDisabled(false);
+                }, 1000);
+            })
         } catch (error) {
             setIsLoading(false);
             // Handle error
@@ -104,65 +140,52 @@ export default function ViewComments({
                     icon: "info",
                     confirmButtonText: "OK",
                 }).then(async function () {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                            if (response.status == 200) {
-                                window.location.href = "/";
-                            }
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                        });
+                    await handleSessionExpiration();
                 });
             } else {
                 // Handle other errors
                 console.log(error);
             }
             console.log(error);
-            setError("Error occurred while saving the data. Please try again."); // Set the error message
         }
-    };
+    }
+
+    const addCommentToConsignmentCallback = useCallback((newValue) => {
+        if(!addedComment){AddCommentToConsignment(newValue)}
+      }, [commentId, addedComment]);
+
+      useEffect(() => {
+        if (deliveryCommentsOptions?.length > 0 && newCommentValue !== '') {
+          const newValue = deliveryCommentsOptions?.find((item) => item.Comment === newCommentValue);
+          if (newValue && newValue?.Comment === newCommentValue) {
+            setCommentId(newValue?.CommentId);
+            addCommentToConsignmentCallback(newValue?.CommentId);
+          }
+        }
+      }, [deliveryCommentsOptions, newCommentValue]);
+
+      const handleSubmit = async () => {
+        if (shouldAddComment) {
+          setAddedComment(false);
+          AddComment(newCommentValue);
+        } else {
+          AddCommentToConsignment()
+        }
+      };
 
     return (
         <ReactModal
             ariaHideApp={false}
             isOpen={isOpen}
-            className="fixed inset-0 flex items-center justify-center "
-            overlayClassName="fixed inset-0 bg-black bg-opacity-60"
+            className="fixed inset-0 flex items-center justify-center"
+            overlayClassName="fixed inset-0 bg-black bg-opacity-60 z-50"
         >
             <div className="bg-white w-[40%] rounded-lg shadow-lg py-6 px-8">
-                <div className="flex justify-between pb-2 border-b-1 border-[#D5D5D5]">
-                    <h2 className="text-2xl font-bold text-gray-500">
-                        Comments
-                        {data?.length > 0 && (
-                            <p className="mt-2 text-dark text-sm font-light">
-                                Added At:{" "}
-                                {moment(
-                                    convertUtcToUserTimezone(
-                                        data[0]?.AddedAt + "Z"
-                                    ),
-
-                                    "MM/DD/YYYY, h:mm:ss A"
-                                ).format("DD-MM-YYYY hh:mm A") == "Invalid date"
-                                    ? ""
-                                    : moment(
-                                          convertUtcToUserTimezone(
-                                              data[0]?.AddedAt + "Z"
-                                          ),
-
-                                          "MM/DD/YYYY, h:mm:ss A"
-                                      ).format("DD-MM-YYYY hh:mm A")}
-                            </p>
-                        )}
-                    </h2>
+                <div className="flex justify-between pb-4 border-b-1 border-[#D5D5D5]">
+                    <h2 className="text-2xl font-bold text-gray-500">Comments</h2>
                     <button
-                        className="text-gray-500 -mt-8 hover:text-gray-700"
-                        onClick={() => {
-                            setComment(null);
-                            setCommentId(null);
-                            handleClose();
-                        }}
+                        className="text-gray-500 hover:text-gray-700"
+                        onClick={handleClose}
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -183,53 +206,36 @@ export default function ViewComments({
                 <div>
                     {data?.length > 0 ? (
                         <div className="max-h-[21rem] overflow-auto pr-1 containerscroll">
-                            <div className="flex flex-col gap-4 py-3">
-                                {canEditDeliveryReportComment(currentUser) && (
-                                    <div className="flex flex-col gap-4 px-1">
-                                        <textarea
-                                            type="text"
-                                            className="border-[#D5D5D5] rounded-lg  focus:!ring-[#D5D5D5] resize-none w-full min-h-[150px]"
-                                            defaultValue={comment}
-                                            value={comment}
-                                            onChange={onValueChange}
-                                        />
-
-                                        <div className="flex ml-auto gap-6  text-sm h-[2.4rem]">
-                                            <button
-                                                onClick={() => {
-                                                    setComment(null);
-                                                    setCommentId(null);
-                                                    handleClose();
-                                                }}
-                                                disabled={isLoading}
-                                                className="text-gray-500 hover:text-black"
-                                            >
-                                                Cancel
-                                            </button>
-                                            {isLoading ? (
-                                                <div className=" inset-0 flex justify-center items-center bg-opacity-50">
-                                                    <Spinner
-                                                        color="secondary"
-                                                        size="sm"
-                                                    />
-                                                </div>
-                                            ) : (
-                                                <button
-                                                    className="bg-gray-800 w-16 text-white font-bold rounded hover:bg-gray-800/80"
-                                                    onClick={() =>
-                                                        handleSubmit()
-                                                    }
-                                                >
-                                                    Save
-                                                </button>
-                                            )}
+                            {data?.map((c, index) => (
+                                <div className="flex flex-col gap-4 border-b-1 border-[#D5D5D5] py-3">
+                                    <div className="flex pr-2">
+                                        <div className="w-[95%]">
+                                        {isEditing && editIndx === index
+                                            ? <ComboBox idField={"CommentId"} valueField={"Comment"} onChange={onSelectComment} inputValue={comment} options={deliveryCommentsOptions?.filter((item) => item.CommentStatus == 1)} isDisabled={false} isMulti={false} onKeyDown={handleKeyDown} setInputValue={setComment}/>
+                                            //<textarea type="text" className="border-[#D5D5D5] rounded-lg w-full" defaultValue={c?.Comment} value={comment} onChange={(e)=>{setComment(e.target.value)}} />
+                                            :<p>{editIndx === index && comment != null && isDisabled ? comment : c?.Comment}</p>
+                                        }
                                         </div>
+                                        {isEditing && editIndx === index
+                                            ? <div className="flex mt-auto gap-4 ml-3 text-sm h-[1.6rem]">
+                                                <button onClick={()=>{setIsEditing(false); setDeliveryCommentId(null); setIsDisabled(false); setEditIndx(null)}} disabled={isLoading} className="text-gray-500">Cancel</button>
+                                                {
+                                                    isLoading
+                                                    ? <div className=" inset-0 flex justify-center items-center bg-opacity-50">
+                                                        <Spinner color="secondary" size="sm" />
+                                                      </div>
+                                                    : <button className="bg-gray-800 w-16 text-white font-bold rounded" onClick={()=>handleSubmit()}>Save</button>
+                                                }
+                                            </div>
+                                            : <PencilIcon onClick={()=>{setIsEditing(true); setComment(c); setDeliveryCommentId(c?.DeliveryCommentId); setCommentId(c?.CommentId); setEditIndx(index)}} className="w-5 h-5 text-sky-500 ml-auto hover:cursor-pointer hover:text-sky-500/70"/>
+                                        }
                                     </div>
-                                )}
-                            </div>
+                                    <p className="text-gray-400 text-sm font-light">{moment(c?.AddedAt).format("DD-MM-YYYY hh:mm A")}</p>
+                                </div>
+                            ))}
                         </div>
                     ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-gray-500 text-lg pt-8 pb-5">
+                        <div className="h-full flex flex-col items-center justify-center text-gray-500 text-lg py-4">
                             <p>No comments found</p>
                         </div>
                     )}

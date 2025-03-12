@@ -367,3 +367,11 @@ html {
       border-image: linear-gradient(to right, transparent 5px, black 5px) 1;
     }
   }
+
+  .htDimmed {
+    color: black !important;
+  }
+
+  .handsontable {
+    scrollbar-color: unset !important;
+}

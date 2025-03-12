@@ -26,6 +26,8 @@ import DailyReportPage from "./ReportsPage/DeliveryReportPage";
 import Cookies from "js-cookie";
 import RealFoodKPIPack from "./RealFoodKPIPack/RealFoodKPIPack";
 import ProductStockTable from "./Products/ProductStockTable";
+import ExcelDeliveryReport from "./ReportsPage/DeliveryReports/ExcelDeliveryReport";
+import DeliveryReportCommentsPage from "./ReportsPage/DeliveryReports/DeliveryReportCommentsPage";
 
 export default function charts({
     setCusomterAccounts,
@@ -1928,9 +1930,77 @@ export default function charts({
         }
     };
 
+    const [excelDailyReportData, setExcelDailyReportData] = useState();
+    const [deliveryReportComments, setDeliveryReportComments] = useState();
+    const fetchExcelDeliveryReportData = async (setCellLoading) => {
+        try {
+            const res = await axios.get(`${url}DeliveryReport`, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            });
+            setExcelDailyReportData(res.data || []);
+
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again",
+                    type: "success",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                }).then(async function () {
+                    await handleSessionExpiration();
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+                // Check if setCellLoading exists before calling it
+                if (typeof setCellLoading === "function") {
+                    setCellLoading(null);
+                }
+            }
+        }
+    };
+    const fetchDeliveryReportCommentsData = async (setCellLoading) => {
+        try {
+            const res = await axios.get(`${url}Delivery/Comments`, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            });
+            setDeliveryReportComments(res.data || []);
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again",
+                    type: "success",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                }).then(async function () {
+                    await handleSessionExpiration();
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+                // Check if setCellLoading exists before calling it
+                if (typeof setCellLoading === "function") {
+                    setCellLoading(null);
+                }
+            }
+        }
+    };
+
     useEffect(() => {
         if (currentUser) {
             fetchDeliveryReport();
+            fetchExcelDeliveryReportData();
+            fetchDeliveryReportCommentsData();
         }
     }, [currentUser]);
 
@@ -2280,14 +2350,47 @@ export default function charts({
             url={url}
             currentUser={currentUser}
             AToken={AToken}
-            dailyReportData={dailyReportData}
+            deliveryReportData={dailyReportData}
             fetchDeliveryReport={fetchDeliveryReport}
             setActiveIndexGTRS={setActiveIndexGTRS}
             setactiveCon={setactiveCon}
             setLastIndex={setLastIndex}
         />,
         <RealFoodKPIPack url={url} currentUser={currentUser} AToken={AToken} />,
-        <ProductStockTable url={url} currentUser={currentUser} AToken={AToken} />
+        <ProductStockTable
+            url={url}
+            currentUser={currentUser}
+            AToken={AToken}
+        />,
+        <DailyReportPage
+            url={url}
+            currentUser={currentUser}
+            AToken={AToken}
+            deliveryReportData={dailyReportData}
+            fetchDeliveryReport={fetchDeliveryReport}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            setactiveCon={setactiveCon}
+            setLastIndex={setLastIndex}
+        />,
+        <ExcelDeliveryReport
+            url={url}
+            AToken={AToken}
+            currentUser={currentUser}
+            setactiveCon={setactiveCon}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            // userPermission={userPermission}
+            deliveryReportData={excelDailyReportData}
+            fetchDeliveryReport={fetchExcelDeliveryReportData}
+            deliveryCommentsOptions={deliveryReportComments}
+        />,
+        <DeliveryReportCommentsPage
+            url={url}
+            AToken={AToken}
+            currentUser={currentUser}
+            // userPermission={userPermission}
+            data={deliveryReportComments}
+            fetchDeliveryReportCommentsData={fetchDeliveryReportCommentsData}
+        />,
     ];
     return (
         <div className="">
