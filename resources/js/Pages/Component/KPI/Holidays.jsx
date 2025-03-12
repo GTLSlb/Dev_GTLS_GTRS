@@ -143,6 +143,12 @@ export default function Holidays({
             },
         },
     ]);
+    const scrollIntoView = ()=>{
+        const button = document.getElementById('addSection');
+        if(button){
+            button.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+        }
+    }
 
     useEffect(() => {
         if (holidayOptions && stateOptions) {
@@ -237,6 +243,7 @@ export default function Holidays({
                                             }
                                             onClick={() => {
                                                 handleEditClick(data);
+                                                scrollIntoView();
                                             }}
                                         >
                                             <span className="flex gap-x-1">
@@ -371,15 +378,9 @@ export default function Holidays({
             {isFetching ? (
                 <AnimatedLoading />
             ) : (
-                <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                    <div className="sm:flex sm:items-center">
-                        <div className="sm:flex w-full items-center justify-between mt-6">
-                            <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                                Holidays
-                            </h1>
-                        </div>
-                    </div>
+                <div className="pt-4 px-4 sm:pt-6 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
                     {showAdd ? (
+                        <div id="addSection">
                         <AddHoliday
                             states={stateOptions}
                             holiday={holiday}
@@ -392,10 +393,12 @@ export default function Holidays({
                             fetchData={fetchData}
                             closeModal={ToggleShow}
                         />
+                        </div>
                     ) : null}
 
                     <TableStructure
                         id={"HolidayId"}
+                        title={"Holidays"}
                         setSelected={setSelected}
                         gridRef={gridRef}
                         additionalButtons={additionalButtons}

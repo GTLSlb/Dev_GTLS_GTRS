@@ -199,7 +199,28 @@ export default function CollapseSidebar({
 
     const handleClick = (id, item) => {
         const updatedElements = sidebarElements?.map((element) => {
-            if (element.options) {
+            if (id == 12 || id == 13 || id == 14 || id == 17 || id == 18) {
+                if (element.options) {
+                    return {
+                        ...element,
+                        current: element.options.find((option) => option.id == id) ? true : false,
+                        options: element.options.map((option) => {
+                            if (option.id == id) {
+                                return { ...option, current: true };
+                            } else {
+                                return { ...option, current: false };
+                            }
+                        }),
+                    };
+                } else {
+                    if (element.id === id) {
+                        return { ...element, current: true };
+                    } else {
+                        return { ...element, current: false };
+                    }
+                }
+            } else {
+                if (element.options) {
                 return {
                     ...element,
                     current: element.options.find((option) => option.id == id)
@@ -224,11 +245,11 @@ export default function CollapseSidebar({
                     return { ...element, current: false };
                 }
             }
-        });
+        }});
 
         handleSelectOnClick();
         setSidebarElements(updatedElements);
-        localStorage.setItem("current", JSON.stringify(id));
+        localStorage.setItem("current_URL", JSON.stringify(id));
         navigate(item.url);
     };
 

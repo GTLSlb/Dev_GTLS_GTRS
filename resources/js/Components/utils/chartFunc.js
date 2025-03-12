@@ -1,4 +1,6 @@
+const shuttleDebtorIds = [1514, 244];
 export const calculateStatistics = (data, filteredSafety) => {
+    
     let safetyCounter = 0;
     const uniqueReceivers = new Set();
     let totalWeight = 0;
@@ -28,6 +30,7 @@ export const calculateStatistics = (data, filteredSafety) => {
         ConsStatus,
         POD,
         FuelLevy,
+        ChargeToId,
     } of data) {
         uniqueReceivers.add(ReceiverName);
         totalWeight += TottalWeight;
@@ -41,7 +44,11 @@ export const calculateStatistics = (data, filteredSafety) => {
         if (ConsStatus === "PASS") {
             totalNoConsPassed++;
         } else if (ConsStatus === "FAIL") {
-            totalConsFailed++;
+            if (shuttleDebtorIds.includes(ChargeToId)) {
+                totalNoConsPassed++;
+            } else {
+                totalConsFailed++;
+            }
         } else if (ConsStatus === "PENDING") {
             totalConsPending++;
         }
@@ -55,6 +62,7 @@ export const calculateStatistics = (data, filteredSafety) => {
     const numUniqueReceivers = uniqueReceivers.size;
     const podPercentage = (podCounter / data.length) * 100;
 
+
     fuelLevy = isNaN(fuelLevy) ? 0 : fuelLevy;
     return {
         numUniqueReceivers,
@@ -65,6 +73,7 @@ export const calculateStatistics = (data, filteredSafety) => {
         totalCost,
         totalNoConsShipped,
         totalNoConsPassed,
+        totalConsPending,
         totalConsFailed,
         podCounter,
         podPercentage,

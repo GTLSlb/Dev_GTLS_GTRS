@@ -587,6 +587,38 @@ export function canViewDeliveryReportComment(currentUser) {
 }
 
 /**
+ * Checks if the user can view Delivery Report Comments Table based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can view Delivery Report Comments Table, false otherwise.
+ */
+export function canViewDeliveryReportCommentTable(currentUser) {
+    // Check for 'DeliveryReportComments_View' permission in the user's permissions array
+    return currentUser?.Features?.find(
+        (feature) =>
+            feature?.FunctionName === "DeliveryReportCommentsTable_View"
+    )
+        ? true
+        : false;
+}
+
+/**
+ * Checks if the user can edit Delivery Report Comments in Table View based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can edit Delivery Report Comments, false otherwise.
+ */
+export function canEditDeliveryReportCommentTableView(currentUser) {
+    // Define the specific permission
+    return currentUser?.Features?.find(
+        (feature) =>
+            feature?.FunctionName === "DeliveryReportCommentsTable_Edit"
+    )
+        ? true
+        : false;
+}
+
+/**
  * Checks if the user can edit Delivery Report Comments based on their permissions.
  *
  * @param {Object} currentUser - The current user object with role and permissions.
@@ -611,21 +643,6 @@ export function canAddDeliveryReportComment(currentUser) {
     // Define the specific permission
     return currentUser?.Features?.find(
         (feature) => feature?.FunctionName === "DeliveryReportComment_add"
-    )
-        ? true
-        : false;
-}
-
-/**
- * Checks if the user can edit Delivery Report Comments in Table View based on their permissions.
- *
- * @param {Object} currentUser - The current user object with role and permissions.
- * @return {boolean} True if the user can edit Delivery Report Comments, false otherwise.
- */
-export function canEditDeliveryReportCommentTableView(currentUser) {
-    // Define the specific permission
-    return currentUser?.Features?.find(
-        (feature) => feature?.FunctionName === "DeliveryReportCommentsTable_Edit"
     )
         ? true
         : false;
@@ -752,7 +769,7 @@ export function canViewChart(currentUser, chartPermission) {
  */
 export function canViewDetails(currentUser) {
     return currentUser?.Features?.find(
-        (feature) => feature?.FunctionName === "ConsignmentsDetails_view"
+        (feature) => feature?.FunctionName == "ConsignmentsDetails_view"
     )
         ? true
         : false;

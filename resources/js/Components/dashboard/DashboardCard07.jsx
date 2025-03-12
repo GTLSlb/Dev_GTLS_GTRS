@@ -259,7 +259,7 @@ function DashboardCard07(props) {
                                     </div>
                                 </td>
                             </tr>
-                            <tr>
+                            {/* <tr>
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
                                         <div className="text-slate-800 text-sm">
@@ -273,7 +273,7 @@ function DashboardCard07(props) {
                                         {data.safetyCounter}{" "}
                                     </div>
                                 </td>
-                            </tr>
+                            </tr> */}
 
                             {/* Row */}
                         </tbody>

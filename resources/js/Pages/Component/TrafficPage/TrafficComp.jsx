@@ -26,7 +26,7 @@ const columnMapping = {
     advice: "Advice",
     information: "More information",
 };
-const loadData = ({ skip, limit, sortInfo, filterValue }) => {
+const loadData = async ({ skip, limit, sortInfo, filterValue }) => {
     const url =
         `${gtrsWebUrl}get-positions` +
         "?skip=" +
@@ -74,6 +74,13 @@ const defaultFilterValue = [
         emptyValue: "",
     },
     {
+        name: "hours_difference",
+        type: "date",
+        operator: "eq",
+        value: "",
+        emptyValue: "",
+    },
+    {
         name: "road_name",
         type: "string",
         operator: "contains",
@@ -108,7 +115,7 @@ const states = [
     },
 ];
 
-function TraffiComp() {
+function TrafficComp() {
     const gridRef = useRef(null);
     const gridStyle = { minHeight: 550, marginTop: 10 };
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -489,4 +496,4 @@ function TraffiComp() {
     );
 }
 
-export default TraffiComp;
+export default TrafficComp;

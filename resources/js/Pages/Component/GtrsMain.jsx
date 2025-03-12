@@ -1,38 +1,9 @@
-import MainCharts from "./Dashboard_Comp/MainCharts";
-import { useState } from "react";
-import GtrsCons from "./GtrsCons";
-import ConsPerf from "./ConsPerf";
-import NoDelivery from "./NoDelivery";
-import AdditionalCharges from "./AdditionalCharges";
-import DriverLogin from "./DriverLogin";
-import SafetyRep from "./safetyRep";
-import RDDMain from "./RDD/RDDMain";
-import FailedConsMain from "./FailedConsignments/FailedConsMain";
-import MissingPOD from "./MissingPOD";
-import { useEffect } from "react";
-import Holidays from "./KPI/Holidays";
-import TransportRep from "./TransportRep";
-import NewKPI from "./KPI/NewKPI";
-import NewTransitDays from "./KPI/NewTransitDays";
-import AddNewTransitDay from "./KPI/AddNewTransitDay";
-import GraphPresentation from "./Presentation/GraphPresentation";
-import DeliveryReportPage from "./ReportsPage/DeliveryReportPage";
-import Incident from "./Incident/Incident";
 import { ProtectedRoute } from "@/CommonFunctions";
 import {
     getLatestDespatchDate,
     getMinMaxValue,
     getOldestDespatchDate,
 } from "@/Components/utils/dateUtils";
-import TrafficComp from "./TrafficPage/TrafficComp";
-import CollapseSidebar from "./CollapseSidebar";
-import { Button } from "@nextui-org/react";
-import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
-import ConsMap from "./TrafficPage/ConsMap";
-import { Routes, Route } from "react-router-dom";
-import NotFoundRedirect from "../NotFoundRedirect";
-import {ToastContainer} from 'react-toastify';
-import DeliveryReportCommentsPage from "./ReportsPage/CommentsTableView/DeliveryReportCommentsPage";
 import {
     getFiltersAddCharges,
     getFiltersCons,
@@ -42,20 +13,45 @@ import {
     getFiltersHolidays,
     getFiltersKPI,
     getFiltersNewTransit,
-    getFiltersKPIReasons,
     getFiltersNoDelInfo,
     getFiltersPOD,
     getFiltersRDD,
     getFiltersSafety,
     getFiltersTransport,
 } from "@/Components/utils/filters";
+import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
+import { Button } from "@nextui-org/react";
+import { useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
 import ConsDetails from "../ConsDetails";
-import NewConsignmentTracking from "./New Consignment Tracking/NewConsignmentTracking";
 import MainPageGTRS from "../MainPageGTRS";
+import NotFoundRedirect from "../NotFoundRedirect";
+import AdditionalCharges from "./AdditionalCharges";
+import CollapseSidebar from "./CollapseSidebar";
+import ConsPerf from "./ConsPerf";
+import MainCharts from "./Dashboard_Comp/MainCharts";
+import DriverLogin from "./DriverLogin";
+import FailedConsMain from "./FailedConsignments/FailedConsMain";
+import GtrsCons from "./GtrsCons";
+import Incident from "./Incident/Incident";
+import AddNewTransitDay from "./KPI/AddNewTransitDay";
+import Holidays from "./KPI/Holidays";
+import NewKPI from "./KPI/NewKPI";
+import NewTransitDays from "./KPI/NewTransitDays";
+import MissingPOD from "./MissingPOD";
+import NewConsignmentTracking from "./New Consignment Tracking/NewConsignmentTracking";
+import NoDelivery from "./NoDelivery";
+import GraphPresentation from "./Presentation/GraphPresentation";
+import RDDMain from "./RDD/RDDMain";
 import RealFoodKPIPack from "./RealFoodKPIPack/RealFoodKPIPack";
-import KPIReasons from "./KPI/KPIReasons";
-import ProductStockTable from "./ProductStock/ProductStockTable";
+import DeliveryReportPage from "./ReportsPage/DeliveryReportPage";
 import ExcelDeliveryReport from "./ReportsPage/ExcelDeliveryReport";
+import DeliveryReportCommentsPage from "./ReportsPage/CommentsTableView/DeliveryReportCommentsPage";
+import SafetyRep from "./safetyRep";
+import ConsMap from "./TrafficPage/ConsMap";
+import TrafficComp from "./TrafficPage/TrafficComp";
+import TransportRep from "./TransportRep";
+import ProductStockTable from "./ProductStock/ProductStockTable";
 
 export default function GtrsMain({
     setCusomterAccounts,
@@ -105,7 +101,6 @@ export default function GtrsMain({
     const [EDate, setEDate] = useState(getLatestDespatchDate(consData));
     const oldestDate = getOldestDespatchDate(consData);
     const latestDate = getLatestDespatchDate(consData);
-    const [collapsed, setCollapsed] = useState(false);
     const [dataFromChild, setDataFromChild] = useState(null);
     const [newtransitDay, setNewTransitDay] = useState(null);
     const [incidentId, setIncidentId] = useState(null);
@@ -161,9 +156,6 @@ export default function GtrsMain({
     );
     const [filtersHolidays, setFiltersHolidays] = useState(
         getFiltersHolidays(minDateHol, maxDateHol)
-    );
-    const [filtersKPIReasons, setFiltersKPIReasons] = useState(
-        getFiltersKPIReasons()
     );
     const [filtersFailed, setFiltersFailed] = useState(
         getFiltersFailed(minDispatchDate, maxDispatchDate)
@@ -696,10 +688,11 @@ export default function GtrsMain({
         });
     }, [sharedEndDate, sharedStartDate]);
 
+    const [chartName, setChartName] = useState("");
+    const [collapsed, setCollapsed] = useState(false);
+
     return (
         <div className="h-full">
-            {/* Added toast container since it wasn't showing */}
-            <ToastContainer />
             <div className="h-full">
                 {/* Left sidebar & main wrapper */}
                 <div className=" h-full flex">
@@ -708,9 +701,9 @@ export default function GtrsMain({
                         setBroken={setBroken}
                         rtl={rtl}
                         toggled={toggled}
+                        setToggled={setToggled}
                         collapsed={collapsed}
                         setCollapsed={setCollapsed}
-                        setToggled={setToggled}
                         sidebarElements={sidebarElements}
                         setSidebarElements={setSidebarElements}
                         setCusomterAccounts={setCusomterAccounts}
@@ -720,7 +713,7 @@ export default function GtrsMain({
                         user={userPermission}
                     />
 
-                    <main className="w-full overflow-y-auto ">
+                    <main className="w-full overflow-y-auto">
                         <div className="fixed left-0 top-20 z-10">
                             {broken && (
                                 <Button
@@ -763,12 +756,16 @@ export default function GtrsMain({
                                                 route="Dashboard_view"
                                                 element={
                                                     <MainCharts
-                                                        sideBarToggle={
-                                                            collapsed
-                                                        }
                                                         chartsData={chartsData}
                                                         safetyData={safetyData}
                                                         accData={dataFromChild}
+                                                        chartName={chartName}
+                                                        setChartName={
+                                                            setChartName
+                                                        }
+                                                        userPermission={
+                                                            userPermission
+                                                        }
                                                     />
                                                 }
                                                 currentUser={currentUser}
@@ -1193,33 +1190,39 @@ export default function GtrsMain({
                                             />
                                         }
                                     />
-                                    <Route
+                                    {/*<Route
                                         path="/kpi/reasons"
                                         element={
                                             <ProtectedRoute
                                                 permission={userPermission}
                                                 route="View_KPIReasons"
                                                 element={
-                                                    <KPIReasons
-                                                        url={url}
-                                                        filterValue={
-                                                            filtersKPIReasons
-                                                        }
-                                                        setFilterValue={
-                                                            setFiltersKPIReasons
+                                                    <Route
+                                                        path="/kpi-reasons"
+                                                        element={
+                                                            <KPIReasons
+                                                                url={url}
+                                                                currentUser={
+                                                                    currentUser
+                                                                }
+                                                                kpireasonsData={
+                                                                    kpireasonsData
+                                                                }
+                                                                AToken={AToken}
+                                                                setkpireasonsData={
+                                                                    setkpireasonsData
+                                                                }
+                                                                userPermission={
+                                                                    userPermission
+                                                                }
+                                                            />
                                                         }
                                                         currentUser={
                                                             currentUser
                                                         }
-                                                        kpireasonsData={
-                                                            kpireasonsData
-                                                        }
-                                                        AToken={AToken}
-                                                        setkpireasonsData={
-                                                            setkpireasonsData
-                                                        }
-                                                        userPermission={
-                                                            userPermission
+                                                        setToken={setToken}
+                                                        setCurrentUser={
+                                                            setCurrentUser
                                                         }
                                                     />
                                                 }
@@ -1228,10 +1231,7 @@ export default function GtrsMain({
                                                 setCurrentUser={setCurrentUser}
                                             />
                                         }
-                                        currentUser={currentUser}
-                                        setToken={setToken}
-                                        setCurrentUser={setCurrentUser}
-                                    />
+                                    />*/}
                                     <Route
                                         path="/transport"
                                         element={
@@ -1439,6 +1439,28 @@ export default function GtrsMain({
                                         setToken={setToken}
                                         setCurrentUser={setCurrentUser}
                                     />
+                                    {/* <Route
+                                        path="/consignment-tracking"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermission}
+                                                route="ConsignmentTracking_View"
+                                                element={
+                                                    <ConsTrack
+                                                        setFilterValue={
+                                                            setFiltersConsTrack
+                                                        }
+                                                        filterValue={
+                                                            filtersConsTrack
+                                                        }
+                                                    />
+                                                }
+                                            />
+                                        }
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
+                                    /> */}
                                     <Route
                                         path="/delivery-report"
                                         element={
@@ -1466,7 +1488,9 @@ export default function GtrsMain({
                                                         fetchDeliveryReport={
                                                             fetchDeliveryReport
                                                         }
-                                                        deliveryReportComments={deliveryReportComments}
+                                                        deliveryReportComments={
+                                                            deliveryReportComments
+                                                        }
                                                         fetchDeliveryReportCommentsDataGTRS={
                                                             fetchDeliveryReportCommentsData
                                                         }
@@ -1521,7 +1545,9 @@ export default function GtrsMain({
                                         element={
                                             <ProtectedRoute
                                                 permission={userPermission}
-                                                route={'DeliveryReportCommentsTable_View'}
+                                                route={
+                                                    "DeliveryReportCommentsTable_View"
+                                                }
                                                 element={
                                                     <DeliveryReportCommentsPage
                                                         url={url}
@@ -1575,6 +1601,10 @@ export default function GtrsMain({
                                         setCurrentUser={setCurrentUser}
                                     />
                                     <Route
+                                        path="/*"
+                                        element={<NotFoundRedirect />}
+                                    />
+                                    <Route
                                         path="/SOH"
                                         element={
                                             <ProtectedRoute
@@ -1594,10 +1624,6 @@ export default function GtrsMain({
                                         currentUser={currentUser}
                                         setToken={setToken}
                                         setCurrentUser={setCurrentUser}
-                                    />
-                                    <Route
-                                        path="/*"
-                                        element={<NotFoundRedirect />}
                                     />
                                 </Routes>
                             </div>

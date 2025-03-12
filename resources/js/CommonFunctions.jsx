@@ -39,7 +39,7 @@ export async function handleSessionExpiration() {
         .then(async (response) => {
             if (response.status === 200) {
                 const isMicrosoftLogin = Cookies.get("msal.isMicrosoftLogin");
-
+                localStorage.removeItem("current_URL");
                 // Clear MSAL-related data from localStorage
                 clearMSALLocalStorage();
                 Cookies.remove("access_token");
@@ -339,7 +339,7 @@ export function navigateToFirstAllowedPage({
       });
 
       // Get the `current` item from localStorage, if it exists
-      const savedCurrentId = localStorage.getItem("current");
+      const savedCurrentId = localStorage.getItem("current_URL");
 
       // Navigate to the current item
       if (currentItem) {

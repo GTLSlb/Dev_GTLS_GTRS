@@ -44,7 +44,7 @@ export default function Gtrs({
     const gtrsUrl = window.Laravel.gtrsUrl;
     const gtamUrl = window.Laravel.gtamUrl;
     const gtccrUrl = window.Laravel.gtccrUrl;
-    const [customerAccounts, setCusomterAccounts] = useState();
+    const [customerAccounts, setCusomterAccounts] = useState([]);
     const userdata = currentUser;
     const [canAccess, setCanAccess] = useState(true);
     const [deliveryReportData, setDeliveryReportData] = useState([]);
@@ -205,7 +205,7 @@ export default function Gtrs({
     const navigate = useNavigate();
     useEffect(() => {
         if(user){
-           navigateToFirstAllowedPage({setSidebarElements, user, navigate})
+            navigateToFirstAllowedPage({setSidebarElements, user, navigate})
         }
     },[user])
     if (
@@ -218,7 +218,6 @@ export default function Gtrs({
     ) {
         setLoadingGtrs(true);
     }
-
     if (loadingGtrs && AToken) {
         if (canAccess) {
             return (

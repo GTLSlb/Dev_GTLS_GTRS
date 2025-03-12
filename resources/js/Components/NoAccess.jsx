@@ -36,7 +36,7 @@ function NoAccess({currentUser, setToken, setCurrentUser}) {
             .post("/composerLogout", credentials)
             .then((response) => {
                 if (response.status === 200 && response.data.status === 200) {
-                    localStorage.removeItem('current');
+                    localStorage.removeItem('current_URL');
                     const isMicrosoftLogin = Cookies.get(
                         "msal.isMicrosoftLogin"
                     );
@@ -77,8 +77,8 @@ function NoAccess({currentUser, setToken, setCurrentUser}) {
                 <div className="text-3xl ">You have no access to this page</div>
 
                 <GtrsButton
-                    name={` ${isLoading ? <Spinner color="white" size="xs" /> : "Logout"}`}
-                    onClick={() => window.location.href= '/logout'}
+                    name={` ${isLoading ? "Loging Out..." : "Logout"}`}
+                    onClick={() => handleLogout()}
                     className="mt-6 py-4"
                 />
             </div>

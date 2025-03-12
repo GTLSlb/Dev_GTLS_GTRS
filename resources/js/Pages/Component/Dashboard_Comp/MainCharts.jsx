@@ -1,36 +1,18 @@
-import DashboardCard07 from "@/Components/dashboard/DashboardCard07";
-import BasicPieCharts from "@/Components/dashboard/DashboardCard13";
 import "../../../../css/dashboard.css";
-import BasicColumnCharts from "./Dashboard_Charts/BasicColumnChart";
-import { ArrowsPointingOutIcon } from "@heroicons/react/20/solid";
 import Select from "react-select";
 // import ReactGridLayout from 'react-grid-layout';
-import RGL, { WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { useState } from "react";
 import notFound from "../../../assets/pictures/NotFound.png";
 import { useEffect } from "react";
-import MultiChartLine from "./Dashboard_Charts/MultiLineChart";
-import DoubleBarChart from "./Dashboard_Charts/DoublBarChart";
 import {
     getLatestDespatchDate,
     getOldestDespatchDate,
 } from "@/Components/utils/dateUtils";
-import {
-    calculateStatistics,
-    getConsStatusCounter,
-    getKPIPerformanceCounter,
-    getKPIStatusCounter,
-    getMonthlyData,
-    getMonthlyRecordCounts,
-    getPODCounts,
-    getPODCountsByState,
-    getStateRecordCounts,
-    getStateTotalWeights,
-} from "@/Components/utils/chartFunc";
 import AnimatedLoading from "@/Components/AnimatedLoading";
-const ReactGridLayout = WidthProvider(RGL);
+import Charts from "./Charts";
+import ChartsTable from "./ChartsTable";
 
 const customStyles = {
     control: (provided) => ({
@@ -49,11 +31,11 @@ const customStyles = {
         width: "30%",
         overflow: "hidden",
         height: "20px",
-        display: "flex",
         justifyContent: "space-between",
     }),
     valueContainer: (provided) => ({
         ...provided,
+        width: "400px",
         maxHeight: "37px", // Set the maximum height for the value container
         overflow: "auto", // Enable scrolling if the content exceeds the maximum height
         // fontSize: '10px',
@@ -75,49 +57,50 @@ const customStyles = {
 
 export default function MainCharts({
     accData,
-    safetyData,
     chartsData,
     sideBarToggle,
+    chartName,
+    setChartName,
+    userPermission
 }) {
-    const [filteredSafety, setFilteredSafety] = useState(safetyData);
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const [cols, setCols] = useState(2);
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
     const [EDate, setEDate] = useState(getLatestDespatchDate(chartsData));
     const [filteredData, setFilteredData] = useState([chartsData]);
     const [selectedReceiver, setselectedReceiver] = useState([]);
-    const [dataWithoutReceiver, setDataWithoutReceiver] = useState([]);
-    const [gridKey, setGridKey] = useState("sidebar-open");
+    const [selectedStates, setSelectedStates] = useState([]);
+    const [filteredReceivers, setFilteredReceivers] = useState([]);
 
+    const [gridKey, setGridKey] = useState("sidebar-open");
     const [hasData, setHasData] = useState(true);
+
     useEffect(() => {
         setFilteredData(chartsData);
     }, []);
     const [layout, setLayout] = useState([
-        { i: "card01", x: 0, y: 0, w: 1, h: 4.5 }, 
-        { i: "card02", x: 2, y: 0, w: 1, h: 4.5 }, 
-        { i: "card03", x: 0, y: 2, w: 1, h: 3 }, 
-        { i: "card11", x: 0, y: 2, w: 1, h: 3 }, 
-        { i: "card04", x: 2, y: 0, w: 1, h: 3 }, 
-        { i: "card05", x: 0, y: 2, w: 1, h: 3 }, 
-        { i: "card06", x: 2, y: 2, w: 1, h: 3 }, 
-        { i: "card07", x: 0, y: 4, w: 1, h: 3 },
+        { i: "card01", x: 0, y: 0, w: 1, h: 4.2 },
+        { i: "card02", x: 2, y: 0, w: 1, h: 4.2 },
+        { i: "card03", x: 0, y: 2, w: 1, h: 3 },
+        { i: "card04", x: 0, y: 2, w: 1, h: 3 },
+        { i: "card05", x: 2, y: 0, w: 1, h: 3 },
+        { i: "card06", x: 0, y: 2, w: 1, h: 3 },
+        { i: "card07", x: 2, y: 2, w: 1, h: 3 },
+        { i: "card08", x: 0, y: 4, w: 1, h: 3 },
         { i: "card09", x: 2, y: 4, w: 1, h: 3 },
-        { i: "card10", x: 0, y: 4, w: 1, h: 3 },
+        { i: "card10", x: 2, y: 4, w: 1, h: 3 },
     ]);
     const ResetLayout = () => {
         // Filter the options based on the selected receivers
         setLayout([
-            { i: "card01", x: 0, y: 0, w: 1, h: 4.5 }, 
-            { i: "card02", x: 2, y: 0, w: 1, h: 4.5 }, 
-            { i: "card03", x: 0, y: 2, w: 1, h: 3 }, 
-            { i: "card11", x: 0, y: 2, w: 1, h: 3 }, 
-            { i: "card04", x: 2, y: 0, w: 1, h: 3 },
-            { i: "card05", x: 0, y: 2, w: 1, h: 3 }, 
-            { i: "card06", x: 2, y: 2, w: 1, h: 3 },
-            { i: "card07", x: 0, y: 4, w: 1, h: 3 },
+            { i: "card01", x: 0, y: 0, w: 1, h: 4.2 },
+            { i: "card02", x: 2, y: 0, w: 1, h: 4.2 },
+            { i: "card03", x: 0, y: 2, w: 1, h: 3 },
+            { i: "card04", x: 0, y: 2, w: 1, h: 3 },
+            { i: "card05", x: 2, y: 0, w: 1, h: 3 },
+            { i: "card06", x: 0, y: 2, w: 1, h: 3 },
+            { i: "card07", x: 2, y: 2, w: 1, h: 3 },
+            { i: "card08", x: 0, y: 4, w: 1, h: 3 },
             { i: "card09", x: 2, y: 4, w: 1, h: 3 },
-            { i: "card10", x: 0, y: 4, w: 1, h: 3 },
+            { i: "card10", x: 2, y: 4, w: 1, h: 3 },
         ]);
     };
     const handleStartDateChange = (event) => {
@@ -130,129 +113,91 @@ export default function MainCharts({
         setEDate(value);
         filterData(SDate, value, selectedReceiver);
     };
-    const uniqueReceiverNames = Array.from(
-        new Set(dataWithoutReceiver.map((item) => item.ReceiverName))
+    const uniqueStates = Array.from(
+        new Set(chartsData.map((item) => item.ReceiverState))
     );
-    const handleReceiverSelectChange = (selectedOptions) => {
-        setselectedReceiver(selectedOptions);
-        // filterData(SDate, EDate, selectedReceiver);
-    };
-    const receiverOptions = uniqueReceiverNames.map((name) => ({
+    const statesOptions = uniqueStates.map((name, index) => ({
         value: name,
         label: name,
     }));
-    function filterReportsByDebtorId(safetyData, debtorIds) {
-        return safetyData.filter((data) => debtorIds.includes(data.DebtorId));
-    }
-    const getFilteredOptions = () => {
-        // Filter the options based on the selected receivers
-        return receiverOptions.filter(
-            (option) =>
-                !selectedReceiver.find(
-                    (receiver) => receiver.value === option.value
-                )
-        );
+    const handleReceiverStateChange = (selectedOptions) => {
+        setselectedReceiver([]);
+        setSelectedStates(selectedOptions);
+    };
+    const handleReceiverSelectChange = (selectedOptions) => {
+        setselectedReceiver(selectedOptions);
     };
 
     const filterData = (startDate, endDate) => {
-        const selectedReceiverNames = selectedReceiver.map(
-            (receiver) => receiver.value
-        );
+        const selectedReceiverNames = selectedReceiver.map((r) => r.value);
+        const selectedReceiverStates = selectedStates.map((s) => s.value);
+
         const intArray = accData?.map((str) => {
             const intValue = parseInt(str);
             return isNaN(intValue) ? 0 : intValue;
         });
-        if (intArray) {
-            if (intArray && intArray?.length === 0) {
-                setFilteredSafety(safetyData);
-            } else {
-                setFilteredSafety(
-                    filterReportsByDebtorId(safetyData, intArray)
-                );
+
+        // Convert date inputs into comparable Date objects
+        const filterStartDate = new Date(startDate);
+        const filterEndDate = new Date(endDate);
+        filterStartDate.setHours(0, 0, 0, 0);
+        filterEndDate.setHours(23, 59, 59, 999);
+
+        // **Single pass through chartsData to filter both data and receivers**
+        const filtered = [];
+        const receiversSet = new Set();
+
+        chartsData.forEach((item) => {
+            const itemDate = new Date(item.DespatchDate);
+            const isInState =
+                selectedReceiverStates.length === 0 ||
+                selectedReceiverStates.includes(item.ReceiverState);
+            const chargeToMatch =
+                intArray?.length === 0 || intArray?.includes(item.ChargeToId);
+
+            // Apply filters for main dataset
+            if (
+                itemDate >= filterStartDate &&
+                itemDate <= filterEndDate &&
+                chargeToMatch &&
+                isInState &&
+                (selectedReceiverNames.length === 0 ||
+                    selectedReceiverNames.includes(item.ReceiverName))
+            ) {
+                filtered.push(item);
             }
-        } else {
-            setFilteredSafety(safetyData);
-        }
-        const filteredDataWithoutReceiver = chartsData.filter((item) => {
-            const itemDate = new Date(item.DespatchDate);
-            const filterStartDate = new Date(startDate);
-            const filterEndDate = new Date(endDate);
-            filterStartDate.setHours(0);
-            filterEndDate.setSeconds(59);
-            filterEndDate.setMinutes(59);
-            filterEndDate.setHours(23);
 
-            const chargeToMatch =
-                intArray?.length === 0 || intArray?.includes(item.ChargeToId);
-
-            return (
+            // Collect possible receivers for the dropdown (ignore receiver filter here)
+            if (
                 itemDate >= filterStartDate &&
                 itemDate <= filterEndDate &&
-                chargeToMatch
-            );
+                chargeToMatch &&
+                isInState
+            ) {
+                receiversSet.add(item.ReceiverName);
+            }
         });
-        const filtered = chartsData.filter((item) => {
-            const isIncluded =
-                selectedReceiverNames.length === 0 ||
-                selectedReceiverNames?.includes(item.ReceiverName);
 
-            const itemDate = new Date(item.DespatchDate);
-            const filterStartDate = new Date(startDate);
-            const filterEndDate = new Date(endDate);
-            filterStartDate.setHours(0);
-            filterEndDate.setSeconds(59);
-            filterEndDate.setMinutes(59);
-            filterEndDate.setHours(23);
-
-            const chargeToMatch =
-                intArray?.length === 0 || intArray?.includes(item.ChargeToId);
-
-            return (
-                itemDate >= filterStartDate &&
-                itemDate <= filterEndDate &&
-                isIncluded &&
-                chargeToMatch
-            );
-        });
-        const hasData = filtered?.length > 0;
-        setDataWithoutReceiver(filteredDataWithoutReceiver);
         setFilteredData(filtered);
-        setHasData(hasData);
+        setHasData(filtered.length > 0);
+
+        // Ensure the selected receivers are always included in the dropdown
+        selectedReceiverNames.forEach((name) => receiversSet.add(name));
+
+        // Convert Set to an array for dropdown options
+        const updatedReceiverOptions = Array.from(receiversSet).map(
+            (name, index) => ({
+                value: name,
+                label: name,
+            })
+        );
+
+        setFilteredReceivers(updatedReceiverOptions);
     };
 
     useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth < 768) {
-                setCols(1);
-            } else if (window.innerWidth < 1300) {
-                setCols(1);
-            } else {
-                setCols(2);
-            }
-        };
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
-    }, []);
-
-    useEffect(() => {
         filterData(SDate, EDate);
-    }, [accData, selectedReceiver]);
-
-    useEffect(() => {
-        // Update the layout when cols change
-        setLayout((prevLayout) =>
-            prevLayout.map((item, index) => {
-                return {
-                    ...item,
-                    x: index % cols, // Distribute the divs evenly between x=0 and x=1
-                    w: sideBarToggle ? item.w : Math.min(item.w, 1), // Set the width to cols for the first div, and 1 for others
-                };
-            })
-        );
-    }, [cols, sideBarToggle]);
+    }, [accData, selectedReceiver, selectedStates]);
 
     useEffect(() => {
         // Introduce a delay before changing the key
@@ -264,213 +209,191 @@ export default function MainCharts({
         return () => clearTimeout(timeout);
     }, [sideBarToggle]);
 
+    const [chartFilter, setChartFilter] = useState({
+        consStatus: "",
+        ReceiverState: "",
+        dateStart: "",
+        dateEnd: "",
+        MatchDel: "",
+        PODValue: [],
+    });
+
+    const [showTable, setShowTable] = useState(false);
+
     if (chartsData.length > 0) {
         return (
             <div className=" px-4 sm:px-6 pb-4 bg-smooth">
-                <div className="sm:flex sm:items-center">
-                    <div className="sm:flex-auto md:mt-6">
-                        <h1 className="text-2xl py-2 px-2 font-extrabold text-gray-600">
-                            Dashboard
-                        </h1>
-                    </div>
-                </div>
-                <div className="mt-3 w-full">
-                    <div className="w-full relative px-2">
-                        <div className=" grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6 gap-4">
-                            <div className="flex flex-col md:flex-row gap-4 md:items-center">
-                                <label
-                                    htmlFor="last-name"
-                                    className="inline-block text-sm font-medium leading-6 flex-item items-center"
-                                >
-                                    Date From
-                                </label>
-                                <div className="">
-                                    <input
-                                        onKeyDown={(e) => e.preventDefault()}
-                                        type="date"
-                                        name="from-date"
-                                        value={SDate}
-                                        min={getOldestDespatchDate(chartsData)}
-                                        max={EDate}
-                                        onChange={handleStartDateChange}
-                                        id="from-date"
-                                        className="flex-item block w-full h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 lg:max-w-xs sm:text-sm sm:leading-6"
-                                    />
+                {hasData ? (
+                    showTable ? (
+                        <div>
+                            <ChartsTable
+                                chartsData={filteredData}
+                                setShowTable={setShowTable}
+                                chartFilter={chartFilter}
+                                setChartFilter={setChartFilter}
+                                chartName={chartName}
+                                setChartName={setChartName}
+                                userPermission={userPermission}
+                            />
+                        </div>
+                    ) : (
+                        <>
+                            <div className="sm:flex sm:items-center">
+                                <div className="sm:flex-auto md:mt-6">
+                                    <h1 className="text-2xl py-2 px-2 font-extrabold text-gray-600">
+                                        Dashboard
+                                    </h1>
                                 </div>
                             </div>
-                            <div className="flex flex-col md:flex-row gap-4 md:items-center">
-                                <label
-                                    htmlFor="last-name"
-                                    className="inline-block text-sm font-medium leading-6 flex-item"
-                                >
-                                    To
-                                </label>
+                            <div className="mt-3 w-full">
+                                <div className="w-full relative px-2">
+                                    <div className=" sm:border-gray-200 text-gray-400 gap-y-4 gap-x-2 w-full">
+                                        <div className="lg:flex items-center">
+                                            <label
+                                                htmlFor="last-name"
+                                                className="inline-block text-sm font-medium leading-6 flex-item items-center"
+                                            >
+                                                Date From
+                                            </label>
+                                            <div className="sm:mt-0 md:px-4">
+                                                <input
+                                                    onKeyDown={(e) =>
+                                                        e.preventDefault()
+                                                    }
+                                                    type="date"
+                                                    name="from-date"
+                                                    value={SDate}
+                                                    min={getOldestDespatchDate(
+                                                        chartsData
+                                                    )}
+                                                    max={EDate}
+                                                    onChange={
+                                                        handleStartDateChange
+                                                    }
+                                                    id="from-date"
+                                                    className="flex-item block w-full h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 lg:max-w-xs sm:text-sm sm:leading-6"
+                                                />
+                                            </div>
 
-                                <div className="">
-                                    <input
-                                        onKeyDown={(e) => e.preventDefault()}
-                                        type="date"
-                                        name="to-date"
-                                        min={SDate}
-                                        max={getLatestDespatchDate(chartsData)}
-                                        value={EDate}
-                                        onChange={handleEndDateChange}
-                                        id="to-date"
-                                        className="block w-full h-[36px]  rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 lg:max-w-xs sm:text-sm sm:leading-6"
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex flex-col md:flex-row gap-4 md:items-center xl:col-span-2 2xl:col-span-3">
-                                <label
-                                    htmlFor="last-name"
-                                    className=" text-sm font-medium text-gray-400"
-                                >
-                                    Receiver Name
-                                </label>
+                                            <label
+                                                htmlFor="last-name"
+                                                className="inline-block text-sm font-medium leading-6 flex-item"
+                                            >
+                                                To
+                                            </label>
 
-                                <div className=" flex items-center w-full">
-                                    <div className="w-full">
-                                        <Select
-                                            styles={customStyles}
-                                            isMulti
-                                            name="colors"
-                                            value={selectedReceiver}
-                                            options={getFilteredOptions()}
-                                            onChange={
-                                                handleReceiverSelectChange
-                                            }
-                                            className="basic-multi-select w-full"
-                                            classNamePrefix="select"
-                                        />
+                                            <div className="mt-2 flex-item  sm:mt-0 md:px-4">
+                                                <input
+                                                    onKeyDown={(e) =>
+                                                        e.preventDefault()
+                                                    }
+                                                    type="date"
+                                                    name="to-date"
+                                                    min={SDate}
+                                                    max={getLatestDespatchDate(
+                                                        chartsData
+                                                    )}
+                                                    value={EDate}
+                                                    onChange={
+                                                        handleEndDateChange
+                                                    }
+                                                    id="to-date"
+                                                    className="block w-full h-[36px]  rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 lg:max-w-xs sm:text-sm sm:leading-6"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="lg:flex items-center gap-5 mt-2">
+                                            <div className="lg:flex lg:w-full items-center">
+                                                <label
+                                                    htmlFor="last-name"
+                                                    className=" text-sm font-medium leading-6 text-gray-400 sm:pt-1.5 2xl:mr-5"
+                                                >
+                                                    State
+                                                </label>
+
+                                                <div className="w-full">
+                                                    <div className=" flex items-center">
+                                                        <div className="mt-2 w-full sm:mt-0 ">
+                                                            <Select
+                                                                styles={
+                                                                    customStyles
+                                                                }
+                                                                isMulti
+                                                                name="colors"
+                                                                value={
+                                                                    selectedStates
+                                                                }
+                                                                options={
+                                                                    statesOptions
+                                                                }
+                                                                onChange={
+                                                                    handleReceiverStateChange
+                                                                }
+                                                                className="basic-multi-select w-full"
+                                                                classNamePrefix="select"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="lg:flex lg:w-full items-center">
+                                                <label
+                                                    htmlFor="last-name"
+                                                    className=" text-sm font-medium leading-6 text-gray-400 sm:pt-1.5 2xl:mr-5"
+                                                >
+                                                    Receiver
+                                                </label>
+
+                                                <div className="w-full">
+                                                    <div className=" flex items-center">
+                                                        <div className="mt-2 w-full sm:mt-0 ">
+                                                            <Select
+                                                                styles={
+                                                                    customStyles
+                                                                }
+                                                                isMulti
+                                                                name="colors"
+                                                                value={
+                                                                    selectedReceiver
+                                                                }
+                                                                options={
+                                                                    filteredReceivers
+                                                                }
+                                                                onChange={
+                                                                    handleReceiverSelectChange
+                                                                }
+                                                                className="basic-multi-select w-full"
+                                                                classNamePrefix="select"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="xl:ml-auto w-1/4 flex justify-end">
+                                                <button
+                                                    className={`hidden items-center w-auto h-[36px] rounded-md border bg-gray-800 px-4 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+                                                    onClick={ResetLayout}
+                                                >
+                                                    Reset layout
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div className="xl:ml-auto flex items-center">
-                                <button
-                                    className={`  items-center w-auto h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
-                                    onClick={ResetLayout}
-                                >
-                                    Reset layout
-                                </button>
+                            <div className="layout-container">
+                                <Charts
+                                    layout={layout}
+                                    filteredData={filteredData}
+                                    gridKey={gridKey}
+                                    setLayout={setLayout}
+                                    setShowTable={setShowTable}
+                                    setChartFilter={setChartFilter}
+                                    setChartName={setChartName}
+                                />
                             </div>
-                        </div>
-                    </div>
-                </div>
-                {hasData ? (
-                    <div className="layout-container">
-                        {" "}
-                        <ReactGridLayout
-                            key={gridKey} // Change key to force re-render
-                            className="layout custom-grid"
-                            layout={layout}
-                            cols={cols}
-                            rowHeight={110}
-                            width={1200}
-                            isResizable={false}
-                            isDraggable={!isMobile}
-                            autoSize={true}
-                            onLayoutChange={(layout) => setLayout(layout)}
-                            dragEnterChild="drag-over"
-                            dragLeaveChild="drag-out"
-                            // onLayoutChange={(layout) => setLayout(layout)}
-                        >
-                            <div key="card01" className="relative drag-over">
-                                {" "}
-                                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                                <DashboardCard07
-                                    InfoData={calculateStatistics(filteredData)}
-                                />{" "}
-                            </div>
-
-                            <div key="card02" className="relative">
-                                {" "}
-                                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                                <MultiChartLine
-                                    chartData={getMonthlyData(filteredData)}
-                                    chartTitle={"Spend By State"}
-                                />{" "}
-                            </div>
-                            <div key="card03" className="relative">
-                                {" "}
-                                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                                <BasicPieCharts
-                                    chartData={getKPIPerformanceCounter(
-                                        filteredData
-                                    )}
-                                    labelContent="{name} - {percentage}"
-                                    chartTitle={"On Time Performance"}
-                                />{" "}
-                            </div>
-                            <div key="card11" className="relative">
-                                {" "}
-                                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                                <BasicPieCharts
-                                    chartData={getConsStatusCounter(
-                                        filteredData
-                                    )}
-                                    labelContent="{name} - {percentage}"
-                                    chartTitle={"Consignment Status"}
-                                />{" "}
-                            </div>
-                            <div key="card04" className="relative">
-                                {" "}
-                                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                                <BasicColumnCharts
-                                    chartData={getMonthlyRecordCounts(
-                                        filteredData
-                                    )}
-                                    chartTitle={" Consignment By Month"}
-                                />{" "}
-                            </div>
-                            <div key="card07">
-                                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                                <BasicColumnCharts
-                                    chartData={getStateRecordCounts(
-                                        filteredData
-                                    )}
-                                    chartTitle={" Consignments By state"}
-                                />{" "}
-                            </div>
-                            <div key="card05" className="relative">
-                                {" "}
-                                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                                <DoubleBarChart
-                                    chartData={getPODCounts(filteredData)}
-                                    chartTitle={"POD True vs False"}
-                                />{" "}
-                            </div>
-                            <div key="card06" className="relative">
-                                {" "}
-                                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                                <BasicPieCharts
-                                    chartData={getPODCountsByState(
-                                        filteredData
-                                    )}
-                                    chartTitle={"POD Status By State"}
-                                />{" "}
-                            </div>
-                            <div key="card09" className="relative">
-                                {" "}
-                                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                                <BasicColumnCharts
-                                    chartData={getStateTotalWeights(
-                                        filteredData
-                                    )}
-                                    chartTitle={" Weight By state"}
-                                />{" "}
-                            </div>
-                            <div key="card10" className="relative">
-                                {" "}
-                                <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                                <BasicPieCharts
-                                    chartData={getKPIStatusCounter(
-                                        filteredData
-                                    )}
-                                    chartTitle={"KPI Status"}
-                                />{" "}
-                            </div>
-                        </ReactGridLayout>
-                    </div>
+                        </>
+                    )
                 ) : (
                     <div className=" h-72 flex items-center justify-center mt-5">
                         <div className="text-center flex justify-center flex-col">
