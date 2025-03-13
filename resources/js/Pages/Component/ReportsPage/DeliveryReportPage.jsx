@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, {
+    useState,
+    useEffect,
+    useCallback,
+    useMemo,
+    useRef,
+} from "react";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
@@ -22,6 +28,21 @@ import { ToastContainer } from "react-toastify";
 import TableStructure from "@/Components/TableStructure";
 import ComboBox from "@/Components/ComboBox";
 import ViewComments from "./Modals/ViewComments";
+import { exportToExcel } from "@/Components/utils/excelUtils";
+
+const formatDateToExcel = (dateValue) => {
+    const date = new Date(dateValue);
+
+    // Check if the date is valid
+    if (isNaN(date.getTime())) {
+        return ""; // Return empty string if invalid date
+    }
+
+    // Convert to Excel date serial number format
+    return (
+        (date.getTime() - date.getTimezoneOffset() * 60000) / 86400000 + 25569
+    );
+};
 
 export default function DailyReportPage({
     url,
@@ -407,7 +428,8 @@ export default function DailyReportPage({
                             },
                         })
                         .then((res) => {
-                            const extracted = CommentValue.split('"')[1] || CommentValue;
+                            const extracted =
+                                CommentValue.split('"')[1] || CommentValue;
                             setDeliveryCommentsOptions(res.data);
                             if (res.data?.length > 0 && CommentValue !== "") {
                                 const newValue = res.data?.find(
@@ -1115,46 +1137,442 @@ export default function DailyReportPage({
 
     const gridRef = useRef(null);
     const [selected, setSelected] = useState([]);
-    function handleDownloadExcel() {
-            const jsonData = handleFilterTable(gridRef, data);
 
-            // Dynamically create column mapping from the `columns` array
-            const columnMapping = columns.reduce((acc, column) => {
-                acc[column.name] = column.header;
-                return acc;
-            }, {});
+    function handleFilterTable(ref, filteredData) {
+        // Get the selected columns or use all columns if none are selected
+        let selectedColumns = Array.from(
+            document.querySelectorAll('input[name="column"]:checked')
+        ).map((checkbox) => checkbox.value);
 
-            // Define custom cell handlers
-            const customCellHandlers = {
-                DespatchDateTime: (value) => formatDateToExcel(value),
-                DeliveryRequiredDateTime: (value) => formatDateToExcel(value),
-                DeliveredDateTime: (value) => formatDateToExcel(value),
-                Comments: (value) =>
-                    value
-                        ?.map(
-                            (item) => `${formatDate(item.AddedAt)}, ${item.Comment}`
-                        )
-                        .join("\n"),
-                POD: (value) => (value ? value : "FALSE"),
-            };
+        let allHeaderColumns = gridRef?.current?.visibleColumns?.map(
+            (column) => ({
+                name: column.name,
+                value: column.computedFilterValue?.value,
+                label: column.computedHeader,
+                type: column.computedFilterValue?.type,
+                operator: column.computedFilterValue?.operator,
+            })
+        );
+        let selectedColVal = allHeaderColumns?.filter(
+            (col) => col?.label?.toString().toLowerCase() !== "edit"
+        );
+        const filterValue = [];
+        filteredData?.map((val) => {
+            let isMatch = true;
 
-            // Call the `exportToExcel` function
-            const ExcelName = activeComponentIndex == 0 ? "Unilever-Metcash-Reports.xlsx" : activeComponentIndex == 1 ? "Unilever-Woolworths-Reports.xlsx" : activeComponentIndex == 2 ? "Unilever-Other-Reports.xlsx" : null;
-            exportToExcel(
-                jsonData, // Filtered data
-                columnMapping, // Dynamic column mapping from columns
-                ExcelName, // Export file name
-                customCellHandlers, // Custom handlers for formatting cells
-                [
-                    "DespatchDateTime",
-                    "DeliveryRequiredDateTime",
-                    "DeliveredDateTime",
-                ]
-            );
+            for (const col of selectedColVal) {
+                const { name, value, type, operator } = col;
+                const cellValue = value;
+                let conditionMet = false;
+                // Skip the filter condition if no filter is set (cellValue is null or empty)
+                if (!cellValue || cellValue.length === 0) {
+                    conditionMet = true;
+                    continue;
+                }
+                if (type === "string") {
+                    const valLowerCase = val[col.name]
+                        ?.toString()
+                        .toLowerCase();
+                    const cellValueLowerCase = cellValue
+                        ?.toString()
+                        .toLowerCase();
+
+                    switch (operator) {
+                        case "contains":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                valLowerCase.includes(cellValueLowerCase);
+                            break;
+                        case "notContains":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                !valLowerCase.includes(cellValueLowerCase);
+                            break;
+                        case "eq":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                cellValueLowerCase === valLowerCase;
+                            break;
+                        case "neq":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                cellValueLowerCase !== valLowerCase;
+                            break;
+                        case "empty":
+                            conditionMet =
+                                cellValue?.length > 0 && val[col.name] === "";
+                            break;
+                        case "notEmpty":
+                            conditionMet =
+                                cellValue?.length > 0 && val[col.name] !== "";
+                            break;
+                        case "startsWith":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                valLowerCase.startsWith(cellValueLowerCase);
+                            break;
+                        case "endsWith":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                valLowerCase.endsWith(cellValueLowerCase);
+                            break;
+                        // ... (add other string type conditions here)
+                    }
+                } else if (type === "number") {
+                    const numericCellValue = parseFloat(cellValue);
+                    const numericValue = parseFloat(val[col.name]);
+
+                    switch (operator) {
+                        case "eq":
+                            conditionMet =
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue === numericCellValue;
+                            break;
+                        case "neq":
+                            conditionMet =
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue !== numericCellValue;
+                            break;
+                        case "gt":
+                            conditionMet =
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue > numericCellValue;
+                            break;
+                        case "gte":
+                            conditionMet =
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue >= numericCellValue;
+                            break;
+                        case "lt":
+                            conditionMet =
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue < numericCellValue;
+                            break;
+                        case "lte":
+                            conditionMet =
+                                numericCellValue != "" &&
+                                numericValue != "" &&
+                                numericValue <= numericCellValue;
+                            break;
+                        case "inrange":
+                            const rangeValues = value.split(",");
+                            const minRangeValue = parseFloat(rangeValues[0]);
+                            const maxRangeValue = parseFloat(rangeValues[1]);
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                numericCellValue >= minRangeValue &&
+                                numericCellValue <= maxRangeValue;
+                            break;
+                        case "notinrange":
+                            const rangeValuesNotBetween = value.split(",");
+                            const minRangeValueNotBetween = parseFloat(
+                                rangeValuesNotBetween[0]
+                            );
+                            const maxRangeValueNotBetween = parseFloat(
+                                rangeValuesNotBetween[1]
+                            );
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                (numericCellValue < minRangeValueNotBetween ||
+                                    numericCellValue > maxRangeValueNotBetween);
+                            break;
+                        // ... (add other number type conditions here if necessary)
+                    }
+                } else if (type === "boolean") {
+                    // Assuming booleanCellValue is a string 'true' or 'false' and needs conversion to a boolean
+                    const booleanCellValue = cellValue === "true";
+                    const booleanValue = val[col.name] === true; // Convert to boolean if it's not already
+
+                    switch (operator) {
+                        case "eq":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                booleanCellValue === booleanValue;
+                            break;
+                        case "neq":
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                booleanCellValue !== booleanValue;
+                            break;
+                        // ... (add other boolean type conditions here if necessary)
+                    }
+                } else if (type === "select") {
+                    let cellValueLowerCase = null;
+                    let valLowerCase = null;
+
+                    if (typeof cellValue === "number") {
+                        cellValueLowerCase = cellValue;
+                        valLowerCase = val[col.name];
+                    } else {
+                        cellValueLowerCase = cellValue
+                            ?.toString()
+                            .toLowerCase();
+                        valLowerCase = val[col.name]?.toString().toLowerCase();
+                    }
+                    switch (operator) {
+                        case "eq":
+                            if (typeof valLowerCase === "number") {
+                                conditionMet =
+                                    cellValueLowerCase === valLowerCase;
+                            } else {
+                                conditionMet =
+                                    cellValue?.length > 0 &&
+                                    cellValueLowerCase === valLowerCase;
+                            }
+
+                            break;
+                        case "neq":
+                            if (typeof valLowerCase === "number") {
+                                conditionMet =
+                                    cellValueLowerCase !== valLowerCase;
+                            } else {
+                                conditionMet =
+                                    cellValue?.length > 0 &&
+                                    cellValueLowerCase !== valLowerCase;
+                            }
+                            break;
+                        case "inlist":
+                            const listValues = Array.isArray(value)
+                                ? value.map((v) => v.toLowerCase())
+                                : [value?.toLowerCase()];
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                listValues.includes(valLowerCase);
+                            break;
+                        case "notinlist":
+                            const listValuesNotIn = Array.isArray(value)
+                                ? value.map((v) => v.toLowerCase())
+                                : [value?.toLowerCase()];
+                            conditionMet =
+                                cellValue?.length > 0 &&
+                                !listValuesNotIn.includes(valLowerCase);
+                            break;
+                        // ... (add other select type conditions here if necessary)
+                    }
+                } else if (type === "date") {
+                    const dateValue = moment(
+                        val[col.name].replace("T", " "),
+                        "YYYY-MM-DD HH:mm:ss"
+                    );
+                    const hasStartDate =
+                        cellValue?.start && cellValue.start.length > 0;
+                    const hasEndDate =
+                        cellValue?.end && cellValue.end.length > 0;
+                    const dateCellValueStart = hasStartDate
+                        ? moment(cellValue.start, "DD-MM-YYYY")
+                        : null;
+                    const dateCellValueEnd = hasEndDate
+                        ? moment(cellValue.end, "DD-MM-YYYY").endOf("day")
+                        : null;
+
+                    switch (operator) {
+                        case "after":
+                            // Parse the cellValue date with the format you know it might have
+                            const afterd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+
+                            // Parse the dateValue as an ISO 8601 date string
+                            const afterdateToCompare = moment(dateValue);
+
+                            // Check if both dates are valid and if cellValue is after dateValue
+                            conditionMet =
+                                afterd.isValid() &&
+                                afterdateToCompare.isValid() &&
+                                afterdateToCompare.isAfter(afterd);
+
+                            break;
+                        case "afterOrOn":
+                            const afterOrOnd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const afterOrOnDateToCompare = moment(dateValue);
+
+                            conditionMet =
+                                afterOrOnd.isValid() &&
+                                afterOrOnDateToCompare.isValid() &&
+                                afterOrOnDateToCompare.isSameOrAfter(
+                                    afterOrOnd
+                                );
+                            break;
+
+                        case "before":
+                            const befored = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const beforeDateToCompare = moment(dateValue);
+
+                            conditionMet =
+                                befored.isValid() &&
+                                beforeDateToCompare.isValid() &&
+                                beforeDateToCompare.isBefore(befored);
+
+                            break;
+
+                        case "beforeOrOn":
+                            const beforeOrOnd = moment(
+                                cellValue,
+                                "DD-MM-YYYY",
+                                true
+                            );
+                            const beforeOrOnDateToCompare = moment(dateValue);
+
+                            conditionMet =
+                                beforeOrOnd.isValid() &&
+                                beforeOrOnDateToCompare.isValid() &&
+                                beforeOrOnDateToCompare.isSameOrBefore(
+                                    beforeOrOnd
+                                );
+
+                            break;
+                        case "eq":
+                            // Parse the cellValue date with the format you know it might have
+                            const d = moment(
+                                cellValue,
+                                ["DD-MM-YYYY", moment.ISO_8601],
+                                true
+                            );
+
+                            // Parse the dateValue with the expected format or formats
+                            const dateToCompare = moment(
+                                dateValue,
+                                ["YYYY-MM-DD HH:mm:ss", moment.ISO_8601],
+                                true
+                            );
+
+                            // Check if both dates are valid and if they represent the same calendar day
+                            conditionMet =
+                                cellValue &&
+                                d.isValid() &&
+                                dateToCompare.isValid() &&
+                                d.isSame(dateToCompare, "day");
+
+                            break;
+                        case "neq":
+                            const neqd = moment(cellValue, "DD-MM-YYYY", true);
+                            const neqDateToCompare = moment(dateValue);
+
+                            conditionMet =
+                                neqd.isValid() &&
+                                neqDateToCompare.isValid() &&
+                                !neqd.isSame(neqDateToCompare, "day");
+
+                            break;
+                        case "inrange":
+                            conditionMet =
+                                (!hasStartDate ||
+                                    dateValue.isSameOrAfter(
+                                        dateCellValueStart
+                                    )) &&
+                                (!hasEndDate ||
+                                    dateValue.isSameOrBefore(dateCellValueEnd));
+                            break;
+                        case "notinrange":
+                            conditionMet =
+                                (hasStartDate &&
+                                    dateValue.isBefore(dateCellValueStart)) ||
+                                (hasEndDate &&
+                                    dateValue.isAfter(dateCellValueEnd));
+                            break;
+                        // ... (add other date type conditions here if necessary)
+                    }
+                }
+
+                if (!conditionMet) {
+                    isMatch = false;
+                    break;
+                }
+            }
+            if (isMatch) {
+                filterValue.push(val);
+            }
+        });
+        selectedColVal = [];
+        if (selectedColumns.length === 0) {
+            selectedColVal = allHeaderColumns?.filter(
+                (col) => col?.label?.toString().toLowerCase() !== "edit"
+            ); // Use all columns
+        } else {
+            allHeaderColumns?.map((header) => {
+                selectedColumns?.map((column) => {
+                    const formattedColumn = column
+                        .replace(/\s/g, "")
+                        .toLowerCase();
+                    if (header.name.toLowerCase() === formattedColumn) {
+                        selectedColVal?.push(header);
+                    }
+                });
+            });
         }
-        const renderTable = useMemo(() => {
-            return () => (
-              <TableStructure
+        return { selectedColumns: selectedColVal, filterValue: filterValue };
+    }
+    function handleDownloadExcel() {
+        const jsonData = handleFilterTable(
+            gridRef,
+            activeComponentIndex == 0
+                ? filteredMetcashData
+                : activeComponentIndex == 1
+                ? filteredWoolworthData
+                : activeComponentIndex == 2
+                ? filteredOtherData
+                : deliveryReportData
+        );
+
+        // Dynamically create column mapping from the `columns` array
+        const columnMapping = columns.reduce((acc, column) => {
+            acc[column.name] = column.header;
+            return acc;
+        }, {});
+
+        // Define custom cell handlers
+        const customCellHandlers = {
+            DespatchDateTime: (value) => formatDateToExcel(value),
+            DeliveryRequiredDateTime: (value) => formatDateToExcel(value),
+            DeliveredDateTime: (value) => formatDateToExcel(value),
+            Comments: (value) =>
+                value
+                    ?.map(
+                        (item) => `${formatDate(item.AddedAt)}, ${item.Comment}`
+                    )
+                    .join("\n"),
+            POD: (value) => (value ? value : "FALSE"),
+        };
+
+        // Call the `exportToExcel` function
+        const ExcelName =
+            activeComponentIndex == 0
+                ? "Unilever-Metcash-Reports.xlsx"
+                : activeComponentIndex == 1
+                ? "Unilever-Woolworths-Reports.xlsx"
+                : activeComponentIndex == 2
+                ? "Unilever-Other-Reports.xlsx"
+                : null;
+        exportToExcel(
+            jsonData, // Filtered data
+            columnMapping, // Dynamic column mapping from columns
+            ExcelName, // Export file name
+            customCellHandlers, // Custom handlers for formatting cells
+            [
+                "DespatchDateTime",
+                "DeliveryRequiredDateTime",
+                "DeliveredDateTime",
+            ]
+        );
+    }
+    const renderTable = useMemo(() => {
+        return () => (
+            <TableStructure
                 rowHeight={50}
                 id={"ReportId"}
                 handleDownloadExcel={handleDownloadExcel}
@@ -1162,24 +1580,32 @@ export default function DailyReportPage({
                 gridRef={gridRef}
                 selected={selected}
                 setFilterValueElements={setFilterValue}
-                tableDataElements={activeComponentIndex == 0 ? filteredMetcashData : activeComponentIndex == 1 ? filteredWoolworthData : activeComponentIndex == 2 ? filteredOtherData : data}
+                tableDataElements={
+                    activeComponentIndex == 0
+                        ? filteredMetcashData
+                        : activeComponentIndex == 1
+                        ? filteredWoolworthData
+                        : activeComponentIndex == 2
+                        ? filteredOtherData
+                        : deliveryReportData
+                }
                 filterValueElements={filterValue}
                 groupsElements={groups}
                 columnsElements={columns}
-              />
-            );
-          }, [
-            activeComponentIndex,
-            filterValue,
-            groups,
-            columns,
-            handleDownloadExcel,
-            setSelected,
-            gridRef,
-            selected,
-            setFilterValue,
-          ]);
-          
+            />
+        );
+    }, [
+        activeComponentIndex,
+        filterValue,
+        groups,
+        columns,
+        handleDownloadExcel,
+        setSelected,
+        gridRef,
+        selected,
+        setFilterValue,
+    ]);
+
     return (
         <div className="min-h-full px-8">
             <ToastContainer />
@@ -1240,7 +1666,7 @@ export default function DailyReportPage({
             ) : (
                 <div></div>
             )}
-             <ViewComments
+            <ViewComments
                 url={url}
                 AToken={AToken}
                 setCellLoading={setCellLoading}

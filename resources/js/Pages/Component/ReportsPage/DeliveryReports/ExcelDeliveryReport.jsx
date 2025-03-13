@@ -8,6 +8,8 @@ import "handsontable/styles/ht-theme-horizon.css";
 import "handsontable/styles/ht-theme-main.min.css";
 import moment from "moment";
 import axios from "axios";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 import { Button, Spinner } from "@nextui-org/react";
 import { EyeIcon } from "@heroicons/react/20/solid";
 import { useNavigate } from "react-router-dom";
@@ -39,23 +41,87 @@ export default function ExcelDeliveryReport({
     const hotTableRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const buttonClickCallback = () => {
+    const buttonClickCallback = async () => {
         const hot = hotTableRef.current?.hotInstance;
-        const exportPlugin = hot?.getPlugin("exportFile");
-
-        exportPlugin?.downloadFile("csv", {
-            bom: false,
-            columnDelimiter: ",",
-            columnHeaders: true,
-            exportHiddenColumns: true,
-            exportHiddenRows: true,
-            fileExtension: "csv",
-            filename: "DeliveryReport_[YYYY]-[MM]-[DD]",
-            mimeType: "text/csv",
-            rowDelimiter: "\r\n",
-            rowHeaders: false,
+        if (!hot) return;
+    
+        const exportData = hot.getData();
+        const selectedColumns = hot.getColHeader();
+    
+        // Create a new workbook and worksheet
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet("Delivery Report");
+    
+        // Add header row with styling
+        const headerRow = worksheet.addRow(selectedColumns);
+        headerRow.font = { bold: true };
+        headerRow.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFE2B540" }, 
+        };
+        headerRow.alignment = { horizontal: "center", vertical: "middle" };
+    
+        // Function to calculate row height for multiline content
+        const calculateRowHeight = (cellValue) => {
+            if (!cellValue) return 20;
+            const lines = cellValue.split("\n").length;
+            return Math.max(20, lines * 25);
+        };
+    
+        // Identify the index of the date column
+        const dateColumnIndexes = selectedColumns
+            .map((col, index) => (["Despatch Date", "Delivery Required DateTime", "Delivered DateTime"].includes(col) ? index : null))
+            .filter(index => index !== null);
+    
+        // Add data rows
+        exportData.forEach((rowData) => {
+            const row = worksheet.addRow(rowData);
+    
+            let maxHeight = 15; // Default row height
+            row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                const cellValue = cell.value?.toString() || "";
+    
+                // Apply text wrapping
+                cell.alignment = { wrapText: true, vertical: "top" };
+    
+                // Format date fields
+                if (dateColumnIndexes.includes(colNumber - 1)) {
+                    const parsedDate = new Date(cellValue);
+                    if (!isNaN(parsedDate)) {
+                        cell.value = parsedDate;
+                        cell.numFmt = "dd-mm-yyy hh:mm"; // Excel date format
+                    }
+                }
+    
+                // Calculate row height based on content
+                maxHeight = Math.max(maxHeight, calculateRowHeight(cellValue));
+            });
+    
+            row.height = maxHeight;
+        });
+    
+        // Set column widths dynamically
+        worksheet.columns = selectedColumns.map(() => ({ width: 20 }));
+    
+        // Generate and save the Excel file
+        workbook.xlsx.writeBuffer().then((buffer) => {
+            const blob = new Blob([buffer], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+            saveAs(
+                blob,
+                activeComponentIndex == 0
+                    ? "Unilever-Metcash-Reports.xlsx"
+                    : activeComponentIndex == 1
+                    ? "Unilever-Woolworths-Reports.xlsx"
+                    : activeComponentIndex == 2
+                    ? "Unilever-Other-Reports.xlsx"
+                    : null
+            );
         });
     };
+    
 
     // Navigation when clicking a consignment number
     const handleClick = (coindex) => {
@@ -119,7 +185,7 @@ export default function ExcelDeliveryReport({
             }
         }
     }, [currentUser]);
-    
+
     useEffect(() => {
         clearAllFilters();
     }, [activeComponentIndex]);
@@ -215,7 +281,7 @@ export default function ExcelDeliveryReport({
     ) => {
         // If the cell has a value, format it
         if (value) {
-            td.innerText = moment(value).format("DD/MM/YYYY"); // Change format here
+            td.innerText = moment(value).format("DD/MM/YYYY hh:mm A"); // Change format here
         } else {
             td.innerText = ""; // If no value, keep it empty
         }
@@ -334,6 +400,13 @@ export default function ExcelDeliveryReport({
             renderer: dateRenderer,
         },
         {
+            data: "POD",
+            title: "POD Avl",
+            readOnly: true,
+            type: "checkbox",
+            editor: false,
+        },
+        {
             data: "Comment",
             title: "Comments",
             type: "autocomplete",
@@ -346,13 +419,6 @@ export default function ExcelDeliveryReport({
             strict: false,
             wordWrap: true, // ✅ Enable text wrapping
             width: 400, // Set a reasonable column width
-        },
-        {
-            data: "POD",
-            title: "POD Avl",
-            readOnly: true,
-            type: "checkbox",
-            editor: false,
         },
     ];
 
