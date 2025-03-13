@@ -9,14 +9,14 @@ import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import moment from "moment";
-import MetcashReports from "./MetcashReports";
-import WoolworthsReports from "./WoolworthsReports";
-import OtherReports from "./OtherReports";
 import { EyeIcon, PencilIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { Spinner } from "@nextui-org/react";
 import ComboBox from "@/Components/ComboBox";
 import ViewComments from "./Modals/ViewComments";
+import { handleFilterTable } from "@/Components/utils/filterUtils";
+import { exportToExcel } from "@/Components/utils/excelUtils";
+import { formatDateToExcel, formatDate } from "@/CommonFunctions";
 import {
     canAddDeliveryReportComment,
     canEditDeliveryReportComment,
@@ -1057,73 +1057,18 @@ export default function DeliveryReportPage({
                 : null;
         }
     }, [userPermission]);
-    let components = [
-        <MetcashReports
-            filterValue={filterValue}
-            setFilterValue={setFilterValue}
-            groups={groups}
-            columns={columns}
-            data={filteredMetcashData}
-            url={url}
-            AToken={AToken}
-            consId={consId}
-            setCellLoading={setCellLoading}
-            fetchData={fetchDeliveryReport}
-            currentUser={currentUser}
-            isViewModalOpen={isViewModalOpen}
-            handleViewModalClose={handleViewClose}
-            isAddModalOpen={isAddModalOpen}
-            handleAddModalClose={handleAddClose}
-            commentsData={commentsData}
-            deliveryCommentsOptions={deliveryCommentsOptions}
-            fetchDeliveryReportCommentsData={fetchDeliveryReportCommentsData}
-        />,
-        <WoolworthsReports
-            filterValue={filterValue}
-            setFilterValue={setFilterValue}
-            groups={groups}
-            columns={columns}
-            data={filteredWoolworthData}
-            url={url}
-            AToken={AToken}
-            setCellLoading={setCellLoading}
-            consId={consId}
-            fetchData={fetchDeliveryReport}
-            currentUser={currentUser}
-            isViewModalOpen={isViewModalOpen}
-            handleViewModalClose={handleViewClose}
-            isAddModalOpen={isAddModalOpen}
-            handleAddModalClose={handleAddClose}
-            commentsData={commentsData}
-            deliveryCommentsOptions={deliveryCommentsOptions}
-            fetchDeliveryReportCommentsData={fetchDeliveryReportCommentsData}
-        />,
-        <OtherReports
-            filterValue={filterValue}
-            setFilterValue={setFilterValue}
-            groups={groups}
-            columns={columns}
-            data={filteredOtherData}
-            url={url}
-            AToken={AToken}
-            consId={consId}
-            setCellLoading={setCellLoading}
-            fetchData={fetchDeliveryReport}
-            currentUser={currentUser}
-            isViewModalOpen={isViewModalOpen}
-            handleViewModalClose={handleViewClose}
-            isAddModalOpen={isAddModalOpen}
-            handleAddModalClose={handleAddClose}
-            commentsData={commentsData}
-            deliveryCommentsOptions={deliveryCommentsOptions}
-            fetchDeliveryReportCommentsData={fetchDeliveryReportCommentsData}
-        />,
-    ];
 
     const gridRef = useRef(null);
     const [selected, setSelected] = useState([]);
     function handleDownloadExcel() {
-        const jsonData = handleFilterTable(gridRef, data);
+        const filteredData = activeComponentIndex == 0
+        ? filteredMetcashData
+        : activeComponentIndex == 1
+        ? filteredWoolworthData
+        : activeComponentIndex == 2
+        ? filteredOtherData
+        : deliveryReportData
+        const jsonData = handleFilterTable(gridRef, filteredData);
 
         // Dynamically create column mapping from the `columns` array
         const columnMapping = columns.reduce((acc, column) => {
@@ -1183,7 +1128,7 @@ export default function DeliveryReportPage({
                         ? filteredWoolworthData
                         : activeComponentIndex == 2
                         ? filteredOtherData
-                        : data
+                        : deliveryReportData
                 }
                 filterValueElements={filterValue}
                 groupsElements={groups}
