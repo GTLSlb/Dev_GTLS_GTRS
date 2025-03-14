@@ -474,6 +474,17 @@ html {
     scrollbar-color: unset !important;
 }
 
+.ht_clone_inline_start {
+  z-index:  40 !important;
+}
+
+.ht_clone_top{
+  z-index:  40 !important;}
+
+  .ht_clone_top_inline_start_corner{
+    z-index:  40 !important;
+  }
+
 /* ✅ Hide the datepicker dropdown only for the "Delivered DateTime" column */
 .htCore td.no-arrow-column {
   background-image: none !important; /* Removes dropdown icon */
