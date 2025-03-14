@@ -634,7 +634,14 @@ export default function ExcelDeliveryReport({
                         manualColumnResize={true}
                         autoWrapCol={true}
                         filters={true} // ✅ Enable filtering
-                        dropdownMenu={true} // ✅ Show dropdown for filtering
+                        dropdownMenu={{
+                            items: {
+                                filter_by_condition: {}, // ✅ Keep filters
+                                filter_by_value: {}, 
+                                filter_action_bar: {}, 
+                                separator1: "---------",
+                            },
+                        }} // ✅ Show dropdown for filtering
                         columnSorting={true} // ✅ Enable sorting
                         // contextMenu={true}
                         settings={{
