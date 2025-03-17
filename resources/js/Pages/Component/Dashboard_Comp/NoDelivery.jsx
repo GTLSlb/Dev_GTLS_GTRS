@@ -535,7 +535,7 @@ export default function NoDelivery({
         headerRow.alignment = { horizontal: "center" };
     
         // Add the data to the worksheet
-        data.forEach((rowData) => {
+        data?.forEach((rowData) => {
             const row = worksheet.addRow(Object.values(rowData));
     
             // Apply date format to the DespatchDateTime column
@@ -578,7 +578,7 @@ export default function NoDelivery({
         const newData = [];
     
         // Map through the data and create new objects
-        data.forEach((item) => {
+        data?.forEach((item) => {
             const fieldValue = item[fieldName];
             // Check if the label is not already included
             if (!uniqueLabels.has(fieldValue)) {
