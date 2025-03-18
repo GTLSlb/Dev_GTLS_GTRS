@@ -552,7 +552,7 @@ export default function GtrsCons({
         });
     
         // Sort the array alphabetically by label
-        return newData.sort((a, b) => a.label.localeCompare(b.label));
+        return newData?.sort((a, b) => a?.label?.localeCompare(b?.label));
     };
     
     const senderStateOptions = createNewLabelObjects(consData, "SenderState");

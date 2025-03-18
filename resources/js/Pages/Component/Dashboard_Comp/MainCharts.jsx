@@ -236,47 +236,44 @@ export default function MainCharts({
         return counter;
     };
     const getKPIPerformanceCounter = (data) => {
-        const counter = [];
-
+        // Pre-populate the counter with the two labels and default values of 0
+        const counter = [
+            { label: "Delivered on Time", value: 0 },
+            { label: "Not Delivered on Time", value: 0 }
+        ];
+    
         for (const item of data) {
             let consStatus = item.ConsStatus;
             const chargeToId = item.ChargeToId;
-
+    
             // Skip if status is PENDING
             if (consStatus === "PENDING") {
                 continue;
             }
-
+    
             // If consStatus is FAIL but chargeToId is in shuttleDebtorIds,
             // treat it as PASS ("Delivered on Time").
-            if (
-                consStatus === "FAIL" &&
-                shuttleDebtorIds.includes(chargeToId)
-            ) {
+            if (consStatus === "FAIL" && shuttleDebtorIds.includes(chargeToId)) {
                 consStatus = "Delivered on Time";
             }
-
+    
             // Convert PASS/FAIL to more descriptive strings
             if (consStatus === "PASS") {
                 consStatus = "Delivered on Time";
             } else if (consStatus === "FAIL") {
                 consStatus = "Not Delivered on Time";
             }
-
-            // Find existing status in the counter array
-            const existingStatus = counter.find(
-                (obj) => obj.label === consStatus
-            );
-
-            if (existingStatus) {
-                existingStatus.value++;
-            } else {
-                counter.push({ label: consStatus, value: 1 });
+    
+            // Increment the counter for the corresponding status
+            const statusEntry = counter.find(obj => obj.label === consStatus);
+            if (statusEntry) {
+                statusEntry.value++;
             }
         }
-
+    
         return counter;
     };
+    
 
     const getKPIStatusCounter = (data) => {
         const counter = [];
