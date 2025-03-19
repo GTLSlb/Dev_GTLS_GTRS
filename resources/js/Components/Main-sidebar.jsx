@@ -74,7 +74,7 @@ export default function MainSidebar({
             .post("/composerLogout", credentials)
             .then((response) => {
                 if (response.status === 200 && response.data.status === 200) {
-                    localStorage.removeItem('current');
+
                     const isMicrosoftLogin = Cookies.get(
                         "msal.isMicrosoftLogin"
                     );
@@ -86,6 +86,7 @@ export default function MainSidebar({
                     } else {
                         window.location.href = `${window.Laravel.appUrl}/login`;
                     }
+                    localStorage.removeItem("current");
                     setToken(null);
                     setCurrentUser(null);
                 }

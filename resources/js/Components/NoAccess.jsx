@@ -36,12 +36,13 @@ function NoAccess({currentUser, setToken, setCurrentUser}) {
             .post("/composerLogout", credentials)
             .then((response) => {
                 if (response.status === 200 && response.data.status === 200) {
-                    localStorage.removeItem('current_URL');
                     const isMicrosoftLogin = Cookies.get(
                         "msal.isMicrosoftLogin"
                     );
                     clearMSALLocalStorage();
                     Cookies.remove('access_token');
+                    localStorage.removeItem("current");
+
                     setIsLoading(true);
                     if (isMicrosoftLogin == "true") {
                         window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=${window.Laravel.appUrl}/login`;
@@ -52,6 +53,7 @@ function NoAccess({currentUser, setToken, setCurrentUser}) {
                         setToken(null);
                         setCurrentUser(null);
                     }
+
                 }
             })
             .catch((error) => {

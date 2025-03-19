@@ -39,7 +39,7 @@ export async function handleSessionExpiration() {
         .then(async (response) => {
             if (response.status === 200) {
                 const isMicrosoftLogin = Cookies.get("msal.isMicrosoftLogin");
-                localStorage.removeItem("current_URL");
+                localStorage.removeItem("current");
                 // Clear MSAL-related data from localStorage
                 clearMSALLocalStorage();
                 Cookies.remove("access_token");
@@ -303,6 +303,7 @@ function findCurrentItem(items, id, navigate, setSidebarElements) {
         }
       });
       setSidebarElements(updatedElements);
+      localStorage.setItem("current", JSON.stringify(targetElement.id));
       navigate(targetElement?.url);
 }
 
@@ -350,7 +351,7 @@ export function navigateToFirstAllowedPage({
       });
 
       // Get the `current` item from localStorage, if it exists
-      const savedCurrentId = localStorage.getItem("current_URL");
+      const savedCurrentId = localStorage.getItem("current");
 
       // Navigate to the current item
       if (currentItem) {
@@ -359,13 +360,14 @@ export function navigateToFirstAllowedPage({
       } else if(savedCurrentId){
         findCurrentItem(items, savedCurrentId, navigate, setSidebarElements);
       }else if (items.length > 0) {
+          // Set the sidebar elements
           items[0].current = true;
+          setSidebarElements(items);
           navigate(items[0].url);
           window.location.pathname = items[0].url;
+          localStorage.setItem("current", JSON.stringify(items[0].id));
       }
 
-      // Set the sidebar elements
-      setSidebarElements(items);
     }
   }
 
