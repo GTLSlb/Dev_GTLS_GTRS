@@ -368,22 +368,7 @@ export function navigateToFirstAllowedPage({
       setSidebarElements(items);
     }
   }
-
-function findItemByURL(items, url) {
-    for (const item of items) {
-      if (item.url === url) {
-        return item;
-      }
-      if (item.options) {
-        const option = findItemByURL(item.options, url);
-        if (option) {
-          return option;
-        }
-      }
-    }
-    return null;
-  }
-
+  
 export function renderConsDetailsLink(userPermission, text, value) {
     if (canViewDetails(userPermission)) {
         return (

@@ -1,29 +1,23 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
 import { HotTable } from "@handsontable/react-wrapper";
 import { registerAllModules } from "handsontable/registry";
+import { useEffect, useMemo, useRef, useState } from "react";
 // import "handsontable/styles/handsontable.css";
 // import "handsontable/styles/ht-theme-main.css";
+import { Button, Spinner } from "@nextui-org/react";
+import axios from "axios";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 import "handsontable/styles/handsontable.min.css";
 import "handsontable/styles/ht-theme-horizon.css";
 import "handsontable/styles/ht-theme-main.min.css";
 import moment from "moment";
-import axios from "axios";
-import { Button, Spinner } from "@nextui-org/react";
-import { EyeIcon } from "@heroicons/react/20/solid";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import ExcelJS from "exceljs";
-import { saveAs } from "file-saver";
+import { ToastContainer } from "react-toastify";
 
 registerAllModules();
 
 import {
-    canAddDeliveryReportComment,
-    canEditDeliveryReportComment,
-    canViewMetcashDeliveryReport,
-    canViewWoolworthsDeliveryReport,
-    canViewOtherDeliveryReport,
-    AlertToast,
+    AlertToast, canViewMetcashDeliveryReport, canViewOtherDeliveryReport, canViewWoolworthsDeliveryReport
 } from "@/permissions";
 import swal from "sweetalert";
 
@@ -33,7 +27,6 @@ export default function ExcelDeliveryReport({
     deliveryReportData,
     currentUser,
     userPermission,
-    fetchDeliveryReport,
     deliveryCommentsOptions,
 }) {
     const navigate = useNavigate();
