@@ -115,6 +115,27 @@ export const getFiltersCons = (minDate, maxDate) => {
             value: null,
             emptyValue: "",
         },
+        {
+            name: "NetAmount",
+            operator: "eq",
+            type: "number",
+            value: undefined,
+            emptyValue: null,
+        },
+        {
+            name: "TottalWeight",
+            operator: "eq",
+            type: "number",
+            value: undefined,
+            emptyValue: null,
+        },
+        {
+            name: "POD",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
     ];
 };
 

@@ -2,20 +2,13 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\LayoutController;
-use App\Http\Controllers\ContactFormController;
-use App\Http\Controllers\ContactUsFormController;
 use App\Http\Controllers\SupportFormController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\Auth\FileController;
 use App\Http\Controllers\SendDailyEmail;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Socialite\Facades\Socialite;
-use SocialiteProviders\Azure\AzureProvider;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\ImageController;
 use gtls\loginstory\LoginClass;
 
