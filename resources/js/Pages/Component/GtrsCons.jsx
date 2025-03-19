@@ -9,8 +9,8 @@ import { useEffect, useRef } from "react";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
-import { renderConsDetailsLink } from "@/CommonFunctions";
-import { useNavigate } from "react-router-dom";
+import { formatNumberWithCommas, renderConsDetailsLink } from "@/CommonFunctions";
+import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
 export default function GtrsCons({
     consData,
     minDate,
@@ -20,9 +20,7 @@ export default function GtrsCons({
     accData,
     userPermission,
 }) {
-
     window.moment = moment;
-    const navigate = useNavigate();
     const [filteredData, setFilteredData] = useState(consData);
     const [selected, setSelected] = useState({});
 
@@ -62,6 +60,17 @@ export default function GtrsCons({
         );
     }
 
+    const podAvlOptions = [
+        {
+            id: true,
+            label: "True",
+        },
+        {
+            id: false,
+            label: "False",
+        },
+    ];
+    
     const senderStateOptions = createNewLabelObjects(consData, "SenderState");
     const senderZoneOptions = createNewLabelObjects(consData, "SenderZone");
     const receiverStateOptions = createNewLabelObjects(
@@ -261,10 +270,36 @@ export default function GtrsCons({
             },
         },
         {
+            name: "NetAmount",
+            header: "Total Amount",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: NumberFilter,
+            render: ({ value }) => {
+                return formatNumberWithCommas(value) + " $";
+            },
+        },
+        {
+            name: "TottalWeight",
+            header: "Total Weight",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: NumberFilter,
+            render: ({ value }) => {
+                return formatNumberWithCommas(value) + " T";
+            },
+        },
+        {
             name: "POD",
             header: "POD",
             headerAlign: "center",
             textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: podAvlOptions,
+            },
             render: ({ value }) => {
                 return value ? (
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
@@ -287,7 +322,9 @@ export default function GtrsCons({
             getFilterValue: ({ data }) => {
                 if (data.ConsReferences && data.ConsReferences.length > 0) {
                     // Join all reference values into a single string for filtering
-                    return data.ConsReferences.map(ref => ref.Value).join(", ");
+                    return data.ConsReferences.map((ref) => ref.Value).join(
+                        ", "
+                    );
                 }
                 return "";
             },
@@ -363,7 +400,7 @@ export default function GtrsCons({
         setFilteredData(filterData());
     }, [accData]);
 
-
+    console.log(filterValue);
     const renderTable = useCallback(() => {
         return (
             <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
