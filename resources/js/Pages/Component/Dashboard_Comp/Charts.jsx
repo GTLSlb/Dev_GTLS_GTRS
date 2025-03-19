@@ -153,6 +153,7 @@ function Charts({
                     chartTitle={"Consignments By state"}
                     setShowTable={setShowTable}
                     setChartFilter={setChartFilter}
+                    setChartName={setChartName}
                 />{" "}
             </div>
 
