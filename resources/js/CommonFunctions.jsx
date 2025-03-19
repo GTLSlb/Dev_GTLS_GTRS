@@ -228,6 +228,17 @@ export const formatDateToExcel = (dateValue) => {
     );
 };
 
+export const formatDate = (dateString) => {
+    if (dateString) {
+        const [date, time] = dateString.split("T");
+        const [day, month, year] = date.split("-");
+        // Using template literals to format the date
+        return `${year}-${month}-${day}`;
+    } else {
+        return dateString;
+    }
+};
+
 export function formatDateFromExcelWithNoTime(dateValue) {
     const date = new Date(dateValue);
 
