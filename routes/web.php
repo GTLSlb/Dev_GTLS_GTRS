@@ -44,16 +44,11 @@ Route::post('/composerLogout', [ LoginClass::class, 'logout'])->middleware(['cus
 
 Route::post('/logoutWithoutReq', [ LoginClass::class, 'logoutWithoutRequest'])->middleware(['custom.auth'])->name('composerLogoutWithoutReq');
 
-Route::redirect('/', '/main');
+// Route::redirect('/', '/main');
 
-Route::get('/main', function () {
-    return Inertia::render('Layout');
-})->middleware(['custom.auth'])->name('landing.page');
-
-
-Route::get('/gtam', function () {
-    return Inertia::render('GTAM');
-})->middleware(['custom.auth'])->name('gtam');
+// Route::get('/main', function () {
+//     return Inertia::render('Layout');
+// })->middleware(['custom.auth'])->name('landing.page');
 
 Route::post('/support', [SupportFormController::class, 'submitSupportForm'])->name('support.submit');
 

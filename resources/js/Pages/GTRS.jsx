@@ -225,7 +225,7 @@ export default function Gtrs({
             return (
                 <Routes>
                     <Route
-                        path="/main/*"
+                        path="/testX/*"
                         element={
                             <div className="h-full">
                                 {/* <mainSidebar/> */}

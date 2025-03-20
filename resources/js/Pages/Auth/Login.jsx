@@ -30,13 +30,13 @@ export default function Login({ }) {
         clearMSALLocalStorage();
     }, []);
 
-    console.log(window.location.origin + "/main/");
+    console.log(window.location.origin + "/testX/");
 
     return (
         <div className="h-screen w-full">
         <LoginPage
             appDomain={appDomain}
-            redirectURL={window.location.origin + "/main/"}
+            redirectURL={window.location.origin + "/testX/"}
             loginURL="/loginComp"
             microsoftURL="/microsoftToken"
             googlekey={googleKey}
