@@ -31,6 +31,8 @@ export default function Login({ }) {
         clearMSALLocalStorage();
     }, []);
 
+    console.log("appUrl", appUrl);
+    console.log(appUrl + "/gtrs/");
     return (
         <div className="h-screen w-full">
         <LoginPage
