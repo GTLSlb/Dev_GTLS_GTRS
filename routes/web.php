@@ -44,7 +44,7 @@ Route::post('/composerLogout', [ LoginClass::class, 'logout'])->middleware(['cus
 
 Route::post('/logoutWithoutReq', [ LoginClass::class, 'logoutWithoutRequest'])->middleware(['custom.auth'])->name('composerLogoutWithoutReq');
 
-// Route::redirect('/', '/main');
+Route::redirect('/', '/testX');
 
 // Route::get('/main', function () {
 //     return Inertia::render('Layout');
