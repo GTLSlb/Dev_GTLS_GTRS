@@ -44,13 +44,9 @@ Route::post('/composerLogout', [ LoginClass::class, 'logout'])->middleware(['cus
 
 Route::post('/logoutWithoutReq', [ LoginClass::class, 'logoutWithoutRequest'])->middleware(['custom.auth'])->name('composerLogoutWithoutReq');
 
-Route::get('/gtrs/dashboard', function () {
-    return Inertia::render('Layout');
-})->middleware(['custom.auth'])->name('layout');
+Route::redirect('/', '/main');
 
-Route::redirect('/', '/gtrs');
-
-Route::get('/gtrs', function () {
+Route::get('/main', function () {
     return Inertia::render('Layout');
 })->middleware(['custom.auth'])->name('landing.page');
 

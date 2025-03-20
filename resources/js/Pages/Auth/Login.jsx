@@ -26,18 +26,17 @@ export default function Login({ }) {
     const appDomain = window.Laravel.appDomain;
     const backToHomeURL = window.Laravel.backToHomeURL;
     const googleKey = window.Laravel.googleKey;
-    const appUrl = window.Laravel.appUrl;
     useEffect(() => {
         clearMSALLocalStorage();
     }, []);
 
-    console.log("appUrl", appUrl);
-    console.log(appUrl + "/gtrs/");
+    console.log(window.location.origin + "/main/");
+
     return (
         <div className="h-screen w-full">
         <LoginPage
             appDomain={appDomain}
-            redirectURL={appUrl + "/gtrs/"}
+            redirectURL={window.location.origin + "/main/"}
             loginURL="/loginComp"
             microsoftURL="/microsoftToken"
             googlekey={googleKey}
