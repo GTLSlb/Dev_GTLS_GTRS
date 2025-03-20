@@ -315,8 +315,6 @@ export function navigateToFirstAllowedPage({
 }) {
     let items = [];
     
-    console.log(window.location)
-
     menu?.forEach((menuItem) => {
         if (menuItem.hasOwnProperty("options")) {
             menuItem.options.forEach((option) => {
