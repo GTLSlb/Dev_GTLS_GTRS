@@ -23,7 +23,7 @@ const menu = [
         icon: ChartPieIcon,
         current: true,
         feature: "Dashboard_view",
-        url: "/gtrs/dashboard",
+        url: "/testX/dashboard",
     },
     {
         id: 1,
@@ -32,7 +32,7 @@ const menu = [
         icon: TruckIcon,
         current: false,
         feature: "ConsignmetsReport_view",
-        url: "/gtrs/consignments",
+        url: "/testX/consignments",
     },
     {
         id: 2,
@@ -48,7 +48,7 @@ const menu = [
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
                 feature: "KPI_view",
-                url: "/gtrs/kpi",
+                url: "/testX/kpi",
             },
             {
                 id: 18,
@@ -57,7 +57,7 @@ const menu = [
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
                 feature: "View_TransitDays",
-                url: "/gtrs/kpi/transit-days",
+                url: "/testX/kpi/transit-days",
             },
             {
                 id: 13,
@@ -66,7 +66,7 @@ const menu = [
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
                 feature: "View_Holidays",
-                url: "/gtrs/kpi/holidays",
+                url: "/testX/kpi/holidays",
             },
             {
                 id: 14,
@@ -75,7 +75,7 @@ const menu = [
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
                 feature: "View_KPIReasons",
-                url: "/gtrs/kpi/reasons",
+                url: "/testX/kpi/reasons",
             },
         ],
     },
@@ -86,7 +86,7 @@ const menu = [
         icon: PresentationChartLineIcon,
         current: false,
         feature: "Performance_view",
-        url: "/gtrs/performance",
+        url: "/testX/performance",
     },
     {
         id: 5,
@@ -95,7 +95,7 @@ const menu = [
         icon: ExclamationTriangleIcon,
         current: false,
         feature: "View_failedConsignment",
-        url: "/gtrs/failed-consignments",
+        url: "/testX/failed-consignments",
     },
     {
         id: 9,
@@ -104,7 +104,7 @@ const menu = [
         icon: ClockIcon,
         current: false,
         feature: "View_RDD",
-        url: "/gtrs/rdd",
+        url: "/testX/rdd",
     },
     {
         id: 11,
@@ -113,7 +113,7 @@ const menu = [
         icon: CameraIcon,
         current: false,
         feature: "MissingPOD_view",
-        url: "/gtrs/missing-pod",
+        url: "/testX/missing-pod",
     },
     {
         id: 16,
@@ -122,7 +122,7 @@ const menu = [
         icon: TaskIcon,
         current: false,
         feature: "View_Transport",
-        url: "/gtrs/transport",
+        url: "/testX/transport",
     },
     {
         id: 24,
@@ -131,7 +131,7 @@ const menu = [
         icon: ClipboardDocumentIcon,
         current: false,
         feature: "DeliveryReport_View",
-        url: "/gtrs/delivery-report",
+        url: "/testX/delivery-report",
         options: [
             {
                 id: 28,
@@ -140,7 +140,7 @@ const menu = [
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
                 feature: "DeliveryReport_View",
-                url: "/gtrs/delivery-report",
+                url: "/testX/delivery-report",
             },
             {
                 id: 30,
@@ -149,7 +149,7 @@ const menu = [
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
                 feature: "DeliveryReport_View",
-                url: "/gtrs/excel-delivery-report",
+                url: "/testX/excel-delivery-report",
             },
             {
                 id: 29,
@@ -158,7 +158,7 @@ const menu = [
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
                 feature: "DeliveryReportCommentsTable_View",
-                url: "/gtrs/delivery-report/comments",
+                url: "/testX/delivery-report/comments",
             },
         ]
     },
@@ -169,7 +169,7 @@ const menu = [
         icon: DocumentTextIcon,
         current: false,
         feature: "UnileverReport_View",
-        url: "/gtrs/pack-report",
+        url: "/testX/pack-report",
     },
     {
         id: 26,
@@ -178,7 +178,7 @@ const menu = [
         icon: DocumentTextIcon,
         current: false,
         feature: "RealFoodReport_View",
-        url: "/gtrs/real-food-report",
+        url: "/testX/real-food-report",
     },
     {
         id: 10,
@@ -187,7 +187,7 @@ const menu = [
         icon: ShieldCheckIcon,
         current: false,
         feature: "View_safety",
-        url: "/gtrs/safety",
+        url: "/testX/safety",
     },
     {
         id: 7,
@@ -196,7 +196,7 @@ const menu = [
         icon: CurrencyDollarIcon,
         current: false,
         feature: "AdditionalCharges_view",
-        url: "/gtrs/additional-charges",
+        url: "/testX/additional-charges",
     },
     {
         id: 6,
@@ -205,7 +205,7 @@ const menu = [
         icon: NoSymbolIcon,
         current: false,
         feature: "NoDeliveryInfo_view",
-        url: "/gtrs/no-delivery",
+        url: "/testX/no-delivery",
     },
     {
         id: 8,
@@ -214,7 +214,7 @@ const menu = [
         icon: UserIcon,
         current: false,
         feature: "DriverLogin_view",
-        url: "/gtrs/driver-login",
+        url: "/testX/driver-login",
     },
     {
         id: 21,
@@ -223,7 +223,7 @@ const menu = [
         icon: ReportIcon,
         current: false,
         feature: "TrafficReport_View",
-        url: "/gtrs/traffic-report",
+        url: "/testX/traffic-report",
     },
     // {
     //     id: 23,
@@ -232,7 +232,7 @@ const menu = [
     //     icon: MapPinIcon,
     //     current: false,
     //     feature: "ConsignmentTracking_View",
-    //     url: "/gtrs/consignment-tracking",
+    //     url: "/testX/consignment-tracking",
     // },
     {
         id: 25,
@@ -241,7 +241,7 @@ const menu = [
         icon: ClipboardDocumentIcon,
         current: false,
         feature: "View_Tracking2",
-        url: "/gtrs/consignment-tracking",
+        url: "/testX/consignment-tracking",
     },
     {
         id: 27,
@@ -250,7 +250,7 @@ const menu = [
         icon: RectangleStackIcon,
         current: false,
         feature: "StockReport_View",
-        url: "/gtrs/SOH",
+        url: "/testX/SOH",
     },
 ];
 
