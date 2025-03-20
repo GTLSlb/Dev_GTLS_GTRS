@@ -692,7 +692,6 @@ export default function GtrsMain({
     const navigate = useNavigate();
     useEffect(() => {
         if(userPermission){
-            console.log("GTRSMAin")
             navigateToFirstAllowedPage({setSidebarElements, user: userPermission, navigate})
         }
     },[])

@@ -354,8 +354,7 @@ export function navigateToFirstAllowedPage({
     });
 
     // Navigate to the page specified in the browser URL
-    if(window.location.pathname != "/testX/" && window.location.pathname != "/testX" ){
-        console.log(window.location.pathname)
+    if(window.location.pathname != "/gtrs/" && window.location.pathname != "/gtrs" ){
         setSidebarElements(findCurrentItem(items, window.location.pathname))
         navigate(window.location.pathname);
     } else {
