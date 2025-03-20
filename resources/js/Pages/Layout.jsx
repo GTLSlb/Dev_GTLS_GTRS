@@ -9,7 +9,6 @@ import Login from "./Auth/Login";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import { handleSessionExpiration } from "@/CommonFunctions";
 import NoAccess from "@/Components/NoAccess";
-import { useNavigate } from "react-router-dom";
 import Logout from "@/Pages/Auth/Logout";
 
 export default function Sidebar(Boolean) {
@@ -21,8 +20,6 @@ export default function Sidebar(Boolean) {
     const [sidebarElements, setSidebarElements] = useState();
     const Gtamurl = window.Laravel.gtamUrl;
     const appDomain = window.Laravel.appDomain;
-
-    const navigate = useNavigate();
 
     const getAppPermisions = () => {
         //user permissions

@@ -1,11 +1,14 @@
-import routes from "@/GTRSRoutes";
 import NoAccessRedirect from "@/Pages/NoAccessRedirect";
 import menu from "@/SidebarMenuItems";
 import { PublicClientApplication } from "@azure/msal-browser";
 import Cookies from "js-cookie";
 import "react-toastify/dist/ReactToastify.css";
 import swal from "sweetalert";
-import { AlertToast, canViewDetails, canViewIncidentDetails } from "./permissions";
+import {
+    AlertToast,
+    canViewDetails,
+    canViewIncidentDetails,
+} from "./permissions";
 import { Link } from "react-router-dom";
 const msalConfig = {
     auth: {
@@ -39,7 +42,7 @@ export async function handleSessionExpiration() {
         .then(async (response) => {
             if (response.status === 200) {
                 const isMicrosoftLogin = Cookies.get("msal.isMicrosoftLogin");
-                localStorage.removeItem("current_URL");
+                localStorage.removeItem("current");
                 // Clear MSAL-related data from localStorage
                 clearMSALLocalStorage();
                 Cookies.remove("access_token");
@@ -273,102 +276,95 @@ function checkUserPermission(permission, route) {
     }
 }
 
-function findCurrentItem(items, id, navigate, setSidebarElements) {
-    let targetElement = null;
+function findCurrentItem(items, id) {
     const updatedElements = items?.map((element) => {
         if (element.options) {
             return {
                 ...element,
-                current:  element.options.find((option) => option.id == id) ? true : false,
+                current: element.options.find((option) => option.url == id)
+                    ? true
+                    : false,
                 ...(element.options
                     ? {
                           options: element.options.map((option) => {
-                                if (option.id == id) {
-                                    targetElement = option;
-                                    return { ...option, current: true };
-                                } else {
-                                    return { ...option, current: false };
-                                }
+                              if (option.id == id) {
+                                  targetElement = option;
+                                  return { ...option, current: true };
+                              } else {
+                                  return { ...option, current: false };
+                              }
                           }),
                       }
                     : {}),
             };
         } else {
-            if (element.id === id) {
-                targetElement = element;
+            if (element.url == id) {
                 return { ...element, current: true };
             } else {
                 return { ...element, current: false };
             }
         }
-      });
-      setSidebarElements(updatedElements);
-      navigate(targetElement?.url);
+    });
+    return updatedElements;
 }
 
 export function navigateToFirstAllowedPage({
     setSidebarElements,
     user,
     navigate,
-  }) {
+}) {
     let items = [];
+    
 
-    // Check if the current route exists
-    const doesRouteExist = routes?.some((route) => route === window.location.pathname);
-
-    // If the route does not exist, navigate to notFound page
-    if (!doesRouteExist) {
-      navigate("/notFound");
-    } else {
-      // Filter allowed menu items based on user features
-      menu?.forEach((menuItem) => {
-        if(menuItem.hasOwnProperty('options')){
+    menu?.forEach((menuItem) => {
+        if (menuItem.hasOwnProperty("options")) {
             menuItem.options.forEach((option) => {
-                if (user?.Features?.some((item) => item?.FunctionName === option?.feature)) {
-                  const existingItem = items.find((item) => item.name === menuItem.name);
-                  if (existingItem) {
-                    existingItem.options.push({ ...option, current: false });
-                  } else {
-                    items.push({ ...menuItem, current: false, options: [{ ...option, current: false }] });
-                  }
+                if (
+                    user?.Features?.some(
+                        (item) => item?.FunctionName === option?.feature
+                    )
+                ) {
+                    const existingItem = items.find(
+                        (item) => item.name === menuItem.name
+                    );
+                    if (existingItem) {
+                        existingItem.options.push({
+                            ...option,
+                            current: false,
+                        });
+                    } else {
+                        items.push({
+                            ...menuItem,
+                            current: false,
+                            options: [{ ...option, current: false }],
+                        });
+                    }
                 }
-              })
-        }else{
-            if(user?.Features?.some((item) => item?.FunctionName === menuItem?.feature)) {
+            });
+        } else {
+            if (
+                user?.Features?.some(
+                    (item) => item?.FunctionName === menuItem?.feature
+                )
+            ) {
                 items.push({ ...menuItem, current: false });
             }
         }
-      });
+    });
 
-      // Find the current menu item for the active route
-      const currentItem = items.find((item) => {
-        if (item.options) {
-          return item.options.some((option) => option.url === window.location.pathname);
-        } else {
-          return item.url === window.location.pathname;
-        }
-      });
-
-      // Get the `current` item from localStorage, if it exists
-      const savedCurrentId = localStorage.getItem("current_URL");
-
-      // Navigate to the current item
-      if (currentItem) {
-        findCurrentItem(items, currentItem?.id, navigate, setSidebarElements);
-
-      } else if(savedCurrentId){
-        findCurrentItem(items, savedCurrentId, navigate, setSidebarElements);
-      }else if (items.length > 0) {
-          items[0].current = true;
-          navigate(items[0].url);
-          window.location.pathname = items[0].url;
-      }
-
-      // Set the sidebar elements
-      setSidebarElements(items);
+    // Navigate to the page specified in the browser URL
+    if(window.location.pathname != "/gtrs/" && window.location.pathname != "/gtrs" ){
+        console.log(window.location.pathname)
+        setSidebarElements(findCurrentItem(items, window.location.pathname))
+        navigate(window.location.pathname);
+    } else {
+        // Navigate to the first allowed page 
+        items[0].current = true; 
+        navigate(items[0].url);
+        setSidebarElements(items);
     }
-  }
-  
+}
+
 export function renderConsDetailsLink(userPermission, text, value) {
     if (canViewDetails(userPermission)) {
         return (

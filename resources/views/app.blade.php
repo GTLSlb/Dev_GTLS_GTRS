@@ -54,6 +54,7 @@
     <link rel="stylesheet" href="public/manifest.json" />
 
     <!-- Scripts -->
+    
     @routes
     @viteReactRefresh
     @vite(['resources/js/app.jsx', "resources/js/Pages/{$page['component']}.jsx"])

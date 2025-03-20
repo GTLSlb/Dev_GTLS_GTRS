@@ -208,6 +208,7 @@ export default function Gtrs({
             navigateToFirstAllowedPage({setSidebarElements, user, navigate})
         }
     },[user])
+
     if (
         consApi &&
         reportApi &&
