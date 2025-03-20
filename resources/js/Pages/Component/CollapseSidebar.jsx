@@ -252,7 +252,6 @@ export default function CollapseSidebar({
         localStorage.setItem("current", JSON.stringify(id));
         navigate(item.url);
     };
-    console.log('currentItem', sidebarElements);
     function handleSelectOnClick() {
         if (collapsed) {
             setCollapsed(false);

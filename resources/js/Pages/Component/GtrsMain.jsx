@@ -1,4 +1,4 @@
-import { ProtectedRoute } from "@/CommonFunctions";
+import { navigateToFirstAllowedPage, ProtectedRoute } from "@/CommonFunctions";
 import {
     getLatestDespatchDate,
     getMinMaxValue,
@@ -22,9 +22,8 @@ import {
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import { Button } from "@nextui-org/react";
 import { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import ConsDetails from "../ConsDetails";
-import MainPageGTRS from "../MainPageGTRS";
 import NotFoundRedirect from "../NotFoundRedirect";
 import AdditionalCharges from "./AdditionalCharges";
 import CollapseSidebar from "./CollapseSidebar";
@@ -73,17 +72,16 @@ export default function GtrsMain({
     AToken,
     chartsData,
     kpireasonsData,
-    setkpireasonsData,
     userPermission,
     sidebarElements,
     setSidebarElements,
     setToken,
     setCurrentUser,
-    setUser,
     deliveryReportData,
     deliveryReportComments,
     fetchDeliveryReportCommentsData,
 }) {
+
     window.moment = moment;
     const [KPIData, setKPIData] = useState([]);
     const [NewKPIData, setNewKPIData] = useState([]);
@@ -691,6 +689,13 @@ export default function GtrsMain({
     const [chartName, setChartName] = useState("");
     const [collapsed, setCollapsed] = useState(false);
 
+    const navigate = useNavigate();
+    useEffect(() => {
+        if(userPermission){
+            navigateToFirstAllowedPage({setSidebarElements, user: userPermission, navigate})
+        }
+    },[])
+
     return (
         <div className="h-full">
             <div className="h-full">
@@ -731,23 +736,6 @@ export default function GtrsMain({
                         <div className="h-full">
                             <div className="rounded-lg h-full">
                                 <Routes>
-                                    <Route
-                                        path="/main"
-                                        element={
-                                            <MainPageGTRS
-                                                user={userPermission}
-                                                setUser={setUser}
-                                                setSidebarElements={
-                                                    setSidebarElements
-                                                }
-                                                sidebarElements={
-                                                    sidebarElements
-                                                }
-                                                AToken={AToken}
-                                                currentUser={currentUser}
-                                            />
-                                        }
-                                    />
                                     <Route
                                         path="/dashboard"
                                         element={
