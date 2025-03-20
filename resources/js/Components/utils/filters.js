@@ -136,6 +136,13 @@ export const getFiltersCons = (minDate, maxDate) => {
             value: null,
             emptyValue: "",
         },
+        {
+            name: "ConsStatus",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
     ];
 };
 

@@ -20,6 +20,7 @@ export default function GtrsCons({
     accData,
     userPermission,
 }) {
+
     window.moment = moment;
     const [filteredData, setFilteredData] = useState(consData);
     const [selected, setSelected] = useState({});
@@ -80,6 +81,7 @@ export default function GtrsCons({
     const receiverZoneOptions = createNewLabelObjects(consData, "ReceiverZone");
     const serviceOptions = createNewLabelObjects(consData, "Service");
     const statusOptions = createNewLabelObjects(consData, "Status");
+    const ConsStatusOptions = createNewLabelObjects(consData, "ConsStatus");
 
     const groups = [
         {
@@ -287,6 +289,38 @@ export default function GtrsCons({
             filterEditor: NumberFilter,
             render: ({ value }) => {
                 return formatNumberWithCommas(value) + " T";
+            },
+        },
+        {
+            name: "ConsStatus",
+            header: "Consignment Status",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: ConsStatusOptions,
+            },
+            render: ({ value, data }) => {
+                return (
+                    <div>
+                        {value == "PASS" ? (
+                            <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                                Pass
+                            </span>
+                        ) : value == "FAIL" ? (
+                            <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                                Fail
+                            </span>
+                        ) : (
+                            <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-0.5 text-sm font-medium text-gray-800">
+                                Pending
+                            </span>
+                        )}
+                    </div>
+                );
             },
         },
         {
