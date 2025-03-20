@@ -34,7 +34,7 @@ export default function Login({ }) {
         <div className="h-screen w-full">
         <LoginPage
             appDomain={appDomain}
-            redirectURL="/gtrs/"
+            redirectURL="/gtrs/dashboard"
             loginURL="/loginComp"
             microsoftURL="/microsoftToken"
             googlekey={googleKey}
