@@ -13,7 +13,8 @@ import moment from "moment";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import { useEffect, useRef } from "react";
-import { isDummyAccount } from "@/CommonFunctions";
+import { formatNumberWithCommas, isDummyAccount } from "@/CommonFunctions";
+import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -419,7 +420,12 @@ export default function GtrsCons({
             ReceiverSuburb: "Receiver Suburb",
             ReceiverReference: "Receiver Reference",
             ReceiverZone: "Receiver Zone",
+            NetAmount: "Total Amount",
+            TottalWeight: "Total Weight",
+            ConsStatus: "Consignment Status",
             ConsReferences: "Consignment References",
+            DeliveryRequiredDateTime: "Required Delivery Date Time",
+            DeliveredDateTime: "Delivered Date Time",
         };
         const fieldsToCheck = [
             "AccountName",
@@ -444,8 +450,8 @@ export default function GtrsCons({
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
-                    if (columnKey === "DespatchDate") {
-                        const date = new Date(person["DespatchDate"]);
+                    if (columnKey === "DespatchDate" || columnKey === "DeliveryRequiredDateTime" || columnKey === "DeliveredDateTime") {
+                        const date = new Date(person[columnKey]);
                         if (!isNaN(date)) {
                             acc[column] =
                                 (date.getTime() -
@@ -497,9 +503,22 @@ export default function GtrsCons({
             // Apply date format to the Despatch Date column
             const despatchDateIndex =
                 newSelectedColumns.indexOf("Despatch Date");
-
+            const requiredDateIndex = newSelectedColumns.indexOf(
+                "Required Delivery Date Time"
+            )
+            const deliveredDateIndex = newSelectedColumns.indexOf(
+                "Delivered Date Time"
+            )
             if (despatchDateIndex !== -1) {
                 const cell = row.getCell(despatchDateIndex + 1); // +1 because ExcelJS is 1-based indexing
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+            }
+            if (requiredDateIndex !== -1) {
+                const cell = row.getCell(requiredDateIndex + 1); // +1 because ExcelJS is 1-based indexing
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+            }
+            if(deliveredDateIndex !== -1) {
+                const cell = row.getCell(deliveredDateIndex + 1); // +1 because ExcelJS is 1-based indexing
                 cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
         });
@@ -536,7 +555,7 @@ export default function GtrsCons({
     const createNewLabelObjects = (data, fieldName) => {
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
-    
+
         // Map through the data and create new objects
         data.forEach((item) => {
             const fieldValue = item[fieldName];
@@ -550,11 +569,11 @@ export default function GtrsCons({
                 newData.push(newObject);
             }
         });
-    
+
         // Sort the array alphabetically by label
         return newData?.sort((a, b) => a?.label?.localeCompare(b?.label));
     };
-    
+
     const senderStateOptions = createNewLabelObjects(consData, "SenderState");
     const senderZoneOptions = createNewLabelObjects(consData, "SenderZone");
     const receiverStateOptions = createNewLabelObjects(
@@ -564,6 +583,18 @@ export default function GtrsCons({
     const receiverZoneOptions = createNewLabelObjects(consData, "ReceiverZone");
     const serviceOptions = createNewLabelObjects(consData, "Service");
     const statusOptions = createNewLabelObjects(consData, "Status");
+    const ConsStatusOptions = createNewLabelObjects(consData, "ConsStatus");
+
+    const podAvlOptions = [
+        {
+            id: true,
+            label: "True",
+        },
+        {
+            id: false,
+            label: "False",
+        },
+    ];
 
     const groups = [
         {
@@ -605,9 +636,6 @@ export default function GtrsCons({
             textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
-            render: ({ value }) => {
-                return isDummyAccount(value);
-            },
         },
         {
             name: "Service",
@@ -645,6 +673,46 @@ export default function GtrsCons({
             },
         },
         {
+            name: "DeliveryRequiredDateTime",
+            header: "Required Delivery date Time",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultFlex: 1,
+            minWidth: 200,
+            dateFormat: "DD-MM-YYYY",
+            filterable: true,
+            filterEditor: DateFilter,
+            render: ({ value, cellProps }) => {
+                if (value == undefined) {
+                    return null;
+                }
+                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                    "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A");
+            },
+        },
+        {
+            name: "DeliveredDateTime",
+            header: "Delivered date Time",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultFlex: 1,
+            minWidth: 200,
+            dateFormat: "DD-MM-YYYY",
+            filterable: true,
+            filterEditor: DateFilter,
+            render: ({ value, cellProps }) => {
+                if (value == undefined) {
+                    return null;
+                }
+                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                    "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A");
+            },
+        },
+        {
             name: "Status",
             header: "Status",
             type: "string",
@@ -666,9 +734,6 @@ export default function GtrsCons({
             textAlign: "center",
             defaultWidth: 200,
             filterEditor: StringFilter,
-            render: ({ value }) => {
-                return isDummyAccount(value);
-            },
         },
         {
             name: "SenderState",
@@ -711,9 +776,6 @@ export default function GtrsCons({
             headerAlign: "center",
             textAlign: "center",
             filterEditor: StringFilter,
-            render: ({ value }) => {
-                return isDummyAccount(value);
-            },
         },
         {
             name: "ReceiverName",
@@ -723,9 +785,6 @@ export default function GtrsCons({
             textAlign: "center",
             defaultWidth: 200,
             filterEditor: StringFilter,
-            render: ({ value }) => {
-                return isDummyAccount(value);
-            },
         },
         {
             name: "ReceiverState",
@@ -755,9 +814,6 @@ export default function GtrsCons({
             headerAlign: "center",
             textAlign: "center",
             filterEditor: StringFilter,
-            render: ({ value }) => {
-                return isDummyAccount(value);
-            },
         },
         {
             name: "ReceiverZone",
@@ -773,10 +829,68 @@ export default function GtrsCons({
             },
         },
         {
+            name: "NetAmount",
+            header: "Total Amount",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: NumberFilter,
+            render: ({ value }) => {
+                return formatNumberWithCommas(value) + " $";
+            },
+        },
+        {
+            name: "TottalWeight",
+            header: "Total Weight",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: NumberFilter,
+            render: ({ value }) => {
+                return formatNumberWithCommas(value) + " T";
+            },
+        },
+        {
+            name: "ConsStatus",
+            header: "Consignment Status",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: ConsStatusOptions,
+            },
+            render: ({ value, data }) => {
+                return (
+                    <div>
+                        {value == "PASS" ? (
+                            <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                                Pass
+                            </span>
+                        ) : value == "FAIL" ? (
+                            <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                                Fail
+                            </span>
+                        ) : (
+                            <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-0.5 text-sm font-medium text-gray-800">
+                                Pending
+                            </span>
+                        )}
+                    </div>
+                );
+            },
+        },
+        {
             name: "POD",
             header: "POD",
             headerAlign: "center",
             textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: podAvlOptions,
+            },
             render: ({ value }) => {
                 return value ? (
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
@@ -796,7 +910,6 @@ export default function GtrsCons({
             textAlign: "center",
             defaultWidth: 200,
             filterEditor: StringFilter,
-
             getFilterValue: ({ data }) => {
                 if (data.ConsReferences && data.ConsReferences.length > 0) {
                     // Join all reference values into a single string for filtering
@@ -813,7 +926,7 @@ export default function GtrsCons({
                               value.length > 1 ? "..." : ""
                           }` // Extract the first Value and add "..." if there's more
                         : ""; // Return an empty string if `x` is not an array or empty
-                return isDummyAccount(result);
+                return result;
             },
         },
     ]);
@@ -1018,10 +1131,37 @@ export default function GtrsCons({
                                             <input
                                                 type="checkbox"
                                                 name="column"
+                                                value="NetAmount"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            Total Amount
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
+                                                value="TottalWeight"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            Total Weight
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
                                                 value="POD"
                                                 className="text-dark rounded focus:ring-goldd"
                                             />{" "}
                                             POD
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
+                                                value="ConsStatus"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            Consignment Status
                                         </label>
                                         <label>
                                             <input

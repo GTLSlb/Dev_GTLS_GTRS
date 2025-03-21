@@ -1,4 +1,4 @@
-import { formatDateToExcel, renderConsDetailsLink } from "@/CommonFunctions";
+import { formatDateToExcel, formatNumberWithCommas } from "@/CommonFunctions";
 import TableStructure from "@/Components/TableStructure";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
@@ -23,7 +23,10 @@ function ChartsTable({
     setChartFilter,
     chartName,
     setChartName,
-    userPermission
+    userPermission,
+    setActiveIndexGTRS,
+    setactiveCon,
+    setLastIndex,
 }) {
     const gridRef = useRef(null);
     const [selected] = useState({});
@@ -61,6 +64,12 @@ function ChartsTable({
         "SenderState"
     );
 
+    const handleClick = (coindex) => {
+        setActiveIndexGTRS(3);
+        setLastIndex(0);
+        setactiveCon(coindex);
+    };
+
     const [columns] = useState([
         {
             name: "ConsignmentNo",
@@ -72,16 +81,19 @@ function ChartsTable({
             minWidth: 200,
             filterEditor: StringFilter,
             render: ({ value, data }) => {
-                return renderConsDetailsLink(
-                    userPermission,
-                    value,
-                    data.consid
+                return (
+                    <span
+                        className="underline text-blue-500 hover:cursor-pointer"
+                        onClick={() => handleClick(data.consid)}
+                    >
+                        {value}
+                    </span>
                 );
             },
         },
         {
             name: "DebtorName",
-            header: "Debtor Name",
+            header: "Account Name",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
@@ -90,34 +102,6 @@ function ChartsTable({
                 multiple: true,
                 wrapMultiple: false,
                 dataSource: DebtorNamesOptions,
-            },
-        },
-        {
-            name: "ReceiverName",
-            header: "Receiver Name",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: ReceiverNamesOptions,
-            },
-        },
-        {
-            name: "ReceiverState",
-            header: "Receiver State",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: ReceiverStatesOptions,
             },
         },
         {
@@ -149,6 +133,34 @@ function ChartsTable({
             },
         },
         {
+            name: "ReceiverName",
+            header: "Receiver Name",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: ReceiverNamesOptions,
+            },
+        },
+        {
+            name: "ReceiverState",
+            header: "Receiver State",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: ReceiverStatesOptions,
+            },
+        },
+        {
             name: "DespatchDate",
             header: "Despatch date",
             headerAlign: "center",
@@ -159,6 +171,49 @@ function ChartsTable({
             filterable: true,
             filterEditor: DateFilter,
             render: ({ value, cellProps }) => {
+                if (value == undefined) {
+                    return null;
+                }
+                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                    "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A");
+            },
+        },
+        {
+            name: "DeliveryRequiredDateTime",
+            header: "Required Delivery date Time",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultFlex: 1,
+            minWidth: 200,
+            dateFormat: "DD-MM-YYYY",
+            filterable: true,
+            filterEditor: DateFilter,
+            render: ({ value, cellProps }) => {
+                if (value == undefined) {
+                    return null;
+                }
+                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                    "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A");
+            },
+        },
+        {
+            name: "DeliveredDateTime",
+            header: "Delivered date Time",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultFlex: 1,
+            minWidth: 200,
+            dateFormat: "DD-MM-YYYY",
+            filterable: true,
+            filterEditor: DateFilter,
+            render: ({ value, cellProps }) => {
+                if (value == undefined) {
+                    return null;
+                }
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -172,6 +227,9 @@ function ChartsTable({
             headerAlign: "center",
             textAlign: "center",
             filterEditor: NumberFilter,
+            render: ({ value }) => {
+                return <p>{formatNumberWithCommas(value)} T</p>;
+            },
         },
         {
             name: "NetAmount",
@@ -180,6 +238,9 @@ function ChartsTable({
             headerAlign: "center",
             textAlign: "center",
             filterEditor: NumberFilter,
+            render: ({ value }) => {
+                return <p>${formatNumberWithCommas(value)}</p>;
+            },
         },
         {
             name: "ConsStatus",
@@ -281,6 +342,8 @@ function ChartsTable({
         // Define custom cell handlers
         const customCellHandlers = {
             DespatchDate: (value) => formatDateToExcel(value),
+            DeliveryRequiredDateTime: (value) => formatDateToExcel(value),
+            DeliveredDateTime: (value) => formatDateToExcel(value),
         };
 
         // Call the `exportToExcel` function
@@ -289,7 +352,7 @@ function ChartsTable({
             columnMapping, // Dynamic column mapping from columns
             "Dashboard-Data.xlsx", // Export file name
             customCellHandlers, // Custom handlers for formatting cells
-            ["DespatchDate"]
+            ["DespatchDate", "DeliveryRequiredDateTime", "DeliveredDateTime"]
         );
     }
 

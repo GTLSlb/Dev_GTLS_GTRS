@@ -162,9 +162,11 @@ function DashboardCard07(props) {
                                 </td>
                                 <td className="px-1">
                                     <div className=" text-sm text-right">
-                                        {formatNumberWithCommas(
-                                            data.totalNoConsShipped
-                                        )}
+                                        {data.totalNoConsShipped
+                                            ? formatNumberWithCommas(
+                                                  data.totalNoConsShipped
+                                              )
+                                            : 0}
                                     </div>
                                 </td>
                             </tr>
@@ -178,9 +180,11 @@ function DashboardCard07(props) {
                                 </td>
                                 <td className="px-1">
                                     <div className=" text-sm text-right">
-                                        {formatNumberWithCommas(
-                                            data.totalConsPending
-                                        )}
+                                        {data.totalConsPending
+                                            ? formatNumberWithCommas(
+                                                  data.totalConsPending
+                                              )
+                                            : 0}
                                     </div>
                                 </td>
                             </tr>
@@ -195,9 +199,11 @@ function DashboardCard07(props) {
                                 </td>
                                 <td className="px-1">
                                     <div className=" text-sm text-right">
-                                        {formatNumberWithCommas(
-                                            data.totalNoConsPassed
-                                        )}
+                                        {data.totalNoConsPassed
+                                            ? formatNumberWithCommas(
+                                                  data.totalNoConsPassed
+                                              )
+                                            : 0}
                                     </div>
                                 </td>
                             </tr>
@@ -212,9 +218,11 @@ function DashboardCard07(props) {
                                 </td>
                                 <td className="px-1">
                                     <div className=" text-sm text-right">
-                                        {formatNumberWithCommas(
-                                            data.totalConsFailed
-                                        )}
+                                        {data.totalConsFailed
+                                            ? formatNumberWithCommas(
+                                                  data.totalConsFailed
+                                              )
+                                            : 0}
                                     </div>
                                 </td>
                             </tr>

@@ -156,6 +156,20 @@ export default function charts({
             },
         },
         {
+            name: "DeliveredDateTime",
+            operator: "inrange",
+            type: "date",
+            value: null,
+            emptyValue: null,
+        },
+        {
+            name: "DeliveryRequiredDateTime",
+            operator: "inrange",
+            type: "date",
+            value: null,
+            emptyValue: null,
+        },
+        {
             name: "Status",
             operator: "inlist",
             type: "select",
@@ -236,6 +250,34 @@ export default function charts({
             name: "ConsReferences",
             operator: "contains",
             type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "NetAmount",
+            operator: "eq",
+            type: "number",
+            value: undefined,
+            emptyValue: null,
+        },
+        {
+            name: "TottalWeight",
+            operator: "eq",
+            type: "number",
+            value: undefined,
+            emptyValue: null,
+        },
+        {
+            name: "POD",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ConsStatus",
+            operator: "inlist",
+            type: "select",
             value: null,
             emptyValue: "",
         },
@@ -1787,7 +1829,7 @@ export default function charts({
         setSDate(formatDate(val.start));
         setEDate(formatDate(val.end));
     }, [filtersFailed]);
-    
+
     useEffect(() => {
         let val = {};
 
@@ -1942,7 +1984,6 @@ export default function charts({
                 },
             });
             setExcelDailyReportData(res.data || []);
-
         } catch (err) {
             if (err.response && err.response.status === 401) {
                 // Handle 401 error using SweetAlert
@@ -2010,6 +2051,9 @@ export default function charts({
             Cookies.set("userEmail", user.Email);
         }
     });
+
+    const [chartName, setChartName] = useState("");
+
     const components = [
         <MainCharts
             chartsData={chartsData}
@@ -2021,6 +2065,11 @@ export default function charts({
             IDfilter={IDfilter}
             EDate={EDate}
             setEDate={setEDate}
+            chartName={chartName}
+            setChartName={setChartName}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            setactiveCon={setactiveCon}
+            setLastIndex={setLastIndex}
             SDate={SDate}
             setSDate={setSDate}
         />,

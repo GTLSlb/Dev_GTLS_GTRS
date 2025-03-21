@@ -61,7 +61,10 @@ export default function MainCharts({
     sideBarToggle,
     chartName,
     setChartName,
-    userPermission
+    userPermission,
+    setActiveIndexGTRS,
+    setactiveCon,
+    setLastIndex,
 }) {
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
     const [EDate, setEDate] = useState(getLatestDespatchDate(chartsData));
@@ -234,6 +237,9 @@ export default function MainCharts({
                                 chartName={chartName}
                                 setChartName={setChartName}
                                 userPermission={userPermission}
+                                setActiveIndexGTRS={setActiveIndexGTRS}
+                                setactiveCon={setactiveCon}
+                                setLastIndex={setLastIndex}
                             />
                         </div>
                     ) : (

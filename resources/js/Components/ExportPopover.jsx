@@ -47,7 +47,7 @@ const ExportPopover = ({ columns, handleDownloadExcel, filteredData }) => {
                 leaveFrom="opacity-100 translate-y-0"
                 leaveTo="opacity-0 translate-y-1"
             >
-                <Popover.Panel className="absolute left-20 sm:left-0 z-10 mt-5 flex w-screen max-w-max -translate-x-1/2">
+                <Popover.Panel className="absolute left-20 sm:-left-5 z-10 mt-5 flex w-screen max-w-max -translate-x-1/2">
                     <div className="max-w-md flex-auto overflow-hidden rounded-lg bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
                         <div className="p-4">
                             <div className="mt-2 flex flex-col">
