@@ -4,13 +4,13 @@ export const handleFilterTable = (gridRef, filteredData) => {
         document.querySelectorAll('input[name="column"]:checked')
     ).map((checkbox) => checkbox.value);
 
-    let allHeaderColumns = gridRef.current.visibleColumns.map((column) => ({
+    let allHeaderColumns = gridRef != null &&gridRef?.current?.visibleColumns.map((column) => ({
         name: column.name,
         value: column.computedFilterValue?.value,
         type: column.computedFilterValue?.type,
         operator: column.computedFilterValue?.operator,
     }));
-    let selectedColVal = allHeaderColumns.filter(
+    let selectedColVal = allHeaderColumns?.filter(
         (col) => col.name !== "edit"
     );
     const filterValue = [];
@@ -27,23 +27,19 @@ export const handleFilterTable = (gridRef, filteredData) => {
                 continue;
             }
             if (type === "string") {
-                const valLowerCase = val[col.name]
-                    ?.toString()
-                    .toLowerCase();
-                const cellValueLowerCase = cellValue
-                    ?.toString()
-                    .toLowerCase();
+                const valLowerCase = val[col.name]?.toString().toLowerCase();
+                const cellValueLowerCase = cellValue?.toString().toLowerCase();
 
                 switch (operator) {
                     case "contains":
                         conditionMet =
                             cellValue?.length > 0 &&
-                            valLowerCase.includes(cellValueLowerCase);
+                            valLowerCase?.includes(cellValueLowerCase);
                         break;
                     case "notContains":
                         conditionMet =
                             cellValue?.length > 0 &&
-                            !valLowerCase.includes(cellValueLowerCase);
+                            !valLowerCase?.includes(cellValueLowerCase);
                         break;
                     case "eq":
                         conditionMet =
@@ -159,17 +155,13 @@ export const handleFilterTable = (gridRef, filteredData) => {
                     // ... (add other boolean type conditions here if necessary)
                 }
             } else if (type === "select") {
-                const cellValueLowerCase = cellValue
-                    ?.toString()
-                    .toLowerCase();
-                const valLowerCase = val[col.name]
-                    ?.toString()
-                    .toLowerCase();
+                const cellValueLowerCase = cellValue?.toString().toLowerCase();
+                const valLowerCase = val[col.name]?.toString().toLowerCase();
 
                 switch (operator) {
                     case "eq":
                         conditionMet =
-                            (cellValue?.length > 0 || cellValue >= 0)&&
+                            (cellValue?.length > 0 || cellValue >= 0) &&
                             cellValueLowerCase === valLowerCase;
                         break;
                     case "neq":
@@ -180,11 +172,21 @@ export const handleFilterTable = (gridRef, filteredData) => {
                         break;
                     case "inlist":
                         const listValues = Array.isArray(value)
-                            ? value.map((v) => v.toLowerCase())
-                            : [value?.toLowerCase()];
+                            ? value.map((v) =>
+                                  typeof v === "string"
+                                      ? v.toLowerCase()
+                                      : String(v)
+                              )
+                            : [
+                                  typeof value === "string"
+                                      ? value.toLowerCase()
+                                      : String(value),
+                              ];
+
                         conditionMet =
                             cellValue?.length > 0 &&
                             listValues.includes(valLowerCase);
+
                         break;
                     case "notinlist":
                         const listValuesNotIn = Array.isArray(value)
@@ -203,8 +205,7 @@ export const handleFilterTable = (gridRef, filteredData) => {
                 );
                 const hasStartDate =
                     cellValue?.start && cellValue.start.length > 0;
-                const hasEndDate =
-                    cellValue?.end && cellValue.end.length > 0;
+                const hasEndDate = cellValue?.end && cellValue.end.length > 0;
                 const dateCellValueStart = hasStartDate
                     ? moment(cellValue.start, "DD-MM-YYYY")
                     : null;
@@ -215,11 +216,7 @@ export const handleFilterTable = (gridRef, filteredData) => {
                 switch (operator) {
                     case "after":
                         // Parse the cellValue date with the format you know it might have
-                        const afterd = moment(
-                            cellValue,
-                            "DD-MM-YYYY",
-                            true
-                        );
+                        const afterd = moment(cellValue, "DD-MM-YYYY", true);
 
                         // Parse the dateValue as an ISO 8601 date string
                         const afterdateToCompare = moment(dateValue);
@@ -242,17 +239,11 @@ export const handleFilterTable = (gridRef, filteredData) => {
                         conditionMet =
                             afterOrOnd.isValid() &&
                             afterOrOnDateToCompare.isValid() &&
-                            afterOrOnDateToCompare.isSameOrAfter(
-                                afterOrOnd
-                            );
+                            afterOrOnDateToCompare.isSameOrAfter(afterOrOnd);
                         break;
 
                     case "before":
-                        const befored = moment(
-                            cellValue,
-                            "DD-MM-YYYY",
-                            true
-                        );
+                        const befored = moment(cellValue, "DD-MM-YYYY", true);
                         const beforeDateToCompare = moment(dateValue);
 
                         conditionMet =
@@ -273,9 +264,7 @@ export const handleFilterTable = (gridRef, filteredData) => {
                         conditionMet =
                             beforeOrOnd.isValid() &&
                             beforeOrOnDateToCompare.isValid() &&
-                            beforeOrOnDateToCompare.isSameOrBefore(
-                                beforeOrOnd
-                            );
+                            beforeOrOnDateToCompare.isSameOrBefore(beforeOrOnd);
 
                         break;
                     case "eq":
@@ -315,9 +304,7 @@ export const handleFilterTable = (gridRef, filteredData) => {
                     case "inrange":
                         conditionMet =
                             (!hasStartDate ||
-                                dateValue.isSameOrAfter(
-                                    dateCellValueStart
-                                )) &&
+                                dateValue.isSameOrAfter(dateCellValueStart)) &&
                             (!hasEndDate ||
                                 dateValue.isSameOrBefore(dateCellValueEnd));
                         break;
@@ -325,8 +312,7 @@ export const handleFilterTable = (gridRef, filteredData) => {
                         conditionMet =
                             (hasStartDate &&
                                 dateValue.isBefore(dateCellValueStart)) ||
-                            (hasEndDate &&
-                                dateValue.isAfter(dateCellValueEnd));
+                            (hasEndDate && dateValue.isAfter(dateCellValueEnd));
                         break;
                     // ... (add other date type conditions here if necessary)
                 }
@@ -343,15 +329,11 @@ export const handleFilterTable = (gridRef, filteredData) => {
     });
     selectedColVal = [];
     if (selectedColumns.length === 0) {
-        selectedColVal = allHeaderColumns.filter(
-            (col) => col.name !== "edit"
-        ); // Use all columns
+        selectedColVal = allHeaderColumns.filter((col) => col.name !== "edit"); // Use all columns
     } else {
         allHeaderColumns.map((header) => {
             selectedColumns.map((column) => {
-                const formattedColumn = column
-                    .replace(/\s/g, "")
-                    .toLowerCase();
+                const formattedColumn = column.replace(/\s/g, "").toLowerCase();
                 if (header.name.toLowerCase() === formattedColumn) {
                     selectedColVal.push(header);
                 }
@@ -359,4 +341,4 @@ export const handleFilterTable = (gridRef, filteredData) => {
         });
     }
     return { selectedColumns: selectedColVal, filterValue: filterValue };
-}
+};

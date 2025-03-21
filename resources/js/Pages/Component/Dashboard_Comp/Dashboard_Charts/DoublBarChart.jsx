@@ -2,8 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Column } from "@ant-design/plots";
 
 const DoubleBarChart = (props) => {
-    const chartData = props.chartData;
-    const chartTitle = props.chartTitle;
+    const {
+        chartTitle,
+        chartData,
+        setShowTable,
+        setChartFilter,
+        setChartName,
+    } = props;
+
     const [data, setData] = useState([]);
     useEffect(() => {
         setData(chartData);
@@ -17,11 +23,7 @@ const DoubleBarChart = (props) => {
         color: ["#ebcb7a", "#4F4F4F"],
         label: {
             position: "middle",
-            // 'top', 'bottom', 'middle'
             layout: [
-                // {
-                //     type: "interval-adjust-position",
-                // }, 
                 {
                     type: "interval-hide-overlap",
                 },
@@ -30,15 +32,34 @@ const DoubleBarChart = (props) => {
                 },
             ],
         },
+        onReady: (plot) => {
+            plot.on("element:click", (event) => {
+                const { data } = event.data;
+
+                if (chartTitle === "POD True vs False") {
+                    const [year, month] = data.monthYear.split("-");
+                    const startDate = `01-${month}-${year}`;
+                    const lastDay = new Date(year, month, 0).getDate(); // Correctly gets the last day of the month
+                    const endDate = `${lastDay}-${month}-${year}`; // Formats it as "DD-MM-YYYY"
+
+                    setChartName(chartTitle);
+                    setChartFilter((prev) => ({
+                        ...prev,
+                        dateStart: startDate,
+                        dateEnd: endDate,
+                        PODValue: data.pod === "true" ? [true] : [false],
+                    }));
+                }
+
+                setShowTable(true);
+            });
+        },
     };
     return (
         <div className="flex flex-col col-span-full sm:col-span-6 bg-white shadow-lg h-full rounded-sm border border-slate-200 ">
             <header className="px-5 py-4 border-b border-slate-100">
                 <h2 className="font-semibold text-slate-800">{chartTitle}</h2>
             </header>
-            {/*  <div className="">
-                
-            </div> */}
             <Column {...config} className="p-4" />
         </div>
     );
