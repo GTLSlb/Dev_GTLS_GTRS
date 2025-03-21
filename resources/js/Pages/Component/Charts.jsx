@@ -1787,6 +1787,7 @@ export default function charts({
         setSDate(formatDate(val.start));
         setEDate(formatDate(val.end));
     }, [filtersFailed]);
+    
     useEffect(() => {
         let val = {};
 
