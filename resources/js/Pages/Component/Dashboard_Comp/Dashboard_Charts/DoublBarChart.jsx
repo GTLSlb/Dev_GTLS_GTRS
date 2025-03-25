@@ -31,9 +31,33 @@ const DoubleBarChart = (props) => {
                     type: "adjust-color",
                 },
             ],
+            style: {
+                cursor: "pointer",
+            }
+        },
+        interactions: [
+            {
+                type: "element-selected",
+            },
+            {
+                type: "element-active",
+            },
+            {
+                type: "element-highlight",
+            },
+            // {
+            //     type: "element-hover"
+            // }
+        ],
+        state: {
+            active: {
+                style: {
+                    cursor: "pointer",
+                }
+            }
         },
         onReady: (plot) => {
-            plot.on("element:click", (event) => {
+            plot.on("element:dblclick", (event) => {
                 const { data } = event.data;
 
                 if (chartTitle === "POD True vs False") {
