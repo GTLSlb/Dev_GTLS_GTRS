@@ -51,6 +51,7 @@ import ConsMap from "./TrafficPage/ConsMap";
 import TrafficComp from "./TrafficPage/TrafficComp";
 import TransportRep from "./TransportRep";
 import ProductStockTable from "./ProductStock/ProductStockTable";
+import Utilization from "./Utilization/Utilization";
 
 export default function GtrsMain({
     setCusomterAccounts,
@@ -81,7 +82,6 @@ export default function GtrsMain({
     deliveryReportComments,
     fetchDeliveryReportCommentsData,
 }) {
-
     window.moment = moment;
     const [KPIData, setKPIData] = useState([]);
     const [NewKPIData, setNewKPIData] = useState([]);
@@ -691,10 +691,14 @@ export default function GtrsMain({
 
     const navigate = useNavigate();
     useEffect(() => {
-        if(userPermission){
-            navigateToFirstAllowedPage({setSidebarElements, user: userPermission, navigate})
+        if (userPermission) {
+            navigateToFirstAllowedPage({
+                setSidebarElements,
+                user: userPermission,
+                navigate,
+            });
         }
-    },[])
+    }, []);
 
     return (
         <div className="h-full">
@@ -1604,6 +1608,30 @@ export default function GtrsMain({
                                                         AToken={AToken}
                                                         currentUser={
                                                             currentUser
+                                                        }
+                                                    />
+                                                }
+                                            />
+                                        }
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
+                                    />
+                                    <Route
+                                        path="/utilization-report"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermission}
+                                                route="StockReport_View"
+                                                element={
+                                                    <Utilization
+                                                        url={url}
+                                                        AToken={AToken}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        userPermission={
+                                                            userPermission
                                                         }
                                                     />
                                                 }

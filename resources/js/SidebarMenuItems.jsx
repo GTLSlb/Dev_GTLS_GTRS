@@ -252,6 +252,15 @@ const menu = [
         feature: "StockReport_View",
         url: "/gtrs/SOH",
     },
+    {
+        id: 31,
+        name: "Utilization Report",
+        href: "#",
+        icon: RectangleStackIcon,
+        current: false,
+        feature: "StockReport_View",
+        url: "/gtrs/utilization-report",
+    },
 ];
 
 export default menu;
