@@ -19,7 +19,7 @@ import {
 } from "@heroicons/react/24/solid";
 import "../../../../css/scroll.css";
 import TaskIcon from "@mui/icons-material/Task";
-
+import ContactsIcon from '@mui/icons-material/Contacts';
 import { useEffect } from "react";
 import {
     Accordion,
@@ -234,6 +234,14 @@ const navigation = [
         icon: RectangleStackIcon,
         current: false,
         feature: "StockReport_View",
+    },
+    {
+        id: 27,
+        name: "Contacts Report",
+        href: "#",
+        icon: ContactsIcon,
+        current: false,
+        feature: "ContactsRep_View",
     },
 ];
 

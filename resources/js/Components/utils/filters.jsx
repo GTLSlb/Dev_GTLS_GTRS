@@ -1741,3 +1741,41 @@ export const getFiltersChartsTable = (chartFilter) => {
         },
     ];
 };
+
+export const getFiltersContactsTable = () => {
+    return [
+        {
+            name: "ContactName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "ContactEmailAddress",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "MobileNumber",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "DebtorName",
+            operator: "inlist",
+            type: "select",
+            value: null,
+        },
+        {
+            name: "ContactTitle",
+            operator: "inlist",
+            type: "select",
+            value: null,
+        },
+    ];
+};

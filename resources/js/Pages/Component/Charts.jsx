@@ -28,6 +28,7 @@ import RealFoodKPIPack from "./RealFoodKPIPack/RealFoodKPIPack";
 import ProductStockTable from "./Products/ProductStockTable";
 import ExcelDeliveryReport from "./ReportsPage/DeliveryReports/ExcelDeliveryReport";
 import DeliveryReportCommentsPage from "./ReportsPage/DeliveryReports/DeliveryReportCommentsPage";
+import ContactRep from "./ContactsRep/ContactRep";
 
 export default function charts({
     setCusomterAccounts,
@@ -2441,6 +2442,7 @@ export default function charts({
             data={deliveryReportComments}
             fetchDeliveryReportCommentsData={fetchDeliveryReportCommentsData}
         />,
+        <ContactRep url={url} AToken={AToken} currentUser={currentUser} />,
     ];
     return (
         <div className="">
