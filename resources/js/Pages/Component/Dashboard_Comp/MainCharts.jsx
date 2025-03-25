@@ -13,6 +13,7 @@ import {
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import Charts from "./Charts";
 import ChartsTable from "./ChartsTable";
+import DifotDashboard from "../DIFOT/DifotDashboard";
 
 const customStyles = {
     control: (provided) => ({
@@ -61,7 +62,7 @@ export default function MainCharts({
     sideBarToggle,
     chartName,
     setChartName,
-    userPermission
+    userPermission,
 }) {
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
     const [EDate, setEDate] = useState(getLatestDespatchDate(chartsData));
@@ -236,7 +237,7 @@ export default function MainCharts({
                                 userPermission={userPermission}
                             />
                         </div>
-                    ) : (
+                    ) : 1 == 2 ? (
                         <>
                             <div className="sm:flex sm:items-center">
                                 <div className="sm:flex-auto md:mt-6">
@@ -392,6 +393,10 @@ export default function MainCharts({
                                     setChartName={setChartName}
                                 />
                             </div>
+                        </>
+                    ) : (
+                        <>
+                            <DifotDashboard />
                         </>
                     )
                 ) : (
