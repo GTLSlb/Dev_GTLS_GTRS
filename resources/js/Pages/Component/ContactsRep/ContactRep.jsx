@@ -33,7 +33,7 @@ function ContactRep({ currentUser, AToken, url }) {
                         name: "DebtorName",
                         header: "Debtor Name",
                         headerAlign: "center",
-                        textAlign: "center",
+                        textAlign: "left",
                         defaultFlex: 1,
                         minWidth: 200,
                         filterEditor: SelectFilter,
@@ -69,7 +69,7 @@ function ContactRep({ currentUser, AToken, url }) {
                         header: "Contact Name",
                         type: "string",
                         headerAlign: "center",
-                        textAlign: "center",
+                        textAlign: "left",
                         defaultFlex: 1,
                         minWidth: 200,
                         filterEditor: StringFilter,
@@ -79,7 +79,7 @@ function ContactRep({ currentUser, AToken, url }) {
                         header: "Contact Email Address",
                         type: "string",
                         headerAlign: "center",
-                        textAlign: "center",
+                        textAlign: "left",
                         defaultFlex: 1,
                         minWidth: 200,
                         filterEditor: StringFilter,
@@ -148,13 +148,27 @@ function ContactRep({ currentUser, AToken, url }) {
         );
     }
 
+    const Title = () => {
+        return (
+            <>
+                <div className="sm:flex sm:items-center">
+                    <div className="sm:flex-auto md:mt-2">
+                        <h1 className="text-2xl py-2 px-2 font-extrabold text-gray-600">
+                            Contacts Report
+                        </h1>
+                    </div>
+                </div>
+            </>
+        );
+    };
+
     const renderTable = useCallback(() => {
         return (
             <div className="px-4 sm:px-6 pb-4 bg-smooth">
                 <div className="px-4 sm:px-6 lg:px-0 w-full bg-smooth">
                     <TableStructure
                         handleDownloadExcel={handleDownloadExcel}
-                        title={"Contacts Report"}
+                        title={Title()}
                         id={"ContactId"}
                         // HeaderContent={HeaderContent()}
                         // setSelected={setSelected}
