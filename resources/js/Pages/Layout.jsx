@@ -198,6 +198,7 @@ export default function Sidebar(Boolean) {
                             setActiveIndexGTRS={setActiveIndexGTRS}
                             setActiveIndexInv={setActiveIndexInv}
                             currentUser={currentUser}
+                            user={user}
                         />
                         <MainNavbar
                             url={Invoicesurl}

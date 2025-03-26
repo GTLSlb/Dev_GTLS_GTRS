@@ -20,11 +20,10 @@ export default function MainSidebar({
     allowedApplications,
     setMobileMenuOpen,
     mobileMenuOpen,
-    setActiveIndexGtam,
     setactivePage,
-    setActiveIndexInv,
     currentUser,
     setActiveIndexGTRS,
+    user,
 }) {
     const navigation = [
         {
@@ -283,6 +282,40 @@ export default function MainSidebar({
     };
     moveToHead(allowedApplications, 3);
 
+    const filterNavigation = (navigationitems, user) => {
+        return navigationitems.filter((navItem) => {
+            
+            // Check if the navigation item has sub-options
+            if (navItem.options) {
+                // Filter options based on user permissions
+                navItem.options = navItem.options.filter((option) =>
+                    user?.Pages?.some(
+                        (userPage) =>
+                            userPage?.PageName === option.name &&
+                            userPage?.Features?.some(
+                                (feature) =>
+                                    feature.FunctionName === option.feature
+                            )
+                    )
+                );
+                // Include the navigation item only if it has any permitted options
+                return navItem.options.length > 0;
+            } else {
+                // For navigation items without options, check the feature directly
+                return user?.Pages?.some(
+                    (userPage) =>
+                        userPage?.PageName === navItem.name &&
+                        userPage?.Features?.some(
+                            (feature) =>
+                                feature?.FunctionName === navItem?.feature
+                        )
+                );
+            }
+        });
+    };
+
+    const filteredNavigation = filterNavigation(navigation, user[0]);
+    console.log(filteredNavigation)
     return (
         <div>
             {/* Desktop Version  */}
@@ -528,9 +561,9 @@ export default function MainSidebar({
                                                                             <ChevronDownIcon className="h-3" />
                                                                         ) : null}
                                                                     </AccordionHeader>
-                                                                    {navigation ? (
+                                                                    {filteredNavigation ? (
                                                                         <AccordionBody className="pl-8 flex flex-col">
-                                                                            {navigation
+                                                                            {filteredNavigation
                                                                                 // .filter(
                                                                                 //     (
                                                                                 //         item
