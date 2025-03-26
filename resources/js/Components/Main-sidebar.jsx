@@ -315,7 +315,7 @@ export default function MainSidebar({
     };
 
     const filteredNavigation = filterNavigation(navigation, user[0]);
-    console.log(filteredNavigation)
+
     return (
         <div>
             {/* Desktop Version  */}
