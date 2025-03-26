@@ -1,5 +1,5 @@
 import { HotTable } from "@handsontable/react-wrapper";
-import { HyperFormula } from 'hyperformula';
+import { HyperFormula } from "hyperformula";
 import { registerAllModules } from "handsontable/registry";
 import { useEffect, useMemo, useRef, useState } from "react";
 // import "handsontable/styles/handsontable.css";
@@ -17,12 +17,7 @@ import { ToastContainer } from "react-toastify";
 
 registerAllModules();
 
-import {
-    AlertToast,
-    canViewMetcashDeliveryReport,
-    canViewOtherDeliveryReport,
-    canViewWoolworthsDeliveryReport,
-} from "@/permissions";
+import { AlertToast } from "@/permissions";
 import swal from "sweetalert";
 
 const tableData = [
@@ -37,11 +32,10 @@ const tableData = [
         PalletsCollected: 26,
         VehicleCapacity: 26,
         LoadWeightT: 18.09,
-        VehicleCapacityT: 22.50,
+        VehicleCapacityT: 22.5,
         LoadWeightUtilisation: "80%",
         TimeIn: "13:30",
         TimeOut: "16:50",
-        CollectionTurnaroundTime: "3:20",
         NorthRockAllowTime45Min: "2:35",
         DemurrageCharges1: 0,
         Reason: "",
@@ -69,13 +63,10 @@ const tableData = [
         PickUpPoint: "S Rocks",
         PalletsCollected: 28,
         VehicleCapacity: 30,
-        LoadWeightT: 20.00,
-        VehicleCapacityT: 24.00,
-        LoadWeightUtilisation: "83%",
+        LoadWeightT: 20.0,
+        VehicleCapacityT: 24.0,
         TimeIn: "14:30",
         TimeOut: "17:00",
-        CollectionTurnaroundTime: "3:00",
-        NorthRockAllowTime45Min: "2:45",
         DemurrageCharges1: 10,
         Reason: "Delay",
         DeliveryPoint: "LFX Minto",
@@ -83,7 +74,7 @@ const tableData = [
         IngleburnAllowTime30Min: "0:00",
         DemurrageCharges2: 15,
         TravelTimeBetweenSites: "1:15",
-        TotalChargeAmount: 25.00,
+        TotalChargeAmount: 25.0,
         Manifest: "Manifest002",
         ProofOfDemurrage: "Proof002",
         Invoiced: "No",
@@ -91,9 +82,8 @@ const tableData = [
         KPIMonth: "2023-Jan",
         CPP: 120,
         RevisedUtilisation: "95%",
-    }
+    },
 ];
-
 
 export default function Utilization({
     url,
@@ -349,14 +339,25 @@ export default function Utilization({
             type: "numeric",
             readOnly: true,
             renderer: (instance, td, row, col, prop, value, cellProperties) => {
-                const palletsCollected = instance.getDataAtCell(row, instance.propToCol("PalletsCollected"));
-                const vehicleCapacity = instance.getDataAtCell(row, instance.propToCol("VehicleCapacity"));
-                
-                const util = palletsCollected && vehicleCapacity ? ((palletsCollected / vehicleCapacity) * 100).toFixed(2) + "%" : "0%";
-    
+                const palletsCollected = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("PalletsCollected")
+                );
+                const vehicleCapacity = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("VehicleCapacity")
+                );
+
+                const util =
+                    palletsCollected && vehicleCapacity
+                        ? ((palletsCollected / vehicleCapacity) * 100).toFixed(
+                              2
+                          ) + "%"
+                        : "0%";
+
                 td.innerText = util;
                 return td;
-            }
+            },
         },
         {
             data: "LoadWeightT",
@@ -375,32 +376,122 @@ export default function Utilization({
             title: "Load Weight Utilisation (%)",
             type: "numeric",
             readOnly: true,
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
+                const LoadWeightT = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("LoadWeightT")
+                );
+                const VehicleCapacityT = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("VehicleCapacityT")
+                );
+
+                const util =
+                    LoadWeightT && VehicleCapacityT
+                        ? ((LoadWeightT / VehicleCapacityT) * 100).toFixed(2) +
+                          "%"
+                        : "0%";
+
+                td.innerText = util;
+                return td;
+            },
         },
         {
             data: "TimeIn",
             title: "Time In",
             type: "date",
-            readOnly: true,
-            renderer: dateRenderer, // Format as date
+            readOnly: true, // Format as date
         },
         {
             data: "TimeOut",
             title: "Time Out",
             type: "date",
-            readOnly: true,
-            renderer: dateRenderer, // Format as date
+            readOnly: true, // Format as date
         },
         {
             data: "CollectionTurnaroundTime",
             title: "Collection Turnaround Time",
-            type: "text",
+            type: "date",
             readOnly: true,
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
+                const timeIn = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("TimeIn")
+                );
+                const timeOut = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("TimeOut")
+                );
+
+                // Check if both times exist
+                if (timeIn && timeOut) {
+                    // Convert to moments (or Date objects)
+                    const timeInMoment = moment(timeIn, "HH:mm");
+                    const timeOutMoment = moment(timeOut, "HH:mm");
+
+                    // Calculate the difference in minutes
+                    const diff = timeOutMoment.diff(timeInMoment, "minutes");
+
+                    // Format the difference as HH:mm (you can adjust the format as per your need)
+                    const formattedDiff = moment
+                        .utc(diff * 60000)
+                        .format("HH:mm");
+                    td.innerText = formattedDiff;
+                } else {
+                    td.innerText = "N/A"; // If either of the time is missing
+                }
+
+                td.classList.add("htLeft"); // Align text to the left
+                return td;
+            },
         },
         {
             data: "NorthRockAllowTime45Min",
             title: "North Rock Allow Time (45Min)",
             type: "text",
             readOnly: true,
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
+                const timeIn = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("TimeIn")
+                );
+                const timeOut = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("TimeOut")
+                );
+console.log(instance.getDataAtProp("CollectionTurnaroundTime"))
+                // If TimeIn or TimeOut is missing
+                if (!timeIn || !timeOut) {
+                    td.innerText = ""; // Return empty if either time is missing
+                } else {
+                    // Convert to moments (or Date objects)
+                    const timeInMoment = moment(timeIn, "HH:mm");
+                    const timeOutMoment = moment(timeOut, "HH:mm");
+
+                    // Calculate the difference in minutes
+                    const diff = timeOutMoment.diff(timeInMoment, "minutes");
+
+                    // Apply the logic for Collection Turnaround Time based on your formula
+                    let collectionTurnaroundTime = diff;
+
+                    // Apply the formula (adjusting for 45 minutes)
+                    if (collectionTurnaroundTime <= 0) {
+                        collectionTurnaroundTime = 0;
+                    } else {
+                        collectionTurnaroundTime =
+                            collectionTurnaroundTime - 0.03125 * 1440; // 0.03125 days = 45 minutes
+                    }
+
+                    // Format the result (convert minutes to HH:mm format)
+                    const formattedDiff = moment
+                        .utc(collectionTurnaroundTime * 60000)
+                        .format("HH:mm");
+                    td.innerText = formattedDiff;
+                }
+
+                td.classList.add("htLeft"); // Align text to the left
+                return td;
+            },
         },
         {
             data: "DemurrageCharges1",
@@ -619,8 +710,8 @@ export default function Utilization({
     const hyperformulaInstance = HyperFormula.buildEmpty({
         // to use an external HyperFormula instance,
         // initialize it with the `'internal-use-in-handsontable'` license key
-        licenseKey: 'internal-use-in-handsontable',
-      });
+        licenseKey: "internal-use-in-handsontable",
+    });
 
     return (
         <div className="min-h-full px-8">
@@ -667,8 +758,8 @@ export default function Utilization({
                         manualColumnMove={true}
                         formulas={{
                             engine: hyperformulaInstance,
-                            sheetName: 'Sheet1',
-                          }}
+                            sheetName: "Sheet1",
+                        }}
                         licenseKey="non-commercial-and-evaluation"
                         rowHeaders={true}
                         afterChange={handleAfterChange}
