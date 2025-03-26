@@ -58,7 +58,6 @@ const customStyles = {
 export default function MainCharts({
     accData,
     chartsData,
-    sideBarToggle,
     chartName,
     setChartName,
     userPermission,
@@ -72,8 +71,6 @@ export default function MainCharts({
     const [selectedReceiver, setselectedReceiver] = useState([]);
     const [selectedStates, setSelectedStates] = useState([]);
     const [filteredReceivers, setFilteredReceivers] = useState([]);
-
-    const [gridKey, setGridKey] = useState("sidebar-open");
     const [hasData, setHasData] = useState(true);
 
     useEffect(() => {
@@ -202,15 +199,6 @@ export default function MainCharts({
         filterData(SDate, EDate);
     }, [accData, selectedReceiver, selectedStates]);
 
-    useEffect(() => {
-        // Introduce a delay before changing the key
-        const timeout = setTimeout(() => {
-            setGridKey(sideBarToggle ? "sidebar-open" : "sidebar-closed");
-        }, 300); // Delay in milliseconds (e.g., 300ms)
-
-        // Cleanup timeout on unmount or when sideBarToggle changes
-        return () => clearTimeout(timeout);
-    }, [sideBarToggle]);
 
     const [chartFilter, setChartFilter] = useState({
         consStatus: "",
@@ -391,7 +379,6 @@ export default function MainCharts({
                                 <Charts
                                     layout={layout}
                                     filteredData={filteredData}
-                                    gridKey={gridKey}
                                     setLayout={setLayout}
                                     setShowTable={setShowTable}
                                     setChartFilter={setChartFilter}

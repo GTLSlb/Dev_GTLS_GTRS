@@ -23,39 +23,34 @@ const ReactGridLayout = WidthProvider(RGL);
 function Charts({
     layout,
     filteredData,
-    gridKey,
     setLayout,
     setShowTable,
     setChartFilter,
     setChartName,
 }) {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const [cols, setCols] = useState(2);
+    const [cols, setCols] = useState(window.innerWidth < 1300 ? 1 : 2);
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth < 768) {
-                setCols(1);
-            } else if (window.innerWidth < 1300) {
-                setCols(1);
-            } else {
-                setCols(2);
-            }
+            const newCols =
+                window.innerWidth < 768 ? 1 : window.innerWidth < 1300 ? 1 : 2;
+            setCols(newCols);
         };
+        // Call it once to set initial value
         handleResize();
         window.addEventListener("resize", handleResize);
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
-    }, []);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []); // Use an empty array because window doesn't change
 
     return (
         <ReactGridLayout
-            key={gridKey} // Change key to force re-render
+            key={`grid-${cols}`} // The key changes when cols changes, forcing a re-render
             className="layout custom-grid"
             layout={layout}
             cols={cols}
-            rowHeight={110}
+            rowHeight={cols == 1 ? 120 : 110}
             width={1200}
+            heigh
             isResizable={false}
             isDraggable={!isMobile}
             // autoSize={true}

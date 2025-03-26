@@ -53,23 +53,6 @@ const navigation = [
         icon: ClipboardDocumentCheckIcon,
         current: false,
         options: [
-            // {
-            //     id: 2,
-            //     name: "KPI",
-            //     href: "#",
-            //     current: false,
-            //     icon: ClipboardDocumentCheckIcon,
-            //     feature: "KPI_view",
-            // },
-
-            // {
-            //     id: 12,
-            //     name: "Transit Days",
-            //     href: "#",
-            //     current: false,
-            //     icon: ClipboardDocumentCheckIcon,
-            //     feature: "View_TransitDays",
-            // },
             {
                 id: 17,
                 name: "KPI",
