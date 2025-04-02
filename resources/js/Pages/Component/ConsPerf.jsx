@@ -19,8 +19,6 @@ export default function ConsPerf({
     oldestDate,
     latestDate,
     currentUser,
-    setSharedStartDate,
-    setSharedEndDate,
 }) {
     const [currentPage, setCurrentPage] = useState(0);
     const [filteredData, setFilteredData] = useState(PerfData);
@@ -28,13 +26,11 @@ export default function ConsPerf({
     const handleStartDateChange = (event) => {
         const value = event.target.value;
         setSDate(value);
-        setSharedStartDate(value);
         filterData(value, EDate, selectedConsignment);
     };
     const handleEndDateChange = (event) => {
         const value = event.target.value;
         setEDate(value);
-        setSharedEndDate(value);
         filterData(SDate, value, selectedConsignment);
     };
     const handleConsignmentChange = (value) => {

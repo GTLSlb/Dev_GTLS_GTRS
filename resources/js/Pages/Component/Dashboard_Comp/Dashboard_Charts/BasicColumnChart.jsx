@@ -105,4 +105,4 @@ const BasicColumnCharts = (props) => {
     );
 };
 
-export default BasicColumnCharts;
+export default React.memo(BasicColumnCharts);

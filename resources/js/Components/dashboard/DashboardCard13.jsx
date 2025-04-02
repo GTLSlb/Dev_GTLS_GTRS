@@ -157,4 +157,4 @@ const BasicPieCharts = (props) => {
     );
 };
 
-export default BasicPieCharts;
+export default React.memo(BasicPieCharts);

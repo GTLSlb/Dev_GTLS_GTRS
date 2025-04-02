@@ -1,5 +1,11 @@
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+import moment from "moment";
+import axios from "axios";
+import Cookies from "js-cookie";
+import swal from "sweetalert";
+
+// Import all child components
 import MainCharts from "./Dashboard_Comp/MainCharts";
-import React, { useState } from "react";
 import ChartsSidebar from "./Dashboard_Comp/ChartsSidebar";
 import GtrsCons from "./GtrsCons";
 import KPI from "./KPI";
@@ -12,7 +18,6 @@ import SafetyRep from "./safetyRep";
 import RDDMain from "./RDDMain";
 import FailedConsMain from "./FailedConsMain";
 import MissingPOD from "./MissingPOD";
-import { useEffect } from "react";
 import TransitDays from "./KPI/TransitDays";
 import Holidays from "./KPI/Holidays";
 import KPIReasons from "./KPI/KPIReasons";
@@ -23,22 +28,26 @@ import NewTransitDays from "./NewTransitDays";
 import AddNewTransitDay from "./KPI/AddNewTransitDay";
 import GraphPresentation from "./Presentation/GraphPresentation";
 import DailyReportPage from "./ReportsPage/DeliveryReportPage";
-import Cookies from "js-cookie";
 import RealFoodKPIPack from "./RealFoodKPIPack/RealFoodKPIPack";
 import ProductStockTable from "./Products/ProductStockTable";
 import ExcelDeliveryReport from "./ReportsPage/DeliveryReports/ExcelDeliveryReport";
 import DeliveryReportCommentsPage from "./ReportsPage/DeliveryReports/DeliveryReportCommentsPage";
 import ContactRep from "./ContactsRep/ContactRep";
 
-export default function charts({
+// Helper function to update a filter group immutably
+function updateFilterGroup(filters, filterName, newValue) {
+    return filters.map((item) =>
+        item.name === filterName ? { ...item, value: newValue } : item
+    );
+}
+
+export default function Charts({
     setCusomterAccounts,
-    setPerfData,
     userBody,
     sessionData,
     safetyData,
     debtorsData,
     customerAccounts,
-    dashData,
     setActiveIndexGTRS,
     setactiveCon,
     consData,
@@ -46,7 +55,6 @@ export default function charts({
     currentUser,
     activeCon,
     PerfData,
-    IDfilter,
     rddReasons,
     setrddReasons,
     transportData,
@@ -59,72 +67,57 @@ export default function charts({
     deliveryReportData,
 }) {
     window.moment = moment;
-    const current = new Date();
-    const month = current.getMonth() + 1;
+
+    // ---------- Data & Miscellaneous States ----------
     const [KPIData, setKPIData] = useState([]);
     const [NewKPIData, setNewKPIData] = useState([]);
     const [transitDays, setTransitDays] = useState();
     const [newTransitDays, setNewTransitDays] = useState();
     const [holidays, setHolidays] = useState();
     const [failedReasons, setFailedReasons] = useState();
-    const [rddData, setrddData] = useState();
+    const [rddData, setRddData] = useState();
     const [NoDelData, setNoDelData] = useState();
     const [safetyDataState, setsafetyDataState] = useState([]);
     const [AdditionalData, setAdditionalData] = useState();
     const [DriverData, setDriverData] = useState();
     const [safetyTypes, setSafetyTypes] = useState([]);
     const [safetyCauses, setSafetyCauses] = useState([]);
-    const [SDate, setSDate] = useState(getOldestDespatchDate(consData));
-    const [EDate, setEDate] = useState(getLatestDespatchDate(consData));
-    const oldestDate = getOldestDespatchDate(consData);
-    const latestDate = getLatestDespatchDate(consData);
-    const [dataFromChild, setDataFromChild] = useState(null);
-    const [transitDay, setTransitDay] = useState(null);
-    const [newtransitDay, setNewTransitDay] = useState(null);
 
-    const [sharedStartDate, setSharedStartDate] = useState(
-        getOldestDespatchDate(consData)
+    // ---------- Derived Date Values ----------
+    const oldestDate = useMemo(
+        () => getOldestDespatchDate(consData),
+        [consData]
     );
-    const [sharedEndDate, setSharedEndDate] = useState(
-        getLatestDespatchDate(consData)
+    const latestDate = useMemo(
+        () => getLatestDespatchDate(consData),
+        [consData]
     );
-
-    const minDate = getMinMaxValue(consData, "DespatchDate", 1);
-    const maxDate = getMinMaxValue(consData, "DespatchDate", 2);
-    const minDispatchDate = getMinMaxValue(KPIData, "DispatchDate", 1);
-    const maxDispatchDate = getMinMaxValue(KPIData, "DispatchDate", 2);
-
-    const minDateHol = getMinMaxValue(holidays, "HolidayDate", 1);
-    const maxDateHol = getMinMaxValue(holidays, "HolidayDate", 2);
-
-    const minDespatchDaterdd = getMinMaxValue(rddData, "DespatchDate", 1);
-    const maxDespatchDaterdd = getMinMaxValue(rddData, "DespatchDate", 2);
-
-    const minDateDespatchMissing = getMinMaxValue(PerfData, "DESPATCHDATE", 1);
-    const maxDateDespatchMissing = getMinMaxValue(PerfData, "DESPATCHDATE", 2);
-
-    const minDateSafety = getMinMaxValue(safetyData, "OccuredAt", 1);
-    const maxDateSafety = getMinMaxValue(safetyData, "OccuredAt", 2);
-
-    const minDateNoDel = getMinMaxValue(NoDelData, "DespatchDateTime", 1);
-    const maxDateNoDel = getMinMaxValue(NoDelData, "DespatchDateTime", 2);
-
-    const minDateAdd = getMinMaxValue(AdditionalData, "DespatchDateTime", 1);
-    const maxDateAdd = getMinMaxValue(AdditionalData, "DespatchDateTime", 2);
-
-    const minDateDelivery = getMinMaxValue(
-        deliveryReportData,
-        "DespatchDate",
-        1
+    const minDate = useMemo(
+        () => getMinMaxValue(consData, "DespatchDate", 1),
+        [consData]
     );
-    const maxDateDelivery = getMinMaxValue(
-        deliveryReportData,
-        "DespatchDate",
-        2
+    const maxDate = useMemo(
+        () => getMinMaxValue(consData, "DespatchDate", 2),
+        [consData]
+    );
+    const minDateHol = useMemo(
+        () => getMinMaxValue(holidays, "HolidayDate", 1),
+        [consData]
+    );
+    const maxDateHol = useMemo(
+        () => getMinMaxValue(holidays, "HolidayDate", 2),
+        [consData]
+    );
+    const minDateSafety = useMemo(
+        () => getMinMaxValue(safetyData, "OccuredAt", 1),
+        [consData]
+    );
+    const maxDateSafety = useMemo(
+        () => getMinMaxValue(safetyData, "OccuredAt", 2),
+        [consData]
     );
 
-    const minDateTransport = getMinMaxValue(transportData, "PickupDate", 1);
-    const maxDateTransport = getMinMaxValue(transportData, "PickupDate", 2);
+    // ---------- Filter States ----------
     const [filtersCons, setFiltersCons] = useState([
         {
             name: "ConsignmentNo",
@@ -151,10 +144,7 @@ export default function charts({
             name: "DespatchDate",
             operator: "inrange",
             type: "date",
-            value: {
-                start: minDate,
-                end: maxDate,
-            },
+            value: null,
         },
         {
             name: "DeliveredDateTime",
@@ -283,561 +273,6 @@ export default function charts({
             emptyValue: "",
         },
     ]);
-    const [filtersTransport, setFiltersTransport] = useState([
-        {
-            name: "CustomerName",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "SenderName",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "SenderState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "CustomerPO",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "DeliveryNo",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "RddDate",
-            operator: "inrange",
-            type: "date",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "RddTime",
-            operator: "eq",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "LTLFTL",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "State",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "PostalCode",
-            operator: "contains",
-            type: "string",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "Carrier",
-            operator: "contains",
-            type: "string",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "PickupDate",
-            operator: "inrange",
-            type: "date",
-            emptyValue: { start: null, end: null },
-            value: {
-                start: minDateTransport,
-                end: maxDateTransport,
-            },
-        },
-
-        {
-            name: "PickupTime",
-            operator: "eq",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "Status",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "ActualDeliveryDate",
-            operator: "inrange",
-            type: "date",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "ActualDeliveryTime",
-            operator: "inrange",
-            type: "date",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "OnTime",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "DelayReason",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "TransportComments",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-    ]);
-
-    const [filtersNewKPI, setFiltersNewKPI] = useState([
-        {
-            name: "ConsignmentNo",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "SenderName",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "SenderReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "SenderState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            //emptyValue: "",
-        },
-        {
-            name: "ReceiverName",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "ReceiverReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "ReceiverState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            //emptyValue: "",
-        },
-        {
-            name: "ReceiverSuburb",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "DispatchDate",
-            operator: "inrange",
-            type: "date",
-            value: {
-                start: minDispatchDate,
-                end: maxDispatchDate,
-            },
-        },
-        {
-            name: "ReceiverPostCode",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: null,
-        },
-        {
-            name: "RDD",
-            operator: "inrange",
-            type: "date",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "DeliveryDate",
-            operator: "inrange",
-            type: "date",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "TransitDays",
-            operator: "eq",
-            type: "number",
-            value: null,
-            // emptyValue: null,
-        },
-        {
-            name: "CalculatedDelDate",
-            operator: "inrange",
-            type: "date",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "MatchDel",
-            operator: "eq",
-            type: "select",
-            value: null,
-            //emptyValue: "",
-        },
-        {
-            name: "ReasonId",
-            operator: "eq",
-            type: "select",
-            value: null,
-            //emptyValue: null,
-        },
-    ]);
-    const [filtersTransit, setFiltersTransit] = useState([
-        {
-            name: "CustomerName",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "CustomerTypeId",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: null,
-        },
-        {
-            name: "SenderState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "SenderCity",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "SenderSuburb",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "SenderPostCode",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-        {
-            name: "ReceiverName",
-            operator: "contains",
-            type: "string",
-            value: null,
-        },
-        {
-            name: "ReceiverState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ReceiverCity",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ReceiverSuburb",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ReceiverPostCode",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-        {
-            name: "TransitTime",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-    ]);
-    const [filtersNewTransit, setFiltersNewTransit] = useState([
-        {
-            name: "CustomerName",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "CustomerTypeId",
-            operator: "eq",
-            type: "select",
-            value: null,
-            // emptyValue: "",
-        },
-        {
-            name: "SenderState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "SenderPostCode",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-        {
-            name: "ReceiverName",
-            operator: "contains",
-            type: "string",
-            value: null,
-        },
-        {
-            name: "ReceiverState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ReceiverPostCode",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-        {
-            name: "TransitTime",
-            operator: "eq",
-            type: "number",
-            value: null,
-        },
-    ]);
-    const [filtersHolidays, setFiltersHolidays] = useState([
-        {
-            name: "HolidayId",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "HolidayName",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "HolidayDate",
-            operator: "inrange",
-            type: "date",
-            value: {
-                start: minDateHol,
-                end: maxDateHol,
-            },
-        },
-        {
-            name: "HolidayState",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "HolidayDesc",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-    ]);
-    const [filtersReasons, setFiltersReasons] = useState();
-    const [filtersFailed, setFiltersFailed] = useState([
-        {
-            name: "CONSIGNMENTNUMBER",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        { name: "SENDERNAME", operator: "contains", type: "string", value: "" },
-        {
-            name: "SENDERREFERENCE",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "SenderState",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "RECEIVERNAME",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "RECEIVER REFERENCE",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "RECEIVERSTATE",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "SERVICE",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "KPI DATETIME",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            value: "",
-        },
-        {
-            name: "DESPATCHDATE",
-            operator: "inrange",
-            type: "date",
-            value: {
-                start: minDispatchDate,
-                end: maxDispatchDate,
-            },
-        },
-        {
-            name: "DELIVERYREQUIREDDATETIME",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            value: "",
-        },
-        {
-            name: "ARRIVEDDATETIME",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            value: "",
-        },
-        {
-            name: "DELIVEREDDATETIME",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            value: "",
-        },
-        {
-            name: "POD",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "FailedReason",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "FailedReasonDesc",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "State",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "Reference",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "Department",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "Resolution",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "OccuredAt",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            value: "",
-        },
-        {
-            name: "Explanation",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-    ]);
     const [filtersRDD, setFiltersRDD] = useState([
         {
             name: "ConsignmentNo",
@@ -916,10 +351,7 @@ export default function charts({
             name: "DespatchDate",
             operator: "inrange",
             type: "date",
-            value: {
-                start: minDespatchDaterdd,
-                end: maxDespatchDaterdd,
-            },
+            value: null,
         },
         {
             name: "OldRdd",
@@ -958,8 +390,128 @@ export default function charts({
             type: "string",
             value: "",
         },
+        // ...
+    ]);
+    const [filtersNewKPI, setFiltersNewKPI] = useState([
+        {
+            name: "ConsignmentNo",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderReference",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "SenderState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverReference",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            //emptyValue: "",
+        },
+        {
+            name: "ReceiverSuburb",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "DispatchDate",
+            operator: "inrange",
+            type: "date",
+            value: null,
+        },
+        {
+            name: "ReceiverPostCode",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: null,
+        },
+        {
+            name: "RDD",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "DeliveryDate",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "TransitDays",
+            operator: "eq",
+            type: "number",
+            value: null,
+            // emptyValue: null,
+        },
+        {
+            name: "CalculatedDelDate",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "MatchDel",
+            operator: "eq",
+            type: "select",
+            value: null,
+            //emptyValue: "",
+        },
+        {
+            name: "ReasonId",
+            operator: "eq",
+            type: "select",
+            value: null,
+            //emptyValue: null,
+        },
     ]);
     const [filtersMissingPOD, setFiltersMissingPOD] = useState([
+        {
+            name: "DESPATCHDATE",
+            operator: "inrange",
+            type: "date",
+            value: null,
+        },
         {
             name: "CONSIGNMENTNUMBER",
             operator: "contains",
@@ -1013,20 +565,13 @@ export default function charts({
             operator: "inrange",
             type: "date",
             emptyValue: "",
-            value: {
-                start: minDateDespatchMissing,
-                end: maxDateDespatchMissing,
-            },
+            value: null,
         },
         {
             name: "DELIVERYREQUIREDDATETIME",
             operator: "inrange",
             type: "date",
             emptyValue: "",
-            // value: {
-            //     start: minDaterdd,
-            //     end: maxDaterdd,
-            // },
         },
 
         {
@@ -1034,89 +579,15 @@ export default function charts({
             operator: "inrange",
             type: "date",
             emptyValue: "",
-            // value: {
-            //     start: minDateArrive,
-            //     end: maxDateArrive,
-            // },
         },
         {
             name: "DELIVEREDDATETIME",
             operator: "inrange",
             type: "date",
             emptyValue: "",
-            // value: {
-            //     start: minDateDel,
-            //     end: maxDateDel,
-            // },
         },
         {
             name: "POD",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-    ]);
-    const [filtersSafety, setFiltersSafety] = useState([
-        {
-            name: "SafetyType",
-            operator: "eq",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "ConsNo",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "DebtorId",
-            operator: "eq",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "CAUSE",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "State",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "Explanation",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "Resolution",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "Reference",
-            operator: "inlist",
-            type: "select",
-            value: "",
-        },
-        {
-            name: "OccuredAt",
-            operator: "inrange",
-            type: "date",
-            emptyValue: "",
-            value: {
-                start: minDateSafety,
-                end: maxDateSafety,
-            },
-        },
-        {
-            name: "AddedBy",
             operator: "contains",
             type: "string",
             value: "",
@@ -1133,11 +604,7 @@ export default function charts({
             name: "DespatchDateTime",
             operator: "inrange",
             type: "date",
-            emptyValue: "",
-            value: {
-                start: minDateNoDel,
-                end: maxDateNoDel,
-            },
+            value: null,
         },
         {
             name: "SenderName",
@@ -1265,10 +732,7 @@ export default function charts({
             operator: "inrange",
             type: "date",
             emptyValue: "",
-            value: {
-                start: minDateAdd,
-                end: maxDateAdd,
-            },
+            value: null,
         },
         {
             name: "Name",
@@ -1288,6 +752,344 @@ export default function charts({
             operator: "eq",
             type: "number",
             value: null,
+        },
+    ]);
+    const [filtersFailed, setFiltersFailed] = useState([
+        {
+            name: "CONSIGNMENTNUMBER",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        { name: "SENDERNAME", operator: "contains", type: "string", value: "" },
+        {
+            name: "SENDERREFERENCE",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "SenderState",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
+            name: "RECEIVERNAME",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "RECEIVER REFERENCE",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "RECEIVERSTATE",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
+            name: "SERVICE",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "KPI DATETIME",
+            operator: "inrange",
+            type: "date",
+            emptyValue: "",
+            value: "",
+        },
+        {
+            name: "DESPATCHDATE",
+            operator: "inrange",
+            type: "date",
+            value: null,
+        },
+        {
+            name: "DELIVERYREQUIREDDATETIME",
+            operator: "inrange",
+            type: "date",
+            emptyValue: "",
+            value: "",
+        },
+        {
+            name: "ARRIVEDDATETIME",
+            operator: "inrange",
+            type: "date",
+            emptyValue: "",
+            value: "",
+        },
+        {
+            name: "DELIVEREDDATETIME",
+            operator: "inrange",
+            type: "date",
+            emptyValue: "",
+            value: "",
+        },
+        {
+            name: "POD",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "FailedReason",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
+            name: "FailedReasonDesc",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "State",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
+            name: "Reference",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
+            name: "Department",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
+            name: "Resolution",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "OccuredAt",
+            operator: "inrange",
+            type: "date",
+            emptyValue: "",
+            value: "",
+        },
+        {
+            name: "Explanation",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+    ]);
+    const [filtersTransport, setFiltersTransport] = useState([
+        { name: "PickupDate", operator: "inrange", type: "date", value: null },
+        {
+            name: "CustomerName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "SenderName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "SenderState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "CustomerPO",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "DeliveryNo",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "RddDate",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "RddTime",
+            operator: "eq",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "LTLFTL",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "State",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "PostalCode",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "Carrier",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "PickupDate",
+            operator: "inrange",
+            type: "date",
+            emptyValue: { start: null, end: null },
+            value: null,
+        },
+
+        {
+            name: "PickupTime",
+            operator: "eq",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "Status",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ActualDeliveryDate",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "ActualDeliveryTime",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "OnTime",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "DelayReason",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "TransportComments",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+    ]);
+    // Additional filters (safety, driver, transit, holidays, reasons, etc.)
+    const [filtersSafety, setFiltersSafety] = useState([
+        {
+            name: "SafetyType",
+            operator: "eq",
+            type: "select",
+            value: null,
+        },
+        {
+            name: "ConsNo",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "DebtorId",
+            operator: "eq",
+            type: "select",
+            value: null,
+        },
+        {
+            name: "CAUSE",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "State",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
+            name: "Explanation",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "Resolution",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "Reference",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
+            name: "OccuredAt",
+            operator: "inrange",
+            type: "date",
+            emptyValue: "",
+            value: {
+                start: minDateSafety,
+                end: maxDateSafety,
+            },
+        },
+        {
+            name: "AddedBy",
+            operator: "contains",
+            type: "string",
+            value: "",
         },
     ]);
     const [filtersDriver, setFiltersDriver] = useState([
@@ -1352,692 +1154,302 @@ export default function charts({
             value: "",
         },
     ]);
+    const [filtersTransit, setFiltersTransit] = useState([
+        {
+            name: "CustomerName",
+            operator: "inlist",
+            type: "select",
+            value: null,
+        },
+        {
+            name: "CustomerTypeId",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: null,
+        },
+        {
+            name: "SenderState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+        },
+        {
+            name: "SenderCity",
+            operator: "inlist",
+            type: "select",
+            value: null,
+        },
+        {
+            name: "SenderSuburb",
+            operator: "inlist",
+            type: "select",
+            value: null,
+        },
+        {
+            name: "SenderPostCode",
+            operator: "eq",
+            type: "number",
+            value: null,
+        },
+        {
+            name: "ReceiverName",
+            operator: "contains",
+            type: "string",
+            value: null,
+        },
+        {
+            name: "ReceiverState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+        },
+        {
+            name: "ReceiverCity",
+            operator: "inlist",
+            type: "select",
+            value: null,
+        },
+        {
+            name: "ReceiverSuburb",
+            operator: "inlist",
+            type: "select",
+            value: null,
+        },
+        {
+            name: "ReceiverPostCode",
+            operator: "eq",
+            type: "number",
+            value: null,
+        },
+        {
+            name: "TransitTime",
+            operator: "eq",
+            type: "number",
+            value: null,
+        },
+    ]);
+    const [filtersHolidays, setFiltersHolidays] = useState([
+        {
+            name: "HolidayId",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
+            name: "HolidayName",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
+            name: "HolidayDate",
+            operator: "inrange",
+            type: "date",
+            value: {
+                start: minDateHol,
+                end: maxDateHol,
+            },
+        },
+        {
+            name: "HolidayState",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
+            name: "HolidayDesc",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+    ]);
+    const [filtersReasons, setFiltersReasons] = useState([]);
+    const [filtersNewTransit, setFiltersNewTransit] = useState([]);
 
+    // ---------- Other States ----------
+    const [dataFromChild, setDataFromChild] = useState(null);
+    const [chartName, setChartName] = useState("");
+    const [lastIndex, setLastIndex] = useState(0);
+    const [dailyReportData, setDailyReportData] = useState(deliveryReportData);
+    const [excelDailyReportData, setExcelDailyReportData] = useState();
+    const [deliveryReportComments, setDeliveryReportComments] = useState();
+    const [newTransitDay, setNewTransitDay] = useState(null);
+
+    // ---------- Helper Functions ----------
     function getOldestDespatchDate(data) {
-        // Filter out elements with invalid 'CreatedDate' values
         const validData = data.filter((item) => isValidDate(item.DespatchDate));
-
-        // Sort the validData array based on the 'CreatedDate' property
         const sortedData = validData.sort(
             (a, b) => new Date(a.DespatchDate) - new Date(b.DespatchDate)
         );
-
-        // Check if the sortedData array is empty
-        if (sortedData.length === 0) {
-            return null; // No valid dates found
-        }
-
-        // Extract only the date part from the 'CreatedDate' of the first element (oldest date)
-        const oldestDate = new Date(
-            sortedData[0]?.DespatchDate
-        ).toLocaleDateString("en-CA");
-        // Return the oldest date in the 'YYYY-MM-DD' format
-        return oldestDate;
+        if (sortedData.length === 0) return null;
+        return new Date(sortedData[0].DespatchDate).toLocaleDateString("en-CA");
+    }
+    function getLatestDespatchDate(data) {
+        const validData = data.filter((item) => isValidDate(item.DespatchDate));
+        const sortedData = validData.sort(
+            (a, b) => new Date(b.DespatchDate) - new Date(a.DespatchDate)
+        );
+        if (sortedData.length === 0) return null;
+        return new Date(sortedData[0].DespatchDate).toLocaleDateString("en-CA");
+    }
+    function getMinMaxValue(data, fieldName, identifier) {
+        if (!data || !Array.isArray(data) || data.length === 0) return null;
+        const sortedData = [...data].sort((a, b) =>
+            a[fieldName] < b[fieldName] ? -1 : 1
+        );
+        const resultDate =
+            identifier === 1
+                ? new Date(sortedData[0][fieldName])
+                : new Date(sortedData[sortedData.length - 1][fieldName]);
+        const day = String(resultDate.getDate()).padStart(2, "0");
+        const month = String(resultDate.getMonth() + 1).padStart(2, "0");
+        const year = resultDate.getFullYear();
+        return `${day}-${month}-${year}`;
     }
     function isValidDate(dateString) {
         const date = new Date(dateString);
         return !isNaN(date);
     }
-    function getLatestDespatchDate(data) {
-        const validData = data.filter((item) => isValidDate(item.DespatchDate));
+    const formatDate = (dateString) =>
+        dateString ? dateString.split("-").reverse().join("-") : dateString;
 
-        // Sort the data array based on the 'DespatchDate' property in descending order
-        const sortedData = validData.sort(
-            (a, b) => new Date(b.DespatchDate) - new Date(a.DespatchDate)
+    // ---------- Common Date Filter ----------
+    const [commonDespatchDate, setCommonDespatchDate] = useState({
+        start: minDate,
+        end: maxDate,
+    });
+    const [SDate, setSDate] = useState(formatDate(commonDespatchDate.start));
+    const [EDate, setEDate] = useState(formatDate(commonDespatchDate.end));
+
+    // ---------- Sync Master Date Filter (from filtersCons) ----------
+    useEffect(() => {
+        const newVal = filtersCons.find((item) => item.name === "DespatchDate")
+            ?.value || { start: minDate, end: maxDate };
+        setCommonDespatchDate(newVal);
+        setSDate(formatDate(newVal.start));
+        setEDate(formatDate(newVal.end));
+    }, [filtersCons, minDate, maxDate]);
+
+    // ---------- Propagate Common Date to Other Filter Groups ----------
+    useEffect(() => {
+        setFiltersCons((prev) =>
+            updateFilterGroup(prev, "DespatchDate", commonDespatchDate)
         );
-        if (sortedData.length === 0) {
-            return null; // No valid dates found
-        }
-        const latestDate = new Date(
-            sortedData[0]?.DespatchDate
-        ).toLocaleDateString("en-CA");
+        setFiltersRDD((prev) =>
+            updateFilterGroup(prev, "DespatchDate", commonDespatchDate)
+        );
+        setFiltersNewKPI((prev) =>
+            updateFilterGroup(prev, "DispatchDate", commonDespatchDate)
+        );
+        setFiltersMissingPOD((prev) =>
+            updateFilterGroup(prev, "DESPATCHDATE", commonDespatchDate)
+        );
+        setFiltersNoDelInfo((prev) =>
+            updateFilterGroup(prev, "DespatchDateTime", commonDespatchDate)
+        );
+        setFiltersAddCharges((prev) =>
+            updateFilterGroup(prev, "DespatchDateTime", commonDespatchDate)
+        );
+        setFiltersFailed((prev) =>
+            updateFilterGroup(prev, "DESPATCHDATE", commonDespatchDate)
+        );
+        setFiltersTransport((prev) =>
+            updateFilterGroup(prev, "PickupDate", commonDespatchDate)
+        );
+    }, [commonDespatchDate]);
 
-        // Return the 'DespatchDate' of the first element (latest date)
-        return latestDate;
-    }
-    const handleDataFromChild = (data) => {
-        setDataFromChild(data);
-    };
-    const [lastIndex, setLastIndex] = useState(0);
-    function getMinMaxValue(data, fieldName, identifier) {
-        // Check for null safety
-        if (!data || !Array.isArray(data) || data.length === 0) {
-            return null;
-        }
-
-        // Sort the data based on the fieldName
-        const sortedData = [...data].sort((a, b) => {
-            if (a[fieldName] < b[fieldName]) return -1;
-            if (a[fieldName] > b[fieldName]) return 1;
-            return 0;
-        });
-
-        // Return the minimum or maximum value based on the identifier
-        let resultDate;
-        if (identifier === 1) {
-            resultDate = new Date(sortedData[0][fieldName]);
-        } else if (identifier === 2) {
-            resultDate = new Date(sortedData[sortedData.length - 1][fieldName]);
-        } else {
-            return null;
-        }
-
-        // Convert the resultDate to the desired format "01-10-2023"
-        const day = String(resultDate.getDate()).padStart(2, "0");
-        const month = String(resultDate.getMonth() + 1).padStart(2, "0"); // +1 because months are 0-indexed
-        const year = resultDate.getFullYear();
-
-        return `${day}-${month}-${year}`;
-    }
-    // Function to format the date
-    const formatDate = (dateString) => {
-        if (dateString) {
-            const [day, month, year] = dateString.split("-");
-            // Using template literals to format the date
-            return `${year}-${month}-${day}`;
-        } else {
-            return dateString;
-        }
-    };
-    // Function to format the date to "DD-MM-YYYY"
-    const formatDateToDDMMYYYY = (dateString) => {
-        if (dateString) {
-            const [year, month, day] = dateString.split("-");
-            return `${day}-${month}-${year}`;
-        } else {
-            return dateString;
-        }
-    };
-    // Update filters if the change is in consignments
-    useEffect(() => {
-        let val = {};
-        filtersCons?.map((item) => {
-            if (item?.name == "DespatchDate") {
-                val = item?.value;
-            }
-        });
-        // Update filtersRDD
-        filtersRDD?.map((item) => {
-            if (item?.name === "DespatchDate") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersNewKPI
-        filtersNewKPI?.map((item) => {
-            if (item?.name === "DispatchDate") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersMissingPOD
-        filtersMissingPOD?.map((item) => {
-            if (item?.name === "DESPATCHDATE") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersNoDelInfo
-        filtersNoDelInfo?.map((item) => {
-            if (item?.name === "DespatchDateTime") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersAddCharges
-        filtersAddCharges?.map((item) => {
-            if (item?.name === "DespatchDateTime") {
-                item.value = val;
-            }
-        });
-        filtersFailed?.map((item) => {
-            if (item?.name == "DESPATCHDATE") {
-                item.value = val;
-            }
-        });
-        setSDate(formatDate(val.start));
-        setEDate(formatDate(val.end));
-    }, [filtersCons]);
-
-    // Update filters if the change is in add charges
-    useEffect(() => {
-        let val = {};
-        filtersAddCharges?.map((item) => {
-            if (item?.name == "DespatchDateTime") {
-                val = item?.value;
-            }
-        });
-        // Update filtersRDD
-        filtersRDD?.map((item) => {
-            if (item?.name === "DespatchDate") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersNewKPI
-        filtersNewKPI?.map((item) => {
-            if (item?.name === "DispatchDate") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersMissingPOD
-        filtersMissingPOD?.map((item) => {
-            if (item?.name === "DESPATCHDATE") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersNoDelInfo
-        filtersNoDelInfo?.map((item) => {
-            if (item?.name === "DespatchDateTime") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersCons
-        filtersCons?.map((item) => {
-            if (item?.name === "DespatchDate") {
-                item.value = val;
-            }
-        });
-        filtersFailed?.map((item) => {
-            if (item?.name == "DESPATCHDATE") {
-                item.value = val;
-            }
-        });
-        filtersTransport?.map((item) => {
-            if (item?.name == "PickupDate") {
-                item.value = val;
-            }
-        });
-        setSDate(formatDate(val.start));
-        setEDate(formatDate(val.end));
-    }, [filtersAddCharges]);
-
-    // Update filters if the change is in no delivery info
-    useEffect(() => {
-        let val = {};
-        filtersNoDelInfo?.map((item) => {
-            if (item?.name == "DespatchDateTime") {
-                val = item?.value;
-            }
-        });
-        filtersTransport?.map((item) => {
-            if (item?.name == "PickupDate") {
-                item.value = val;
-            }
-        });
-        // Update filtersRDD
-        filtersRDD?.map((item) => {
-            if (item?.name === "DespatchDate") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersNewKPI
-        filtersNewKPI?.map((item) => {
-            if (item?.name === "DispatchDate") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersMissingPOD
-        filtersMissingPOD?.map((item) => {
-            if (item?.name === "DESPATCHDATE") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersAddCharges
-        filtersAddCharges?.map((item) => {
-            if (item?.name === "DespatchDateTime") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersCons
-        filtersCons?.map((item) => {
-            if (item?.name === "DespatchDate") {
-                item.value = val;
-            }
-        });
-        filtersFailed?.map((item) => {
-            if (item?.name == "DESPATCHDATE") {
-                item.value = val;
-            }
-        });
-        setSDate(formatDate(val.start));
-        setEDate(formatDate(val.end));
-    }, [filtersNoDelInfo]);
-
-    // Update filters if the change is in RDD
-    useEffect(() => {
-        let val = {};
-        filtersRDD?.map((item) => {
-            if (item?.name == "DespatchDate") {
-                val = item?.value;
-            }
-        });
-        filtersTransport?.map((item) => {
-            if (item?.name == "PickupDate") {
-                item.value = val;
-            }
-        });
-        // Update filtersAddCharges
-        filtersAddCharges?.map((item) => {
-            if (item?.name === "DespatchDateTime") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersNewKPI
-        filtersNewKPI?.map((item) => {
-            if (item?.name === "DispatchDate") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersMissingPOD
-        filtersMissingPOD?.map((item) => {
-            if (item?.name === "DESPATCHDATE") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersNoDelInfo
-        filtersNoDelInfo?.map((item) => {
-            if (item?.name === "DespatchDateTime") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersCons
-        filtersCons?.map((item) => {
-            if (item?.name === "DespatchDate") {
-                item.value = val;
-            }
-        });
-        filtersFailed?.map((item) => {
-            if (item?.name == "DESPATCHDATE") {
-                item.value = val;
-            }
-        });
-        setSDate(formatDate(val.start));
-        setEDate(formatDate(val.end));
-    }, [filtersRDD]);
-
-    // Update filters if the change is in missing pod
-    useEffect(() => {
-        let val = {};
-        filtersMissingPOD?.map((item) => {
-            if (item?.name == "DESPATCHDATE") {
-                val = item?.value;
-            }
-        });
-        filtersTransport?.map((item) => {
-            if (item?.name == "PickupDate") {
-                item.value = val;
-            }
-        });
-        // Update filtersAddCharges
-        filtersAddCharges?.map((item) => {
-            if (item?.name === "DespatchDateTime") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersNewKPI
-        filtersNewKPI?.map((item) => {
-            if (item?.name === "DispatchDate") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersRDD
-        filtersRDD?.map((item) => {
-            if (item?.name === "DespatchDate") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersNoDelInfo
-        filtersNoDelInfo?.map((item) => {
-            if (item?.name === "DespatchDateTime") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersCons
-        filtersCons?.map((item) => {
-            if (item?.name === "DespatchDate") {
-                item.value = val;
-            }
-        });
-        filtersFailed?.map((item) => {
-            if (item?.name == "DESPATCHDATE") {
-                item.value = val;
-            }
-        });
-        setSDate(formatDate(val.start));
-        setEDate(formatDate(val.end));
-    }, [filtersMissingPOD]);
-
-    // Update filters if the change is in kpi
-    useEffect(() => {
-        let val = {};
-        filtersNewKPI?.map((item) => {
-            if (item?.name == "DispatchDate") {
-                val = item?.value;
-            }
-        });
-        filtersTransport?.map((item) => {
-            if (item?.name == "PickupDate") {
-                item.value = val;
-            }
-        });
-        // Update filtersAddCharges
-        filtersAddCharges?.map((item) => {
-            if (item?.name === "DespatchDateTime") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersMissingPOD
-        filtersMissingPOD?.map((item) => {
-            if (item?.name === "DESPATCHDATE") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersRDD
-        filtersRDD?.map((item) => {
-            if (item?.name === "DespatchDate") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersNoDelInfo
-        filtersNoDelInfo?.map((item) => {
-            if (item?.name === "DespatchDateTime") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersCons
-        filtersCons?.map((item) => {
-            if (item?.name === "DespatchDate") {
-                item.value = val;
-            }
-        });
-        filtersFailed?.map((item) => {
-            if (item?.name == "DESPATCHDATE") {
-                item.value = val;
-            }
-        });
-        setSDate(formatDate(val.start));
-        setEDate(formatDate(val.end));
-    }, [filtersNewKPI]);
-    // Update filters if the change is in Transport cons
-    useEffect(() => {
-        let val = {};
-        filtersFailed?.map((item) => {
-            if (item?.name == "DESPATCHDATE") {
-                val = item?.value;
-            }
-        });
-        filtersTransport?.map((item) => {
-            if (item?.name == "PickupDate") {
-                item.value = val;
-            }
-        });
-        // Update filtersNewKPI
-        filtersNewKPI?.map((item) => {
-            if (item?.name === "DispatchDate") {
-                item.value = val;
-            }
-        });
-        // Update filtersAddCharges
-        filtersAddCharges?.map((item) => {
-            if (item?.name === "DespatchDateTime") {
-                item.value = val;
-            }
-        });
-        // Update filtersMissingPOD
-        filtersMissingPOD?.map((item) => {
-            if (item?.name === "DESPATCHDATE") {
-                item.value = val;
-            }
-        });
-        // Update filtersRDD
-        filtersRDD?.map((item) => {
-            if (item?.name === "DespatchDate") {
-                item.value = val;
-            }
-        });
-        // Update filtersNoDelInfo
-        filtersNoDelInfo?.map((item) => {
-            if (item?.name === "DespatchDateTime") {
-                item.value = val;
-            }
-        });
-        // Update filtersCons
-        filtersCons?.map((item) => {
-            if (item?.name === "DespatchDate") {
-                item.value = val;
-            }
-        });
-        setSDate(formatDate(val.start));
-        setEDate(formatDate(val.end));
-    }, [filtersFailed]);
-
-    useEffect(() => {
-        let val = {};
-
-        filtersTransport?.map((item) => {
-            if (item?.name == "PickupDate") {
-                val = item?.value;
-            }
-        });
-        filtersFailed?.map((item) => {
-            if (item?.name == "DESPATCHDATE") {
-                item.value = val;
-            }
-        });
-        // Update filtersNewKPI
-        filtersNewKPI?.map((item) => {
-            if (item?.name === "DispatchDate") {
-                item.value = val;
-            }
-        });
-        // Update filtersAddCharges
-        filtersAddCharges?.map((item) => {
-            if (item?.name === "DespatchDateTime") {
-                item.value = val;
-            }
-        });
-        // Update filtersMissingPOD
-        filtersMissingPOD?.map((item) => {
-            if (item?.name === "DESPATCHDATE") {
-                item.value = val;
-            }
-        });
-        // Update filtersRDD
-        filtersRDD?.map((item) => {
-            if (item?.name === "DespatchDate") {
-                item.value = val;
-            }
-        });
-        // Update filtersNoDelInfo
-        filtersNoDelInfo?.map((item) => {
-            if (item?.name === "DespatchDateTime") {
-                item.value = val;
-            }
-        });
-        // Update filtersCons
-        filtersCons?.map((item) => {
-            if (item?.name === "DespatchDate") {
-                item.value = val;
-            }
-        });
-        setSDate(formatDate(val.start));
-        setEDate(formatDate(val.end));
-    }, [filtersTransport]);
-    //Update Filters if the change is in the Perfromance Report
-    useEffect(() => {
-        const val = {
-            start: formatDateToDDMMYYYY(sharedStartDate),
-            end: formatDateToDDMMYYYY(sharedEndDate),
-        };
-        filtersTransport?.map((item) => {
-            if (item?.name == "PickupDate") {
-                item.value = val;
-            }
-        });
-        // Update filtersAddCharges
-        filtersAddCharges?.map((item) => {
-            if (item?.name === "DespatchDateTime") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersNewKPI
-        filtersNewKPI?.map((item) => {
-            if (item?.name === "DispatchDate") {
-                item.value = val;
-            }
-        });
-        // Update filtersMissingPOD
-        filtersMissingPOD?.map((item) => {
-            if (item?.name === "DESPATCHDATE") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersRDD
-        filtersRDD?.map((item) => {
-            if (item?.name === "DespatchDate") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersNoDelInfo
-        filtersNoDelInfo?.map((item) => {
-            if (item?.name === "DespatchDateTime") {
-                item.value = val;
-            }
-        });
-
-        // Update filtersCons
-        filtersCons?.map((item) => {
-            if (item?.name === "DespatchDate") {
-                item.value = val;
-            }
-        });
-    }, [sharedEndDate, sharedStartDate]);
-
-    const [dailyReportData, setDailyReportData] = useState(deliveryReportData);
-    const fetchDeliveryReport = async (setCellLoading) => {
-        try {
-            const res = await axios.get(`${url}Delivery`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            });
-            setDailyReportData(res.data || []);
-
-            // Check if setCellLoading exists before calling it
-            if (typeof setCellLoading === "function") {
-                setCellLoading(null);
-            }
-        } catch (err) {
-            if (err.response && err.response.status === 401) {
-                // Handle 401 error using SweetAlert
-                swal({
-                    title: "Session Expired!",
-                    text: "Please login again",
-                    type: "success",
-                    icon: "info",
-                    confirmButtonText: "OK",
-                }).then(async function () {
-                    await handleSessionExpiration();
+    // ---------- API Calls (wrapped in useCallback) ----------
+    const fetchDeliveryReport = useCallback(
+        async (setCellLoading) => {
+            try {
+                const res = await axios.get(`${url}Delivery`, {
+                    headers: {
+                        UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
+                    },
                 });
-            } else {
-                // Handle other errors
-                console.log(err);
-                // Check if setCellLoading exists before calling it
-                if (typeof setCellLoading === "function") {
-                    setCellLoading(null);
+                setDailyReportData(res.data || []);
+                if (typeof setCellLoading === "function") setCellLoading(null);
+            } catch (err) {
+                if (err.response && err.response.status === 401) {
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        icon: "info",
+                        button: "OK",
+                    }).then(async () => {
+                        await handleSessionExpiration();
+                    });
+                } else {
+                    console.error(err);
+                    if (typeof setCellLoading === "function")
+                        setCellLoading(null);
                 }
             }
-        }
-    };
+        },
+        [url, currentUser, AToken]
+    );
 
-    const [excelDailyReportData, setExcelDailyReportData] = useState();
-    const [deliveryReportComments, setDeliveryReportComments] = useState();
-    const fetchExcelDeliveryReportData = async (setCellLoading) => {
-        try {
-            const res = await axios.get(`${url}DeliveryReport`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            });
-            setExcelDailyReportData(res.data || []);
-        } catch (err) {
-            if (err.response && err.response.status === 401) {
-                // Handle 401 error using SweetAlert
-                swal({
-                    title: "Session Expired!",
-                    text: "Please login again",
-                    type: "success",
-                    icon: "info",
-                    confirmButtonText: "OK",
-                }).then(async function () {
-                    await handleSessionExpiration();
+    const fetchExcelDeliveryReportData = useCallback(
+        async (setCellLoading) => {
+            try {
+                const res = await axios.get(`${url}DeliveryReport`, {
+                    headers: {
+                        UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
+                    },
                 });
-            } else {
-                // Handle other errors
-                console.log(err);
-                // Check if setCellLoading exists before calling it
-                if (typeof setCellLoading === "function") {
-                    setCellLoading(null);
+                setExcelDailyReportData(res.data || []);
+            } catch (err) {
+                if (err.response && err.response.status === 401) {
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        icon: "info",
+                        button: "OK",
+                    }).then(async () => {
+                        await handleSessionExpiration();
+                    });
+                } else {
+                    console.error(err);
+                    if (typeof setCellLoading === "function")
+                        setCellLoading(null);
                 }
             }
-        }
-    };
-    const fetchDeliveryReportCommentsData = async (setCellLoading) => {
-        try {
-            const res = await axios.get(`${url}Delivery/Comments`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            });
-            setDeliveryReportComments(res.data || []);
-        } catch (err) {
-            if (err.response && err.response.status === 401) {
-                // Handle 401 error using SweetAlert
-                swal({
-                    title: "Session Expired!",
-                    text: "Please login again",
-                    type: "success",
-                    icon: "info",
-                    confirmButtonText: "OK",
-                }).then(async function () {
-                    await handleSessionExpiration();
+        },
+        [url, currentUser, AToken]
+    );
+
+    const fetchDeliveryReportCommentsData = useCallback(
+        async (setCellLoading) => {
+            try {
+                const res = await axios.get(`${url}Delivery/Comments`, {
+                    headers: {
+                        UserId: currentUser.UserId,
+                        Authorization: `Bearer ${AToken}`,
+                    },
                 });
-            } else {
-                // Handle other errors
-                console.log(err);
-                // Check if setCellLoading exists before calling it
-                if (typeof setCellLoading === "function") {
-                    setCellLoading(null);
+                setDeliveryReportComments(res.data || []);
+            } catch (err) {
+                if (err.response && err.response.status === 401) {
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        icon: "info",
+                        button: "OK",
+                    }).then(async () => {
+                        await handleSessionExpiration();
+                    });
+                } else {
+                    console.error(err);
+                    if (typeof setCellLoading === "function")
+                        setCellLoading(null);
                 }
             }
-        }
-    };
+        },
+        [url, currentUser, AToken]
+    );
 
     useEffect(() => {
         if (currentUser) {
@@ -2045,25 +1457,31 @@ export default function charts({
             fetchExcelDeliveryReportData();
             fetchDeliveryReportCommentsData();
         }
-    }, [currentUser]);
+    }, [
+        currentUser,
+        fetchDeliveryReport,
+        fetchExcelDeliveryReportData,
+        fetchDeliveryReportCommentsData,
+    ]);
 
     useEffect(() => {
         if (user) {
             Cookies.set("userEmail", user.Email);
         }
-    });
+    }, [user]);
 
-    const [chartName, setChartName] = useState("");
+    const handleDataFromChild = useCallback((data) => {
+        setDataFromChild(data);
+    }, []);
 
+    // ---------- Components Array (filled with all components) ----------
     const components = [
         <MainCharts
             chartsData={chartsData}
             safetyData={safetyData}
             accData={dataFromChild}
-            dashData={dashData}
             AToken={AToken}
             currentUser={currentUser}
-            IDfilter={IDfilter}
             EDate={EDate}
             setEDate={setEDate}
             chartName={chartName}
@@ -2088,34 +1506,12 @@ export default function charts({
             minDate={minDate}
             maxDate={maxDate}
             setLastIndex={setLastIndex}
-            IDfilter={IDfilter}
             EDate={EDate}
             setEDate={setEDate}
             SDate={SDate}
             setSDate={setSDate}
         />,
-        <KPI
-            kpireasonsData={kpireasonsData}
-            oldestDate={oldestDate}
-            latestDate={latestDate}
-            KPIData={KPIData}
-            filterValue={filtersNewKPI}
-            setFilterValue={setFiltersNewKPI}
-            setKPIData={setKPIData}
-            currentUser={currentUser}
-            userBody={userBody}
-            accData={dataFromChild}
-            setActiveIndexGTRS={setActiveIndexGTRS}
-            url={url}
-            AToken={AToken}
-            setactiveCon={setactiveCon}
-            setLastIndex={setLastIndex}
-            IDfilter={IDfilter}
-            EDate={EDate}
-            setEDate={setEDate}
-            SDate={SDate}
-            setSDate={setSDate}
-        />,
+        <KPI />,
         <ConsignmentD
             url={url}
             accData={dataFromChild}
@@ -2126,8 +1522,6 @@ export default function charts({
             currentUser={currentUser}
         />,
         <ConsPerf
-            setSharedStartDate={setSharedStartDate}
-            setSharedEndDate={setSharedEndDate}
             oldestDate={oldestDate}
             latestDate={latestDate}
             currentUser={currentUser}
@@ -2135,7 +1529,6 @@ export default function charts({
             setActiveIndexGTRS={setActiveIndexGTRS}
             PerfData={PerfData}
             setLastIndex={setLastIndex}
-            IDfilter={IDfilter}
             EDate={EDate}
             AToken={AToken}
             setEDate={setEDate}
@@ -2155,13 +1548,11 @@ export default function charts({
             PerfData={PerfData}
             setactiveCon={setactiveCon}
             setLastIndex={setLastIndex}
-            IDfilter={IDfilter}
             EDate={EDate}
             AToken={AToken}
             setEDate={setEDate}
             SDate={SDate}
             setSDate={setSDate}
-            setPerfData={setPerfData}
             setFailedReasons={setFailedReasons}
         />,
         <NoDelivery
@@ -2227,12 +1618,11 @@ export default function charts({
             setFilterValue={setFiltersRDD}
             accData={dataFromChild}
             rddData={rddData}
-            setrddData={setrddData}
+            setrddData={setRddData}
             debtorsData={debtorsData}
             setActiveIndexGTRS={setActiveIndexGTRS}
             setactiveCon={setactiveCon}
             setLastIndex={setLastIndex}
-            IDfilter={IDfilter}
             EDate={EDate}
             setEDate={setEDate}
             SDate={SDate}
@@ -2261,7 +1651,6 @@ export default function charts({
             PerfData={PerfData}
             setactiveCon={setactiveCon}
             setLastIndex={setLastIndex}
-            IDfilter={IDfilter}
             DefaultEDate={EDate}
             setEDate={setEDate}
             DefaultSDate={SDate}
@@ -2283,16 +1672,14 @@ export default function charts({
             PerfData={PerfData}
             setactiveCon={setactiveCon}
             setLastIndex={setLastIndex}
-            IDfilter={IDfilter}
             EDate={EDate}
             setEDate={setEDate}
             SDate={SDate}
             setSDate={setSDate}
-            setPerfData={setPerfData}
             setFailedReasons={setFailedReasons}
         />,
         <TransitDays
-            setTransitDay={setTransitDay}
+            setTransitDay={setTransitDays}
             transitDays={transitDays}
             filterValue={filtersTransit}
             setFilterValue={setFiltersTransit}
@@ -2323,11 +1710,11 @@ export default function charts({
         <AddTransit
             url={url}
             currentUser={currentUser}
-            setTransitDay={setTransitDay}
+            setTransitDay={setTransitDays}
             setTransitDays={setTransitDays}
             AToken={AToken}
             setActiveIndexGTRS={setActiveIndexGTRS}
-            transitDay={transitDay}
+            transitDay={transitDays}
         />,
         <TransportRep
             oldestDate={oldestDate}
@@ -2342,7 +1729,6 @@ export default function charts({
             minDate={minDate}
             maxDate={maxDate}
             setLastIndex={setLastIndex}
-            IDfilter={IDfilter}
             EDate={EDate}
             setEDate={setEDate}
             SDate={SDate}
@@ -2364,7 +1750,6 @@ export default function charts({
             AToken={AToken}
             setactiveCon={setactiveCon}
             setLastIndex={setLastIndex}
-            IDfilter={IDfilter}
             EDate={EDate}
             setEDate={setEDate}
             SDate={SDate}
@@ -2372,7 +1757,7 @@ export default function charts({
         />,
         <NewTransitDays
             setNewTransitDay={setNewTransitDay}
-            newTransitDay={newtransitDay}
+            newTransitDay={newTransitDay}
             setNewTransitDays={setNewTransitDays}
             setFilterValue={setFiltersNewTransit}
             setActiveIndexGTRS={setActiveIndexGTRS}
@@ -2390,7 +1775,7 @@ export default function charts({
             setNewTransitDays={setNewTransitDays}
             AToken={AToken}
             setActiveIndexGTRS={setActiveIndexGTRS}
-            newtransitDay={newtransitDay}
+            newtransitDay={newTransitDay}
         />,
         <GraphPresentation
             url={url}
@@ -2429,7 +1814,6 @@ export default function charts({
             currentUser={currentUser}
             setactiveCon={setactiveCon}
             setActiveIndexGTRS={setActiveIndexGTRS}
-            // userPermission={userPermission}
             deliveryReportData={excelDailyReportData}
             fetchDeliveryReport={fetchExcelDeliveryReportData}
             deliveryCommentsOptions={deliveryReportComments}
@@ -2438,26 +1822,23 @@ export default function charts({
             url={url}
             AToken={AToken}
             currentUser={currentUser}
-            // userPermission={userPermission}
             data={deliveryReportComments}
             fetchDeliveryReportCommentsData={fetchDeliveryReportCommentsData}
         />,
         <ContactRep url={url} AToken={AToken} currentUser={currentUser} />,
     ];
+
     return (
         <div className="">
-            {/* <Sidebar /> */}
-            <div className=" h-full flex ">
-                {/* Left sidebar & main wrapper */}
+            <div className="h-full flex">
                 <div className="min-w-0 flex-1 bg-gray-100 xl:flex">
-                    <div className=" xl:w-64 flex-shrink-0 w-full h-auto md:block mb-4">
-                        <div className="h-full  ">
-                            {/* Start left column area */}
+                    <div className="xl:w-64 flex-shrink-0 w-full h-auto md:block mb-4">
+                        <div className="h-full">
                             <div
                                 className="relative h-full"
                                 style={{ minHeight: "6rem" }}
                             >
-                                <div className=" inset-0 rounded-lg border-dashed border-gray-200">
+                                <div className="inset-0 rounded-lg border-dashed border-gray-200">
                                     <ChartsSidebar
                                         setCusomterAccounts={
                                             setCusomterAccounts
@@ -2472,13 +1853,10 @@ export default function charts({
                                     />
                                 </div>
                             </div>
-                            {/* End left column area */}
                         </div>
                     </div>
-
                     <div className="bg-smooth w-full lg:min-w-0 lg:flex-1">
                         <div className="h-full">
-                            {/* Start main area*/}
                             <div
                                 className="relative h-full"
                                 style={{ minHeight: "36rem" }}
@@ -2487,7 +1865,6 @@ export default function charts({
                                     {components[activeIndexGTRS]}
                                 </div>
                             </div>
-                            {/* End main area */}
                         </div>
                     </div>
                 </div>

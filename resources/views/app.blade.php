@@ -7,7 +7,7 @@
     <meta name="locale" property= "og:locale" content="en_US">
     <meta name="type" property= "og:type" content="website">
     <meta name="url" property="og:url" content="https://web.gtls.au" />
-    <meta name="theme-color" content="#317EFB"/>
+    <meta name="theme-color" content="#317EFB" />
     <meta name="site_name" property="og:site_name" content="GTLS" />
     <meta name="image" property="og:image" content="{{ asset('favicon.ico') }}" />
     <meta name="title" property= "og:title" content="Gold Tiger Logistics Solutions">
@@ -16,6 +16,8 @@
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0KMJRECLV1"></script>
+    
+    {{--  <script async src="//unpkg.com/react-scan/dist/auto.global.js"></script>  --}}
     <script>
         window.dataLayer = window.dataLayer || [];
 

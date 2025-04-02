@@ -31,6 +31,7 @@ export default function AdditionalCharges({
 
     const [isFetching, setIsFetching] = useState();
     const handleClick = (coindex) => {
+        
         setActiveIndexGTRS(3);
         setLastIndex(7);
         setactiveCon(coindex);
@@ -600,7 +601,7 @@ export default function AdditionalCharges({
                 return (
                     <span
                         className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => handleClick(data.ConsignmentId)}
+                        onClick={() => handleClick(data.ConsignmentID)}
                     >
                         {isDummyAccount(value)}
                     </span>

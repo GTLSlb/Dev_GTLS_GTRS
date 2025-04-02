@@ -7,13 +7,11 @@ import axios from "axios";
 export default function FailedConsMain({
     url,
     PerfData,
-    setPerfData,
     setActiveIndexGTRS,
     setLastIndex,
     setactiveCon,
     filterValue,
     setFilterValue,
-    IDfilter,
     currentUser,
     accData,
     EDate,
@@ -28,9 +26,7 @@ export default function FailedConsMain({
 }) {
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     const [isFetching, setIsfetching] = useState();
-    const [roleId, setRoleId] = useState(null);
-    const [shouldShowList, setShouldShowList] = useState(false);
-    const Roles = ["1", "3", "4"];
+
     useEffect(() => {
         if (!failedReasons) {
             setIsfetching(true);
@@ -87,14 +83,6 @@ export default function FailedConsMain({
             console.error("Error fetching data:", error);
         }
     };
-    useEffect(() => {
-        if (currentUser && currentUser.role_id) {
-            setRoleId(currentUser.role_id);
-        }
-        setShouldShowList(
-            currentUser?.role_id === 1 || currentUser?.role_id === 3
-        );
-    }, [currentUser]);
     const components = [
         <FailedCons
             url={url}
@@ -105,7 +93,6 @@ export default function FailedConsMain({
             PerfData={PerfData}
             setactiveCon={setactiveCon}
             setLastIndex={setLastIndex}
-            IDfilter={IDfilter}
             filterValue={filterValue}
             setFilterValue={setFilterValue}
             EDate={EDate}
@@ -113,7 +100,6 @@ export default function FailedConsMain({
             setEDate={setEDate}
             SDate={SDate}
             setSDate={setSDate}
-            setPerfData={setPerfData}
             oldestDate={oldestDate}
             latestDate={latestDate}
         />,

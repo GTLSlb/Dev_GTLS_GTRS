@@ -25,321 +25,138 @@ export default function Gtrs({
     currentUser,
     loadingGtrs,
 }) {
-    const [rddData, setrddData] = useState([]);
-    const [chartsData, setchartsData] = useState([]);
-    const [debtorsData, setdebtorsData] = useState([]);
-    const [kpireasonsData, setkpireasonsData] = useState([]);
-    const [failedReasons, setFailedReasons] = useState([]);
-    const [rddReasons, setrddReasons] = useState([]);
-    const [activeCon, setactiveCon] = useState(0);
-    const [lastIndex, setLastIndex] = useState(0);
-    const [chartsApi, setchartsApi] = useState(false);
-    const [consApi, setConsApi] = useState(false);
-    const [reportApi, setReportApi] = useState(false);
-    const [transportApi, setTransportApi] = useState(false);
-    const [DebtorsApi, setDebtorsApi] = useState(false);
-    const [KPIReasonsApi, setKPIReasonsApi] = useState(false);
-    const [safetyTypes, setSafetyTypes] = useState([]);
-    const [safetyCauses, setSafetyCauses] = useState([]);
-    const [safetyData, setSafetyData] = useState([]);
-    const [consData, setconsData] = useState([]);
-    const [transportData, setTransportData] = useState([]);
-    const [KPIData, setKPIData] = useState([]);
-    const [PerfData, setPerfData] = useState([]);
-    const [NoDelData, setNoDelData] = useState([]);
-    const [AdditionalData, setAdditionalData] = useState([]);
-    const [DriverData, setDriverData] = useState([]);
-    const [userBody, setUserBody] = useState();
-    const [dataFromChild, setDataFromChild] = useState(null);
     const gtrsUrl = window.Laravel.gtrsUrl;
     const gtamUrl = window.Laravel.gtamUrl;
-    const [customerAccounts, setCusomterAccounts] = useState();
-    const userdata = currentUser;
     const [canAccess, setCanAccess] = useState(true);
-    const [deliveryReportData, setDeliveryReportData] = useState([]);
-
-    const debtorIdsArray = userdata?.Accounts?.map((account) => {
-        return { UserId: account.DebtorId };
+    const [rddReasons, setrddReasons] = useState([]);
+    const [activeCon, setactiveCon] = useState(0);
+    const [allData, setAllData] = useState({
+        chartsData: [],
+        debtorsData: [],
+        safetyData: [],
+        consData: [],
+        perfData: [],
+        kpiReasonsData: [],
+        transportData: [],
+        deliveryReportData: [],
+        customerAccounts: [],
     });
-    // Usage
-    let debtorIds;
-    if (userdata.TypeId == 1) {
-        debtorIds = debtorIdsArray;
-    } else {
-        debtorIds = currentUser.UserId;
-    }
+
+    const [debtorIds, setDebtorIds] = useState(null);
     useEffect(() => {
         document.cookie =
             "previous_page=" + encodeURIComponent(window.location.href);
     }, []);
 
-    const fetchDeliveryReport = () => {
-        axios
-            .get(`${gtrsUrl}Delivery`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setDeliveryReportData(parsedData || []);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
-    };
-
     useEffect(() => {
-        setUserBody(debtorIds);
-        setLoadingGtrs(false);
-        axios
-            .get(`${gtrsUrl}/Dashboard`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setchartsData(parsedData || []);
-                    setchartsApi(true);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
+        const debtorIdsArray =
+            currentUser?.Accounts?.map((account) => ({
+                UserId: account.DebtorId,
+            })) || [];
+        if (currentUser.TypeId === 1) {
+            setDebtorIds(debtorIdsArray);
+        } else {
+            setDebtorIds(currentUser.UserId);
+        }
+    }, [currentUser]);
 
-            axios
-                .get(`${gtamUrl}/Customer/Accounts`, {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
-                    },
-                })
-                .then((res) => {
-                    const x = JSON.stringify(res.data);
-                    const parsedDataPromise = new Promise((resolve, reject) => {
-                        const parsedData = JSON.parse(x);
-                        resolve(parsedData);
-                    });
-                    parsedDataPromise.then((parsedData) => {
-                        // Remove duplicates based on DebtorId
-                        const uniqueAccounts = parsedData.reduce((acc, current) => {
-                            if (!acc.some(account => account.DebtorId.trim() === current.DebtorId.trim())) {
+    // Single useEffect that loads ALL data at once:
+    useEffect(() => {
+        // Start loading
+        setLoadingGtrs(true);
+
+        const headers = {
+            headers: {
+                UserId: currentUser.UserId,
+                Authorization: `Bearer ${AToken}`,
+            },
+        };
+
+        // Prepare all the GET requests
+        const dashReq = axios.get(`${gtrsUrl}/Dashboard`, headers);
+        const debtorsReq = axios.get(`${gtrsUrl}/Debtors`, headers);
+        const consReq = axios.get(`${gtrsUrl}/Consignments`, headers);
+        const perfReq = axios.get(`${gtrsUrl}/PerformanceReport`, headers);
+        const kpiReq = axios.get(`${gtrsUrl}/KpiReasons`, headers);
+        const safetyReq = axios.get(`${gtrsUrl}/SafetyReport`, headers);
+        const transportReq = axios.get(`${gtrsUrl}/Transport`, headers);
+        const deliveryReq = axios.get(`${gtrsUrl}/Delivery`, headers);
+        const accountsReq = axios.get(`${gtamUrl}/Customer/Accounts`, headers);
+
+        // Now fetch everything in parallel:
+        Promise.all([
+            dashReq,
+            debtorsReq,
+            consReq,
+            perfReq,
+            kpiReq,
+            safetyReq,
+            transportReq,
+            deliveryReq,
+            accountsReq,
+        ])
+            .then(
+                ([
+                    dashRes,
+                    debtorsRes,
+                    consRes,
+                    perfRes,
+                    kpiRes,
+                    safetyRes,
+                    transportRes,
+                    deliveryRes,
+                    accountsRes,
+                ]) => {
+                    // Combine the results into one big object
+                    let customerAccounts = accountsRes.data || [];
+                    // Example: remove duplicates based on DebtorId
+                    customerAccounts = customerAccounts.reduce(
+                        (acc, current) => {
+                            if (
+                                !acc.some(
+                                    (account) =>
+                                        account.DebtorId.trim() ===
+                                        current.DebtorId.trim()
+                                )
+                            ) {
                                 acc.push(current);
                             }
                             return acc;
-                        }, []);
-                        
-                        setCusomterAccounts(uniqueAccounts || []);
-                    });
-                })
-                .catch((err) => {
-                    if (err.response && err.response.status === 401) {
-                        // Handle 401 error using SweetAlert
-                        swal({
-                            title: "Session Expired!",
-                            text: "Please login again",
-                            type: "success",
-                            icon: "info",
-                            confirmButtonText: "OK",
-                        }).then(function () {
-                            axios
-                                .post("/logoutAPI")
-                                .then((response) => {
-                                    if (response.status == 200) {
-                                        window.location.href = "/";
-                                    }
-                                })
-                                .catch((error) => {
-                                    console.log(error);
-                                });
-                        });
-                    } else {
-                        // Handle other errors
-                        console.log(err);
-                    }
-                });
-            
-        axios
-            .get(`${gtrsUrl}/SafetyReport`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
+                        },
+                        []
+                    );
 
-                parsedDataPromise.then((parsedData) => {
-                    setSafetyData(parsedData || []);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    // Update our single piece of state
+                    setAllData({
+                        chartsData: dashRes.data || [],
+                        debtorsData: debtorsRes.data || [],
+                        consData: consRes.data || [],
+                        perfData: perfRes.data || [],
+                        kpiReasonsData: kpiRes.data || [],
+                        safetyData: safetyRes.data || [],
+                        transportData: transportRes.data || [],
+                        deliveryReportData: deliveryRes.data || [],
+                        customerAccounts,
                     });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
-        axios
-            .get(`${gtrsUrl}/Debtors`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setdebtorsData(parsedData || []);
-                    setDebtorsApi(true);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
-        axios
-            .get(`${gtrsUrl}/Consignments`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
 
-                parsedDataPromise.then((parsedData) => {
-                    setconsData(parsedData || []);
-                    setConsApi(true);
-                });
-            })
+                    // Done loading
+                    setLoadingGtrs(false);
+                }
+            )
             .catch((err) => {
+                setLoadingGtrs(false);
+                // Handle 401 with SweetAlert
                 if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
                     swal({
                         title: "Session Expired!",
                         text: "Please login again",
-                        type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
+                    }).then(() => {
                         axios
                             .post("/logoutAPI")
                             .then((response) => {
-                                if (response.status == 200) {
+                                if (response.status === 200) {
                                     window.location.href = "/";
                                 }
                             })
@@ -352,130 +169,7 @@ export default function Gtrs({
                     console.log(err);
                 }
             });
-        axios
-            .get(`${gtrsUrl}/PerformanceReport`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedData = JSON.parse(x);
-                setPerfData(parsedData || []);
-                setReportApi(true);
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
-        axios
-            .get(`${gtrsUrl}/KpiReasons`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    const parsedData = JSON.parse(x);
-                    resolve(parsedData);
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setkpireasonsData(parsedData || []);
-                    setKPIReasonsApi(true);
-                });
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
-        fetchDeliveryReport();
-        axios
-            .get(`${gtrsUrl}/Transport`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedData = JSON.parse(x);
-                setTransportData(parsedData || []);
-                setTransportApi(true);
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                }
-            });
-    }, []);
+    }, [AToken, currentUser.UserId, gtrsUrl, gtamUrl, setLoadingGtrs]);
     function checkFeaturesInPages(jsonData) {
         // Iterate over the Pages array in the JSON data
         for (let i = 0; i < jsonData?.Pages?.length; i++) {
@@ -503,87 +197,27 @@ export default function Gtrs({
             }
         }
     }, [user, loadingGtrs]);
-    if (
-        consApi &&
-        reportApi &&
-        chartsApi &&
-        DebtorsApi &&
-        KPIReasonsApi &&
-        transportApi
-    ) {
-        setLoadingGtrs(true);
-    }
 
-    if (loadingGtrs && AToken) {
-        if (canAccess) {
-            return (
-                <div className="bg-smooth">
-                    <div className="md:pl-20 pt-16 ">
-                        <Charts
-                            transportData={transportData}
-                            setCusomterAccounts={setCusomterAccounts}
-                            kpireasonsData={kpireasonsData}
-                            setkpireasonsData={setkpireasonsData}
-                            userBody={userBody}
-                            url={gtrsUrl}
-                            chartsData={chartsData}
-                            safetyTypes={safetyTypes}
-                            setSafetyTypes={setSafetyTypes}
-                            safetyCauses={safetyCauses}
-                            setSafetyCauses={setSafetyCauses}
-                            failedReasons={failedReasons}
-                            rddReasons={rddReasons}
-                            setrddReasons={setrddReasons}
-                            setFailedReasons={setFailedReasons}
-                            safetyData={safetyData}
-                            debtorsData={debtorsData}
-                            customerAccounts={customerAccounts}
-                            rddData={rddData}
-                            setrddData={setrddData}
-                            IDfilter={dataFromChild}
-                            sessionData={sessionData}
-                            currentUser={{
-                                ...user[0],
-                                UserId: currentUser.UserId,
-                            }}
-                            user={currentUser}
-                            dashData={PerfData}
-                            setActiveIndexGTRS={setActiveIndexGTRS}
-                            activeIndexGTRS={activeIndexGTRS}
-                            setactiveCon={setactiveCon}
-                            consData={consData}
-                            setLastIndex={setLastIndex}
-                            KPIData={KPIData}
-                            DriverData={DriverData}
-                            AdditionalData={AdditionalData}
-                            NoDelData={NoDelData}
-                            activeCon={activeCon}
-                            lastIndex={lastIndex}
-                            AToken={AToken}
-                            PerfData={PerfData}
-                            setPerfData={setPerfData}
-                            fetchDeliveryReport={fetchDeliveryReport}
-                            deliveryReportData={deliveryReportData}
-                        />
-                    </div>
-                </div>
-            );
-        } else {
-            return <NoAccess />;
+    // Once the data is loaded, check if user can access
+    useEffect(() => {
+        if (!loadingGtrs) {
+            if (!user || Object.keys(user).length === 0) {
+                setCanAccess(false);
+            } else if (user && checkFeaturesInPages(user[0])) {
+                setCanAccess(true);
+            } else {
+                setCanAccess(false);
+            }
         }
-    } else {
+    }, [user, loadingGtrs]);
+
+    if (loadingGtrs) {
         return (
             <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
                 <div className="flex items-center justify-center">
-                    <div
-                        className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
-                    ></div>
-                    <div
-                        className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
-                    ></div>
-                    <div
-                        className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
-                    ></div>
+                    <div className="h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce"></div>
+                    <div className="h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200"></div>
+                    <div className="h-5 w-5 bg-goldd rounded-full animate-bounce400"></div>
                 </div>
                 <div className="text-dark mt-4 font-bold">
                     Please wait while we get the data for you.
@@ -591,4 +225,54 @@ export default function Gtrs({
             </div>
         );
     }
+
+    // 2) If user does NOT have access:
+    if (!canAccess) {
+        return <NoAccess />;
+    }
+
+    return (
+        <div className="bg-smooth">
+            <div className="md:pl-20 pt-16">
+                <Charts
+                    transportData={allData.transportData}
+                    kpireasonsData={allData.kpiReasonsData}
+                    debtorsData={allData.debtorsData}
+                    chartsData={allData.chartsData}
+                    safetyData={allData.safetyData}
+                    customerAccounts={allData.customerAccounts}
+                    consData={allData.consData}
+                    deliveryReportData={allData.deliveryReportData}
+                    PerfData={allData.perfData}
+                    setCusomterAccounts={(newValue) =>
+                        setAllData((prevData) => ({
+                            ...prevData,
+                            customerAccounts: newValue,
+                        }))
+                    }
+                    setkpireasonsData={(newValue) =>
+                        setAllData((prevData) => ({
+                            ...prevData,
+                            kpiReasonsData: newValue,
+                        }))
+                    }
+                    userBody={debtorIds}
+                    url={gtrsUrl}
+                    rddReasons={rddReasons}
+                    setrddReasons={setrddReasons}
+                    sessionData={sessionData}
+                    currentUser={{
+                        ...user[0],
+                        UserId: currentUser.UserId,
+                    }}
+                    user={currentUser}
+                    setActiveIndexGTRS={setActiveIndexGTRS}
+                    activeIndexGTRS={activeIndexGTRS}
+                    setactiveCon={setactiveCon}
+                    activeCon={activeCon}
+                    AToken={AToken}
+                />
+            </div>
+        </div>
+    );
 }

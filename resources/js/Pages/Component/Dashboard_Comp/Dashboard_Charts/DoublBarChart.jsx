@@ -89,4 +89,4 @@ const DoubleBarChart = (props) => {
     );
 };
 
-export default DoubleBarChart;
+export default React.memo(DoubleBarChart);

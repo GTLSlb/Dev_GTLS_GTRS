@@ -55,4 +55,4 @@ const MultiChartLine = (props) => {
     );
 };
 
-export default MultiChartLine;
+export default React.memo(MultiChartLine);
