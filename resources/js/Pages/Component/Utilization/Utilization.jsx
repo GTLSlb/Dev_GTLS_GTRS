@@ -35,9 +35,8 @@ const tableData = [
         VehicleCapacityT: 22.5,
         LoadWeightUtilisation: "80%",
         TimeIn: "13:30",
-        TimeOut: "16:50",
+        TimeOut: "20:50",
         NorthRockAllowTime45Min: "2:35",
-        DemurrageCharges1: 0,
         Reason: "",
         DeliveryPoint: "LFX Ingleburn",
         UnloadTurnaroundTime: "0:30",
@@ -67,7 +66,6 @@ const tableData = [
         VehicleCapacityT: 24.0,
         TimeIn: "14:30",
         TimeOut: "17:00",
-        DemurrageCharges1: 10,
         Reason: "Delay",
         DeliveryPoint: "LFX Minto",
         UnloadTurnaroundTime: "0:45",
@@ -278,6 +276,57 @@ export default function Utilization({
         td.classList.add("htLeft"); // Align text to the right
         return td;
     };
+
+    const calculateTimeDifference = (timeIn, timeOut) => {
+        // If either of the times is missing, return "N/A"
+        if (!timeIn || !timeOut) return "N/A";
+
+        // Convert to moments (or Date objects)
+        const timeInMoment = moment(timeIn, "HH:mm");
+        const timeOutMoment = moment(timeOut, "HH:mm");
+
+        // Calculate the difference in minutes
+        const diff = timeOutMoment.diff(timeInMoment, "minutes");
+
+        // Return the formatted difference as HH:mm
+        return moment.utc(diff * 60000).format("HH:mm");
+    };
+
+    const calculateNorthRockAllowTime = (timeIn, timeOut) => {
+        const timeInMoment = moment(timeIn, "HH:mm");
+        const timeOutMoment = moment(timeOut, "HH:mm");
+
+        // If either timeIn or timeOut is invalid, return empty string
+        if (!timeInMoment.isValid() || !timeOutMoment.isValid()) {
+            return ""; // Return empty if invalid time
+        }
+
+        // Calculate the difference in minutes
+        const diff = timeOutMoment.diff(timeInMoment, "minutes");
+
+        // Apply the logic for Collection Turnaround Time based on your formula
+        let collectionTurnaroundTime = diff;
+
+        // Apply the formula (adjusting for 45 minutes)
+        if (collectionTurnaroundTime <= 0) {
+            collectionTurnaroundTime = 0;
+        } else {
+            collectionTurnaroundTime =
+                collectionTurnaroundTime - 0.03125 * 1440; // 0.03125 days = 45 minutes
+        }
+
+        // Format the result (convert minutes to HH:mm format)
+        return moment.utc(collectionTurnaroundTime * 60000).format("HH:mm");
+    };
+
+    const convertToMinutes = (time) => {
+        const timeMoment = moment(time, "HH:mm");
+    
+        // Return the total minutes from midnight
+        return timeMoment.isValid() ? timeMoment.hours() * 60 + timeMoment.minutes() : 0;
+    };
+
+    
     const hotColumns = [
         {
             data: "Date",
@@ -423,24 +472,10 @@ export default function Utilization({
                     instance.propToCol("TimeOut")
                 );
 
-                // Check if both times exist
-                if (timeIn && timeOut) {
-                    // Convert to moments (or Date objects)
-                    const timeInMoment = moment(timeIn, "HH:mm");
-                    const timeOutMoment = moment(timeOut, "HH:mm");
+                // Use the reusable function to calculate the time difference
+                const formattedDiff = calculateTimeDifference(timeIn, timeOut);
 
-                    // Calculate the difference in minutes
-                    const diff = timeOutMoment.diff(timeInMoment, "minutes");
-
-                    // Format the difference as HH:mm (you can adjust the format as per your need)
-                    const formattedDiff = moment
-                        .utc(diff * 60000)
-                        .format("HH:mm");
-                    td.innerText = formattedDiff;
-                } else {
-                    td.innerText = "N/A"; // If either of the time is missing
-                }
-
+                td.innerText = formattedDiff; // Set the result into the table cell
                 td.classList.add("htLeft"); // Align text to the left
                 return td;
             },
@@ -459,35 +494,14 @@ export default function Utilization({
                     row,
                     instance.propToCol("TimeOut")
                 );
-console.log(instance.getDataAtProp("CollectionTurnaroundTime"))
                 // If TimeIn or TimeOut is missing
-                if (!timeIn || !timeOut) {
-                    td.innerText = ""; // Return empty if either time is missing
-                } else {
-                    // Convert to moments (or Date objects)
-                    const timeInMoment = moment(timeIn, "HH:mm");
-                    const timeOutMoment = moment(timeOut, "HH:mm");
 
-                    // Calculate the difference in minutes
-                    const diff = timeOutMoment.diff(timeInMoment, "minutes");
-
-                    // Apply the logic for Collection Turnaround Time based on your formula
-                    let collectionTurnaroundTime = diff;
-
-                    // Apply the formula (adjusting for 45 minutes)
-                    if (collectionTurnaroundTime <= 0) {
-                        collectionTurnaroundTime = 0;
-                    } else {
-                        collectionTurnaroundTime =
-                            collectionTurnaroundTime - 0.03125 * 1440; // 0.03125 days = 45 minutes
-                    }
-
-                    // Format the result (convert minutes to HH:mm format)
-                    const formattedDiff = moment
-                        .utc(collectionTurnaroundTime * 60000)
-                        .format("HH:mm");
-                    td.innerText = formattedDiff;
-                }
+                // Convert to moments (or Date objects)
+                const formattedDiff = calculateNorthRockAllowTime(
+                    timeIn,
+                    timeOut
+                );
+                td.innerText = formattedDiff;
 
                 td.classList.add("htLeft"); // Align text to the left
                 return td;
@@ -498,6 +512,63 @@ console.log(instance.getDataAtProp("CollectionTurnaroundTime"))
             title: "Demurrage Charges ($97.85 Per Hr or $1.63 Per Minute)",
             type: "numeric",
             readOnly: true,
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
+                const timeIn = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("TimeIn")
+                );
+                const timeOut = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("TimeOut")
+                );
+                let collectionTurnaroundTime = calculateNorthRockAllowTime(
+                    timeIn,
+                    timeOut
+                );
+                let demurrageCharges = 0;
+
+                // Apply the logic for Collection Turnaround Time based on your formula
+                collectionTurnaroundTime = calculateNorthRockAllowTime(
+                    timeIn,
+                    timeOut
+                );
+
+                console.log(collectionTurnaroundTime);
+
+                const minutes= convertToMinutes(collectionTurnaroundTime);
+                // Format the result (convert minutes to HH:mm format)
+                const formattedDiff = moment
+                    .utc(minutes * 60000)
+                    .format("HH:mm");
+                td.innerText = formattedDiff;
+                console.log(formattedDiff);
+                // Recalculate NorthRockAllowTime45Min based on the formula
+                // Apply the formula for NorthRockAllowTime45Min based on CollectionTurnaroundTime
+                if (minutes > 0) {
+                    let northRockAllowTime = minutes - 45; // 45 minutes allowance
+
+                    // Ensure the value does not go below 0
+                    if (northRockAllowTime < 0) {
+                        northRockAllowTime = 0;
+                    }
+
+                    // Now calculate Demurrage Charges based on the above logic
+                    const collectionTurnaroundInHours =
+                    minutes / 60; // Convert minutes to hours
+                    demurrageCharges = collectionTurnaroundInHours * 97.85; // $1.63 per minute
+
+                    // If the collection turnaround time is less than the allowed time, demurrage charges = 0
+                    const adjustedCharges =
+                    minutes > northRockAllowTime
+                            ? demurrageCharges
+                            : 0;
+                console.log(adjustedCharges)
+                    td.innerText = adjustedCharges.toFixed(2); // Display with 2 decimal places
+                }
+
+                td.classList.add("htLeft"); // Align text to the left
+                return td;
+            },
         },
         {
             data: "Reason",
