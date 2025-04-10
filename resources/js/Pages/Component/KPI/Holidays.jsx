@@ -21,7 +21,7 @@ export default function Holidays({
     holidays,
     setHolidays,
     url,
-    AToken,
+    Token,
     filterValue,
     setFilterValue,
     userPermission,
@@ -385,7 +385,7 @@ export default function Holidays({
                             states={stateOptions}
                             holiday={holiday}
                             url={url}
-                            AToken={AToken}
+                            Token={Token}
                             currentUser={currentUser}
                             userPermission={userPermission}
                             setHoliday={setHoliday}

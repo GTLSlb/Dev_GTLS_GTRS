@@ -9,7 +9,7 @@ export default function AddSafetyType({
     safetyTypes,
     setSafetyTypes,
     url,
-    AToken,
+    Token,
     currentUser,
     userPermission,
 }) {
@@ -192,7 +192,7 @@ export default function AddSafetyType({
                 ariaHideApp={false}
                 isOpen={isModalOpen}
                 type={type}
-                AToken={AToken}
+                Token={Token}
                 setType={setType}
                 safetyTypes={safetyTypes}
                 handleClose={handleEditClick}

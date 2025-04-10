@@ -13,7 +13,7 @@ export default function ModalRDD({
     isOpen,
     handleClose,
     url,
-    AToken,
+    Token,
     consignment,
     currentUser,
     userPermission,
@@ -87,7 +87,7 @@ export default function ModalRDD({
                 .post(`${url}Add/RDD`, data, {
                     headers: {
                         UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
+                        Authorization: `Bearer ${Token}`,
                     },
                 })
                 .then((res) => {})

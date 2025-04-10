@@ -22,7 +22,7 @@ export default function AddHoliday({
     url,
     currentUser,
     userPermission,
-    AToken,
+    Token,
     setHoliday,
     setShowAdd,
     fetchData,
@@ -70,7 +70,7 @@ export default function AddHoliday({
             .post(`${url}Add/Holiday`, inputValues, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {

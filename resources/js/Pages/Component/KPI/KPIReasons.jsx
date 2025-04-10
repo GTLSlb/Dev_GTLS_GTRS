@@ -13,7 +13,7 @@ import { ToastContainer } from "react-toastify";
 export default function KPIReasons({
     url,
     currentUser,
-    AToken,
+    Token,
     userPermission,
     kpireasonsData,
     setkpireasonsData,
@@ -142,7 +142,7 @@ export default function KPIReasons({
             .get(`${url}KpiReasons`, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {
@@ -385,7 +385,7 @@ export default function KPIReasons({
                 </div>
                 <SmallTableKPI
                     fromModel={fromModel}
-                    AToken={AToken}
+                    Token={Token}
                     showAddRow={showAddRow}
                     setShowAddRow={setShowAddRow}
                     objects={filteredData}
@@ -403,7 +403,7 @@ export default function KPIReasons({
                     <AddKPIReason
                         selectedReason={selectedReason}
                         url={url}
-                        AToken={AToken}
+                        Token={Token}
                         currentUser={currentUser}
                         userPermission={userPermission}
                         setSelectedReason={setSelectedReason}

@@ -13,7 +13,7 @@ export default function AddSafetyTypeModal({
     url,
     handleClose,
     type,
-    AToken,
+    Token,
     setType,
     updateLocalData,
     safetyTypes,
@@ -65,7 +65,7 @@ export default function AddSafetyTypeModal({
                 {
                     headers: {
                         UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
+                        Authorization: `Bearer ${Token}`,
                     },
                 }
             );

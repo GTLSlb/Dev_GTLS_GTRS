@@ -19,7 +19,7 @@ export default function AddCommentToList({
     selectedComment,
     url,
     currentUser,
-    AToken,
+    Token,
     setSelectedComment,
     setShowAdd,
     fetchData,
@@ -56,7 +56,7 @@ export default function AddCommentToList({
             .post(`${url}Add/Comment`, inputValues, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {

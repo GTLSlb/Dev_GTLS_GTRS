@@ -23,7 +23,7 @@ import swal from "sweetalert";
 
 export default function ExcelDeliveryReport({
     url,
-    AToken,
+    Token,
     deliveryReportData,
     currentUser,
     userPermission,
@@ -473,7 +473,7 @@ export default function ExcelDeliveryReport({
             .post(`${url}Add/Delivery/Single/Comment`, inputValues, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {
@@ -629,8 +629,8 @@ export default function ExcelDeliveryReport({
                         dropdownMenu={{
                             items: {
                                 filter_by_condition: {}, // ✅ Keep filters
-                                filter_by_value: {}, 
-                                filter_action_bar: {}, 
+                                filter_by_value: {},
+                                filter_action_bar: {},
                                 separator1: "---------",
                             },
                         }} // ✅ Show dropdown for filtering

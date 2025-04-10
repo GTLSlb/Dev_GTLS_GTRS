@@ -3,7 +3,7 @@ import { useState } from "react";
 import ConsignmentGraph from "./ReportTabs/ConsignmentGraph";
 import TotalFailPODGraph from "./ReportTabs/TotalFailPODGraph";
 
-const MultiChartLine = ({ url, currentUser, AToken }) => {
+const MultiChartLine = ({ url, currentUser, Token }) => {
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     const customers = [
         {
@@ -24,7 +24,7 @@ const MultiChartLine = ({ url, currentUser, AToken }) => {
         <ConsignmentGraph
             url={url}
             currentUser={currentUser}
-            AToken={AToken}
+            Token={Token}
             customers={customers}
             CustomerId={1}
         />, // Graph and Table

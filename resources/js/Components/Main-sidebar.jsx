@@ -9,8 +9,7 @@ import {
     AccordionHeader,
     AccordionItem,
 } from "react-headless-accordion";
-import { useEffect } from "react";
-import { Fragment, useState } from "react";
+import { useEffect, useContext, Fragment, useState} from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import tiger from "../assets/pictures/tiger.png";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
@@ -18,17 +17,20 @@ import SupportModal from "@/Pages/Component/modals/SupportModal";
 import { PublicClientApplication } from "@azure/msal-browser";
 import { clearMSALLocalStorage } from "@/CommonFunctions";
 import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
+import { CustomContext } from "@/CommonContext";
+
 export default function MainSidebar({
-    allowedApplications,
     setMobileMenuOpen,
     mobileMenuOpen,
-    setToken,
-    setCurrentUser,
-    currentUser,
-    user,
 }) {
-    const appUrl = window.Laravel.appUrl;
+        const {
+            currentUser,
+            setCurrentUser,
+            setToken,
+            user,
+            allowedApplications,
+        } = useContext(CustomContext);
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [sidebarNavigation, setSidebarNavigation] = useState([]);
     useEffect(() => {

@@ -16,7 +16,7 @@ export default function ViewComments({
     url,
     handleClose,
     consId,
-    AToken,
+    Token,
     fetchData,
     currentUser,
     commentsData,
@@ -56,7 +56,7 @@ export default function ViewComments({
             .post(`${url}Add/Comment`, inputValues, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {
@@ -113,7 +113,7 @@ export default function ViewComments({
             const response = await axios.post(`${url}Add/Delivery/Comment`, formValues, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             }).then((response) => {
                 fetchData();

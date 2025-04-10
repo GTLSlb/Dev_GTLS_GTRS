@@ -20,7 +20,7 @@ export default function RDDMain({
     setEDate,
     SDate,
     url,
-    AToken,
+    Token,
     userPermission,
     setSDate,
     currentUser,
@@ -121,7 +121,7 @@ export default function RDDMain({
                 .get(`${url}RddChangeReason`, {
                     headers: {
                         UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
+                        Authorization: `Bearer ${Token}`,
                     },
                 })
                 .then((res) => {
@@ -181,7 +181,7 @@ export default function RDDMain({
                             setIncidentId={setIncidentId}
                             setEDate={setEDate}
                             SDate={SDate}
-                            AToken={AToken}
+                            Token={Token}
                             setSDate={setSDate}
                             rddReasons={rddReasons}
                             oldestDate={oldestDate}

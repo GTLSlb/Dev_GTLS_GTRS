@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import ConsignmentGraph from "../Presentation/ReportTabs/ConsignmentGraph";
 // import axios from "axios";
-function RealFoodKPIPack({ url, currentUser, AToken }) {
+function RealFoodKPIPack({ url, currentUser, Token }) {
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     const customers = [
         {
@@ -26,7 +26,7 @@ function RealFoodKPIPack({ url, currentUser, AToken }) {
         <ConsignmentGraph
             url={url}
             currentUser={currentUser}
-            AToken={AToken}
+            Token={Token}
             customers={customers}
             CustomerId={2}
         />,

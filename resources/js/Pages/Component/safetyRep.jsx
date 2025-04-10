@@ -12,7 +12,7 @@ export default function SafetyRep({
     accData,
     currentUser,
     url,
-    AToken,
+    Token,
     safetyDataState,
     filterValue,
     setFilterValue,
@@ -173,7 +173,7 @@ export default function SafetyRep({
         <SafetyRepTable
             url={url}
             fetchData={fetchData}
-            AToken={AToken}
+            Token={Token}
             customerAccounts={customerAccounts}
             safetyCauses={safetyCauses}
             filterValue={filterValue}
@@ -188,14 +188,14 @@ export default function SafetyRep({
             setDataEdited={setDataEdited}
         />,
         <SafetyRepChart
-            AToken={AToken}
+            Token={Token}
             filteredData={filteredData}
             safetyCauses={safetyCauses}
             safetyTypes={safetyTypes}
         />,
         <AddSafetyType
             url={url}
-            AToken={AToken}
+            Token={Token}
             currentUser={currentUser}
             userPermission={userPermission}
             safetyTypes={safetyTypes}

@@ -11,7 +11,7 @@ function AddNewTransitDay({
     currentUser,
     setNewTransitDay,
     setNewTransitDays,
-    AToken,
+    Token,
 }) {
     const states = [
         {
@@ -118,7 +118,7 @@ function AddNewTransitDay({
             .post(`${url}Add/TransitNew`, inputValues, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {

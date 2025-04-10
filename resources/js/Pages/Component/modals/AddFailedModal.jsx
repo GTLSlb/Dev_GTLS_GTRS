@@ -14,7 +14,7 @@ export default function AddFailedModal({
     isOpen,
     handleClose,
     url,
-    AToken,
+    Token,
     reason,
     currentUser,
     updateLocalData,
@@ -72,7 +72,7 @@ export default function AddFailedModal({
                 {
                     headers: {
                         UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
+                        Authorization: `Bearer ${Token}`,
                     },
                 }
             );

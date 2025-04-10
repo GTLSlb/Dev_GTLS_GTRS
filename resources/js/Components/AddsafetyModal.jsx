@@ -17,7 +17,7 @@ export default function SafetyModal({
     modalSafetyType,
     modalMainCause,
     modalState,
-    AToken,
+    Token,
     customerAccounts,
     modalConsNo,
     modalDebtorId,
@@ -75,7 +75,7 @@ export default function SafetyModal({
         modalResol,
         modalRefer,
         formattedDate,
-        AToken,
+        Token,
         currentUser.name,
     ]);
     const handlePopUpClose = () => {
@@ -115,7 +115,7 @@ export default function SafetyModal({
                 {
                     headers: {
                         UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
+                        Authorization: `Bearer ${Token}`,
                     },
                 }
             );

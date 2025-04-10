@@ -12,7 +12,7 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 export default function AddSafetyCauses({
-    AToken,
+    Token,
     safetyCauses,
     setSafetyCauses,
     currentUser,
@@ -187,7 +187,7 @@ export default function AddSafetyCauses({
             </div>
             <AddSafetyCausesModal
                 url={url}
-                AToken={AToken}
+                Token={Token}
                 currentUser={currentUser}
                 ariaHideApp={false}
                 isOpen={isModalOpen}

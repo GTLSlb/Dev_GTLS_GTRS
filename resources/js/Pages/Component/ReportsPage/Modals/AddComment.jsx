@@ -13,7 +13,7 @@ export default function AddComment({
     url,
     handleClose,
     consId,
-    AToken,
+    Token,
     fetchData,
     currentUser,
     commentsData,
@@ -67,7 +67,7 @@ export default function AddComment({
                 const response = await axios.post(`${url}Add/Delivery/Comment`, formValues, {
                     headers: {
                         UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
+                        Authorization: `Bearer ${Token}`,
                     },
                 });
 

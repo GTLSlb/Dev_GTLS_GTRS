@@ -98,11 +98,10 @@ const hexToRgba = (hex, alpha) => {
 
 export default function CollapseSidebar({
     setBroken,
-    rtl,
     toggled,
     setToggled,
     currentUser,
-    setCusomterAccounts,
+    setCustomerAccounts,
     customerAccounts,
     onData,
     collapsed,
@@ -145,7 +144,7 @@ export default function CollapseSidebar({
                 : option
         );
         setCustomerOptions(value);
-        setCusomterAccounts(value);
+        setCustomerAccounts(value);
         handleSelectedCValue(event);
     };
 
@@ -301,7 +300,7 @@ export default function CollapseSidebar({
                     width="240px"
                     onBackdropClick={() => setToggled(false)}
                     onBreakPoint={setBroken}
-                    rtl={rtl}
+                    rtl={false}
                     breakPoint="md"
                     backgroundColor={hexToRgba(
                         collapsed

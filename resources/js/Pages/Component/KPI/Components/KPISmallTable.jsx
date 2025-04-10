@@ -21,7 +21,7 @@ export default function SmallTableKPI({
     showAddRow,
     setShowAddRow,
     objects,
-    AToken,
+    Token,
     editIndex,
     setEditIndex,
     dynamicHeaders,
@@ -78,7 +78,7 @@ export default function SmallTableKPI({
                 .post(addurl, editedObject, {
                     headers: {
                         UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
+                        Authorization: `Bearer ${Token}`,
                     },
                 })
                 .then((res) => {
@@ -135,7 +135,7 @@ export default function SmallTableKPI({
                 .post(addurl, dataToSend, {
                     headers: {
                         UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
+                        Authorization: `Bearer ${Token}`,
                     },
                 })
                 .then((res) => {

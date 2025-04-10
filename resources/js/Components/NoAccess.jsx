@@ -5,9 +5,9 @@ import GtrsButton from "@/Pages/Component/GtrsButton";
 import { PublicClientApplication } from "@azure/msal-browser";
 import { clearMSALLocalStorage } from "@/CommonFunctions";
 import Cookies from "js-cookie";
-import { Spinner } from "@nextui-org/react";
+import { CustomContext } from "@/CommonContext";
 
-function NoAccess({currentUser, setToken, setCurrentUser}) {
+function NoAccess() {
     const msalConfig = {
         auth: {
             clientId: "05f70999-6ca7-4ee8-ac70-f2d136c50288",
@@ -22,6 +22,12 @@ function NoAccess({currentUser, setToken, setCurrentUser}) {
     };
     const pca = new PublicClientApplication(msalConfig);
     const [isLoading, setIsLoading] = useState(false);
+
+    const {
+        setToken,
+        currentUser,
+        setCurrentUser,
+    } = useContext(CustomContext);
     const handleLogout = async () => {
         setIsLoading(true);
         const credentials = {
@@ -40,7 +46,7 @@ function NoAccess({currentUser, setToken, setCurrentUser}) {
                         "msal.isMicrosoftLogin"
                     );
                     clearMSALLocalStorage();
-                    Cookies.remove('access_token');
+                    Cookies.remove("access_token");
                     localStorage.removeItem("current");
 
                     setIsLoading(true);
@@ -53,7 +59,6 @@ function NoAccess({currentUser, setToken, setCurrentUser}) {
                         setToken(null);
                         setCurrentUser(null);
                     }
-
                 }
             })
             .catch((error) => {

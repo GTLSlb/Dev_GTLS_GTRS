@@ -9,6 +9,7 @@ import { createInertiaApp } from "@inertiajs/react";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { NextUIProvider } from "@nextui-org/react";
 import { BrowserRouter } from "react-router-dom";
+import ContextProvider from "./CommonContext";
 ReactGA.initialize("G-0KMJRECLV1");
 
 const appName =
@@ -27,7 +28,9 @@ createInertiaApp({
         root.render(
             <BrowserRouter>
                 <NextUIProvider>
-                    <App {...props} />
+                    <ContextProvider>
+                        <App {...props} />
+                    </ContextProvider>
                 </NextUIProvider>
             </BrowserRouter>
         );

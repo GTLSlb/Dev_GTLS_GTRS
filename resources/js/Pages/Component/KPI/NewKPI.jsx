@@ -32,7 +32,7 @@ function NewKPI({
     url,
     currentUser,
     filterValue,
-    AToken,
+    Token,
     setFilterValue,
     KPIData,
     setKPIData,
@@ -567,7 +567,7 @@ function NewKPI({
             .get(`${url}KPIReportNew`, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {
@@ -726,7 +726,7 @@ function NewKPI({
                 renderTable()
             )}
             <NewKPIModalAddReason
-                AToken={AToken}
+                Token={Token}
                 url={url}
                 isOpen={isModalOpen}
                 kpi={reason}
