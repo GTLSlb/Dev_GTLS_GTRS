@@ -600,7 +600,7 @@ export default function AdditionalCharges({
                 return (
                     <span
                         className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => handleClick(data.ConsignmentId)}
+                        onClick={() => handleClick(data.ConsignmentID)}
                     >
                         {isDummyAccount(value)}
                     </span>
