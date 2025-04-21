@@ -13,7 +13,7 @@ function classNames(...classes) {
 
 export default function GtrsTabs({ }) {
 
-    const [sidebarElements, setSidebarElements] = useState(tabs);
+    const [sidebarElements] = useState(tabs);
     return (
         <div>
 

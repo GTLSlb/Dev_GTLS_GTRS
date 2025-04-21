@@ -395,9 +395,9 @@ export default function MainCharts({
                             </div>
                         </>
                     ) : (
-                        <>
+                        <div>
                             <DifotDashboard />
-                        </>
+                        </div>
                     )
                 ) : (
                     <div className=" h-72 flex items-center justify-center mt-5">
