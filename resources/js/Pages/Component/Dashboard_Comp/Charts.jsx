@@ -60,10 +60,9 @@ function Charts({
         >
             <div key="card01" className="relative drag-over">
                 <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                <DashboardCard07 InfoData={calculateStatistics(filteredData)} />{" "}
+                <DashboardCard07 InfoData={calculateStatistics(filteredData)} />
             </div>
             <div key="card02" className="relative">
-                {" "}
                 <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
                 <MultiChartLine
                     chartData={getMonthlyData(filteredData)}

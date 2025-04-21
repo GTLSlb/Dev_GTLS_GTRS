@@ -77,8 +77,8 @@ export default function MainCharts({
         setFilteredData(chartsData);
     }, []);
     const [layout, setLayout] = useState([
-        { i: "card01", x: 0, y: 0, w: 1, h: 4.2 },
-        { i: "card02", x: 2, y: 0, w: 1, h: 4.2 },
+        { i: "card01", x: 0, y: 0, w: 1, h: 4.7 },
+        { i: "card02", x: 2, y: 0, w: 1, h: 4.7 },
         { i: "card03", x: 0, y: 2, w: 1, h: 3 },
         { i: "card04", x: 0, y: 2, w: 1, h: 3 },
         { i: "card05", x: 2, y: 0, w: 1, h: 3 },
@@ -91,8 +91,8 @@ export default function MainCharts({
     const ResetLayout = () => {
         // Filter the options based on the selected receivers
         setLayout([
-            { i: "card01", x: 0, y: 0, w: 1, h: 4.2 },
-            { i: "card02", x: 2, y: 0, w: 1, h: 4.2 },
+            { i: "card01", x: 0, y: 0, w: 1, h: 4.7 },
+            { i: "card02", x: 2, y: 0, w: 1, h: 4.7 },
             { i: "card03", x: 0, y: 2, w: 1, h: 3 },
             { i: "card04", x: 0, y: 2, w: 1, h: 3 },
             { i: "card05", x: 2, y: 0, w: 1, h: 3 },

@@ -8,7 +8,9 @@ function DashboardCard07(props) {
             (data.totalConsFailed + data.totalNoConsPassed)) *
         100;
     const percentageFailed =
-        (data.totalConsFailed / data.totalNoConsShipped) * 100;
+        (data.totalConsFailed /
+            (data.totalConsFailed + data.totalNoConsPassed)) *
+        100;
     const percentagePending =
         (data.totalConsPending / data.totalNoConsShipped) * 100;
 
@@ -211,6 +213,26 @@ function DashboardCard07(props) {
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
                                         <div className="text-slate-800 text-sm">
+                                            Total % of Consignments Delivered on
+                                            time
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="px-1">
+                                    <div className=" text-sm text-right">
+                                        {percentagePassed
+                                            ? formatNumberWithCommas(
+                                                  percentagePassed
+                                              )
+                                            : 0}{" "}
+                                        %
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="px-1">
+                                    <div className="flex items-center py-1 font-extrabold">
+                                        <div className="text-slate-800 text-sm">
                                             Total No. Consignments Not Delivered
                                             on time
                                         </div>
@@ -223,6 +245,26 @@ function DashboardCard07(props) {
                                                   data.totalConsFailed
                                               )
                                             : 0}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="px-1">
+                                    <div className="flex items-center py-1 font-extrabold">
+                                        <div className="text-slate-800 text-sm">
+                                            Total % of Consignments Not Delivered on
+                                            time
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="px-1">
+                                    <div className=" text-sm text-right">
+                                        {percentageFailed
+                                            ? formatNumberWithCommas(
+                                                  percentageFailed
+                                              )
+                                            : 0}{" "}
+                                        %
                                     </div>
                                 </td>
                             </tr>

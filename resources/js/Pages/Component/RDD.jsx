@@ -1003,7 +1003,6 @@ export default function RDDreason({
             header: "New Rdd",
             headerAlign: "center",
             textAlign: "center",
-            headerAlign: "center",
             defaultWidth: 170,
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,

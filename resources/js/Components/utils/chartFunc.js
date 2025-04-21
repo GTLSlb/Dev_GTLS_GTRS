@@ -1,6 +1,5 @@
 const shuttleDebtorIds = [1514, 244];
 export const calculateStatistics = (data, filteredSafety) => {
-    
     let safetyCounter = 0;
     const uniqueReceivers = new Set();
     let totalWeight = 0;
@@ -61,7 +60,6 @@ export const calculateStatistics = (data, filteredSafety) => {
         totalConsPending + totalConsFailed + totalNoConsPassed;
     const numUniqueReceivers = uniqueReceivers.size;
     const podPercentage = (podCounter / data.length) * 100;
-
 
     fuelLevy = isNaN(fuelLevy) ? 0 : fuelLevy;
     return {
@@ -296,9 +294,13 @@ export const getKPIPerformanceCounter = (data) => {
             continue;
         }
         if (consStatus === "PASS") {
-            consStatus = "Delivered on Time"; 
+            consStatus = "Delivered on Time";
         } else if (consStatus === "FAIL") {
-            consStatus = "Not Delivered on Time"; 
+            if (shuttleDebtorIds.includes(item.ChargeToId)) {
+                consStatus = "Delivered on Time";
+            } else {
+                consStatus = "Not Delivered on Time";
+            }
         }
 
         const existingStatus = counter.find((obj) => obj.label === consStatus);
