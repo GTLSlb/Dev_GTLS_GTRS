@@ -129,7 +129,7 @@ function DashboardCard07(props) {
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
                                         <div className="text-slate-800 text-sm">
-                                            Cost
+                                            Spend
                                         </div>
                                     </div>
                                 </td>
@@ -144,7 +144,7 @@ function DashboardCard07(props) {
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
                                         <div className="text-slate-800 text-sm">
-                                            Fuel Surcharge cost
+                                            Fuel Surcharge spend
                                         </div>
                                     </div>
                                 </td>
@@ -158,7 +158,7 @@ function DashboardCard07(props) {
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
                                         <div className="text-slate-800 text-sm">
-                                            Total No. Consignments Shipped
+                                            Consignments Dispatched
                                         </div>
                                     </div>
                                 </td>
@@ -194,8 +194,7 @@ function DashboardCard07(props) {
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
                                         <div className="text-slate-800 text-sm">
-                                            Total No. Consignments Delivered on
-                                            time
+                                            Delivered on time – Consignments
                                         </div>
                                     </div>
                                 </td>
@@ -213,8 +212,7 @@ function DashboardCard07(props) {
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
                                         <div className="text-slate-800 text-sm">
-                                            Total % of Consignments Delivered on
-                                            time
+                                            Delivered on time – %
                                         </div>
                                     </div>
                                 </td>
@@ -233,8 +231,7 @@ function DashboardCard07(props) {
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
                                         <div className="text-slate-800 text-sm">
-                                            Total No. Consignments Not Delivered
-                                            on time
+                                            Not Delivered on time – Consignments
                                         </div>
                                     </div>
                                 </td>
@@ -252,8 +249,7 @@ function DashboardCard07(props) {
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
                                         <div className="text-slate-800 text-sm">
-                                            Total % of Consignments Not Delivered on
-                                            time
+                                            Not Delivered on time – %
                                         </div>
                                     </div>
                                 </td>
@@ -272,7 +268,7 @@ function DashboardCard07(props) {
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
                                         <div className="text-slate-800 text-sm">
-                                            # of True PODs
+                                            # of PODs Available
                                         </div>
                                     </div>
                                 </td>
@@ -288,7 +284,7 @@ function DashboardCard07(props) {
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
                                         <div className="text-slate-800 text-sm">
-                                            % of True PODs
+                                            % of PODs Available
                                         </div>
                                     </div>
                                 </td>
