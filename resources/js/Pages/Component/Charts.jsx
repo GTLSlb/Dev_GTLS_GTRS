@@ -1976,6 +1976,7 @@ export default function charts({
     };
 
     const [excelDailyReportData, setExcelDailyReportData] = useState();
+    const [utilizationData, setUtilizationData] = useState();
     const [deliveryReportComments, setDeliveryReportComments] = useState();
     const fetchExcelDeliveryReportData = async (setCellLoading) => {
         try {
@@ -1986,6 +1987,37 @@ export default function charts({
                 },
             });
             setExcelDailyReportData(res.data || []);
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again",
+                    type: "success",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                }).then(async function () {
+                    await handleSessionExpiration();
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+                // Check if setCellLoading exists before calling it
+                if (typeof setCellLoading === "function") {
+                    setCellLoading(null);
+                }
+            }
+        }
+    };
+    const fetchUtilizationReportData = async (setCellLoading) => {
+        try {
+            const res = await axios.get(`${url}Utilization/Report`, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            });
+            setUtilizationData(res.data || []);
         } catch (err) {
             if (err.response && err.response.status === 401) {
                 // Handle 401 error using SweetAlert
@@ -2045,6 +2077,7 @@ export default function charts({
             fetchDeliveryReport();
             fetchExcelDeliveryReportData();
             fetchDeliveryReportCommentsData();
+            fetchUtilizationReportData();
         }
     }, [currentUser]);
 
@@ -2446,6 +2479,7 @@ export default function charts({
         <ContactRep url={url} AToken={AToken} currentUser={currentUser} />,
         <Utilization
             url={url}
+            utilizationData={utilizationData}
             AToken={AToken}
             currentUser={currentUser}
             setActiveIndexGTRS={setActiveIndexGTRS}

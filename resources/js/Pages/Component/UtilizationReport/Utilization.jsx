@@ -89,7 +89,7 @@ const tableData = [
 export default function Utilization({
     url,
     AToken,
-    deliveryReportData,
+    utilizationData,
     currentUser,
     userPermission,
     deliveryCommentsOptions,
@@ -906,6 +906,8 @@ export default function Utilization({
         licenseKey: "internal-use-in-handsontable",
     });
 
+    console.log("🚀 ~ utilizationReportData:", utilizationData);
+
     return (
         <div className="min-h-full px-8">
             <ToastContainer />
@@ -938,11 +940,11 @@ export default function Utilization({
                     Export
                 </Button>
             </div>
-            {tableData && (
+            {utilizationData && (
                 <div id="" className="ht-theme-main mt-4 pb-10">
                     <HotTable
                         ref={hotTableRef}
-                        data={tableData}
+                        data={utilizationData}
                         colHeaders={hotColumns.map((col) => col.title)}
                         columns={hotColumns}
                         fixedColumnsStart={1}
