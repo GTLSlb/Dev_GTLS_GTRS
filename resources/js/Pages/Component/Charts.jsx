@@ -29,6 +29,7 @@ import ProductStockTable from "./Products/ProductStockTable";
 import ExcelDeliveryReport from "./ReportsPage/DeliveryReports/ExcelDeliveryReport";
 import DeliveryReportCommentsPage from "./ReportsPage/DeliveryReports/DeliveryReportCommentsPage";
 import ContactRep from "./ContactsRep/ContactRep";
+import Utilization from "./UtilizationReport/Utilization";
 
 export default function charts({
     setCusomterAccounts,
@@ -2443,6 +2444,14 @@ export default function charts({
             fetchDeliveryReportCommentsData={fetchDeliveryReportCommentsData}
         />,
         <ContactRep url={url} AToken={AToken} currentUser={currentUser} />,
+        <Utilization
+            url={url}
+            AToken={AToken}
+            currentUser={currentUser}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            setactiveCon={setactiveCon}
+            setLastIndex={setLastIndex}
+        />,
     ];
     return (
         <div className="">

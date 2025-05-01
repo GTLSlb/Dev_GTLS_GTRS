@@ -226,6 +226,14 @@ const navigation = [
         current: false,
         feature: "ContactsRep_View",
     },
+    {
+        id: 28,
+        name: "Utilization Report",
+        href: "#",
+        icon: DocumentTextIcon,
+        current: false,
+        feature: "UtilizationReport_View",
+    },
 ];
 
 function classNames(...classes) {

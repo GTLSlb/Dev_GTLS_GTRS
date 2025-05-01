@@ -198,6 +198,13 @@ export default function MainSidebar({
             current: false,
             feature: "ContactsRep_View",
         },
+        {
+            id: 28,
+            name: "Utilization Report",
+            href: "#",
+            current: false,
+            feature: "UtilizationReport_View",
+        },
     ];
     const currentAppId = window.Laravel.appId;
 
