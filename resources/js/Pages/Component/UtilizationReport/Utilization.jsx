@@ -324,14 +324,14 @@ export default function Utilization({
     
     const hotColumns = [
         {
-            data: "Date",
+            data: "ManifestDateTime",
             title: "Date",
             type: "date",
             readOnly: true,
             renderer: dateRenderer, // You can use this to format the date
         },
         {
-            data: "Rego",
+            data: "RegistrationNumber",
             title: "Rego",
             type: "text",
             readOnly: true,
@@ -528,10 +528,10 @@ export default function Utilization({
                     timeOut
                 );
 
-                console.log(collectionTurnaroundTime);
+                // console.log(collectionTurnaroundTime);
                 const minutes= convertToMinutes(collectionTurnaroundTime);
 
-                console.log(minutes);
+                // console.log(minutes);
                 // Format the result (convert minutes to HH:mm format)
                 const formattedDiff = moment
                     .utc(minutes * 60000)
@@ -779,13 +779,13 @@ export default function Utilization({
     ];
 
     const [changedRows, setChangedRows] = useState([]); // Stores changed rows
-
+console.log(changedRows)
     const handleAfterChange = (changes, source) => {
         if (source === "loadData" || !changes) return;
-
+    
         setChangedRows((prevChanges) => {
-            let updatedChanges = [...prevChanges]; // Clone the existing changes array
-
+            let updatedChanges = [...prevChanges]; // clone current changes
+    
             changes.forEach(([row, prop, oldValue, newValue]) => {
                 if (newValue !== oldValue) {
                     const hotInstance = hotTableRef.current?.hotInstance;
@@ -793,37 +793,34 @@ export default function Utilization({
                         console.error("❌ Handsontable instance is undefined!");
                         return updatedChanges;
                     }
-
+    
                     const rowData = hotInstance.getSourceDataAtRow(row);
                     if (!rowData || !rowData.ConsignmentID) {
-                        console.warn(
-                            "⚠️ Row data is undefined or missing ConsignmentID!",
-                            rowData
-                        );
+                        console.warn("⚠️ Row data missing ConsignmentID!", rowData);
                         return updatedChanges;
                     }
-
+    
                     const existingIndex = updatedChanges.findIndex(
                         (item) => item.ConsignmentID === rowData.ConsignmentID
                     );
-
+    
                     if (existingIndex > -1) {
                         updatedChanges[existingIndex] = {
                             ...updatedChanges[existingIndex],
-                            Comment: newValue,
+                            [prop]: newValue, // update only the changed field
                         };
                     } else {
                         updatedChanges.push({
                             ...rowData,
-                            Comment: newValue,
+                            [prop]: newValue, // only override the changed prop
                         });
                     }
                 }
             });
-            return updatedChanges; // Ensure we return a new array
+    
+            return updatedChanges;
         });
     };
-
     function SaveComments() {
         setIsLoading(true);
         const inputValues = changedRows?.map((item) => ({
@@ -944,7 +941,8 @@ export default function Utilization({
                 <div id="" className="ht-theme-main mt-4 pb-10">
                     <HotTable
                         ref={hotTableRef}
-                        data={utilizationData}
+                        data={utilizationData.slice(
+                            0,1000)}
                         colHeaders={hotColumns.map((col) => col.title)}
                         columns={hotColumns}
                         fixedColumnsStart={1}
@@ -960,6 +958,9 @@ export default function Utilization({
                         afterChange={handleAfterChange}
                         autoWrapRow={true}
                         manualColumnResize={true}
+                        renderAllRows={false}
+                        viewportRowRenderingOffset={10}
+                        viewportColumnRenderingOffset={10}
                         autoWrapCol={true}
                         filters={true} // ✅ Enable filtering
                         dropdownMenu={{
@@ -976,6 +977,7 @@ export default function Utilization({
                             useTheme: null, // ✅ Ensures Handsontable doesn’t depend on a missing theme
                         }}
                     />
+                    {isLoading && <div>Loading more data...</div>}
                 </div>
             )}
             {cellLoading && (
