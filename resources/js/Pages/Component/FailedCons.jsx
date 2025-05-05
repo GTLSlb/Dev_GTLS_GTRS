@@ -3,9 +3,7 @@ import SetFailedReasonModal from "@/Components/SetFailedReasonModal";
 import TableStructure from "@/Components/TableStructure";
 import { canEditFailedConsignments } from "@/permissions";
 import { Popover, Transition } from "@headlessui/react";
-import {
-    ChevronDownIcon
-} from "@heroicons/react/20/solid";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { PencilIcon } from "@heroicons/react/24/outline";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
@@ -96,7 +94,7 @@ export default function FailedCons({
     const createNewLabelObjects = (data, fieldName) => {
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
-    
+
         // Map through the data and create new objects
         data.forEach((item) => {
             const fieldValue = item[fieldName];
@@ -110,13 +108,15 @@ export default function FailedCons({
                 newData.push(newObject);
             }
         });
-    
+
         // Sort the array alphabetically by label
         return newData.sort((a, b) => a.label.localeCompare(b.label));
     };
-    
+
     const senderZoneOptions = createNewLabelObjects(data, "SenderState");
     const receiverZoneOptions = createNewLabelObjects(data, "RECEIVERSTATE");
+    const senderZoneOptions1 = createNewLabelObjects(data, "SENDERZONE");
+    const receiverZoneOptions1 = createNewLabelObjects(data, "RECEIVERZONE");
     const states = createNewLabelObjects(data, "State");
     const departments = createNewLabelObjects(data, "Department");
     function getMinMaxValue(data, fieldName, identifier) {
@@ -249,7 +249,12 @@ export default function FailedCons({
             group: "senderInfo",
             textAlign: "center",
             defaultWidth: 170,
-            filterEditor: StringFilter,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: senderZoneOptions1,
+            },
         },
         {
             name: "RECEIVERNAME",
@@ -297,7 +302,12 @@ export default function FailedCons({
             group: "receiverInfo",
             textAlign: "center",
             defaultWidth: 170,
-            filterEditor: StringFilter,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: receiverZoneOptions1,
+            },
         },
         {
             name: "SERVICE",
@@ -995,7 +1005,7 @@ export default function FailedCons({
             "RECEIVER REFERENCE",
             "ReceiverReference",
         ]; // for dummy data
-        
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
@@ -1080,7 +1090,9 @@ export default function FailedCons({
                     } else if (columnKey === "State") {
                         acc[columnKey] = person["State"];
                     } else if (columnKey === "RECEIVERREFERENCE") {
-                        acc[columnKey] = isDummyAccount(person["RECEIVER REFERENCE"]);
+                        acc[columnKey] = isDummyAccount(
+                            person["RECEIVER REFERENCE"]
+                        );
                     } else if (fieldsToCheck.includes(columnKey)) {
                         acc[column] = isDummyAccount(person[columnKey]);
                     } else {

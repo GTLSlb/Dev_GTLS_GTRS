@@ -705,6 +705,8 @@ export default function RDDreason({
     const accountOptions = createNewLabelObjects(rddData, "AccountNumber");
     const senderSuburbs = createNewLabelObjects(rddData, "SenderSuburb");
     const senderStates = createNewLabelObjects(rddData, "SenderState");
+    const senderZones = createNewLabelObjects(rddData, "SenderZone");
+    const receiverZones = createNewLabelObjects(rddData, "ReceiverZone");
     const receiverSuburbs = createNewLabelObjects(rddData, "ReceiverSuburb");
     const receiverStates = createNewLabelObjects(rddData, "ReceiverState");
     function getMinMaxValue(data, fieldName, identifier) {
@@ -898,7 +900,12 @@ export default function RDDreason({
             defaultWidth: 170,
             headerAlign: "center",
             textAlign: "center",
-            filterEditor: StringFilter,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: senderZones,
+            },
             group: "senderInfo",
         },
         {
@@ -977,7 +984,12 @@ export default function RDDreason({
             defaultWidth: 170,
             headerAlign: "center",
             textAlign: "center",
-            filterEditor: StringFilter,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: receiverZones,
+            },
             group: "receiverInfo",
         },
         {
