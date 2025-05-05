@@ -722,6 +722,12 @@ export default function charts({
             value: "",
         },
         {
+            name: "SENDERZONE",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
             name: "RECEIVERNAME",
             operator: "contains",
             type: "string",
@@ -737,6 +743,12 @@ export default function charts({
             name: "RECEIVERSTATE",
             operator: "inlist",
             type: "select",
+            value: "",
+        },
+        {
+            name: "RECEIVERZONE",
+            operator: "contains",
+            type: "string",
             value: "",
         },
         {
@@ -883,6 +895,12 @@ export default function charts({
             value: "",
         },
         {
+            name: "SenderZone",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
             name: "ReceiverName",
             operator: "contains",
             type: "string",
@@ -910,6 +928,12 @@ export default function charts({
             name: "ReceiverState",
             operator: "inlist",
             type: "select",
+            value: "",
+        },
+        {
+            name: "ReceiverZone",
+            operator: "contains",
+            type: "string",
             value: "",
         },
         {

@@ -892,6 +892,16 @@ export default function RDDreason({
             group: "senderInfo",
         },
         {
+            name: "SenderZone",
+            header: "Sender Zone",
+            type: "string",
+            defaultWidth: 170,
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
+            group: "senderInfo",
+        },
+        {
             name: "ReceiverName",
             header: "Receiver Name",
             type: "string",
@@ -958,6 +968,16 @@ export default function RDDreason({
                 wrapMultiple: false,
                 dataSource: receiverStates,
             },
+            group: "receiverInfo",
+        },
+        {
+            name: "ReceiverZone",
+            header: "Receiver Zone",
+            type: "string",
+            defaultWidth: 170,
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
             group: "receiverInfo",
         },
         {
@@ -1265,6 +1285,15 @@ export default function RDDreason({
                                                             <input
                                                                 type="checkbox"
                                                                 name="column"
+                                                                value="SenderZone"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Sender Zone
+                                                        </label>
+                                                        <label className="">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
                                                                 value="ReceiverName"
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
@@ -1305,6 +1334,15 @@ export default function RDDreason({
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Receiver State
+                                                        </label>
+                                                        <label className="">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
+                                                                value="ReceiverZone"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Receiver Zone
                                                         </label>
                                                         <label className="">
                                                             <input

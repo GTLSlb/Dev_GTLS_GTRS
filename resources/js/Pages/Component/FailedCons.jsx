@@ -243,6 +243,15 @@ export default function FailedCons({
             },
         },
         {
+            name: "SENDERZONE",
+            header: "Sender Zone",
+            headerAlign: "center",
+            group: "senderInfo",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
+        {
             name: "RECEIVERNAME",
             header: "Receiver Name",
             type: "string",
@@ -280,6 +289,15 @@ export default function FailedCons({
                 wrapMultiple: false,
                 dataSource: receiverZoneOptions,
             },
+        },
+        {
+            name: "RECEIVERZONE",
+            header: "Receiver Zone",
+            headerAlign: "center",
+            group: "receiverInfo",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
         },
         {
             name: "SERVICE",
@@ -1316,6 +1334,15 @@ export default function FailedCons({
                                                             <input
                                                                 type="checkbox"
                                                                 name="column"
+                                                                value="SENDERZONE"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Sender Zone
+                                                        </label>
+                                                        <label>
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
                                                                 value="RECEIVERNAME"
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
@@ -1338,6 +1365,15 @@ export default function FailedCons({
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Receiver State
+                                                        </label>
+                                                        <label>
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
+                                                                value="RECEIVERZONE"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Receiver Zone
                                                         </label>
                                                         <label>
                                                             <input
