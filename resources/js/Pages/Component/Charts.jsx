@@ -1260,13 +1260,13 @@ export default function charts({
             value: null,
         },
         {
-            name: "TotalCharge",
+            name: "ChargeRate",
             operator: "eq",
             type: "number",
             value: null,
         },
         {
-            name: "Total",
+            name: "TotalCharge",
             operator: "eq",
             type: "number",
             value: null,

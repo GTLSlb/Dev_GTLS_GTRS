@@ -59,7 +59,7 @@ export default function AdditionalCharges({
                 parsedDataPromise.then((parsedData) => {
                     const updatedData = parsedData.map((item) => ({
                         ...item,
-                        Total: ((item.TotalCharge || 0) * (item.Quantity || 0)).toFixed(2), // Calculate total
+                        TotalCharge: ((item.ChargeRate || 0) * (item.Quantity || 0)).toFixed(2), // Calculate total
                     }));
                     setAdditionalData(updatedData);
                     setIsFetching(false);
@@ -469,6 +469,7 @@ export default function AdditionalCharges({
             ReceiverReference: "Receiver Reference",
             Quantity: "Quantity",
             TotalCharge: "Total Charge",
+            ChargeRate: "Charge Rate",
             CodeRef: "Code Ref",
             DescriptionRef: "Description Ref",
             FuelLevyAmountRef: "Fuel Levy Amount Ref",
@@ -498,7 +499,7 @@ export default function AdditionalCharges({
                         } else {
                             acc[columnKey] = "";
                         }
-                    }else if(column.replace(/\s+/g, "") === "Total"){
+                    }else if(column.replace(/\s+/g, "") === "TotalCharge"){
                         acc[columnKey] = Number(person[columnKey])
                     } else {
                         acc[columnKey] = person[columnKey];
@@ -670,7 +671,7 @@ export default function AdditionalCharges({
             filterEditor: NumberFilter,
         },
         {
-            name: "TotalCharge",
+            name: "ChargeRate",
             header: "Charge Rate",
             headerAlign: "center",
             textAlign: "center",
@@ -679,7 +680,7 @@ export default function AdditionalCharges({
             filterEditor: NumberFilter,
         },
         {
-            name: "Total",
+            name: "TotalCharge",
             header: "Total Charge",
             headerAlign: "center",
             textAlign: "center",
@@ -897,7 +898,7 @@ export default function AdditionalCharges({
                                                         <input
                                                             type="checkbox"
                                                             name="column"
-                                                            value="Total Charge"
+                                                            value="Charge Rate"
                                                             className="text-dark rounded focus:ring-goldd"
                                                         />{" "}
                                                         Charge Rate
@@ -906,7 +907,7 @@ export default function AdditionalCharges({
                                                         <input
                                                             type="checkbox"
                                                             name="column"
-                                                            value="Total"
+                                                            value="TotalCharge"
                                                             className="text-dark rounded focus:ring-goldd"
                                                         />{" "}
                                                         Total Charge
