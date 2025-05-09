@@ -1266,6 +1266,12 @@ export default function charts({
             value: null,
         },
         {
+            name: "Total",
+            operator: "eq",
+            type: "number",
+            value: null,
+        },
+        {
             name: "CodeRef",
             operator: "inlist",
             type: "select",
