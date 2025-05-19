@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardBody, Divider } from "@nextui-org/react";
+import { Card, CardHeader, CardBody, Divider } from "@heroui/react";
 import TaskIcon from "@mui/icons-material/Task";
 import { formatNumberWithCommas } from "@/CommonFunctions";
 function PODCard({ totalPODTrue, totalCount }) {

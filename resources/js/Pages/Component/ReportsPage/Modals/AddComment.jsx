@@ -6,7 +6,7 @@ import swal from "sweetalert";
 import { handleSessionExpiration } from "@/CommonFunctions";
 import {
     Spinner,
-} from "@nextui-org/react";
+} from "@heroui/react";
 
 export default function AddComment({
     isOpen,

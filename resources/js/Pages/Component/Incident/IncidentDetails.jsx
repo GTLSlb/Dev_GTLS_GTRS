@@ -1,6 +1,6 @@
 import { canViewInternal } from "@/permissions";
 import logo from "@/assets/pictures/Logoblack.png";
-import { Checkbox, Chip } from "@nextui-org/react";
+import { Checkbox, Chip } from "@heroui/react";
 import moment from "moment/moment";
 import { useNavigate } from "react-router-dom";
 

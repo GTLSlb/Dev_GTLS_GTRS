@@ -2,7 +2,7 @@ import {
     Progress,
     Tab,
     Tabs,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useEffect, useState } from "react";
 import IncidentDetails from "./IncidentDetails";
 import swal from "sweetalert";

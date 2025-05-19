@@ -12,10 +12,10 @@ import {
     Select,
     SelectItem,
     Spinner,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useMemo } from "react";
 import { useRef } from "react";
-import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
+import { useInfiniteScroll } from "@heroui/use-infinite-scroll";
 import moment from "moment/moment";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";

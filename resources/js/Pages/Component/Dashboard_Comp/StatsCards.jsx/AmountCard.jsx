@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardHeader, CardBody, Divider } from "@nextui-org/react";
+import { Card, CardHeader, CardBody, Divider } from "@heroui/react";
 import PaidIcon from "@mui/icons-material/Paid";
 import { formatNumberWithCommas } from "@/CommonFunctions";
 function AmountCard({ totalCost }) {

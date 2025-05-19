@@ -6,7 +6,7 @@ import ReactDataGrid from "@inovua/reactdatagrid-community";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import "@inovua/reactdatagrid-community/index.css";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
-import { useDisclosure } from "@nextui-org/react";
+import { useDisclosure } from "@heroui/react";
 import axios from "axios";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import EventModal from "./EventModal";

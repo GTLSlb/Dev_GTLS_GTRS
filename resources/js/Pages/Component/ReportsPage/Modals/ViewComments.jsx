@@ -8,7 +8,7 @@ import axios from "axios";
 import { handleSessionExpiration } from '@/CommonFunctions';
 import {
     Spinner,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import ComboBox from "@/Components/ComboBox";
 
 export default function ViewComments({

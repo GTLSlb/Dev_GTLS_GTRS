@@ -11,7 +11,7 @@ import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import moment from "moment";
 import { EyeIcon, PencilIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
-import { Spinner } from "@nextui-org/react";
+import { Spinner } from "@heroui/react";
 import ComboBox from "@/Components/ComboBox";
 import ViewComments from "./Modals/ViewComments";
 import { handleFilterTable } from "@/Components/utils/filterUtils";

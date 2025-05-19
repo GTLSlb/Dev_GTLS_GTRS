@@ -1,4 +1,4 @@
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { Sidebar, Menu, MenuItem, menuClasses } from "react-pro-sidebar";
 import { useNavigate } from "react-router-dom";

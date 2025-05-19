@@ -3,7 +3,7 @@ import { registerAllModules } from "handsontable/registry";
 import { useEffect, useMemo, useRef, useState } from "react";
 // import "handsontable/styles/handsontable.css";
 // import "handsontable/styles/ht-theme-main.css";
-import { Button, Spinner } from "@nextui-org/react";
+import { Button, Spinner } from "@heroui/react";
 import axios from "axios";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";

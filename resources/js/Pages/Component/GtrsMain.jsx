@@ -20,7 +20,7 @@ import {
     getFiltersTransport,
 } from "@/Components/utils/filters";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import { useEffect, useState, useContext } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import ConsDetails from "../ConsDetails";
@@ -52,6 +52,7 @@ import TrafficComp from "./TrafficPage/TrafficComp";
 import TransportRep from "./TransportRep";
 import ProductStockTable from "./ProductStock/ProductStockTable";
 import { CustomContext } from "@/CommonContext";
+import Customers from "./Settings/Customers";
 
 export default function GtrsMain({
     setCustomerAccounts,
@@ -1595,6 +1596,27 @@ export default function GtrsMain({
                                                 route="StockReport_View"
                                                 element={
                                                     <ProductStockTable
+                                                        url={url}
+                                                        Token={Token}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                    />
+                                                }
+                                            />
+                                        }
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
+                                    />
+                                    <Route
+                                        path="/Customer-Settings"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermission}
+                                                route="StockReport_View"
+                                                element={
+                                                    <Customers
                                                         url={url}
                                                         Token={Token}
                                                         currentUser={

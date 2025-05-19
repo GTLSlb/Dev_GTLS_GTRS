@@ -13,7 +13,7 @@ import {
     AccordionItem,
     Avatar,
     Image,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import Roadworks from "@/assets/icons/RoadWork.png";
 import Alpine from "@/assets/icons/Alpine.png";
 import Flooding from "@/assets/icons/Flooding.png";

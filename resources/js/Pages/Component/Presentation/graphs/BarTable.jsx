@@ -6,7 +6,7 @@ import {
     TableBody,
     TableRow,
     TableCell,
-} from "@nextui-org/react";
+} from "@heroui/react";
 function BarTable({ colLabel, colTotal, colOnTime, colKPI, colPOD, colWidth }) {
     return (
         <Table
