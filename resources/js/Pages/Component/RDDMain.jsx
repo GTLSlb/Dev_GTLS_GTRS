@@ -39,46 +39,52 @@ export default function RDDMain({
         const parts = dateString.split(/[\s/:]/);
         let dateObject;
         if (parts.length === 7) {
-            // If there is a time component
+            // Parse the date and time (with AM/PM handling)
+            let hours = parseInt(parts[3], 10);
+            if (parts[6] === "PM" && hours < 12) {
+                hours += 12; // Convert PM hours to 24-hour format
+            } else if (parts[6] === "AM" && hours === 12) {
+                hours = 0; // Convert 12 AM to 00 hours
+            }
+    
+            // Create a new date object using local time, no UTC involved
             dateObject = new Date(
-                Date.UTC(
-                    parts[2],
-                    parts[1] - 1,
-                    parts[0],
-                    parts[3],
-                    parts[4],
-                    parts[5]
-                )
+                parseInt(parts[2]),  // year
+                parseInt(parts[1]) - 1,  // month (0-based)
+                parseInt(parts[0]),  // day
+                hours,  // hour (adjusted for AM/PM)
+                parseInt(parts[4]),  // minute
+                parseInt(parts[5])   // second
             );
         } else {
             // If there is no time component
-            dateObject = new Date(Date.UTC(parts[2], parts[1] - 1, parts[0]));
+            dateObject = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
         }
         return dateObject;
     };
-    
     
     const formatDate = (date) => {
         if (!(date instanceof Date) || isNaN(date.getTime())) {
           return ""; // or return any other default value as needed
         }
-        const options = {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          timeZone: "UTC",
-        };
-      
-        return date.toISOString().slice(0, 19); // UTC time
+    
+        // Use toISOString() for UTC conversion, but adjust for local time
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+        
+        // Return the formatted date string
+        return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
     };
+    
     const updateFieldWithData = (data, fieldName) => {
         if (!data || data.length === 0) {
             return []; // or return any other default value as needed
         }
-
+    
         const updatedData = data.map((item) => {
             const fieldValue = item[fieldName];
             const parsedDate = parseDateString(fieldValue);
@@ -89,6 +95,8 @@ export default function RDDMain({
         setrddData(updatedData);
         return updatedData;
     };
+    
+    
     useEffect(() => {
         if (!rddData) {
             setIsFetching(true);

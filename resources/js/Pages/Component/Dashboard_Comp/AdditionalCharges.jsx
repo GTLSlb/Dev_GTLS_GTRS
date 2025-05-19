@@ -1,43 +1,19 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useEffect } from "react";
-import ReactPaginate from "react-paginate";
-import notFound from "../../../assets/pictures/NotFound.png";
-import { useDownloadExcel, downloadExcel } from "react-export-table-to-excel";
 import { Fragment } from "react";
 import moment from "moment";
 import ExcelJS from "exceljs";
 import { Popover, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
-import BoolFilter from "@inovua/reactdatagrid-community/BoolFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
-import Button from "@inovua/reactdatagrid-community/packages/Button";
 import TableStructure from "@/Components/TableStructure";
-import ReactDataGrid from "@inovua/reactdatagrid-community";
-import swal from 'sweetalert';
+import swal from "sweetalert";
 import axios from "axios";
-
-const report = [
-    {
-        ConsignmentId: 275576,
-        ConsignmentNo: "FOR100312",
-        SenderName: "INDUSTRIAL STEEL",
-        ReceiverName: "R AND A CONCRETING",
-        FromState: "QLD",
-        ToState: "VIC",
-        POD: true,
-        MatchTransit: false,
-        MatchRdd: false,
-    },
-    // More people...
-];
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
+import { isDummyAccount } from "@/CommonFunctions";
 
 export default function AdditionalCharges({
     AdditionalData,
@@ -81,72 +57,65 @@ export default function AdditionalCharges({
                     resolve(parsedData);
                 });
                 parsedDataPromise.then((parsedData) => {
-                    setAdditionalData(parsedData);
+                    const updatedData = parsedData.map((item) => ({
+                        ...item,
+                        TotalCharge: ((item.ChargeRate || 0) * (item.Quantity || 0)).toFixed(2), // Calculate total
+                    }));
+                    setAdditionalData(updatedData);
                     setIsFetching(false);
                 });
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
-                    text: "Please login again",
-                    type: 'success',
-                    icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(function() {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                          if (response.status == 200) {
-                            window.location.href = "/";
-                          }
-                        })
-                        .catch((error) => {
-                            console.log(err);
-                            setAdditionalData([]);
-                            setIsFetching(false);
-                        });
-                  });
+                    // Handle 401 error using SweetAlert
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then(function () {
+                        axios
+                            .post("/logoutAPI")
+                            .then((response) => {
+                                if (response.status == 200) {
+                                    window.location.href = "/";
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(err);
+                                setAdditionalData([]);
+                                setIsFetching(false);
+                            });
+                    });
                 } else {
-                  // Handle other errors
-                  console.log(err);
-                  setAdditionalData([]);
-                  setIsFetching(false);
+                    // Handle other errors
+                    console.log(err);
+                    setAdditionalData([]);
+                    setIsFetching(false);
                 }
-              });
+            });
     };
-    const [filteredData, setFilteredData] = useState(AdditionalData);
-    const tableRef = useRef(null);
-    const headers = [
-        "Consignment No",
-        "Quantity",
-        "Total Charge",
-        "Code Ref",
-        "Description Ref",
-        "Fuel Levy Amount Ref",
-        "Despatch DateTime",
-        "Name",
-        "Description",
-        "Code",
-    ];
+
     const gridRef = useRef(null);
     function handleFilterTable() {
         // Get the selected columns or use all columns if none are selected
         let selectedColumns = Array.from(
             document.querySelectorAll('input[name="column"]:checked')
         ).map((checkbox) => checkbox.value);
-        
+
         let allHeaderColumns = gridRef.current.visibleColumns.map((column) => ({
             name: column.name,
             value: column.computedFilterValue?.value,
             type: column.computedFilterValue?.type,
             operator: column.computedFilterValue?.operator,
         }));
-        let selectedColVal = allHeaderColumns.filter(col => col.name !== "edit");
+        let selectedColVal = allHeaderColumns.filter(
+            (col) => col.name !== "edit"
+        );
 
         const filterValue = [];
-        AdditionalData?.map((val) =>{
+        AdditionalData?.map((val) => {
             let isMatch = true;
 
             for (const col of selectedColVal) {
@@ -329,12 +298,21 @@ export default function AdditionalCharges({
                         // ... (add other select type conditions here if necessary)
                     }
                 } else if (type === "date") {
-                    const dateValue = moment(val[col.name].replace("T", " "), "YYYY-MM-DD HH:mm:ss");
-                    const hasStartDate = cellValue?.start && cellValue.start.length > 0;
-                    const hasEndDate = cellValue?.end && cellValue.end.length > 0;
-                    const dateCellValueStart = hasStartDate ? moment(cellValue.start, "DD-MM-YYYY") : null;
-                    const dateCellValueEnd = hasEndDate ? moment(cellValue.end, "DD-MM-YYYY").endOf('day') : null;
-                
+                    const dateValue = moment(
+                        val[col.name].replace("T", " "),
+                        "YYYY-MM-DD HH:mm:ss"
+                    );
+                    const hasStartDate =
+                        cellValue?.start && cellValue.start.length > 0;
+                    const hasEndDate =
+                        cellValue?.end && cellValue.end.length > 0;
+                    const dateCellValueStart = hasStartDate
+                        ? moment(cellValue.start, "DD-MM-YYYY")
+                        : null;
+                    const dateCellValueEnd = hasEndDate
+                        ? moment(cellValue.end, "DD-MM-YYYY").endOf("day")
+                        : null;
+
                     switch (operator) {
                         case "after":
                             // Parse the cellValue date with the format you know it might have
@@ -433,18 +411,27 @@ export default function AdditionalCharges({
                                 neqDateToCompare.isValid() &&
                                 !neqd.isSame(neqDateToCompare, "day");
 
-                            break;case "inrange":
-                            conditionMet = (!hasStartDate || dateValue.isSameOrAfter(dateCellValueStart)) &&
-                                           (!hasEndDate || dateValue.isSameOrBefore(dateCellValueEnd));
+                            break;
+                        case "inrange":
+                            conditionMet =
+                                (!hasStartDate ||
+                                    dateValue.isSameOrAfter(
+                                        dateCellValueStart
+                                    )) &&
+                                (!hasEndDate ||
+                                    dateValue.isSameOrBefore(dateCellValueEnd));
                             break;
                         case "notinrange":
-                            conditionMet = (hasStartDate && dateValue.isBefore(dateCellValueStart)) ||
-                                           (hasEndDate && dateValue.isAfter(dateCellValueEnd));
+                            conditionMet =
+                                (hasStartDate &&
+                                    dateValue.isBefore(dateCellValueStart)) ||
+                                (hasEndDate &&
+                                    dateValue.isAfter(dateCellValueEnd));
                             break;
                         // ... (add other date type conditions here if necessary)
                     }
                 }
-                
+
                 if (!conditionMet) {
                     isMatch = false;
                     break;
@@ -456,7 +443,9 @@ export default function AdditionalCharges({
         });
         selectedColVal = [];
         if (selectedColumns.length === 0) {
-            selectedColVal = allHeaderColumns.filter(col => col.name !== "edit"); // Use all columns
+            selectedColVal = allHeaderColumns.filter(
+                (col) => col.name !== "edit"
+            ); // Use all columns
         } else {
             allHeaderColumns.map((header) => {
                 selectedColumns.map((column) => {
@@ -473,30 +462,31 @@ export default function AdditionalCharges({
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-        
+
         const columnMapping = {
-            "ConsignmentNo": "Consignment No",
-            "SenderReference": "Sender Reference",
-            "ReceiverReference": "Receiver Reference",
-            "Quantity": "Quantity",
-            "TotalCharge": "Total Charge",
-            "CodeRef": "Code Ref", 
-            "DescriptionRef": "Description Ref",
-            "FuelLevyAmountRef": "Fuel Levy Amount Ref",
-            "DespatchDateTime": "Despatch DateTime",
+            ConsignmentNo: "Consignment No",
+            SenderReference: "Sender Reference",
+            ReceiverReference: "Receiver Reference",
+            Quantity: "Quantity",
+            TotalCharge: "Total Charge",
+            ChargeRate: "Charge Rate",
+            CodeRef: "Code Ref",
+            DescriptionRef: "Description Ref",
+            FuelLevyAmountRef: "Fuel Levy Amount Ref",
+            DespatchDateTime: "Despatch DateTime",
         };
-    
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
-    
+
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
-                const columnKey = column.replace(/\s+/g, "");
+                const columnKey = column?.replace(/\s+/g, "");
                 if (columnKey) {
                     if (column.replace(/\s+/g, "") === "DespatchDateTime") {
                         const date = new Date(person[columnKey]);
@@ -504,11 +494,13 @@ export default function AdditionalCharges({
                             acc[columnKey] =
                                 (date.getTime() -
                                     date.getTimezoneOffset() * 60000) /
-                                86400000 +
+                                    86400000 +
                                 25569; // Convert to Excel date serial number
                         } else {
                             acc[columnKey] = "";
                         }
+                    }else if(column.replace(/\s+/g, "") === "TotalCharge"){
+                        acc[columnKey] = Number(person[columnKey])
                     } else {
                         acc[columnKey] = person[columnKey];
                     }
@@ -516,13 +508,13 @@ export default function AdditionalCharges({
                 return acc;
             }, {})
         );
-    
+
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
-    
+
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
-    
+
         // Apply custom styles to the header row
         const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
@@ -532,38 +524,39 @@ export default function AdditionalCharges({
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
         headerRow.alignment = { horizontal: "center" };
-    
+
         // Add the data to the worksheet
         data?.forEach((rowData) => {
             const row = worksheet.addRow(Object.values(rowData));
-    
+
             // Apply date format to the DespatchDateTime column
-            const despatchDateIndex = newSelectedColumns.indexOf("Despatch DateTime");
+            const despatchDateIndex =
+                newSelectedColumns.indexOf("Despatch DateTime");
             if (despatchDateIndex !== -1) {
                 const cell = row.getCell(despatchDateIndex + 1);
-                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
         });
-    
+
         // Set column widths
         const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
         }));
-    
+
         // Generate the Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
             // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-    
+
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "Additional-Charges.xlsx");
         });
     }
-    
+
     const [selected, setSelected] = useState([]);
 
     function getMinMaxValue(data, fieldName, identifier) {
@@ -599,13 +592,12 @@ export default function AdditionalCharges({
     // Usage example remains the same
     const minDate = getMinMaxValue(AdditionalData, "DespatchDateTime", 1);
     const maxDate = getMinMaxValue(AdditionalData, "DespatchDateTime", 2);
-    
+
     const createNewLabelObjects = (data, fieldName) => {
-        let id = 1; // Initialize the ID
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
+
         // Map through the data and create new objects
-        if(data?.length>0){
         data?.forEach((item) => {
             const fieldValue = item[fieldName];
             // Check if the label is not already included
@@ -617,9 +609,12 @@ export default function AdditionalCharges({
                 };
                 newData.push(newObject);
             }
-        });}
-        return newData;
+        });
+
+        // Sort the array alphabetically by label
+        return newData.sort((a, b) => a.label.localeCompare(b.label));
     };
+
     const reference = createNewLabelObjects(AdditionalData, "CodeRef");
     const name = createNewLabelObjects(AdditionalData, "Name");
     const description = createNewLabelObjects(AdditionalData, "Description");
@@ -635,10 +630,9 @@ export default function AdditionalCharges({
                 return (
                     <span
                         className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => handleClick(data.ConsignmentId)}
+                        onClick={() => handleClick(data.ConsignmentID)}
                     >
-                        {" "}
-                        {value}
+                        {isDummyAccount(value)}
                     </span>
                 );
             },
@@ -651,6 +645,9 @@ export default function AdditionalCharges({
             textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "ReceiverReference",
@@ -660,10 +657,22 @@ export default function AdditionalCharges({
             textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "Quantity",
             header: "Quantity",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            type: "number",
+            filterEditor: NumberFilter,
+        },
+        {
+            name: "ChargeRate",
+            header: "Charge Rate",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
@@ -678,6 +687,12 @@ export default function AdditionalCharges({
             defaultWidth: 170,
             type: "number",
             filterEditor: NumberFilter,
+            render: ({ value }) => {
+                return Number(value).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  });
+            },
         },
         {
             name: "CodeRef",
@@ -883,7 +898,16 @@ export default function AdditionalCharges({
                                                         <input
                                                             type="checkbox"
                                                             name="column"
-                                                            value="Total Charge"
+                                                            value="Charge Rate"
+                                                            className="text-dark rounded focus:ring-goldd"
+                                                        />{" "}
+                                                        Charge Rate
+                                                    </label>
+                                                    <label>
+                                                        <input
+                                                            type="checkbox"
+                                                            name="column"
+                                                            value="TotalCharge"
                                                             className="text-dark rounded focus:ring-goldd"
                                                         />{" "}
                                                         Total Charge

@@ -15,6 +15,7 @@ import {
 import swal from "sweetalert";
 import axios from "axios";
 import GtamButton from "./GTAM/components/Buttons/GtamButton";
+import { isDummyAccount } from "@/CommonFunctions";
 
 function NewTransitDays({
     setActiveIndexGTRS,
@@ -28,6 +29,7 @@ function NewTransitDays({
     AToken,
     url,
 }) {
+    console.log(newTransitDays);
     const [isFetching, setIsFetching] = useState(true);
     const [selected, setSelected] = useState([]);
     const [filteredData, setFilteredData] = useState(newTransitDays);
@@ -147,22 +149,26 @@ function NewTransitDays({
     function getUniqueCustomerTypes(data) {
         // Create a Map to store unique customer types with their corresponding IDs
         const typeMap = new Map();
-    
+
         // Loop through each object in the data array
         data?.forEach((item) => {
             // Add the customer type to the map with the CustomerTypeId as the key
             // only if the CustomerType is not an empty string
-            if (item.CustomerType && item.CustomerType.trim() !== "" && !typeMap.has(item.CustomerTypeId)) {
+            if (
+                item.CustomerType &&
+                item.CustomerType.trim() !== "" &&
+                !typeMap.has(item.CustomerTypeId)
+            ) {
                 typeMap.set(item.CustomerTypeId, item.CustomerType);
             }
         });
-    
+
         // Convert the map to an array of objects with id and label
         const uniqueCustomers = Array.from(typeMap).map(([id, label]) => ({
             id,
             label,
         }));
-    
+
         return uniqueCustomers;
     }
     const columns = [
@@ -179,6 +185,9 @@ function NewTransitDays({
                 multiple: false,
                 wrapMultiple: false,
                 dataSource: customers,
+            },
+            render: ({ value }) => {
+                return isDummyAccount(value);
             },
         },
         {
@@ -198,7 +207,7 @@ function NewTransitDays({
             render: ({ value, data }) => {
                 return (
                     <div>
-                        {data.CustomerType}
+                        {isDummyAccount(data.CustomerType)}
                     </div>
                 );
             },
@@ -240,6 +249,9 @@ function NewTransitDays({
             defaultFlex: 1,
             textAlign: "center",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "ReceiverState",

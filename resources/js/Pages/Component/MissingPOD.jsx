@@ -10,6 +10,7 @@ import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import Button from "@inovua/reactdatagrid-community/packages/Button";
 import TableStructure from "@/Components/TableStructure";
+import { isDummyAccount } from "@/CommonFunctions";
 export default function MissingPOD({
     PerfData,
     setActiveIndexGTRS,
@@ -454,7 +455,13 @@ export default function MissingPOD({
             DELIVEREDDATETIME: "Delivered Datetime",
             POD: "POD",
         };
-    
+        const fieldsToCheck = [
+            "CONSIGNMENTNUMBER",
+            "SENDERNAME",
+            "SENDERREFERENCE",
+            "RECEIVERNAME",
+            "RECEIVER REFERENCE",
+        ]; // for dummy data
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
@@ -489,7 +496,9 @@ export default function MissingPOD({
                     } else if (column === "Consignemnt Number") {
                         acc[columnKey] = person["CONSIGNMENTNUMBER"];
                     } else if (column.toUpperCase() === "RECEIVER REFERENCE") {
-                        acc[columnKey] = person["RECEIVER REFERENCE"];
+                        acc[columnKey] = isDummyAccount(person["RECEIVER REFERENCE"]);
+                    } else if (fieldsToCheck.includes(columnKey)) {
+                        acc[column] = isDummyAccount(person[columnKey]);
                     } else {
                         acc[columnKey] = person[columnKey.toUpperCase()];
                     }
@@ -581,12 +590,11 @@ export default function MissingPOD({
         },
     ];
     const createNewLabelObjects = (data, fieldName) => {
-        let id = 1; // Initialize the ID
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
-
+    
         // Map through the data and create new objects
-        data?.forEach((item) => {
+        data.forEach((item) => {
             const fieldValue = item[fieldName];
             // Check if the label is not already included
             if (!uniqueLabels.has(fieldValue)) {
@@ -598,8 +606,11 @@ export default function MissingPOD({
                 newData.push(newObject);
             }
         });
-        return newData;
+    
+        // Sort the array alphabetically by label
+        return newData.sort((a, b) => a.label.localeCompare(b.label));
     };
+    
     const senderStates = createNewLabelObjects(falsePodOnly, "SenderState");
     const receiverStates = createNewLabelObjects(falsePodOnly, "RECEIVERSTATE");
     const services = createNewLabelObjects(falsePodOnly, "SERVICE");
@@ -653,10 +664,9 @@ export default function MissingPOD({
                 return (
                     <span
                         className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => handleClick(data.ConsignmentId)}
+                        onClick={() => handleClick(data.CONSIGNMNENTID)}
                     >
-                        {" "}
-                        {value}
+                        {isDummyAccount(value)}
                     </span>
                 );
             },
@@ -670,6 +680,9 @@ export default function MissingPOD({
             defaultWidth: 170,
             filterEditor: StringFilter,
             group: "senderInfo",
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SENDERREFERENCE",
@@ -680,6 +693,9 @@ export default function MissingPOD({
             defaultWidth: 170,
             group: "senderInfo",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SenderState",
@@ -705,6 +721,9 @@ export default function MissingPOD({
             defaultWidth: 170,
             filterEditor: StringFilter,
             group: "receiverInfo",
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "RECEIVER REFERENCE",
@@ -715,6 +734,9 @@ export default function MissingPOD({
             defaultWidth: 170,
             group: "receiverInfo",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "RECEIVERSTATE",

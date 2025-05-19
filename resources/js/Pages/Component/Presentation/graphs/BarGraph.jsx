@@ -32,12 +32,18 @@ ChartJS.register(
 function BarGraph({
     graphData,
     url,
+    AToken,
+    originalgraphData,
     currentUser,
     getReportData,
     selectedReceiver,
     setGraphData,
-    updateData,
+    CustomerId,
 }) {
+
+    // useEffect(() => {
+    //     getReportData();
+    // }, [graphData]);
     function generateMonthArrayFromJson(data) {
         const monthNames = [
             "JAN",
@@ -176,9 +182,9 @@ function BarGraph({
                         let yAxisID = tooltipItem.dataset.yAxisID;
 
                         if (yAxisID === "y-axis-bar") {
-                            return `${datasetLabel}: ${value}`;
+                            return `${datasetLabel}: ${parseFloat(value).toFixed(2)}`;
                         } else {
-                            return `${datasetLabel}: ${value}%`;
+                            return `${datasetLabel}: ${parseFloat(value).toFixed(2)}%`;
                         }
                     },
                 },
@@ -192,13 +198,15 @@ function BarGraph({
             <Bar ref={chartRef} data={data} options={options} />
             {/* Table */}
             <InlineTable
+                AToken={AToken}
                 getReportData={getReportData}
                 graphData={graphData}
+                originalgraphData={originalgraphData}
                 url={url}
                 currentUser={currentUser}
+                CustomerId={CustomerId}
                 selectedReceiver={selectedReceiver}
                 setGraphData={setGraphData}
-                updateData={updateData}
             />
         </div>
     );

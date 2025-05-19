@@ -85,21 +85,7 @@ export default function DriverLogin({
                 }
             });
     };
-    const tableRef = useRef(null);
-    const headers = [
-        "Name",
-        "Device Code",
-        "Smart SCAN",
-        "Smart SCAN Freight",
-        "Smart SCAN Version",
-        "Description",
-        "Last Active UTC",
-        "VLink",
-        "Software Version",
-        "Device Sim Type",
-        "Device Model",
-        "Device Makes",
-    ];
+
     const gridRef = useRef(null);
 
     function handleFilterTable() {
@@ -306,7 +292,7 @@ export default function DriverLogin({
                     const hasEndDate = cellValue?.end && cellValue.end.length > 0;
                     const dateCellValueStart = hasStartDate ? moment(cellValue.start, "DD-MM-YYYY") : null;
                     const dateCellValueEnd = hasEndDate ? moment(cellValue.end, "DD-MM-YYYY").endOf('day') : null;
-                
+
                     switch (operator) {
                         case "after":
                             // Parse the cellValue date with the format you know it might have
@@ -416,7 +402,7 @@ export default function DriverLogin({
                         // ... (add other date type conditions here if necessary)
                     }
                 }
-                
+
                 if (!conditionMet) {
                     isMatch = false;
                     break;
@@ -447,26 +433,26 @@ export default function DriverLogin({
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-    
+
         const columnMapping = {
             "ConsignmentNo": "Consignment No",
             "SenderReference": "Sender Reference",
             "ReceiverReference": "Receiver Reference",
             "Quantity": "Quantity",
             "TotalCharge": "Total Charge",
-            "CodeRef": "Code Ref", 
+            "CodeRef": "Code Ref",
             "DescriptionRef": "Description Ref",
             "FuelLevyAmountRef": "Fuel Levy Amount Ref",
             "DespatchDateTime": "Despatch DateTime",
         };
-    
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
-    
+
         const filterValue = jsonData?.filterValue;
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
@@ -517,13 +503,13 @@ export default function DriverLogin({
                 return acc;
             }, {})
         );
-    
+
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
-    
+
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
-    
+
         // Apply custom styles to the header row
         const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
@@ -533,11 +519,11 @@ export default function DriverLogin({
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
         headerRow.alignment = { horizontal: "center" };
-    
+
         // Add the data to the worksheet
         data.forEach((rowData) => {
             const row = worksheet.addRow(Object.values(rowData));
-    
+
             // Apply date format to the LastActiveUTC column
             const lastActiveUtcIndex = newSelectedColumns.indexOf("LastActiveUTC");
             if (lastActiveUtcIndex !== -1) {
@@ -545,48 +531,29 @@ export default function DriverLogin({
                 cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
             }
         });
-    
+
         // Set column widths
         const columnWidths = selectedColumns.map(() => 20); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
         }));
-    
+
         // Generate the Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
             // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-    
+
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "Driver-Login.xlsx");
         });
     }
-    
-    
+
     const [selected, setSelected] = useState([]);
 
-    const filterIcon = (className) => {
-        return (
-            <svg
-                className={className}
-                enable-background="new 0 0 24 24"
-                height="24px"
-                viewBox="0 0 24 24"
-                width="24px"
-            >
-                <g>
-                    <path d="M0,0h24 M24,24H0" fill="none" />
-                    <path d="M7,6h10l-5.01,6.3L7,6z M4.25,5.61C6.27,8.2,10,13,10,13v6c0,0.55,0.45,1,1,1h2c0.55,0,1-0.45,1-1v-6 c0,0,3.72-4.8,5.74-7.39C20.25,4.95,19.78,4,18.95,4H5.04C4.21,4,3.74,4.95,4.25,5.61z" />
-                    <path d="M0,0h24v24H0V0z" fill="none" />
-                </g>
-            </svg>
-        );
-    };
     const createNewLabelObjects = (data, fieldName) => {
-        let id = 1; // Initialize the ID (Note: This ID is initialized but not used in the provided code)
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
 
@@ -608,8 +575,9 @@ export default function DriverLogin({
                 newData.push(newObject);
             }
         });
-        return newData;
+        return newData.sort((a, b) => a.label.localeCompare(b.label));
     };
+    
     const reference = createNewLabelObjects(DriverData, "DeviceCode");
     const version = createNewLabelObjects(
         DriverData,

@@ -14,10 +14,12 @@ import {
     ShieldCheckIcon,
     CameraIcon,
     DocumentTextIcon,
+    DocumentDuplicateIcon,
+    RectangleStackIcon,
 } from "@heroicons/react/24/solid";
 import "../../../../css/scroll.css";
 import TaskIcon from "@mui/icons-material/Task";
-
+import ContactsIcon from '@mui/icons-material/Contacts';
 import { useEffect } from "react";
 import {
     Accordion,
@@ -25,6 +27,7 @@ import {
     AccordionHeader,
     AccordionItem,
 } from "react-headless-accordion";
+import { isDummyAccountWithDummyData } from "@/CommonFunctions";
 
 const navigation = [
     {
@@ -50,23 +53,6 @@ const navigation = [
         icon: ClipboardDocumentCheckIcon,
         current: false,
         options: [
-            // {
-            //     id: 2,
-            //     name: "KPI",
-            //     href: "#",
-            //     current: false,
-            //     icon: ClipboardDocumentCheckIcon,
-            //     feature: "KPI_view",
-            // },
-
-            // {
-            //     id: 12,
-            //     name: "Transit Days",
-            //     href: "#",
-            //     current: false,
-            //     icon: ClipboardDocumentCheckIcon,
-            //     feature: "View_TransitDays",
-            // },
             {
                 id: 17,
                 name: "KPI",
@@ -176,11 +162,69 @@ const navigation = [
     },
     {
         id: 20,
-        name: "Unilever Report",
+        name: "Unilever KPI Pack",
         href: "#",
         icon: DocumentTextIcon,
         current: false,
         feature: "UnileverReport_View",
+    },
+    {
+        id: 22,
+        name: "Real Food KPI Pack",
+        href: "#",
+        icon: DocumentTextIcon,
+        current: false,
+        feature: "RealFoodReport_View",
+    },
+    {
+        id: 21,
+        name: "Delivery Report",
+        href: "#",
+        options: [
+            {
+                id: 24,
+                name: "Delivery Report",
+                href: "#",
+                current: false,
+                icon: DocumentDuplicateIcon,
+                feature: "DeliveryReport_View",
+            },
+            // {
+            //     id: 25,
+            //     name: "Excel Delivery Report",
+            //     href: "#",
+            //     current: false,
+            //     icon: DocumentDuplicateIcon,
+            //     feature: "ExcelTable_View",
+            // },
+            {
+                id: 26,
+                name: "Comments",
+                href: "#",
+                current: false,
+                icon: DocumentDuplicateIcon,
+                feature: "CommentsTable_View",
+            },
+        ],
+        icon: DocumentDuplicateIcon,
+        current: false,
+        feature: "DeliveryReport_View",
+    },
+    {
+        id: 23,
+        name: "SOH Report",
+        href: "#",
+        icon: RectangleStackIcon,
+        current: false,
+        feature: "StockReport_View",
+    },
+    {
+        id: 27,
+        name: "Contacts Report",
+        href: "#",
+        icon: ContactsIcon,
+        current: false,
+        feature: "ContactsRep_View",
     },
 ];
 
@@ -232,6 +276,7 @@ export default function ChartsSidebar({
         onData(optionSelected);
     }, [optionSelected]);
     const [sidebarElements, setSidebarElements] = useState(navigation);
+
     const handleClick = (index) => {
         setActiveIndexGTRS(index);
         const updatedElements = sidebarElements.map((element) => {
@@ -286,8 +331,9 @@ export default function ChartsSidebar({
         });
         setSidebarElements(updatedElements);
     };
-    const filterNavigation = (navigation, user) => {
-        return navigation.filter((navItem) => {
+    const filterNavigation = (navigationitems, user) => {
+        return navigationitems.filter((navItem) => {
+            
             // Check if the navigation item has sub-options
             if (navItem.options) {
                 // Filter options based on user permissions
@@ -316,7 +362,8 @@ export default function ChartsSidebar({
             }
         });
     };
-    const filteredNavigation = filterNavigation(navigation, currentUser);
+
+    const filteredNavigation = filterNavigation(sidebarElements, currentUser);
     useEffect(() => {
         setSidebarElements(filteredNavigation);
         setActiveIndexGTRS(filteredNavigation[0]?.id);
@@ -384,7 +431,7 @@ export default function ChartsSidebar({
                                         {showList && (
                                             <div className="text-left max-h-64 overflow-y-scroll mt-3 pt-1 pl-1 containerscroll">
                                                 {customerAccounts?.map(
-                                                    (option) => (
+                                                    (option,index) => (
                                                         <div
                                                             className="flex items-start"
                                                             key={
@@ -415,9 +462,10 @@ export default function ChartsSidebar({
                                                                 }
                                                                 className="ml-2"
                                                             >
-                                                                {
+                                                                {isDummyAccountWithDummyData(
+                                                                    `Account No.${index + 1} `,
                                                                     option.AccountNo
-                                                                }
+                                                                )}
                                                             </label>
                                                         </div>
                                                     )

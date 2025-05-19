@@ -5,7 +5,6 @@ import GtrsCons from "./GtrsCons";
 import KPI from "./KPI";
 import ConsignmentD from "../Consignment";
 import ConsPerf from "./ConsPerf";
-import FailedCons from "./FailedCons";
 import NoDelivery from "./Dashboard_Comp/NoDelivery";
 import AdditionalCharges from "./Dashboard_Comp/AdditionalCharges";
 import DriverLogin from "./Dashboard_Comp/DriverLogin";
@@ -23,6 +22,13 @@ import NewKPI from "./NewKPI";
 import NewTransitDays from "./NewTransitDays";
 import AddNewTransitDay from "./KPI/AddNewTransitDay";
 import GraphPresentation from "./Presentation/GraphPresentation";
+import DailyReportPage from "./ReportsPage/DeliveryReportPage";
+import Cookies from "js-cookie";
+import RealFoodKPIPack from "./RealFoodKPIPack/RealFoodKPIPack";
+import ProductStockTable from "./Products/ProductStockTable";
+import ExcelDeliveryReport from "./ReportsPage/DeliveryReports/ExcelDeliveryReport";
+import DeliveryReportCommentsPage from "./ReportsPage/DeliveryReports/DeliveryReportCommentsPage";
+import ContactRep from "./ContactsRep/ContactRep";
 
 export default function charts({
     setCusomterAccounts,
@@ -50,6 +56,7 @@ export default function charts({
     chartsData,
     kpireasonsData,
     setkpireasonsData,
+    deliveryReportData,
 }) {
     window.moment = moment;
     const current = new Date();
@@ -105,6 +112,19 @@ export default function charts({
     const minDateAdd = getMinMaxValue(AdditionalData, "DespatchDateTime", 1);
     const maxDateAdd = getMinMaxValue(AdditionalData, "DespatchDateTime", 2);
 
+    const minDateDelivery = getMinMaxValue(
+        deliveryReportData,
+        "DespatchDate",
+        1
+    );
+    const maxDateDelivery = getMinMaxValue(
+        deliveryReportData,
+        "DespatchDate",
+        2
+    );
+
+    const minDateTransport = getMinMaxValue(transportData, "PickupDate", 1);
+    const maxDateTransport = getMinMaxValue(transportData, "PickupDate", 2);
     const [filtersCons, setFiltersCons] = useState([
         {
             name: "ConsignmentNo",
@@ -135,6 +155,20 @@ export default function charts({
                 start: minDate,
                 end: maxDate,
             },
+        },
+        {
+            name: "DeliveredDateTime",
+            operator: "inrange",
+            type: "date",
+            value: null,
+            emptyValue: null,
+        },
+        {
+            name: "DeliveryRequiredDateTime",
+            operator: "inrange",
+            type: "date",
+            value: null,
+            emptyValue: null,
         },
         {
             name: "Status",
@@ -208,6 +242,41 @@ export default function charts({
         },
         {
             name: "ReceiverZone",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ConsReferences",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "NetAmount",
+            operator: "eq",
+            type: "number",
+            value: undefined,
+            emptyValue: null,
+        },
+        {
+            name: "TottalWeight",
+            operator: "eq",
+            type: "number",
+            value: undefined,
+            emptyValue: null,
+        },
+        {
+            name: "POD",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ConsStatus",
             operator: "inlist",
             type: "select",
             value: null,
@@ -296,12 +365,13 @@ export default function charts({
             name: "PickupDate",
             operator: "inrange",
             type: "date",
+            emptyValue: { start: null, end: null },
             value: {
-                start: "2023-07-01",
-                end: "2023-07-31",
+                start: minDateTransport,
+                end: maxDateTransport,
             },
-            emptyValue: "",
         },
+
         {
             name: "PickupTime",
             operator: "eq",
@@ -353,122 +423,6 @@ export default function charts({
         },
     ]);
 
-    const [filtersKPI, setFiltersKPI] = useState([
-        {
-            name: "ConsignmentNo",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "SenderName",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "SenderReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "SenderState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            //emptyValue: "",
-        },
-        {
-            name: "ReceiverName",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "ReceiverReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "ReceiverState",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            //emptyValue: "",
-        },
-        {
-            name: "ReceiverSuburb",
-            operator: "contains",
-            type: "string",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "DispatchDate",
-            operator: "inrange",
-            type: "date",
-            value: {
-                start: minDispatchDate,
-                end: maxDispatchDate,
-            },
-        },
-        {
-            name: "ReceiverPostCode",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: null,
-        },
-        {
-            name: "RDD",
-            operator: "inrange",
-            type: "date",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "DeliveryDate",
-            operator: "inrange",
-            type: "date",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "TransitDays",
-            operator: "eq",
-            type: "number",
-            value: null,
-            // emptyValue: null,
-        },
-        {
-            name: "CalculatedDelDate",
-            operator: "inrange",
-            type: "date",
-            value: "",
-            //emptyValue: "",
-        },
-        {
-            name: "MatchDel",
-            operator: "eq",
-            type: "select",
-            value: null,
-            //emptyValue: "",
-        },
-        {
-            name: "ReasonId",
-            operator: "eq",
-            type: "select",
-            value: null,
-            //emptyValue: null,
-        },
-    ]);
     const [filtersNewKPI, setFiltersNewKPI] = useState([
         {
             name: "ConsignmentNo",
@@ -768,6 +722,12 @@ export default function charts({
             value: "",
         },
         {
+            name: "SENDERZONE",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
             name: "RECEIVERNAME",
             operator: "contains",
             type: "string",
@@ -781,6 +741,12 @@ export default function charts({
         },
         {
             name: "RECEIVERSTATE",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
+            name: "RECEIVERZONE",
             operator: "inlist",
             type: "select",
             value: "",
@@ -929,6 +895,12 @@ export default function charts({
             value: "",
         },
         {
+            name: "SenderZone",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
             name: "ReceiverName",
             operator: "contains",
             type: "string",
@@ -954,6 +926,12 @@ export default function charts({
         },
         {
             name: "ReceiverState",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
+            name: "ReceiverZone",
             operator: "inlist",
             type: "select",
             value: "",
@@ -1282,6 +1260,12 @@ export default function charts({
             value: null,
         },
         {
+            name: "ChargeRate",
+            operator: "eq",
+            type: "number",
+            value: null,
+        },
+        {
             name: "TotalCharge",
             operator: "eq",
             type: "number",
@@ -1509,8 +1493,8 @@ export default function charts({
             }
         });
 
-        // Update filtersKPI
-        filtersKPI?.map((item) => {
+        // Update filtersNewKPI
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -1560,8 +1544,8 @@ export default function charts({
             }
         });
 
-        // Update filtersKPI
-        filtersKPI?.map((item) => {
+        // Update filtersNewKPI
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -1592,6 +1576,11 @@ export default function charts({
                 item.value = val;
             }
         });
+        filtersTransport?.map((item) => {
+            if (item?.name == "PickupDate") {
+                item.value = val;
+            }
+        });
         setSDate(formatDate(val.start));
         setEDate(formatDate(val.end));
     }, [filtersAddCharges]);
@@ -1604,6 +1593,11 @@ export default function charts({
                 val = item?.value;
             }
         });
+        filtersTransport?.map((item) => {
+            if (item?.name == "PickupDate") {
+                item.value = val;
+            }
+        });
         // Update filtersRDD
         filtersRDD?.map((item) => {
             if (item?.name === "DespatchDate") {
@@ -1611,8 +1605,8 @@ export default function charts({
             }
         });
 
-        // Update filtersKPI
-        filtersKPI?.map((item) => {
+        // Update filtersNewKPI
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -1655,6 +1649,11 @@ export default function charts({
                 val = item?.value;
             }
         });
+        filtersTransport?.map((item) => {
+            if (item?.name == "PickupDate") {
+                item.value = val;
+            }
+        });
         // Update filtersAddCharges
         filtersAddCharges?.map((item) => {
             if (item?.name === "DespatchDateTime") {
@@ -1662,8 +1661,8 @@ export default function charts({
             }
         });
 
-        // Update filtersKPI
-        filtersKPI?.map((item) => {
+        // Update filtersNewKPI
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -1706,6 +1705,11 @@ export default function charts({
                 val = item?.value;
             }
         });
+        filtersTransport?.map((item) => {
+            if (item?.name == "PickupDate") {
+                item.value = val;
+            }
+        });
         // Update filtersAddCharges
         filtersAddCharges?.map((item) => {
             if (item?.name === "DespatchDateTime") {
@@ -1713,8 +1717,8 @@ export default function charts({
             }
         });
 
-        // Update filtersKPI
-        filtersKPI?.map((item) => {
+        // Update filtersNewKPI
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -1752,9 +1756,14 @@ export default function charts({
     // Update filters if the change is in kpi
     useEffect(() => {
         let val = {};
-        filtersKPI?.map((item) => {
+        filtersNewKPI?.map((item) => {
             if (item?.name == "DispatchDate") {
                 val = item?.value;
+            }
+        });
+        filtersTransport?.map((item) => {
+            if (item?.name == "PickupDate") {
+                item.value = val;
             }
         });
         // Update filtersAddCharges
@@ -1798,8 +1807,8 @@ export default function charts({
         });
         setSDate(formatDate(val.start));
         setEDate(formatDate(val.end));
-    }, [filtersKPI]);
-    // Update filters if the change is in failed cons
+    }, [filtersNewKPI]);
+    // Update filters if the change is in Transport cons
     useEffect(() => {
         let val = {};
         filtersFailed?.map((item) => {
@@ -1807,8 +1816,13 @@ export default function charts({
                 val = item?.value;
             }
         });
-        // Update filtersKPI
-        filtersKPI?.map((item) => {
+        filtersTransport?.map((item) => {
+            if (item?.name == "PickupDate") {
+                item.value = val;
+            }
+        });
+        // Update filtersNewKPI
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -1846,12 +1860,70 @@ export default function charts({
         setSDate(formatDate(val.start));
         setEDate(formatDate(val.end));
     }, [filtersFailed]);
+
+    useEffect(() => {
+        let val = {};
+
+        filtersTransport?.map((item) => {
+            if (item?.name == "PickupDate") {
+                val = item?.value;
+            }
+        });
+        filtersFailed?.map((item) => {
+            if (item?.name == "DESPATCHDATE") {
+                item.value = val;
+            }
+        });
+        // Update filtersNewKPI
+        filtersNewKPI?.map((item) => {
+            if (item?.name === "DispatchDate") {
+                item.value = val;
+            }
+        });
+        // Update filtersAddCharges
+        filtersAddCharges?.map((item) => {
+            if (item?.name === "DespatchDateTime") {
+                item.value = val;
+            }
+        });
+        // Update filtersMissingPOD
+        filtersMissingPOD?.map((item) => {
+            if (item?.name === "DESPATCHDATE") {
+                item.value = val;
+            }
+        });
+        // Update filtersRDD
+        filtersRDD?.map((item) => {
+            if (item?.name === "DespatchDate") {
+                item.value = val;
+            }
+        });
+        // Update filtersNoDelInfo
+        filtersNoDelInfo?.map((item) => {
+            if (item?.name === "DespatchDateTime") {
+                item.value = val;
+            }
+        });
+        // Update filtersCons
+        filtersCons?.map((item) => {
+            if (item?.name === "DespatchDate") {
+                item.value = val;
+            }
+        });
+        setSDate(formatDate(val.start));
+        setEDate(formatDate(val.end));
+    }, [filtersTransport]);
     //Update Filters if the change is in the Perfromance Report
     useEffect(() => {
         const val = {
             start: formatDateToDDMMYYYY(sharedStartDate),
             end: formatDateToDDMMYYYY(sharedEndDate),
         };
+        filtersTransport?.map((item) => {
+            if (item?.name == "PickupDate") {
+                item.value = val;
+            }
+        });
         // Update filtersAddCharges
         filtersAddCharges?.map((item) => {
             if (item?.name === "DespatchDateTime") {
@@ -1859,8 +1931,8 @@ export default function charts({
             }
         });
 
-        // Update filtersKPI
-        filtersKPI?.map((item) => {
+        // Update filtersNewKPI
+        filtersNewKPI?.map((item) => {
             if (item?.name === "DispatchDate") {
                 item.value = val;
             }
@@ -1893,6 +1965,126 @@ export default function charts({
             }
         });
     }, [sharedEndDate, sharedStartDate]);
+
+    const [dailyReportData, setDailyReportData] = useState(deliveryReportData);
+    const fetchDeliveryReport = async (setCellLoading) => {
+        try {
+            const res = await axios.get(`${url}Delivery`, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            });
+            setDailyReportData(res.data || []);
+
+            // Check if setCellLoading exists before calling it
+            if (typeof setCellLoading === "function") {
+                setCellLoading(null);
+            }
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again",
+                    type: "success",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                }).then(async function () {
+                    await handleSessionExpiration();
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+                // Check if setCellLoading exists before calling it
+                if (typeof setCellLoading === "function") {
+                    setCellLoading(null);
+                }
+            }
+        }
+    };
+
+    const [excelDailyReportData, setExcelDailyReportData] = useState();
+    const [deliveryReportComments, setDeliveryReportComments] = useState();
+    const fetchExcelDeliveryReportData = async (setCellLoading) => {
+        try {
+            const res = await axios.get(`${url}DeliveryReport`, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            });
+            setExcelDailyReportData(res.data || []);
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again",
+                    type: "success",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                }).then(async function () {
+                    await handleSessionExpiration();
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+                // Check if setCellLoading exists before calling it
+                if (typeof setCellLoading === "function") {
+                    setCellLoading(null);
+                }
+            }
+        }
+    };
+    const fetchDeliveryReportCommentsData = async (setCellLoading) => {
+        try {
+            const res = await axios.get(`${url}Delivery/Comments`, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            });
+            setDeliveryReportComments(res.data || []);
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again",
+                    type: "success",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                }).then(async function () {
+                    await handleSessionExpiration();
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+                // Check if setCellLoading exists before calling it
+                if (typeof setCellLoading === "function") {
+                    setCellLoading(null);
+                }
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (currentUser) {
+            fetchDeliveryReport();
+            fetchExcelDeliveryReportData();
+            fetchDeliveryReportCommentsData();
+        }
+    }, [currentUser]);
+
+    useEffect(() => {
+        if (user) {
+            Cookies.set("userEmail", user.Email);
+        }
+    });
+
+    const [chartName, setChartName] = useState("");
+
     const components = [
         <MainCharts
             chartsData={chartsData}
@@ -1904,6 +2096,11 @@ export default function charts({
             IDfilter={IDfilter}
             EDate={EDate}
             setEDate={setEDate}
+            chartName={chartName}
+            setChartName={setChartName}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            setactiveCon={setactiveCon}
+            setLastIndex={setLastIndex}
             SDate={SDate}
             setSDate={setSDate}
         />,
@@ -1915,6 +2112,7 @@ export default function charts({
             setactiveCon={setactiveCon}
             consData={consData}
             AToken={AToken}
+            userBody={userBody}
             filterValue={filtersCons}
             setFilterValue={setFiltersCons}
             minDate={minDate}
@@ -1931,8 +2129,8 @@ export default function charts({
             oldestDate={oldestDate}
             latestDate={latestDate}
             KPIData={KPIData}
-            filterValue={filtersKPI}
-            setFilterValue={setFiltersKPI}
+            filterValue={filtersNewKPI}
+            setFilterValue={setFiltersNewKPI}
             setKPIData={setKPIData}
             currentUser={currentUser}
             userBody={userBody}
@@ -2229,6 +2427,52 @@ export default function charts({
             currentUser={currentUser}
             AToken={AToken}
         />,
+        <DailyReportPage
+            url={url}
+            currentUser={currentUser}
+            AToken={AToken}
+            deliveryReportData={dailyReportData}
+            fetchDeliveryReport={fetchDeliveryReport}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            setactiveCon={setactiveCon}
+            setLastIndex={setLastIndex}
+        />,
+        <RealFoodKPIPack url={url} currentUser={currentUser} AToken={AToken} />,
+        <ProductStockTable
+            url={url}
+            currentUser={currentUser}
+            AToken={AToken}
+        />,
+        <DailyReportPage
+            url={url}
+            currentUser={currentUser}
+            AToken={AToken}
+            deliveryReportData={dailyReportData}
+            fetchDeliveryReport={fetchDeliveryReport}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            setactiveCon={setactiveCon}
+            setLastIndex={setLastIndex}
+        />,
+        <ExcelDeliveryReport
+            url={url}
+            AToken={AToken}
+            currentUser={currentUser}
+            setactiveCon={setactiveCon}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            // userPermission={userPermission}
+            deliveryReportData={excelDailyReportData}
+            fetchDeliveryReport={fetchExcelDeliveryReportData}
+            deliveryCommentsOptions={deliveryReportComments}
+        />,
+        <DeliveryReportCommentsPage
+            url={url}
+            AToken={AToken}
+            currentUser={currentUser}
+            // userPermission={userPermission}
+            data={deliveryReportComments}
+            fetchDeliveryReportCommentsData={fetchDeliveryReportCommentsData}
+        />,
+        <ContactRep url={url} AToken={AToken} currentUser={currentUser} />,
     ];
     return (
         <div className="">
@@ -2269,7 +2513,7 @@ export default function charts({
                                 className="relative h-full"
                                 style={{ minHeight: "36rem" }}
                             >
-                                <div className="absolute inset-0 rounded-lg">
+                                <div className="">
                                     {components[activeIndexGTRS]}
                                 </div>
                             </div>

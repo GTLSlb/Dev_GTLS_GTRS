@@ -1,3 +1,4 @@
+import { isDummyAccount } from "@/CommonFunctions";
 import moment from "moment";
 
 export default function General({ item }) {
@@ -15,11 +16,7 @@ export default function General({ item }) {
                         ACCOUNT NAME
                     </dt>
                     <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">
-                        {item["ACCOUNTNUMBER"]}
-                    </dd>
-                    <dt className="text-sm font-medium text-gray-900">POD</dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">
-                        {item["POD"].toString()}
+                        {isDummyAccount(item["ACCOUNTNUMBER"])}
                     </dd>
                     <dt className="text-sm font-medium text-gray-900">
                         KPI DATETIME
@@ -28,17 +25,6 @@ export default function General({ item }) {
                         {item["KPI DATETIME"]
                             ? moment(
                                   item["KPI DATETIME"].replace("T", " "),
-                                  "YYYY-MM-DD HH:mm:ss"
-                              ).format("DD-MM-YYYY h:mm A")
-                            : null}
-                    </dd>
-                    <dt className="text-sm font-medium text-gray-900">
-                        POD DATETIME
-                    </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">
-                        {item["PODDATETIME"]
-                            ? moment(
-                                  item["PODDATETIME"].replace("T", " "),
                                   "YYYY-MM-DD HH:mm:ss"
                               ).format("DD-MM-YYYY h:mm A")
                             : null}

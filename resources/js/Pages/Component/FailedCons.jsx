@@ -1,35 +1,17 @@
-import { useLayoutEffect, useRef, useState } from "react";
-import ReactPaginate from "react-paginate";
-import { useDownloadExcel, downloadExcel } from "react-export-table-to-excel";
-import { useEffect } from "react";
-import * as XLSX from "xlsx";
-import notFound from "../../assets/pictures/NotFound.png";
-import ExcelJS from "exceljs";
-import { saveAs } from "file-saver";
-import { Fragment } from "react";
-import { Popover, Transition } from "@headlessui/react";
-import { PencilIcon } from "@heroicons/react/24/outline";
-import Button from "@inovua/reactdatagrid-community/packages/Button";
-import moment from "moment";
-import {
-    ChevronDownIcon,
-    PhoneIcon,
-    PlayCircleIcon,
-} from "@heroicons/react/20/solid";
-import {
-    ArrowPathIcon,
-    ChartPieIcon,
-    CursorArrowRaysIcon,
-    FingerPrintIcon,
-    SquaresPlusIcon,
-} from "@heroicons/react/24/outline";
+import { isDummyAccount } from "@/CommonFunctions";
 import SetFailedReasonModal from "@/Components/SetFailedReasonModal";
-import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import TableStructure from "@/Components/TableStructure";
-import ReactDataGrid from "@inovua/reactdatagrid-community";
+import { canEditFailedConsignments } from "@/permissions";
+import { Popover, Transition } from "@headlessui/react";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { PencilIcon } from "@heroicons/react/24/outline";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
-import { canEditFailedConsignments } from "@/permissions";
+import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
+import moment from "moment";
+import { Fragment, useEffect, useRef, useState } from "react";
 
 export default function FailedCons({
     PerfData,
@@ -44,8 +26,6 @@ export default function FailedCons({
     currentUser,
     accData,
 }) {
-
-    
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [reason, setReason] = useState();
     const handleEditClick = (reason) => {
@@ -112,12 +92,11 @@ export default function FailedCons({
         },
     ];
     const createNewLabelObjects = (data, fieldName) => {
-        let id = 1; // Initialize the ID
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
 
         // Map through the data and create new objects
-        data?.forEach((item) => {
+        data.forEach((item) => {
             const fieldValue = item[fieldName];
             // Check if the label is not already included
             if (!uniqueLabels.has(fieldValue)) {
@@ -129,10 +108,15 @@ export default function FailedCons({
                 newData.push(newObject);
             }
         });
-        return newData;
+
+        // Sort the array alphabetically by label
+        return newData.sort((a, b) => a.label.localeCompare(b.label));
     };
+
     const senderZoneOptions = createNewLabelObjects(data, "SenderState");
     const receiverZoneOptions = createNewLabelObjects(data, "RECEIVERSTATE");
+    const senderZoneOptions1 = createNewLabelObjects(data, "SENDERZONE");
+    const receiverZoneOptions1 = createNewLabelObjects(data, "RECEIVERZONE");
     const states = createNewLabelObjects(data, "State");
     const departments = createNewLabelObjects(data, "Department");
     function getMinMaxValue(data, fieldName, identifier) {
@@ -205,8 +189,7 @@ export default function FailedCons({
                         className="underline text-blue-500 hover:cursor-pointer"
                         onClick={() => handleClick(data.CONSIGNMNENTID)}
                     >
-                        {" "}
-                        {value}
+                        {isDummyAccount(value)}
                     </span>
                 );
             },
@@ -228,6 +211,9 @@ export default function FailedCons({
 
             group: "senderInfo",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SENDERREFERENCE",
@@ -238,6 +224,9 @@ export default function FailedCons({
             textAlign: "center",
             group: "senderInfo",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SenderState",
@@ -254,6 +243,20 @@ export default function FailedCons({
             },
         },
         {
+            name: "SENDERZONE",
+            header: "Sender Zone",
+            headerAlign: "center",
+            group: "senderInfo",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: senderZoneOptions1,
+            },
+        },
+        {
             name: "RECEIVERNAME",
             header: "Receiver Name",
             type: "string",
@@ -262,6 +265,9 @@ export default function FailedCons({
             textAlign: "center",
             group: "receiverInfo",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "RECEIVER REFERENCE",
@@ -272,6 +278,9 @@ export default function FailedCons({
             textAlign: "center",
             group: "receiverInfo",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "RECEIVERSTATE",
@@ -284,6 +293,20 @@ export default function FailedCons({
                 multiple: true,
                 wrapMultiple: false,
                 dataSource: receiverZoneOptions,
+            },
+        },
+        {
+            name: "RECEIVERZONE",
+            header: "Receiver Zone",
+            headerAlign: "center",
+            group: "receiverInfo",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: receiverZoneOptions1,
             },
         },
         {
@@ -974,6 +997,15 @@ export default function FailedCons({
             FailedNote: "Explanation",
         };
 
+        const fieldsToCheck = [
+            "CONSIGNMENTNUMBER",
+            "SENDERNAME",
+            "SENDERREFERENCE",
+            "RECEIVERNAME",
+            "RECEIVER REFERENCE",
+            "ReceiverReference",
+        ]; // for dummy data
+
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
@@ -1008,7 +1040,7 @@ export default function FailedCons({
                         } else {
                             acc[columnKey] = "";
                         }
-                    } else if ( columnKey === "DELIVERYREQUIREDDATETIME") {
+                    } else if (columnKey === "DELIVERYREQUIREDDATETIME") {
                         const date = new Date(person[columnKey]);
                         if (!isNaN(date)) {
                             acc[columnKey] =
@@ -1058,7 +1090,11 @@ export default function FailedCons({
                     } else if (columnKey === "State") {
                         acc[columnKey] = person["State"];
                     } else if (columnKey === "RECEIVERREFERENCE") {
-                        acc[columnKey] = person["RECEIVER REFERENCE"];
+                        acc[columnKey] = isDummyAccount(
+                            person["RECEIVER REFERENCE"]
+                        );
+                    } else if (fieldsToCheck.includes(columnKey)) {
+                        acc[column] = isDummyAccount(person[columnKey]);
                     } else {
                         acc[columnKey] = person[columnKey.toUpperCase()];
                     }
@@ -1310,6 +1346,15 @@ export default function FailedCons({
                                                             <input
                                                                 type="checkbox"
                                                                 name="column"
+                                                                value="SENDERZONE"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Sender Zone
+                                                        </label>
+                                                        <label>
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
                                                                 value="RECEIVERNAME"
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
@@ -1332,6 +1377,15 @@ export default function FailedCons({
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Receiver State
+                                                        </label>
+                                                        <label>
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
+                                                                value="RECEIVERZONE"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Receiver Zone
                                                         </label>
                                                         <label>
                                                             <input

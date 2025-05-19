@@ -7,17 +7,30 @@ import TotalFailPODGraph from "./ReportTabs/TotalFailPODGraph";
 
 const MultiChartLine = ({ url, currentUser, AToken }) => {
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
-    const handleItemClick = (index) => {
-        setActiveComponentIndex(index);
-    };
+    const customers = [
+        {
+            value: 1,
+            label: "Unilever/ Metcash 12 Monthly Consignment",
+        },
+        {
+            value: 3,
+            label: "Unilever Monthly Consignment",
+        },
+        {
+            value: 2,
+            label: "Unilever/ Woolworth 12 Monthly Consignment",
+        },
+    ];
 
     let components = [
         <ConsignmentGraph
             url={url}
             currentUser={currentUser}
             AToken={AToken}
+            customers={customers}
+            CustomerId={1}
         />, // Graph and Table
-        <TotalFailPODGraph />, // The 3 charts
+        // <TotalFailPODGraph />, // The 3 charts
     ];
 
     return (
@@ -25,12 +38,12 @@ const MultiChartLine = ({ url, currentUser, AToken }) => {
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto mt-6">
                     <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                        Unilever Reports
+                       Unilever KPI Pack Report
                     </h1>
                 </div>
             </div>
-            <ul className="flex space-x-0 mt-5">
-                <li
+            <ul className="flex space-x-0">
+                {/* <li
                     className={`cursor-pointer ${
                         activeComponentIndex === 0
                             ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
@@ -39,8 +52,8 @@ const MultiChartLine = ({ url, currentUser, AToken }) => {
                     onClick={() => handleItemClick(0)}
                 >
                     <div className="px-2"> Report 1 </div>
-                </li>
-                <li
+                </li> */}
+                {/* <li
                     className={`cursor-pointer ${
                         activeComponentIndex === 1
                             ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
@@ -49,7 +62,7 @@ const MultiChartLine = ({ url, currentUser, AToken }) => {
                     onClick={() => handleItemClick(1)}
                 >
                     <div className="px-2"> Report 2 </div>
-                </li>
+                </li> */}
             </ul>
             <div className="grid grid-cols-2 gap-4">
                 {/* <BarGraph />

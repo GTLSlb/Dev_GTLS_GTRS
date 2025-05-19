@@ -1,26 +1,17 @@
+import { formatNumberWithCommas } from "@/CommonFunctions";
 import React from "react";
 
 function DashboardCard07(props) {
     const data = props.InfoData;
     const percentagePassed =
-        (data.totalNoConsPassed / data.totalNoConsShipped) * 100;
+        (data.totalNoConsPassed /
+            (data.totalConsFailed + data.totalNoConsPassed)) *
+        100;
     const percentageFailed =
         (data.totalConsFailed / data.totalNoConsShipped) * 100;
-    function formatCost(cost) {
-        // Ensure the cost is a number and round it to two decimal places
-        const roundedCost = cost.toFixed(2);
+    const percentagePending =
+        (data.totalConsPending / data.totalNoConsShipped) * 100;
 
-        // Split the rounded cost into integer and decimal parts
-        const parts = roundedCost.split(".");
-
-        // Format the integer part with commas
-        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
-        // Join the integer part and decimal part
-        const formattedCost = parts.join(".");
-
-        return formattedCost;
-    }
     return (
         <div className="col-span-full h-full xl:col-span-4 bg-white shadow-lg rounded-sm border border-slate-200">
             <header className="px-5 py-2 border-b border-slate-100">
@@ -28,7 +19,7 @@ function DashboardCard07(props) {
             </header>
             <div className="px-4">
                 {/* Table */}
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto pt-2">
                     <table className="table-auto w-full">
                         {/* Table header */}
                         {/* Table body */}
@@ -38,13 +29,15 @@ function DashboardCard07(props) {
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
                                         <div className="text-slate-800 text-sm">
-                                            # of Rec's
+                                            # of Receivers
                                         </div>
                                     </div>
                                 </td>
                                 <td className="px-1">
-                                    <div className="text-center text-sm text-right">
-                                        {data.numUniqueReceivers}
+                                    <div className=" text-sm text-right">
+                                        {formatNumberWithCommas(
+                                            data.numUniqueReceivers
+                                        )}
                                     </div>
                                 </td>
                             </tr>
@@ -57,8 +50,11 @@ function DashboardCard07(props) {
                                     </div>
                                 </td>
                                 <td className="px-1">
-                                    <div className="text-center text-sm text-right">
-                                        {data.totalWeight?.toFixed(2)} KG
+                                    <div className=" text-sm text-right">
+                                        {formatNumberWithCommas(
+                                            data.totalWeight
+                                        )}{" "}
+                                        T
                                     </div>
                                 </td>
                             </tr>
@@ -72,8 +68,10 @@ function DashboardCard07(props) {
                                     </div>
                                 </td>
                                 <td className="px-1">
-                                    <div className="text-center text-sm text-right">
-                                        {data.totalPalletSpace}
+                                    <div className=" text-sm text-right">
+                                        {formatNumberWithCommas(
+                                            data.totalPalletSpace
+                                        )}
                                     </div>
                                 </td>
                             </tr>
@@ -86,8 +84,8 @@ function DashboardCard07(props) {
                                     </div>
                                 </td>
                                 <td className="px-1">
-                                    <div className="text-center text-sm text-right">
-                                        {data.totalChep}
+                                    <div className=" text-sm text-right">
+                                        {formatNumberWithCommas(data.totalChep)}
                                     </div>
                                 </td>
                             </tr>
@@ -100,8 +98,10 @@ function DashboardCard07(props) {
                                     </div>
                                 </td>
                                 <td className="px-1 text-right">
-                                    <div className="text-center text-sm text-right">
-                                        {data.totalLoscam}
+                                    <div className=" text-sm text-right">
+                                        {formatNumberWithCommas(
+                                            data.totalLoscam
+                                        )}
                                     </div>
                                 </td>
                             </tr>
@@ -115,8 +115,10 @@ function DashboardCard07(props) {
                                     </div>
                                 </td>
                                 <td className="px-1">
-                                    <div className="text-center text-sm text-right">
-                                        {data.totalCustomerOwn}
+                                    <div className=" text-sm text-right">
+                                        {formatNumberWithCommas(
+                                            data.totalCustomerOwn
+                                        )}
                                     </div>
                                 </td>
                             </tr>
@@ -130,8 +132,9 @@ function DashboardCard07(props) {
                                     </div>
                                 </td>
                                 <td className="px-1">
-                                    <div className="text-center text-sm text-right">
-                                        ${formatCost(data.totalCost)}{" "}
+                                    <div className=" text-sm text-right">
+                                        $
+                                        {formatNumberWithCommas(data.totalCost)}{" "}
                                     </div>
                                 </td>
                             </tr>
@@ -144,8 +147,8 @@ function DashboardCard07(props) {
                                     </div>
                                 </td>
                                 <td className="px-1">
-                                    <div className="text-center text-sm text-right">
-                                        ${formatCost(data.fuelLevy)}{" "}
+                                    <div className=" text-sm text-right">
+                                        ${formatNumberWithCommas(data.fuelLevy)}{" "}
                                     </div>
                                 </td>
                             </tr>
@@ -153,13 +156,17 @@ function DashboardCard07(props) {
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
                                         <div className="text-slate-800 text-sm">
-                                            Total No. Cons Shipped
+                                            Total No. Consignments Shipped
                                         </div>
                                     </div>
                                 </td>
                                 <td className="px-1">
-                                    <div className="text-center text-sm text-right">
-                                        {data.totalNoConsShipped}
+                                    <div className=" text-sm text-right">
+                                        {data.totalNoConsShipped
+                                            ? formatNumberWithCommas(
+                                                  data.totalNoConsShipped
+                                              )
+                                            : 0}
                                     </div>
                                 </td>
                             </tr>
@@ -167,14 +174,17 @@ function DashboardCard07(props) {
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
                                         <div className="text-slate-800 text-sm">
-                                            Total No. Cons Passed
+                                            Total No. Consignments Pending
                                         </div>
                                     </div>
                                 </td>
                                 <td className="px-1">
-                                    <div className="text-center text-sm text-right">
-                                        {data.totalNoConsPassed} /{" "}
-                                        {percentagePassed?.toFixed(2)} %{" "}
+                                    <div className=" text-sm text-right">
+                                        {data.totalConsPending
+                                            ? formatNumberWithCommas(
+                                                  data.totalConsPending
+                                              )
+                                            : 0}
                                     </div>
                                 </td>
                             </tr>
@@ -182,14 +192,37 @@ function DashboardCard07(props) {
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
                                         <div className="text-slate-800 text-sm">
-                                            Total No. Cons Failed
+                                            Total No. Consignments Delivered on
+                                            time
                                         </div>
                                     </div>
                                 </td>
                                 <td className="px-1">
-                                    <div className="text-center text-sm text-right">
-                                        {data.totalConsFailed} /{" "}
-                                        {percentageFailed?.toFixed(2)} %
+                                    <div className=" text-sm text-right">
+                                        {data.totalNoConsPassed
+                                            ? formatNumberWithCommas(
+                                                  data.totalNoConsPassed
+                                              )
+                                            : 0}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="px-1">
+                                    <div className="flex items-center py-1 font-extrabold">
+                                        <div className="text-slate-800 text-sm">
+                                            Total No. Consignments Not Delivered
+                                            on time
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="px-1">
+                                    <div className=" text-sm text-right">
+                                        {data.totalConsFailed
+                                            ? formatNumberWithCommas(
+                                                  data.totalConsFailed
+                                              )
+                                            : 0}
                                     </div>
                                 </td>
                             </tr>
@@ -202,8 +235,10 @@ function DashboardCard07(props) {
                                     </div>
                                 </td>
                                 <td className="px-1">
-                                    <div className="text-center text-sm text-right">
-                                        {data.podCounter}
+                                    <div className=" text-sm text-right">
+                                        {formatNumberWithCommas(
+                                            data.podCounter
+                                        )}
                                     </div>
                                 </td>
                             </tr>
@@ -216,13 +251,15 @@ function DashboardCard07(props) {
                                     </div>
                                 </td>
                                 <td className="px-1">
-                                    <div className="text-center text-sm text-right">
-                                        {" "}
-                                        {data.podPercentage?.toFixed(2)} %
+                                    <div className=" text-sm text-right">
+                                        {formatNumberWithCommas(
+                                            data.podPercentage
+                                        )}{" "}
+                                        %
                                     </div>
                                 </td>
                             </tr>
-                            <tr>
+                            {/* <tr>
                                 <td className="px-1">
                                     <div className="flex items-center py-1 font-extrabold">
                                         <div className="text-slate-800 text-sm">
@@ -231,12 +268,12 @@ function DashboardCard07(props) {
                                     </div>
                                 </td>
                                 <td className="px-1">
-                                    <div className="text-center text-sm text-right">
+                                    <div className=" text-sm text-right">
                                         {" "}
                                         {data.safetyCounter}{" "}
                                     </div>
                                 </td>
-                            </tr>
+                            </tr> */}
 
                             {/* Row */}
                         </tbody>

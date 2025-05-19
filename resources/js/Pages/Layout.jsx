@@ -201,6 +201,7 @@ export default function Sidebar(Boolean) {
                             setActiveIndexGTRS={setActiveIndexGTRS}
                             setActiveIndexInv={setActiveIndexInv}
                             currentUser={currentUser}
+                            user={user}
                         />
                         <MainNavbar
                             url={Invoicesurl}
@@ -226,7 +227,7 @@ export default function Sidebar(Boolean) {
                     <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
                         <div className="flex items-center justify-center">
                             <div
-                                className={`h-5 w-5 bg-red-500 rounded-full mr-5 animate-bounce`}
+                                className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
                             ></div>
                             <div
                                 className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}

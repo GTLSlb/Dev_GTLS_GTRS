@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import "../../css/scroll.css";
 import moment from "moment";
 import swal from "sweetalert";
+import { isDummyAccount } from "@/CommonFunctions";
 export default function ConsignmentD({
     setActiveIndexGTRS,
     activeCon,
@@ -37,11 +38,15 @@ export default function ConsignmentD({
         return [
             {
                 label: "Sender",
-                value: Consignment[0].SenderReciever[0].SenderName,
+                value: isDummyAccount(
+                    Consignment[0].SenderReciever[0].SenderName
+                ),
             },
             {
                 label: "Receiver",
-                value: Consignment[0].SenderReciever[0].ReceiverName,
+                value: isDummyAccount(
+                    Consignment[0].SenderReciever[0].ReceiverName
+                ),
             },
             {
                 label: "Address",
@@ -109,11 +114,15 @@ export default function ConsignmentD({
             },
             {
                 label: "Sender Ref",
-                value: Consignment[0].SenderReciever[0].SenderReference,
+                value: isDummyAccount(
+                    Consignment[0].SenderReciever[0].SenderReference
+                ),
             },
             {
                 label: "Receiver Ref",
-                value: Consignment[0].SenderReciever[0].ReceiverReference,
+                value: isDummyAccount(
+                    Consignment[0].SenderReciever[0].ReceiverReference
+                ),
             },
             // Add more options as needed
         ];
@@ -193,6 +202,8 @@ export default function ConsignmentD({
             width = 100;
         }
 
+
+
     if (!Consignment) {
         return (
             <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
@@ -248,10 +259,10 @@ export default function ConsignmentD({
                                 Consignment Details :{" "}
                                 <span className="text-goldd">
                                     {" "}
-                                    {
+                                    {isDummyAccount(
                                         Consignment[0].MainDetails[0]
                                             .ConsignmentNo
-                                    }
+                                    )}
                                 </span>
                             </h4>
                         </div>
@@ -333,20 +344,20 @@ export default function ConsignmentD({
                                                 Consignment No.
                                             </dt>
                                             <dd className="mt-1 text-sm text-gray-500 sm:mt-0">
-                                                {
+                                                {isDummyAccount(
                                                     Consignment[0]
                                                         .MainDetails[0]
                                                         .ConsignmentNo
-                                                }
+                                                )}
                                             </dd>
                                             <dt className="text-sm font-medium text-gray-900">
                                                 Charge To
                                             </dt>
                                             <dd className="mt-1 text-sm text-gray-500  sm:mt-0">
-                                                {
+                                                {isDummyAccount(
                                                     Consignment[0]
                                                         .MainDetails[0].ChargeTo
-                                                }
+                                                )}
                                             </dd>
                                         </div>
                                         <div className="py-4 sm:grid sm:grid-cols-6 sm:gap-4 sm:py-5 sm:px-6">
@@ -497,7 +508,30 @@ export default function ConsignmentD({
                     ) : (
                         ""
                     )}
-
+                    {Consignment[0].ConsReferences ? (
+                        <div className="overflow-hidden mx-3 mt-8 bg-white shadow sm:rounded-xl shadow-lg  mx-auto">
+                            <div className="px-4 pb-3 sm:px-6">
+                                <div className="px-4 py-5 sm:px-6">
+                                    <h3 className="text-base font-semibold leading-6 text-gray-900">
+                                        References
+                                    </h3>
+                                </div>
+                                <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
+                                    <dl className="sm:divide-y sm:divide-gray-200">
+                                        <div className="py-4 sm:grid sm:grid-cols-1 sm:gap-4 sm:py-5 sm:px-6">
+                                            <dt className="text-sm font-medium text-gray-900">
+                                                {Consignment[0].ConsReferences.map(
+                                                    (item) => item.Value
+                                                ).join(", ")}
+                                            </dt>
+                                        </div>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        ""
+                    )}
                     {Consignment[0].SenderReciever ? (
                         <div className="overflow-hidden mx-3 mt-8 bg-white shadow sm:rounded-xl shadow-lg  mx-auto">
                             <div className="px-4 py-5 sm:px-6">
@@ -828,17 +862,19 @@ export default function ConsignmentD({
                                                                 )}
                                                             </td>
                                                             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-600 sm:pl-3">
-                                                                <a
-                                                                    href={
-                                                                        item.PODimage
-                                                                    }
-                                                                    target="_blank"
-                                                                    className="text-indigo-600 hover:text-goldds"
-                                                                >
-                                                                    {
-                                                                        item.PODimage
-                                                                    }
-                                                                </a>
+                                                                {isDummyAccount(
+                                                                    <a
+                                                                        href={
+                                                                            item.PODimage
+                                                                        }
+                                                                        target="_blank"
+                                                                        className="text-indigo-600 hover:text-goldds"
+                                                                    >
+                                                                        {
+                                                                            item.PODimage
+                                                                        }
+                                                                    </a>
+                                                                )}{" "}
                                                             </td>
                                                         </tr>
                                                     )
@@ -852,30 +888,6 @@ export default function ConsignmentD({
                     ) : (
                         ""
                     )}
-                    {/* <div className="overflow-hidden mx-3 mt-8 bg-white shadow sm:rounded-xl shadow-lg  mx-auto">
-                            <div className="px-4 pb-3 sm:px-6">
-                                <div className="px-4 py-5 sm:px-6">
-                                    <h3 className="text-base font-semibold leading-6 text-gray-900">
-                                        POD Details
-                                    </h3>
-                                </div>
-                                <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
-                                    <dl className="sm:divide-y sm:divide-gray-200">
-                                        <div className="py-4 sm:grid sm:grid-cols-6 sm:gap-4 sm:py-5 sm:px-6">
-                                            <dt className="text-sm font-medium text-gray-500 col-span-3">
-                                                file.pdf
-                                            </dt>
-                                            <dd className="mt-1 text-sm text-gray-900  sm:mt-0 col-span-2">
-                                                Download
-                                            </dd>
-                                            <dt className="text-sm font-medium text-gray-500">
-                                                Click to enlarge
-                                            </dt>
-                                        </div>
-                                    </dl>
-                                </div>
-                                </div>
-                            </div> */}
                 </div>
             </div>
         );

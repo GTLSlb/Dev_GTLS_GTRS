@@ -1,47 +1,20 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useEffect } from "react";
-import ReactPaginate from "react-paginate";
-import notFound from "../../../assets/pictures/NotFound.png";
-import { useDownloadExcel, downloadExcel } from "react-export-table-to-excel";
 import ExcelJS from "exceljs";
 import { Fragment } from "react";
 import moment from "moment";
-import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { Popover, Transition } from "@headlessui/react";
-import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
-import BoolFilter from "@inovua/reactdatagrid-community/BoolFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
-import Button from "@inovua/reactdatagrid-community/packages/Button";
 import swal from "sweetalert";
 import axios from "axios";
 import TableStructure from "@/Components/TableStructure";
 import {
-    ChevronDownIcon,
-    PhoneIcon,
-    PlayCircleIcon,
+    ChevronDownIcon
 } from "@heroicons/react/20/solid";
-import ReactDataGrid from "@inovua/reactdatagrid-community";
-
-const report = [
-    {
-        ConsignmentId: 275576,
-        ConsignmentNo: "FOR100312",
-        SenderName: "INDUSTRIAL STEEL",
-        ReceiverName: "R AND A CONCRETING",
-        FromState: "QLD",
-        ToState: "VIC",
-        POD: true,
-        MatchTransit: false,
-        MatchRdd: false,
-    },
-    // More people...
-];
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
+import { isDummyAccount } from "@/CommonFunctions";
 
 export default function NoDelivery({
     NoDelData,
@@ -478,7 +451,8 @@ export default function NoDelivery({
             });
         }
         return { selectedColumns: selectedColVal, filterValue: filterValue };
-    }function handleDownloadExcel() {
+    }
+    function handleDownloadExcel() {
         const jsonData = handleFilterTable();
     
         const columnMapping = {
@@ -561,7 +535,7 @@ export default function NoDelivery({
         headerRow.alignment = { horizontal: "center" };
     
         // Add the data to the worksheet
-        data.forEach((rowData) => {
+        data?.forEach((rowData) => {
             const row = worksheet.addRow(Object.values(rowData));
     
             // Apply date format to the DespatchDateTime column
@@ -600,10 +574,9 @@ export default function NoDelivery({
     
     const [selected, setSelected] = useState([]);
     const createNewLabelObjects = (data, fieldName) => {
-        let id = 1; // Initialize the ID
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
-
+    
         // Map through the data and create new objects
         data?.forEach((item) => {
             const fieldValue = item[fieldName];
@@ -617,8 +590,11 @@ export default function NoDelivery({
                 newData.push(newObject);
             }
         });
-        return newData;
+    
+        // Sort the array alphabetically by label
+        return newData.sort((a, b) => a.label.localeCompare(b.label));
     };
+    
     const senderSuburbs = createNewLabelObjects(NoDelData, "Send_Suburb");
     const senderStates = createNewLabelObjects(NoDelData, "Send_State");
     const status = createNewLabelObjects(
@@ -692,10 +668,9 @@ export default function NoDelivery({
                 return (
                     <span
                         className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => handleClick(data.ConsignmentId)}
+                        onClick={() => handleClick(data.ConsignmentID)}
                     >
-                        {" "}
-                        {value}
+                        {isDummyAccount(value)}
                     </span>
                 );
             },
@@ -728,6 +703,9 @@ export default function NoDelivery({
             defaultWidth: 170,
             filterEditor: StringFilter,
             group: "senderInfo",
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SenderReference",
@@ -738,6 +716,9 @@ export default function NoDelivery({
             defaultWidth: 170,
             filterEditor: StringFilter,
             group: "senderInfo",
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "Send_Suburb",
@@ -792,6 +773,9 @@ export default function NoDelivery({
             defaultWidth: 170,
             filterEditor: StringFilter,
             group: "receiverInfo",
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "ReceiverReference",
@@ -802,6 +786,9 @@ export default function NoDelivery({
             defaultWidth: 170,
             filterEditor: StringFilter,
             group: "receiverInfo",
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "Del_Suburb",

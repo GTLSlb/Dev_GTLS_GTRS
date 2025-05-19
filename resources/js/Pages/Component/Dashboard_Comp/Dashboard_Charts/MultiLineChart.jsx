@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
-import ReactDOM from "react-dom";
 import { Line } from "@ant-design/plots";
 
 const MultiChartLine = (props) => {
     const chartData = props.chartData;
     const chartTitle = props.chartTitle;
     const [data, setData] = useState([]);
+    
     useEffect(() => {
         const filteredData = chartData.filter(
             (item) => !isNaN(Date.parse(item.month)) && !isNaN(item.amount)
         );
         setData(filteredData);
     }, [chartData]);
+    
     const config = {
         data,
         xField: "month",
@@ -30,8 +31,17 @@ const MultiChartLine = (props) => {
         yAxis: {
             label: {
                 formatter: (v) =>
-                    `${v}`.replace(/\d{1,3}(?=(\d{3})+$)/g, (s) => `${s},`),
+                    v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
             },
+        },
+        
+        tooltip: {
+            formatter: (datum) => ({
+                name: datum.state,
+                value: Number(datum.amount)
+                    .toFixed(2) // Limit to two decimal places
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ","), // Add commas
+            }),
         },
     };
 

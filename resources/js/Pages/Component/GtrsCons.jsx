@@ -13,6 +13,8 @@ import moment from "moment";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import { useEffect, useRef } from "react";
+import { formatNumberWithCommas, isDummyAccount } from "@/CommonFunctions";
+import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -25,6 +27,7 @@ export default function GtrsCons({
     filterValue,
     setFilterValue,
     setLastIndex,
+    userBody,
     accData,
 }) {
     window.moment = moment;
@@ -402,7 +405,7 @@ export default function GtrsCons({
     }
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
-    
+
         const columnMapping = {
             ConsignmentNo: "Consignment No",
             AccountName: "Account Name",
@@ -417,25 +420,38 @@ export default function GtrsCons({
             ReceiverSuburb: "Receiver Suburb",
             ReceiverReference: "Receiver Reference",
             ReceiverZone: "Receiver Zone",
+            NetAmount: "Total Amount",
+            TottalWeight: "Total Weight",
+            ConsStatus: "Consignment Status",
+            ConsReferences: "Consignment References",
+            DeliveryRequiredDateTime: "Required Delivery Date Time",
+            DeliveredDateTime: "Delivered Date Time",
         };
-    
+        const fieldsToCheck = [
+            "AccountName",
+            "ConsignmentNo",
+            "SenderName",
+            "SenderReference",
+            "ReceiverName",
+            "ReceiverReference",
+        ]; // for dummy data
         const selectedColumns = jsonData?.selectedColumns.map(
             (column) => column.name
         );
-    
+
         // Apply the mapping to the selected columns
         const newSelectedColumns = selectedColumns.map(
             (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
         );
-    
+
         const filterValue = jsonData?.filterValue;
-    
+
         const data = filterValue.map((person) =>
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
-                    if (columnKey === "DespatchDate") {
-                        const date = new Date(person["DespatchDate"]);
+                    if (columnKey === "DespatchDate" || columnKey === "DeliveryRequiredDateTime" || columnKey === "DeliveredDateTime") {
+                        const date = new Date(person[columnKey]);
                         if (!isNaN(date)) {
                             acc[column] =
                                 (date.getTime() -
@@ -445,6 +461,16 @@ export default function GtrsCons({
                         } else {
                             acc[column] = "";
                         }
+                    } else if (columnKey === "ConsReferences") {
+                        if (Array.isArray(person[columnKey])) {
+                            acc[column] = person[columnKey]
+                                .map((item) => item.Value)
+                                .join(", ");
+                        } else {
+                            acc[column] = ""; // Fallback for undefined or non-array values
+                        }
+                    } else if (fieldsToCheck.includes(columnKey)) {
+                        acc[column] = isDummyAccount(person[columnKey]);
                     } else {
                         acc[columnMapping[columnKey] || columnKey] =
                             person[columnKey];
@@ -453,13 +479,13 @@ export default function GtrsCons({
                 return acc;
             }, {})
         );
-    
+
         // Create a new workbook
         const workbook = new ExcelJS.Workbook();
-    
+
         // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
-    
+
         // Apply custom styles to the new header row
         const headerRow = worksheet.addRow(newSelectedColumns);
         headerRow.font = { bold: true };
@@ -468,34 +494,49 @@ export default function GtrsCons({
             pattern: "solid",
             fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
         };
-        headerRow.alignment = { horizontal: "center" };
-    
+        headerRow.alignment = { horizontal: "left" };
+
         // Add the data to the worksheet
         data.forEach((rowData) => {
             const row = worksheet.addRow(Object.values(rowData));
-    
+
             // Apply date format to the Despatch Date column
-            const despatchDateIndex = newSelectedColumns.indexOf("Despatch Date");
+            const despatchDateIndex =
+                newSelectedColumns.indexOf("Despatch Date");
+            const requiredDateIndex = newSelectedColumns.indexOf(
+                "Required Delivery Date Time"
+            )
+            const deliveredDateIndex = newSelectedColumns.indexOf(
+                "Delivered Date Time"
+            )
             if (despatchDateIndex !== -1) {
                 const cell = row.getCell(despatchDateIndex + 1); // +1 because ExcelJS is 1-based indexing
-                cell.numFmt = 'dd-mm-yyyy hh:mm AM/PM';
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+            }
+            if (requiredDateIndex !== -1) {
+                const cell = row.getCell(requiredDateIndex + 1); // +1 because ExcelJS is 1-based indexing
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+            }
+            if(deliveredDateIndex !== -1) {
+                const cell = row.getCell(deliveredDateIndex + 1); // +1 because ExcelJS is 1-based indexing
+                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
         });
-    
+
         // Set column widths
-        const columnWidths = newSelectedColumns.map(() => 15); // Set width of each column
+        const columnWidths = newSelectedColumns.map(() => 25); // Set width of each column
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: newSelectedColumns[index],
         }));
-    
+
         // Generate the Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
             // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-    
+
             // Save the file using FileSaver.js or alternative method
             saveAs(blob, "Consignments.xlsx");
         });
@@ -512,7 +553,6 @@ export default function GtrsCons({
         }
     };
     const createNewLabelObjects = (data, fieldName) => {
-        let id = 1; // Initialize the ID
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
 
@@ -529,8 +569,11 @@ export default function GtrsCons({
                 newData.push(newObject);
             }
         });
-        return newData;
+
+        // Sort the array alphabetically by label
+        return newData?.sort((a, b) => a?.label?.localeCompare(b?.label));
     };
+
     const senderStateOptions = createNewLabelObjects(consData, "SenderState");
     const senderZoneOptions = createNewLabelObjects(consData, "SenderZone");
     const receiverStateOptions = createNewLabelObjects(
@@ -540,6 +583,18 @@ export default function GtrsCons({
     const receiverZoneOptions = createNewLabelObjects(consData, "ReceiverZone");
     const serviceOptions = createNewLabelObjects(consData, "Service");
     const statusOptions = createNewLabelObjects(consData, "Status");
+    const ConsStatusOptions = createNewLabelObjects(consData, "ConsStatus");
+
+    const podAvlOptions = [
+        {
+            id: true,
+            label: "True",
+        },
+        {
+            id: false,
+            label: "False",
+        },
+    ];
 
     const groups = [
         {
@@ -553,7 +608,8 @@ export default function GtrsCons({
             headerAlign: "center",
         },
     ];
-    const columns = [
+
+    const [columns, setColumns] = useState([
         {
             name: "ConsignmentNo",
             header: "Cons No",
@@ -567,8 +623,7 @@ export default function GtrsCons({
                         className="underline text-blue-500 hover:cursor-pointer"
                         onClick={() => handleClick(data.ConsignmentId)}
                     >
-                        {" "}
-                        {value}
+                        {isDummyAccount(value)}
                     </span>
                 );
             },
@@ -604,12 +659,53 @@ export default function GtrsCons({
             defaultFlex: 1,
             minWidth: 200,
             dateFormat: "DD-MM-YYYY",
+            filterable: true,
             filterEditor: DateFilter,
             filterEditorProps: {
                 minDate: minDate,
                 maxDate: maxDate,
             },
             render: ({ value, cellProps }) => {
+                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                    "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A");
+            },
+        },
+        {
+            name: "DeliveryRequiredDateTime",
+            header: "Required Delivery date Time",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultFlex: 1,
+            minWidth: 200,
+            dateFormat: "DD-MM-YYYY",
+            filterable: true,
+            filterEditor: DateFilter,
+            render: ({ value, cellProps }) => {
+                if (value == undefined) {
+                    return null;
+                }
+                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                    "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A");
+            },
+        },
+        {
+            name: "DeliveredDateTime",
+            header: "Delivered date Time",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultFlex: 1,
+            minWidth: 200,
+            dateFormat: "DD-MM-YYYY",
+            filterable: true,
+            filterEditor: DateFilter,
+            render: ({ value, cellProps }) => {
+                if (value == undefined) {
+                    return null;
+                }
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -733,10 +829,68 @@ export default function GtrsCons({
             },
         },
         {
+            name: "NetAmount",
+            header: "Total Amount",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: NumberFilter,
+            render: ({ value }) => {
+                return formatNumberWithCommas(value) + " $";
+            },
+        },
+        {
+            name: "TottalWeight",
+            header: "Total Weight",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: NumberFilter,
+            render: ({ value }) => {
+                return formatNumberWithCommas(value) + " T";
+            },
+        },
+        {
+            name: "ConsStatus",
+            header: "Consignment Status",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: ConsStatusOptions,
+            },
+            render: ({ value, data }) => {
+                return (
+                    <div>
+                        {value == "PASS" ? (
+                            <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                                Pass
+                            </span>
+                        ) : value == "FAIL" ? (
+                            <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                                Fail
+                            </span>
+                        ) : (
+                            <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-0.5 text-sm font-medium text-gray-800">
+                                Pending
+                            </span>
+                        )}
+                    </div>
+                );
+            },
+        },
+        {
             name: "POD",
             header: "POD",
             headerAlign: "center",
             textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: podAvlOptions,
+            },
             render: ({ value }) => {
                 return value ? (
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
@@ -749,7 +903,33 @@ export default function GtrsCons({
                 );
             },
         },
-    ];
+        {
+            name: "ConsReferences",
+            header: "Consignment References",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 200,
+            filterEditor: StringFilter,
+            getFilterValue: ({ data }) => {
+                if (data.ConsReferences && data.ConsReferences.length > 0) {
+                    // Join all reference values into a single string for filtering
+                    return data.ConsReferences.map((ref) => ref.Value).join(
+                        ", "
+                    );
+                }
+                return "";
+            },
+            render: ({ value }) => {
+                const result =
+                    Array.isArray(value) && value.length > 0
+                        ? `${value[0].Value || ""}${
+                              value.length > 1 ? "..." : ""
+                          }` // Extract the first Value and add "..." if there's more
+                        : ""; // Return an empty string if `x` is not an array or empty
+                return result;
+            },
+        },
+    ]);
     const filterData = () => {
         const intArray = accData?.map((str) => {
             const intValue = parseInt(str);
@@ -808,7 +988,7 @@ export default function GtrsCons({
                         leaveFrom="opacity-100 translate-y-0"
                         leaveTo="opacity-0 translate-y-1"
                     >
-                        <Popover.Panel className="absolute left-20 lg:left-0 z-10 mt-5 flex w-screen max-w-max -translate-x-1/2 px-4">
+                        <Popover.Panel className="absolute left-20 lg:left-0 z-10 mt-5 flex w-screen max-w-max -translate-x-1/2">
                             <div className=" max-w-md flex-auto overflow-hidden rounded-lg bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
                                 <div className="p-4">
                                     <div className="mt-2 flex flex-col">
@@ -951,10 +1131,46 @@ export default function GtrsCons({
                                             <input
                                                 type="checkbox"
                                                 name="column"
+                                                value="NetAmount"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            Total Amount
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
+                                                value="TottalWeight"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            Total Weight
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
                                                 value="POD"
                                                 className="text-dark rounded focus:ring-goldd"
                                             />{" "}
                                             POD
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
+                                                value="ConsStatus"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            Consignment Status
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
+                                                value="ConsReferences"
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            Consignment References
                                         </label>
                                     </div>
                                 </div>

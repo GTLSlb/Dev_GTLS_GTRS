@@ -41,24 +41,25 @@ class LoginController extends Controller
         // Loop through each cookie and set it to expire
         foreach ($cookies as $name => $value) {
             setcookie($name, '', $expiration);
-        }  
+        }
+
         $response = Http::withHeaders($headers)->get("$url" . "Login");
         if ($response->successful()) {
             $responseData = $response->json();
             if (!empty($responseData)) {
                 $authProvider = new CustomAuth();
-                
+
                 $credentials = [
                     'EmailInput' => $request->input('Email'),
-                    'EmailDb' => $responseData[0]['Email'],
+                    'EmailDb' => $responseData[0]['Username'],
                     'PasswordDb' => $responseData[0]['UserId'],
                     'PasswordInput' => $request->input('Password'),
                 ];
-                
+
                 $authenticatedUser = $authProvider->attempt($credentials, true);
-                
+
                 if ($authenticatedUser) {
-                    // Redirect to the intended page with the obtained user 
+                    // Redirect to the intended page with the obtained user
                     $user = null;
                     $TokenHeaders = [
                         'UserId'=> $responseData[0]['UserId'],
@@ -90,22 +91,21 @@ class LoginController extends Controller
                         $cookieValue = $token['access_token'];
                         $expiry = 60 * 60 * 24; // 24 hours
                         $expirationTime = time() + $expiry;
-                        
-                        // Set cookies for the domain .gtls.store
-                        setcookie($cookieName, $cookieValue, $expirationTime, '/', $_ENV['SESSION_DOMAIN'], true, false);
-                        setcookie('gtfm_refresh_token', $token['refresh_token'], $expirationTime, '/', $_ENV['SESSION_DOMAIN'], true, false);
-                    
+                        setcookie($cookieName, $cookieValue, $expirationTime, '/', '', true);
+                        //dd($expirationTime);
+                        setcookie('gtrs_refresh_token', $token['refresh_token'], $expirationTime, '/', '', true);
+
                         $userId = $user['UserId'];
                         $request->session()->regenerate();
                         $request->session()->put('user', $user);
                         $request->session()->put('user_id', $userId);
                         $request->session()->put('newRoute', route('loginapi'));
-                    
+
                         $sessionId = $request->session()->getId();
                         $payload = $request->session()->get('_token');
                         $userSession = $request->session()->get('user');
                         $user = json_encode($userSession->getAttributes());
-                    
+
                         $lastActivity = time();
                         DB::table('custom_sessions')->insert([
                             'id' => $sessionId,
@@ -116,9 +116,9 @@ class LoginController extends Controller
                             'created_at' => now(),
                             'updated_at' => now(),
                         ]);
-                        
+
                         $request->session()->save();
-                    
+
                         if ($request->session()->get('newRoute') && $request->session()->get('user')) {
                             return response($request, 200);
                         }
@@ -144,46 +144,18 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
-        // Retrieve the 'access_token' cookie
-        $token = isset($_COOKIE['access_token']) ? $_COOKIE['access_token'] : null;
-        // Create an instance of the RegisteredUserController and get the current user
-        $userController = new RegisteredUserController();
-        $user = $userController->getCurrentUserName($request);
-        // Extract the UserId from the response
-        $UserId = $user->original['UserId'];
-        // Set up headers for the logout request
-    
-        $headers = [
-            'UserId' => $UserId,
-            'Authorization' => "Bearer " . "$token",
-        ];
-        // Define the URL for the logout request
-        $url = env('GTAM_API_URL') . "Logout";
-        // Send the logout request to the external API
-        $response = Http::withHeaders($headers)->get($url);
-        // Check if the logout request was successful
-        //  dd($response);
-        if ($response->successful()) {
-            // Invalidate and flush the session
-            $request->session()->invalidate();
-            $request->session()->flush();
-            // Set the expiration time for the cookies to 24 hours before the current time
-            $expiration = time() - (60 * 60 * 24);
-            // Get an array of all the cookies
-            $cookies = $_COOKIE;
-            // Loop through each cookie and set it to expire
-            foreach ($cookies as $name => $value) {
-                setcookie($name, '', $expiration);
-            }
-            // Regenerate the session token
-            $request->session()->regenerateToken();
-            // Redirect to the login page
-            return redirect('/login');
-        } else {
-            // Handle the case where the logout request fails
-            // You can log an error or return a specific response
-            return redirect()->back()->withErrors(['error' => 'Logout failed. Please try again.']);
+        $request->session()->invalidate();
+        $request->session()->flush();
+        $expiration = time() - (60 * 60 * 24); // expiration time set to 24h before current time
+        // Get an array of all the cookies
+        $cookies = $_COOKIE;
+
+        // Loop through each cookie and set it to expire
+        foreach ($cookies as $name => $value) {
+            setcookie($name, '', $expiration);
         }
+        $request->session()->regenerateToken();
+        return redirect('/');
     }
 }
 ?>
