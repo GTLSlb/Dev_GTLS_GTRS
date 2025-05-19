@@ -107,44 +107,44 @@ export default function FailedCons({
                 );
             },
         },
-        {
-            name: "IncidentNo",
-            defaultWidth: 170,
-            header: "Incident No",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            render: ({ value, data }) => {
-                return renderIncidentDetailsLink(
-                    userPermission,
-                    value,
-                    data.IncidentId
-                );
-            },
-            filterEditor: StringFilter,
-        },
-        {
-            name: "IncidentTypeName",
-            defaultWidth: 170,
-            header: "Incident Type",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            render: ({ value, data }) => {
-                return <span className=""> {value}</span>;
-            },
-            filterEditor: StringFilter,
-        },
-        {
-            name: "IncidentStatusName",
-            header: "Status",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            render: ({ value, data }) => {
-                return <span className=""> {data.IncidentStatusName}</span>;
-            },
-        },
+        // {
+        //     name: "IncidentNo",
+        //     defaultWidth: 170,
+        //     header: "Incident No",
+        //     type: "string",
+        //     headerAlign: "center",
+        //     textAlign: "center",
+        //     render: ({ value, data }) => {
+        //         return renderIncidentDetailsLink(
+        //             userPermission,
+        //             value,
+        //             data.IncidentId
+        //         );
+        //     },
+        //     filterEditor: StringFilter,
+        // },
+        // {
+        //     name: "IncidentTypeName",
+        //     defaultWidth: 170,
+        //     header: "Incident Type",
+        //     type: "string",
+        //     headerAlign: "center",
+        //     textAlign: "center",
+        //     render: ({ value, data }) => {
+        //         return <span className=""> {value}</span>;
+        //     },
+        //     filterEditor: StringFilter,
+        // },
+        // {
+        //     name: "IncidentStatusName",
+        //     header: "Status",
+        //     type: "string",
+        //     headerAlign: "center",
+        //     textAlign: "center",
+        //     render: ({ value, data }) => {
+        //         return <span className=""> {data.IncidentStatusName}</span>;
+        //     },
+        // },
         {
             name: "SenderName",
             defaultWidth: 170,
