@@ -835,7 +835,7 @@ export default function RDDreason({
             render: ({ value }) => {
                 return isDummyAccount(value);
             },
-            
+
         },
         {
             name: "SenderReference",
@@ -1033,7 +1033,6 @@ export default function RDDreason({
         {
             name: "NewRdd",
             header: "New Rdd",
-            headerAlign: "center",
             textAlign: "center",
             headerAlign: "center",
             defaultWidth: 170,
