@@ -52,6 +52,7 @@ import TrafficComp from "./TrafficPage/TrafficComp";
 import TransportRep from "./TransportRep";
 import ProductStockTable from "./ProductStock/ProductStockTable";
 import { CustomContext } from "@/CommonContext";
+import { useQuery } from "@tanstack/react-query";
 
 export default function GtrsMain({
     setCustomerAccounts,
@@ -80,7 +81,6 @@ export default function GtrsMain({
     deliveryReportComments,
     fetchDeliveryReportCommentsData,
 }) {
-
     window.moment = moment;
     const [KPIData, setKPIData] = useState([]);
     const [NewKPIData, setNewKPIData] = useState([]);
@@ -456,43 +456,96 @@ export default function GtrsMain({
         setEDate(formatDate(val.end));
     }, [filtersMissingPOD]);
 
-    const [dailyReportData, setDailyReportData] = useState(deliveryReportData);
-    const fetchDeliveryReport = async (setCellLoading) => {
-        try {
-            const res = await axios.get(`${url}Delivery`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${Token}`,
-                },
-            });
-            setDailyReportData(res.data || []);
+    // const [dailyReportData, setDailyReportData] = useState(deliveryReportData);
+    // const fetchDeliveryReport = async (setCellLoading) => {
+    //     try {
+    //         const res = await axios.get(`${url}Delivery`, {
+    //             headers: {
+    //                 UserId: currentUser.UserId,
+    //                 Authorization: `Bearer ${Token}`,
+    //             },
+    //         });
+    //         setDailyReportData(res.data || []);
 
-            // Check if setCellLoading exists before calling it
-            if (typeof setCellLoading === "function") {
-                setCellLoading(null);
-            }
-        } catch (err) {
-            if (err.response && err.response.status === 401) {
-                // Handle 401 error using SweetAlert
-                swal({
-                    title: "Session Expired!",
-                    text: "Please login again",
-                    type: "success",
-                    icon: "info",
-                    confirmButtonText: "OK",
-                }).then(async function () {
-                    await handleSessionExpiration();
-                });
-            } else {
-                // Handle other errors
-                console.log(err);
-                // Check if setCellLoading exists before calling it
-                if (typeof setCellLoading === "function") {
-                    setCellLoading(null);
-                }
-            }
-        }
+    //         // Check if setCellLoading exists before calling it
+    //         if (typeof setCellLoading === "function") {
+    //             setCellLoading(null);
+    //         }
+    //     } catch (err) {
+    //         if (err.response && err.response.status === 401) {
+    //             // Handle 401 error using SweetAlert
+    //             swal({
+    //                 title: "Session Expired!",
+    //                 text: "Please login again",
+    //                 type: "success",
+    //                 icon: "info",
+    //                 confirmButtonText: "OK",
+    //             }).then(async function () {
+    //                 await handleSessionExpiration();
+    //             });
+    //         } else {
+    //             // Handle other errors
+    //             console.log(err);
+    //             // Check if setCellLoading exists before calling it
+    //             if (typeof setCellLoading === "function") {
+    //                 setCellLoading(null);
+    //             }
+    //         }
+    //     }
+    // };
+
+    const fetchDeliveryReport = async () => {
+        const res = await axios.get(`${url}Delivery`, {
+            headers: {
+                UserId: currentUser.UserId,
+                Authorization: `Bearer ${Token}`,
+            },
+        });
+        return res.data || [];
     };
+
+const {
+  data: dailyReportData = [],
+  isLoading,
+  isError,
+  error,
+} = useQuery({
+  queryKey: ['deliveryReport', currentUser?.UserId],
+  queryFn: async () => {
+    const res = await axios.get(`${url}Delivery`, {
+      headers: {
+        UserId: currentUser.UserId,
+        Authorization: `Bearer ${Token}`,
+      },
+    });
+    return res.data || [];
+  },
+  enabled: !!currentUser && !!Token,
+  staleTime: 1000 * 60 * 5,
+  onSuccess: () => {
+    if (typeof setCellLoading === 'function') {
+      setCellLoading(null);
+    }
+  },
+  onError: async (err) => {
+    if (typeof setCellLoading === 'function') {
+      setCellLoading(null);
+    }
+
+    if (err.response?.status === 401) {
+      await swal({
+        title: 'Session Expired!',
+        text: 'Please login again',
+        icon: 'info',
+        buttons: ['Cancel', 'OK'],
+      }).then(async () => {
+        await handleSessionExpiration(); // Ensure this exists
+      });
+    } else {
+      console.error(err);
+    }
+  },
+});
 
     const [excelDailyReportData, setExcelDailyReportData] = useState();
     const fetchExcelDeliveryReportData = async (setCellLoading) => {
@@ -689,10 +742,14 @@ export default function GtrsMain({
 
     const navigate = useNavigate();
     useEffect(() => {
-        if(userPermission){
-            navigateToFirstAllowedPage({setSidebarElements, user: userPermission, navigate})
+        if (userPermission) {
+            navigateToFirstAllowedPage({
+                setSidebarElements,
+                user: userPermission,
+                navigate,
+            });
         }
-    },[])
+    }, []);
 
     return (
         <div className="h-full">

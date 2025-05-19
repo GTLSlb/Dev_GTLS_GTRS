@@ -19,6 +19,7 @@ import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
 import moment from "moment/moment";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import { useQuery } from "@tanstack/react-query";
 export const SearchIcon = (props) => {
     return (
         <svg
@@ -62,22 +63,80 @@ export default function ProductStockTable({ url, Token, currentUser }) {
     // const scrollRef = useRef(null);
     const [hasMore, setHasMore] = React.useState(true);
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    // useEffect(() => {
+    //     fetchData();
+    // }, []);
 
-    const fetchData = async () => {
-        try {
-            const response = await axios.get(`${url}/SOH`, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${Token}`,
-                },
-            });
+    // const fetchData = async () => {
+    //     try {
+    //         const response = await axios.get(`${url}/SOH`, {
+    //             headers: {
+    //                 UserId: currentUser.UserId,
+    //                 Authorization: `Bearer ${Token}`,
+    //             },
+    //         });
 
-            // Convert TransitDays to string
-            setProductsData(response.data);
-            const debtorList = Array.from(
+    //         // Convert TransitDays to string
+    //         setProductsData(response.data);
+    //         const debtorList = Array.from(
+    //             new Map(
+    //                 response.data.map((item) => [
+    //                     item.DebtorId,
+    //                     {
+    //                         DebtorId: item.DebtorId,
+    //                         DebtorName: item.DebtorName,
+    //                     },
+    //                 ])
+    //             ).values()
+    //         );
+    //         setDebtors(debtorList);
+    //         const branchlist = Array.from(
+    //             new Map(
+    //                 response.data.map((item) => [
+    //                     item.WarehouseID,
+    //                     {
+    //                         BranchId: item.WarehouseID,
+    //                         BranchName: item.BranchName,
+    //                     },
+    //                 ])
+    //             ).values()
+    //         );
+    //         setBranches(branchlist);
+    //     } catch (error) {
+    //         if (error.response && error.response.status === 401) {
+    //             swal({
+    //                 title: "Session Expired!",
+    //                 text: "Please login again",
+    //                 type: "error",
+    //                 icon: "info",
+    //                 confirmButtonText: "OK",
+    //             }).then(() => {
+    //                 axios
+    //                     .post("/logoutAPI")
+    //                     .then((response) => {
+    //                         if (response.status === 200) {
+    //                             window.location.href = "/";
+    //                         }
+    //                     })
+    //                     .catch((error) => {
+    //                         console.error(error);
+    //                     });
+    //             });
+    //         } else {
+    //             console.error(error);
+    //         }
+    //     }
+    // };
+
+    const fetchSOHData = async () => {
+        console.log("Fetching SOH data...");
+        const response = await axios.get(`${url}/SOH`, {
+            headers: {
+                UserId: currentUser.UserId,
+                Authorization: `Bearer ${Token}`,
+            },
+        });
+         const debtorList = Array.from(
                 new Map(
                     response.data.map((item) => [
                         item.DebtorId,
@@ -101,8 +160,23 @@ export default function ProductStockTable({ url, Token, currentUser }) {
                 ).values()
             );
             setBranches(branchlist);
-        } catch (error) {
-            if (error.response && error.response.status === 401) {
+        console.log("API response:", response.data);
+        return response.data;
+    };
+
+    const {
+        data: sohData = [],
+        isLoading,
+        isError,
+        error,
+    } = useQuery({
+        queryKey: ["sohData", currentUser?.UserId],
+        queryFn: fetchSOHData,
+        enabled: !!currentUser?.UserId && !!Token,
+        staleTime: 1000 * 60 * 5,
+        onError: (err) => {
+            console.error("Query error:", err);
+            if (err.response?.status === 401) {
                 swal({
                     title: "Session Expired!",
                     text: "Please login again",
@@ -112,21 +186,45 @@ export default function ProductStockTable({ url, Token, currentUser }) {
                 }).then(() => {
                     axios
                         .post("/logoutAPI")
-                        .then((response) => {
-                            if (response.status === 200) {
+                        .then((res) => {
+                            if (res.status === 200) {
                                 window.location.href = "/";
                             }
                         })
-                        .catch((error) => {
-                            console.error(error);
-                        });
+                        .catch(console.error);
                 });
-            } else {
-                console.error(error);
             }
-        }
-    };
+        },
+    });
 
+    useEffect(() => {
+        if (sohData) {
+            setProductsData(sohData);
+        }
+    }, [sohData]);
+
+    useEffect(() => {if(error) {
+        console.error("Query error:", error);
+        if (error.response?.status === 401) {
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again",
+                    type: "error",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                }).then(() => {
+                    axios
+                        .post("/logoutAPI")
+                        .then((res) => {
+                            if (res.status === 200) {
+                                window.location.href = "/";
+                            }
+                        })
+                        .catch(console.error);
+                });
+            }
+    }}, [error]);
+console.log(sohData)
     const [filterValue, setFilterValue] = React.useState("");
 
     const columns = [
@@ -244,8 +342,8 @@ export default function ProductStockTable({ url, Token, currentUser }) {
             }
             return acc;
         }, {});
-        setDisplayCount(30)
-        setHasMore(true)
+        setDisplayCount(30);
+        setHasMore(true);
         // Step 5: Flatten groups into rows with recalculated totals
         return Object.values(recalculatedGroups).flatMap(
             (group, groupIndex) => {
@@ -401,16 +499,16 @@ export default function ProductStockTable({ url, Token, currentUser }) {
 
     const onClear = React.useCallback(() => {
         setFilterValue("");
-        setDisplayCount(30)
-        setHasMore(true)
+        setDisplayCount(30);
+        setHasMore(true);
     }, []);
 
     function onClearAll() {
         setFilterValue("");
         setSelectedBranch(new Set());
         setSelectedDebtor(new Set());
-        setDisplayCount(30)
-        setHasMore(true)
+        setDisplayCount(30);
+        setHasMore(true);
     }
 
     const displayedData = useMemo(
@@ -573,7 +671,6 @@ export default function ProductStockTable({ url, Token, currentUser }) {
             saveAs(blob, "SOH_Report.xlsx");
         });
     }
-
     return (
         <div>
             {productsData.length === 0 ? (
