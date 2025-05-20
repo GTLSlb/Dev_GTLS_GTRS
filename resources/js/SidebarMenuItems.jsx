@@ -260,7 +260,7 @@ const menu = [
         icon: CogIcon,
         current: false,
         feature: "StockReport_View",
-        url: "/gtrs/Customer-Settings",
+        url: "/gtrs/customer-settings",
     },
 ];
 

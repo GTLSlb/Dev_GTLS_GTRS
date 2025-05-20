@@ -53,6 +53,7 @@ import TransportRep from "./TransportRep";
 import ProductStockTable from "./ProductStock/ProductStockTable";
 import { CustomContext } from "@/CommonContext";
 import Customers from "./Settings/Customers";
+import CustomerProfile from "./Settings/CustomerProfile";
 
 export default function GtrsMain({
     setCustomerAccounts,
@@ -1610,13 +1611,33 @@ export default function GtrsMain({
                                         setCurrentUser={setCurrentUser}
                                     />
                                     <Route
-                                        path="/Customer-Settings"
+                                        path="/customer-settings"
                                         element={
                                             <ProtectedRoute
                                                 permission={userPermission}
                                                 route="StockReport_View"
                                                 element={
                                                     <Customers
+                                                        url={url}
+                                                        Token={Token}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                    />
+                                                }
+                                            />
+                                        }
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
+                                    /><Route
+                                        path="/customer-profile"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermission}
+                                                route="StockReport_View"
+                                                element={
+                                                    <CustomerProfile
                                                         url={url}
                                                         Token={Token}
                                                         currentUser={
