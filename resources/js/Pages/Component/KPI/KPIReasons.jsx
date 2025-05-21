@@ -10,6 +10,8 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import AddKPIReason from "./Components/AddKPIReason";
 import { ToastContainer } from "react-toastify";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+
 export default function KPIReasons({
     url,
     currentUser,
@@ -27,11 +29,9 @@ export default function KPIReasons({
 
     const gridRef = useRef(null);
     const [editIndex, setEditIndex] = useState(null);
-    const [currentPage, setCurrentPage] = useState(0);
     const [filteredData, setFilteredData] = useState(kpireasonsData);
     const [showAddRow, setShowAddRow] = useState(false);
     const [selectedReason, setSelectedReason] = useState(false);
-    const [filterText, setFilterText] = useState("");
     const reasonNameOptions = createNewLabelObjects(
         kpireasonsData,
         "ReasonName"
@@ -85,7 +85,11 @@ export default function KPIReasons({
     ]);
 
     const additionalButtons = (
-        <div>
+        <div className="flex justify-between w-full gap-x-4">
+            <div className="relative">
+                <MagnifyingGlassIcon className="absolute h-[0.88rem] w-[0.88rem] text-gray-500 top-[0.77rem] left-2"/>
+                <input placeholder="Search" onChange={(e)=>handleFilterChange(e)} className="border px-7 py-1.5 rounded-lg placeholder:text-gray-500"/>
+            </div>
             {canAddKpiReasons(userPermission) ? (
                 <div className="flex flex-col sm:flex-row gap-x-5 gap-y-3">
                     <div className="col-span-2">
@@ -128,7 +132,6 @@ export default function KPIReasons({
 
     const handleFilterChange = (e) => {
         const searchText = e.target.value;
-        setFilterText(searchText);
 
         // Use the `filter` method to filter the array based on ReasonName
         const filteredResults = kpireasonsData.filter((reason) =>
@@ -137,6 +140,9 @@ export default function KPIReasons({
         setFilteredData(filteredResults);
     };
 
+    useEffect(() => {
+        if(kpireasonsData?.length > 0) setFilteredData(kpireasonsData);
+    },[kpireasonsData])
     function getKPIReasons() {
         axios
             .get(`${url}KpiReasons`, {
@@ -310,10 +316,11 @@ export default function KPIReasons({
                 additionalButtons={additionalButtons}
                 handleDownloadExcel={handleDownloadExcel}
                 selected={selected}
-                tableDataElements={kpireasonsData}
+                tableDataElements={filteredData}
                 filterValueElements={filterValue}
                 setFilterValueElements={setFilterValue}
                 columnsElements={columns}
+
             />
         );
     }, [columns, kpireasonsData]);
