@@ -19,11 +19,15 @@ import { getApiRequest } from "@/CommonFunctions";
 import GtrsButton from "../GtrsButton";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import { AlertToast } from "@/permissions";
+import { ToastContainer } from "react-toastify";
 
 export default function CustomerProfile({ currentUser }) {
     const [customer, setCustomer] = useState([]);
     const [editMode, setEditMode] = useState(false);
     const [accountStates, setAccountStates] = useState({});
+    const [originalAccountStates, setOriginalAccountStates] = useState({});
+    const [userStatus, setUserStatus] = useState(true); // true = enabled
     const [loading, setLoading] = useState(true);
     const gtamUrl = window.Laravel.gtamUrl;
     const navigate = useNavigate();
@@ -40,7 +44,6 @@ export default function CustomerProfile({ currentUser }) {
             setCustomer(data);
         }
     }
-    console.log("customer", customer);
     useEffect(() => {
         fetchData();
     }, []);
@@ -51,6 +54,15 @@ export default function CustomerProfile({ currentUser }) {
 
     const handleUserClick = (user) => {
         setSelectedUser(user);
+        setUserStatus(user?.IsActive ?? true); // Reset user switch
+        const initialStates = {};
+        customer.Accounts.forEach((account) => {
+            const isLinked = user.Accounts?.includes(account.AccountId);
+            initialStates[account.AccountId] = isLinked;
+        });
+        setAccountStates(initialStates);
+        setOriginalAccountStates(initialStates);
+        setEditMode(false); // Reset edit mode too
         onOpen();
     };
 
@@ -104,17 +116,26 @@ export default function CustomerProfile({ currentUser }) {
 
     const renderDrawerContent = () => {
         if (!selectedUser) return null;
+
+        const handleUserClick = (user) => {
+            setSelectedUser(user);
+            setUserStatus(user?.IsActive ?? true); // Assuming there's an IsActive flag
+            onOpen();
+        };
+
         const toggleEditMode = () => {
             if (!editMode) {
-                // Initialize state when entering edit mode
                 const initialStates = {};
                 customer.Accounts.forEach((account) => {
-                    initialStates[account.AccountId] =
-                        selectedUser.Accounts?.includes(account.AccountId);
+                    const isLinked = selectedUser.Accounts?.includes(
+                        account.AccountId
+                    );
+                    initialStates[account.AccountId] = isLinked;
                 });
                 setAccountStates(initialStates);
+                setOriginalAccountStates(initialStates); // <--- store original snapshot
             }
-            setEditMode(!editMode);
+            setEditMode((prev) => !prev);
         };
 
         const handleSwitchChange = (accountId, value) => {
@@ -123,19 +144,53 @@ export default function CustomerProfile({ currentUser }) {
                 [accountId]: value,
             }));
         };
-
+        console.log(
+            customer.Accounts.find((acc) => acc.AccountId === 2)?.AccountName
+        );
         const handleSave = () => {
-            const changed = Object.entries(accountStates).filter(
-                ([accountId, value]) => {
-                    const originalHasAccount =
-                        selectedUser.Accounts?.includes(accountId);
-                    return originalHasAccount !== value;
-                }
+            const changes = Object.entries(accountStates).reduce(
+                (acc, [accountId, newValue]) => {
+                    const originalValue = originalAccountStates[accountId];
+                    if (originalValue !== newValue) {
+                        const account = customer.Accounts.find(
+                            (acc) => acc.AccountId === parseInt(accountId)
+                        );
+                        acc.push({
+                            Username: selectedUser.Username,
+                            AccountName:
+                                account?.AccountName || `Account ${accountId}`,
+                            Status: newValue ? "Enabled" : "Disabled",
+                        });
+                    }
+                    return acc;
+                },
+                []
             );
 
-            console.log("Changed assignments:", changed);
-            // TODO: send `changed` data to your backend or state manager
+            console.log("Changed assignments:", changes);
 
+            // Build email details
+            const subject = `Account Changes for ${selectedUser.Username}`;
+
+            const userStatusLine = `User Status: ${
+                userStatus ? "Enabled" : "Disabled"
+            }`;
+
+            const bodyLines = changes.map(
+                (change) => `• ${change.AccountName}: ${change.Status}`
+            );
+            const body = `Hello,\n\nThe following account changes have been requested for ${
+                selectedUser.Username
+            }:\n\n${userStatusLine}\n\n${bodyLines.join("\n")}\n\nThanks`;
+
+            const mailtoLink = `mailto:recipient@example.com?cc=cc@example.com&subject=${encodeURIComponent(
+                subject
+            )}&body=${encodeURIComponent(body)}`;
+
+            // Open default mail client
+            window.location.href = mailtoLink;
+            // You can send `changes` to backend here...
+            AlertToast("Request submitted successfully", 1);
             setEditMode(false);
         };
 
@@ -147,20 +202,24 @@ export default function CustomerProfile({ currentUser }) {
                             <div className="flex gap-2 items-center">
                                 All Accounts for {selectedUser.Username}
                                 <Switch
-                                    defaultSelected
+                                    isSelected={userStatus}
+                                    onValueChange={setUserStatus}
+                                    isDisabled={!editMode}
                                     color="success"
-                                    isDisabled
                                     size="sm"
                                 />
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 mr-5">
                                 {editMode ? (
                                     <Button
                                         color="success"
                                         size="sm"
-                                        onPress={handleSave}
+                                        onPress={() => {
+                                            handleSave();
+                                            onClose();
+                                        }}
                                     >
-                                        Save
+                                        Submit Request
                                     </Button>
                                 ) : (
                                     <Button
@@ -230,6 +289,7 @@ export default function CustomerProfile({ currentUser }) {
 
     return (
         <div className="container mx-auto flex flex-col gap-4 p-5">
+            <ToastContainer />
             <GtrsButton
                 name="Back"
                 icon={<ArrowLeftIcon className="mr-2 h-4 w-4" />}
@@ -267,6 +327,7 @@ export default function CustomerProfile({ currentUser }) {
                 isOpen={isOpen}
                 onOpenChange={onOpenChange}
                 placement="bottom"
+                className=""
             >
                 {renderDrawerContent()}
             </Drawer>
