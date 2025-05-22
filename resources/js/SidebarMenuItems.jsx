@@ -259,8 +259,8 @@ const menu = [
         href: "#",
         icon: CogIcon,
         current: false,
-        feature: "StockReport_View",
-        url: "/gtrs/customer-settings",
+        feature: "Settings_View",
+        url: "/gtrs/settings",
     },
 ];
 

@@ -788,3 +788,32 @@ export function canViewIncidentDetails(currentUser) {
         ? true
         : false;
 }
+
+/**
+ * Checks if the user can view Settings based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can view Settings, false otherwise.
+ */
+export function canViewSettings(currentUser) {
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "Settings_View"
+    )
+        ? true
+        : false;
+}
+
+
+/**
+ * Checks if the user can edit Users based on their permissions.
+ *
+ * @param {Object} currentUser - The current user object with role and permissions.
+ * @return {boolean} True if the user can edit Users, false otherwise.
+ */
+export function canEditUsers(currentUser) {
+    return currentUser?.Features?.find(
+        (feature) => feature?.FunctionName === "Users_Edit"
+    )
+        ? true
+        : false;
+}

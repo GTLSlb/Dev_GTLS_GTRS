@@ -54,6 +54,7 @@ import ProductStockTable from "./ProductStock/ProductStockTable";
 import { CustomContext } from "@/CommonContext";
 import Customers from "./Settings/Customers";
 import CustomerProfile from "./Settings/CustomerProfile";
+import SettingMiddleware from "./Settings/SettingMiddleware";
 
 export default function GtrsMain({
     setCustomerAccounts,
@@ -1611,13 +1612,13 @@ export default function GtrsMain({
                                         setCurrentUser={setCurrentUser}
                                     />
                                     <Route
-                                        path="/customer-settings"
+                                        path="/settings"
                                         element={
                                             <ProtectedRoute
                                                 permission={userPermission}
-                                                route="StockReport_View"
+                                                route="Settings_View"
                                                 element={
-                                                    <Customers
+                                                    <SettingMiddleware
                                                         url={url}
                                                         Token={Token}
                                                         currentUser={
@@ -1630,15 +1631,43 @@ export default function GtrsMain({
                                         currentUser={currentUser}
                                         setToken={setToken}
                                         setCurrentUser={setCurrentUser}
-                                    /><Route
+                                    />
+                                    <Route
+                                        path="/customer-settings"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermission}
+                                                route="Settings_View"
+                                                element={
+                                                    <Customers
+                                                        url={url}
+                                                        userPermission={
+                                                            userPermission
+                                                        }
+                                                        Token={Token}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                    />
+                                                }
+                                            />
+                                        }
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
+                                    />
+                                    <Route
                                         path="/customer-profile"
                                         element={
                                             <ProtectedRoute
                                                 permission={userPermission}
-                                                route="StockReport_View"
+                                                route="Settings_View"
                                                 element={
                                                     <CustomerProfile
                                                         url={url}
+                                                        userPermission={
+                                                            userPermission
+                                                        }
                                                         Token={Token}
                                                         currentUser={
                                                             currentUser
