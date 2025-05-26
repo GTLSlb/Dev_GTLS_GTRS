@@ -93,10 +93,10 @@ export default function Accounts({ customer, userPermission }) {
         return (
             <div
                 key={accountId}
-                className="bg-white shadow-md rounded-lg min-h-[120px] p-4"
+                className="bg-white shadow-md rounded-xl border min-h-[120px] p-4"
             >
                 <div className="flex items-start justify-between mb-2">
-                    <h2 className="text-xl font-semibold">
+                    <h2 className="text-lg font-semibold">
                         {account.AccountName}
                     </h2>
                     <Switch
@@ -115,7 +115,7 @@ export default function Accounts({ customer, userPermission }) {
     };
 
     return (
-        <div className="p-4">
+        <div className="">
             {canEditUsers(userPermission) && (
                 <div className="flex justify-end gap-2 mb-4">
                     {editMode ? (

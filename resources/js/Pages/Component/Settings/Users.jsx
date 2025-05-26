@@ -155,10 +155,10 @@ export default function Users({ customer,userPermission }) {
                                     return (
                                         <div
                                             key={accountId}
-                                            className="bg-white shadow-md rounded-lg p-4"
+                                            className="bg-white shadow-md rounded-xl min-h-[120px] border p-4"
                                         >
                                             <div className="flex items-start justify-between mb-2">
-                                                <h2 className="text-xl font-semibold">
+                                                <h2 className="text-lg font-semibold">
                                                     {account.AccountName}
                                                 </h2>
                                                 <Switch

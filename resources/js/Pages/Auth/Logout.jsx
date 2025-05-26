@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import Cookies from "js-cookie";
 import { clearMSALLocalStorage } from "@/CommonFunctions";
 import { PublicClientApplication } from "@azure/msal-browser";

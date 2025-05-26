@@ -24,7 +24,7 @@ import { ToastContainer } from "react-toastify";
 import Accounts from "./Accounts";
 import Users from "./Users";
 
-export default function CustomerProfile({ currentUser,userPermission }) {
+export default function CustomerProfile({ currentUser, userPermission }) {
     const [customer, setCustomer] = useState([]);
     // const [editMode, setEditMode] = useState(false);
     // const [accountStates, setAccountStates] = useState({});
@@ -36,11 +36,11 @@ export default function CustomerProfile({ currentUser,userPermission }) {
     const location = useLocation();
 
     const customerId = location?.state?.CustomerId;
-
+console.log(customerId ? customerId : currentUser?.OwnerId);
     async function fetchData() {
         const data = await getApiRequest(`${gtamUrl}CustomerById`, {
             UserId: currentUser?.UserId,
-            Customer_Id: customerId ? customerId : currentUser?.UserId,
+            Customer_Id: customerId ? customerId : currentUser?.OwnerId,
         });
 
         if (data) {
@@ -291,15 +291,16 @@ export default function CustomerProfile({ currentUser,userPermission }) {
     // };
 
     return (
-        <div className="container mx-auto flex flex-col gap-4 p-5">
-            <ToastContainer />
-            <GtrsButton
-                name="Back"
-                icon={<ArrowLeftIcon className="mr-2 h-4 w-4" />}
-                onClick={() => {
-                    navigate("/gtrs/customer-settings");
-                }}
-            />
+        <><div className="container mx-auto flex flex-col gap-4 p-5">
+            {currentUser?.TypeId !== 1 && (
+                <GtrsButton
+                    name="Back"
+                    icon={<ArrowLeftIcon className="mr-2 h-4 w-4" />}
+                    onClick={() => {
+                        navigate("/gtrs/customer-settings");
+                    }}
+                />
+            )}
             <h1 className="text-4xl font-bold">{customer.CustomerName}</h1>
 
             <div className="flex flex-wrap gap-4">
@@ -316,13 +317,19 @@ export default function CustomerProfile({ currentUser,userPermission }) {
                 </Tabs>
             </div>
 
-            <div className="mt-4">
+            <div className="">
                 {loading ? (
                     <AnimatedLoading />
                 ) : selectedTab === "accounts" ? (
-                    <Accounts customer={customer} userPermission={userPermission} />
+                    <Accounts
+                        customer={customer}
+                        userPermission={userPermission}
+                    />
                 ) : (
-                    <Users customer={customer} userPermission={userPermission} />
+                    <Users
+                        customer={customer}
+                        userPermission={userPermission}
+                    />
                 )}
             </div>
 
@@ -335,5 +342,8 @@ export default function CustomerProfile({ currentUser,userPermission }) {
                 {renderDrawerContent()}
             </Drawer> */}
         </div>
+        <ToastContainer />
+        </>
+        
     );
 }
