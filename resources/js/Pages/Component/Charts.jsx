@@ -29,6 +29,7 @@ import ProductStockTable from "./Products/ProductStockTable";
 import ExcelDeliveryReport from "./ReportsPage/DeliveryReports/ExcelDeliveryReport";
 import DeliveryReportCommentsPage from "./ReportsPage/DeliveryReports/DeliveryReportCommentsPage";
 import ContactRep from "./ContactsRep/ContactRep";
+import DifotReport from "./DifotReport";
 
 export default function charts({
     setCusomterAccounts,
@@ -1382,6 +1383,215 @@ export default function charts({
             value: "",
         },
     ]);
+    const [difotData, setDifotData] = useState([]);
+    const [filtersDifot, setFiltersDifot] = useState([
+        {
+            name: "DeliveryNo",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },{
+            name: "CustomerPallets",
+            operator: "eq",
+            type: "number",
+            value: undefined,
+            emptyValue: null,
+        },
+        {
+            name: "PalletsWeight",
+            operator: "eq",
+            type: "number",
+            value: undefined,
+            emptyValue: null,
+        },
+        {
+            name: "CustomerSpaces",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "SenderName",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "SenderSuburb",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "SenderState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "SenderReference",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "CustomerPostalCode",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "CustomerName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "CustomerState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "CustomerPO",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "ReceiverReference",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "Service",
+            operator: "inlist",
+            type: "select",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "PickupDate",
+            operator: "inrange",
+            type: "date",
+            value: null,
+            emptyValue: null,
+        },
+        {
+            name: "DeliveryRequiredDateTime",
+            operator: "inrange",
+            type: "date",
+            value: null,
+            emptyValue: null,
+        },
+        {
+            name: "NewDeliveryRequiredDateTime",
+            operator: "inrange",
+            type: "date",
+            value: null,
+            emptyValue: null,
+        },
+        {
+            name: "Reason",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "ReasonDescription",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "NewRddTime",
+            operator: "eq",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "RddTime",
+            operator: "eq",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "LTLFTL",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "POD",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
+        {
+            name: "Status",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "GTLSError",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ActualDeliveryDate",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "ActualDeliveryTime",
+            operator: "inrange",
+            type: "date",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "OnTime",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "DelayReason",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "TransportComments",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+    ]);
 
     function getOldestDespatchDate(data) {
         // Filter out elements with invalid 'CreatedDate' values
@@ -2473,6 +2683,7 @@ export default function charts({
             fetchDeliveryReportCommentsData={fetchDeliveryReportCommentsData}
         />,
         <ContactRep url={url} AToken={AToken} currentUser={currentUser} />,
+        <DifotReport difotData={difotData} filterValue={filtersDifot} setFilterValue={setFiltersDifot} />,
     ];
     return (
         <div className="">

@@ -20,6 +20,7 @@ import {
 import "../../../../css/scroll.css";
 import TaskIcon from "@mui/icons-material/Task";
 import ContactsIcon from '@mui/icons-material/Contacts';
+import DescriptionIcon from '@mui/icons-material/Description';
 import { useEffect } from "react";
 import {
     Accordion,
@@ -226,6 +227,14 @@ const navigation = [
         current: false,
         feature: "ContactsRep_View",
     },
+    {
+        id: 28,
+        name: "DIFOT Report",
+        href: "#",
+        icon: DescriptionIcon,
+        current: false,
+        feature: "DifotReport_View",
+    },
 ];
 
 function classNames(...classes) {
@@ -333,7 +342,7 @@ export default function ChartsSidebar({
     };
     const filterNavigation = (navigationitems, user) => {
         return navigationitems.filter((navItem) => {
-            
+
             // Check if the navigation item has sub-options
             if (navItem.options) {
                 // Filter options based on user permissions

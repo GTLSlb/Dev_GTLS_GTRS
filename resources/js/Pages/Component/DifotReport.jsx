@@ -65,7 +65,6 @@ export default function DifotReport({
     const gridRef = useRef(null);
     const handleDownloadExcel = () => {
         const jsonData = handleFilterTable();
-
         const columnMapping = {
             DeliveryNo: "Delivery No",
             PickupDate: "Pickup Date",
@@ -88,7 +87,7 @@ export default function DifotReport({
             ReasonDescription: "Reason Description",
             ChangedAt: "ChangedAt",
             RddTime: "Rdd Time",
-            NewRddTime: "New RDD ime",
+            NewRddTime: "New RDD Time",
             LTLFTL: "LTL/FTL",
             Status: "Status",
             ActualDeliveryDate: "Actual Delivery Date",
@@ -695,180 +694,6 @@ export default function DifotReport({
     return (
         <div>
             <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                <div className="sm:flex sm:items-center">
-                                    <div className="sm:flex  items-center w-full justify-between mt-6">
-                                        <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                                            DIFOT Report
-                                        </h1>
-                                        <Popover className="relative object-right flex-item md:ml-auto">
-                                            <button onMouseEnter={handleMouseEnter}>
-                                                <Popover.Button
-                                                    className={`inline-flex items-center w-[5.5rem] h-[36px] rounded-md border ${
-                                                        data.length === 0
-                                                            ? "bg-gray-300 cursor-not-allowed"
-                                                            : "bg-gray-800"
-                                                    } px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
-                                                    disabled={data.length === 0}
-                                                >
-                                                    Export
-                                                    <ChevronDownIcon
-                                                        className="h-5 w-5"
-                                                        aria-hidden="true"
-                                                    />
-                                                </Popover.Button>
-                                            </button>
-                                            {isMessageVisible && (
-                                                <div className="absolute top-9.5 text-center left-0 md:-left-14 w-[9rem] right-0 bg-red-200 text-dark z-10 text-xs py-2 px-4 rounded-md opacity-100 transition-opacity duration-300">
-                                                    {hoverMessage}
-                                                </div>
-                                            )}
-
-                                            <Transition
-                                                as={Fragment}
-                                                enter="transition ease-out duration-200"
-                                                enterFrom="opacity-0 translate-y-1"
-                                                enterTo="opacity-100 translate-y-0"
-                                                leave="transition ease-in duration-150"
-                                                leaveFrom="opacity-100 translate-y-0"
-                                                leaveTo="opacity-0 translate-y-1"
-                                            >
-                                                <Popover.Panel className="absolute left-20 lg:left-0 z-10 mt-5 flex w-screen max-w-max -translate-x-1/2 px-4">
-                                                    <div className=" max-w-md flex-auto overflow-hidden rounded-lg bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
-                                                        <div className="p-4">
-                                                            <div className="mt-2 flex flex-col">
-                                                                <label className="">
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        name="column"
-                                                                        value="CONSIGNMENTNUMBER"
-                                                                        className="text-dark focus:ring-goldd rounded "
-                                                                    />{" "}
-                                                                    Consignment Number
-                                                                </label>
-                                                                <label>
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        name="column"
-                                                                        value="SENDERNAME"
-                                                                        className="text-dark rounded focus:ring-goldd"
-                                                                    />{" "}
-                                                                    Sender Name
-                                                                </label>
-                                                                <label>
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        name="column"
-                                                                        value="SENDERREFERENCE"
-                                                                        className="text-dark rounded focus:ring-goldd"
-                                                                    />{" "}
-                                                                    Sender Reference
-                                                                </label>
-                                                                <label>
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        name="column"
-                                                                        value="SenderState"
-                                                                        className="text-dark rounded focus:ring-goldd"
-                                                                    />{" "}
-                                                                    Sender State
-                                                                </label>
-                                                                <label>
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        name="column"
-                                                                        value="RECEIVERNAME"
-                                                                        className="text-dark rounded focus:ring-goldd"
-                                                                    />{" "}
-                                                                    Receiver Name
-                                                                </label>
-                                                                <label>
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        name="column"
-                                                                        value="RECEIVER REFERENCE"
-                                                                        className="text-dark rounded focus:ring-goldd"
-                                                                    />{" "}
-                                                                    Receiver Reference
-                                                                </label>
-                                                                <label>
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        name="column"
-                                                                        value="RECEIVERSTATE"
-                                                                        className="text-dark rounded focus:ring-goldd"
-                                                                    />{" "}
-                                                                    Receiver State
-                                                                </label>
-                                                                <label>
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        name="column"
-                                                                        value="SERVICE"
-                                                                        className="text-dark rounded focus:ring-goldd"
-                                                                    />{" "}
-                                                                    Service
-                                                                </label>
-                                                                <label>
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        name="column"
-                                                                        value="DESPATCHDATE"
-                                                                        className="text-dark rounded focus:ring-goldd"
-                                                                    />{" "}
-                                                                    Despatch DateTime
-                                                                </label>
-                                                                <label className="">
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        name="column"
-                                                                        value="DELIVERYREQUIREDDATETIME"
-                                                                        className="text-dark rounded focus:ring-goldd"
-                                                                    />{" "}
-                                                                    RDD
-                                                                </label>
-                                                                <label className="">
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        name="column"
-                                                                        value="ARRIVEDDATETIME"
-                                                                        className="text-dark rounded focus:ring-goldd"
-                                                                    />{" "}
-                                                                    Arrived Date Time
-                                                                </label>
-                                                                <label className="">
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        name="column"
-                                                                        value="DELIVEREDDATETIME"
-                                                                        className="text-dark rounded focus:ring-goldd"
-                                                                    />{" "}
-                                                                    Delivered Date Time
-                                                                </label>
-                                                                <label className="">
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        name="column"
-                                                                        value="POD"
-                                                                        className="text-dark rounded focus:ring-goldd"
-                                                                    />{" "}
-                                                                    POD
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                        <div className="grid grid-cols-1 divide-x divide-gray-900/5 bg-gray-50">
-                                                            <button
-                                                                onClick={handleDownloadExcel}
-                                                                className="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-gray-900 hover:bg-gray-100"
-                                                            >
-                                                                Export XLS
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </Popover.Panel>
-                                            </Transition>
-                                        </Popover>
-                                    </div>
-                                </div>
                 <div className="mt-4">
                     <div className=" w-full bg-smooth ">
                         <TableStructure
