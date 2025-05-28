@@ -117,10 +117,12 @@ export default function Customers({ Token, currentUser }) {
             </CardHeader>
         </Card>
     );
-
+    
     const renderAccountsTab = () => (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {accounts.map(renderCustomerCard)}
+            {accounts
+                .filter((account) => account.CustomerStatusId === 1) // or whatever your active flag is named
+                .map(renderCustomerCard)}
         </div>
     );
 
@@ -129,11 +131,7 @@ export default function Customers({ Token, currentUser }) {
             <h1 className="text-4xl font-bold mb-4">Customers</h1>
 
             <div className="mt-4">
-                {loading ? (
-                    <AnimatedLoading />
-                ) : (
-                    renderAccountsTab()
-                )}
+                {loading ? <AnimatedLoading /> : renderAccountsTab()}
             </div>
         </div>
     );

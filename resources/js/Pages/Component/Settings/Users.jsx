@@ -74,7 +74,6 @@ export default function Users({ customer,userPermission }) {
                 []
             );
 
-            console.log("Changed assignments:", changes);
 
             // Build email details
             const subject = `Account Changes for ${selectedUser.Username}`;
