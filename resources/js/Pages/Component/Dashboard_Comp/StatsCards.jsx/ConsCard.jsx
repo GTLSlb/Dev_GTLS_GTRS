@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardBody, Divider } from "@nextui-org/react";
+import { Card, CardHeader, CardBody, Divider } from "@heroui/react";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import { formatNumberWithCommas } from "@/CommonFunctions";
 function ConsCard({ totalCount }) {

@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardHeader, CardBody, Divider } from "@nextui-org/react";
+import { Card, CardHeader, CardBody, Divider } from "@heroui/react";
 
 import ScaleIcon from "@mui/icons-material/Scale";
 import { formatNumberWithCommas } from "@/CommonFunctions";

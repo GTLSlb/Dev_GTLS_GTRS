@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Gtrs from "@/Pages/GTRS";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -10,13 +9,22 @@ import AnimatedLoading from "@/Components/AnimatedLoading";
 import { handleSessionExpiration } from "@/CommonFunctions";
 import NoAccess from "@/Components/NoAccess";
 import Logout from "@/Pages/Auth/Logout";
+import { CustomContext } from "@/CommonContext";
 
-export default function Sidebar(Boolean) {
-    const [currentUser, setcurrentUser] = useState(null);
-    const [user, setUser] = useState(null);
-    const [allowedApplications, setAllowedApplications] = useState([]);
-    const [Token, setToken] = useState(Cookies.get("access_token"));
-    const [canAccess, setCanAccess] = useState(true);
+export default function Sidebar() {
+    const {
+        user,
+        Token,
+        setUser,
+        setToken,
+        canAccess,
+        currentUser,
+        setCanAccess,
+        setCurrentUser,
+        allowedApplications,
+        setAllowedApplications
+    } = useContext(CustomContext);
+
     const [sidebarElements, setSidebarElements] = useState();
     const Gtamurl = window.Laravel.gtamUrl;
     const appDomain = window.Laravel.appDomain;
@@ -45,7 +53,7 @@ export default function Sidebar(Boolean) {
             .get("/users")
             .then((res) => {
                 if (typeof res.data == "object") {
-                    setcurrentUser(res.data);
+                    setCurrentUser(res.data);
                 }
             })
             .catch((error) => {
@@ -159,7 +167,7 @@ export default function Sidebar(Boolean) {
         return null; // Render nothing
     } else {
         if(canAccess === false) {
-            return <NoAccess currentUser={currentUser} setToken={setToken} setCurrentUser={setcurrentUser}/>
+            return <NoAccess />
         }else{
             return (
                 <div className="h-screen">
@@ -170,22 +178,10 @@ export default function Sidebar(Boolean) {
                                     path="/*"
                                     element={
                                         <Gtrs
-                                            setToken={setToken}
-                                            user={user}
                                             setMobileMenuOpen={setMobileMenuOpen}
                                             mobileMenuOpen={mobileMenuOpen}
                                             loadingGtrs={loadingGtrs}
                                             setLoadingGtrs={setLoadingGtrs}
-                                            currentUser={currentUser}
-                                            AToken={Token}
-                                            setCurrentUser={setcurrentUser}
-                                            allowedApplications={
-                                                allowedApplications
-                                            }
-                                            setUser={setUser}
-                                            setSidebarElements={setSidebarElements}
-                                            sidebarElements={sidebarElements}
-                                            setcurrentUser={setcurrentUser}
                                         />
                                     }
                                 />
@@ -194,8 +190,8 @@ export default function Sidebar(Boolean) {
                                     path="/notFound"
                                     element={<NotFoundPage />}
                                 />
-                                <Route path="/logout" element={<Logout  currentUser={currentUser} setToken={setToken} setCurrentUser={setcurrentUser}/>} />
-                                <Route path="/no-access" element ={<NoAccess currentUser={currentUser} setToken={setToken} setCurrentUser={setcurrentUser}/>} />
+                                <Route path="/logout" element={<Logout />} />
+                                <Route path="/no-access" element ={<NoAccess />} />
                                 <Route path="/*" element={<NotFoundPage />} />
                             </Routes>
                         </div>

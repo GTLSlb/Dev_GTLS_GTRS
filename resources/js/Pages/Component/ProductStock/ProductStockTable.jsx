@@ -12,10 +12,10 @@ import {
     Select,
     SelectItem,
     Spinner,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useMemo } from "react";
 import { useRef } from "react";
-import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
+import { useInfiniteScroll } from "@heroui/use-infinite-scroll";
 import moment from "moment/moment";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
@@ -49,7 +49,7 @@ export const SearchIcon = (props) => {
     );
 };
 
-export default function ProductStockTable({ url, AToken, currentUser }) {
+export default function ProductStockTable({ url, Token, currentUser }) {
     const [productsData, setProductsData] = useState([]);
     const [debtors, setDebtors] = useState([]);
     const [page, setPage] = React.useState(1);
@@ -71,7 +71,7 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
             const response = await axios.get(`${url}/SOH`, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             });
 

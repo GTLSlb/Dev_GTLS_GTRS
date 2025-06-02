@@ -20,8 +20,8 @@ import {
     getFiltersTransport,
 } from "@/Components/utils/filters";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
-import { Button } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import { Button } from "@heroui/react";
+import { useEffect, useState, useContext } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import ConsDetails from "../ConsDetails";
 import NotFoundRedirect from "../NotFoundRedirect";
@@ -51,11 +51,14 @@ import ConsMap from "./TrafficPage/ConsMap";
 import TrafficComp from "./TrafficPage/TrafficComp";
 import TransportRep from "./TransportRep";
 import ProductStockTable from "./ProductStock/ProductStockTable";
+import { CustomContext } from "@/CommonContext";
+import Customers from "./Settings/Customers";
+import CustomerProfile from "./Settings/CustomerProfile";
+import SettingMiddleware from "./Settings/SettingMiddleware";
 
 export default function GtrsMain({
-    setCusomterAccounts,
+    setCustomerAccounts,
     setPerfData,
-    userBody,
     gtccrUrl,
     safetyData,
     debtorsData,
@@ -64,12 +67,11 @@ export default function GtrsMain({
     consData,
     currentUser,
     PerfData,
-    IDfilter,
     rddReasons,
     setrddReasons,
     transportData,
     url,
-    AToken,
+    Token,
     chartsData,
     kpireasonsData,
     userPermission,
@@ -135,7 +137,6 @@ export default function GtrsMain({
 
     const [toggled, setToggled] = useState(false);
     const [broken, setBroken] = useState(false);
-    const [rtl, setRtl] = useState(false);
 
     // ********************************************************************
     // Each table FilterValue
@@ -464,7 +465,7 @@ export default function GtrsMain({
             const res = await axios.get(`${url}Delivery`, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             });
             setDailyReportData(res.data || []);
@@ -502,7 +503,7 @@ export default function GtrsMain({
             const res = await axios.get(`${url}DeliveryReport`, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             });
             setExcelDailyReportData(res.data || []);
@@ -704,14 +705,13 @@ export default function GtrsMain({
                     {/* Start left column area with collapsing sidebar */}
                     <CollapseSidebar
                         setBroken={setBroken}
-                        rtl={rtl}
                         toggled={toggled}
                         setToggled={setToggled}
                         collapsed={collapsed}
                         setCollapsed={setCollapsed}
                         sidebarElements={sidebarElements}
                         setSidebarElements={setSidebarElements}
-                        setCusomterAccounts={setCusomterAccounts}
+                        setCustomerAccounts={setCustomerAccounts}
                         customerAccounts={customerAccounts}
                         onData={handleDataFromChild}
                         currentUser={currentUser}
@@ -881,10 +881,9 @@ export default function GtrsMain({
                                                         setLastIndex={
                                                             setLastIndex
                                                         }
-                                                        IDfilter={IDfilter}
                                                         EDate={EDate}
                                                         gtccrUrl={gtccrUrl}
-                                                        AToken={AToken}
+                                                        Token={Token}
                                                         setEDate={setEDate}
                                                         SDate={SDate}
                                                         setSDate={setSDate}
@@ -1019,7 +1018,6 @@ export default function GtrsMain({
                                                         currentUser={
                                                             currentUser
                                                         }
-                                                        userBody={userBody}
                                                         url={url}
                                                         filterValue={filtersRDD}
                                                         setFilterValue={
@@ -1040,7 +1038,7 @@ export default function GtrsMain({
                                                         EDate={EDate}
                                                         setEDate={setEDate}
                                                         SDate={SDate}
-                                                        AToken={AToken}
+                                                        Token={Token}
                                                         setSDate={setSDate}
                                                         rddReasons={rddReasons}
                                                         setrddReasons={
@@ -1068,7 +1066,7 @@ export default function GtrsMain({
                                                         oldestDate={oldestDate}
                                                         latestDate={latestDate}
                                                         url={url}
-                                                        AToken={AToken}
+                                                        Token={Token}
                                                         customerAccounts={
                                                             customerAccounts
                                                         }
@@ -1166,7 +1164,7 @@ export default function GtrsMain({
                                                             setHolidays
                                                         }
                                                         url={url}
-                                                        AToken={AToken}
+                                                        Token={Token}
                                                         userPermission={
                                                             userPermission
                                                         }
@@ -1196,7 +1194,7 @@ export default function GtrsMain({
                                                                 kpireasonsData={
                                                                     kpireasonsData
                                                                 }
-                                                                AToken={AToken}
+                                                                Token={Token}
                                                                 setkpireasonsData={
                                                                     setkpireasonsData
                                                                 }
@@ -1274,7 +1272,7 @@ export default function GtrsMain({
                                                         }
                                                         accData={dataFromChild}
                                                         url={url}
-                                                        AToken={AToken}
+                                                        Token={Token}
                                                         userPermission={
                                                             userPermission
                                                         }
@@ -1339,7 +1337,7 @@ export default function GtrsMain({
                                                         setNewTransitDays={
                                                             setNewTransitDays
                                                         }
-                                                        AToken={AToken}
+                                                        Token={Token}
                                                     />
                                                 }
                                                 currentUser={currentUser}
@@ -1360,7 +1358,7 @@ export default function GtrsMain({
                                                         currentUser={
                                                             currentUser
                                                         }
-                                                        AToken={AToken}
+                                                        Token={Token}
                                                     />
                                                 }
                                                 currentUser={currentUser}
@@ -1381,7 +1379,7 @@ export default function GtrsMain({
                                                         currentUser={
                                                             currentUser
                                                         }
-                                                        AToken={AToken}
+                                                        Token={Token}
                                                     />
                                                 }
                                                 currentUser={currentUser}
@@ -1411,7 +1409,7 @@ export default function GtrsMain({
                                                 route="IncidentDetails_View"
                                                 element={
                                                     <Incident
-                                                        AToken={AToken}
+                                                        Token={Token}
                                                         gtccrUrl={gtccrUrl}
                                                         currentUser={
                                                             currentUser
@@ -1463,7 +1461,7 @@ export default function GtrsMain({
                                                 element={
                                                     <DeliveryReportPage
                                                         url={url}
-                                                        AToken={AToken}
+                                                        Token={Token}
                                                         currentUser={
                                                             currentUser
                                                         }
@@ -1504,7 +1502,7 @@ export default function GtrsMain({
                                                 element={
                                                     <ExcelDeliveryReport
                                                         url={url}
-                                                        AToken={AToken}
+                                                        Token={Token}
                                                         currentUser={
                                                             currentUser
                                                         }
@@ -1539,7 +1537,7 @@ export default function GtrsMain({
                                                 element={
                                                     <DeliveryReportCommentsPage
                                                         url={url}
-                                                        AToken={AToken}
+                                                        Token={Token}
                                                         currentUser={
                                                             currentUser
                                                         }
@@ -1601,7 +1599,76 @@ export default function GtrsMain({
                                                 element={
                                                     <ProductStockTable
                                                         url={url}
-                                                        AToken={AToken}
+                                                        Token={Token}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                    />
+                                                }
+                                            />
+                                        }
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
+                                    />
+                                    <Route
+                                        path="/settings"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermission}
+                                                route="Settings_View"
+                                                element={
+                                                    <SettingMiddleware
+                                                        url={url}
+                                                        Token={Token}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                    />
+                                                }
+                                            />
+                                        }
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
+                                    />
+                                    <Route
+                                        path="/customer-settings"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermission}
+                                                route="Settings_View"
+                                                element={
+                                                    <Customers
+                                                        url={url}
+                                                        userPermission={
+                                                            userPermission
+                                                        }
+                                                        Token={Token}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                    />
+                                                }
+                                            />
+                                        }
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
+                                    />
+                                    <Route
+                                        path="/customer-profile"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermission}
+                                                route="Settings_View"
+                                                element={
+                                                    <CustomerProfile
+                                                        url={url}
+                                                        userPermission={
+                                                            userPermission
+                                                        }
+                                                        Token={Token}
                                                         currentUser={
                                                             currentUser
                                                         }

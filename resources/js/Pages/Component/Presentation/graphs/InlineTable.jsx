@@ -17,7 +17,7 @@ function InlineTable({
     getReportData,
     selectedReceiver,
     updateLocalDataFromJson,
-    AToken,
+    Token,
 }) {
     const [jsonData, setJsonData] = useState(graphData);
     const [localGraphData, setLocalGraphData] = useState(graphData);
@@ -331,7 +331,7 @@ function InlineTable({
                 .post(`${url}Add/KpiPackRecord`, baseRecord, {
                     headers: {
                         UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
+                        Authorization: `Bearer ${Token}`,
                     },
                 })
                 .then((res) => {

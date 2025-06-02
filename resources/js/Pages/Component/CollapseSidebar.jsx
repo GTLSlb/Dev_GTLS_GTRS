@@ -1,4 +1,4 @@
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { Sidebar, Menu, MenuItem, menuClasses } from "react-pro-sidebar";
 import { useNavigate } from "react-router-dom";
@@ -98,11 +98,10 @@ const hexToRgba = (hex, alpha) => {
 
 export default function CollapseSidebar({
     setBroken,
-    rtl,
     toggled,
     setToggled,
     currentUser,
-    setCusomterAccounts,
+    setCustomerAccounts,
     customerAccounts,
     onData,
     collapsed,
@@ -145,7 +144,7 @@ export default function CollapseSidebar({
                 : option
         );
         setCustomerOptions(value);
-        setCusomterAccounts(value);
+        setCustomerAccounts(value);
         handleSelectedCValue(event);
     };
 
@@ -203,7 +202,11 @@ export default function CollapseSidebar({
                 if (element.options) {
                     return {
                         ...element,
-                        current: element.options.find((option) => option.id == id) ? true : false,
+                        current: element.options.find(
+                            (option) => option.id == id
+                        )
+                            ? true
+                            : false,
                         options: element.options.map((option) => {
                             if (option.id == id) {
                                 return { ...option, current: true };
@@ -221,31 +224,34 @@ export default function CollapseSidebar({
                 }
             } else {
                 if (element.options) {
-                return {
-                    ...element,
-                    current: element.options.find((option) => option.id == id)
-                        ? true
-                        : false,
-                    ...(element.options
-                        ? {
-                              options: element.options.map((option) => {
-                                  if (option.id == id) {
-                                      return { ...option, current: true };
-                                  } else {
-                                      return { ...option, current: false };
-                                  }
-                              }),
-                          }
-                        : {}),
-                };
-            } else {
-                if (element.id === id) {
-                    return { ...element, current: true };
+                    return {
+                        ...element,
+                        current: element.options.find(
+                            (option) => option.id == id
+                        )
+                            ? true
+                            : false,
+                        ...(element.options
+                            ? {
+                                  options: element.options.map((option) => {
+                                      if (option.id == id) {
+                                          return { ...option, current: true };
+                                      } else {
+                                          return { ...option, current: false };
+                                      }
+                                  }),
+                              }
+                            : {}),
+                    };
                 } else {
-                    return { ...element, current: false };
+                    if (element.id === id) {
+                        return { ...element, current: true };
+                    } else {
+                        return { ...element, current: false };
+                    }
                 }
             }
-        }});
+        });
 
         handleSelectOnClick();
         setSidebarElements(updatedElements);
@@ -301,7 +307,7 @@ export default function CollapseSidebar({
                     width="240px"
                     onBackdropClick={() => setToggled(false)}
                     onBreakPoint={setBroken}
-                    rtl={rtl}
+                    rtl={false}
                     breakPoint="md"
                     backgroundColor={hexToRgba(
                         collapsed
@@ -321,7 +327,13 @@ export default function CollapseSidebar({
                     {/* Sidebar content */}
                     <div className=" h-full ">
                         {/* Arrow to close and open it  */}
-                        <div className="p-5 flex items-center justify-between">
+                        <div
+                            className={
+                                collapsed
+                                    ? "p-5 flex items-center justify-center"
+                                    : "p-5 flex items-center justify-between"
+                            }
+                        >
                             <div
                                 className={
                                     collapsed
@@ -357,8 +369,8 @@ export default function CollapseSidebar({
                                     <KeyboardDoubleArrowRightIcon
                                         className={
                                             collapsed
-                                                ? "p-[2px] w-2 h-2"
-                                                : "p-[2px] w-2 h-2"
+                                                ? "p-[2px] min-w-2 min-h-2"
+                                                : "p-[2px] min-w-2 min-h-2"
                                         }
                                     />
                                 </div>

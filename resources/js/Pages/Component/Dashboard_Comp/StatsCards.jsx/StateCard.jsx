@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardBody, Divider } from "@nextui-org/react";
+import { Card, CardHeader, CardBody, Divider } from "@heroui/react";
 import { MapIcon } from "@heroicons/react/24/outline";
 function StateCard({ states }) {
     return (

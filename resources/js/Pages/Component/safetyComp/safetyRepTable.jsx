@@ -20,7 +20,7 @@ import { AlertToast } from "@/permissions";
 export default function SafetyRepTable({
     currentPageRep,
     safetyData,
-    AToken,
+    Token,
     url,
     filterValue,
     customerAccounts,
@@ -456,7 +456,7 @@ export default function SafetyRepTable({
             <SafetyModal
                 url={url}
                 setIsSuccessfull={setIsSuccessfull}
-                AToken={AToken}
+                Token={Token}
                 customerAccounts={debtorsOptions}
                 safetyTypes={safetyTypes}
                 safetyCauses={safetyCauses}

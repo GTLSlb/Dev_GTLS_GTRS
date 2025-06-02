@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import NoAccess from "@/Components/NoAccess";
 import { fetchApiData } from "@/CommonFunctions";
 import MainSidebar from "@/Components/Main-sidebar";
@@ -9,50 +8,57 @@ import GtrsMain from "./Component/GtrsMain";
 import { Routes, Route } from "react-router-dom";
 import { navigateToFirstAllowedPage } from "@/CommonFunctions";
 import { useNavigate } from "react-router-dom";
+import { CustomContext } from "@/CommonContext";
+
 export default function Gtrs({
-    user,
-    setToken,
     setMobileMenuOpen,
-    AToken,
     setLoadingGtrs,
-    currentUser,
     loadingGtrs,
-    allowedApplications,
     mobileMenuOpen,
-    setcurrentUser,
-    setSidebarElements,
-    sidebarElements,
-    setUser,
 }) {
+
+    const {
+        currentUser,
+        setCurrentUser,
+        Token,
+        setToken,
+        user,
+        setUser,
+        canAccess,
+        setCanAccess,
+        sidebarElements,
+        setSidebarElements,
+        allowedApplications,
+        DebtorsApi, setDebtorsApi,
+        debtorsData, setdebtorsData,
+        chartsApi, setchartsApi,
+        consApi, setConsApi,
+        reportApi, setReportApi,
+        transportApi, setTransportApi,
+        KPIReasonsApi, setKPIReasonsApi,
+        customerAccounts, setCustomerAccounts,
+        transportData, setTransportData,
+        kpireasonsData, setkpireasonsData,
+    } = useContext(CustomContext);
+
     const [chartsData, setchartsData] = useState([]);
-    const [debtorsData, setdebtorsData] = useState([]);
-    const [kpireasonsData, setkpireasonsData] = useState([]);
+
     const [rddReasons, setrddReasons] = useState([]);
     const [activeCon, setactiveCon] = useState(0);
-    const [chartsApi, setchartsApi] = useState(false);
-    const [consApi, setConsApi] = useState(false);
-    const [reportApi, setReportApi] = useState(false);
-    const [transportApi, setTransportApi] = useState(false);
-    const [DebtorsApi, setDebtorsApi] = useState(false);
-    const [KPIReasonsApi, setKPIReasonsApi] = useState(false);
     const [safetyData, setSafetyData] = useState([]);
     const [consData, setconsData] = useState([]);
-    const [transportData, setTransportData] = useState([]);
+
     const [PerfData, setPerfData] = useState([]);
-    const [userBody, setUserBody] = useState();
-    const [dataFromChild, setDataFromChild] = useState(null);
     const gtrsUrl = window.Laravel.gtrsUrl;
     const gtamUrl = window.Laravel.gtamUrl;
     const gtccrUrl = window.Laravel.gtccrUrl;
-    const [customerAccounts, setCusomterAccounts] = useState([]);
-    const userdata = currentUser;
-    const [canAccess, setCanAccess] = useState(true);
+
     const [deliveryReportData, setDeliveryReportData] = useState([]);
-    const debtorIdsArray = userdata?.Accounts?.map((account) => {
+    const debtorIdsArray = currentUser?.Accounts?.map((account) => {
         return { UserId: account.DebtorId };
     });
     let debtorIds;
-    if (userdata.TypeId == 1) {
+    if (currentUser.TypeId == 1) {
         debtorIds = debtorIdsArray;
     } else {
         debtorIds = currentUser.UserId;
@@ -63,7 +69,7 @@ export default function Gtrs({
             .get(`${gtrsUrl}Delivery`, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {
@@ -110,7 +116,7 @@ export default function Gtrs({
             const res = await axios.get(`${gtrsUrl}Delivery/Comments`, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             });
             setDeliveryReportComments(res.data || []);
@@ -136,9 +142,9 @@ export default function Gtrs({
             }
         }
     };
+
     useEffect(() => {
-        if (AToken != null && currentUser) {
-            setUserBody(debtorIds);
+        if (Token != null && currentUser) {
             setLoadingGtrs(false);
             fetchDeliveryReport();
             fetchDeliveryReportCommentsData();
@@ -150,7 +156,7 @@ export default function Gtrs({
                 },
                 {
                     url: `${gtamUrl}/Customer/Accounts`,
-                    setData: setCusomterAccounts,
+                    setData: setCustomerAccounts,
                 },
                 { url: `${gtrsUrl}/SafetyReport`, setData: setSafetyData },
                 {
@@ -180,10 +186,10 @@ export default function Gtrs({
                 },
             ];
             urls.forEach(({ url, setData, setApiStatus }) => {
-                fetchApiData(url, setData, currentUser, AToken, setApiStatus);
+                fetchApiData(url, setData, currentUser, Token, setApiStatus);
             });
         }
-    }, [AToken, currentUser]);
+    }, [Token, currentUser]);
 
     useEffect(() => {
         if (loadingGtrs && currentUser != "") {
@@ -219,7 +225,7 @@ export default function Gtrs({
     ) {
         setLoadingGtrs(true);
     }
-    if (loadingGtrs && AToken) {
+    if (loadingGtrs && Token) {
         if (canAccess) {
             return (
                 <Routes>
@@ -229,13 +235,8 @@ export default function Gtrs({
                             <div className="h-full">
                                 {/* <mainSidebar/> */}
                                 <MainSidebar
-                                    allowedApplications={allowedApplications}
                                     setMobileMenuOpen={setMobileMenuOpen}
                                     mobileMenuOpen={mobileMenuOpen}
-                                    setToken={setToken}
-                                    user={user}
-                                    currentUser={currentUser}
-                                    setCurrentUser={setcurrentUser}
                                 />
                                 <MainNavbar
                                     setMobileMenuOpen={setMobileMenuOpen}
@@ -245,14 +246,13 @@ export default function Gtrs({
                                     <div className="md:pl-20 pt-16 h-full">
                                         <GtrsMain
                                             transportData={transportData}
-                                            setCusomterAccounts={
-                                                setCusomterAccounts
+                                            setCustomerAccounts={
+                                                setCustomerAccounts
                                             }
                                             kpireasonsData={kpireasonsData}
                                             setkpireasonsData={
                                                 setkpireasonsData
                                             }
-                                            userBody={userBody}
                                             setUser={setUser}
                                             url={gtrsUrl}
                                             gtccrUrl={gtccrUrl}
@@ -262,7 +262,6 @@ export default function Gtrs({
                                             safetyData={safetyData}
                                             debtorsData={debtorsData}
                                             customerAccounts={customerAccounts}
-                                            IDfilter={dataFromChild}
                                             currentUser={currentUser}
                                             user={user}
                                             userPermission={user}
@@ -270,11 +269,11 @@ export default function Gtrs({
                                             setactiveCon={setactiveCon}
                                             consData={consData}
                                             activeCon={activeCon}
-                                            AToken={AToken}
+                                            Token={Token}
                                             PerfData={PerfData}
                                             setPerfData={setPerfData}
                                             setToken={setToken}
-                                            setCurrentUser={setcurrentUser}
+                                            setCurrentUser={setCurrentUser}
                                             sidebarElements={sidebarElements}
                                             setSidebarElements={
                                                 setSidebarElements
@@ -295,7 +294,7 @@ export default function Gtrs({
                 <NoAccess
                     currentUser={currentUser}
                     setToken={setToken}
-                    setCurrentUser={setcurrentUser}
+                    setCurrentUser={setCurrentUser}
                 />
             );
         }

@@ -21,7 +21,7 @@ export default function AddKPIReason({
     url,
     currentUser,
     userPermission,
-    AToken,
+    Token,
     setSelectedReason,
     setShowAdd,
     fetchData,
@@ -59,7 +59,7 @@ export default function AddKPIReason({
             .post(`${url}Add/KpiReason`, inputValues, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {

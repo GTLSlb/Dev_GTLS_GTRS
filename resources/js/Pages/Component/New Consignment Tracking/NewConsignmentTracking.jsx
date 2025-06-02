@@ -27,7 +27,7 @@ import {
     Input,
     Button,
     Image,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { ChevronLeftIcon, MapPinIcon } from "@heroicons/react/20/solid";
 import { AlertToast } from "@/permissions";
 

@@ -19,7 +19,7 @@ export default function FailedCons({
     PerfData,
     failedReasons,
     url,
-    AToken,
+    Token,
     filterValue,
     setFilterValue,
     currentUser,
@@ -447,7 +447,7 @@ export default function FailedCons({
 
             <SetFailedReasonModal
                 url={url}
-                AToken={AToken}
+                Token={Token}
                 isOpen={isModalOpen}
                 reason={reason}
                 setReason={setReason}

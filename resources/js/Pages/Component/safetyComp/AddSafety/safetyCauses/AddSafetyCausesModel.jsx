@@ -12,7 +12,7 @@ export default function AddSafetyCausesModal({
     isOpen,
     handleClose,
     url,
-    AToken,
+    Token,
     cause,
     updateLocalData,
     safetyCauses,
@@ -72,7 +72,7 @@ export default function AddSafetyCausesModal({
                 {
                     headers: {
                         UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
+                        Authorization: `Bearer ${Token}`,
                     },
                 }
             );

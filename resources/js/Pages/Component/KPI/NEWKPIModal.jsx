@@ -11,7 +11,7 @@ export default function NewKPIModalAddReason({
     handleClose,
     url,
     kpi,
-    AToken,
+    Token,
     userPermission,
     currentUser,
     updateLocalData,
@@ -78,7 +78,7 @@ export default function NewKPIModalAddReason({
                 .post(`${url}Add/KPI/FailedReasonNew`, data, {
                     headers: {
                         UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
+                        Authorization: `Bearer ${Token}`,
                     },
                 })
                 .then((res) => {})

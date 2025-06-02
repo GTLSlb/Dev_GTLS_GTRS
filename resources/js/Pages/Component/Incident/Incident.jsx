@@ -2,7 +2,7 @@ import {
     Progress,
     Tab,
     Tabs,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useEffect, useState } from "react";
 import IncidentDetails from "./IncidentDetails";
 import swal from "sweetalert";
@@ -13,7 +13,7 @@ import { useLocation } from "react-router-dom";
 export default function Incident({
     gtccrUrl,
     currentUser,
-    AToken,
+    Token,
     userPermission,
 }) {
     const location = useLocation();
@@ -32,7 +32,7 @@ export default function Incident({
             .get(`${gtccrUrl}IncidentAssets`, {
                 headers: {
                     UserId: currentUser?.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {
@@ -75,7 +75,7 @@ export default function Incident({
                 headers: {
                     UserId: currentUser?.UserId,
                     // UserId: 1,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {
@@ -117,7 +117,7 @@ export default function Incident({
                 headers: {
                     // UserId: 1,
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                     Incident_Id: location?.state?.incidentId,
                 },
             })
@@ -164,7 +164,7 @@ export default function Incident({
                             <Tab key="notes" title="Notes">
                                 <Notes
                                     incident={incident}
-                                    AToken={AToken}
+                                    Token={Token}
                                     getIncident={getIncident}
                                     filters={filters}
                                     currentUser={currentUser}

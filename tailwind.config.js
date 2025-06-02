@@ -1,5 +1,5 @@
 const defaultTheme = require("tailwindcss/defaultTheme");
-const {nextui} = require("@nextui-org/react");
+const {heroui} = require("@heroui/react");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -8,7 +8,7 @@ module.exports = {
         "./storage/framework/views/*.php",
         "./resources/views/**/*.blade.php",
         "./resources/js/**/*.jsx",
-        "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+        "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
     ],
 
     theme: {
@@ -53,6 +53,6 @@ module.exports = {
         require("@tailwindcss/forms"),
         require("@tailwindcss/aspect-ratio"),
         require('tailwindcss-animated'),
-        nextui(),
+        heroui(),
     ],
 };

@@ -10,7 +10,8 @@ import {
     CameraIcon,
     DocumentTextIcon,
     ClipboardDocumentIcon,
-    RectangleStackIcon
+    RectangleStackIcon,
+    CogIcon
 } from "@heroicons/react/24/solid";
 import TaskIcon from "@mui/icons-material/Task";
 import ReportIcon from "@mui/icons-material/Report";
@@ -251,6 +252,15 @@ const menu = [
         current: false,
         feature: "StockReport_View",
         url: "/gtrs/SOH",
+    },
+    {
+        id: 31,
+        name: "Settings",
+        href: "#",
+        icon: CogIcon,
+        current: false,
+        feature: "Settings_View",
+        url: "/gtrs/settings",
     },
 ];
 

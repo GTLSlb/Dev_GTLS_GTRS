@@ -21,7 +21,7 @@ export default function RDDTable({
     rddData,
     url,
     setIncidentId,
-    AToken,
+    Token,
     setrddData,
     filterValue,
     setFilterValue,
@@ -426,7 +426,7 @@ export default function RDDTable({
             )}
             <ModalRDD
                 url={url}
-                AToken={AToken}
+                Token={Token}
                 isOpen={isModalOpen}
                 updateLocalData={updateLocalData}
                 handleClose={handleEditClick}

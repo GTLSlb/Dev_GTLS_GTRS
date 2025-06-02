@@ -15,7 +15,7 @@ export default function SetFailedReasonModal({
     handleClose,
     reason,
     url,
-    AToken,
+    Token,
     setReason,
     failedReasons,
     currentUser,
@@ -144,7 +144,7 @@ export default function SetFailedReasonModal({
                 {
                     headers: {
                         UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
+                        Authorization: `Bearer ${Token}`,
                     },
                 }
             );

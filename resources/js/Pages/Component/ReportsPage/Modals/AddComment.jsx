@@ -6,14 +6,14 @@ import swal from "sweetalert";
 import { handleSessionExpiration } from "@/CommonFunctions";
 import {
     Spinner,
-} from "@nextui-org/react";
+} from "@heroui/react";
 
 export default function AddComment({
     isOpen,
     url,
     handleClose,
     consId,
-    AToken,
+    Token,
     fetchData,
     currentUser,
     commentsData,
@@ -67,7 +67,7 @@ export default function AddComment({
                 const response = await axios.post(`${url}Add/Delivery/Comment`, formValues, {
                     headers: {
                         UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
+                        Authorization: `Bearer ${Token}`,
                     },
                 });
 

@@ -15,7 +15,7 @@ export default function AddRDDReasonModal({
     url,
     reason,
     setReason,
-    AToken,
+    Token,
     updateLocalData,
     rddReasons,
     currentUser,
@@ -74,7 +74,7 @@ export default function AddRDDReasonModal({
             const response = await axios.post(
                 `${url}Add/RddChangeReason`,data,{headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 }},
 
             );

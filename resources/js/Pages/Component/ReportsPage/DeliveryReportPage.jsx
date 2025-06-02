@@ -11,7 +11,7 @@ import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import moment from "moment";
 import { EyeIcon, PencilIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
-import { Spinner } from "@nextui-org/react";
+import { Spinner } from "@heroui/react";
 import ComboBox from "@/Components/ComboBox";
 import ViewComments from "./Modals/ViewComments";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
@@ -31,7 +31,7 @@ import TableStructure from "@/Components/TableStructure";
 
 export default function DeliveryReportPage({
     url,
-    AToken,
+    Token,
     deliveryReportData,
     currentUser,
     userPermission,
@@ -356,7 +356,7 @@ export default function DeliveryReportPage({
             const res = await axios.get(`${url}Delivery/Comments`, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             });
             setDeliveryCommentsOptions(res.data || []);
@@ -401,7 +401,7 @@ export default function DeliveryReportPage({
                 .post(`${url}Add/Comment`, inputValues, {
                     headers: {
                         UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
+                        Authorization: `Bearer ${Token}`,
                     },
                 })
                 .then(async () => {
@@ -409,7 +409,7 @@ export default function DeliveryReportPage({
                         .get(`${url}Delivery/Comments`, {
                             headers: {
                                 UserId: currentUser.UserId,
-                                Authorization: `Bearer ${AToken}`,
+                                Authorization: `Bearer ${Token}`,
                             },
                         })
                         .then((res) => {
@@ -438,7 +438,7 @@ export default function DeliveryReportPage({
                                             {
                                                 headers: {
                                                     UserId: currentUser.UserId,
-                                                    Authorization: `Bearer ${AToken}`,
+                                                    Authorization: `Bearer ${Token}`,
                                                 },
                                             }
                                         )
@@ -553,7 +553,7 @@ export default function DeliveryReportPage({
                         {
                             headers: {
                                 UserId: currentUser.UserId,
-                                Authorization: `Bearer ${AToken}`,
+                                Authorization: `Bearer ${Token}`,
                             },
                         }
                     )
@@ -1208,7 +1208,7 @@ export default function DeliveryReportPage({
             )}
             <ViewComments
                 url={url}
-                AToken={AToken}
+                Token={Token}
                 isOpen={isViewModalOpen}
                 handleClose={handleViewClose}
                 consId={consId}

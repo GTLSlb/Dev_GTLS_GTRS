@@ -14,7 +14,7 @@ import AddCommentToList from "./AddCommentToList";
 
 export default function DeliveryReportCommentsPage({
     url,
-    AToken,
+    Token,
     currentUser,
     userPermission,
     data,
@@ -185,7 +185,7 @@ export default function DeliveryReportCommentsPage({
                         selectedComment={selectedComment}
                         setSelectedComment={setSelectedComment}
                         url={url}
-                        AToken={AToken}
+                        Token={Token}
                         currentUser={currentUser}
                         fetchData={fetchDeliveryReportCommentsData}
                         setShowAdd={setShowAdd}

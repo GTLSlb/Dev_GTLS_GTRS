@@ -137,14 +137,14 @@ export const fetchApiData = async (
     url,
     setData,
     currentUser,
-    AToken,
+    Token,
     setApiStatus
 ) => {
     try {
         const response = await axios.get(url, {
             headers: {
                 UserId: currentUser.UserId,
-                Authorization: `Bearer ${AToken}`,
+                Authorization: `Bearer ${Token}`,
             },
         });
 
@@ -314,7 +314,7 @@ export function navigateToFirstAllowedPage({
     navigate,
 }) {
     let items = [];
-    
+
     menu?.forEach((menuItem) => {
         if (menuItem.hasOwnProperty("options")) {
             menuItem.options.forEach((option) => {
@@ -356,8 +356,8 @@ export function navigateToFirstAllowedPage({
         setSidebarElements(findCurrentItem(items, window.location.pathname))
         navigate(window.location.pathname);
     } else {
-        // Navigate to the first allowed page 
-        items[0].current = true; 
+        // Navigate to the first allowed page
+        items[0].current = true;
         navigate(items[0].url);
         setSidebarElements(items);
     }

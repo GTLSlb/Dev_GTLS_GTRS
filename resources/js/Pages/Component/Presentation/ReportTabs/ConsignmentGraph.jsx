@@ -4,7 +4,7 @@ import { useState } from "react";
 import Select from "react-select";
 import BarGraph from "../graphs/BarGraph";
 
-function ConsignmentGraph({ url, currentUser, AToken, customers, CustomerId }) {
+function ConsignmentGraph({ url, currentUser, Token, customers, CustomerId }) {
     const [graphData, setGraphData] = useState();
     const [originalgraphData, setGraphOriginalData] = useState();
     const [loading, setLoading] = useState(true);
@@ -37,7 +37,7 @@ function ConsignmentGraph({ url, currentUser, AToken, customers, CustomerId }) {
                     UserId: currentUser.UserId,
                     CustomerId: CustomerId,
                     CustomerTypeId: selectedReceiver.value,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {
@@ -153,7 +153,7 @@ function ConsignmentGraph({ url, currentUser, AToken, customers, CustomerId }) {
                     graphData={graphData}
                     url={url}
                     CustomerId={CustomerId}
-                    AToken={AToken}
+                    Token={Token}
                     currentUser={currentUser}
                     selectedReceiver={selectedReceiver}
                     originalgraphData={originalgraphData}

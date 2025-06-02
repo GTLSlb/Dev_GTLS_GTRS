@@ -1,9 +1,11 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import Cookies from "js-cookie";
 import { clearMSALLocalStorage } from "@/CommonFunctions";
 import { PublicClientApplication } from "@azure/msal-browser";
 import { LogoutSVG } from "@/assets/svgs/LogoutSVG";
-export default function Logout({ currentUser, setToken, setCurrentUser }) {
+import { CustomContext } from "@/CommonContext";
+
+export default function Logout() {
     const msalConfig = {
         auth: {
             clientId: "05f70999-6ca7-4ee8-ac70-f2d136c50288",
@@ -19,6 +21,11 @@ export default function Logout({ currentUser, setToken, setCurrentUser }) {
     const pca = new PublicClientApplication(msalConfig);
     const appUrl = window.Laravel.appUrl;
 
+    const {
+        setToken,
+        currentUser,
+        setCurrentUser,
+    } = useContext(CustomContext);
     const handleLogout = async () => {
         try {
             const credentials = {

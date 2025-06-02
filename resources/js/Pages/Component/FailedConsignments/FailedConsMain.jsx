@@ -13,7 +13,7 @@ export default function FailedConsMain({
     currentUser,
     userPermission,
     accData,
-    AToken,
+    Token,
     failedReasons,
     setFailedReasons,
 }) {
@@ -31,7 +31,7 @@ export default function FailedConsMain({
                 .get(`${url}FailureReasons`, {
                     headers: {
                         UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
+                        Authorization: `Bearer ${Token}`,
                     },
                 })
                 .then((res) => {
@@ -82,7 +82,7 @@ export default function FailedConsMain({
                         PerfData={PerfData}
                         filterValue={filterValue}
                         setFilterValue={setFilterValue}
-                        AToken={AToken}
+                        Token={Token}
                     />
                 </div>
             )}
