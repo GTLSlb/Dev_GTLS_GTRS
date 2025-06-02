@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Tabs, Tab, Button } from "@nextui-org/react";
+import { Tabs, Tab, Button } from "@heroui/react";
 import { IoClose } from "react-icons/io5"; // Close (X) icon from react-icons
 import FinancialDashboard from "./Comp/FinancialDashboard";
 import FirstSection from "./Comp/firstSection";
