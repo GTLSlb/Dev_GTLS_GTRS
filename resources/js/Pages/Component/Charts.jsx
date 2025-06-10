@@ -1392,21 +1392,21 @@ export default function charts({
             value: null,
             emptyValue: "",
         },{
-            name: "CustomerPallets",
-            operator: "eq",
-            type: "number",
+            name: "Pallets",
+            operator: "contains",
+            type: "string",
             value: undefined,
             emptyValue: null,
         },
         {
-            name: "PalletsWeight",
-            operator: "eq",
-            type: "number",
+            name: "Weight",
+            operator: "contains",
+            type: "string",
             value: undefined,
             emptyValue: null,
         },
         {
-            name: "CustomerSpaces",
+            name: "Spaces",
             operator: "contains",
             type: "string",
             value: null,
@@ -1441,6 +1441,27 @@ export default function charts({
             emptyValue: "",
         },
         {
+            name: "REceiverState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ReceiverPostCode",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ReceiverReference",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
             name: "CustomerPostalCode",
             operator: "contains",
             type: "string",
@@ -1469,13 +1490,6 @@ export default function charts({
             emptyValue: "",
         },
         {
-            name: "ReceiverReference",
-            operator: "contains",
-            type: "string",
-            value: null,
-            emptyValue: "",
-        },
-        {
             name: "Service",
             operator: "inlist",
             type: "select",
@@ -1490,16 +1504,16 @@ export default function charts({
             emptyValue: null,
         },
         {
-            name: "DeliveryRequiredDateTime",
+            name: "RDD",
             operator: "inrange",
             type: "date",
             value: null,
             emptyValue: null,
         },
         {
-            name: "NewDeliveryRequiredDateTime",
-            operator: "inrange",
-            type: "date",
+            name: "NewRdd",
+            operator: 'inrange',
+            type: 'date',
             value: null,
             emptyValue: null,
         },
@@ -1510,23 +1524,16 @@ export default function charts({
             value: "",
         },
         {
-            name: "ReasonDescription",
+            name: "ReasonDesc",
             operator: "contains",
             type: "string",
             value: "",
         },
         {
-            name: "NewRddTime",
-            operator: "eq",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "RddTime",
-            operator: "eq",
-            type: "string",
-            value: "",
+            name: "ChangedAt",
+            operator: "inrange",
+            type: "date",
+            value: null,
             emptyValue: "",
         },
         {
@@ -1537,20 +1544,7 @@ export default function charts({
             emptyValue: "",
         },
         {
-            name: "POD",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "Status",
-            operator: "inlist",
-            type: "select",
-            value: null,
-            emptyValue: "",
-        },
-        {
-            name: "GTLSError",
+            name: "OnTime",
             operator: "inlist",
             type: "select",
             value: null,
@@ -1560,35 +1554,14 @@ export default function charts({
             name: "ActualDeliveryDate",
             operator: "inrange",
             type: "date",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "ActualDeliveryTime",
-            operator: "inrange",
-            type: "date",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "OnTime",
-            operator: "inlist",
-            type: "select",
             value: null,
             emptyValue: "",
         },
         {
-            name: "DelayReason",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "TransportComments",
-            operator: "contains",
-            type: "string",
-            value: "",
+            name: "GTLSError",
+            operator: "inlist",
+            type: "select",
+            value: null,
             emptyValue: "",
         },
     ]);
@@ -2186,6 +2159,7 @@ export default function charts({
                 },
             });
             setDailyReportData(res.data || []);
+            setExcelDailyReportData(res.data || []);
 
             // Check if setCellLoading exists before calling it
             if (typeof setCellLoading === "function") {
@@ -2216,15 +2190,15 @@ export default function charts({
 
     const [excelDailyReportData, setExcelDailyReportData] = useState();
     const [deliveryReportComments, setDeliveryReportComments] = useState();
-    const fetchExcelDeliveryReportData = async (setCellLoading) => {
+    const fetchDifotReportData = async (setCellLoading) => {
         try {
-            const res = await axios.get(`${url}DeliveryReport`, {
+            const res = await axios.get(`${url}Difot/Report`, {
                 headers: {
                     UserId: currentUser.UserId,
                     Authorization: `Bearer ${AToken}`,
                 },
             });
-            setExcelDailyReportData(res.data || []);
+            setDifotData(res.data || []);
         } catch (err) {
             if (err.response && err.response.status === 401) {
                 // Handle 401 error using SweetAlert
@@ -2282,7 +2256,7 @@ export default function charts({
     useEffect(() => {
         if (currentUser) {
             fetchDeliveryReport();
-            fetchExcelDeliveryReportData();
+            fetchDifotReportData();
             fetchDeliveryReportCommentsData();
         }
     }, [currentUser]);
@@ -2671,7 +2645,7 @@ export default function charts({
             setActiveIndexGTRS={setActiveIndexGTRS}
             // userPermission={userPermission}
             deliveryReportData={excelDailyReportData}
-            fetchDeliveryReport={fetchExcelDeliveryReportData}
+            fetchDeliveryReport={fetchDeliveryReport}
             deliveryCommentsOptions={deliveryReportComments}
         />,
         <DeliveryReportCommentsPage

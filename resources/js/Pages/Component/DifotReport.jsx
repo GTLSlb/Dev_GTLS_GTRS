@@ -49,18 +49,14 @@ export default function DifotReport({
 
     const minDatePickup = getMinMaxValue(difotData, "DespatchDate", 1);
     const maxDatePickup = getMinMaxValue(difotData, "DespatchDate", 2);
-    const minDaterdd = getMinMaxValue(difotData, "DeliveryRequiredDateTime", 1);
-    const maxDaterdd = getMinMaxValue(difotData, "DeliveryRequiredDateTime", 2);
-    const minDateActualDel = getMinMaxValue(difotData, "DeliveredDate", 1);
-    const maxDateActualDel = getMinMaxValue(difotData, "DeliveredDate", 2);
+    const minDaterdd = getMinMaxValue(difotData, "RDD", 1);
+    const maxDaterdd = getMinMaxValue(difotData, "RDD", 2);
+    const minDateNewRdd = getMinMaxValue(difotData, "NewRdd", 1);
+    const maxDateNewRdd = getMinMaxValue(difotData, "NewRdd", 2);
+    const minDateActualDel = getMinMaxValue(difotData, "ActualDeliveryDate", 1);
+    const maxDateActualDel = getMinMaxValue(difotData, "ActualDeliverydDate", 2);
     const minDateChangedAt = getMinMaxValue(difotData, "ChangedAt", 1);
     const maxDateChangedAt = getMinMaxValue(difotData, "ChangedAt", 2);
-
-    const falsePodOnly = difotData?.filter(function (entry) {
-        return entry.POD === false;
-    });
-
-    const [data, setData] = useState(falsePodOnly);
 
     const gridRef = useRef(null);
     const handleDownloadExcel = () => {
@@ -71,7 +67,7 @@ export default function DifotReport({
             SenderName: "Sender Name",
             SenderSuburb: "Sender Suburb",
             SenderState: "Sender State",
-            SenderReference: "Sender Reference",
+            // SenderReference: "Sender Reference",
             CustomerName: "Customer Name",
             CustomerState: "Customer State",
             CustomerPostalCode: "Customer Postal Code",
@@ -82,20 +78,15 @@ export default function DifotReport({
             ReceiverReference: "Receiver Reference",
             Service: "Service",
             DeliveryRequiredDateTime: "RDD",
-            NewDeliveryRequiredDateTime: "New RDD",
             Reason: "Reason",
             ReasonDescription: "Reason Description",
             ChangedAt: "ChangedAt",
             RddTime: "Rdd Time",
-            NewRddTime: "New RDD Time",
+            NewRdd: "New RDD Time",
             LTLFTL: "LTL/FTL",
-            Status: "Status",
             ActualDeliveryDate: "Actual Delivery Date",
             OnTime: "On Time",
-            POD: "POD",
             GTLSError: "GTLS Error",
-            DelayReason: "Delay Reason",
-            TransportComments: "Transport Comments",
         };
 
         const selectedColumns = jsonData?.selectedColumns.map(
@@ -212,6 +203,11 @@ export default function DifotReport({
             headerAlign: "center",
         },
         {
+            name: "receiverInfo",
+            header: "Receiver Details",
+            headerAlign: "center",
+        },
+        {
             name: "customerInfo",
             header: "Customer Details",
             headerAlign: "center",
@@ -239,11 +235,11 @@ export default function DifotReport({
         return newData;
     };
 
-    const senderStates = createNewLabelObjects(falsePodOnly, "SenderState");
-    const receiverStates = createNewLabelObjects(falsePodOnly, "ReceiverState");
-    const services = createNewLabelObjects(falsePodOnly, "Service");
-    const LTLFTLOptions = createNewLabelObjects(data, "LTLFTL");
-    const StatusOptions = createNewLabelObjects(data, "Status");
+    const senderStates = createNewLabelObjects(difotData, "SenderState");
+    const receiverStates = createNewLabelObjects(difotData, "REceiverState");
+    const services = createNewLabelObjects(difotData, "Service");
+    const LTLFTLOptions = createNewLabelObjects(difotData, "LTLFTL");
+    const StatusOptions = createNewLabelObjects(difotData, "OnTime");
 
     const RDDTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
         const [value, setValue] = useState(
@@ -332,6 +328,26 @@ export default function DifotReport({
             },
         },
         {
+            name: "CustomerName",
+            header: "Customer Name",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "start",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+            group: "customerInfo",
+        },
+        {
+            name: "CustomerPO",
+            header: "Customer PO",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "start",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+            group: "customerInfo",
+        },
+        {
             name: "SenderName",
             header: "Sender Name",
             type: "string",
@@ -377,17 +393,7 @@ export default function DifotReport({
             filterEditor: StringFilter,
         },
         {
-            name: "CustomerName",
-            header: "Customer Name",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "start",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-            group: "customerInfo",
-        },
-        {
-            name: "CustomerState",
+            name: "REceiverState",
             header: "State",
             type: "string",
             headerAlign: "center",
@@ -399,64 +405,52 @@ export default function DifotReport({
                 wrapMultiple: false,
                 dataSource: receiverStates,
             },
-            group: "customerInfo",
+            group: "receiverInfo",
         },
         {
-            name: "CustomerPostalCode",
-            header: "Customer Postal Code",
+            name: "ReceiverPostCode",
+            header: "Receiver Post Code",
             type: "string",
             headerAlign: "center",
             textAlign: "start",
             defaultWidth: 170,
             filterEditor: StringFilter,
-            group: "customerInfo",
-        },
-        {
-            name: "CustomerSpaces",
-            header: "Spaces",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "start",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-            group: "customerInfo",
-        },
-        {
-            name: "CustomerPallets",
-            header: "Pallets",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "start",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-            group: "customerInfo",
-        },
-        {
-            name: "PalletsWeight",
-            header: "Weight",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "start",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-            group: "customerInfo",
-        },
-        {
-            name: "CustomerPO",
-            header: "Customer PO",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "start",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-            group: "customerInfo",
+            group: "receiverInfo",
         },
         {
             name: "ReceiverReference",
             header: "Receiver Reference",
             type: "string",
             headerAlign: "center",
-            textAlign: "center",
+            textAlign: "start",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+            group: "receiverInfo",
+        },
+        {
+            name: "Spaces",
+            header: "Spaces",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "start",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
+        {
+            name: "Pallets",
+            header: "Pallets",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "start",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
+        {
+            name: "Weight",
+            header: "Weight",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "start",
             defaultWidth: 170,
             filterEditor: StringFilter,
         },
@@ -474,7 +468,7 @@ export default function DifotReport({
             },
         },
         {
-            name: "DeliveryRequiredDateTime",
+            name: "RDD",
             header: "RDD",
             headerAlign: "center",
             textAlign: "center",
@@ -493,14 +487,7 @@ export default function DifotReport({
             },
         },
         {
-            name: "RddTime",
-            header: "RDD Time",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: RDDTimeFilter,
-        },
-        {
-            name: "NewDeliveryRequiredDateTime",
+            name: "NewRdd",
             header: "New RDD",
             headerAlign: "center",
             textAlign: "center",
@@ -508,22 +495,18 @@ export default function DifotReport({
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
             filterEditorProps: {
-                minDate: minDaterdd,
-                maxDate: maxDaterdd,
+                minDate: minDateNewRdd,
+                maxDate: maxDateNewRdd,
             },
             render: ({ value, cellProps }) => {
+                const dateValue = value.replace(/\//g, '-'); // replace / with -
+                const date = new Date(dateValue);
+                const formattedDate = `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()} ${date.toLocaleTimeString('en-GB', { hour12: true })}`;
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+                    : formattedDate;
             },
-        },
-        {
-            name: "NewRddTime",
-            header: "New RDD Time",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: RDDTimeFilter,
         },
         {
             name: "Reason",
@@ -535,7 +518,7 @@ export default function DifotReport({
             filterEditor: StringFilter,
         },
         {
-            name: "ReasonDescription",
+            name: "ReasonDesc",
             header: "Reason Description",
             type: "string",
             headerAlign: "center",
@@ -577,8 +560,8 @@ export default function DifotReport({
             },
         },
         {
-            name: "Status",
-            header: "Status",
+            name: "OnTime",
+            header: "OnTime",
             headerAlign: "center",
             textAlign: "center",
             defaultFlex: 1,
@@ -610,25 +593,7 @@ export default function DifotReport({
             },
         },
         {
-            name: "OnTime",
-            header: "OnTime",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            render: ({ value }) => {
-                return value ? (
-                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                        YES
-                    </span>
-                ) : (
-                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        No
-                    </span>
-                );
-            },
-        },
-        {
-            name: "GTLSError",
+            name: "GtlsError",
             header: "GTLS Error",
             headerAlign: "center",
             textAlign: "center",
@@ -643,54 +608,8 @@ export default function DifotReport({
                 );
             },
         },
-        {
-            name: "POD",
-            header: "POD",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            render: ({ value }) => {
-                return value ? (
-                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                        True
-                    </span>
-                ) : (
-                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        False
-                    </span>
-                );
-            },
-        },
-        {
-            name: "DelayReason",
-            header: "Delay Reason",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-        },
-        {
-            name: "TransportComments",
-            header: "Transport Comments",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-        },
     ];
-    const [hoverMessage, setHoverMessage] = useState("");
-    const [isMessageVisible, setMessageVisible] = useState(false);
-    const handleMouseEnter = () => {
-        if (data.length === 0) {
-            setHoverMessage("No Data Found");
-            setMessageVisible(true);
-            setTimeout(() => {
-                setMessageVisible(false);
-            }, 1000);
-        }
-    };
+
     return (
         <div>
             <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
@@ -704,7 +623,7 @@ export default function DifotReport({
                             gridRef={gridRef}
                             selected={selected}
                             groupsElements={groups}
-                            tableDataElements={data}
+                            tableDataElements={difotData}
                             filterValueElements={filterValue}
                             setFilterValueElements={setFilterValue}
                             columnsElements={columns}
