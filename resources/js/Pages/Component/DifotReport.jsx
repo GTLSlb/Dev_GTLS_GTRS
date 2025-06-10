@@ -518,7 +518,6 @@ export default function DifotReport({
                 maxDate: maxDateActualDel,
             },
             render: ({ value, cellProps }) => {
-                console.log(value)
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
