@@ -15,7 +15,7 @@ import {
     AreaChart,
     Area,
 } from "recharts";
-import DifotStats from "./DifotStats";
+import Stats from "./Stats";
 
 // Dummy data for the charts
 const dummyLineData = [
@@ -77,7 +77,7 @@ function FinancialDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
             {/* Key Financial Metrics */}
             <div className="lg:col-span-2">
-                <DifotStats />
+                <Stats />
             </div>
     
             {/* Service Cost Breakdown (Stacked Bar Chart) */}

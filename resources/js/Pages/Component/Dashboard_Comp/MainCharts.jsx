@@ -13,7 +13,7 @@ import {
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import Charts from "./Charts";
 import ChartsTable from "./ChartsTable";
-import DifotDashboard from "../DIFOT/DifotDashboard";
+import SpendDashboard from "../SpendAnalysis/SpendDashboard";
 
 const customStyles = {
     control: (provided) => ({
@@ -237,7 +237,7 @@ export default function MainCharts({
                                 userPermission={userPermission}
                             />
                         </div>
-                    ) : 1 == 2 ? (
+                    ) : (
                         <>
                             <div className="sm:flex sm:items-center">
                                 <div className="sm:flex-auto md:mt-6">
@@ -394,11 +394,7 @@ export default function MainCharts({
                                 />
                             </div>
                         </>
-                    ) : (
-                        <div>
-                            <DifotDashboard />
-                        </div>
-                    )
+                    ) 
                 ) : (
                     <div className=" h-72 flex items-center justify-center mt-5">
                         <div className="text-center flex justify-center flex-col">

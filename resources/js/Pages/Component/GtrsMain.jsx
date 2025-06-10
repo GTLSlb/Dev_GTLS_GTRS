@@ -55,6 +55,7 @@ import { CustomContext } from "@/CommonContext";
 import Customers from "./Settings/Customers";
 import CustomerProfile from "./Settings/CustomerProfile";
 import SettingMiddleware from "./Settings/SettingMiddleware";
+import SpendDashboard from "./SpendAnalysis/SpendDashboard";
 
 export default function GtrsMain({
     setCustomerAccounts,
@@ -83,7 +84,6 @@ export default function GtrsMain({
     deliveryReportComments,
     fetchDeliveryReportCommentsData,
 }) {
-
     window.moment = moment;
     const [KPIData, setKPIData] = useState([]);
     const [NewKPIData, setNewKPIData] = useState([]);
@@ -692,10 +692,14 @@ export default function GtrsMain({
 
     const navigate = useNavigate();
     useEffect(() => {
-        if(userPermission){
-            navigateToFirstAllowedPage({setSidebarElements, user: userPermission, navigate})
+        if (userPermission) {
+            navigateToFirstAllowedPage({
+                setSidebarElements,
+                user: userPermission,
+                navigate,
+            });
         }
-    },[])
+    }, []);
 
     return (
         <div className="h-full">
@@ -756,6 +760,19 @@ export default function GtrsMain({
                                                         }
                                                     />
                                                 }
+                                                currentUser={currentUser}
+                                                setToken={setToken}
+                                                setCurrentUser={setCurrentUser}
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path="/spendanalysis"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermission}
+                                                route="Dashboard_view"
+                                                element={<SpendDashboard />}
                                                 currentUser={currentUser}
                                                 setToken={setToken}
                                                 setCurrentUser={setCurrentUser}

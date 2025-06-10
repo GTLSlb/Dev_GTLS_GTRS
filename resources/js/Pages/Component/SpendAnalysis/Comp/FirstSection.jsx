@@ -13,7 +13,7 @@ import {
     Pie,
     Cell,
 } from "recharts";
-import DifotStats from "./DifotStats";
+import Stats from "./Stats";
 
 const dummyData = [
     { name: "Week 1", difot: 90, otd: 92, inFull: 95, returnRate: 5 },
@@ -36,7 +36,7 @@ function FirstSection() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
                 {/* KPI Tiles */}
                 <div className="lg:col-span-2">
-                    <DifotStats />
+                    <Stats />
                 </div>
 
                 <Card>
