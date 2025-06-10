@@ -13,6 +13,7 @@ import {
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import Charts from "./Charts";
 import ChartsTable from "./ChartsTable";
+import SpendDashboard from "../SpendAnalysis/SpendDashboard";
 
 const customStyles = {
     control: (provided) => ({
@@ -61,7 +62,7 @@ export default function MainCharts({
     sideBarToggle,
     chartName,
     setChartName,
-    userPermission
+    userPermission,
 }) {
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
     const [EDate, setEDate] = useState(getLatestDespatchDate(chartsData));
@@ -393,7 +394,7 @@ export default function MainCharts({
                                 />
                             </div>
                         </>
-                    )
+                    ) 
                 ) : (
                     <div className=" h-72 flex items-center justify-center mt-5">
                         <div className="text-center flex justify-center flex-col">

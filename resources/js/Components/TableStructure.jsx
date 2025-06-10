@@ -21,13 +21,12 @@ export default function TableStructure({
     rowHeight,
     id,
     HeaderContent,
+    minHeight
 }) {
     // 1) Memoize columns and data
     const columns = useMemo(() => columnsElements, [columnsElements]);
     const filters = useMemo(() => filterValueElements, [filterValueElements]);
     const groups = useMemo(() => groupsElements, [groupsElements]);
-
-    const tableData = useMemo(() => tableDataElements, [tableDataElements]);
     const filterTypes = useMemo(
         () => filterTypesElements,
         [filterTypesElements]
@@ -46,7 +45,7 @@ export default function TableStructure({
         }
     );
 
-    const gridStyle = { minHeight: 600 };
+    const gridStyle = { minHeight: minHeight ? minHeight : 600 };
 
     const onFilterValueChange = useCallback(
         (filterValue) => {
