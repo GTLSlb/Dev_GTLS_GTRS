@@ -1551,7 +1551,7 @@ export default function charts({
             emptyValue: "",
         },
         {
-            name: "ActualDeliveryDate",
+            name: "ActualDeliveyDate",
             operator: "inrange",
             type: "date",
             value: null,

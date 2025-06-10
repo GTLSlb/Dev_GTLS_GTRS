@@ -3,7 +3,7 @@ export const handleFilterTable = (gridRef, filteredData) => {
     let selectedColumns = Array.from(
         document.querySelectorAll('input[name="column"]:checked')
     ).map((checkbox) => checkbox.value);
-
+console.log("selectedColumns", gridRef);
     let allHeaderColumns = gridRef != null &&gridRef?.current?.visibleColumns.map((column) => ({
         name: column.name,
         value: column.computedFilterValue?.value,
@@ -328,14 +328,14 @@ export const handleFilterTable = (gridRef, filteredData) => {
         }
     });
     selectedColVal = [];
-    if (selectedColumns.length === 0) {
-        selectedColVal = allHeaderColumns.filter((col) => col.name !== "edit"); // Use all columns
+    if (selectedColumns?.length === 0) {
+        selectedColVal = allHeaderColumns?.filter((col) => col.name !== "edit"); // Use all columns
     } else {
-        allHeaderColumns.map((header) => {
-            selectedColumns.map((column) => {
-                const formattedColumn = column.replace(/\s/g, "").toLowerCase();
-                if (header.name.toLowerCase() === formattedColumn) {
-                    selectedColVal.push(header);
+        allHeaderColumns?.map((header) => {
+            selectedColumns?.map((column) => {
+                const formattedColumn = column?.replace(/\s/g, "").toLowerCase();
+                if (header?.name?.toLowerCase() === formattedColumn) {
+                    selectedColVal?.push(header);
                 }
             });
         });

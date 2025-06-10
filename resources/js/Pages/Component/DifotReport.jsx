@@ -6,8 +6,9 @@ import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import TableStructure from "@/Components/TableStructure";
 import { forwardRef } from "react";
+import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { handleFilterTable } from "@/Components/utils/filterUtils";
 
 export default function DifotReport({
     difotData,
@@ -53,40 +54,41 @@ export default function DifotReport({
     const maxDaterdd = getMinMaxValue(difotData, "RDD", 2);
     const minDateNewRdd = getMinMaxValue(difotData, "NewRdd", 1);
     const maxDateNewRdd = getMinMaxValue(difotData, "NewRdd", 2);
-    const minDateActualDel = getMinMaxValue(difotData, "ActualDeliveryDate", 1);
-    const maxDateActualDel = getMinMaxValue(difotData, "ActualDeliverydDate", 2);
+    const minDateActualDel = getMinMaxValue(difotData, "ActualDeliveyDate", 1);
+    const maxDateActualDel = getMinMaxValue(difotData, "ActualDeliveyDate", 2);
     const minDateChangedAt = getMinMaxValue(difotData, "ChangedAt", 1);
     const maxDateChangedAt = getMinMaxValue(difotData, "ChangedAt", 2);
-
     const gridRef = useRef(null);
+
+    const [filteredData, setFilteredData] = useState(difotData);
+    
     const handleDownloadExcel = () => {
-        const jsonData = handleFilterTable();
+        const jsonData = handleFilterTable(gridRef, difotData);
         const columnMapping = {
             DeliveryNo: "Delivery No",
             PickupDate: "Pickup Date",
             SenderName: "Sender Name",
             SenderSuburb: "Sender Suburb",
             SenderState: "Sender State",
-            // SenderReference: "Sender Reference",
+            SenderReference: "Sender Reference",
             CustomerName: "Customer Name",
-            CustomerState: "Customer State",
-            CustomerPostalCode: "Customer Postal Code",
-            CustomerSpaces: "Customer Spaces",
-            CustomerPallets: "Customer Pallets",
-            PalletsWeight: "Pallets Weight",
+            Spaces: "Spaces",
+            Pallets: "Pallets",
+            Weight: "Weight",
             CustomerPO: "Customer PO",
+            ReceiverPostCode: "Receiver Post Code",
+            REceiverState: "Receiver State",
             ReceiverReference: "Receiver Reference",
             Service: "Service",
-            DeliveryRequiredDateTime: "RDD",
+            RDD: "RDD",
+            NewRdd: "New RDD",
             Reason: "Reason",
-            ReasonDescription: "Reason Description",
+            ReasonDesc: "Reason Description",
             ChangedAt: "ChangedAt",
-            RddTime: "Rdd Time",
-            NewRdd: "New RDD Time",
             LTLFTL: "LTL/FTL",
-            ActualDeliveryDate: "Actual Delivery Date",
+            ActualDeliveyDate: "Actual Delivery Date",
             OnTime: "On Time",
-            GTLSError: "GTLS Error",
+            GtlsError: "GTLS Error",
         };
 
         const selectedColumns = jsonData?.selectedColumns.map(
@@ -101,32 +103,21 @@ export default function DifotReport({
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
-                    if (columnKey === "SenderSuburb") {
-                        acc[columnKey] = person["Send_Suburb"];
-                    } else if (columnKey === "Status") {
-                        acc[columnKey] = person["AdminStatusCodes_Description"];
-                    } else if (columnKey === "SenderState") {
-                        acc[columnKey] = person["Send_State"];
-                    } else if (columnKey === "ReceiverSuburb") {
-                        acc[columnKey] = person["Del_Suburb"];
-                    } else if (
+                    if (
                         [
-                            "DespatchDateTime",
-                            "DeliveryRequiredDateTime",
+                            "ActualDeliveyDate",
+                            "RDD",
+                            "NewRdd",
+                            "ChangedAt",
                         ].includes(columnKey)
                     ) {
                         const date = new Date(person[columnKey]);
                         if (!isNaN(date)) {
                             acc[columnKey] =
-                                (date.getTime() -
-                                    date.getTimezoneOffset() * 60000) /
-                                    86400000 +
-                                25569; // Convert to Excel date serial number
+                            moment(date).format("DD-MM-YYYY hh:mm A");
                         } else {
                             acc[columnKey] = "";
                         }
-                    } else if (columnKey === "ReceiverState") {
-                        acc[columnKey] = person["Del_State"];
                     } else {
                         acc[column.replace(/\s+/g, "")] =
                             person[column.replace(/\s+/g, "")];
@@ -191,7 +182,7 @@ export default function DifotReport({
             });
 
             // Save the file using FileSaver.js or alternative method
-            saveAs(blob, "NoDeliveryinfo.xlsx");
+            saveAs(blob, "DifotReport.xlsx");
         });
     };
     const [selected, setSelected] = useState([]);
@@ -240,64 +231,6 @@ export default function DifotReport({
     const services = createNewLabelObjects(difotData, "Service");
     const LTLFTLOptions = createNewLabelObjects(difotData, "LTLFTL");
     const StatusOptions = createNewLabelObjects(difotData, "OnTime");
-
-    const RDDTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
-        const [value, setValue] = useState(
-            filterValue ? filterValue.value : ""
-        );
-
-        const handleChange = (event) => {
-            const newValue = event.target.value + ":00";
-            setValue(newValue);
-            onChange({
-                name: "RddTime",
-                value: newValue,
-                operator: "eq",
-                emptyValue: "",
-                type: "string",
-            });
-        };
-
-        const handleClear = () => {
-            setValue("");
-            onChange({
-                name: "RddTime",
-                value: "",
-                operator: "eq",
-                emptyValue: "",
-                type: "string",
-            });
-        };
-
-        useEffect(() => {
-            setValue(filterValue ? filterValue.value : "");
-        }, [filterValue]);
-
-        return (
-            <div className="flex gap-2 mx-1">
-                <input
-                    type="time"
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm"
-                    value={value.slice(0, 5)}
-                    onChange={handleChange}
-                />
-                <button onClick={handleClear}>
-                    <svg
-                        tabIndex="0"
-                        className="InovuaReactDataGrid__column-header__filter-settings-icon"
-                        width="14"
-                        height="14"
-                        viewBox="0 0 14 14"
-                    >
-                        <path
-                            fillRule="evenodd"
-                            d="M13.222 2H.778C.348 2 0 1.552 0 1s.348-1 .778-1h12.444c.43 0 .778.448.778 1s-.348 1-.778 1zM1.556 3.111l3.888 4.667v5.444c0 .43.349.778.778.778h1.556c.43 0 .778-.348.778-.778V7.778l3.888-4.667H1.556z"
-                        ></path>
-                    </svg>
-                </button>
-            </div>
-        );
-    });
 
     const columns = [
         {
@@ -499,13 +432,11 @@ export default function DifotReport({
                 maxDate: maxDateNewRdd,
             },
             render: ({ value, cellProps }) => {
-                const dateValue = value.replace(/\//g, '-'); // replace / with -
-                const date = new Date(dateValue);
-                const formattedDate = `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()} ${date.toLocaleTimeString('en-GB', { hour12: true })}`;
+                const dateValue = value ? value.replace(/\//g, '-') : "";
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
-                    : formattedDate;
+                    : dateValue;
             },
         },
         {
@@ -539,10 +470,11 @@ export default function DifotReport({
                 maxDate: maxDateChangedAt,
             },
             render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                return cellProps.hasOwnProperty("ChangedAt") ? moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+                    : moment(value).format("DD-MM-YYYY hh:mm A")
+                    : "";
             },
         },
         {
@@ -574,7 +506,7 @@ export default function DifotReport({
             },
         },
         {
-            name: "ActualDeliveryDate",
+            name: "ActualDeliveyDate",
             header: "Actual Delivery Date",
             headerAlign: "center",
             textAlign: "center",
@@ -586,10 +518,12 @@ export default function DifotReport({
                 maxDate: maxDateActualDel,
             },
             render: ({ value, cellProps }) => {
+                console.log(value)
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+                    : moment(value).format("DD-MM-YYYY hh:mm A")
+                    ;
             },
         },
         {
@@ -623,8 +557,9 @@ export default function DifotReport({
                             gridRef={gridRef}
                             selected={selected}
                             groupsElements={groups}
-                            tableDataElements={difotData}
+                            tableDataElements={filteredData}
                             filterValueElements={filterValue}
+                            setFilteredData={setFilteredData}
                             setFilterValueElements={setFilterValue}
                             columnsElements={columns}
                         />
