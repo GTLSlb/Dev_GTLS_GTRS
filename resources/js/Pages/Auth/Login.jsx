@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Logo from "../../assets/pictures/Logo-upscaled.png";
 import { PublicClientApplication } from "@azure/msal-browser";
-import "../../../css/scroll.css";
 import { LoginPage } from "gtls-npm-libraries";
 import MicrosoftLogo from "@/assets/icons/microsoft-logo.png";
 import { clearMSALLocalStorage } from "@/CommonFunctions";
@@ -21,7 +20,7 @@ const msalConfig = {
 
 const pca = new PublicClientApplication(msalConfig);
 
-export default function Login({ }) {
+export default function Login() {
     const gtamURl = window.Laravel.gtamUrl;
     const appDomain = window.Laravel.appDomain;
     const backToHomeURL = window.Laravel.backToHomeURL;
@@ -29,25 +28,24 @@ export default function Login({ }) {
     useEffect(() => {
         clearMSALLocalStorage();
     }, []);
-
     return (
         <div className="h-screen w-full">
-        <LoginPage
-            appDomain={appDomain}
-            redirectURL="/gtrs"
-            loginURL="/loginComp"
-            microsoftURL="/microsoftToken"
-            googlekey={googleKey}
-            gtamURl={gtamURl}
-            pca={pca}
-            canResetPassword={true}
-            handleForgotPassword={() =>
-                (window.location.href = "/forgot-password")
-            }
-            backToHomeURL={backToHomeURL}
-            gtlsLogo={Logo}
-            microsoftLogo={MicrosoftLogo}
-        />
-    </div>
+            <LoginPage
+                appDomain={appDomain}
+                googlekey={googleKey}
+                redirectURL="/gtrs"
+                loginURL="/loginComp"
+                microsoftURL="/microsoftToken"
+                gtamURl={gtamURl}
+                pca={pca}
+                canResetPassword={true}
+                handleForgotPassword={() =>
+                    (window.location.href = "/forgot-password")
+                }
+                gtlsLogo={Logo}
+                backToHomeURL={backToHomeURL}
+                microsoftLogo={MicrosoftLogo}
+            />
+        </div>
     );
 }
