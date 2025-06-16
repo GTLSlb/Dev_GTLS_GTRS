@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 // import "handsontable/styles/ht-theme-main.css";
 import { Button, Spinner } from "@nextui-org/react";
 import axios from "axios";
+import * as XLSX from "xlsx";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import "handsontable/styles/handsontable.min.css";
@@ -18,6 +19,7 @@ registerAllModules();
 
 import { AlertToast } from "@/permissions";
 import swal from "sweetalert";
+import UtilizationImport from "../modals/UtilizationImport";
 
 const tableData = [
     {
@@ -936,6 +938,7 @@ console.log(changedRows)
                 >
                     Export
                 </Button>
+                <UtilizationImport />
             </div>
             {utilizationData && (
                 <div id="" className="ht-theme-main mt-4 pb-10">
