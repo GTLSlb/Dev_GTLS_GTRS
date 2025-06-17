@@ -50,8 +50,8 @@ export default function DifotReport({
 
     const minDatePickup = getMinMaxValue(difotData, "DespatchDate", 1);
     const maxDatePickup = getMinMaxValue(difotData, "DespatchDate", 2);
-    const minDaterdd = getMinMaxValue(difotData, "RDD", 1);
-    const maxDaterdd = getMinMaxValue(difotData, "RDD", 2);
+    const minDaterdd = getMinMaxValue(difotData, "OldRdd", 1);
+    const maxDaterdd = getMinMaxValue(difotData, "OldRdd", 2);
     const minDateNewRdd = getMinMaxValue(difotData, "NewRdd", 1);
     const maxDateNewRdd = getMinMaxValue(difotData, "NewRdd", 2);
     const minDateActualDel = getMinMaxValue(difotData, "ActualDeliveyDate", 1);
@@ -80,7 +80,7 @@ export default function DifotReport({
             REceiverState: "Receiver State",
             ReceiverReference: "Receiver Reference",
             Service: "Service",
-            RDD: "RDD",
+            OldRdd: "Old RDD",
             NewRdd: "New RDD",
             Reason: "Reason",
             ReasonDesc: "Reason Description",
@@ -107,6 +107,7 @@ export default function DifotReport({
                         [
                             "ActualDeliveyDate",
                             "RDD",
+                            "OldRdd",
                             "NewRdd",
                             "ChangedAt",
                         ].includes(columnKey)
@@ -261,26 +262,6 @@ export default function DifotReport({
             },
         },
         {
-            name: "CustomerName",
-            header: "Customer Name",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "start",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-            group: "customerInfo",
-        },
-        {
-            name: "CustomerPO",
-            header: "Customer PO",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "start",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-            group: "customerInfo",
-        },
-        {
             name: "SenderName",
             header: "Sender Name",
             type: "string",
@@ -316,13 +297,12 @@ export default function DifotReport({
             group: "senderInfo",
         },
         {
-            name: "SenderReference",
-            header: "Sender Reference",
+            name: "CustomerName",
+            header: "Customer Name",
             type: "string",
             headerAlign: "center",
-            textAlign: "center",
+            textAlign: "start",
             defaultWidth: 170,
-            group: "senderInfo",
             filterEditor: StringFilter,
         },
         {
@@ -338,27 +318,15 @@ export default function DifotReport({
                 wrapMultiple: false,
                 dataSource: receiverStates,
             },
-            group: "receiverInfo",
         },
         {
             name: "ReceiverPostCode",
-            header: "Receiver Post Code",
+            header: "Post Code",
             type: "string",
             headerAlign: "center",
             textAlign: "start",
             defaultWidth: 170,
             filterEditor: StringFilter,
-            group: "receiverInfo",
-        },
-        {
-            name: "ReceiverReference",
-            header: "Receiver Reference",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "start",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-            group: "receiverInfo",
         },
         {
             name: "Spaces",
@@ -388,6 +356,33 @@ export default function DifotReport({
             filterEditor: StringFilter,
         },
         {
+            name: "CustomerPO",
+            header: "Customer PO",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "start",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
+        {
+            name: "SenderReference",
+            header: "Sender Reference",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
+        {
+            name: "ReceiverReference",
+            header: "Receiver Reference",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "start",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
+        {
             name: "Service",
             header: "Service",
             headerAlign: "center",
@@ -401,8 +396,8 @@ export default function DifotReport({
             },
         },
         {
-            name: "RDD",
-            header: "RDD",
+            name: "OldRdd",
+            header: "Old RDD",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
@@ -412,11 +407,13 @@ export default function DifotReport({
                 minDate: minDaterdd,
                 maxDate: maxDaterdd,
             },
-            render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+            render: ({ value }) => {
+                const dateValue = value ? value.replace(/\//g, '-') : "";
+                return (
+                    <span className="flex justify-start items-left text-left">
+                        {dateValue}
+                    </span>
+                )
             },
         },
         {
@@ -433,10 +430,11 @@ export default function DifotReport({
             },
             render: ({ value, cellProps }) => {
                 const dateValue = value ? value.replace(/\//g, '-') : "";
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
-                    ? ""
-                    : dateValue;
+                return (
+                    <span className="flex justify-start items-left text-left">
+                        {dateValue}
+                    </span>
+                )
             },
         },
         {
@@ -470,11 +468,12 @@ export default function DifotReport({
                 maxDate: maxDateChangedAt,
             },
             render: ({ value, cellProps }) => {
-                return cellProps.hasOwnProperty("ChangedAt") ? moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A")
-                    : "";
+                const dateValue = value ? moment(value).format("DD-MM-YYYY hh:mm A") : "";
+                return (
+                    <span className="flex justify-start items-left text-left">
+                        {dateValue}
+                    </span>
+                )
             },
         },
         {
@@ -489,20 +488,6 @@ export default function DifotReport({
                 multiple: true,
                 wrapMultiple: false,
                 dataSource: LTLFTLOptions,
-            },
-        },
-        {
-            name: "OnTime",
-            header: "OnTime",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultFlex: 1,
-            minWidth: 200,
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: StatusOptions,
             },
         },
         {
@@ -523,6 +508,20 @@ export default function DifotReport({
                     ? ""
                     : moment(value).format("DD-MM-YYYY hh:mm A")
                     ;
+            },
+        },
+                {
+            name: "OnTime",
+            header: "OnTime",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultFlex: 1,
+            minWidth: 200,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: StatusOptions,
             },
         },
         {

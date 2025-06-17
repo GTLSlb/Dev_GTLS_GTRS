@@ -1504,7 +1504,7 @@ export default function charts({
             emptyValue: null,
         },
         {
-            name: "RDD",
+            name: "OldRdd",
             operator: "inrange",
             type: "date",
             value: null,
