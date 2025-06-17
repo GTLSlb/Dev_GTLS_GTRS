@@ -109,6 +109,7 @@ export default function DifotReport({
                             "RDD",
                             "OldRdd",
                             "NewRdd",
+                            "PickupDate",
                             "ChangedAt",
                         ].includes(columnKey)
                     ) {
