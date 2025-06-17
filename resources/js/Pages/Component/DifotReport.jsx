@@ -469,12 +469,10 @@ export default function DifotReport({
                 maxDate: maxDateChangedAt,
             },
             render: ({ value, cellProps }) => {
-                const dateValue = value ? moment(value).format("DD-MM-YYYY hh:mm A") : "";
-                return (
-                    <span className="flex justify-start items-left text-left">
-                        {dateValue}
-                    </span>
-                )
+                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                    "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A");
             },
         },
         {
