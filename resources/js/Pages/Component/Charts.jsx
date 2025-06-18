@@ -2238,9 +2238,9 @@ export default function charts({
                 res.data.map((item) => {
                     return {
                         ...item,
-                        Spaces: item.Spaces.toString(),
-                        Pallets: item.Pallets.toString(),
-                        Weight: item.Weight.toString(),
+                        Spaces: item?.Spaces?.toString(),
+                        Pallets: item?.Pallets?.toString(),
+                        Weight: item?.Weight?.toString(),
                     };
                 }) || []
             );
