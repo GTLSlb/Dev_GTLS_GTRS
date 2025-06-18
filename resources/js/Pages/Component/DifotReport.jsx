@@ -15,15 +15,37 @@ export default function DifotReport({
     filterValue,
     setFilterValue,
     fetchData,
+    accData,
 }) {
-    const [filteredData, setFilteredData] = useState([]);
-    const [data, setData] = useState(null);
+    const [filteredData, setFilteredData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const filterData = () => {
+        const intArray = accData?.map((str) => {
+            const intValue = parseInt(str);
+            return isNaN(intValue) ? 0 : intValue;
+        });
+        // Filter the data based on the start and end date filters, selected receiver names, and chargeTo values
+        const filtered = difotData.filter((item) => {
+            const chargeToMatch =
+                intArray?.length === 0 || intArray?.includes(item.ChargeToID);
+
+            return chargeToMatch;
+        });
+        return filtered;
+    };
     useEffect(() => {
         if (difotData) {
-            setFilteredData(difotData);
-            setData(difotData);
+            const filtered = filterData();
+            setFilteredData(filtered);
         }
-    }, [difotData]);
+    }, [difotData, accData]);
+
+    useEffect(() => {
+        if (filteredData != null) {
+            setIsLoading(false);
+        }
+    }, [filteredData]);
 
     function getMinMaxValue(data, fieldName, identifier) {
         // Check for null safety
@@ -58,8 +80,10 @@ export default function DifotReport({
 
     const minDatePickup = getMinMaxValue(difotData, "DespatchDate", 1);
     const maxDatePickup = getMinMaxValue(difotData, "DespatchDate", 2);
-    const minDaterdd = getMinMaxValue(difotData, "OldRdd", 1);
-    const maxDaterdd = getMinMaxValue(difotData, "OldRdd", 2);
+    const minDateRdd = getMinMaxValue(difotData, "RDD", 1);
+    const maxDateRdd = getMinMaxValue(difotData, "RDD", 2);
+    const minDateOldRdd = getMinMaxValue(difotData, "OldRdd", 1);
+    const maxDateOldRdd = getMinMaxValue(difotData, "OldRdd", 2);
     const minDateNewRdd = getMinMaxValue(difotData, "NewRdd", 1);
     const maxDateNewRdd = getMinMaxValue(difotData, "NewRdd", 2);
     const minDateActualDel = getMinMaxValue(difotData, "ActualDeliveyDate", 1);
@@ -86,6 +110,7 @@ export default function DifotReport({
             ReceiverState: "Receiver State",
             ReceiverReference: "Receiver Reference",
             Service: "Service",
+            RDD: "RDD",
             OldRdd: "Old RDD",
             NewRdd: "New RDD",
             Reason: "Reason",
@@ -118,6 +143,7 @@ export default function DifotReport({
                             "ActualDeliveyDate",
                             "PickupDate",
                             "ChangedAt",
+                            "RDD",
                         ].includes(columnKey)
                     ) {
                         const date = new Date(person[columnKey]);
@@ -127,9 +153,7 @@ export default function DifotReport({
                         } else {
                             acc[columnKey] = "";
                         }
-                    } else if (
-                        ["RDD", "OldRdd", "NewRdd"].includes(columnKey)
-                    ) {
+                    } else if (["OldRdd", "NewRdd"].includes(columnKey)) {
                         acc[columnKey] = person[columnKey].replace(/\//g, "-");
                         //value.replace(/\//g, '-')
                     } else {
@@ -227,12 +251,12 @@ export default function DifotReport({
             const fieldValue = item[fieldName];
             // Check if the label is not already included
             if (!uniqueLabels.has(fieldValue)) {
-                uniqueLabels.add(fieldValue);
-                const newObject = {
-                    id: fieldValue?.toString(),
-                    label: fieldValue?.toString(),
-                };
-                newData.push(newObject);
+                    uniqueLabels.add(fieldValue);
+                    const newObject = {
+                        id: fieldValue?.toString(),
+                        label: fieldValue?.toString(),
+                    };
+                    fieldValue == undefined ? null : newData.push(newObject);
             }
         });
         return newData;
@@ -268,8 +292,10 @@ export default function DifotReport({
                 maxDate: maxDatePickup,
             },
             render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
+                return value == undefined || value == null
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A") ==
+                      "Invalid date"
                     ? ""
                     : moment(value).format("DD-MM-YYYY hh:mm A");
             },
@@ -385,6 +411,13 @@ export default function DifotReport({
             textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return (
+                    <span className="flex justify-start items-left text-left">
+                        {value}
+                    </span>
+                );
+            },
         },
         {
             name: "ReceiverReference",
@@ -409,6 +442,30 @@ export default function DifotReport({
             },
         },
         {
+            name: "RDD",
+            header: "RDD",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            dateFormat: "DD-MM-YYYY",
+            filterEditor: DateFilter,
+            filterEditorProps: {
+                minDate: minDateRdd,
+                maxDate: maxDateRdd,
+            },
+            render: ({ value, cellProps }) => {
+                return (cellProps.data?.hasOwnProperty("RDD") &&
+                    value == undefined) ||
+                    value == null
+                    ? ""
+                    : cellProps.data?.hasOwnProperty("RDD") &&
+                      moment(value).format("DD-MM-YYYY hh:mm A") ==
+                          "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A");
+            },
+        },
+        {
             name: "OldRdd",
             header: "Old RDD",
             headerAlign: "center",
@@ -417,11 +474,16 @@ export default function DifotReport({
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
             filterEditorProps: {
-                minDate: minDaterdd,
-                maxDate: maxDaterdd,
+                minDate: minDateOldRdd,
+                maxDate: maxDateOldRdd,
             },
             render: ({ value }) => {
-                const dateValue = value ? value.replace(/\//g, "-") : "";
+                const dateValue =
+                    value == undefined || value == null
+                        ? ""
+                        : value
+                        ? value.replace(/\//g, "-")
+                        : "";
                 return (
                     <span className="flex justify-start items-left text-left">
                         {dateValue}
@@ -442,7 +504,12 @@ export default function DifotReport({
                 maxDate: maxDateNewRdd,
             },
             render: ({ value, cellProps }) => {
-                const dateValue = value ? value.replace(/\//g, "-") : "";
+                const dateValue =
+                    value == undefined || value == null
+                        ? ""
+                        : value
+                        ? value.replace(/\//g, "-")
+                        : "";
                 return (
                     <span className="flex justify-start items-left text-left">
                         {dateValue}
@@ -481,8 +548,10 @@ export default function DifotReport({
                 maxDate: maxDateChangedAt,
             },
             render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
+                return value == undefined || value == null
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A") ==
+                      "Invalid date"
                     ? ""
                     : moment(value).format("DD-MM-YYYY hh:mm A");
             },
@@ -523,8 +592,10 @@ export default function DifotReport({
                 maxDate: maxDateActualDel,
             },
             render: ({ value, cellProps }) => {
-                return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                    "Invalid date"
+                return value == undefined || value == null
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A") ==
+                      "Invalid date"
                     ? ""
                     : moment(value).format("DD-MM-YYYY hh:mm A");
             },
@@ -583,10 +654,11 @@ export default function DifotReport({
                     <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
                         {value}
                     </span>
-                ) : <span className="inline-flex items-center px-3 py-0.5 text-sm">
+                ) : (
+                    <span className="inline-flex items-center px-3 py-0.5 text-sm">
                         {value ? value : ""}
                     </span>
-
+                );
             },
         },
         {
@@ -602,13 +674,17 @@ export default function DifotReport({
                 dataSource: PODOptions,
             },
             render: ({ value }) => {
-                return value ? (
+                return value == true ? (
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
                         {value?.toString()}
                     </span>
-                ) : (
+                ) : value == false ? (
                     <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
                         {value?.toString()}
+                    </span>
+                ): (
+                    <span className="inline-flex items-center px-3 py-0.5 text-sm">
+                        {value ? value.toString() : ""}
                     </span>
                 );
             },
@@ -621,6 +697,13 @@ export default function DifotReport({
             textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return (
+                    <span className="flex justify-start items-left text-left">
+                        {value}
+                    </span>
+                );
+            },
         },
         {
             name: "TransportComment",
@@ -630,6 +713,13 @@ export default function DifotReport({
             textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return (
+                    <span className="flex justify-start items-left text-left">
+                        {value}
+                    </span>
+                );
+            },
         },
     ];
 
@@ -637,7 +727,7 @@ export default function DifotReport({
         <div>
             <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20 h-full">
                 <div className="mt-4 h-full">
-                    {data == null ? (
+                    {isLoading && filteredData != null ? (
                         <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
                             <div className="flex items-center justify-center">
                                 <div

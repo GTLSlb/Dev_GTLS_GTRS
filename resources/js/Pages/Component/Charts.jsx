@@ -1527,21 +1527,28 @@ export default function charts({
         },
         {
             name: "PickupDate",
-            operator: "inrange",
+            operator: "eq",
+            type: "date",
+            value: null,
+            emptyValue: null,
+        },
+        {
+            name: "RDD",
+            operator: "eq",
             type: "date",
             value: null,
             emptyValue: null,
         },
         {
             name: "OldRdd",
-            operator: "inrange",
+            operator: "eq",
             type: "date",
             value: null,
             emptyValue: null,
         },
         {
             name: "NewRdd",
-            operator: "inrange",
+            operator: "eq",
             type: "date",
             value: null,
             emptyValue: null,
@@ -1588,7 +1595,7 @@ export default function charts({
         },
         {
             name: "ActualDeliveyDate",
-            operator: "inrange",
+            operator: "eq",
             type: "date",
             value: null,
             emptyValue: "",
@@ -2707,6 +2714,7 @@ export default function charts({
             fetchData={fetchDifotReportData}
             filterValue={filtersDifot}
             setFilterValue={setFiltersDifot}
+            accData={dataFromChild}
         />,
     ];
     return (
