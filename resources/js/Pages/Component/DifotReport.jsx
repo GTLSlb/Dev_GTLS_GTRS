@@ -77,7 +77,7 @@ export default function DifotReport({
             Weight: "Weight",
             CustomerPO: "Customer PO",
             ReceiverPostCode: "Receiver Post Code",
-            REceiverState: "Receiver State",
+            ReceiverState: "Receiver State",
             ReceiverReference: "Receiver Reference",
             Service: "Service",
             OldRdd: "Old RDD",
@@ -89,6 +89,10 @@ export default function DifotReport({
             ActualDeliveyDate: "Actual Delivery Date",
             OnTime: "On Time",
             GtlsError: "GTLS Error",
+            Status: "Status",
+            POD: "POD",
+            DelayReason: "Delay Reason",
+            TransportComment: "Transport Comments",
         };
 
         const selectedColumns = jsonData?.selectedColumns.map(
@@ -229,7 +233,7 @@ export default function DifotReport({
     };
 
     const senderStates = createNewLabelObjects(difotData, "SenderState");
-    const receiverStates = createNewLabelObjects(difotData, "REceiverState");
+    const receiverStates = createNewLabelObjects(difotData, "ReceiverState");
     const services = createNewLabelObjects(difotData, "Service");
     const LTLFTLOptions = createNewLabelObjects(difotData, "LTLFTL");
     const StatusOptions = createNewLabelObjects(difotData, "OnTime");
@@ -307,7 +311,7 @@ export default function DifotReport({
             filterEditor: StringFilter,
         },
         {
-            name: "REceiverState",
+            name: "ReceiverState",
             header: "State",
             type: "string",
             headerAlign: "center",
@@ -492,6 +496,15 @@ export default function DifotReport({
             },
         },
         {
+            name: "Status",
+            header: "Status",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
+        {
             name: "ActualDeliveyDate",
             header: "Actual Delivery Date",
             headerAlign: "center",
@@ -540,6 +553,40 @@ export default function DifotReport({
                     <span className="inline-flex items-center px-3 py-0.5 text-sm font-medium"></span>
                 );
             },
+        },
+        {
+            name: "POD",
+            header: "POD",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            render: ({ value }) => {
+                return value ? (
+                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                        YES
+                    </span>
+                ) : (
+                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">No</span>
+                );
+            },
+        },
+        {
+            name: "DelayReason",
+            header: "Delay Reason",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
+        {
+            name: "TransportComment",
+            header: "Transport Comments",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
         },
     ];
 

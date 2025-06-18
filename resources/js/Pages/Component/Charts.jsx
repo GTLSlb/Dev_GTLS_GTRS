@@ -1441,7 +1441,7 @@ export default function charts({
             emptyValue: "",
         },
         {
-            name: "REceiverState",
+            name: "ReceiverState",
             operator: "inlist",
             type: "select",
             value: null,
@@ -1484,6 +1484,34 @@ export default function charts({
         },
         {
             name: "CustomerPO",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "Status",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "POD",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "DelayReason",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "TransportComment",
             operator: "contains",
             type: "string",
             value: "",
