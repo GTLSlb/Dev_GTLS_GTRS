@@ -579,11 +579,14 @@ export default function DifotReport({
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
                         {value}
                     </span>
-                ) : (
+                ) : value?.toLowerCase() == "no" ? (
                     <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
                         {value}
                     </span>
-                );
+                ) : <span className="inline-flex items-center px-3 py-0.5 text-sm">
+                        {value ? value : ""}
+                    </span>
+
             },
         },
         {
