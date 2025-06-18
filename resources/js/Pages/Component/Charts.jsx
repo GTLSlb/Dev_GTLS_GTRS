@@ -1391,23 +1391,24 @@ export default function charts({
             type: "string",
             value: null,
             emptyValue: "",
-        },{
+        },
+        {
             name: "Pallets",
-            operator: "contains",
+            operator: "eq",
             type: "string",
-            value: undefined,
-            emptyValue: null,
+            value: null,
+            emptyValue: "",
         },
         {
             name: "Weight",
-            operator: "contains",
+            operator: "eq",
             type: "string",
-            value: undefined,
-            emptyValue: null,
+            value: null,
+            emptyValue: "",
         },
         {
             name: "Spaces",
-            operator: "contains",
+            operator: "eq",
             type: "string",
             value: null,
             emptyValue: "",
@@ -1540,8 +1541,8 @@ export default function charts({
         },
         {
             name: "NewRdd",
-            operator: 'inrange',
-            type: 'date',
+            operator: "inrange",
+            type: "date",
             value: null,
             emptyValue: null,
         },
@@ -1579,6 +1580,13 @@ export default function charts({
             emptyValue: "",
         },
         {
+            name: "GtlsError",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
             name: "ActualDeliveyDate",
             operator: "inrange",
             type: "date",
@@ -1586,7 +1594,7 @@ export default function charts({
             emptyValue: "",
         },
         {
-            name: "GTLSError",
+            name: "POD",
             operator: "inlist",
             type: "select",
             value: null,
@@ -2226,7 +2234,16 @@ export default function charts({
                     Authorization: `Bearer ${AToken}`,
                 },
             });
-            setDifotData(res.data || []);
+            setDifotData(
+                res.data.map((item) => {
+                    return {
+                        ...item,
+                        Spaces: item.Spaces.toString(),
+                        Pallets: item.Pallets.toString(),
+                        Weight: item.Weight.toString(),
+                    };
+                }) || []
+            );
         } catch (err) {
             if (err.response && err.response.status === 401) {
                 // Handle 401 error using SweetAlert
@@ -2685,19 +2702,24 @@ export default function charts({
             fetchDeliveryReportCommentsData={fetchDeliveryReportCommentsData}
         />,
         <ContactRep url={url} AToken={AToken} currentUser={currentUser} />,
-        <DifotReport difotData={difotData} filterValue={filtersDifot} setFilterValue={setFiltersDifot} />,
+        <DifotReport
+            difotData={difotData}
+            fetchData={fetchDifotReportData}
+            filterValue={filtersDifot}
+            setFilterValue={setFiltersDifot}
+        />,
     ];
     return (
-        <div className="">
+        <div className="h-full w-full bg-smooth">
             {/* <Sidebar /> */}
-            <div className=" h-full flex ">
+            <div className="h-full flex">
                 {/* Left sidebar & main wrapper */}
-                <div className="min-w-0 flex-1 bg-gray-100 xl:flex">
+                <div className="h-full min-w-0 flex-1 bg-gray-100 xl:flex">
                     <div className=" xl:w-64 flex-shrink-0 w-full h-auto md:block mb-4">
-                        <div className="h-full  ">
+                        <div className="h-full ">
                             {/* Start left column area */}
                             <div
-                                className="relative h-full"
+                                className="relative h-screen"
                                 style={{ minHeight: "6rem" }}
                             >
                                 <div className=" inset-0 rounded-lg border-dashed border-gray-200">
@@ -2719,19 +2741,15 @@ export default function charts({
                         </div>
                     </div>
 
-                    <div className="bg-smooth w-full lg:min-w-0 lg:flex-1">
-                        <div className="h-full">
-                            {/* Start main area*/}
-                            <div
-                                className="relative h-full"
-                                style={{ minHeight: "36rem" }}
-                            >
-                                <div className="">
-                                    {components[activeIndexGTRS]}
-                                </div>
-                            </div>
-                            {/* End main area */}
+                    <div className="bg-smooth w-full h-full lg:min-w-0 lg:flex-1">
+                        {/* Start main area*/}
+                        <div
+                            className="relative h-full"
+                            style={{ minHeight: "40rem" }}
+                        >
+                            {components[activeIndexGTRS]}
                         </div>
+                        {/* End main area */}
                     </div>
                 </div>
             </div>

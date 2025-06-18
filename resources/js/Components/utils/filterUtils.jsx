@@ -3,7 +3,6 @@ export const handleFilterTable = (gridRef, filteredData) => {
     let selectedColumns = Array.from(
         document.querySelectorAll('input[name="column"]:checked')
     ).map((checkbox) => checkbox.value);
-console.log("selectedColumns", gridRef);
     let allHeaderColumns = gridRef != null &&gridRef?.current?.visibleColumns.map((column) => ({
         name: column.name,
         value: column.computedFilterValue?.value,

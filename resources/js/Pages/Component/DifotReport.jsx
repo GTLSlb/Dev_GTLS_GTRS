@@ -14,8 +14,16 @@ export default function DifotReport({
     difotData,
     filterValue,
     setFilterValue,
+    fetchData,
 }) {
-    window.moment = moment;
+    const [filteredData, setFilteredData] = useState([]);
+    const [data, setData] = useState(null);
+    useEffect(() => {
+        if (difotData) {
+            setFilteredData(difotData);
+            setData(difotData);
+        }
+    }, [difotData]);
 
     function getMinMaxValue(data, fieldName, identifier) {
         // Check for null safety
@@ -60,8 +68,6 @@ export default function DifotReport({
     const maxDateChangedAt = getMinMaxValue(difotData, "ChangedAt", 2);
     const gridRef = useRef(null);
 
-    const [filteredData, setFilteredData] = useState(difotData);
-    
     const handleDownloadExcel = () => {
         const jsonData = handleFilterTable(gridRef, difotData);
         const columnMapping = {
@@ -110,9 +116,6 @@ export default function DifotReport({
                     if (
                         [
                             "ActualDeliveyDate",
-                            "RDD",
-                            "OldRdd",
-                            "NewRdd",
                             "PickupDate",
                             "ChangedAt",
                         ].includes(columnKey)
@@ -120,13 +123,17 @@ export default function DifotReport({
                         const date = new Date(person[columnKey]);
                         if (!isNaN(date)) {
                             acc[columnKey] =
-                            moment(date).format("DD-MM-YYYY hh:mm A");
+                                moment(date).format("DD-MM-YYYY hh:mm A");
                         } else {
                             acc[columnKey] = "";
                         }
+                    } else if (
+                        ["RDD", "OldRdd", "NewRdd"].includes(columnKey)
+                    ) {
+                        acc[columnKey] = person[columnKey].replace(/\//g, "-");
+                        //value.replace(/\//g, '-')
                     } else {
-                        acc[column.replace(/\s+/g, "")] =
-                            person[column.replace(/\s+/g, "")];
+                        acc[columnKey] = person[columnKey];
                     }
                 } else {
                     acc[columnKey] = person[columnKey];
@@ -212,7 +219,6 @@ export default function DifotReport({
     ];
 
     const createNewLabelObjects = (data, fieldName) => {
-        let id = 1; // Initialize the ID
         const uniqueLabels = new Set(); // To keep track of unique labels
         const newData = [];
 
@@ -223,8 +229,8 @@ export default function DifotReport({
             if (!uniqueLabels.has(fieldValue)) {
                 uniqueLabels.add(fieldValue);
                 const newObject = {
-                    id: fieldValue,
-                    label: fieldValue,
+                    id: fieldValue?.toString(),
+                    label: fieldValue?.toString(),
                 };
                 newData.push(newObject);
             }
@@ -237,6 +243,8 @@ export default function DifotReport({
     const services = createNewLabelObjects(difotData, "Service");
     const LTLFTLOptions = createNewLabelObjects(difotData, "LTLFTL");
     const StatusOptions = createNewLabelObjects(difotData, "OnTime");
+    const GtlsErrorOptions = createNewLabelObjects(difotData, "GtlsError");
+    const PODOptions = createNewLabelObjects(difotData, "POD");
 
     const columns = [
         {
@@ -413,12 +421,12 @@ export default function DifotReport({
                 maxDate: maxDaterdd,
             },
             render: ({ value }) => {
-                const dateValue = value ? value.replace(/\//g, '-') : "";
+                const dateValue = value ? value.replace(/\//g, "-") : "";
                 return (
                     <span className="flex justify-start items-left text-left">
                         {dateValue}
                     </span>
-                )
+                );
             },
         },
         {
@@ -434,12 +442,12 @@ export default function DifotReport({
                 maxDate: maxDateNewRdd,
             },
             render: ({ value, cellProps }) => {
-                const dateValue = value ? value.replace(/\//g, '-') : "";
+                const dateValue = value ? value.replace(/\//g, "-") : "";
                 return (
                     <span className="flex justify-start items-left text-left">
                         {dateValue}
                     </span>
-                )
+                );
             },
         },
         {
@@ -518,11 +526,10 @@ export default function DifotReport({
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A")
-                    ;
+                    : moment(value).format("DD-MM-YYYY hh:mm A");
             },
         },
-                {
+        {
             name: "OnTime",
             header: "OnTime",
             headerAlign: "center",
@@ -535,6 +542,25 @@ export default function DifotReport({
                 wrapMultiple: false,
                 dataSource: StatusOptions,
             },
+            render: ({ value }) => {
+                return value?.toLowerCase() == "yes" ? (
+                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                        {value}
+                    </span>
+                ) : value?.toLowerCase() == "no" ? (
+                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                        {value}
+                    </span>
+                ) : value?.toLowerCase() == "pending" ? (
+                    <span className="inline-flex items-center rounded-full bg-yellow-100 px-3 py-0.5 text-sm font-medium text-yellow-800">
+                        {value}
+                    </span>
+                ) : (
+                    <span className="inline-flex items-center px-3 py-0.5 text-sm">
+                        {value ? value : ""}
+                    </span>
+                );
+            },
         },
         {
             name: "GtlsError",
@@ -542,13 +568,21 @@ export default function DifotReport({
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: false,
+                wrapMultiple: false,
+                dataSource: GtlsErrorOptions,
+            },
             render: ({ value }) => {
-                return value ? (
+                return value?.toLowerCase() == "yes" ? (
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                        YES
+                        {value}
                     </span>
                 ) : (
-                    <span className="inline-flex items-center px-3 py-0.5 text-sm font-medium"></span>
+                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                        {value}
+                    </span>
                 );
             },
         },
@@ -558,13 +592,21 @@ export default function DifotReport({
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: false,
+                wrapMultiple: false,
+                dataSource: PODOptions,
+            },
             render: ({ value }) => {
                 return value ? (
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                        YES
+                        {value?.toString()}
                     </span>
                 ) : (
-                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">No</span>
+                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                        {value?.toString()}
+                    </span>
                 );
             },
         },
@@ -590,24 +632,43 @@ export default function DifotReport({
 
     return (
         <div>
-            <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                <div className="mt-4">
-                    <div className=" w-full bg-smooth ">
-                        <TableStructure
-                            id={"ConsignmentID"}
-                            handleDownloadExcel={handleDownloadExcel}
-                            title={"DIFOT Report"}
-                            setSelected={setSelected}
-                            gridRef={gridRef}
-                            selected={selected}
-                            groupsElements={groups}
-                            tableDataElements={filteredData}
-                            filterValueElements={filterValue}
-                            setFilteredData={setFilteredData}
-                            setFilterValueElements={setFilterValue}
-                            columnsElements={columns}
-                        />
-                    </div>
+            <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20 h-full">
+                <div className="mt-4 h-full">
+                    {data == null ? (
+                        <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
+                            <div className="flex items-center justify-center">
+                                <div
+                                    className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
+                                ></div>
+                                <div
+                                    className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
+                                ></div>
+                                <div
+                                    className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
+                                ></div>
+                            </div>
+                            <div className="text-dark mt-4 font-bold">
+                                Please wait while we get the data for you.
+                            </div>
+                        </div>
+                    ) : (
+                        <div className=" w-full bg-smooth h-full">
+                            <TableStructure
+                                id={"ConsignmentID"}
+                                handleDownloadExcel={handleDownloadExcel}
+                                title={"DIFOT Report"}
+                                setSelected={setSelected}
+                                gridRef={gridRef}
+                                selected={selected}
+                                groupsElements={groups}
+                                tableDataElements={filteredData}
+                                filterValueElements={filterValue}
+                                setFilteredData={setFilteredData}
+                                setFilterValueElements={setFilterValue}
+                                columnsElements={columns}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

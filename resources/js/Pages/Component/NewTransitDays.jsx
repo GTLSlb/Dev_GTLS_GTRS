@@ -29,7 +29,7 @@ function NewTransitDays({
     AToken,
     url,
 }) {
-    console.log(newTransitDays);
+
     const [isFetching, setIsFetching] = useState(true);
     const [selected, setSelected] = useState([]);
     const [filteredData, setFilteredData] = useState(newTransitDays);

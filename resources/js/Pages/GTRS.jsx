@@ -188,7 +188,7 @@ export default function Gtrs({
                             }
                             return acc;
                         }, []);
-                        
+
                         setCusomterAccounts(uniqueAccounts || []);
                     });
                 })
@@ -218,7 +218,7 @@ export default function Gtrs({
                         console.log(err);
                     }
                 });
-            
+
         axios
             .get(`${gtrsUrl}/SafetyReport`, {
                 headers: {
@@ -517,8 +517,8 @@ export default function Gtrs({
     if (loadingGtrs && AToken) {
         if (canAccess) {
             return (
-                <div className="bg-smooth">
-                    <div className="md:pl-20 pt-16 ">
+                <div className="w-full h-full bg-smooth">
+                    <div className="md:pl-20 pt-16 w-full h-full">
                         <Charts
                             transportData={transportData}
                             setCusomterAccounts={setCusomterAccounts}
