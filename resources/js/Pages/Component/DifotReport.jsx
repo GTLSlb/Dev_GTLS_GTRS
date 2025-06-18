@@ -42,7 +42,7 @@ export default function DifotReport({
     }, [difotData, accData]);
 
     useEffect(() => {
-        if (filteredData != null) {
+        if (filteredData != null && filteredData.length > 0) {
             setIsLoading(false);
         }
     }, [filteredData]);
@@ -149,12 +149,12 @@ export default function DifotReport({
                         const date = new Date(person[columnKey]);
                         if (!isNaN(date)) {
                             acc[columnKey] =
-                                moment(date).format("DD-MM-YYYY hh:mm A");
+                                moment(date)?.format("DD-MM-YYYY hh:mm A");
                         } else {
                             acc[columnKey] = "";
                         }
                     } else if (["OldRdd", "NewRdd"].includes(columnKey)) {
-                        acc[columnKey] = person[columnKey].replace(/\//g, "-");
+                        acc[columnKey] = person[columnKey]?.replace(/\//g, "-");
                         //value.replace(/\//g, '-')
                     } else {
                         acc[columnKey] = person[columnKey];
@@ -727,7 +727,7 @@ export default function DifotReport({
         <div>
             <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20 h-full">
                 <div className="mt-4 h-full">
-                    {isLoading && filteredData != null ? (
+                    {isLoading ? (
                         <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
                             <div className="flex items-center justify-center">
                                 <div
