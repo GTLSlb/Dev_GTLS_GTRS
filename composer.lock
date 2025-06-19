@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "81ad6ba7c0b3f71ec81fa298d654d2ee",
+    "content-hash": "03221c4ded27bd8a3a90c70f775024ed",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -1253,16 +1253,16 @@
         },
         {
             "name": "gtls/loginstory",
-            "version": "v1.0.6",
+            "version": "v1.0.7",
             "source": {
                 "type": "git",
-                "url": "https://github.com/MiraCh-gtls/loginStory.git",
-                "reference": "47f4a89691b27558f83869bbf9de83feb3bfcaf7"
+                "url": "https://github.com/GTLSlb/Composer_Libraries.git",
+                "reference": "0d49b88c5d03be16c90977e03d8094fff2980aa2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/MiraCh-gtls/loginStory/zipball/47f4a89691b27558f83869bbf9de83feb3bfcaf7",
-                "reference": "47f4a89691b27558f83869bbf9de83feb3bfcaf7",
+                "url": "https://api.github.com/repos/GTLSlb/Composer_Libraries/zipball/0d49b88c5d03be16c90977e03d8094fff2980aa2",
+                "reference": "0d49b88c5d03be16c90977e03d8094fff2980aa2",
                 "shasum": ""
             },
             "type": "library",
@@ -1279,15 +1279,15 @@
             ],
             "authors": [
                 {
-                    "name": "MiraCh"
+                    "name": "gtls-dev"
                 }
             ],
             "description": "[]",
             "support": {
-                "issues": "https://github.com/MiraCh-gtls/loginStory/issues",
-                "source": "https://github.com/MiraCh-gtls/loginStory/tree/v1.0.6"
+                "issues": "https://github.com/GTLSlb/Composer_Libraries/issues",
+                "source": "https://github.com/GTLSlb/Composer_Libraries/tree/v1.0.7"
             },
-            "time": "2025-01-22T07:36:19+00:00"
+            "time": "2025-06-10T11:57:47+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",

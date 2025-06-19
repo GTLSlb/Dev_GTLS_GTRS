@@ -47,6 +47,7 @@ export default function Login({ }) {
             backToHomeURL={backToHomeURL}
             gtlsLogo={Logo}
             microsoftLogo={MicrosoftLogo}
+            isTest={window.Laravel.isTest || false}
         />
     </div>
     );
