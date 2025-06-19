@@ -21,7 +21,7 @@ import {
 } from "@/Components/utils/filters";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import { Button } from "@heroui/react";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import ConsDetails from "../ConsDetails";
 import NotFoundRedirect from "../NotFoundRedirect";
@@ -51,7 +51,6 @@ import ConsMap from "./TrafficPage/ConsMap";
 import TrafficComp from "./TrafficPage/TrafficComp";
 import TransportRep from "./TransportRep";
 import ProductStockTable from "./ProductStock/ProductStockTable";
-import { CustomContext } from "@/CommonContext";
 import Customers from "./Settings/Customers";
 import CustomerProfile from "./Settings/CustomerProfile";
 import SettingMiddleware from "./Settings/SettingMiddleware";
