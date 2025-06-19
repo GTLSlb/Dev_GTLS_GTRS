@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import LottieComponent from "./LottieComponent/LottieComponent";
 import Lock from "@/Components/LottieComponent/lock.json";
 import GtrsButton from "@/Pages/Component/GtrsButton";
@@ -28,6 +28,7 @@ function NoAccess() {
         currentUser,
         setCurrentUser,
     } = useContext(CustomContext);
+
     const handleLogout = async () => {
         setIsLoading(true);
         const credentials = {
