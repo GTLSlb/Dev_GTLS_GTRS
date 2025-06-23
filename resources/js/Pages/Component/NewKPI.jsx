@@ -559,7 +559,7 @@ function NewKPI({
             MatchDel: "Pass/Fail",
             ReceiverZone:'Receiver Zone',
             RateUnit:'Rate Unit',
-            FtlLtl:'Ftl/Ltl'
+            FtlLtl:'FTL/LTL'
         };
 
         const fieldsToCheck = [
@@ -992,7 +992,7 @@ function NewKPI({
         },
         {
             name: "FtlLtl",
-            header: "Ftl/Ltl",
+            header: "FTL/LTL",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
@@ -1565,7 +1565,7 @@ function NewKPI({
                                                                 value="FtlLtl"
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
-                                                            Ftl/Ltl
+                                                            FTL/LTL
                                                         </label>
                                                     </div>
                                                 </div>

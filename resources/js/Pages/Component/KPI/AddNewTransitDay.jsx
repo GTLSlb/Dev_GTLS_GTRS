@@ -524,7 +524,7 @@ function AddNewTransitDay({
                                     setReceiverFtlLtl(e.target.value);
                                 }}
                             >
-                                <option value="">--Select Ftl/Ltl--</option>
+                                <option value="">--Select FTL/LTL--</option>
 
                                 {ltlFtlOptions?.map((op) => {
                                     return (

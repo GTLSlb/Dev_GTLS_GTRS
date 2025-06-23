@@ -295,7 +295,7 @@ function NewTransitDays({
         },
         {
             name: "FtlLtl",
-            header: "Ftl/Ltl",
+            header: "FTL/LTL",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
@@ -733,7 +733,7 @@ function NewTransitDays({
             ReceiverPostCode: "Receiver Postal Code",
             ZoneCode: 'Zone Code',
             ZoneDescription:'Zone Description',
-            FtlLtl:'Ftl/Ltl',
+            FtlLtl:'FTL/LTL',
             TransitTime: "Transit Time",
         };
 
@@ -1054,7 +1054,7 @@ function NewTransitDays({
                                                                 value="FtlLtl"
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
-                                                            Ftl/Ltl
+                                                            FTL/LTL
                                                         </label>
                                                         </div>
                                                     </div>
