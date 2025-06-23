@@ -59,6 +59,7 @@ function AddNewTransitDay({
         { id: 3, label: "FREIGHT PEOPLE" },
         { id: 4, label: "KIMBERLY CLARK" },
         { id: 5, label: "PET BRANDS" },
+        { id: 6, label: "KERRY INGREDIENTS" },
     ];
 
     const types = [
