@@ -1029,6 +1029,33 @@ function NewTransitDays({
                                                                 />{" "}
                                                                 Transit Time
                                                             </label>
+                                                            <label className="">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
+                                                                value="ZoneCode"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Zone Code
+                                                        </label>
+                                                        <label className="">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
+                                                                value="ZoneDescription"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Zone Description
+                                                        </label>
+                                                        <label className="">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
+                                                                value="FtlLtl"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Ftl/Ltl
+                                                        </label>
                                                         </div>
                                                     </div>
                                                     <div className="grid grid-cols-1 divide-x divide-gray-900/5 bg-gray-50">

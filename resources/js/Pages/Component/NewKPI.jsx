@@ -1540,6 +1540,33 @@ function NewKPI({
                                                             />{" "}
                                                             Pass / Fail
                                                         </label>
+                                                        <label className="">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
+                                                                value="ReceiverZone"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Receiver Zone
+                                                        </label>
+                                                        <label className="">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
+                                                                value="RateUnit"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Rate Unit
+                                                        </label>
+                                                        <label className="">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
+                                                                value="FtlLtl"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Ftl/Ltl
+                                                        </label>
                                                     </div>
                                                 </div>
                                                 <div className="grid grid-cols-1 divide-x divide-gray-900/5 bg-gray-50">
