@@ -77,6 +77,12 @@ function AddNewTransitDay({
     const [selectedRstate, setSelectedRstate] = useState(
         newtransitDay?.ReceiverState || null
     );
+    const [selectedRZone, setSelectedRZone] = useState(
+        newtransitDay?.ReceiverZoneId || null
+    );
+    const [receiverFtlLtl , setReceiverFtlLtl ] = useState(
+        newtransitDay?.FtlLtl || null
+    );
     const [selectedSstate, setSelectedSstate] = useState(
         newtransitDay?.SenderState || null
     );
@@ -160,6 +166,8 @@ function AddNewTransitDay({
                     ? null
                     : document.getElementById("ReceiverPostCode").value,
             TransitTime: document.getElementById("TransitTime").value,
+            ReceiverZoneId: selectedRZone,
+            FtlLtl: receiverFtlLtl,
         };
         axios
             .post(`${url}Add/TransitNew`, inputValues, {
@@ -208,6 +216,26 @@ function AddNewTransitDay({
         setNewTransitDay(null);
         setActiveIndexGTRS(18);
     }
+    const receiverZoneOptions=[
+        {
+            id: 111,
+            label: 'Melbourne Metro',
+        },
+        {
+            id: 102,
+            label: 'Sydney Metro',
+        },
+    ]
+    const ltlFtlOptions=[
+        {
+            id: 'FTL',
+            label: 'FTL',
+        },
+        {
+            id: 'LTL',
+            label: 'LTL',
+        },
+    ]
     return (
         <div className="p-8">
             <div className="shadow bg-white p-6 rounded-lg ">
@@ -393,6 +421,7 @@ function AddNewTransitDay({
                                 })}
                             </select>
                         </div>
+                        
                         {/* Sender PostCode  */}
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label htmlFor="name" className="block w-48 ">
@@ -440,6 +469,71 @@ function AddNewTransitDay({
                                 className="rounded sm:w-96 max-w-lg bg-gray-50 border border-gray-300 h-7"
                             />
                         </div>
+                        <div className="col-span-2 flex items-center gap-x-2">
+                        </div>
+                        {/* Receiver Zone  */}
+                        <div className="col-span-2 flex items-center gap-x-2">
+                            <label
+                                htmlFor="ReceiverZone"
+                                className="block w-48"
+                            >
+                                Receiver Zone:
+                            </label>
+                            <select
+                                id="ReceiverZone"
+                                name="ReceiverZone"
+                                className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
+                                // defaultValue={modalSafetyType}
+                                // value={formValues.SafetyType || ""}
+                                value={selectedRZone}
+                                onChange={(e) => {
+                                    setSelectedRZone(e.target.value);
+                                }}
+                            >
+                                <option value="">--Select a Zone--</option>
+
+                                {receiverZoneOptions?.map((op) => {
+                                    return (
+                                        <option key={op.id} value={op.id}>
+                                            {op.label}
+                                        </option>
+                                    );
+                                })}
+                            </select>
+                        </div>
+
+                        <div className="col-span-2 flex items-center gap-x-2">
+                        </div>
+                        {/* FTL/LTL  */}
+                        <div className="col-span-2 flex items-center gap-x-2">
+                            <label
+                                htmlFor="FTLLTL"
+                                className="block w-48"
+                            >
+                                FTL/LTL:
+                            </label>
+                            <select
+                                id="FTLLTL"
+                                name="FTLLTL"
+                                className="w-full border border-gray-300 rounded px-3 py-2 sm:w-96"
+                                // defaultValue={modalSafetyType}
+                                // value={formValues.SafetyType || ""}
+                                value={receiverFtlLtl}
+                                onChange={(e) => {
+                                    setReceiverFtlLtl(e.target.value);
+                                }}
+                            >
+                                <option value="">--Select Ftl/Ltl--</option>
+
+                                {ltlFtlOptions?.map((op) => {
+                                    return (
+                                        <option key={op.id} value={op.id}>
+                                            {op.label}
+                                        </option>
+                                    );
+                                })}
+                            </select>
+                        </div>
 
                         {/* Sender Title Border  */}
                         <div className="col-span-4 flex items-center gap-x-2">
@@ -447,6 +541,7 @@ function AddNewTransitDay({
                                 <p className="font-bold text-lg">Transit</p>
                             </div>
                         </div>
+                        
                         {/* Transit Time  */}
                         <div className="col-span-2 flex items-center gap-x-2">
                             <label htmlFor="name" className="block  w-48">
@@ -462,6 +557,7 @@ function AddNewTransitDay({
                             />
                         </div>
                     </div>
+                    
                     <div className="flex w-full gap-x-2 justify-end">
                         <GtamButton
                             // disabled={isLoading}

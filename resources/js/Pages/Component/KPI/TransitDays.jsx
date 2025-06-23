@@ -172,7 +172,7 @@ export default function TransitDays({
 
         return uniqueCustomers;
     }
-   
+
     const filterIcon = (className) => {
         return (
             <svg
@@ -327,6 +327,30 @@ export default function TransitDays({
             group: "receiverDetails",
             textAlign: "center",
             filterEditor: NumberFilter,
+        },
+        {
+            name: "ZoneCode",
+            header: "Zone Code",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
+        },
+        {
+            name: "ZoneDescription",
+            header: "Zone Description",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
+        },
+        {
+            name: "FtlLtl",
+            header: "Ftl/Ltl",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
         },
         {
             name: "TransitTime",

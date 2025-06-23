@@ -29,7 +29,6 @@ function NewTransitDays({
     AToken,
     url,
 }) {
-
     const [isFetching, setIsFetching] = useState(true);
     const [selected, setSelected] = useState([]);
     const [filteredData, setFilteredData] = useState(newTransitDays);
@@ -205,11 +204,7 @@ function NewTransitDays({
                 dataSource: types,
             },
             render: ({ value, data }) => {
-                return (
-                    <div>
-                        {isDummyAccount(data.CustomerType)}
-                    </div>
-                );
+                return <div>{isDummyAccount(data.CustomerType)}</div>;
             },
         },
         {
@@ -279,6 +274,32 @@ function NewTransitDays({
             defaultFlex: 1,
             textAlign: "center",
             filterEditor: NumberFilter,
+        },
+        {
+            name: "ZoneCode",
+            header: "Zone Code",
+            type: "string",
+            group: "receiverDetails",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
+        },
+        {
+            name: "ZoneDescription",
+            header: "Zone Description",
+            type: "string",
+            group: "receiverDetails",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
+        },
+        {
+            name: "FtlLtl",
+            header: "Ftl/Ltl",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
         },
         {
             name: "TransitTime",
@@ -710,6 +731,9 @@ function NewTransitDays({
             ReceiverState: "Receiver State",
             ReceiverState: "Receiver State",
             ReceiverPostCode: "Receiver Postal Code",
+            ZoneCode: 'Zone Code',
+            ZoneDescription:'Zone Description',
+            FtlLtl:'Ftl/Ltl',
             TransitTime: "Transit Time",
         };
 

@@ -482,6 +482,27 @@ export default function charts({
             //emptyValue: "",
         },
         {
+            name: "ReceiverZone",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "RateUnit",
+            operator: "inlist",
+            type: "select",
+            value: "",
+            //emptyValue: "",
+        },
+        {
+            name: "FtlLtl",
+            operator: "contains",
+            type: "string",
+            value: "",
+            //emptyValue: "",
+        },
+        {
             name: "DispatchDate",
             operator: "inrange",
             type: "date",
@@ -609,6 +630,24 @@ export default function charts({
             value: null,
         },
         {
+            name: "ZoneCode",
+            operator: "contains",
+            type: "string",
+            value: null,
+        },
+        {
+            name: "FtlLtl",
+            operator: "contains",
+            type: "string",
+            value: null,
+        },
+        {
+            name: "ZoneDescription",
+            operator: "contains",
+            type: "string",
+            value: null,
+        },
+        {
             name: "TransitTime",
             operator: "eq",
             type: "number",
@@ -657,6 +696,24 @@ export default function charts({
             name: "ReceiverPostCode",
             operator: "eq",
             type: "number",
+            value: null,
+        },
+        {
+            name: "ZoneCode",
+            operator: "contains",
+            type: "string",
+            value: null,
+        },
+        {
+            name: "FtlLtl",
+            operator: "contains",
+            type: "string",
+            value: null,
+        },
+        {
+            name: "ZoneDescription",
+            operator: "contains",
+            type: "string",
             value: null,
         },
         {

@@ -54,6 +54,7 @@ function NewKPI({
 
     const [reasonOptions, setReasonOptions] = useState([]);
     const [receiverStateOptions, setReceiverStateOptions] = useState([]);
+    const [rateUnitOptions, setRateUnitOptions] = useState([]);
     const [senderStateOptions, setSenderStateOptions] = useState([]);
 
     const fetchData = async () => {
@@ -78,6 +79,9 @@ function NewKPI({
             setReceiverStateOptions(
                 createNewLabelObjects(modifiedData, "ReceiverState")
             );
+            setRateUnitOptions(
+                createNewLabelObjects(modifiedData, "RateUnit")
+            )
             setReasonOptions(
                 kpireasonsData.map((reason) => ({
                     id: reason.ReasonId,
@@ -151,6 +155,9 @@ function NewKPI({
         setReceiverStateOptions(
             createNewLabelObjects(filterData(), "ReceiverState")
         );
+        setRateUnitOptions(
+            createNewLabelObjects(filterData(), "RateUnit")
+        )
         setSenderStateOptions(
             createNewLabelObjects(filterData(), "SenderState")
         );
@@ -550,6 +557,9 @@ function NewKPI({
             CalculatedDelDate: "Calculated Delivery Date",
             ReasonId: "Reason",
             MatchDel: "Pass/Fail",
+            ReceiverZone:'Receiver Zone',
+            RateUnit:'Rate Unit',
+            FtlLtl:'Ftl/Ltl'
         };
 
         const fieldsToCheck = [
@@ -805,6 +815,9 @@ function NewKPI({
         setReceiverStateOptions(
             createNewLabelObjects(updatedData, "ReceiverState")
         );
+        setRateUnitOptions(
+            createNewLabelObjects(updatedData, "RateUnit")
+        );
         setReasonOptions(
             kpireasonsData.map((reason) => ({
                 id: reason.ReasonId,
@@ -947,6 +960,39 @@ function NewKPI({
             name: "ReceiverPostCode",
             group: "receiverDetails",
             header: "Post Code",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
+            defaultWidth: 200,
+        },
+        {
+            name: "ReceiverZone",
+            group: "receiverDetails",
+            header: "Receiver Zone",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
+            defaultWidth: 200,
+        },
+        {
+            name: "RateUnit",
+            header: "Rate Unit",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: rateUnitOptions,
+            },
+            defaultWidth: 200,
+        },
+        {
+            name: "FtlLtl",
+            header: "Ftl/Ltl",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
@@ -1151,6 +1197,12 @@ function NewKPI({
                 item.filterEditorProps = {
                     ...item.filterEditorProps,
                     dataSource: receiverStateOptions,
+                };
+            }
+            if (item?.name == "RateUnit") {
+                item.filterEditorProps = {
+                    ...item.filterEditorProps,
+                    dataSource: rateUnitOptions,
                 };
             }
             return item;
