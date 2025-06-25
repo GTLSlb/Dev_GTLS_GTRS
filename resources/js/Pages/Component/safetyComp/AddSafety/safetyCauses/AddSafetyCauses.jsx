@@ -150,14 +150,14 @@ export default function AddSafetyCauses({
                                         ) : (
                                             <tr>
                                                 <td colSpan="7">
-                                                    <div class=" h-64 flex items-center justify-center mt-10">
-                                                        <div class="text-center flex justify-center flex-col">
+                                                    <div className=" h-64 flex items-center justify-center mt-10">
+                                                        <div className="text-center flex justify-center flex-col">
                                                             <img
                                                                 src={notFound}
                                                                 alt=""
                                                                 className="w-52 h-auto "
                                                             />
-                                                            <h1 class="text-3xl font-bold text-gray-900">
+                                                            <h1 className="text-3xl font-bold text-gray-900">
                                                                 No Data Found
                                                             </h1>
                                                         </div>
@@ -169,14 +169,14 @@ export default function AddSafetyCauses({
                                 </table>
                             </div>
                         ) : (
-                            <div class=" h-64 flex items-center justify-center mt-10">
-                                <div class="text-center flex justify-center flex-col">
+                            <div className=" h-64 flex items-center justify-center mt-10">
+                                <div className="text-center flex justify-center flex-col">
                                     <img
                                         src={notFound}
                                         alt=""
                                         className="w-52 h-auto "
                                     />
-                                    <h1 class="text-3xl font-bold text-gray-900">
+                                    <h1 className="text-3xl font-bold text-gray-900">
                                         No Data Found
                                     </h1>
                                 </div>

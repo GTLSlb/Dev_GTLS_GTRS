@@ -27,7 +27,7 @@ function BarChart03({
     const max = values.reduce(reducer);
 
     const ctx = canvas.current;
-    // eslint-disable-next-line no-unused-vars
+     
     const chart = new Chart(ctx, {
       type: 'bar',
       data: data,

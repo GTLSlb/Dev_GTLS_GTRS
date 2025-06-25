@@ -38,7 +38,7 @@ function PickupDelInfo({
                                             <a
                                                 href={item.PODimage}
                                                 target="_blank"
-                                                className="text-indigo-600 hover:text-goldds"
+                                                className="text-indigo-600 hover:text-goldds" rel="noreferrer"
                                             >
                                                 {item.PODimage}
                                             </a>

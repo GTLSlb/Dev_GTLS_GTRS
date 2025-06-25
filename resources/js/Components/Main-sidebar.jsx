@@ -169,7 +169,7 @@ export default function MainSidebar({
                                         key={item.AppId}
                                         target={
                                             item.id === 0 ? undefined : "_blank"
-                                        }
+                                        } rel="noreferrer"
                                     >
                                         {" "}
                                         <button
@@ -214,7 +214,7 @@ export default function MainSidebar({
                             <a
                                 href="https://support.gtls.com.au/help/2703577665"
                                 target="_blank"
-                                className="flex justify-center"
+                                className="flex justify-center" rel="noreferrer"
                             >
                                 {" "}
                                 <button
@@ -410,7 +410,7 @@ export default function MainSidebar({
                                     <a
                                         href="https://support.gtls.com.au/help/2703577665"
                                         target="_blank"
-                                        className="flex"
+                                        className="flex" rel="noreferrer"
                                     >
                                         {" "}
                                         <button

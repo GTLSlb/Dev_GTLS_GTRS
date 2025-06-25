@@ -326,9 +326,9 @@ export default function SafetyRepChart({
                 </ReactGridLayout>
             ) : (
                 <div className="h-64 flex items-center justify-center mt-10">
-                    <div class="text-center flex justify-center flex-col">
+                    <div className="text-center flex justify-center flex-col">
                         {/* <img src={notFound} alt="" className="w-52 h-auto " /> */}
-                        <h1 class="text-3xl font-bold text-gray-900">
+                        <h1 className="text-3xl font-bold text-gray-900">
                             Congrats! <br/> Nothing To Show
                         </h1>
                     </div>

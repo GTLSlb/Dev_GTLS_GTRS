@@ -140,7 +140,7 @@ export default function Navbars() {
                                                 <a
                                                     target={"_blank"}
                                                     href="https://jaixwebapps.gtls.com.au/Portal/Account/Login.aspx"
-                                                    className=" hover:bg-dark text-dark hover:text-goldt "
+                                                    className=" hover:bg-dark text-dark hover:text-goldt " rel="noreferrer"
                                                 >
                                                     <div className="w-full flex justify-center">
                                                         <button className=" font-bold p-2 px-4">
@@ -215,7 +215,7 @@ export default function Navbars() {
                                                     <a
                                                         target={"_blank"}
                                                         href="https://jaixwebapps.gtls.com.au/Portal/Account/Login.aspx"
-                                                        className=" hover:bg-dark text-dark hover:text-goldt "
+                                                        className=" hover:bg-dark text-dark hover:text-goldt " rel="noreferrer"
                                                     >
                                                         <div className="w-full flex justify-center">
                                                             <button className=" font-bold p-2 px-4">
@@ -354,7 +354,7 @@ export default function Navbars() {
                                                     <a
                                                         target={"_blank"}
                                                         href="https://jaixwebapps.gtls.com.au/Portal/Account/Login.aspx"
-                                                        className=" hover:bg-dark text-dark hover:text-goldt "
+                                                        className=" hover:bg-dark text-dark hover:text-goldt " rel="noreferrer"
                                                     >
                                                         <div className="w-full flex justify-center">
                                                             <button className=" font-bold p-2 px-4">
@@ -432,7 +432,7 @@ export default function Navbars() {
                                                         <a
                                                             target={"_blank"}
                                                             href="https://jaixwebapps.gtls.com.au/Portal/Account/Login.aspx"
-                                                            className=" hover:bg-dark text-dark hover:text-goldt "
+                                                            className=" hover:bg-dark text-dark hover:text-goldt " rel="noreferrer"
                                                         >
                                                             <div className="w-full flex justify-center">
                                                                 <button className=" font-bold p-2 px-4">
