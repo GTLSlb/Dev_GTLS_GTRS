@@ -1,23 +1,19 @@
 import ReactModal from "react-modal";
 import InputError from "@/Components/InputError";
+import React from "react";
+import PropTypes from "prop-types";
 import { useState } from "react";
-import axios from "axios";
 import { useEffect } from "react";
 import swal from 'sweetalert';
 import { handleSessionExpiration } from '@/CommonFunctions';
 
-const placeholder = "test";
 
 export default function AddSafetyTypeModal({
     isOpen,
-    url,
     handleClose,
     type,
-    AToken,
-    setType,
     updateLocalData,
     safetyTypes,
-    currentUser,
 }) {
     const [Name, setName] = useState(null);
     const [isSaveEnabled, setIsSaveEnabled] = useState(true);
@@ -25,8 +21,6 @@ export default function AddSafetyTypeModal({
     const [typeStatus, setTypeStatus] = useState(true);
     const [isLoading,SetIsLoading] = useState(false)
     const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
-    const [inputValue, setInputValue] = useState("");
 
     useEffect(() => {
         if (type) {
@@ -39,13 +33,6 @@ export default function AddSafetyTypeModal({
             setName("");
         }
     }, [type]);
-    const data = [
-        {
-            TypeId: type ? type.SafetyTypeId : null,
-            TypeName: Name,
-            TypeStatus: Status,
-        },
-    ];
 
     const handlePopUpClose = () => {
         setError(null); // Clear the error message
@@ -59,24 +46,13 @@ export default function AddSafetyTypeModal({
         try {
             SetIsLoading(true)
             // Make the API request using Axios or any other library
-            const response = await axios.post(
-                `${url}Add/SafetyType`,
-                data,
-                {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
-                    },
-                }
-            );
+          
             // Handle the response as needed
             // setInputValue("");
-            setSuccess(true);
             setTimeout(() => {
                 handleClose();
                 setName("");
                 // setdescription("");
-                setSuccess(false);
                 SetIsLoading(false)
                 updateLocalData();
             }, 1000);
@@ -96,7 +72,7 @@ export default function AddSafetyTypeModal({
                     await handleSessionExpiration();
                 });
                   // Handle other errors
-                  console.log(err);
+                  console.log(error);
                 }
         }
     };
@@ -196,7 +172,7 @@ export default function AddSafetyTypeModal({
                                                 type="radio"
                                                 value="active"
                                                 checked={typeStatus === true}
-                                                onChange={(event) => {
+                                                onChange={() => {
                                                     setTypeStatus(true);
                                                     setStatus(true);
                                                 }}
@@ -216,7 +192,7 @@ export default function AddSafetyTypeModal({
                                                 type="radio"
                                                 value="inactive"
                                                 checked={typeStatus === false}
-                                                onChange={(event) => {
+                                                onChange={() => {
                                                     setTypeStatus(false);
                                                     setStatus(false);
                                                 }}
@@ -255,3 +231,10 @@ export default function AddSafetyTypeModal({
         </ReactModal>
     );
 }
+AddSafetyTypeModal.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    handleClose: PropTypes.func.isRequired,
+    type: PropTypes.object,
+    updateLocalData: PropTypes.func.isRequired,
+    safetyTypes: PropTypes.array.isRequired,
+};

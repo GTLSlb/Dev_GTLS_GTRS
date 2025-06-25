@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { chartColors } from './ChartjsConfig';
 import {
   Chart, BarController, BarElement, LinearScale, TimeScale, Tooltip, Legend,
@@ -103,7 +104,6 @@ function BarChart02({
     });
     setChart(newChart);
     return () => newChart.destroy();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -131,5 +131,10 @@ function BarChart02({
     <canvas ref={canvas} width={width} height={height}></canvas>
   );
 }
+BarChart02.propTypes = {
+  data: PropTypes.object.isRequired,
+  width: PropTypes.number,
+  height: PropTypes.number,
+};
 
 export default BarChart02;

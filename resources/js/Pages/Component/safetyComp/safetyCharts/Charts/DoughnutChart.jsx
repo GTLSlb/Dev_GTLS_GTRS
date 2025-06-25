@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-
+import PropTypes from 'prop-types';
 import {
   Chart, DoughnutController, ArcElement, TimeScale, Tooltip,
 } from 'chart.js';
@@ -47,7 +47,7 @@ function DoughnutChart({
       },
       plugins: [{
         id: 'htmlLegend',
-        afterUpdate(c, args, options) {
+        afterUpdate(c) {
           const ul = legend.current;
           if (!ul) return;
           // Remove old legend items
@@ -96,7 +96,6 @@ function DoughnutChart({
       }],
     });
     return () => chart.destroy();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   return (
@@ -110,5 +109,11 @@ function DoughnutChart({
     </div>
   );
 }
+
+DoughnutChart.propTypes = {
+  data: PropTypes.object.isRequired,
+  width: PropTypes.number,
+  height: PropTypes.number,
+};
 
 export default DoughnutChart;
