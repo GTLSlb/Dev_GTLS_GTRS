@@ -29,6 +29,7 @@ import TableStructure from "@/Components/TableStructure";
 import ComboBox from "@/Components/ComboBox";
 import ViewComments from "./Modals/ViewComments";
 import { exportToExcel } from "@/Components/utils/excelUtils";
+import AddComment from "./Modals/AddComment";
 
 const formatDateToExcel = (dateValue) => {
     const date = new Date(dateValue);
@@ -60,6 +61,7 @@ export default function DailyReportPage({
         setactiveCon(coindex);
         setActiveIndexGTRS(3);
     };
+
     const [deliveryCommentsOptions, setDeliveryCommentsOptions] = useState(
         deliveryReportComments
     );
@@ -356,12 +358,6 @@ export default function DailyReportPage({
             );
         }
     }, [deliveryReportData, consId, deliveryCommentsOptions]);
-
-    const handleViewComments = (data) => {
-        setCommentsData(data?.Comments);
-        setConsId(data?.ConsignmentID);
-        setIsViewModalOpen(true);
-    };
 
     const [newCommentValue, setNewCommentValue] = useState("");
     const [addedComment, setAddedComment] = useState(true);
@@ -678,7 +674,6 @@ export default function DailyReportPage({
             canAddDeliveryReportComment(currentUser) && (
                 <>
                     <ComboBox
-                        onCancel={() => {}}
                         idField={"CommentId"}
                         valueField={"Comment"}
                         onChange={onSelectComment}
@@ -690,6 +685,7 @@ export default function DailyReportPage({
                         isDisabled={false}
                         onKeyDown={handleKeyDown}
                         setInputValue={setDefaultDeliveryComment}
+                        onCancel={onCancel}
                     />
                 </>
             )
@@ -983,7 +979,7 @@ export default function DailyReportPage({
             },
             render: ({ value, data }) => {
                 return (
-                    <div className="flex gap-4 items-center px-2">
+                    <div className="flex gap-4 items-center px-2" onClick={()=>{}}>
                         {data.ConsignmentID == cellLoading ? (
                             <div className="flex flex-col w-full">
                                 <div className=" inset-0 flex justify-center items-center bg-opacity-50">
@@ -1023,6 +1019,12 @@ export default function DailyReportPage({
                         >
                             <EyeIcon className="h-5 w-5 text-goldt" />
                         </span>
+                        {/* <span
+                            className="underline text-blue-400 hover:cursor-pointer"
+                            onClick={() => handleAddComments(data)}
+                        >
+                            <PlusIcon className="h-5 w-5 text-gtrs1" />
+                        </span> */}
                     </div>
                 );
             },
@@ -1038,6 +1040,17 @@ export default function DailyReportPage({
         setIsViewModalOpen(false);
         setCommentsData(null);
     };
+    const handleViewComments = (data) => {
+        setCommentsData(data?.Comments);
+        setConsId(data?.ConsignmentID);
+        setIsViewModalOpen(true);
+    };
+    const handleAddComments = (data) => {
+        setCommentsData(data?.Comments);
+        setConsId(data?.ConsignmentID);
+        setIsAddModalOpen(true);
+    };
+
     const [filteredMetcashData, setFilteredMetcashData] = useState(
         deliveryReportData?.filter((item) => item?.CustomerTypeId == 1)
     );
@@ -1672,6 +1685,16 @@ export default function DailyReportPage({
                 setCellLoading={setCellLoading}
                 isOpen={isViewModalOpen}
                 handleClose={handleViewClose}
+                consId={consId}
+                fetchData={fetchDeliveryReport}
+                currentUser={currentUser}
+                commentsData={commentsData}
+            />
+            <AddComment
+                url={url}
+                AToken={AToken}
+                isOpen={isAddModalOpen}
+                handleClose={handleAddClose}
                 consId={consId}
                 fetchData={fetchDeliveryReport}
                 currentUser={currentUser}

@@ -183,7 +183,7 @@ const navigation = [
         href: "#",
         options: [
             {
-                id: 24,
+                id: 21,
                 name: "Delivery Report",
                 href: "#",
                 current: false,
@@ -199,7 +199,7 @@ const navigation = [
             //     feature: "ExcelTable_View",
             // },
             {
-                id: 26,
+                id: 24,
                 name: "Comments",
                 href: "#",
                 current: false,
@@ -220,7 +220,7 @@ const navigation = [
         feature: "StockReport_View",
     },
     {
-        id: 27,
+        id: 25,
         name: "Contacts Report",
         href: "#",
         icon: ContactsIcon,
@@ -228,7 +228,7 @@ const navigation = [
         feature: "ContactsRep_View",
     },
     {
-        id: 28,
+        id: 26,
         name: "DIFOT Report",
         href: "#",
         icon: DescriptionIcon,

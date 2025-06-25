@@ -867,7 +867,7 @@ export function canAddDeliveryReportCommentTableView(currentUser) {
 
 export function canAddDeliveryReportComment(currentUser) {
     // Define the specific permission
-    const targetPermissionName = "DeliveryReportCommentsTable_Add";
+    const targetPermissionName = "DeliveryReportComment_add";
     const pageName = "Delivery Report"; // Adjust the page name as needed
 
     // Find the specified page in the user's Pages array

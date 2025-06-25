@@ -2729,6 +2729,7 @@ export default function charts({
             setActiveIndexGTRS={setActiveIndexGTRS}
             setactiveCon={setactiveCon}
             setLastIndex={setLastIndex}
+            deliveryReportComments={deliveryReportComments}
         />,
         <RealFoodKPIPack url={url} currentUser={currentUser} AToken={AToken} />,
         <ProductStockTable
@@ -2736,27 +2737,18 @@ export default function charts({
             currentUser={currentUser}
             AToken={AToken}
         />,
-        <DailyReportPage
-            url={url}
-            currentUser={currentUser}
-            AToken={AToken}
-            deliveryReportData={dailyReportData}
-            fetchDeliveryReport={fetchDeliveryReport}
-            setActiveIndexGTRS={setActiveIndexGTRS}
-            setactiveCon={setactiveCon}
-            setLastIndex={setLastIndex}
-        />,
-        <ExcelDeliveryReport
-            url={url}
-            AToken={AToken}
-            currentUser={currentUser}
-            setactiveCon={setactiveCon}
-            setActiveIndexGTRS={setActiveIndexGTRS}
-            // userPermission={userPermission}
-            deliveryReportData={excelDailyReportData}
-            fetchDeliveryReport={fetchDeliveryReport}
-            deliveryCommentsOptions={deliveryReportComments}
-        />,
+
+        // <ExcelDeliveryReport
+        //     url={url}
+        //     AToken={AToken}
+        //     currentUser={currentUser}
+        //     setactiveCon={setactiveCon}
+        //     setActiveIndexGTRS={setActiveIndexGTRS}
+        //     // userPermission={userPermission}
+        //     deliveryReportData={excelDailyReportData}
+        //     fetchDeliveryReport={fetchDeliveryReport}
+        //     deliveryCommentsOptions={deliveryReportComments}
+        // />,
         <DeliveryReportCommentsPage
             url={url}
             AToken={AToken}
