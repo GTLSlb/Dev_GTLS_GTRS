@@ -1,5 +1,5 @@
 import React from "react";
-export const LogoutSVG = (props) => (
+export const LogoutSVG = () => (
     <svg fill="currentColor" width="54px" height="54px" version="1.1" id="Layer_1" viewBox="0 0 511.989 511.989" xmlSpace="preserve">
     <g>
         <g>

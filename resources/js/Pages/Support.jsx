@@ -1,4 +1,5 @@
 import SupportForm from "./Component/SupportComp/SupportForm";
+import React from "react";
 
 export default function Support() {
     return (

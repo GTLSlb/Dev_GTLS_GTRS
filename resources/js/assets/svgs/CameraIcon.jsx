@@ -1,11 +1,10 @@
 import React from "react";
+import PropTypes from "prop-types";
 export const CameraIcon = ({
   fill = 'currentColor',
-  filled,
   size,
   height,
   width,
-  label,
   ...props
 }) => {
   return (
@@ -25,4 +24,10 @@ export const CameraIcon = ({
       />
     </svg>
   );
+};
+CameraIcon.propTypes = {
+  fill: PropTypes.string,
+  size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
