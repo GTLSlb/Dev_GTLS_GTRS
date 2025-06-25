@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 // import BarChart01 from "../charts/BarChart01";
 import BarChart01 from "@/Components/charts/BarChart01";
 import { useEffect } from "react";
@@ -10,7 +11,6 @@ function SafetyCard02(props) {
         labels: [],
         datasets: [],
     });
-    const entries = Object.entries(barValues);
 
     useEffect(() => {
         if (barValues !== null) {
@@ -45,5 +45,10 @@ function SafetyCard02(props) {
         </div>
     );
 }
+
+SafetyCard02.propTypes = {
+    barValues: PropTypes.array.isRequired,
+    chartTitle: PropTypes.string.isRequired,
+};
 
 export default SafetyCard02;

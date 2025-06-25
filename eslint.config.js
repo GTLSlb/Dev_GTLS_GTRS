@@ -32,6 +32,7 @@ export default defineConfig([
     },
     rules: {
       ...react.configs.flat.recommended.rules,
+      'react/no-unescaped-entities': 'off',
     },
     settings: {
       react: {

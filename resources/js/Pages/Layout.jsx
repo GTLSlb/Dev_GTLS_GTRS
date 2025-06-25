@@ -1,4 +1,5 @@
 import { useState } from "react";
+import React from "react";
 import { useEffect } from "react";
 import Gtrs from "@/Pages/GTRS";
 import axios from "axios";
@@ -11,7 +12,7 @@ import { handleSessionExpiration } from "@/CommonFunctions";
 import NoAccess from "@/Components/NoAccess";
 import Logout from "@/Pages/Auth/Logout";
 
-export default function Sidebar(Boolean) {
+export default function Sidebar() {
     const [currentUser, setcurrentUser] = useState(null);
     const [user, setUser] = useState(null);
     const [allowedApplications, setAllowedApplications] = useState([]);

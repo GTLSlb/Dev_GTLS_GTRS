@@ -1,19 +1,12 @@
 import { useState } from "react";
-import { Fragment } from "react";
-import { Listbox, Transition } from "@headlessui/react";
-import {
-    CheckIcon,
-    ChevronDownIcon,
-} from "@heroicons/react/20/solid";
+import React from "react";
+import PropTypes from "prop-types";
 import { useEffect } from "react";
 import swal from "sweetalert";
 import axios from "axios";
 import { handleSessionExpiration } from '@/CommonFunctions';
 import GtrsButton from "@/Pages/Component/GtrsButton";
 
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
 
 export default function AddCommentToList({
     selectedComment,
@@ -59,7 +52,7 @@ export default function AddCommentToList({
                     Authorization: `Bearer ${AToken}`,
                 },
             })
-            .then((res) => {
+            .then(() => {
                 setSelectedComment(null);
                 fetchData();
                 setShowAdd(false);
@@ -130,3 +123,13 @@ export default function AddCommentToList({
         </div>
     );
 }
+
+AddCommentToList.propTypes = {
+    selectedComment: PropTypes.object,
+    url: PropTypes.string,
+    currentUser: PropTypes.object,
+    AToken: PropTypes.string,
+    setSelectedComment: PropTypes.func,
+    setShowAdd: PropTypes.func,
+    fetchData: PropTypes.func,
+};

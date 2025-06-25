@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useEffect } from "react";
+import React from "react";
+import propTypes from "prop-types";
 import SafetyRepTable from "./safetyComp/safetyRepTable";
 import SafetyRepChart from "./safetyComp/safetyRepChart";
 import AddSafetyType from "./safetyComp/AddSafety/safetyTypes/AddSafetyType";
@@ -171,6 +173,7 @@ export default function SafetyRep({
 
     let components = [
         <SafetyRepTable
+        key={currentPage}
             url={url}
             fetchData={fetchData}
             AToken={AToken}
@@ -188,6 +191,7 @@ export default function SafetyRep({
             setDataEdited={setDataEdited}
         />,
         <SafetyRepChart
+            key={currentPage}
             AToken={AToken}
             filteredData={filteredData}
             safetyCauses={safetyCauses}
@@ -195,6 +199,7 @@ export default function SafetyRep({
         />,
         <AddSafetyType
             url={url}
+            key={currentPage}
             AToken={AToken}
             currentUser={currentUser}
             userPermission={userPermission}
@@ -338,3 +343,26 @@ export default function SafetyRep({
         </div>
     );
 }
+
+
+SafetyRep.propTypes = {
+    accData: propTypes.array,
+    currentUser: propTypes.object,
+    url: propTypes.string,
+    AToken: propTypes.string,
+    safetyDataState: propTypes.array,
+    filterValue: propTypes.string,
+    setFilterValue: propTypes.func,
+    setsafetyDataState: propTypes.func,
+    setSafetyTypes: propTypes.func,
+    safetyTypes: propTypes.array,
+    customerAccounts: propTypes.array,
+    safetyCauses: propTypes.array,
+    setSafetyCauses: propTypes.func,
+    oldestDate: propTypes.string,
+    latestDate: propTypes.string,
+    DefaultSDate: propTypes.string,
+    DefaultEDate: propTypes.string,
+    userPermission: propTypes.object,
+};
+

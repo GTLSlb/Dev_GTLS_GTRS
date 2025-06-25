@@ -1,4 +1,9 @@
 import { useState } from "react";
+import React from "react";
+import PropTypes from "prop-types";
+import swal from "sweetalert";
+import axios from "axios";
+import { handleSessionExpiration } from "@/CommonFunctions";
 import { useEffect } from "react";
 import NoAccess from "@/Components/NoAccess";
 import { fetchApiData } from "@/CommonFunctions";
@@ -40,7 +45,6 @@ export default function Gtrs({
     const [transportData, setTransportData] = useState([]);
     const [PerfData, setPerfData] = useState([]);
     const [userBody, setUserBody] = useState();
-    const [dataFromChild, setDataFromChild] = useState(null);
     const gtrsUrl = window.Laravel.gtrsUrl;
     const gtamUrl = window.Laravel.gtamUrl;
     const gtccrUrl = window.Laravel.gtccrUrl;
@@ -68,7 +72,7 @@ export default function Gtrs({
             })
             .then((res) => {
                 const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
+                const parsedDataPromise = new Promise((resolve) => {
                     const parsedData = JSON.parse(x);
                     resolve(parsedData);
                 });
@@ -262,7 +266,6 @@ export default function Gtrs({
                                             safetyData={safetyData}
                                             debtorsData={debtorsData}
                                             customerAccounts={customerAccounts}
-                                            IDfilter={dataFromChild}
                                             currentUser={currentUser}
                                             user={user}
                                             userPermission={user}
@@ -303,3 +306,19 @@ export default function Gtrs({
         return <AnimatedLoading />;
     }
 }
+
+Gtrs.propTypes = {
+    user: PropTypes.object,
+    setToken: PropTypes.func.isRequired,
+    setMobileMenuOpen: PropTypes.func.isRequired,
+    AToken: PropTypes.string,
+    setLoadingGtrs: PropTypes.func.isRequired,
+    currentUser: PropTypes.object,
+    loadingGtrs: PropTypes.bool.isRequired,
+    allowedApplications: PropTypes.array.isRequired,
+    mobileMenuOpen: PropTypes.bool.isRequired,
+    setcurrentUser: PropTypes.func.isRequired,
+    setSidebarElements: PropTypes.func.isRequired,
+    sidebarElements: PropTypes.array.isRequired,
+    setUser: PropTypes.func.isRequired,
+};

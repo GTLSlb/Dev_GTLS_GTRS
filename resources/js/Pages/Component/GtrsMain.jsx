@@ -65,7 +65,6 @@ export default function GtrsMain({
     consData,
     currentUser,
     PerfData,
-    IDfilter,
     rddReasons,
     setrddReasons,
     transportData,
@@ -886,7 +885,6 @@ export default function GtrsMain({
                                                         setLastIndex={
                                                             setLastIndex
                                                         }
-                                                        IDfilter={IDfilter}
                                                         EDate={EDate}
                                                         gtccrUrl={gtccrUrl}
                                                         AToken={AToken}

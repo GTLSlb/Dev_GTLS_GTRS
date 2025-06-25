@@ -1,5 +1,6 @@
 import LogoWhite from "../assets/pictures/LogoWhite.webp";
 import notFound from "../assets/pictures/404.webp";
+import React from "react";
 
 export default function NotFoundPage() {
     return (
