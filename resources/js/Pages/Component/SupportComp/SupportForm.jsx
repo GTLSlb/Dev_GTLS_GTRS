@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
 
 class SupportForm extends Component {
     constructor(props) {
@@ -89,7 +88,7 @@ class SupportForm extends Component {
     };
 
     render() {
-        const { errors, previewUrl } = this.state;
+        const { errors } = this.state;
         const { isLoading, success } = this.state;
 
         return (

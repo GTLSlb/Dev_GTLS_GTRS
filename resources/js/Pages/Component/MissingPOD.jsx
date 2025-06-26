@@ -9,7 +9,6 @@ import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { formatDateToExcel, renderConsDetailsLink } from "@/CommonFunctions";
-import { useNavigate } from "react-router-dom";
 
 export default function MissingPOD({
     PerfData,
@@ -19,7 +18,6 @@ export default function MissingPOD({
     accData,
 }) {
     window.moment = moment;
-    const navigate = useNavigate();
     const minDateDespatch = getMinMaxValue(PerfData, "DespatchDate", 1);
     const maxDateDespatch = getMinMaxValue(PerfData, "DespatchDate", 2);
     const minDaterdd = getMinMaxValue(PerfData, "DeliveryRequiredDateTime", 1);

@@ -30,6 +30,7 @@ import {
 } from "@nextui-org/react";
 import { ChevronLeftIcon, MapPinIcon } from "@heroicons/react/20/solid";
 import { AlertToast } from "@/permissions";
+import axios from "axios";
 
 const googleMapsKey = window.Laravel.googleMapsKey;
 const center = { lat: -25.2744, lng: 133.7751 };
@@ -90,7 +91,8 @@ function NewConsignmentTracking() {
     const mapRef = useRef(null); // Create a ref for the map instance
     const gtrsWebUrl = window.Laravel.gtrsWeb;
     const [consignmentDetails, setConsignmentDetails] = useState(null);
-    const getConsignmentRoute = (e) => {
+
+    const getConsignmentRoute = () => {
         setPolyline(null);
         setEventsMarkers([]);
         setLoading(true);

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import "../../../css/reactdatagrid.css";
 import TableStructure from "@/Components/TableStructure";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
@@ -83,6 +85,12 @@ function TransportRep({
             </div>
         );
     });
+    RDDTimeFilter.displayName = "RDDTimeFilter";
+    RDDTimeFilter.propTypes = {
+        filterValue: PropTypes.object,
+        onChange: PropTypes.func.isRequired,
+    };
+
     const PickTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
         const [value, setValue] = useState(
             filterValue ? filterValue.value : ""
@@ -147,6 +155,11 @@ function TransportRep({
             </div>
         );
     });
+    PickTimeFilter.displayName = "PickTimeFilter";
+    PickTimeFilter.propTypes = {
+        filterValue: PropTypes.object,
+        onChange: PropTypes.func.isRequired,
+    };
     const DeliveryTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
         const [value, setValue] = useState(
             filterValue ? filterValue.value : ""
@@ -211,6 +224,11 @@ function TransportRep({
             </div>
         );
     });
+    DeliveryTimeFilter.displayName = "DeliveryTimeFilter";
+    DeliveryTimeFilter.propTypes = {
+        filterValue: PropTypes.object,
+        onChange: PropTypes.func.isRequired,
+    };
     window.moment = moment;
     const [filteredData, setFilteredData] = useState(transportData);
     const [selected, setSelected] = useState({});
@@ -442,7 +460,7 @@ function TransportRep({
                 minDate: minDate,
                 maxDate: maxDate,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return extractUTCFormattedDate(value);
             },
         },
@@ -480,7 +498,7 @@ function TransportRep({
                 minDate: minArrivedDate,
                 maxDate: maxArrivedDate,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return extractFormattedDate(value);
             },
         },
@@ -581,4 +599,14 @@ function TransportRep({
         </div>
     );
 }
+
+TransportRep.propTypes = {
+    transportData: PropTypes.array.isRequired,
+    minDate: PropTypes.string.isRequired,
+    maxDate: PropTypes.string.isRequired,
+    filterValue: PropTypes.object.isRequired,
+    setFilterValue: PropTypes.func.isRequired,
+    accData: PropTypes.array.isRequired,
+};
+
 export default TransportRep;

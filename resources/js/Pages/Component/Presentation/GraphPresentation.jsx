@@ -1,10 +1,10 @@
 import React from "react";
-import { useState } from "react";
+import PropTypes from "prop-types";
 import ConsignmentGraph from "./ReportTabs/ConsignmentGraph";
 import TotalFailPODGraph from "./ReportTabs/TotalFailPODGraph";
 
 const MultiChartLine = ({ url, currentUser, AToken }) => {
-    const [activeComponentIndex, setActiveComponentIndex] = useState(0);
+    const activeComponentIndex = 0; // Index of the active component to display
     const customers = [
         {
             value: 1,
@@ -22,13 +22,14 @@ const MultiChartLine = ({ url, currentUser, AToken }) => {
 
     let components = [
         <ConsignmentGraph
+            key={activeComponentIndex}
             url={url}
             currentUser={currentUser}
             AToken={AToken}
             customers={customers}
             CustomerId={1}
         />, // Graph and Table
-        <TotalFailPODGraph />, // The 3 charts
+        <TotalFailPODGraph key={activeComponentIndex} />, // The 3 charts
     ];
 
     return (
@@ -47,6 +48,12 @@ const MultiChartLine = ({ url, currentUser, AToken }) => {
             {components[activeComponentIndex]}
         </div>
     );
+};
+
+MultiChartLine.propTypes = {
+    url: PropTypes.string.isRequired,
+    currentUser: PropTypes.object.isRequired,
+    AToken: PropTypes.string.isRequired,
 };
 
 export default MultiChartLine;

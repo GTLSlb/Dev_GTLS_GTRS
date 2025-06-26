@@ -1,4 +1,6 @@
 import { useState } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import { PencilIcon } from "@heroicons/react/24/outline";
 import notFound from "../../../../../assets/pictures/NotFound.png";
 import AddSafetyTypeModal from "./AddSafetyTypeModel";
@@ -22,7 +24,6 @@ export default function AddSafetyType({
         document.body.style.overflow = isModalCurrentlyOpen ? "hidden" : "auto";
         setIsModalOpen(isModalCurrentlyOpen);
     };
-    const [currentPage, setCurrentPage] = useState(0);
 
 
     async function fetchData() {
@@ -201,3 +202,12 @@ export default function AddSafetyType({
         </div>
     );
 }
+
+AddSafetyType.propTypes = {
+    safetyTypes: PropTypes.array.isRequired,
+    setSafetyTypes: PropTypes.func.isRequired,
+    url: PropTypes.string.isRequired,
+    AToken: PropTypes.string.isRequired,
+    currentUser: PropTypes.object.isRequired,
+    userPermission: PropTypes.object.isRequired,
+};

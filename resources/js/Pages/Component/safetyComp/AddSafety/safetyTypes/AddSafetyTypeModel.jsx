@@ -15,28 +15,21 @@ export default function AddSafetyTypeModal({
     updateLocalData,
     safetyTypes,
 }) {
-    const [Name, setName] = useState(null);
     const [isSaveEnabled, setIsSaveEnabled] = useState(true);
-    const [Status, setStatus] = useState(true);
     const [typeStatus, setTypeStatus] = useState(true);
     const [isLoading,SetIsLoading] = useState(false)
     const [error, setError] = useState(null);
 
     useEffect(() => {
         if (type) {
-            setStatus(type?.SafetyStatus);
             setTypeStatus(type?.SafetyStatus);
-            setName(type?.SafetyTypeName);
         } else {
             setTypeStatus(true);
-            setStatus(true);
-            setName("");
         }
     }, [type]);
 
     const handlePopUpClose = () => {
         setError(null); // Clear the error message
-        setName("");
         handleClose(); // Clear the input value
     };
     const handleSubmit = async (event) => {
@@ -51,7 +44,6 @@ export default function AddSafetyTypeModal({
             // setInputValue("");
             setTimeout(() => {
                 handleClose();
-                setName("");
                 // setdescription("");
                 SetIsLoading(false)
                 updateLocalData();
@@ -89,7 +81,6 @@ export default function AddSafetyTypeModal({
             setError("Name already exists. Please enter a unique name.");
         } else {
             setIsSaveEnabled(true);
-            setName(newName);
             setError(null); // Clear the error message if the name is valid
         }
     };
@@ -174,7 +165,6 @@ export default function AddSafetyTypeModal({
                                                 checked={typeStatus === true}
                                                 onChange={() => {
                                                     setTypeStatus(true);
-                                                    setStatus(true);
                                                 }}
                                                 className="h-4 w-4 border-gray-300 text-dark focus:ring-goldd"
                                             />
@@ -194,7 +184,6 @@ export default function AddSafetyTypeModal({
                                                 checked={typeStatus === false}
                                                 onChange={() => {
                                                     setTypeStatus(false);
-                                                    setStatus(false);
                                                 }}
                                                 className="h-4 w-4 border-gray-300 text-dark focus:ring-goldd"
                                             />

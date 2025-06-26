@@ -1,4 +1,6 @@
 import { useState } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import { useEffect } from "react";
 import swal from "sweetalert";
 import axios from "axios";
@@ -6,9 +8,6 @@ import { handleSessionExpiration } from '@/CommonFunctions';
 import GtrsButton from "../../GtrsButton";
 import ReactModal from "react-modal";
 
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
 
 export default function AddCommentToList({
     selectedComment,
@@ -55,7 +54,7 @@ export default function AddCommentToList({
                     Authorization: `Bearer ${AToken}`,
                 },
             })
-            .then((res) => {
+            .then(() => {
                 setSelectedComment(null);
                 fetchData();
                 setShowAdd(false);
@@ -139,3 +138,14 @@ export default function AddCommentToList({
         </ReactModal>
     );
 }
+
+AddCommentToList.propTypes = {
+    selectedComment: PropTypes.object,
+    url: PropTypes.string.isRequired,
+    currentUser: PropTypes.object.isRequired,    
+    AToken: PropTypes.string.isRequired,    
+    setSelectedComment: PropTypes.func.isRequired,
+    setShowAdd: PropTypes.func.isRequired,
+    fetchData: PropTypes.func.isRequired,
+    isOpen: PropTypes.bool.isRequired,
+};

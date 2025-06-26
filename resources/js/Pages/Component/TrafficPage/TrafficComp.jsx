@@ -1,5 +1,7 @@
 import { handleDownloadExcel } from "@/Components/utils/TrafficRepTableUtils";
-import { createNewLabelObjects, createNewLabelObjectsUsingIds } from "@/Components/utils/dataUtils";
+import moment from "moment";
+import React from "react";
+import { createNewLabelObjectsUsingIds } from "@/Components/utils/dataUtils";
 import { Popover, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
@@ -118,10 +120,8 @@ const states = [
 function TrafficComp() {
     const gridRef = useRef(null);
     const gridStyle = { minHeight: 550, marginTop: 10 };
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    const [eventDetails, setEventDetails] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [datatoexport, setDatatoexport] = useState([]);
+    const { isOpen, onOpenChange } = useDisclosure();
+    const loading = false; // Placeholder for loading state, can be replaced with actual loading logic
     const [exportLoading, setExportLoading] = useState(false);
     const [categories, setCategories] = useState([]);
     const [categoriesOptions, setCategoriesOptions] = useState([]);
@@ -150,7 +150,7 @@ function TrafficComp() {
         return category ? category.event_category : "";
     }
 
-    const columns = [
+    const [columns, setColumns] = useState([
         // {
         //     name: "event_id",
         //     header: "event_id",
@@ -190,7 +190,7 @@ function TrafficComp() {
                 wrapMultiple: false,
                 dataSource: categoriesOptions,
             },
-            render: ({value, data }) => {
+            render: ({value }) => {
                 return getEventCategoryById(value);
             },
         },
@@ -209,13 +209,13 @@ function TrafficComp() {
             defaultWidth: 170,
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
-            filterEditorProps: (props, { index }) => {
+            filterEditorProps: () => {
                 // for range and notinrange operators, the index is 1 for the after field
                 return {
                     dateFormat: "MM-DD-YYYY",
                 };
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value}) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -230,13 +230,13 @@ function TrafficComp() {
             defaultWidth: 170,
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
-            filterEditorProps: (props, { index }) => {
+            filterEditorProps: () => {
                 // for range and notinrange operators, the index is 1 for the after field
                 return {
                     dateFormat: "MM-DD-YYYY",
                 };
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -281,7 +281,7 @@ function TrafficComp() {
             textAlign: "left",
             defaultWidth: 170,
         },
-    ];
+    ])
 
     const getexceldata = (filterValue) => {
         setExportLoading(true);
@@ -294,7 +294,6 @@ function TrafficComp() {
             // const totalCount = response.headers.get("X-Total-Count");
             return response.json().then((data) => {
                 // const totalCount = data.pagination.total;
-                setDatatoexport(data);
                 handleDownloadExcel(data);
             });
         });
@@ -304,13 +303,12 @@ function TrafficComp() {
     const [filterValue, setFilterValue] = useState(defaultFilterValue);
 
     const dataSource = useCallback(loadData, []);
-    const [hoverMessage, setHoverMessage] = useState("");
-    const [isMessageVisible, setMessageVisible] = useState(false);
+    const hoverMessage = ""
+    const isMessageVisible = false
 
     useEffect(() => {
         const handleClick = (event) => {
             const target = event.target;
-            const textContent = target.textContent.trim();
             let columnHeader;
             // Handle filter settings button click
             if (
@@ -487,7 +485,6 @@ function TrafficComp() {
             />
             <EventModal
                 getEventCategoryById={getEventCategoryById}
-                eventDetails={eventDetails}
                 loading={loading}
                 isOpen={isOpen}
                 onOpenChange={onOpenChange}

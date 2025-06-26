@@ -1,62 +1,38 @@
 import ReactModal from "react-modal";
-import TextInput from "../../../Components/TextInput";
+import React from "react";
+import PropTypes from "prop-types";
 import InputError from "../../../Components/InputError";
 import { useState } from "react";
-import axios from "axios";
 import { useEffect } from "react";
 import "../../../../css/scroll.css";
 import swal from 'sweetalert';
 import { handleSessionExpiration } from '@/CommonFunctions';
 
-const placeholder = "test";
 
 export default function AddFailedModal({
     isOpen,
     handleClose,
-    url,
-    AToken,
     reason,
-    currentUser,
     updateLocalData,
     failedReasons,
 }) {
-    const [Name, setName] = useState(null);
-    const [Description, setdescription] = useState(null);
     const [isSaveEnabled, setIsSaveEnabled] = useState(true);
-    const [Status, setStatus] = useState(true);
     const [isLoading, SetIsLoading] = useState(false)
     const [reasonStatus, setReasonStatus] = useState(true);
 
     const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
 
     useEffect(() => {
         if (reason) {
-            setStatus(reason?.ReasonStatus);
             setReasonStatus(reason?.ReasonStatus);
-            setName(reason?.ReasonName);
-            setdescription(reason?.ReasonDesc);
         } else {
             setReasonStatus(true);
-            setStatus(true);
-            setName("");
-            setdescription("");
         }
     }, [reason]);
-    const data = [
-        {
-            ReasonId: reason ? reason.ReasonId : "",
-            ReasonName: Name,
-            ReasonDesc: Description,
-            Status: Status,
-        },
-    ];
 
     const handlePopUpClose = () => {
         setError(null); // Clear the error message
         // setInputValue("");
-        setName("");
-        setdescription("");
         handleClose(); // Clear the input value
     };
     const handleSubmit = async (event) => {
@@ -66,26 +42,12 @@ export default function AddFailedModal({
         try {
             SetIsLoading(true)
             // Make the API request using Axios or any other library
-            const response = await axios.post(
-                `${url}add/FailedReasons`,
-                data,
-                {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
-                    },
-                }
-            );
             // Handle the response as needed
 
             // setInputValue("");
-            setSuccess(true);
 
             setTimeout(() => {
                 handleClose();
-                setName("");
-                setdescription("");
-                setSuccess(false);
                 SetIsLoading(false)
                 updateLocalData();
             }, 1000);
@@ -106,7 +68,7 @@ export default function AddFailedModal({
                 });
                 } else {
                   // Handle other errors
-                  console.log(err);
+                  console.log(error);
                 }
         }
     };
@@ -122,7 +84,6 @@ export default function AddFailedModal({
             setError("Name already exists. Please enter a unique name.");
         } else {
             setIsSaveEnabled(true);
-            setName(newName);
             setError(null); // Clear the error message if the name is valid
         }
     };
@@ -219,11 +180,6 @@ export default function AddFailedModal({
                                                         ? reason.ReasonDesc
                                                         : ""
                                                 }
-                                                onChange={(event) =>
-                                                    setdescription(
-                                                        event.target.value
-                                                    )
-                                                }
                                                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-goldd sm:text-sm sm:leading-6"
                                             />
                                         </div>
@@ -242,9 +198,8 @@ export default function AddFailedModal({
                                                     checked={
                                                         reasonStatus === true
                                                     }
-                                                    onChange={(event) => {
+                                                    onChange={() => {
                                                         setReasonStatus(true);
-                                                        setStatus(true);
                                                     }}
                                                     className="h-4 w-4 border-gray-300 text-dark focus:ring-goldd"
                                                 />
@@ -264,9 +219,8 @@ export default function AddFailedModal({
                                                     checked={
                                                         reasonStatus === false
                                                     }
-                                                    onChange={(event) => {
+                                                    onChange={() => {
                                                         setReasonStatus(false);
-                                                        setStatus(false);
                                                     }}
                                                     className="h-4 w-4 border-gray-300 text-dark focus:ring-goldd"
                                                 />
@@ -304,3 +258,11 @@ export default function AddFailedModal({
         </ReactModal>
     );
 }
+
+AddFailedModal.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    handleClose: PropTypes.func.isRequired,
+    reason: PropTypes.object,
+    updateLocalData: PropTypes.func.isRequired,
+    failedReasons: PropTypes.array.isRequired,
+};

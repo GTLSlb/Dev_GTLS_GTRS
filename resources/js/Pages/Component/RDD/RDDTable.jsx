@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import PropTypes from "prop-types";
 import { useEffect } from "react";
 import ModalRDD from "@/Components/modalRDD";
 import moment from "moment";
@@ -13,7 +14,6 @@ import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { formatDateToExcel, renderConsDetailsLink } from "@/CommonFunctions";
-import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 
 export default function RDDTable({
@@ -31,7 +31,6 @@ export default function RDDTable({
     accData,
 }) {
     window.moment = moment;
-    const navigate = useNavigate();
     const updateLocalData = (id, reason, note) => {
         // Find the item in the local data with the matching id
         const updatedData = rddData.map((item) => {
@@ -201,7 +200,7 @@ export default function RDDTable({
             type: "string",
             headerAlign: "center",
             textAlign: "center",
-            render: ({ value, data }) => {
+            render: ({ value }) => {
                 return <span className=""> {value}</span>;
             },
             filterEditor: StringFilter,
@@ -212,7 +211,7 @@ export default function RDDTable({
             type: "string",
             headerAlign: "center",
             textAlign: "center",
-            render: ({ value, data }) => {
+            render: ({ data }) => {
                 return <span className=""> {data.IncidentStatusName}</span>;
             },
         },
@@ -348,7 +347,7 @@ export default function RDDTable({
                 minDate: minDespatchDate,
                 maxDate: maxDespatchDate,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -367,7 +366,7 @@ export default function RDDTable({
                 minDate: minOldRddDate,
                 maxDate: maxOldRddDate,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -386,7 +385,7 @@ export default function RDDTable({
                 minDate: minNewRddDate,
                 maxDate: maxNewRddDate,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD/MM/YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -438,3 +437,18 @@ export default function RDDTable({
         </div>
     );
 }
+
+RDDTable.propTypes = {
+    setActiveIndexGTRS: PropTypes.func.isRequired,
+    rddData: PropTypes.array.isRequired,
+    url: PropTypes.string.isRequired,
+    setIncidentId: PropTypes.func.isRequired,
+    AToken: PropTypes.string.isRequired,
+    setrddData: PropTypes.func.isRequired,
+    filterValue: PropTypes.object.isRequired,
+    setFilterValue: PropTypes.func.isRequired,
+    currentUser: PropTypes.object.isRequired,
+    userPermission: PropTypes.object.isRequired,
+    rddReasons: PropTypes.array.isRequired,
+    accData: PropTypes.array.isRequired,
+};  

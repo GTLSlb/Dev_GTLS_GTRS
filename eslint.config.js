@@ -10,6 +10,16 @@ export default defineConfig([
     ignores: ['vendor/**/*', 'node_modules/**/*', 'public/**/*', 'storage/**/*'],
   },
   {
+    files: ['*.config.js', 'tailwind.config.js', '**/*.config.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module', // or 'script' if not using ESM in config files
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
+  {
     files: ['**/*.{js,mjs,cjs,jsx}'],
     languageOptions: {
       ecmaVersion: 'latest',
