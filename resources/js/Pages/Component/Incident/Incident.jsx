@@ -3,6 +3,9 @@ import {
     Tab,
     Tabs,
 } from "@nextui-org/react";
+import axios from "axios";
+import React from "react";
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import IncidentDetails from "./IncidentDetails";
 import swal from "sweetalert";
@@ -199,3 +202,10 @@ export default function Incident({
         </div>
     );
 }
+
+Incident.propTypes = {
+    gtccrUrl: PropTypes.string.isRequired,
+    currentUser: PropTypes.object.isRequired,
+    AToken: PropTypes.string.isRequired,
+    userPermission: PropTypes.object.isRequired,
+};

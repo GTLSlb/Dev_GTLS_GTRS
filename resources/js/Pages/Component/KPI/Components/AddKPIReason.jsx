@@ -1,10 +1,6 @@
 import { useState } from "react";
-import { Fragment } from "react";
-import { Listbox, Transition } from "@headlessui/react";
-import {
-    CheckIcon,
-    ChevronDownIcon,
-} from "@heroicons/react/20/solid";
+import React from "react";
+import PropTypes from "prop-types";
 import { useEffect } from "react";
 import swal from "sweetalert";
 import axios from "axios";
@@ -12,15 +8,11 @@ import { handleSessionExpiration } from '@/CommonFunctions';
 import GtrsButton from "../../GtrsButton";
 import { AlertToast } from "@/permissions";
 
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
 
 export default function AddKPIReason({
     selectedReason,
     url,
     currentUser,
-    userPermission,
     AToken,
     setSelectedReason,
     setShowAdd,
@@ -62,7 +54,7 @@ export default function AddKPIReason({
                     Authorization: `Bearer ${AToken}`,
                 },
             })
-            .then((res) => {
+            .then(() => {
                 setSelectedReason(null);
                 fetchData();
                 setShowAdd(false);
@@ -140,3 +132,14 @@ export default function AddKPIReason({
         </div>
     );
 }
+
+AddKPIReason.propTypes = {
+    selectedReason: PropTypes.object,
+    url: PropTypes.string.isRequired,
+    currentUser: PropTypes.object.isRequired,
+    AToken: PropTypes.string.isRequired,
+    setSelectedReason: PropTypes.func.isRequired,
+    setShowAdd: PropTypes.func.isRequired,
+    fetchData: PropTypes.func.isRequired,
+    closeModal: PropTypes.func.isRequired,
+};

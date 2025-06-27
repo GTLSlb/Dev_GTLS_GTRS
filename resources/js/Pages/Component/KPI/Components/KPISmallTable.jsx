@@ -12,7 +12,6 @@ import { canEditKpiReasons } from "@/permissions";
 import { handleSessionExpiration } from '@/CommonFunctions';
 
 export default function SmallTableKPI({
-    fromModel,
     showAddRow,
     setShowAddRow,
     objects,
@@ -149,7 +148,7 @@ export default function SmallTableKPI({
         for (const obj of data) {
             // Check if the field name exists in the object and if its value is a string
             if (
-                obj.hasOwnProperty(fieldName) &&
+                Object.prototype.hasOwnProperty.call(obj, fieldName) &&
                 typeof obj[fieldName] === "string"
             ) {
                 // Convert the object's field value to lowercase
@@ -192,7 +191,7 @@ export default function SmallTableKPI({
         for (const obj of data) {
             // Check if the field name exists in the object and if its value is a string
             if (
-                obj.hasOwnProperty(fieldName) &&
+                Object.prototype.hasOwnProperty.call(obj, fieldName) &&
                 typeof obj[fieldName] === "string"
             ) {
                 // Convert the object's field value to lowercase
@@ -735,7 +734,23 @@ export default function SmallTableKPI({
 SmallTableKPI.propTypes = {
     data: PropTypes.array.isRequired,
     headers: PropTypes.array.isRequired,
-    setData: PropTypes.func.isRequired,
+    canEditKpiReasons: PropTypes.func.isRequired,
     userPermission: PropTypes.object.isRequired,
     notFound: PropTypes.string.isRequired,
+    onAddRow: PropTypes.func.isRequired,
+    onEditRow: PropTypes.func.isRequired,
+    currentTheme: PropTypes.string.isRequired,
+    showAddRow: PropTypes.bool.isRequired,
+    setShowAddRow: PropTypes.func.isRequired,
+    objects: PropTypes.array.isRequired,
+    AToken: PropTypes.string.isRequired,
+    addurl: PropTypes.string.isRequired,
+    editIndex: PropTypes.number.isRequired,
+    setEditIndex: PropTypes.func.isRequired,
+    getfunction: PropTypes.func.isRequired,
+    AlertToast: PropTypes.func.isRequired,
+    currentPage: PropTypes.number.isRequired,
+    setCurrentPage: PropTypes.func.isRequired,
+    currentUser: PropTypes.object.isRequired,
+    dynamicHeaders: PropTypes.array.isRequired,
 };
