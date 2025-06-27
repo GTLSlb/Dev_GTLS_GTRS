@@ -167,6 +167,13 @@ export default function MainSidebar({
                     feature: "DeliveryReport_View",
                 },
                 {
+                    id: 27,
+                    name: "Excel Delivery Report",
+                    href: "#",
+                    current: false,
+                    feature: "ExcelTable_View",
+                },
+                {
                     id: 24,
                     name: "Comments",
                     href: "#",

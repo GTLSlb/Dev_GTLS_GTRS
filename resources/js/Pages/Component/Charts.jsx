@@ -2738,17 +2738,6 @@ export default function charts({
             AToken={AToken}
         />,
 
-        // <ExcelDeliveryReport
-        //     url={url}
-        //     AToken={AToken}
-        //     currentUser={currentUser}
-        //     setactiveCon={setactiveCon}
-        //     setActiveIndexGTRS={setActiveIndexGTRS}
-        //     // userPermission={userPermission}
-        //     deliveryReportData={excelDailyReportData}
-        //     fetchDeliveryReport={fetchDeliveryReport}
-        //     deliveryCommentsOptions={deliveryReportComments}
-        // />,
         <DeliveryReportCommentsPage
             url={url}
             AToken={AToken}
@@ -2764,6 +2753,18 @@ export default function charts({
             filterValue={filtersDifot}
             setFilterValue={setFiltersDifot}
             accData={dataFromChild}
+        />,
+        
+        <ExcelDeliveryReport
+            url={url}
+            AToken={AToken}
+            currentUser={currentUser}
+            setactiveCon={setactiveCon}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            // userPermission={userPermission}
+            deliveryReportData={excelDailyReportData}
+            fetchDeliveryReport={fetchDeliveryReport}
+            deliveryCommentsOptions={deliveryReportComments}
         />,
     ];
     return (

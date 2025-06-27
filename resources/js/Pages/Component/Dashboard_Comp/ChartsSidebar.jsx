@@ -190,14 +190,14 @@ const navigation = [
                 icon: DocumentDuplicateIcon,
                 feature: "DeliveryReport_View",
             },
-            // {
-            //     id: 25,
-            //     name: "Excel Delivery Report",
-            //     href: "#",
-            //     current: false,
-            //     icon: DocumentDuplicateIcon,
-            //     feature: "ExcelTable_View",
-            // },
+            {
+                id: 27,
+                name: "Excel Delivery Report",
+                href: "#",
+                current: false,
+                icon: DocumentDuplicateIcon,
+                feature: "ExcelTable_View",
+            },
             {
                 id: 24,
                 name: "Comments",
