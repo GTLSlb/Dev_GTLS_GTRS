@@ -1,21 +1,16 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { useLayoutEffect, useRef, useState } from "react";
 import ReactPaginate from "react-paginate";
 import { PencilIcon } from "@heroicons/react/24/solid";
+import swal from "sweetalert";
 import notFound from "../../../../assets//pictures/NotFound.png";
-import { Listbox } from "@headlessui/react";
-import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import { Fragment } from "react";
 import axios from "axios";
-import { Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { useEffect } from "react";
 import { canEditKpiReasons } from "@/permissions";
 import { handleSessionExpiration } from '@/CommonFunctions';
 
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
 export default function SmallTableKPI({
     fromModel,
     showAddRow,
@@ -27,37 +22,29 @@ export default function SmallTableKPI({
     dynamicHeaders,
     AlertToast,
     userPermission,
-    setObjects,
     getfunction,
     addurl,
     currentUser,
     currentPage,
     setCurrentPage,
 }) {
-    function classNames(...classes) {
-        return classes.filter(Boolean).join(" ");
-    }
+
     const [data, setData] = useState(objects);
 
     useEffect(() => {
         setData(objects);
     }, [objects]);
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [error, setError] = useState(false);
     const [editError, setEditError] = useState(false);
     const [newObject, setNewObject] = useState({});
     const [editedObject, setEditObject] = useState(null);
     const checkbox = useRef();
-    const [checked, setChecked] = useState(false);
-    const [indeterminate, setIndeterminate] = useState(false);
-    const [selectedRecords, setselectedRecords] = useState([]);
+    const selectedRecords= []
     useLayoutEffect(() => {
         const isIndeterminate =
             selectedRecords?.length > 0 &&
             selectedRecords?.length < data?.length;
-        setChecked(selectedRecords?.length === data?.length);
-        setIndeterminate(isIndeterminate);
         if (checkbox.current) {
             checkbox.current.indeterminate = isIndeterminate;
         }
@@ -69,7 +56,7 @@ export default function SmallTableKPI({
     };
     const pageCount = Math.ceil(data?.length / PER_PAGE);
 
-    function Editarray(index) {
+    function Editarray() {
         if (editIndex !== null) {
             const updatedObjects = [...data];
             updatedObjects[editIndex + currentPage * PER_PAGE] = editedObject;
@@ -81,7 +68,7 @@ export default function SmallTableKPI({
                         Authorization: `Bearer ${AToken}`,
                     },
                 })
-                .then((res) => {
+                .then(() => {
                     getfunction();
                     setEditIndex(null);
                     setEditObject({});
@@ -107,24 +94,7 @@ export default function SmallTableKPI({
                 });
         }
     }
-    function ShowEditBasedOnRoleAndModel() {
-        if (currentUser.role_id == 1) {
-            return true;
-        } else if (fromModel() == 3) {
-            if (currentUser.role_id == 9 || currentUser.role_id == 8) {
-                return true;
-            } else {
-                return false;
-            }
-        } else if (fromModel() == 1 || fromModel() == 4 || fromModel() == 3) {
-            if (currentUser.role_id == 8) {
-                return false;
-            } else {
-                return true;
-            }
-        }
-        return false;
-    }
+  
     function addObject() {
         let dataToSend = newObject;
         dataToSend = { ...dataToSend, ReasonStatus: 1, ReasonId: null };
@@ -142,11 +112,11 @@ export default function SmallTableKPI({
                     setShowAddRow(false);
                     const x = JSON.stringify(res.data);
                     getfunction();
-                    const parsedDataPromise = new Promise((resolve, reject) => {
+                    const parsedDataPromise = new Promise((resolve) => {
                         const parsedData = JSON.parse(x);
                         resolve(parsedData);
                     });
-                    parsedDataPromise.then((parsedData) => {
+                    parsedDataPromise.then(() => {
                         setNewObject({});
                     });
                 })
@@ -342,9 +312,7 @@ export default function SmallTableKPI({
                                                                                         type="radio"
                                                                                         value="active"
                                                                                         defaultChecked="true"
-                                                                                        onChange={(
-                                                                                            event
-                                                                                        ) => {
+                                                                                        onChange={() => {
                                                                                             setNewObject(
                                                                                                 {
                                                                                                     ...newObject,
@@ -367,9 +335,7 @@ export default function SmallTableKPI({
                                                                                         name="ReasonStatus"
                                                                                         type="radio"
                                                                                         value="inactive"
-                                                                                        onChange={(
-                                                                                            event
-                                                                                        ) => {
+                                                                                        onChange={( ) => {
                                                                                             setNewObject(
                                                                                                 {
                                                                                                     ...newObject,
@@ -522,9 +488,7 @@ export default function SmallTableKPI({
                                                                                                                 ] ==
                                                                                                                 1
                                                                                                             }
-                                                                                                            onChange={(
-                                                                                                                event
-                                                                                                            ) => {
+                                                                                                            onChange={() => {
                                                                                                                 setEditObject(
                                                                                                                     {
                                                                                                                         ...editedObject,
@@ -554,9 +518,7 @@ export default function SmallTableKPI({
                                                                                                                 ] ==
                                                                                                                 2
                                                                                                             }
-                                                                                                            onChange={(
-                                                                                                                event
-                                                                                                            ) => {
+                                                                                                            onChange={() => {
                                                                                                                 setEditObject(
                                                                                                                     {
                                                                                                                         ...editedObject,
@@ -768,3 +730,12 @@ export default function SmallTableKPI({
         </div>
     );
 }
+
+
+SmallTableKPI.propTypes = {
+    data: PropTypes.array.isRequired,
+    headers: PropTypes.array.isRequired,
+    setData: PropTypes.func.isRequired,
+    userPermission: PropTypes.object.isRequired,
+    notFound: PropTypes.string.isRequired,
+};

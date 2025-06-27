@@ -1,53 +1,31 @@
-import axios from "axios";
+
 import { Fragment, useState, useEffect } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import ReactModal from "react-modal";
-import swal from "sweetalert";
-import { handleSessionExpiration } from '@/CommonFunctions';
+import React from "react";
+import PropTypes from "prop-types";
 
 export default function NewKPIModalAddReason({
     isOpen,
     handleClose,
-    url,
     kpi,
-    AToken,
-    userPermission,
-    currentUser,
     updateLocalData,
     kpiReasons,
 }) {
     const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
-    const [inputValue, setInputValue] = useState("");
-    const [kpiRow, setKPIRow] = useState(kpi);
-    const [note, setNote] = useState("");
     const [isLoading, SetIsLoading] = useState(false);
-    const [audit, setAudit] = useState();
-    const [reasonname, setReasonName] = useState();
     const [selected, setSelected] = useState();
-    const [showDesc, setShowDesc] = useState();
     function handleReasonChange(event) {
         setSelected(event);
-        setShowDesc(event);
     }
     function classNames(...classes) {
         return classes.filter(Boolean).join(" ");
     }
 
-    const data = [
-        {
-            KpiId: kpiRow?.KpiId,
-            ReasonId: selected?.ReasonId,
-        },
-    ];
     useEffect(() => {
         const filteredReasons = kpiReasons?.filter(
             (reason) => reason.ReasonStatus === 1
-        );
-        setKPIRow(kpi);
-        setReasonName(
-            kpiReasons?.find((i) => i.ReasonId === kpiRow?.ReasonId)?.ReasonName
         );
         if (kpi) {
             const x = kpiReasons?.find(
@@ -60,13 +38,11 @@ export default function NewKPIModalAddReason({
                 } else {
                     setSelected(filteredReasons[0]);
                 }
-                setNote(kpi?.ReasonDesc);
             }
         }
     }, [kpi]);
     const handlePopUpClose = () => {
         setError(null); // Clear the error message
-        setInputValue("");
         handleClose(); // Clear the input value
     };
     const handleSubmit = async (event) => {
@@ -74,38 +50,11 @@ export default function NewKPIModalAddReason({
         try {
             // Make the API request using Axios or any other library
             SetIsLoading(true);
-            const response = await axios
-                .post(`${url}Add/KPI/FailedReasonNew`, data, {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
-                    },
-                })
-                .then((res) => {})
-                .catch((err) => {
-                    if (err.response && err.response.status === 401) {
-                        // Handle 401 error using SweetAlert
-                        swal({
-                            title: "Session Expired!",
-                            text: "Please login again",
-                            type: "success",
-                            icon: "info",
-                            confirmButtonText: "OK",
-                        }).then(async function () {
-                            await handleSessionExpiration();
-                        });
-                    } else {
-                        // Handle other errors
-                        console.log(err);
-                    }
-                });
+          
             updateLocalData(kpi.ConsignmentId, selected?.ReasonId);
-            setInputValue("");
-            setSuccess(true);
             setTimeout(() => {
                 handleClose();
                 SetIsLoading(false);
-                setSuccess(false);
             }, 1000);
         } catch (error) {
             SetIsLoading(false);
@@ -260,3 +209,11 @@ export default function NewKPIModalAddReason({
         </ReactModal>
     );
 }
+
+NewKPIModalAddReason.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    handleClose: PropTypes.func.isRequired,
+    kpi: PropTypes.object.isRequired,
+    updateLocalData: PropTypes.func.isRequired,
+    kpiReasons: PropTypes.array.isRequired,
+};
