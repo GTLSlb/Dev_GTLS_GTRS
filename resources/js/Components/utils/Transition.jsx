@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useContext } from "react";
 import { CSSTransition as ReactCSSTransition } from "react-transition-group";
+import PropTypes from "prop-types";
 
 const TransitionContext = React.createContext({
     parent: {},
@@ -130,5 +131,25 @@ function Transition({ show, appear, ...rest }) {
         </TransitionContext.Provider>
     );
 }
+
+
+CSSTransition.propTypes = {
+    show: PropTypes.bool.isRequired,
+    appear: PropTypes.bool,
+    enter: PropTypes.string,
+    enterStart: PropTypes.string,
+    enterEnd: PropTypes.string,
+    leave: PropTypes.string,
+    leaveStart: PropTypes.string,
+    leaveEnd: PropTypes.string,
+    unmountOnExit: PropTypes.bool,
+    tag: PropTypes.string,
+    children: PropTypes.node.isRequired,
+};
+
+Transition.propTypes = {
+    show: PropTypes.bool.isRequired,
+    appear: PropTypes.bool,
+};
 
 export default Transition;

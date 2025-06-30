@@ -12,6 +12,7 @@ import swal from "sweetalert";
 import Notes from "../Notes";
 import { handleSessionExpiration } from '@/CommonFunctions';
 import { useLocation } from "react-router-dom";
+import { canViewIncidentDetails } from "@/permissions";
 
 export default function Incident({
     gtccrUrl,
@@ -142,7 +143,7 @@ export default function Incident({
 
             {incident && filters && mainCauses ? (
                 <div>
-                    {false ? (
+                    {canViewIncidentDetails(userPermission) ? (
                         <Tabs
                             aria-label="Options"
                             selectedKey={selected}

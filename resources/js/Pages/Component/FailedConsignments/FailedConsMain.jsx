@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import FailedCons from "./FailedCons";
 import swal from "sweetalert";
 import axios from "axios";
@@ -36,7 +37,7 @@ export default function FailedConsMain({
                 })
                 .then((res) => {
                     const x = JSON.stringify(res.data);
-                    const parsedDataPromise = new Promise((resolve, reject) => {
+                    const parsedDataPromise = new Promise((resolve) => {
                         const parsedData = JSON.parse(x);
                         resolve(parsedData);
                     });
@@ -90,3 +91,16 @@ export default function FailedConsMain({
     );
 
 }
+
+FailedConsMain.propTypes = {
+    url: PropTypes.string.isRequired,
+    PerfData: PropTypes.object.isRequired,
+    filterValue: PropTypes.object.isRequired,
+    setFilterValue: PropTypes.func.isRequired,
+    currentUser: PropTypes.object.isRequired,
+    userPermission: PropTypes.object.isRequired,
+    accData: PropTypes.array.isRequired,
+    AToken: PropTypes.string.isRequired,
+    failedReasons: PropTypes.array,
+    setFailedReasons: PropTypes.func.isRequired,
+};

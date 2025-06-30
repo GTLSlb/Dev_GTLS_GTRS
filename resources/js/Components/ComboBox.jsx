@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 
@@ -76,7 +77,7 @@ export default function ComboBox({idField, valueField, onChange, inputValue, opt
         return option[valueField];
       }}
       renderOption={(props, option) => {
-        const { key, ...optionProps } = props;
+        const { ...optionProps } = props;
            return (
           <li key={option[idField]} id={option[idField]} {...optionProps}>
             {option[valueField]}
@@ -90,3 +91,16 @@ export default function ComboBox({idField, valueField, onChange, inputValue, opt
     />
   );
 }
+
+ComboBox.propTypes = {
+  idField: PropTypes.string.isRequired,
+  valueField: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  inputValue: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+  options: PropTypes.array.isRequired,
+  setInputValue: PropTypes.func.isRequired,
+  onKeyDown: PropTypes.func,
+  onCancel: PropTypes.func,
+  isMulti: PropTypes.bool,
+  isDisabled: PropTypes.bool,
+};

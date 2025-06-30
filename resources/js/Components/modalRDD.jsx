@@ -1,32 +1,20 @@
 import ReactModal from "react-modal";
-import TextInput from "./TextInput";
-import InputError from "./InputError";
-import axios from "axios";
+import React from "react";
+import PropTypes from "prop-types";
 import { Fragment, useState, useEffect } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import swal from "sweetalert";
-import { set } from "date-fns";
-import { handleSessionExpiration } from '@/CommonFunctions';
 
 export default function ModalRDD({
     isOpen,
     handleClose,
-    url,
-    AToken,
     consignment,
-    currentUser,
-    userPermission,
     updateLocalData,
     rddReasons,
 }) {
     const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
-    const [inputValue, setInputValue] = useState("");
-    const [consignmentrdd, setConsignmentrdd] = useState(consignment);
     const [note, setNote] = useState("");
     const [isLoading, SetIsLoading] = useState(false);
-    const [reasonname, setReasonName] = useState();
     const [selected, setSelected] = useState();
     const [showDesc, setShowDesc] = useState();
 
@@ -44,20 +32,8 @@ export default function ModalRDD({
     function classNames(...classes) {
         return classes.filter(Boolean).join(" ");
     }
-    const data = [
-        {
-            AuditId: consignmentrdd?.AuditId,
-            ReasonId: selected?.ReasonId,
-            Description: note,
-        },
-    ];
     useEffect(() => {
         // setAudit(consignment?.AuditId)
-        setConsignmentrdd(consignment);
-        setReasonName(
-            rddReasons?.find((i) => i.ReasonId === consignmentrdd?.Reason)
-                ?.ReasonName
-        );
         if (consignment) {
             const x = rddReasons?.find(
                 (i) => i.ReasonId === consignment?.Reason
@@ -75,7 +51,6 @@ export default function ModalRDD({
     }, [consignment]);
     const handlePopUpClose = () => {
         setError(null); // Clear the error message
-        setInputValue("");
         handleClose(); // Clear the input value
     };
     const handleSubmit = async (event) => {
@@ -83,44 +58,17 @@ export default function ModalRDD({
         try {
             // Make the API request using Axios or any other library
             SetIsLoading(true);
-            const response = await axios
-                .post(`${url}Add/RDD`, data, {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
-                    },
-                })
-                .then((res) => {})
-                .catch((err) => {
-                    if (err.response && err.response.status === 401) {
-                        // Handle 401 error using SweetAlert
-                        swal({
-                            title: "Session Expired!",
-                            text: "Please login again",
-                            type: "success",
-                            icon: "info",
-                            confirmButtonText: "OK",
-                        }).then(async function () {
-                            await handleSessionExpiration();
-                        });
-                    } else {
-                        // Handle other errors
-                        console.log(err);
-                    }
-                });
             // Handle the response as needed
             updateLocalData(consignment.AuditId, selected?.ReasonId, note);
-            setInputValue("");
-            setSuccess(true);
 
             setTimeout(() => {
                 handleClose();
                 SetIsLoading(false);
-                setSuccess(false);
             }, 1000);
-        } catch (error) {
+        } catch (err) {
             SetIsLoading(false);
             // Handle error
+            console.error("Error occurred while saving the data:", err);
             setError("Error occurred while saving the data. Please try again."); // Set the error message
         }
     };
@@ -299,3 +247,14 @@ export default function ModalRDD({
         </ReactModal>
     );
 }
+
+ModalRDD.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    handleClose: PropTypes.func.isRequired,
+    url: PropTypes.string.isRequired,
+    AToken: PropTypes.string.isRequired,
+    consignment: PropTypes.object.isRequired,
+    currentUser: PropTypes.object.isRequired,
+    updateLocalData: PropTypes.func.isRequired,
+    rddReasons: PropTypes.arrayOf(PropTypes.object).isRequired,
+};

@@ -1,3 +1,5 @@
+import React from "react";
+import PropTypes from "prop-types";
 import ReactModal from "react-modal";
 import moment from "moment";
 
@@ -8,11 +10,6 @@ export default function DescriptionModal({
     safetyDesc,
     safetyTypes,
 }) {
-    function classNames(...classes) {
-        return classes.filter(Boolean).join(" ");
-    }
-
-
     const handlePopUpClose = () => {
         setSafetyDesc(null);
         handleClose(); // Clear the input value
@@ -110,3 +107,11 @@ export default function DescriptionModal({
         </ReactModal>
     );
 }
+
+DescriptionModal.propTypes = {
+    isOpen: PropTypes.bool,
+    handleClose: PropTypes.func,
+    setSafetyDesc: PropTypes.func,
+    safetyDesc: PropTypes.object,
+    safetyTypes: PropTypes.array,
+};

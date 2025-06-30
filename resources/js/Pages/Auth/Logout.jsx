@@ -1,8 +1,10 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
+import PropTypes from "prop-types";
 import Cookies from "js-cookie";
 import { clearMSALLocalStorage } from "@/CommonFunctions";
 import { PublicClientApplication } from "@azure/msal-browser";
 import { LogoutSVG } from "@/assets/svgs/LogoutSVG";
+import axios from "axios";
 export default function Logout({ currentUser, setToken, setCurrentUser }) {
     const msalConfig = {
         auth: {
@@ -82,3 +84,9 @@ export default function Logout({ currentUser, setToken, setCurrentUser }) {
         </div>
     );
 }
+
+Logout.propTypes = {
+    currentUser: PropTypes.object.isRequired,
+    setToken: PropTypes.func.isRequired,
+    setCurrentUser: PropTypes.func.isRequired,
+};

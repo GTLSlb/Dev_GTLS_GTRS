@@ -1,6 +1,8 @@
 import { Card, CardHeader, CardBody, Divider } from "@nextui-org/react";
 import TaskIcon from "@mui/icons-material/Task";
 import { formatNumberWithCommas } from "@/CommonFunctions";
+import React from "react";
+import PropTypes from "prop-types";
 function PODCard({ totalPODTrue, totalCount }) {
     const podPercentage = (totalPODTrue / totalCount) * 100;
 
@@ -22,5 +24,10 @@ function PODCard({ totalPODTrue, totalCount }) {
         </Card>
     );
 }
+
+PODCard.propTypes = {
+    totalPODTrue: PropTypes.number.isRequired,
+    totalCount: PropTypes.number.isRequired,
+};
 
 export default PODCard;

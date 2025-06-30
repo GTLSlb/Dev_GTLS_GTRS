@@ -108,7 +108,7 @@ export default function KPIReasons({
     );
 
     const handleDownloadExcel = () => {
-        const jsonData = handleFilterTable(gridRef, holidays);
+        const jsonData = handleFilterTable(gridRef, kpireasonsData);
 
         const columnMapping = columns.reduce((acc, column) => {
             acc[column.name] = column.header;

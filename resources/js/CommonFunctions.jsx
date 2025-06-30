@@ -1,6 +1,7 @@
+import React from "react";
+import PropTypes from "prop-types";
 import NoAccessRedirect from "@/Pages/NoAccessRedirect";
 import menu from "@/SidebarMenuItems";
-import { PublicClientApplication } from "@azure/msal-browser";
 import Cookies from "js-cookie";
 import "react-toastify/dist/ReactToastify.css";
 import swal from "sweetalert";
@@ -10,19 +11,7 @@ import {
     canViewIncidentDetails,
 } from "./permissions";
 import { Link } from "react-router-dom";
-const msalConfig = {
-    auth: {
-        clientId: "05f70999-6ca7-4ee8-ac70-f2d136c50288",
-        authority:
-            "https://login.microsoftonline.com/647bf8f1-fc82-468e-b769-65fd9dacd442",
-        redirectUri: window.Laravel.azureCallback,
-    },
-    cache: {
-        cacheLocation: "sessionStorage",
-        storeAuthStateInCookie: true, // Set this to true if dealing with IE11 or issues with sessionStorage
-    },
-};
-const pca = new PublicClientApplication(msalConfig);
+import axios from "axios";
 
 export async function handleSessionExpiration() {
     const appUrl = window.Laravel.appUrl;
@@ -233,7 +222,7 @@ export const formatDateToExcel = (dateValue) => {
 
 export const formatDate = (dateString) => {
     if (dateString) {
-        const [date, time] = dateString.split("T");
+        const [date] = dateString.split("T");
         const [day, month, year] = date.split("-");
         // Using template literals to format the date
         return `${year}-${month}-${day}`;
@@ -262,6 +251,12 @@ export function ProtectedRoute({ permission, route, element }) {
     return userHasPermission ? element : <NoAccessRedirect />;
 }
 
+ProtectedRoute.propTypes = {
+    permission: PropTypes.object.isRequired,
+    route: PropTypes.oneOfType([PropTypes.string, PropTypes.array]).isRequired,
+    element: PropTypes.element.isRequired,
+};
+
 function checkUserPermission(permission, route) {
     if (typeof route == "string") {
         // Go over the flat permissions and check if the user has the required permission
@@ -288,7 +283,7 @@ function findCurrentItem(items, id) {
                     ? {
                           options: element.options.map((option) => {
                               if (option.id == id) {
-                                  targetElement = option;
+                                //   targetElement = option;
                                   return { ...option, current: true };
                               } else {
                                   return { ...option, current: false };
@@ -314,9 +309,9 @@ export function navigateToFirstAllowedPage({
     navigate,
 }) {
     let items = [];
-    
+
     menu?.forEach((menuItem) => {
-        if (menuItem.hasOwnProperty("options")) {
+        if (Object.prototype.hasOwnProperty.call(menuItem, "options")) {
             menuItem.options.forEach((option) => {
                 if (
                     user?.Features?.some(
@@ -352,12 +347,15 @@ export function navigateToFirstAllowedPage({
     });
 
     // Navigate to the page specified in the browser URL
-    if(window.location.pathname != "/gtrs/" && window.location.pathname != "/gtrs" ){
-        setSidebarElements(findCurrentItem(items, window.location.pathname))
+    if (
+        window.location.pathname != "/gtrs/" &&
+        window.location.pathname != "/gtrs"
+    ) {
+        setSidebarElements(findCurrentItem(items, window.location.pathname));
         navigate(window.location.pathname);
     } else {
-        // Navigate to the first allowed page 
-        items[0].current = true; 
+        // Navigate to the first allowed page
+        items[0].current = true;
         navigate(items[0].url);
         setSidebarElements(items);
     }

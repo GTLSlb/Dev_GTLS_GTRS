@@ -294,7 +294,7 @@ function TrafficComp() {
             // const totalCount = response.headers.get("X-Total-Count");
             return response.json().then((data) => {
                 // const totalCount = data.pagination.total;
-                handleDownloadExcel(data);
+                handleDownloadExcel(data , gridRef, columnMapping);
             });
         });
     };

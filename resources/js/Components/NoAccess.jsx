@@ -1,11 +1,12 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import LottieComponent from "./LottieComponent/LottieComponent";
 import Lock from "@/Components/LottieComponent/lock.json";
 import GtrsButton from "@/Pages/Component/GtrsButton";
 import { PublicClientApplication } from "@azure/msal-browser";
 import { clearMSALLocalStorage } from "@/CommonFunctions";
 import Cookies from "js-cookie";
-import { Spinner } from "@nextui-org/react";
+import axios from "axios";
 
 function NoAccess({currentUser, setToken, setCurrentUser}) {
     const msalConfig = {
@@ -87,5 +88,11 @@ function NoAccess({currentUser, setToken, setCurrentUser}) {
         </div>
     );
 }
+
+NoAccess.propTypes = {
+    currentUser: PropTypes.object.isRequired,
+    setToken: PropTypes.func.isRequired,
+    setCurrentUser: PropTypes.func.isRequired,
+};
 
 export default NoAccess;

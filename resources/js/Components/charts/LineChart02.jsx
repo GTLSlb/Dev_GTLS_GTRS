@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 import {
   Chart, LineController, LineElement, Filler, PointElement, LinearScale, TimeScale, Tooltip,
@@ -84,7 +85,7 @@ function LineChart02({
       plugins: [
         {
           id: 'htmlLegend',
-          afterUpdate(c, args, options) {
+          afterUpdate(c) {
             const ul = legend.current;
             if (!ul) return;
             // Remove old legend items
@@ -132,7 +133,6 @@ function LineChart02({
       ],
     });
     return () => chart.destroy();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
 
   }, [data]);
   return (
@@ -155,5 +155,11 @@ function LineChart02({
     </React.Fragment>
   );
 }
+
+LineChart02.propTypes = {
+  data: PropTypes.object.isRequired,
+  width: PropTypes.number,
+  height: PropTypes.number,
+};
 
 export default LineChart02;

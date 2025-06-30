@@ -1,5 +1,6 @@
-import { useState,useEffect } from "react";
-const tabs = [
+import React from "react";
+
+const sidebarElements = [
     { id: 0, name: "Dashboard", href: "#", current: true },
     { id: 1, name: "Consignments", href: "#", current: false },
     { id: 2, name: "KPI Report", href: "#", current: false },
@@ -11,18 +12,17 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
-export default function GtrsTabs({ }) {
+export default function GtrsTabs() {
 
-    const [sidebarElements, setSidebarElements] = useState(tabs);
     return (
         <div>
 
             <div className="hidden md:block px-5 py-5">
                 <nav className="flex space-x-4" aria-label="Tabs">
                     {sidebarElements.map((tab) => (
-                        <div className="px-3">
+                        <div key={tab.name} className="px-3">
                         <a
-                            onClick={() => handleClick(tab.id)}
+                            // onClick={() => handleClick(tab.id)}
                             key={tab.name}
                             href={tab.href}
                             className={classNames(

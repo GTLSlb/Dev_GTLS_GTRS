@@ -1,5 +1,6 @@
 import { Button } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { Sidebar, Menu, MenuItem, menuClasses } from "react-pro-sidebar";
 import { useNavigate } from "react-router-dom";
 import { CircleStackIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
@@ -111,8 +112,8 @@ export default function CollapseSidebar({
     setSidebarElements,
 }) {
     const [isOpen, setIsOpen] = useState(false);
-    const [hasImage, setHasImage] = useState(false);
-    const [theme, setTheme] = useState("light");
+    const hasImage = false;
+    const theme = "light";
     const [customerOptions, setCustomerOptions] = useState([]);
     const [showList, setShowList] = useState(false);
     const showSelect = customerOptions?.length > 0;
@@ -203,7 +204,11 @@ export default function CollapseSidebar({
                 if (element.options) {
                     return {
                         ...element,
-                        current: element.options.find((option) => option.id == id) ? true : false,
+                        current: element.options.find(
+                            (option) => option.id == id
+                        )
+                            ? true
+                            : false,
                         options: element.options.map((option) => {
                             if (option.id == id) {
                                 return { ...option, current: true };
@@ -221,31 +226,34 @@ export default function CollapseSidebar({
                 }
             } else {
                 if (element.options) {
-                return {
-                    ...element,
-                    current: element.options.find((option) => option.id == id)
-                        ? true
-                        : false,
-                    ...(element.options
-                        ? {
-                              options: element.options.map((option) => {
-                                  if (option.id == id) {
-                                      return { ...option, current: true };
-                                  } else {
-                                      return { ...option, current: false };
-                                  }
-                              }),
-                          }
-                        : {}),
-                };
-            } else {
-                if (element.id === id) {
-                    return { ...element, current: true };
+                    return {
+                        ...element,
+                        current: element.options.find(
+                            (option) => option.id == id
+                        )
+                            ? true
+                            : false,
+                        ...(element.options
+                            ? {
+                                  options: element.options.map((option) => {
+                                      if (option.id == id) {
+                                          return { ...option, current: true };
+                                      } else {
+                                          return { ...option, current: false };
+                                      }
+                                  }),
+                              }
+                            : {}),
+                    };
                 } else {
-                    return { ...element, current: false };
+                    if (element.id === id) {
+                        return { ...element, current: true };
+                    } else {
+                        return { ...element, current: false };
+                    }
                 }
             }
-        }});
+        });
 
         handleSelectOnClick();
         setSidebarElements(updatedElements);
@@ -386,7 +394,7 @@ export default function CollapseSidebar({
                                             {showList && (
                                                 <div className="text-left max-h-64 overflow-y-scroll mt-3 pt-1 pl-1 containerscroll">
                                                     {customerAccounts?.map(
-                                                        (option) => (
+                                                        (option, index) => (
                                                             <div
                                                                 className="flex items-start"
                                                                 key={`${option.DebtorId}-${option.AccountNo}-${index}`}
@@ -458,7 +466,7 @@ export default function CollapseSidebar({
                                                     }}
                                                 >
                                                     <AccordionItem>
-                                                        {({ open }) => (
+                                                        {() => (
                                                             <>
                                                                 <AccordionHeader
                                                                     className={classNames(
@@ -598,3 +606,18 @@ export default function CollapseSidebar({
         )
     );
 }
+
+CollapseSidebar.propTypes = {
+    setBroken: PropTypes.func.isRequired,
+    rtl: PropTypes.bool.isRequired,
+    toggled: PropTypes.bool.isRequired,
+    setToggled: PropTypes.func.isRequired,
+    currentUser: PropTypes.object.isRequired,
+    setCusomterAccounts: PropTypes.func.isRequired,
+    customerAccounts: PropTypes.array.isRequired,
+    onData: PropTypes.func.isRequired,
+    collapsed: PropTypes.bool.isRequired,
+    setCollapsed: PropTypes.func.isRequired,
+    sidebarElements: PropTypes.array.isRequired,
+    setSidebarElements: PropTypes.func.isRequired,
+};  

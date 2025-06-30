@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import BarChart from "../charts/BarChart03";
+import PropTypes from "prop-types";
 
 // Import utilities
 import { tailwindConfig } from "@/Components/utils/Utils";
@@ -89,5 +90,9 @@ function DashboardCard11(props) {
         </div>
     );
 }
+
+DashboardCard11.propTypes = {
+    weightStateData: PropTypes.object.isRequired,
+};
 
 export default DashboardCard11;

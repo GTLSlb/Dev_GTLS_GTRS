@@ -119,9 +119,7 @@ function NewConsignmentTracking() {
                             ...event, // Keep existing event data
                             description:
                                 event.description || "No description available", // Add default description if missing
-                            icon: event.severity
-                                ? getMarkerIcon(event.severity)
-                                : "defaultIcon", // Example: change marker icon based on event severity
+                            icon: "defaultIcon", // Example: change marker icon based on event severity
                             // Add or modify other fields as needed
                         };
                     }

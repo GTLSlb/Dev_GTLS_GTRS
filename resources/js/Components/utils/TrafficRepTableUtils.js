@@ -1,4 +1,7 @@
-export function handleFilterTable(dataa) {
+import moment from "moment";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
+export function handleFilterTable(dataa, gridRef) {
     // Get the selected columns or use all columns if none are selected
     let selectedColumns = Array.from(
         document.querySelectorAll('input[name="column"]:checked')
@@ -16,7 +19,7 @@ export function handleFilterTable(dataa) {
     dataa?.map((val) => {
         let isMatch = true;
         for (const col of selectedColVal) {
-            const { name, value, type, operator } = col;
+            const { value, type, operator } = col;
             const cellValue = value;
             let conditionMet = false;
             // Skip the filter condition if no filter is set (cellValue is null or empty)
@@ -122,7 +125,7 @@ export function handleFilterTable(dataa) {
                             numericValue != "" &&
                             numericValue <= numericCellValue;
                         break;
-                    case "inrange":
+                    case "inrange":{
                         const rangeValues = value.split(",");
                         const minRangeValue = parseFloat(rangeValues[0]);
                         const maxRangeValue = parseFloat(rangeValues[1]);
@@ -130,8 +133,8 @@ export function handleFilterTable(dataa) {
                             cellValue?.length > 0 &&
                             numericCellValue >= minRangeValue &&
                             numericCellValue <= maxRangeValue;
-                        break;
-                    case "notinrange":
+                        break;}
+                    case "notinrange":{
                         const rangeValuesNotBetween = value.split(",");
                         const minRangeValueNotBetween = parseFloat(
                             rangeValuesNotBetween[0]
@@ -143,7 +146,7 @@ export function handleFilterTable(dataa) {
                             cellValue?.length > 0 &&
                             (numericCellValue < minRangeValueNotBetween ||
                                 numericCellValue > maxRangeValueNotBetween);
-                        break;
+                        break;}
                     // ... (add other number type conditions here if necessary)
                 }
             } else if (type === "boolean") {
@@ -180,22 +183,22 @@ export function handleFilterTable(dataa) {
                             cellValue?.length > 0 &&
                             cellValueLowerCase !== valLowerCase;
                         break;
-                    case "inlist":
+                    case "inlist":{
                         const listValues = Array.isArray(value)
                             ? value.map((v) => v.toLowerCase())
                             : [value?.toLowerCase()];
                         conditionMet =
                             cellValue?.length > 0 &&
                             listValues.includes(valLowerCase);
-                        break;
-                    case "notinlist":
+                        break;}
+                    case "notinlist":{
                         const listValuesNotIn = Array.isArray(value)
                             ? value.map((v) => v.toLowerCase())
                             : [value?.toLowerCase()];
                         conditionMet =
                             cellValue?.length > 0 &&
                             !listValuesNotIn.includes(valLowerCase);
-                        break;
+                        break;}
                     // ... (add other select type conditions here if necessary)
                 }
             } else if (type === "date") {
@@ -214,7 +217,7 @@ export function handleFilterTable(dataa) {
                     : null;
 
                 switch (operator) {
-                    case "after":
+                    case "after":{
                         // Parse the cellValue date with the format you know it might have
                         const afterd = moment(cellValue, "DD-MM-YYYY", true);
 
@@ -227,8 +230,8 @@ export function handleFilterTable(dataa) {
                             afterdateToCompare.isValid() &&
                             afterdateToCompare.isAfter(afterd);
 
-                        break;
-                    case "afterOrOn":
+                        break;}
+                    case "afterOrOn":{
                         const afterOrOnd = moment(
                             cellValue,
                             "DD-MM-YYYY",
@@ -240,9 +243,9 @@ export function handleFilterTable(dataa) {
                             afterOrOnd.isValid() &&
                             afterOrOnDateToCompare.isValid() &&
                             afterOrOnDateToCompare.isSameOrAfter(afterOrOnd);
-                        break;
+                        break;}
 
-                    case "before":
+                    case "before":{
                         const befored = moment(cellValue, "DD-MM-YYYY", true);
                         const beforeDateToCompare = moment(dateValue);
 
@@ -251,9 +254,9 @@ export function handleFilterTable(dataa) {
                             beforeDateToCompare.isValid() &&
                             beforeDateToCompare.isBefore(befored);
 
-                        break;
+                        break;}
 
-                    case "beforeOrOn":
+                    case "beforeOrOn":{
                         const beforeOrOnd = moment(
                             cellValue,
                             "DD-MM-YYYY",
@@ -266,8 +269,8 @@ export function handleFilterTable(dataa) {
                             beforeOrOnDateToCompare.isValid() &&
                             beforeOrOnDateToCompare.isSameOrBefore(beforeOrOnd);
 
-                        break;
-                    case "eq":
+                        break;}
+                    case "eq":{
                         // Parse the cellValue date with the format you know it might have
                         const d = moment(
                             cellValue,
@@ -289,8 +292,8 @@ export function handleFilterTable(dataa) {
                             dateToCompare.isValid() &&
                             d.isSame(dateToCompare, "day");
 
-                        break;
-                    case "neq":
+                        break;}
+                    case "neq":{
                         const neqd = moment(cellValue, "DD-MM-YYYY", true);
                         const neqDateToCompare = moment(dateValue);
 
@@ -299,7 +302,7 @@ export function handleFilterTable(dataa) {
                             neqDateToCompare.isValid() &&
                             !neqd.isSame(neqDateToCompare, "day");
 
-                        break;
+                        break;}
 
                     case "inrange":
                         conditionMet =
@@ -343,8 +346,8 @@ export function handleFilterTable(dataa) {
     return { selectedColumns: selectedColVal, filterValue: filterValue };
 }
 
-export function handleDownloadExcel(dataa) {
-    const jsonData = handleFilterTable(dataa);
+export function handleDownloadExcel(dataa, ref, columnMapping) {
+    const jsonData = handleFilterTable(dataa, ref);
     const selectedColumns = jsonData?.selectedColumns.map(
         (column) => column.name
     );
@@ -403,11 +406,6 @@ export function handleDownloadExcel(dataa) {
                     } else if (person[columnKey] == 2) {
                         acc[columnKey] = "FAIL";
                     }
-                } else if (columnKey === "ReasonId") {
-                    const Reason = kpireasonsData?.find(
-                        (reason) => reason.ReasonId === person.ReasonId
-                    );
-                    acc[columnKey] = Reason?.ReasonName;
                 } else {
                     acc[columnKey] = person[columnKey];
                 }
@@ -484,6 +482,5 @@ export function handleDownloadExcel(dataa) {
 
         // Save the file using FileSaver.js or alternative method
         saveAs(blob, "Traffic-report.xlsx");
-        setExportLoading(false);
     });
 }
