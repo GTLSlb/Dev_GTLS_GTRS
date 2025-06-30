@@ -191,7 +191,7 @@ const navigation = [
                 feature: "DeliveryReport_View",
             },
             {
-                id: 27,
+                id: 24,
                 name: "Excel Delivery Report",
                 href: "#",
                 current: false,
@@ -199,7 +199,7 @@ const navigation = [
                 feature: "ExcelTable_View",
             },
             {
-                id: 24,
+                id: 25,
                 name: "Comments",
                 href: "#",
                 current: false,
@@ -220,7 +220,7 @@ const navigation = [
         feature: "StockReport_View",
     },
     {
-        id: 25,
+        id: 26,
         name: "Contacts Report",
         href: "#",
         icon: ContactsIcon,
@@ -228,12 +228,19 @@ const navigation = [
         feature: "ContactsRep_View",
     },
     {
-        id: 26,
+        id: 27,
         name: "DIFOT Report",
         href: "#",
         icon: DescriptionIcon,
         current: false,
         feature: "DifotReport_View",
+    },{
+        id: 28,
+        name: "Utilization Report",
+        href: "#",
+        icon: DocumentTextIcon,
+        current: false,
+        feature: "UtilizationReport_View",
     },
 ];
 

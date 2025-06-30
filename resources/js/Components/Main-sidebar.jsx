@@ -167,14 +167,14 @@ export default function MainSidebar({
                     feature: "DeliveryReport_View",
                 },
                 {
-                    id: 27,
+                    id: 24,
                     name: "Excel Delivery Report",
                     href: "#",
                     current: false,
                     feature: "ExcelTable_View",
                 },
                 {
-                    id: 24,
+                    id: 25,
                     name: "Comments",
                     href: "#",
                     current: false,
@@ -192,18 +192,24 @@ export default function MainSidebar({
             feature: "StockReport_View",
         },
         {
-            id: 25,
+            id: 26,
             name: "Contacts Report",
             href: "#",
             current: false,
             feature: "ContactsRep_View",
         },
         {
-            id: 26,
+            id: 27,
             name: "DIFOT Report",
             href: "#",
             current: false,
             feature: "DifotReport_View",
+        },{
+            id: 28,
+            name: "Utilization Report",
+            href: "#",
+            current: false,
+            feature: "UtilizationReport_View",
         },
     ];
     const currentAppId = window.Laravel.appId;

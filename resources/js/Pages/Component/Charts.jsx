@@ -30,6 +30,7 @@ import ExcelDeliveryReport from "./ReportsPage/DeliveryReports/ExcelDeliveryRepo
 import DeliveryReportCommentsPage from "./ReportsPage/DeliveryReports/DeliveryReportCommentsPage";
 import ContactRep from "./ContactsRep/ContactRep";
 import DifotReport from "./DifotReport";
+import Utilization from "./UtilizationReport/Utilization";
 
 export default function charts({
     setCusomterAccounts,
@@ -2289,6 +2290,7 @@ export default function charts({
     };
 
     const [excelDailyReportData, setExcelDailyReportData] = useState();
+    const [utilizationData, setUtilizationData] = useState();
     const [deliveryReportComments, setDeliveryReportComments] = useState();
     const fetchDifotReportData = async (setCellLoading) => {
         try {
@@ -2308,6 +2310,37 @@ export default function charts({
                     };
                 }) || []
             );
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again",
+                    type: "success",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                }).then(async function () {
+                    await handleSessionExpiration();
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+                // Check if setCellLoading exists before calling it
+                if (typeof setCellLoading === "function") {
+                    setCellLoading(null);
+                }
+            }
+        }
+    };
+    const fetchUtilizationReportData = async (setCellLoading) => {
+        try {
+            const res = await axios.get(`${url}Utilization/Report`, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            });
+            setUtilizationData(res.data || []);
         } catch (err) {
             if (err.response && err.response.status === 401) {
                 // Handle 401 error using SweetAlert
@@ -2367,6 +2400,7 @@ export default function charts({
             fetchDeliveryReport();
             fetchDifotReportData();
             fetchDeliveryReportCommentsData();
+            fetchUtilizationReportData();
         }
     }, [currentUser]);
 
@@ -2737,12 +2771,20 @@ export default function charts({
             currentUser={currentUser}
             AToken={AToken}
         />,
-
+        <ExcelDeliveryReport
+            url={url}
+            AToken={AToken}
+            currentUser={currentUser}
+            setactiveCon={setactiveCon}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            deliveryReportData={excelDailyReportData}
+            fetchDeliveryReport={fetchDeliveryReport}
+            deliveryCommentsOptions={deliveryReportComments}
+        />,
         <DeliveryReportCommentsPage
             url={url}
             AToken={AToken}
             currentUser={currentUser}
-            // userPermission={userPermission}
             data={deliveryReportComments}
             fetchDeliveryReportCommentsData={fetchDeliveryReportCommentsData}
         />,
@@ -2754,17 +2796,14 @@ export default function charts({
             setFilterValue={setFiltersDifot}
             accData={dataFromChild}
         />,
-        
-        <ExcelDeliveryReport
+        <Utilization
             url={url}
+            utilizationData={utilizationData}
             AToken={AToken}
             currentUser={currentUser}
-            setactiveCon={setactiveCon}
             setActiveIndexGTRS={setActiveIndexGTRS}
-            // userPermission={userPermission}
-            deliveryReportData={excelDailyReportData}
-            fetchDeliveryReport={fetchDeliveryReport}
-            deliveryCommentsOptions={deliveryReportComments}
+            setactiveCon={setactiveCon}
+            setLastIndex={setLastIndex}
         />,
     ];
     return (

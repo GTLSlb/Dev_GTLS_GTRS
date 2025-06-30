@@ -29,6 +29,15 @@
   transform: translateX(100%);
 }
 
+.htDimmed{
+    text-align: left ;
+}
+
+.invalid-time {
+  background-color: #e7584e !important; /* red */
+  color: white;
+}
+
 
 .cookie-popup {
   position: fixed;
