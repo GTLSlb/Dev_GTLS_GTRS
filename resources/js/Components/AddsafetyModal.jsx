@@ -134,9 +134,9 @@ export default function SafetyModal({
                     await handleSessionExpiration();
                 });
             } else {
-                console.log(error);
+                console.error(error);
             }
-            console.log(error);
+            console.error(error);
             setError("Error occurred while saving the data. Please try again."); // Set the error message
         }
     };

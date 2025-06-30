@@ -76,7 +76,7 @@ export default function MainSidebar({
                 [app.AppId]: blobUrl,
             }));
         } catch (error) {
-            console.log(error);
+            console.error(error);
             setAppsImgs((prev) => ({
                 ...prev,
                 [app.AppId]: "/icons/NoPhoto.jpg",

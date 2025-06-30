@@ -88,7 +88,7 @@ export default function SmallTableKPI({
                       } else {
                         // Handle other errors
                     setEditObject({});
-                    console.log(err);
+                    console.error(err);
                       }
                 });
         }
@@ -135,7 +135,7 @@ export default function SmallTableKPI({
                       } else {
                         // Handle other errors
                     setNewObject({});
-                    console.log(err);
+                    console.error(err);
                       }
 
                 });

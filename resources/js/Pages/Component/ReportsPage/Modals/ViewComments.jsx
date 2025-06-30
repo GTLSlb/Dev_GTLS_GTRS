@@ -72,7 +72,7 @@ export default function ViewComments({
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                 }
             });
     }
@@ -117,9 +117,9 @@ export default function ViewComments({
                 });
             } else {
                 // Handle other errors
-                console.log(error);
+                console.error(error);
             }
-            console.log(error);
+            console.error(error);
         }
     };
 

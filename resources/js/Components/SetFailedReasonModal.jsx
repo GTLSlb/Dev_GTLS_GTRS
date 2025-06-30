@@ -132,7 +132,7 @@ export default function SetFailedReasonModal({
                 });
               } else {
                 // Handle other errors
-                console.log(error);
+                console.error(error);
               }
 
         }

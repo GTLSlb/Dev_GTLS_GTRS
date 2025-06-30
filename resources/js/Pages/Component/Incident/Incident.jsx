@@ -68,7 +68,7 @@ export default function Incident({
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                 }
             });
     }
@@ -111,7 +111,7 @@ export default function Incident({
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                 }
             });
     }
@@ -129,7 +129,7 @@ export default function Incident({
                 setIncident(res.data[0]);
             })
             .catch((err) => {
-                console.log("Encountered an Error", err);
+                console.error("Encountered an Error", err);
             });
     }
 

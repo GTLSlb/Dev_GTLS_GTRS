@@ -68,7 +68,7 @@ export default function AddFailedModal({
                 });
                 } else {
                   // Handle other errors
-                  console.log(error);
+                  console.error(error);
                 }
         }
     };

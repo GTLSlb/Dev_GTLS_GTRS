@@ -79,7 +79,7 @@ class SupportForm extends Component {
                 });
             })
             .catch((error) => {
-                console.log(error.response);
+                console.error(error.response);
                 this.setState({
                     errors: error.response.data.errors,
                     isLoading: false,

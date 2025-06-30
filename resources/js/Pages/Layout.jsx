@@ -37,7 +37,7 @@ export default function Sidebar() {
                 }
             })
             .catch((err) => {
-                console.log(err);
+                console.error(err);
             });
     };
 
@@ -59,7 +59,7 @@ export default function Sidebar() {
                     handleSessionExpiration();
                 }
 
-                console.log(error)
+                console.error(error)
             }
         );
     }, []);
@@ -100,7 +100,7 @@ export default function Sidebar() {
                 });
             })
             .catch((err) => {
-                console.log(err);
+                console.error(err);
             });
     };
 
@@ -148,7 +148,7 @@ export default function Sidebar() {
                     });
                 })
                 .catch((err) => {
-                    console.log(err);
+                    console.error(err);
                     if(err.response.status === 401) {
                         handleSessionExpiration();
                     }

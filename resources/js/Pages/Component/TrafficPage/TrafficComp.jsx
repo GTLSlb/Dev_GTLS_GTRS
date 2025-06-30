@@ -129,7 +129,6 @@ function TrafficComp() {
         axios
             .get(`${gtrsWebUrl}get-eventsCategories`)
             .then((res) => {
-                console.log(createNewLabelObjectsUsingIds(res.data,"id", "event_category"))
                 setCategoriesOptions(
                     createNewLabelObjectsUsingIds(res.data,"id", "event_category")
                     
@@ -137,7 +136,7 @@ function TrafficComp() {
                 setCategories(res.data);
             })
             .catch((err) => {
-                console.log(err);
+                console.error(err);
             });
     }
 
@@ -389,7 +388,6 @@ function TrafficComp() {
             document.body.removeEventListener("click", handleClick);
         };
     }, [columns]);
-    console.log(filterValue)
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
             <div className="sm:flex sm:items-center">

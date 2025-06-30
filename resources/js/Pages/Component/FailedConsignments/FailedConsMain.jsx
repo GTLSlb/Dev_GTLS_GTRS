@@ -60,7 +60,7 @@ export default function FailedConsMain({
                         });
                     } else {
                         // Handle other errors
-                        console.log(err);
+                        console.error(err);
                     }
                 });
         } catch (error) {

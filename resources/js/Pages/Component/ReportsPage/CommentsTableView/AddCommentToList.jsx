@@ -77,7 +77,7 @@ export default function AddCommentToList({
                     });
                   } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                     setIsLoading(false);
                   }
             });

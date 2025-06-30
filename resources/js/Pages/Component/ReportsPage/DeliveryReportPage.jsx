@@ -385,7 +385,7 @@ export default function DeliveryReportPage({
                 });
             } else {
                 // Handle other errors
-                console.log(err);
+                console.error(err);
             }
         }
     };
@@ -485,12 +485,12 @@ export default function DeliveryReportPage({
                                                             }
                                                         })
                                                         .catch((error) => {
-                                                            console.log(error);
+                                                            console.error(error);
                                                         });
                                                 });
                                             } else {
                                                 // Handle other errors
-                                                console.log(error);
+                                                console.error(error);
                                             }
                                         });
                                 }
@@ -511,7 +511,7 @@ export default function DeliveryReportPage({
                         });
                     } else {
                         // Handle other errors
-                        console.log(err);
+                        console.error(err);
                     }
                 });
         }
@@ -590,12 +590,12 @@ export default function DeliveryReportPage({
                                         }
                                     })
                                     .catch((error) => {
-                                        console.log(error);
+                                        console.error(error);
                                     });
                             });
                         } else {
                             // Handle other errors
-                            console.log(error);
+                            console.error(error);
                         }
                     });
             }

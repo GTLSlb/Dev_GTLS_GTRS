@@ -49,7 +49,7 @@ export default function Logout({ currentUser, setToken, setCurrentUser }) {
                 }
             }
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 

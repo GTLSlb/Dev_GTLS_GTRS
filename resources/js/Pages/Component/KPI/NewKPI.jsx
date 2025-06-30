@@ -593,7 +593,7 @@ function NewKPI({
                     // Handle other errors
                     setLoading(false);
                     setTimeout(clearStatusMessage, messageDisplayTime);
-                    console.log(err);
+                    console.error(err);
                 }
             });
     }

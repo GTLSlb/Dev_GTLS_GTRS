@@ -59,7 +59,7 @@ function NoAccess({currentUser, setToken, setCurrentUser}) {
             })
             .catch((error) => {
                 setIsLoading(true);
-                console.log(error);
+                console.error(error);
             });
     };
 

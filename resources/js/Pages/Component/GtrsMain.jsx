@@ -486,7 +486,7 @@ export default function GtrsMain({
                 });
             } else {
                 // Handle other errors
-                console.log(err);
+                console.error(err);
                 // Check if setCellLoading exists before calling it
                 if (typeof setCellLoading === "function") {
                     setCellLoading(null);
@@ -524,7 +524,7 @@ export default function GtrsMain({
                 });
             } else {
                 // Handle other errors
-                console.log(err);
+                console.error(err);
                 // Check if setCellLoading exists before calling it
                 if (typeof setCellLoading === "function") {
                     setCellLoading(null);

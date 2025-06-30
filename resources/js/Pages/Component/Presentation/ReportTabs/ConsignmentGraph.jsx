@@ -30,7 +30,7 @@ function ConsignmentGraph({ url, currentUser, AToken, customers, CustomerId }) {
                 setGraphData(res.data);
             })
             .catch((err) => {
-                console.log(err);
+                console.error(err);
             });
     }
 

@@ -98,12 +98,12 @@ export default function Gtrs({
                                 }
                             })
                             .catch((error) => {
-                                console.log(error);
+                                console.error(error);
                             });
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                 }
             });
     };
@@ -132,7 +132,7 @@ export default function Gtrs({
                 });
             } else {
                 // Handle other errors
-                console.log(err);
+                console.error(err);
                 // Check if setCellLoading exists before calling it
                 if (typeof setCellLoading === "function") {
                     setCellLoading(null);

@@ -82,9 +82,9 @@ export default function AddComment({
                     });
                 } else {
                     // Handle other errors
-                    console.log(error);
+                    console.error(error);
                 }
-                console.log(error);
+                console.error(error);
                 setError("Error occurred while saving the data. Please try again."); // Set the error message
             }
         }

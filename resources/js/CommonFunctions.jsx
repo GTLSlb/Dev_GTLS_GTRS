@@ -47,11 +47,11 @@ export async function handleSessionExpiration() {
                     window.location.href = `/login`;
                 }
             } else {
-                console.log("Logout error:", response);
+                console.error("Logout error:", response);
             }
         })
         .catch((error) => {
-            console.log(error);
+            console.error(error);
             if (error.response && error.response.status === 401) {
                 // Handle 401 error using SweetAlert
                 swal({
@@ -157,7 +157,7 @@ export const fetchApiData = async (
                 await handleSessionExpiration();
             });
         } else {
-            console.log(err);
+            console.error(err);
         }
     }
 };
@@ -201,7 +201,7 @@ export function getApiRequest(url, headers = {}) {
             } else {
                 // Handle other errors
                 AlertToast("Something went wrong", 2);
-                console.log(err);
+                console.error(err);
             }
         });
 }

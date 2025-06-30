@@ -95,7 +95,7 @@ export default function AddHoliday({
                     });
                   } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                     setIsLoading(false);
                     AlertToast("Something went wrong", 2);
                   }

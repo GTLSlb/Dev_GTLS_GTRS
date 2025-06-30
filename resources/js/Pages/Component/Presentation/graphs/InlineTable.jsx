@@ -313,9 +313,6 @@ function InlineTable({
                 baseRecord.KpiBenchMark === "" ||
                 Number.isNaN(baseRecord.KpiBenchMark)
             ) {
-                console.log(
-                    "Validation failed: One or more required fields are null, empty, or NaN"
-                );
                 setValidationErrors((prev) => ({
                     ...prev,
                     [`${columnId}`]: true,
@@ -349,7 +346,7 @@ function InlineTable({
                     setGraphData(updatedData); // Optional: If parent component needs the updates
                 })
                 .catch((err) => {
-                    console.log(err);
+                    console.error(err);
                     AlertToast(err.response.data.Message, 2);
                 });
 

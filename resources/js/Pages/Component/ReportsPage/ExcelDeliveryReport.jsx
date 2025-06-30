@@ -421,7 +421,7 @@ export default function ExcelDeliveryReport({
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                 }
             });
     }

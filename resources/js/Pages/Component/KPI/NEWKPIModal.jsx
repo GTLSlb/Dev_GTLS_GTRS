@@ -59,7 +59,7 @@ export default function NewKPIModalAddReason({
         } catch (error) {
             SetIsLoading(false);
             // Handle error
-            console.log(error);
+            console.error(error);
             setError("Error occurred while saving the data. Please try again."); // Set the error message
         }
     };

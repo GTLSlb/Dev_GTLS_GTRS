@@ -66,7 +66,7 @@ export default function AddSafetyCausesModal({
                 });
                 } else {
                   // Handle other errors
-                  console.log(error);
+                  console.error(error);
                 }
         }
     };

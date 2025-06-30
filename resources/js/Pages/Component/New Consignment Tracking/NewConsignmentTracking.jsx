@@ -150,7 +150,7 @@ function NewConsignmentTracking() {
             })
             .catch((error) => {
                 setLoading(false);
-                console.log(error);
+                console.error(error);
                 AlertToast(error.response.data.message, 2);
             });
     };

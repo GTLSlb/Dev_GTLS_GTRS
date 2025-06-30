@@ -141,7 +141,7 @@ function AddNewTransitDay({
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                 }
             });
     }
