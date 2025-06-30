@@ -21,80 +21,11 @@ import { AlertToast } from "@/permissions";
 import swal from "sweetalert";
 import UtilizationImport from "../modals/UtilizationImport";
 
-const tableData = [
-    {
-        Date: "2023-01-03",
-        Rego: "CM98UA",
-        DayOrNightShift: "DAY",
-        TrailerType: "RORO",
-        ProductType: "LIQUID",
-        OBDNumber: "68777856",
-        PickUpPoint: "N Rocks",
-        PalletsCollected: 26,
-        VehicleCapacity: 26,
-        LoadWeightT: 18.09,
-        VehicleCapacityT: 22.5,
-        LoadWeightUtilisation: "80%",
-        TimeIn: "",
-        TimeOut: "",
-        NorthRockAllowTime45Min: "2:35",
-        Reason: "",
-        DeliveryPoint: "LFX Ingleburn",
-        DTimeIn: "21:10",
-        DTimeOut: "23:40",
-        UnloadTurnaroundTime: "0:30",
-        IngleburnAllowTime30Min: "0:00",
-        DemurrageCharges2: 0,
-        TravelTimeBetweenSites: "1:10",
-        TotalChargeAmount: 0,
-        Manifest: "Manifest001",
-        ProofOfDemurrage: "Proof001",
-        Invoiced: "Yes",
-        KPIWeek: "2023 - Week 02",
-        KPIMonth: "2023-Jan",
-        CPP: 100,
-        RevisedUtilisation: "100%",
-    },
-    {
-        Date: "2023-01-04",
-        Rego: "CM99UB",
-        DayOrNightShift: "NIGHT",
-        TrailerType: "RORO",
-        ProductType: "SOLID",
-        OBDNumber: "68777857",
-        PickUpPoint: "S Rocks",
-        PalletsCollected: 28,
-        VehicleCapacity: 30,
-        LoadWeightT: 20.0,
-        VehicleCapacityT: 24.0,
-        TimeIn: "",
-        TimeOut: "",
-        Reason: "Delay",
-        DeliveryPoint: "LFX Minto",
-        DTimeIn: "21:50",
-        DTimeOut: "22:56",
-        UnloadTurnaroundTime: "0:45",
-        IngleburnAllowTime30Min: "0:00",
-        DemurrageCharges2: 15,
-        TravelTimeBetweenSites: "1:15",
-        TotalChargeAmount: 25.0,
-        Manifest: "Manifest002",
-        ProofOfDemurrage: "Proof002",
-        Invoiced: "No",
-        KPIWeek: "2023 - Week 02",
-        KPIMonth: "2023-Jan",
-        CPP: 120,
-        RevisedUtilisation: "95%",
-    },
-];
-
 export default function Utilization({
     url,
     AToken,
     utilizationData,
     currentUser,
-    userPermission,
-    deliveryCommentsOptions,
 }) {
     const hotTableRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -201,7 +132,6 @@ export default function Utilization({
     // Used to show a spinner in the cell when saving changes
     const [cellLoading, setCellLoading] = useState(null);
 
-
     // 📌 Custom Button Renderer
     // const buttonRenderer = (
     //     instance,
@@ -285,8 +215,8 @@ export default function Utilization({
         // Calculate the difference in minutes
         const diff = timeOutMoment.diff(timeInMoment, "minutes");
 
-        // Return the formatted difference as HH:mm
-        return moment.utc(diff * 60000).format("HH:mm");
+        // Return the formatted difference as HH:mm:ss
+        return moment.utc(diff * 60000).format("HH:mm:ss");
     };
 
     const calculateNorthRockAllowTime = (timeIn, timeOut) => {
@@ -318,12 +248,22 @@ export default function Utilization({
 
     const convertToMinutes = (time) => {
         const timeMoment = moment(time, "HH:mm");
-    
+
         // Return the total minutes from midnight
-        return timeMoment.isValid() ? timeMoment.hours() * 60 + timeMoment.minutes() : 0;
+        return timeMoment.isValid()
+            ? timeMoment.hours() * 60 + timeMoment.minutes()
+            : 0;
     };
 
-    
+    const calculateUtilization = (instance, row, col1, col2) => {
+        const val1 = instance.getDataAtCell(row, instance.propToCol(col1));
+        const val2 = instance.getDataAtCell(row, instance.propToCol(col2));
+        // Calculate the pallet/vehicle utilization
+        const util = val1 && val2 ? ((val1 / val2) * 100).toFixed(2) : "0";
+        return util;
+    };
+    const timeValidatorRegexp =
+        /^(0?[0-9]|1[0-9]|2[0-3])(?::([0-5][0-9]))?(?::([0-5][0-9]))?$/;
     const hotColumns = [
         {
             data: "ManifestDateTime",
@@ -333,17 +273,30 @@ export default function Utilization({
             renderer: dateRenderer, // You can use this to format the date
         },
         {
+            data: "ManifestNo",
+            title: "Manifest",
+            type: "text",
+            readOnly: true,
+        },
+        {
+            data: "ShiftType",
+            title: "Day or Night Shift",
+            type: "text",
+            readOnly: true,
+        },
+        {
+            data: "ConsignmentNo",
+            title: "Consignment No",
+            type: "text",
+            readOnly: true,
+        },
+        {
             data: "RegistrationNumber",
             title: "Rego",
             type: "text",
             readOnly: true,
         },
-        {
-            data: "DayOrNightShift",
-            title: "Day or Night Shift",
-            type: "text",
-            readOnly: true,
-        },
+
         {
             data: "TrailerType",
             title: "Trailer Type",
@@ -357,13 +310,13 @@ export default function Utilization({
             readOnly: true,
         },
         {
-            data: "OBDNumber",
+            data: "ReceiverReference",
             title: "OBD Number",
             type: "text",
             readOnly: true,
         },
         {
-            data: "PickUpPoint",
+            data: "SenderName",
             title: "Pick Up Point",
             type: "text",
             readOnly: true,
@@ -375,7 +328,7 @@ export default function Utilization({
             readOnly: true,
         },
         {
-            data: "VehicleCapacity",
+            data: "PalletsVehicleCapacity",
             title: "Vehicle Capacity",
             type: "numeric",
             readOnly: true,
@@ -385,34 +338,25 @@ export default function Utilization({
             type: "numeric",
             readOnly: true,
             renderer: (instance, td, row, col, prop, value, cellProperties) => {
-                const palletsCollected = instance.getDataAtCell(
+                const val = calculateUtilization(
+                    instance,
                     row,
-                    instance.propToCol("PalletsCollected")
+                    "PalletsCollected",
+                    "PalletsVehicleCapacity"
                 );
-                const vehicleCapacity = instance.getDataAtCell(
-                    row,
-                    instance.propToCol("VehicleCapacity")
-                );
-
-                const util =
-                    palletsCollected && vehicleCapacity
-                        ? ((palletsCollected / vehicleCapacity) * 100).toFixed(
-                              2
-                          ) + "%"
-                        : "0%";
-
-                td.innerText = util;
+                td.innerText = val + "%";
+                td.classList.add("htLeft");
                 return td;
             },
         },
         {
-            data: "LoadWeightT",
+            data: "Weight",
             title: "Load Weight (T)",
             type: "numeric",
             readOnly: true,
         },
         {
-            data: "VehicleCapacityT",
+            data: "WeightVehicleCapacity",
             title: "Vehicle Capacity (T)",
             type: "numeric",
             readOnly: true,
@@ -423,50 +367,102 @@ export default function Utilization({
             type: "numeric",
             readOnly: true,
             renderer: (instance, td, row, col, prop, value, cellProperties) => {
-                const LoadWeightT = instance.getDataAtCell(
+                const val = calculateUtilization(
+                    instance,
                     row,
-                    instance.propToCol("LoadWeightT")
+                    "Weight",
+                    "WeightVehicleCapacity"
                 );
-                const VehicleCapacityT = instance.getDataAtCell(
-                    row,
-                    instance.propToCol("VehicleCapacityT")
-                );
-
-                const util =
-                    LoadWeightT && VehicleCapacityT
-                        ? ((LoadWeightT / VehicleCapacityT) * 100).toFixed(2) +
-                          "%"
-                        : "0%";
-
-                td.innerText = util;
+                td.innerText = val + "%";
+                td.classList.add("htLeft");
                 return td;
             },
         },
         {
-            data: "TimeIn",
-            title: "Time In",
+            data: "PickupTimeIn",
+            title: "Pickup Time In",
             type: "text",
-            readOnly: false, // Format as date
+            readOnly: false, // Format as time //editable //10:00
+            allowInvalid: true,
+            allowEmpty: true,
+            numericFormat: null,
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
+                td.classList.remove("htInvalid");
+                if (value != "" && value != null && value != undefined) {
+                    if (timeValidatorRegexp.test(value)) {
+                        const formattedTime = value.replace(
+                            timeValidatorRegexp,
+                            (match, hour, minute, second) => {
+                                const hours = hour.padStart(2, "0");
+                                const minutes = minute
+                                    ? minute.padStart(2, "0")
+                                    : "00";
+                                const seconds = second
+                                    ? second.padStart(2, "0")
+                                    : "00";
+                                return `${hours}:${minutes}:${seconds}`;
+                            }
+                        );
+                        td.innerText = formattedTime;
+                    } else {
+                        td.classList.add("htInvalid");
+                    }
+                } else {
+                    td.innerText = value;
+                }
+                td.classList.add("htLeft");
+                return td;
+            },
         },
         {
-            data: "TimeOut",
-            title: "Time Out",
+            data: "PickupTimeOut",
+            title: "Pickup Time Out",
             type: "text",
-            readOnly: false, // Format as date
+            readOnly: false, // Format as as time //editable //10:00
+            allowInvalid: true,
+            allowEmpty: true,
+            numericFormat: null,
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
+                td.classList.remove("htInvalid");
+                if (value != "" && value != null && value != undefined) {
+                    if (timeValidatorRegexp.test(value)) {
+                        const formattedTime = value.replace(
+                            timeValidatorRegexp,
+                            (match, hour, minute, second) => {
+                                const hours = hour.padStart(2, "0");
+                                const minutes = minute
+                                    ? minute.padStart(2, "0")
+                                    : "00";
+                                const seconds = second
+                                    ? second.padStart(2, "0")
+                                    : "00";
+                                return `${hours}:${minutes}:${seconds}`;
+                            }
+                        );
+                        td.innerText = formattedTime;
+                    } else {
+                        td.classList.add("htInvalid");
+                    }
+                } else {
+                    td.innerText = value;
+                }
+                td.classList.add("htLeft");
+                return td;
+            },
         },
         {
             data: "CollectionTurnaroundTime",
             title: "Collection Turnaround Time",
             type: "date",
-            readOnly: true,
+            readOnly: true, // Time out - time in //editable //10:00  as time
             renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 const timeIn = instance.getDataAtCell(
                     row,
-                    instance.propToCol("TimeIn")
+                    instance.propToCol("PickupTimeIn")
                 );
                 const timeOut = instance.getDataAtCell(
                     row,
-                    instance.propToCol("TimeOut")
+                    instance.propToCol("PickupTimeOut")
                 );
 
                 // Use the reusable function to calculate the time difference
@@ -478,270 +474,184 @@ export default function Utilization({
             },
         },
         {
-            data: "NorthRockAllowTime45Min",
-            title: "North Rock Allow Time (45Min)",
+            data: "PickupAllowTime",
+            title: "North Rock Allow Time (Min)", //calculate based on time in and time out and allowed time
             type: "text",
             readOnly: true,
-            renderer: (instance, td, row, col, prop, value, cellProperties) => {
-                const timeIn = instance.getDataAtCell(
-                    row,
-                    instance.propToCol("TimeIn")
-                );
-                const timeOut = instance.getDataAtCell(
-                    row,
-                    instance.propToCol("TimeOut")
-                );
-                // If TimeIn or TimeOut is missing
+            // renderer: (instance, td, row, col, prop, value, cellProperties) => {
+            //     const timeIn = instance.getDataAtCell(
+            //         row,
+            //         instance.propToCol("PickupTimeIn")
+            //     );
+            //     const timeOut = instance.getDataAtCell(
+            //         row,
+            //         instance.propToCol("PickupTimeOut")
+            //     );
+            //     // If TimeIn or TimeOut is missing
 
-                // Convert to moments (or Date objects)
-                const formattedDiff = calculateNorthRockAllowTime(
-                    timeIn,
-                    timeOut
-                );
-                td.innerText = formattedDiff;
+            //     // Convert to moments (or Date objects)
+            //     const formattedDiff = calculateNorthRockAllowTime(
+            //         timeIn,
+            //         timeOut
+            //     );
+            //     td.innerText = formattedDiff;
 
-                td.classList.add("htLeft"); // Align text to the left
-                return td;
-            },
+            //     td.classList.add("htLeft"); // Align text to the left
+            //     return td;
+            // },
         },
         {
-            data: "DemurrageCharges1",
+            data: "CollectionDemurrageCharges", //calculate based on pickup time in and time out //debatable
             title: "Demurrage Charges ($97.85 Per Hr or $1.63 Per Minute)",
             type: "numeric",
             readOnly: true,
             renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 const timeIn = instance.getDataAtCell(
                     row,
-                    instance.propToCol("TimeIn")
+                    instance.propToCol("PickupTimeIn")
                 );
                 const timeOut = instance.getDataAtCell(
                     row,
-                    instance.propToCol("TimeOut")
+                    instance.propToCol("PickupTimeOut")
                 );
-                let collectionTurnaroundTime = calculateNorthRockAllowTime(
-                    timeIn,
-                    timeOut
-                );
-                let demurrageCharges = 0;
-
-                // Apply the logic for Collection Turnaround Time based on your formula
-                collectionTurnaroundTime = calculateNorthRockAllowTime(
-                    timeIn,
-                    timeOut
-                );
-
-                // console.log(collectionTurnaroundTime);
-                const minutes= convertToMinutes(collectionTurnaroundTime);
-
-                // console.log(minutes);
-                // Format the result (convert minutes to HH:mm format)
-                const formattedDiff = moment
-                    .utc(minutes * 60000)
-                    .format("HH:mm");
-                td.innerText = formattedDiff;
-                // console.log(formattedDiff);
-                // Recalculate NorthRockAllowTime45Min based on the formula
-                // Apply the formula for NorthRockAllowTime45Min based on CollectionTurnaroundTime
-                if (minutes > 0) {
-                    let northRockAllowTime = minutes - 45; // 45 minutes allowance
-
-                    // Ensure the value does not go below 0
-                    if (northRockAllowTime < 0) {
-                        northRockAllowTime = 0;
-                    }
-
-                    // Now calculate Demurrage Charges based on the above logic
-                    const collectionTurnaroundInHours =
-                    minutes / 60; // Convert minutes to hours
-                    demurrageCharges = collectionTurnaroundInHours * 97.85; // $1.63 per minute
-
-                    // If the collection turnaround time is less than the allowed time, demurrage charges = 0
-                    const adjustedCharges =
-                    minutes > northRockAllowTime
-                            ? demurrageCharges
-                            : 0;
-                // console.log(adjustedCharges)
-                    td.innerText = adjustedCharges.toFixed(2); // Display with 2 decimal places
-                }
-
+                const allowTime = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("PickupAllowTime")
+                )
+                const demurrageCharges = calculateDemurrageCharges(timeIn, timeOut, allowTime);
+                td.innerText = demurrageCharges.toFixed(2); // Display with 2 decimal places
                 td.classList.add("htLeft"); // Align text to the left
                 return td;
             },
         },
         {
-            data: "Reason",
-            title: "Reason",
+            data: "PickupReason", //editable
+            title: "Pickup Reason",
             type: "text",
-            readOnly: true,
+            readOnly: false,
         },
         {
-            data: "DeliveryPoint",
+            data: "ReceiverName",
             title: "Delivery Point",
             type: "text",
             readOnly: true,
         },
-        
+
         {
-            data: "DTimeIn",
+            data: "DelTimeIn",
             title: "Time In",
             type: "date",
             readOnly: true, // Format as date
         },
         {
-            data: "DTimeOut",
+            data: "DelTimeOut",
             title: "Time Out",
             type: "date",
             readOnly: true, // Format as date
         },
         {
-            data: "CollectionTurnaroundTime",
-            title: "Collection Turnaround Time",
-            type: "date",
-            readOnly: true,
-            renderer: (instance, td, row, col, prop, value, cellProperties) => {
-                const timeIn = instance.getDataAtCell(
-                    row,
-                    instance.propToCol("DTimeIn")
-                );
-                const timeOut = instance.getDataAtCell(
-                    row,
-                    instance.propToCol("DTimeOut")
-                );
-
-                // Use the reusable function to calculate the time difference
-                const formattedDiff = calculateTimeDifference(timeIn, timeOut);
-
-                td.innerText = formattedDiff; // Set the result into the table cell
-                td.classList.add("htLeft"); // Align text to the left
-                return td;
-            },
-        },
-        {
-            data: "NorthRockAllowTime45Min",
-            title: "North Rock Allow Time (45Min)",
-            type: "text",
-            readOnly: true,
-            renderer: (instance, td, row, col, prop, value, cellProperties) => {
-                const timeIn = instance.getDataAtCell(
-                    row,
-                    instance.propToCol("DTimeIn")
-                );
-                const timeOut = instance.getDataAtCell(
-                    row,
-                    instance.propToCol("DTimeOut")
-                );
-                // If TimeIn or TimeOut is missing
-
-                // Convert to moments (or Date objects)
-                const formattedDiff = calculateNorthRockAllowTime(
-                    timeIn,
-                    timeOut
-                );
-                td.innerText = formattedDiff;
-
-                td.classList.add("htLeft"); // Align text to the left
-                return td;
-            },
-        },
-        {
-            data: "DemurrageCharges2",
-            title: "Demurrage Charges ($97.85 Per Hr or $1.63 Per Minute)",
-            type: "numeric",
-            readOnly: true,
-            renderer: (instance, td, row, col, prop, value, cellProperties) => {
-                const timeIn = instance.getDataAtCell(
-                    row,
-                    instance.propToCol("DTimeIn")
-                );
-                const timeOut = instance.getDataAtCell(
-                    row,
-                    instance.propToCol("DTimeOut")
-                );
-                let collectionTurnaroundTime = calculateNorthRockAllowTime(
-                    timeIn,
-                    timeOut
-                );
-                let demurrageCharges = 0;
-
-                // Apply the logic for Collection Turnaround Time based on your formula
-                collectionTurnaroundTime = calculateNorthRockAllowTime(
-                    timeIn,
-                    timeOut
-                );
-
-                // console.log(collectionTurnaroundTime);
-
-                const minutes= convertToMinutes(collectionTurnaroundTime);
-                // Format the result (convert minutes to HH:mm format)
-                const formattedDiff = moment
-                    .utc(minutes * 60000)
-                    .format("HH:mm");
-                td.innerText = formattedDiff;
-                // console.log(formattedDiff);
-                // Recalculate NorthRockAllowTime45Min based on the formula
-                // Apply the formula for NorthRockAllowTime45Min based on CollectionTurnaroundTime
-                if (minutes > 0) {
-                    let northRockAllowTime = minutes - 45; // 45 minutes allowance
-
-                    // Ensure the value does not go below 0
-                    if (northRockAllowTime < 0) {
-                        northRockAllowTime = 0;
-                    }
-
-                    // Now calculate Demurrage Charges based on the above logic
-                    const collectionTurnaroundInHours =
-                    minutes / 60; // Convert minutes to hours
-                    demurrageCharges = collectionTurnaroundInHours * 97.85; // $1.63 per minute
-
-                    // If the collection turnaround time is less than the allowed time, demurrage charges = 0
-                    const adjustedCharges =
-                    minutes > northRockAllowTime
-                            ? demurrageCharges
-                            : 0;
-                // console.log(adjustedCharges)
-                    td.innerText = adjustedCharges.toFixed(2); // Display with 2 decimal places
-                }
-
-                td.classList.add("htLeft"); // Align text to the left
-                return td;
-            },
-        },
-        {
-            data: "UnloadTurnaroundTime",
+            data: "UnloadTime",
             title: "Unload Turnaround Time",
             type: "text",
             readOnly: true,
         },
         {
-            data: "IngleburnAllowTime30Min",
-            title: "Ingleburn Allow Time (30Min)",
+            data: "DeliveryAllowTime",
+            title: "Ingleburn Allow Time (Min)",
             type: "text",
             readOnly: true,
         },
         {
-            data: "DemurrageCharges2",
-            title: "Demurrage Charges ($97.85 Per Hr or $1.63 Per Minute)",
-            type: "numeric",
-            readOnly: true,
+            data: "DeliveryReason", //editable
+            title: "Delivery Reason",
+            type: "text",
+            readOnly: false,
         },
         {
-            data: "TravelTimeBetweenSites",
+            data: "UnloadDemurrageCharges", //db
+            title: "Unload Demurrage Charges ($97.85 Per Hr or $1.63 Per Minute)",
+            type: "numeric",
+            readOnly: true,
+            // renderer: (instance, td, row, col, prop, value, cellProperties) => {
+            //     td.classList.add("htLeft"); // Align text to the left
+            //     return td;
+            // },
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
+                const timeIn = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("DelTimeIn")
+                );
+                const timeOut = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("DelTimeOut")
+                );
+                const allowTime = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("DeliveryAllowTime")
+                )
+                const demurrageCharges = calculateDemurrageCharges(timeIn, timeOut, allowTime);
+                td.innerText = demurrageCharges.toFixed(2); // Display with 2 decimal places
+                td.classList.add("htLeft"); // Align text to the left
+                return td;
+            },
+        },
+        {
+            data: "TravelTime", //editable
             title: "Travel time between sites",
             type: "text",
             readOnly: true,
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
+                const deliveryTimeIn = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("DelTimeIn")
+                );
+                const pickupTimeOut = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("PickupTimeOut")
+                );
+
+                const formattedDiff = getTimeDifference(
+                    deliveryTimeIn,
+                    pickupTimeOut
+                );
+
+                td.innerText = formattedDiff;
+                td.classList.add("htLeft"); // Align text to the left
+                return td;
+            },
         },
         {
-            data: "TotalChargeAmount",
+            data: "TotalCharge", // sum of two demurages (collection + unload)
             title: "Total Charge Amount",
             type: "numeric",
             readOnly: true,
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
+                const unloadDemurrage = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("UnloadDemurrageCharges")
+                );
+                const collectionDemurrage = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("CollectionDemurrageCharges")
+                );
+
+                const unloadDemurrageNumber =
+                    typeof unloadDemurrage === "string"
+                        ? Number(unloadDemurrage)
+                        : unloadDemurrage;
+                const collectionDemurrageNumber =
+                    typeof collectionDemurrage === "string"
+                        ? Number(collectionDemurrage)
+                        : collectionDemurrage;
+
+                // Calculate the sum
+                const sum = unloadDemurrageNumber + collectionDemurrageNumber;
+                td.innerText = sum;
+                td.classList.add("htLeft"); // Align text to the left
+                return td;
+            },
         },
-        {
-            data: "Manifest",
-            title: "Manifest",
-            type: "text",
-            readOnly: true,
-        },
+
         {
             data: "ProofOfDemurrage",
             title: "PROOF OF DEMURRAGE",
@@ -749,45 +659,159 @@ export default function Utilization({
             readOnly: true,
         },
         {
-            data: "Invoiced",
-            title: "Invoiced",
-            type: "text",
-            readOnly: true,
-        },
-        {
-            data: "KPIWeek",
-            title: "KPI Week",
-            type: "text",
-            readOnly: true,
-        },
-        {
-            data: "KPIMonth",
-            title: "KPI Month",
-            type: "text",
-            readOnly: true,
-        },
-        {
-            data: "CPP",
-            title: "CPP",
-            type: "numeric",
-            readOnly: true,
-        },
-        {
-            data: "RevisedUtilisation",
+            data: "RevisedUtilization", //max between utilization (weight) and (pallets) //db
             title: "Revised Utilisation%",
             type: "numeric",
             readOnly: true,
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
+                // Recalculate the utilization values since they are not stored in the database
+                // Calculate the pallet/vehicle utilization
+                const vehicleUtil = calculateUtilization(
+                    instance,
+                    row,
+                    "PalletsCollected",
+                    "PalletsVehicleCapacity"
+                );
+
+                // Get the values of Weight and VehicleCapacity
+                const weightUtil = calculateUtilization(
+                    instance,
+                    row,
+                    "Weight",
+                    "WeightVehicleCapacity"
+                );
+
+                // Get the maximum of the two utilizations
+                const max = Math.max(vehicleUtil, weightUtil);
+                td.innerText = max + "%";
+                td.classList.add("htLeft"); // Align text to the left
+                return td;
+            },
         },
     ];
 
     const [changedRows, setChangedRows] = useState([]); // Stores changed rows
-console.log(changedRows)
+    const calculateDemurrageCharges = (timeIn, timeOut, allowTime) => {
+        const momentTimeIn = moment(timeIn, 'HH:mm:ss');
+        const momentTimeOut = moment(timeOut, 'HH:mm:ss');
+
+        const timeDiff = momentTimeOut.diff(momentTimeIn);
+        const allowedTime = moment.duration(allowTime, 'minutes');
+        const allowedTimeMs = allowedTime.asMilliseconds();
+        const timeDiffWithAllowance = timeDiff <= allowedTimeMs ? 0 : timeDiff - allowedTimeMs;
+
+        let demurrageCharges = 0;
+
+        if (timeDiffWithAllowance > 0) {
+            // Divide the time difference between hour and minutes
+            const timeDiffWithAllowanceDuration = moment.duration(timeDiffWithAllowance);
+            const hours = timeDiffWithAllowanceDuration.hours();
+            const minutes = timeDiffWithAllowanceDuration.minutes();
+
+            const hoursCharge = hours * 97.85; // Charge per hour
+            const minutesCharge = minutes * 1.63; // Charge per minute
+
+            demurrageCharges = hoursCharge + minutesCharge;
+        }
+        return demurrageCharges;
+    };
+    const calculateTotalChargeAmount = (item) => {
+        const unloadDemurrage = item.UnloadDemurrageCharges;
+        const collectionDemurrage = calculateDemurrageCharges(item.PickupTimeIn, item.PickupTimeOut, item.PickupAllowTime);
+
+        const unloadDemurrageNumber =
+            typeof unloadDemurrage === "string"
+                ? Number(unloadDemurrage)
+                : unloadDemurrage;
+        const collectionDemurrageNumber =
+            typeof collectionDemurrage === "string"
+                ? Number(collectionDemurrage)
+                : collectionDemurrage;
+
+        // Calculate the sum
+        const sum = unloadDemurrageNumber + collectionDemurrageNumber;
+        return sum;
+    };
+    const getTimeDifference = (time1, time2) => {
+        const timeInMoment = moment(time1, "HH:mm");
+        const timeOutMoment = moment(time2, "HH:mm");
+
+        // If either timeIn or timeOut is invalid, return empty string
+        if (!timeInMoment.isValid() || !timeOutMoment.isValid()) {
+            return ""; // Return empty if invalid time
+        }
+
+        // Calculate the difference in minutes
+        const diff = timeOutMoment.diff(timeInMoment, "minutes");
+        const minutes = convertToMinutes(diff);
+
+        // Format the result (convert minutes to HH:mm format)
+        const formattedDiff = moment.utc(minutes * 60000).format("HH:mm");
+
+        return formattedDiff;
+    };
+
+    const handleAddEditUtilization = () => {
+        setIsLoading(true);
+        // function accepts an array of objects
+        // map over the changedRows object and only keep:
+        // UtilizationId, ConsignmentId, PickupTimeIn, PickupTimeOut, CollectionTime, CollectionDemurrage, PickupReason, DeliveryReason, TotalChargeAmount, ExtraCollectionTime
+        const inputValues = changedRows.map((item) => ({
+            UtilizationId:
+                item.UtilizationId == undefined ? null : item.UtilizationId,
+            ConsignmentId: item.ConsignmentID,
+            PickupTimeIn: item.PickupTimeIn.replace(
+                timeValidatorRegexp,
+                (match, hour, minute, second) => {
+                    const hours = hour.padStart(2, "0");
+                    const minutes = minute ? minute.padStart(2, "0") : "00";
+                    const seconds = second ? second.padStart(2, "0") : "00";
+                    return `${hours}:${minutes}:${seconds}`;
+                }
+            ),
+            PickupTimeOut: item.PickupTimeOut.replace(
+                timeValidatorRegexp,
+                (match, hour, minute, second) => {
+                    const hours = hour.padStart(2, "0");
+                    const minutes = minute ? minute.padStart(2, "0") : "00";
+                    const seconds = second ? second.padStart(2, "0") : "00";
+                    return `${hours}:${minutes}:${seconds}`;
+                }
+            ),
+            CollectionTime: getTimeDifference(
+                item.PickupTimeIn,
+                item.PickupTimeOut
+            ),
+            CollectionDemurrage: calculateDemurrageCharges(item.PickupTimeIn, item.PickupTimeOut, item.PickupAllowTime),
+            PickupReason: item.PickupReason == undefined ? '' : item.PickupReason,
+            DeliveryReason: item.DeliveryReason == undefined ? '' : item.DeliveryReason,
+            TravelTime: getTimeDifference(item.DelTimeIn, item.PickupTimeOut),
+            TotalChargeAmount: calculateTotalChargeAmount(item),
+            ExtraCollectionTime: moment(calculateTimeDifference(item.PickupTimeIn, item.PickupTimeOut), 'HH:mm:ss').subtract(item.PickupAllowTime, 'minutes').format('HH:mm:ss'),
+        }));
+        console.log(inputValues);
+        axios
+            .post(`${url}Add/UtilizationReport`, inputValues, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            })
+            .then((res) => {
+                AlertToast("Saved successfully", 1);
+                setIsLoading(false);
+            })
+            .catch((err) => {
+                console.log(err);
+                AlertToast("Something went wrong", 2);
+                setIsLoading(false);
+            });
+    };
     const handleAfterChange = (changes, source) => {
         if (source === "loadData" || !changes) return;
-    
         setChangedRows((prevChanges) => {
             let updatedChanges = [...prevChanges]; // clone current changes
-    
+
             changes.forEach(([row, prop, oldValue, newValue]) => {
                 if (newValue !== oldValue) {
                     const hotInstance = hotTableRef.current?.hotInstance;
@@ -795,17 +819,20 @@ console.log(changedRows)
                         console.error("❌ Handsontable instance is undefined!");
                         return updatedChanges;
                     }
-    
+
                     const rowData = hotInstance.getSourceDataAtRow(row);
                     if (!rowData || !rowData.ConsignmentID) {
-                        console.warn("⚠️ Row data missing ConsignmentID!", rowData);
+                        console.warn(
+                            "⚠️ Row data missing ConsignmentID!",
+                            rowData
+                        );
                         return updatedChanges;
                     }
-    
+
                     const existingIndex = updatedChanges.findIndex(
                         (item) => item.ConsignmentID === rowData.ConsignmentID
                     );
-    
+
                     if (existingIndex > -1) {
                         updatedChanges[existingIndex] = {
                             ...updatedChanges[existingIndex],
@@ -819,10 +846,11 @@ console.log(changedRows)
                     }
                 }
             });
-    
+
             return updatedChanges;
         });
     };
+    console.log("changes for each", changedRows);
     function SaveComments() {
         setIsLoading(true);
         const inputValues = changedRows?.map((item) => ({
@@ -877,7 +905,8 @@ console.log(changedRows)
         if (event.ctrlKey && event.key === "s") {
             event.preventDefault(); // ✅ Prevent browser's default "Save Page" action
             if (changedRows.length > 0) {
-                // SaveComments(); // ✅ Call your save function here
+                handleAddEditUtilization(); // ✅ Call the save function here
+                // SaveComments();
             }
         }
     };
@@ -903,9 +932,9 @@ console.log(changedRows)
         // to use an external HyperFormula instance,
         // initialize it with the `'internal-use-in-handsontable'` license key
         licenseKey: "internal-use-in-handsontable",
+        autoWrapRow: true,
+        autoWrapCol: true,
     });
-
-    console.log("🚀 ~ utilizationReportData:", utilizationData);
 
     return (
         <div className="min-h-full px-8">
@@ -918,7 +947,7 @@ console.log(changedRows)
             <div className="my-1 flex w-full items-center gap-3 justify-end">
                 <Button
                     className="bg-dark text-white px-4 py-2"
-                    onClick={() => SaveComments()}
+                    onClick={() => handleAddEditUtilization()}
                     isDisabled={changedRows.length === 0}
                     size="sm"
                 >
@@ -944,8 +973,7 @@ console.log(changedRows)
                 <div id="" className="ht-theme-main mt-4 pb-10">
                     <HotTable
                         ref={hotTableRef}
-                        data={utilizationData.slice(
-                            0,1000)}
+                        data={utilizationData.slice(0, 1000)}
                         colHeaders={hotColumns.map((col) => col.title)}
                         columns={hotColumns}
                         fixedColumnsStart={1}

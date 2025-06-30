@@ -189,14 +189,14 @@ const navigation = [
                 icon: DocumentDuplicateIcon,
                 feature: "DeliveryReport_View",
             },
-            // {
-            //     id: 25,
-            //     name: "Excel Delivery Report",
-            //     href: "#",
-            //     current: false,
-            //     icon: DocumentDuplicateIcon,
-            //     feature: "ExcelTable_View",
-            // },
+            {
+                id: 25,
+                name: "Excel Delivery Report",
+                href: "#",
+                current: false,
+                icon: DocumentDuplicateIcon,
+                feature: "ExcelTable_View",
+            },
             {
                 id: 26,
                 name: "Comments",
@@ -341,7 +341,7 @@ export default function ChartsSidebar({
     };
     const filterNavigation = (navigationitems, user) => {
         return navigationitems.filter((navItem) => {
-            
+
             // Check if the navigation item has sub-options
             if (navItem.options) {
                 // Filter options based on user permissions

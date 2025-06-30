@@ -16,7 +16,6 @@ export default function DeliveryReportCommentsPage({
     url,
     AToken,
     currentUser,
-    userPermission,
     data,
     fetchDeliveryReportCommentsData,
 }) {

@@ -194,9 +194,8 @@ return [
         App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
-        App\Providers\NovaServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        //SocialiteProviders 
+        //SocialiteProviders
         SocialiteProviders\Manager\ServiceProvider::class,
         \SocialiteProviders\Manager\ServiceProvider::class, // add
 

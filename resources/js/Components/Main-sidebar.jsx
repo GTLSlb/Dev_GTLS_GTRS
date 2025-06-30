@@ -166,13 +166,13 @@ export default function MainSidebar({
                     current: false,
                     feature: "DeliveryReport_View",
                 },
-                // {
-                //     id: 25,
-                //     name: "Excel Delivery Report",
-                //     href: "#",
-                //     current: false,
-                //     feature: "ExcelTable_View",
-                // },
+                {
+                    id: 25,
+                    name: "Excel Delivery Report",
+                    href: "#",
+                    current: false,
+                    feature: "ExcelTable_View",
+                },
                 {
                     id: 26,
                     name: "Comments",
@@ -291,7 +291,7 @@ export default function MainSidebar({
 
     const filterNavigation = (navigationitems, user) => {
         return navigationitems.filter((navItem) => {
-            
+
             // Check if the navigation item has sub-options
             if (navItem.options) {
                 // Filter options based on user permissions

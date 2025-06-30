@@ -2463,7 +2463,6 @@ export default function charts({
             currentUser={currentUser}
             setactiveCon={setactiveCon}
             setActiveIndexGTRS={setActiveIndexGTRS}
-            // userPermission={userPermission}
             deliveryReportData={excelDailyReportData}
             fetchDeliveryReport={fetchExcelDeliveryReportData}
             deliveryCommentsOptions={deliveryReportComments}
@@ -2472,7 +2471,6 @@ export default function charts({
             url={url}
             AToken={AToken}
             currentUser={currentUser}
-            // userPermission={userPermission}
             data={deliveryReportComments}
             fetchDeliveryReportCommentsData={fetchDeliveryReportCommentsData}
         />,

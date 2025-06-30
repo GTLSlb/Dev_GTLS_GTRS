@@ -59,8 +59,6 @@ export default function UtilizationImport({}) {
         }
     };
 
-    console.log(jsonData);
-
     return (
         <>
             <Button
