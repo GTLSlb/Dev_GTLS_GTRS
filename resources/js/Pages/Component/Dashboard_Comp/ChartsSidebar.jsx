@@ -293,7 +293,7 @@ export default function ChartsSidebar({
     }, [optionSelected]);
     const [sidebarElements, setSidebarElements] = useState(navigation);
 
-    const handleClick = (index) => {
+    const handleClick = (index, parentId) => {
         setActiveIndexGTRS(index);
         const updatedElements = sidebarElements.map((element) => {
             if (
@@ -562,7 +562,7 @@ export default function ChartsSidebar({
                                                                         }
                                                                         onClick={() =>
                                                                             handleClick(
-                                                                                option.id
+                                                                                option.id, item.id
                                                                             )
                                                                         }
                                                                         className={classNames(
