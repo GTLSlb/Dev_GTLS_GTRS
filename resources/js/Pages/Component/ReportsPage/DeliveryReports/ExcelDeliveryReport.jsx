@@ -70,8 +70,16 @@ export default function ExcelDeliveryReport({
 
         // Identify the index of the date column
         const dateColumnIndexes = selectedColumns
-            .map((col, index) => (["Despatch Date", "Delivery Required DateTime", "Delivered DateTime"].includes(col) ? index : null))
-            .filter(index => index !== null);
+            .map((col, index) =>
+                [
+                    "Despatch Date",
+                    "Delivery Required DateTime",
+                    "Delivered DateTime",
+                ].includes(col)
+                    ? index
+                    : null
+            )
+            .filter((index) => index !== null);
 
         // Add data rows
         exportData.forEach((rowData) => {
@@ -120,7 +128,6 @@ export default function ExcelDeliveryReport({
             );
         });
     };
-
 
     // Navigation when clicking a consignment number
     const handleClick = (coindex) => {
@@ -295,6 +302,7 @@ export default function ExcelDeliveryReport({
             type: "text",
             readOnly: true,
             editor: false,
+            width: 110,
         },
         {
             data: "AccountNumber",
@@ -302,6 +310,7 @@ export default function ExcelDeliveryReport({
             type: "text",
             readOnly: true,
             editor: false,
+            width: 110,
         },
         {
             data: "DespatchDateTime",
@@ -309,6 +318,7 @@ export default function ExcelDeliveryReport({
             type: "date",
             readOnly: true,
             editor: false,
+            width: 110,
             renderer: dateRenderer,
         },
         {
@@ -317,6 +327,7 @@ export default function ExcelDeliveryReport({
             type: "text",
             readOnly: true,
             editor: false,
+            width: 110,
         },
         {
             data: "SenderReference",
@@ -324,6 +335,7 @@ export default function ExcelDeliveryReport({
             type: "text",
             readOnly: true,
             editor: false,
+            width: 110,
         },
         {
             data: "SenderState",
@@ -331,6 +343,7 @@ export default function ExcelDeliveryReport({
             type: "text",
             readOnly: true,
             editor: false,
+            width: 50,
         },
         {
             data: "SenderZone",
@@ -338,6 +351,7 @@ export default function ExcelDeliveryReport({
             type: "text",
             readOnly: true,
             editor: false,
+            width: 50,
         },
         {
             data: "ReceiverName",
@@ -345,6 +359,7 @@ export default function ExcelDeliveryReport({
             type: "text",
             readOnly: true,
             editor: false,
+            width: 110,
         },
         {
             data: "ReceiverReference",
@@ -352,6 +367,7 @@ export default function ExcelDeliveryReport({
             type: "text",
             readOnly: true,
             editor: false,
+            width: 110,
         },
         {
             data: "ReceiverState",
@@ -359,6 +375,7 @@ export default function ExcelDeliveryReport({
             type: "text",
             readOnly: true,
             editor: false,
+            width: 50,
         },
         {
             data: "ReceiverZone",
@@ -366,6 +383,7 @@ export default function ExcelDeliveryReport({
             type: "text",
             readOnly: true,
             editor: false,
+            width: 50,
         },
         {
             data: "ConsignmentStatus",
@@ -373,6 +391,7 @@ export default function ExcelDeliveryReport({
             type: "text",
             readOnly: true,
             editor: false,
+            width: 100,
         },
         {
             data: "DeliveryInstructions",
@@ -381,6 +400,7 @@ export default function ExcelDeliveryReport({
             readOnly: true,
             width: 400,
             editor: false,
+            width: 150,
         },
         {
             data: "DeliveryRequiredDateTime",
@@ -388,6 +408,7 @@ export default function ExcelDeliveryReport({
             type: "date",
             readOnly: true,
             editor: false,
+            width: 150,
             renderer: dateRenderer, // ✅ Applies the custom renderer
         },
         {
@@ -396,6 +417,7 @@ export default function ExcelDeliveryReport({
             type: "date",
             readOnly: true,
             editor: false,
+            width: 150,
             renderer: dateRenderer,
         },
         {
@@ -404,6 +426,7 @@ export default function ExcelDeliveryReport({
             readOnly: true,
             type: "checkbox",
             editor: false,
+            width: 50,
         },
         {
             data: "Comment",
@@ -420,6 +443,7 @@ export default function ExcelDeliveryReport({
             width: 400, // Set a reasonable column width
         },
     ];
+
 
     const [changedRows, setChangedRows] = useState([]); // Stores changed rows
 
@@ -536,10 +560,18 @@ export default function ExcelDeliveryReport({
     const clearAllFilters = () => {
         const hotInstance = hotTableRef.current?.hotInstance;
         if (hotInstance) {
-            const filtersPlugin = hotInstance.getPlugin("filters");
+            const filtersPlugin = hotInstance?.getPlugin("filters");
             filtersPlugin.clearConditions(); // Clears all filter conditions
             filtersPlugin.filter(); // Reapplies filters (removes them)
         }
+    };
+
+    
+    const applyDefaultFilter = (hot) => {
+        const hotInstance = hotTableRef.current?.hotInstance;
+        const filters = hotInstance.getPlugin("filters");
+        filters.addCondition(15, "eq", [false], "conjunction"); // Assuming POD is column index 2
+        filters.filter();
     };
 
     return (
@@ -624,6 +656,19 @@ export default function ExcelDeliveryReport({
                         fixedColumnsStart={1}
                         width="100%"
                         height={"600px"}
+                        contextMenu={[
+                            "hidden_columns_show",
+                            "hidden_columns_hide",
+                        ]}
+                        hiddenColumns={{
+                            columns: [3,4,5,6,8,11,12,13],
+                            indicators: true,
+                        }}
+                        afterInit={(hot) => {
+                            console.log(hot)
+                            // Apply default filter for POD column
+                          setTimeout(() => applyDefaultFilter(hot), 10);
+                        }}
                         manualColumnMove={true}
                         licenseKey="non-commercial-and-evaluation"
                         rowHeaders={true}
