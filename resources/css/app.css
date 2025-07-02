@@ -29,8 +29,8 @@
   transform: translateX(100%);
 }
 
-.htDimmed{
-    text-align: left ;
+.htNumeric {
+    text-align: left !important;
 }
 
 .invalid-time {
