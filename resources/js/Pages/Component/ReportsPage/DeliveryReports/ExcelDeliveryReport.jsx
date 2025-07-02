@@ -10,10 +10,21 @@ import moment from "moment";
 import axios from "axios";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
-import { Button, Spinner } from "@nextui-org/react";
+import {
+    Button,
+    Dropdown,
+    DropdownItem,
+    DropdownMenu,
+    DropdownTrigger,
+    Spinner,
+} from "@nextui-org/react";
 import { EyeIcon } from "@heroicons/react/20/solid";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+
+export function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
 registerAllModules();
 
@@ -26,6 +37,8 @@ import {
     AlertToast,
 } from "@/permissions";
 import swal from "sweetalert";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { set } from "date-fns";
 
 export default function ExcelDeliveryReport({
     url,
@@ -38,6 +51,10 @@ export default function ExcelDeliveryReport({
     deliveryCommentsOptions,
 }) {
     const hotTableRef = useRef(null);
+    const [visibleColumns, setVisibleColumns] = useState(
+        new Set(["0", "1", "2", "7", "9", "10", "14", "15", "16"])
+    );
+    const [hiddenColumns, setHiddenColumns] = useState([3, 4, 5, 6, 8, 11, 12, 13]);
     const [isLoading, setIsLoading] = useState(false);
 
     const buttonClickCallback = async () => {
@@ -462,7 +479,6 @@ export default function ExcelDeliveryReport({
         },
     ];
 
-
     const [changedRows, setChangedRows] = useState([]); // Stores changed rows
 
     const handleAfterChange = (changes, source) => {
@@ -584,13 +600,40 @@ export default function ExcelDeliveryReport({
         }
     };
 
-    
-    const applyDefaultFilter = (hot) => {
+    const applyDefaultFilter = () => {
         const hotInstance = hotTableRef.current?.hotInstance;
         const filters = hotInstance.getPlugin("filters");
         filters.addCondition(15, "eq", [false], "conjunction"); // Assuming POD is column index 2
         filters.filter();
     };
+
+    const applyHiddenColumns = () => {
+        const hotInstance = hotTableRef.current?.hotInstance;
+        if (!hotInstance) return;
+
+        const totalColumns = hotInstance.countCols();
+        const hiddenPlugin = hotInstance.getPlugin("hiddenColumns");
+
+        const visibleIndexes = Array.from(visibleColumns).map(Number);
+        const columnsToHide = [];
+
+        for (let i = 0; i < totalColumns; i++) {
+            if (!visibleIndexes.includes(i)) {
+                columnsToHide.push(i);
+            }
+        }
+
+        hiddenPlugin.hideColumns(columnsToHide);
+        setHiddenColumns(columnsToHide);
+        hiddenPlugin.showColumns(visibleIndexes);
+        hotInstance.render();
+    };
+
+    useEffect(() => {
+        applyHiddenColumns();
+    }, [visibleColumns,tableData]);
+
+    console.log(Array.from(visibleColumns));
 
     return (
         <div className="min-h-full px-8">
@@ -641,6 +684,38 @@ export default function ExcelDeliveryReport({
                 </ul>
             </div>
             <div className="my-1 flex w-full items-center gap-3 justify-end">
+                <Dropdown>
+                    <DropdownTrigger className="hidden xl:flex">
+                        <Button
+                            endContent={
+                                <ChevronDownIcon className="text-small " />
+                            }
+                            size="sm"
+                            variant="flat"
+                        >
+                            Columns
+                        </Button>
+                    </DropdownTrigger>
+                    <DropdownMenu
+                        disallowEmptySelection
+                        aria-label="Table Columns"
+                        closeOnSelect={false}
+                        selectedKeys={visibleColumns}
+                        selectionMode="multiple"
+                        onSelectionChange={(keys) => {
+                            setVisibleColumns(new Set(keys));
+                        }}
+                    >
+                        {hotColumns.map((column, index) => (
+                            <DropdownItem
+                                key={String(index)}
+                                className="capitalize"
+                            >
+                                {capitalize(column.title)}
+                            </DropdownItem>
+                        ))}
+                    </DropdownMenu>
+                </Dropdown>
                 <Button
                     className="bg-dark text-white px-4 py-2"
                     onClick={() => SaveComments()}
@@ -679,13 +754,13 @@ export default function ExcelDeliveryReport({
                             "hidden_columns_hide",
                         ]}
                         hiddenColumns={{
-                            columns: [3,4,5,6,8,11,12,13],
+                            // columns: [3, 4, 5, 6, 8, 11, 12, 13],
+                            columns: hiddenColumns,
                             indicators: true,
                         }}
-                        afterInit={(hot) => {
-                            console.log(hot)
+                        afterInit={() => {
                             // Apply default filter for POD column
-                          setTimeout(() => applyDefaultFilter(hot), 10);
+                            setTimeout(() => applyDefaultFilter(), 10);
                         }}
                         manualColumnMove={true}
                         licenseKey="non-commercial-and-evaluation"
