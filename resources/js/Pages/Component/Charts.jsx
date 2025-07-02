@@ -2300,8 +2300,11 @@ export default function charts({
                     Authorization: `Bearer ${AToken}`,
                 },
             });
-            setDifotData(
-                res.data.map((item) => {
+           if(res.data == "" || res.data == []){
+            setDifotData([]);
+           }else{
+                setDifotData(
+                res?.data?.map((item) => {
                     return {
                         ...item,
                         Spaces: item?.Spaces?.toString(),
@@ -2310,6 +2313,7 @@ export default function charts({
                     };
                 }) || []
             );
+           }
         } catch (err) {
             if (err.response && err.response.status === 401) {
                 // Handle 401 error using SweetAlert

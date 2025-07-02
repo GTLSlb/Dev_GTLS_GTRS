@@ -302,7 +302,7 @@ export default function DifotReport({
         },
         {
             name: "SenderName",
-            header: "Sender Name",
+            header: "Name",
             type: "string",
             headerAlign: "center",
             textAlign: "start",
@@ -312,7 +312,7 @@ export default function DifotReport({
         },
         {
             name: "SenderSuburb",
-            header: "Sender Suburb",
+            header: "Suburb",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
@@ -322,7 +322,7 @@ export default function DifotReport({
         },
         {
             name: "SenderState",
-            header: "Sender State",
+            header: "State",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
@@ -602,7 +602,7 @@ export default function DifotReport({
         },
         {
             name: "OnTime",
-            header: "OnTime",
+            header: "On Time",
             headerAlign: "center",
             textAlign: "center",
             defaultFlex: 1,
@@ -634,29 +634,17 @@ export default function DifotReport({
             },
         },
         {
-            name: "GtlsError",
-            header: "GTLS Error",
+            name: "DelayReason",
+            header: "Delay Reason",
+            type: "string",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: false,
-                wrapMultiple: false,
-                dataSource: GtlsErrorOptions,
-            },
+            filterEditor: StringFilter,
             render: ({ value }) => {
-                return value?.toLowerCase() == "yes" ? (
-                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                return (
+                    <span className="flex justify-start items-left text-left">
                         {value}
-                    </span>
-                ) : value?.toLowerCase() == "no" ? (
-                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        {value}
-                    </span>
-                ) : (
-                    <span className="inline-flex items-center px-3 py-0.5 text-sm">
-                        {value ? value : ""}
                     </span>
                 );
             },
@@ -690,17 +678,29 @@ export default function DifotReport({
             },
         },
         {
-            name: "DelayReason",
-            header: "Delay Reason",
-            type: "string",
+            name: "GtlsError",
+            header: "GTLS Error",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
-            filterEditor: StringFilter,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: false,
+                wrapMultiple: false,
+                dataSource: GtlsErrorOptions,
+            },
             render: ({ value }) => {
-                return (
-                    <span className="flex justify-start items-left text-left">
+                return value?.toLowerCase() == "yes" ? (
+                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
                         {value}
+                    </span>
+                ) : value?.toLowerCase() == "no" ? (
+                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                        {value}
+                    </span>
+                ) : (
+                    <span className="inline-flex items-center px-3 py-0.5 text-sm">
+                        {value ? value : ""}
                     </span>
                 );
             },
