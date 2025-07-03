@@ -2253,7 +2253,7 @@ export default function charts({
     const [dailyReportData, setDailyReportData] = useState(deliveryReportData);
     const fetchDeliveryReport = async (setCellLoading) => {
         try {
-            const res = await axios.get(`${url}Delivery`, {
+            const res = await axios.get(`${url}DeliveryReport`, {
                 headers: {
                     UserId: currentUser.UserId,
                     Authorization: `Bearer ${AToken}`,
