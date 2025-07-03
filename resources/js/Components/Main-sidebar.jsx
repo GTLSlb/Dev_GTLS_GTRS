@@ -50,53 +50,7 @@ export default function MainSidebar({
         setIsModalOpen(isModalCurrentlyOpen);
         setMobileMenuOpen(false);
     };
-    const msalConfig = {
-        auth: {
-            clientId: "05f70999-6ca7-4ee8-ac70-f2d136c50288",
-            authority:
-                "https://login.microsoftonline.com/647bf8f1-fc82-468e-b769-65fd9dacd442",
-            redirectUri: window.Laravel.azureCallback,
-        },
-        cache: {
-            cacheLocation: "localStorage",
-            storeAuthStateInCookie: true, // Set this to true if dealing with IE11 or issues with sessionStorage
-        },
-    };
-    const pca = new PublicClientApplication(msalConfig);
-    const handleLogout = async () => {
-        const credentials = {
-            URL: window.Laravel.gtamUrl,
-            CurrentUser: currentUser,
-            SessionDomain: window.Laravel.appDomain,
-        };
 
-        await pca.initialize();
-
-        axios
-            .post("/composerLogout", credentials)
-            .then((response) => {
-                if (response.status === 200 && response.data.status === 200) {
-
-                    const isMicrosoftLogin = Cookies.get(
-                        "msal.isMicrosoftLogin"
-                    );
-                    clearMSALLocalStorage();
-                    Cookies.remove('access_token');
-
-                    if (isMicrosoftLogin == "true") {
-                        window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=${window.Laravel.appUrl}/login`;
-                    } else {
-                        window.location.href = `${window.Laravel.appUrl}/login`;
-                    }
-                    localStorage.removeItem("current");
-                    setToken(null);
-                    setCurrentUser(null);
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    };
     const currentAppId = window.Laravel.appId;
     function moveToHead(array, id) {
         // Find the index of the object with the matching AppId

@@ -10,19 +10,21 @@ import {
     canViewIncidentDetails,
 } from "./permissions";
 import { Link } from "react-router-dom";
+
 const msalConfig = {
     auth: {
-        clientId: "05f70999-6ca7-4ee8-ac70-f2d136c50288",
+        clientId: window.Laravel.azureClientId,
         authority:
-            "https://login.microsoftonline.com/647bf8f1-fc82-468e-b769-65fd9dacd442",
+            `https://login.microsoftonline.com/${window.Laravel.azureTenantId}`,
         redirectUri: window.Laravel.azureCallback,
+        failureRedirectUri: '/failed-login',
     },
     cache: {
         cacheLocation: "sessionStorage",
         storeAuthStateInCookie: true, // Set this to true if dealing with IE11 or issues with sessionStorage
     },
 };
-const pca = new PublicClientApplication(msalConfig);
+export const pca = new PublicClientApplication(msalConfig);
 
 export async function handleSessionExpiration() {
     const appUrl = window.Laravel.appUrl;

@@ -71,6 +71,7 @@ class RegisteredUserController extends Controller
 
                 // Check if json_decode returned a valid object
                 if ($user !== null && is_object($user)) {
+
                     // Handle based on TypeId
                     if ($user->TypeId == 1) { // Customer
                         return response()->json([
@@ -156,7 +157,6 @@ class RegisteredUserController extends Controller
     {
         $UserId=$id;
         $user = User::find($UserId);
-        //dd($user);
         if ($user) {
             if ($user->parent_id == null) {
                 $children = User::where('parent_id', $user->id)->pluck('user_id')->all();

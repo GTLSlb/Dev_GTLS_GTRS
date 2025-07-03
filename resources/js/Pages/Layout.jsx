@@ -190,7 +190,7 @@ export default function Sidebar() {
                                     path="/notFound"
                                     element={<NotFoundPage />}
                                 />
-                                <Route path="/logout" element={<Logout />} />
+                                <Route path="/logout" element={<Logout setCurrentUser={setCurrentUser} setToken={setToken} currentUser={currentUser}/>} />
                                 <Route path="/no-access" element ={<NoAccess />} />
                                 <Route path="/*" element={<NotFoundPage />} />
                             </Routes>
