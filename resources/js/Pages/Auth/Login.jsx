@@ -20,7 +20,7 @@ export default function Login() {
         <LoginPage
             appDomain={appDomain}
             googlekey={googleKey}
-            redirectURL="/"
+            redirectURL="/gtrs/"
             loginURL="/loginComp"
             gtamURl={gtamURl}
             pca={pca}

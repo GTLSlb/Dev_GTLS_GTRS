@@ -3,7 +3,7 @@ import Gtrs from "@/Pages/GTRS";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { Routes, Route } from "react-router-dom";
-import NotFoundPage from "./NotFoundPage";
+import NotFound from "./NotFoundPage";
 import Login from "./Auth/Login";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import { handleSessionExpiration } from "@/CommonFunctions";
@@ -188,11 +188,11 @@ export default function Sidebar() {
                                 <Route path="/login" element={<Login />} />
                                 <Route
                                     path="/notFound"
-                                    element={<NotFoundPage />}
+                                    element={<NotFound />}
                                 />
                                 <Route path="/logout" element={<Logout setCurrentUser={setCurrentUser} setToken={setToken} currentUser={currentUser}/>} />
                                 <Route path="/no-access" element ={<NoAccess />} />
-                                <Route path="/*" element={<NotFoundPage />} />
+                                <Route path="/*" element={<NotFound />} />
                             </Routes>
                         </div>
                     ) : (

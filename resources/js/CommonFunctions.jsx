@@ -352,6 +352,8 @@ export function navigateToFirstAllowedPage({
             }
         }
     });
+console.log(items)
+console.log(window.location.pathname)
 
     // Navigate to the page specified in the browser URL
     if(window.location.pathname != "/gtrs/" && window.location.pathname != "/gtrs" ){
