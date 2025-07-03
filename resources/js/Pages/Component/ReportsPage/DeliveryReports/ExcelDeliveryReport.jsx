@@ -1,6 +1,8 @@
+import { registerAllModules } from "handsontable/registry";
+registerAllModules();
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { HotTable } from "@handsontable/react-wrapper";
-import { registerAllModules } from "handsontable/registry";
+
 // import "handsontable/styles/handsontable.css";
 // import "handsontable/styles/ht-theme-main.css";
 import "handsontable/styles/handsontable.min.css";
@@ -21,13 +23,6 @@ import {
 import { EyeIcon } from "@heroicons/react/20/solid";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-
-export function capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-registerAllModules();
-
 import {
     canAddDeliveryReportComment,
     canEditDeliveryReportComment,
@@ -39,6 +34,12 @@ import {
 import swal from "sweetalert";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { set } from "date-fns";
+
+
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 
 export default function ExcelDeliveryReport({
     url,
@@ -567,6 +568,42 @@ export default function ExcelDeliveryReport({
             });
     }
 
+    function CheckComments() {
+        setIsLoading(true);
+        axios
+            .post(`${url}Approve/Delivery/Comments`,[], {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            })
+            .then((res) => {
+                setChangedRows([]);
+                setIsLoading(false);
+                AlertToast("Saved successfully", 1);
+            })
+            .catch((err) => {
+                AlertToast("Something went wrong", 2);
+
+                if (err.response && err.response.status === 401) {
+                    // Handle 401 error using SweetAlert
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then(async function () {
+                        await handleSessionExpiration();
+                    });
+                } else {
+                    // Handle other errors
+                    console.log(err);
+                    setIsLoading(false);
+                }
+            });
+    }
+
     useEffect(() => {
         if (hotTableRef.current) {
             setTimeout(() => {
@@ -633,7 +670,7 @@ export default function ExcelDeliveryReport({
         applyHiddenColumns();
     }, [visibleColumns,tableData]);
 
-    console.log(Array.from(visibleColumns));
+    console.log(tableData);
 
     return (
         <div className="min-h-full px-8">
@@ -684,14 +721,31 @@ export default function ExcelDeliveryReport({
                 </ul>
             </div>
             <div className="my-1 flex w-full items-center gap-3 justify-end">
+                 <Button
+                    className="bg-dark text-white px-4 py-2"
+                    onClick={() => SaveComments()}
+                    isDisabled={changedRows.length === 0}
+                    size="sm"
+                >
+                    Save
+                </Button>
+                <Button
+                    className="bg-dark text-white px-4 py-2"
+                    onClick={() => CheckComments()}
+                    // isDisabled={changedRows.length === 0}
+                    size="sm"
+                >
+                    Check
+                </Button>
                 <Dropdown>
                     <DropdownTrigger className="hidden xl:flex">
                         <Button
                             endContent={
-                                <ChevronDownIcon className="text-small " />
+                                <ChevronDownIcon className="text-small w-3" />
                             }
                             size="sm"
                             variant="flat"
+                            className="bg-gray-800 text-white"
                         >
                             Columns
                         </Button>
@@ -716,14 +770,6 @@ export default function ExcelDeliveryReport({
                         ))}
                     </DropdownMenu>
                 </Dropdown>
-                <Button
-                    className="bg-dark text-white px-4 py-2"
-                    onClick={() => SaveComments()}
-                    isDisabled={changedRows.length === 0}
-                    size="sm"
-                >
-                    Save
-                </Button>
                 <Button
                     className="bg-dark text-white px-4 py-2"
                     size="sm"
