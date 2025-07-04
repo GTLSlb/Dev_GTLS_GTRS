@@ -1,6 +1,13 @@
 import { registerAllModules } from "handsontable/registry";
 registerAllModules();
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import Handsontable from "handsontable";
+import React, {
+    useState,
+    useEffect,
+    useMemo,
+    useRef,
+    useCallback,
+} from "react";
 import { HotTable } from "@handsontable/react-wrapper";
 
 // import "handsontable/styles/handsontable.css";
@@ -19,6 +26,7 @@ import {
     DropdownMenu,
     DropdownTrigger,
     Spinner,
+    useDisclosure,
 } from "@nextui-org/react";
 import { EyeIcon } from "@heroicons/react/20/solid";
 import { useNavigate } from "react-router-dom";
@@ -34,12 +42,11 @@ import {
 import swal from "sweetalert";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { set } from "date-fns";
-
+import CommentsModal from "./CommentsModal";
 
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
-
 
 export default function ExcelDeliveryReport({
     url,
@@ -51,11 +58,14 @@ export default function ExcelDeliveryReport({
     fetchDeliveryReport,
     deliveryCommentsOptions,
 }) {
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const hotTableRef = useRef(null);
     const [visibleColumns, setVisibleColumns] = useState(
-        new Set(["0", "1", "2", "7", "9", "10", "14", "15", "16"])
+        new Set(["0", "1", "2", "7", "9", "10", "14", "15", "16", "17"])
     );
-    const [hiddenColumns, setHiddenColumns] = useState([3, 4, 5, 6, 8, 11, 12, 13]);
+    const [hiddenColumns, setHiddenColumns] = useState([
+        3, 4, 5, 6, 8, 11, 12, 13,
+    ]);
     const [isLoading, setIsLoading] = useState(false);
 
     const buttonClickCallback = async () => {
@@ -82,7 +92,7 @@ export default function ExcelDeliveryReport({
         // Function to calculate row height for multiline content
         const calculateRowHeight = (cellValue) => {
             if (!cellValue) return 20;
-            const lines = cellValue.split("\n").length;
+            const lines = cellValue.split("\n")?.length;
             return Math.max(20, lines * 25);
         };
 
@@ -158,9 +168,9 @@ export default function ExcelDeliveryReport({
     const [commentsData, setCommentsData] = useState(null);
     const [consId, setConsId] = useState(null);
     const handleViewComments = (data) => {
-        setCommentsData(data?.Comments);
+        setCommentsData(data);
         setConsId(data?.ConsignmentID);
-        setIsViewModalOpen(true);
+        onOpen();
     };
     const handleViewClose = () => {
         setIsViewModalOpen(false);
@@ -243,242 +253,273 @@ export default function ExcelDeliveryReport({
     };
 
     // 📌 Custom Button Renderer
-    const buttonRenderer = (
-        instance,
-        td,
-        row,
-        col,
-        prop,
-        value,
-        cellProperties
-    ) => {
-        td.innerHTML = ""; // Clear existing content
+    // const buttonRenderer = (
+    //     instance,
+    //     td,
+    //     row,
+    //     col,
+    //     prop,
+    //     value,
+    //     cellProperties
+    // ) => {
+    //     td.innerHTML = ""; // Clear existing content
 
-        // Create container div for buttons
-        const buttonContainer = document.createElement("div");
-        buttonContainer.className = "flex space-x-2 w-[15rem]"; // Tailwind for spacing
+    //     // Create container div for buttons
+    //     const buttonContainer = document.createElement("div");
+    //     buttonContainer.className = "flex space-x-2 w-[15rem]"; // Tailwind for spacing
 
-        // 🔍 View Button
-        const viewButton = document.createElement("button");
-        viewButton.className =
-            "flex items-center gap-2 px-3 py-1 bg-blue-500 text-white rounded shadow-md hover:bg-blue-600 transition";
-        viewButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25M8.25 9V5.25M15.75 5.25V4.5a2.25 2.25 0 00-4.5 0v.75M8.25 5.25V4.5a2.25 2.25 0 00-4.5 0v.75"></path>
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9h-7.5a4.5 4.5 0 00-4.5 4.5v4.5a2.25 2.25 0 002.25 2.25h11.25a2.25 2.25 0 002.25-2.25v-4.5a4.5 4.5 0 00-4.5-4.5z"></path>
-        </svg> View`;
-        viewButton.onclick = () => {
+    //     // 🔍 View Button
+    //     const viewButton = document.createElement("button");
+    //     viewButton.className =
+    //         "flex items-center gap-2 px-3 py-1 bg-blue-500 text-white rounded shadow-md hover:bg-blue-600 transition";
+    //     viewButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+    //     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25M8.25 9V5.25M15.75 5.25V4.5a2.25 2.25 0 00-4.5 0v.75M8.25 5.25V4.5a2.25 2.25 0 00-4.5 0v.75"></path>
+    //     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9h-7.5a4.5 4.5 0 00-4.5 4.5v4.5a2.25 2.25 0 002.25 2.25h11.25a2.25 2.25 0 002.25-2.25v-4.5a4.5 4.5 0 00-4.5-4.5z"></path>
+    //     </svg> View`;
+    //     viewButton.onclick = () => {
+    //         const rowData = instance.getSourceDataAtRow(row);
+    //         handleButtonClick(rowData);
+    //     };
+
+    //     // 🗑️ Delete Button
+    //     const deleteButton = document.createElement("button");
+    //     deleteButton.className =
+    //         "flex items-center gap-2 px-3 py-1 bg-red-500 text-white rounded shadow-md hover:bg-red-600 transition";
+    //     deleteButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+    //     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
+    //     </svg> Delete`;
+    //     deleteButton.onclick = () => {
+    //         const rowData = instance.getSourceDataAtRow(row);
+    //         alert(`Deleting consignment: ${rowData.ConsignmentNo}`);
+    //         // TODO: Implement actual delete logic
+    //     };
+
+    //     // Append buttons to container
+    //     buttonContainer.appendChild(viewButton);
+    //     buttonContainer.appendChild(deleteButton);
+
+    //     // Append container to cell
+    //     td.appendChild(buttonContainer);
+
+    //     return td;
+    // };
+
+    const buttonRenderer = useCallback(
+        (instance, td, row, col, prop, value, cellProperties) => {
+            Handsontable.dom.empty(td);
             const rowData = instance.getSourceDataAtRow(row);
-            handleButtonClick(rowData);
-        };
 
-        // 🗑️ Delete Button
-        const deleteButton = document.createElement("button");
-        deleteButton.className =
-            "flex items-center gap-2 px-3 py-1 bg-red-500 text-white rounded shadow-md hover:bg-red-600 transition";
-        deleteButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
-        </svg> Delete`;
-        deleteButton.onclick = () => {
-            const rowData = instance.getSourceDataAtRow(row);
-            alert(`Deleting consignment: ${rowData.ConsignmentNo}`);
-            // TODO: Implement actual delete logic
-        };
+            // ✅ Only render button if there are approved comments
+            if (rowData?.ApprovedComments?.length > 0) {
+                const button = document.createElement("button");
+                button.textContent = "View Comments";
 
-        // Append buttons to container
-        buttonContainer.appendChild(viewButton);
-        buttonContainer.appendChild(deleteButton);
+                button.className = `
+                px-2 py-1
+                text-sm
+                bg-blue-500
+                text-white
+                rounded
+                hover:bg-blue-600
+                focus:outline-none
+                transition
+            `;
 
-        // Append container to cell
-        td.appendChild(buttonContainer);
+                button.addEventListener("click", () => {
+                    handleViewComments(rowData);
+                });
 
+                td.style.textAlign = "center";
+                td.appendChild(button);
+            }
+
+            return td;
+        },
+        []
+    );
+
+    const dateRenderer = useCallback((instance, td, row, col, prop, value) => {
+        td.innerText = value ? moment(value).format("DD/MM/YYYY hh:mm A") : "";
+        td.classList.add("htLeft");
         return td;
-    };
+    }, []);
 
-    const dateRenderer = (
-        instance,
-        td,
-        row,
-        col,
-        prop,
-        value,
-        cellProperties
-    ) => {
-        // If the cell has a value, format it
-        if (value) {
-            td.innerText = moment(value).format("DD/MM/YYYY hh:mm A"); // Change format here
-        } else {
-            td.innerText = ""; // If no value, keep it empty
-        }
-
-        td.classList.add("htLeft"); // Align text to the right
-        return td;
-    };
-    const hotColumns = [
-        {
-            data: "ConsignmentNo",
-            title: "Consignment Number",
-            type: "text",
-            readOnly: true,
-            editor: false,
-            width: 110,
-            headerClassName: "htLeft",
-        },
-        {
-            data: "AccountNumber",
-            title: "Account Number",
-            type: "text",
-            readOnly: true,
-            headerTooltips: true,
-            editor: false,
-            width: 110,
-            headerClassName: "htLeft",
-        },
-        {
-            data: "DespatchDateTime",
-            title: "Despatch Date",
-            type: "date",
-            readOnly: true,
-            editor: false,
-            width: 110,
-            headerClassName: "htLeft",
-            renderer: dateRenderer,
-        },
-        {
-            data: "SenderName",
-            title: "Sender Name",
-            type: "text",
-            readOnly: true,
-            editor: false,
-            width: 110,
-            headerClassName: "htLeft",
-        },
-        {
-            data: "SenderReference",
-            title: "Sender Reference",
-            type: "text",
-            readOnly: true,
-            editor: false,
-            headerClassName: "htLeft",
-            width: 110,
-        },
-        {
-            data: "SenderState",
-            title: "Sender State",
-            type: "text",
-            readOnly: true,
-            headerClassName: "htLeft",
-            editor: false,
-            width: 50,
-        },
-        {
-            data: "SenderZone",
-            title: "Sender Zone",
-            type: "text",
-            readOnly: true,
-            editor: false,
-            headerClassName: "htLeft",
-            width: 50,
-        },
-        {
-            data: "ReceiverName",
-            title: "Receiver Name",
-            type: "text",
-            readOnly: true,
-            headerClassName: "htLeft",
-            editor: false,
-            width: 110,
-        },
-        {
-            data: "ReceiverReference",
-            title: "Receiver Reference",
-            type: "text",
-            readOnly: true,
-            headerClassName: "htLeft",
-            editor: false,
-            width: 110,
-        },
-        {
-            data: "ReceiverState",
-            title: "Receiver State",
-            type: "text",
-            headerClassName: "htLeft",
-            readOnly: true,
-            editor: false,
-            width: 50,
-        },
-        {
-            data: "ReceiverZone",
-            title: "Receiver Zone",
-            type: "text",
-            readOnly: true,
-            headerClassName: "htLeft",
-            editor: false,
-            width: 50,
-        },
-        {
-            data: "ConsignmentStatus",
-            title: "Consignment Status",
-            type: "text",
-            readOnly: true,
-            headerClassName: "htLeft",
-            editor: false,
-            width: 100,
-        },
-        {
-            data: "DeliveryInstructions",
-            title: "Special Instructions",
-            type: "text",
-            readOnly: true,
-            headerClassName: "htLeft",
-            width: 400,
-            editor: false,
-            width: 150,
-        },
-        {
-            data: "DeliveryRequiredDateTime",
-            title: "Delivery Required DateTime",
-            type: "date",
-            readOnly: true,
-            headerClassName: "htLeft",
-            editor: false,
-            width: 150,
-            renderer: dateRenderer, // ✅ Applies the custom renderer
-        },
-        {
-            data: "DeliveredDateTime",
-            title: "Delivered DateTime",
-            type: "date",
-            readOnly: true,
-            editor: false,
-            headerClassName: "htLeft",
-            width: 150,
-            renderer: dateRenderer,
-        },
-        {
-            data: "POD",
-            title: "POD Avl",
-            headerClassName: "htLeft",
-            readOnly: true,
-            type: "checkbox",
-            editor: false,
-            width: 50,
-        },
-        {
-            data: "Comment",
-            title: "Comments",
-            headerClassName: "htLeft",
-            type: "autocomplete",
-            source:
-                deliveryCommentsOptions?.length > 0
-                    ? deliveryCommentsOptions
-                          .filter((item) => item.CommentStatus === 1)
-                          .map((item) => item.Comment)
-                    : ["Loading..."],
-            strict: false,
-            wordWrap: true, // ✅ Enable text wrapping
-            width: 400, // Set a reasonable column width
-        },
-    ];
+    const hotColumns = useMemo(
+        () => [
+            {
+                data: "ConsignmentNo",
+                title: "Consignment Number",
+                type: "text",
+                readOnly: true,
+                editor: false,
+                width: 110,
+                headerClassName: "htLeft",
+            },
+            {
+                data: "AccountNumber",
+                title: "Account Number",
+                type: "text",
+                readOnly: true,
+                headerTooltips: true,
+                editor: false,
+                width: 110,
+                headerClassName: "htLeft",
+            },
+            {
+                data: "DespatchDateTime",
+                title: "Despatch Date",
+                type: "date",
+                readOnly: true,
+                editor: false,
+                width: 110,
+                headerClassName: "htLeft",
+                renderer: dateRenderer,
+            },
+            {
+                data: "SenderName",
+                title: "Sender Name",
+                type: "text",
+                readOnly: true,
+                editor: false,
+                width: 110,
+                headerClassName: "htLeft",
+            },
+            {
+                data: "SenderReference",
+                title: "Sender Reference",
+                type: "text",
+                readOnly: true,
+                editor: false,
+                headerClassName: "htLeft",
+                width: 110,
+            },
+            {
+                data: "SenderState",
+                title: "Sender State",
+                type: "text",
+                readOnly: true,
+                headerClassName: "htLeft",
+                editor: false,
+                width: 50,
+            },
+            {
+                data: "SenderZone",
+                title: "Sender Zone",
+                type: "text",
+                readOnly: true,
+                editor: false,
+                headerClassName: "htLeft",
+                width: 50,
+            },
+            {
+                data: "ReceiverName",
+                title: "Receiver Name",
+                type: "text",
+                readOnly: true,
+                headerClassName: "htLeft",
+                editor: false,
+                width: 110,
+            },
+            {
+                data: "ReceiverReference",
+                title: "Receiver Reference",
+                type: "text",
+                readOnly: true,
+                headerClassName: "htLeft",
+                editor: false,
+                width: 110,
+            },
+            {
+                data: "ReceiverState",
+                title: "Receiver State",
+                type: "text",
+                headerClassName: "htLeft",
+                readOnly: true,
+                editor: false,
+                width: 50,
+            },
+            {
+                data: "ReceiverZone",
+                title: "Receiver Zone",
+                type: "text",
+                readOnly: true,
+                headerClassName: "htLeft",
+                editor: false,
+                width: 50,
+            },
+            {
+                data: "ConsignmentStatus",
+                title: "Consignment Status",
+                type: "text",
+                readOnly: true,
+                headerClassName: "htLeft",
+                editor: false,
+                width: 100,
+            },
+            {
+                data: "DeliveryInstructions",
+                title: "Special Instructions",
+                type: "text",
+                readOnly: true,
+                headerClassName: "htLeft",
+                width: 400,
+                editor: false,
+                width: 150,
+            },
+            {
+                data: "DeliveryRequiredDateTime",
+                title: "Delivery Required DateTime",
+                type: "date",
+                readOnly: true,
+                headerClassName: "htLeft",
+                editor: false,
+                width: 150,
+                renderer: dateRenderer, // ✅ Applies the custom renderer
+            },
+            {
+                data: "DeliveredDateTime",
+                title: "Delivered DateTime",
+                type: "date",
+                readOnly: true,
+                editor: false,
+                headerClassName: "htLeft",
+                width: 150,
+                renderer: dateRenderer,
+            },
+            {
+                data: "POD",
+                title: "POD Avl",
+                headerClassName: "htLeft",
+                readOnly: true,
+                type: "checkbox",
+                editor: false,
+                width: 50,
+            },
+            {
+                data: "Comment",
+                title: "Comments",
+                headerClassName: "htLeft",
+                type: "autocomplete",
+                source:
+                    deliveryCommentsOptions?.length > 0
+                        ? deliveryCommentsOptions
+                              .filter((item) => item.CommentStatus === 1)
+                              .map((item) => item.Comment)
+                        : ["Loading..."],
+                strict: false,
+                wordWrap: true, // ✅ Enable text wrapping
+                width: 400, // Set a reasonable column width
+            },
+            {
+                data: "ApprovedComments",
+                title: "Approved Comments",
+                headerClassName: "htLeft",
+                renderer: buttonRenderer,
+                width: 100, // Set a reasonable column width
+            },
+        ],
+        [deliveryCommentsOptions]
+    );
 
     const [changedRows, setChangedRows] = useState([]); // Stores changed rows
 
@@ -571,7 +612,7 @@ export default function ExcelDeliveryReport({
     function CheckComments() {
         setIsLoading(true);
         axios
-            .post(`${url}Approve/Delivery/Comments`,[], {
+            .post(`${url}Approve/Delivery/Comments`, [], {
                 headers: {
                     UserId: currentUser.UserId,
                     Authorization: `Bearer ${AToken}`,
@@ -604,13 +645,13 @@ export default function ExcelDeliveryReport({
             });
     }
 
-    useEffect(() => {
-        if (hotTableRef.current) {
-            setTimeout(() => {
-                hotTableRef.current.hotInstance.render();
-            }, 100);
-        }
-    }, []);
+    // useEffect(() => {
+    //     if (hotTableRef.current) {
+    //         setTimeout(() => {
+    //             hotTableRef.current.hotInstance.render();
+    //         }, 100);
+    //     }
+    // }, []);
     const handleSaveShortcut = (event) => {
         if (event.ctrlKey && event.key === "s") {
             event.preventDefault(); // ✅ Prevent browser's default "Save Page" action
@@ -649,28 +690,38 @@ export default function ExcelDeliveryReport({
         if (!hotInstance) return;
 
         const totalColumns = hotInstance.countCols();
-        const hiddenPlugin = hotInstance.getPlugin("hiddenColumns");
-
         const visibleIndexes = Array.from(visibleColumns).map(Number);
-        const columnsToHide = [];
 
+        const newColumnsToHide = [];
         for (let i = 0; i < totalColumns; i++) {
             if (!visibleIndexes.includes(i)) {
-                columnsToHide.push(i);
+                newColumnsToHide.push(i);
             }
         }
 
-        hiddenPlugin.hideColumns(columnsToHide);
-        setHiddenColumns(columnsToHide);
-        hiddenPlugin.showColumns(visibleIndexes);
-        hotInstance.render();
+        const isSame =
+            JSON.stringify(hiddenColumns) === JSON.stringify(newColumnsToHide);
+
+        // 🧠 Avoid updating state and rerendering if nothing actually changed
+        if (!isSame) {
+            setHiddenColumns(newColumnsToHide);
+
+            const hiddenPlugin = hotInstance.getPlugin("hiddenColumns");
+            hiddenPlugin.hideColumns(newColumnsToHide);
+            hiddenPlugin.showColumns(visibleIndexes);
+            hotInstance.render(); // only render when something changed
+        }
     };
 
     useEffect(() => {
         applyHiddenColumns();
-    }, [visibleColumns,tableData]);
+    }, [visibleColumns, tableData]);
 
-    console.log(tableData);
+
+    const colHeaders = useMemo(
+        () => hotColumns.map((col) => col.title),
+        [hotColumns]
+    );
 
     return (
         <div className="min-h-full px-8">
@@ -721,10 +772,10 @@ export default function ExcelDeliveryReport({
                 </ul>
             </div>
             <div className="my-1 flex w-full items-center gap-3 justify-end">
-                 <Button
+                <Button
                     className="bg-dark text-white px-4 py-2"
                     onClick={() => SaveComments()}
-                    isDisabled={changedRows.length === 0}
+                    isDisabled={changedRows?.length === 0}
                     size="sm"
                 >
                     Save
@@ -790,7 +841,7 @@ export default function ExcelDeliveryReport({
                     <HotTable
                         ref={hotTableRef}
                         data={tableData}
-                        colHeaders={hotColumns.map((col) => col.title)}
+                        colHeaders={colHeaders}
                         columns={hotColumns}
                         fixedColumnsStart={1}
                         width="100%"
@@ -833,12 +884,18 @@ export default function ExcelDeliveryReport({
                 </div>
             )}
 
-            {isViewModalOpen && (
+            {/* {isViewModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30">
                     <div className="bg-white p-6 rounded shadow-lg">
                         <h2 className="text-lg font-bold mb-4">Comments</h2>
                         <div className="mb-4">
-                            {commentsData || "No comments"}
+                            {commentsData?.map((comment, index) => (
+                                <div key={index}>
+                                    <p className="text-gray-800">
+                                        {comment?.Comment}
+                                    </p>
+                                </div>
+                            ))}
                         </div>
                         <button
                             className="px-4 py-2 bg-blue-500 text-white rounded"
@@ -848,7 +905,12 @@ export default function ExcelDeliveryReport({
                         </button>
                     </div>
                 </div>
-            )}
+            )} */}
+            <CommentsModal
+                isOpen={isOpen}
+                onOpenChange={onOpenChange}
+                commentsData={commentsData}
+            />
             {cellLoading && (
                 <div className="absolute inset-0 flex justify-center items-center">
                     <Spinner color="default" size="sm" />
