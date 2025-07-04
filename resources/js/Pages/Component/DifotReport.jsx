@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState, useRef } from "react";
+import { Fragment, useEffect, useState, useRef, useImperativeHandle, } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import moment from "moment";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
@@ -92,6 +92,133 @@ export default function DifotReport({
     const maxDateChangedAt = getMinMaxValue(difotData, "ChangedAt", 2);
     const gridRef = useRef(null);
 
+    const RDDTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
+        const [value, setValue] = useState(
+            filterValue ? filterValue.value : ""
+        );
+
+        const handleChange = (event) => {
+            const newValue = event.target.value + ":00";
+            setValue(newValue);
+            onChange({
+                name: "RddTime",
+                value: newValue,
+                operator: "eq",
+                emptyValue: "",
+                type: "string",
+            });
+        };
+
+        const handleClear = () => {
+            setValue("");
+            onChange({
+                name: "RddTime",
+                value: "",
+                operator: "eq",
+                emptyValue: "",
+                type: "string",
+            });
+        };
+
+        useEffect(() => {
+            setValue(filterValue ? filterValue.value : "");
+        }, [filterValue]);
+
+        useImperativeHandle(ref, () => ({
+            setValue: (newValue) => {
+                setValue(newValue);
+            },
+        }));
+
+        return (
+            <div className="flex gap-2 mx-1">
+                <input
+                    type="time"
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm"
+                    value={value.slice(0, 5)}
+                    onChange={handleChange}
+                />
+                <button onClick={handleClear}>
+                    <svg
+                        tabIndex="0"
+                        className="InovuaReactDataGrid__column-header__filter-settings-icon"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                    >
+                        <path
+                            fillRule="evenodd"
+                            d="M13.222 2H.778C.348 2 0 1.552 0 1s.348-1 .778-1h12.444c.43 0 .778.448.778 1s-.348 1-.778 1zM1.556 3.111l3.888 4.667v5.444c0 .43.349.778.778.778h1.556c.43 0 .778-.348.778-.778V7.778l3.888-4.667H1.556z"
+                        ></path>
+                    </svg>
+                </button>
+            </div>
+        );
+    });
+
+    const NewRDDTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
+        const [value, setValue] = useState(
+            filterValue ? filterValue.value : ""
+        );
+
+        const handleChange = (event) => {
+            const newValue = event.target.value + ":00";
+            setValue(newValue);
+            onChange({
+                name: "NewRddTime",
+                value: newValue,
+                operator: "eq",
+                emptyValue: "",
+                type: "string",
+            });
+        };
+
+        const handleClear = () => {
+            setValue("");
+            onChange({
+                name: "NewRddTime",
+                value: "",
+                operator: "eq",
+                emptyValue: "",
+                type: "string",
+            });
+        };
+
+        useEffect(() => {
+            setValue(filterValue ? filterValue.value : "");
+        }, [filterValue]);
+
+        useImperativeHandle(ref, () => ({
+            setValue: (newValue) => {
+                setValue(newValue);
+            },
+        }));
+
+        return (
+            <div className="flex gap-2 mx-1">
+                <input
+                    type="time"
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm"
+                    value={value.slice(0, 5)}
+                    onChange={handleChange}
+                />
+                <button onClick={handleClear}>
+                    <svg
+                        tabIndex="0"
+                        className="InovuaReactDataGrid__column-header__filter-settings-icon"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                    >
+                        <path
+                            fillRule="evenodd"
+                            d="M13.222 2H.778C.348 2 0 1.552 0 1s.348-1 .778-1h12.444c.43 0 .778.448.778 1s-.348 1-.778 1zM1.556 3.111l3.888 4.667v5.444c0 .43.349.778.778.778h1.556c.43 0 .778-.348.778-.778V7.778l3.888-4.667H1.556z"
+                        ></path>
+                    </svg>
+                </button>
+            </div>
+        );
+    });
     const handleDownloadExcel = () => {
         const jsonData = handleFilterTable(gridRef, difotData);
         const columnMapping = {
@@ -113,6 +240,8 @@ export default function DifotReport({
             RDD: "RDD",
             OldRdd: "Old RDD",
             NewRdd: "New RDD",
+            RddTime: "RDD Time",
+            NewRddTime: "New RDD Time",
             Reason: "Reason",
             ReasonDesc: "Reason Description",
             ChangedAt: "ChangedAt",
@@ -466,6 +595,13 @@ export default function DifotReport({
             },
         },
         {
+            name: "RddTime",
+            header: "RDD Time",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: RDDTimeFilter,
+        },
+        {
             name: "OldRdd",
             header: "Old RDD",
             headerAlign: "center",
@@ -516,6 +652,13 @@ export default function DifotReport({
                     </span>
                 );
             },
+        },
+        {
+            name: "NewRddTime",
+            header: "New RDD Time",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: NewRDDTimeFilter,
         },
         {
             name: "Reason",

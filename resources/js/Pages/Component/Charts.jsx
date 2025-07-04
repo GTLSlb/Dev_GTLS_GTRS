@@ -1612,6 +1612,20 @@ export default function charts({
             emptyValue: null,
         },
         {
+            name: "RddTime",
+            operator: "eq",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "NewRddTime",
+            operator: "eq",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
             name: "Reason",
             operator: "contains",
             type: "string",
