@@ -315,12 +315,12 @@ export default function ExcelDeliveryReport({
                 button.textContent = "View Comments";
 
                 button.className = `
-                px-2 py-1
+                px-4 py-1
                 text-sm
-                bg-blue-500
+                bg-gray-800
                 text-white
                 rounded
-                hover:bg-blue-600
+                hover:bg-gray-500
                 focus:outline-none
                 transition
             `;

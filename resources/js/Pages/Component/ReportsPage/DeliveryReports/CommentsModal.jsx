@@ -20,7 +20,7 @@ export default function CommentsModal({ commentsData, isOpen, onOpenChange }) {
                     {(onClose) => (
                         <>
                             <ModalHeader className="flex flex-col gap-1">
-                                Approved Comments for:{" "}
+                                Approved Comments for:
                                 {commentsData?.ConsignmentNo}
                             </ModalHeader>
                             <ModalBody>
@@ -31,7 +31,13 @@ export default function CommentsModal({ commentsData, isOpen, onOpenChange }) {
                                                 <Divider />
                                                 <p>{item.Comment}</p>
                                                 <p className="text-xs text-gray-400">
-                                                    {item.AddedAt ? moment(item.AddedAt).format("DD/MM/YYYY hh:mm A") : ""}
+                                                    {item.AddedAt
+                                                        ? moment(
+                                                              item.AddedAt
+                                                          ).format(
+                                                              "DD/MM/YYYY hh:mm A"
+                                                          )
+                                                        : ""}
                                                 </p>
                                             </div>
                                         )
