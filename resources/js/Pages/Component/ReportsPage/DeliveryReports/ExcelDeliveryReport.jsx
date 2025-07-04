@@ -515,6 +515,8 @@ export default function ExcelDeliveryReport({
                 title: "Approved Comments",
                 headerClassName: "htLeft",
                 renderer: buttonRenderer,
+                editor: false,
+                readOnly: true,
                 width: 100, // Set a reasonable column width
             },
         ],
