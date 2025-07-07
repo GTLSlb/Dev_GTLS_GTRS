@@ -52,10 +52,12 @@ export default function ExcelDeliveryReport({
     url,
     AToken,
     deliveryReportData,
+    commentsCheck,
     currentUser,
     setActiveIndexGTRS,
     setactiveCon,
-    fetchDeliveryReport,
+    fetchDifotReportData,
+    fetchDeliveryReportExcel,
     deliveryCommentsOptions,
 }) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -372,16 +374,16 @@ export default function ExcelDeliveryReport({
         () => [
             {
                 data: "ConsignmentNo",
-                title: "Consignment Number",
+                title: "Cons. No.",
                 type: "text",
                 readOnly: true,
                 editor: false,
-                width: 110,
+                width: 120,
                 headerClassName: "htLeft",
             },
             {
                 data: "AccountNumber",
-                title: "Account Number",
+                title: "Acc. No.",
                 type: "text",
                 readOnly: true,
                 headerTooltips: true,
@@ -424,7 +426,7 @@ export default function ExcelDeliveryReport({
                 readOnly: true,
                 headerClassName: "htLeft",
                 editor: false,
-                width: 50,
+                width: 110,
             },
             {
                 data: "SenderZone",
@@ -437,7 +439,7 @@ export default function ExcelDeliveryReport({
             },
             {
                 data: "ReceiverName",
-                title: "Receiver Name",
+                title: "Rec. Name",
                 type: "text",
                 readOnly: true,
                 headerClassName: "htLeft",
@@ -446,7 +448,7 @@ export default function ExcelDeliveryReport({
             },
             {
                 data: "ReceiverReference",
-                title: "Receiver Reference",
+                title: "Rec. Reference",
                 type: "text",
                 readOnly: true,
                 headerClassName: "htLeft",
@@ -455,25 +457,25 @@ export default function ExcelDeliveryReport({
             },
             {
                 data: "ReceiverState",
-                title: "Receiver State",
+                title: "Rec. State",
                 type: "text",
                 headerClassName: "htLeft",
                 readOnly: true,
                 editor: false,
-                width: 50,
+                width: 110,
             },
             {
                 data: "ReceiverZone",
-                title: "Receiver Zone",
+                title: "Rec. Zone",
                 type: "text",
                 readOnly: true,
                 headerClassName: "htLeft",
                 editor: false,
-                width: 50,
+                width: 110,
             },
             {
                 data: "ConsignmentStatus",
-                title: "Consignment Status",
+                title: "Cons. Status",
                 type: "text",
                 readOnly: true,
                 headerClassName: "htLeft",
@@ -502,22 +504,22 @@ export default function ExcelDeliveryReport({
             },
             {
                 data: "DeliveredDateTime",
-                title: "Delivered DateTime",
+                title: "Delivered Date Time",
                 type: "date",
                 readOnly: true,
                 editor: false,
                 headerClassName: "htLeft",
-                width: 150,
+                width: 170,
                 renderer: dateRenderer,
             },
             {
                 data: "POD",
-                title: "POD Avl",
+                title: "POD",
                 headerClassName: "htLeft",
                 readOnly: true,
                 type: "checkbox",
                 editor: false,
-                width: 50,
+                width: 110,
             },
             {
                 data: "Comment",
@@ -541,7 +543,7 @@ export default function ExcelDeliveryReport({
                 renderer: buttonRenderer,
                 editor: false,
                 readOnly: true,
-                width: 100, // Set a reasonable column width
+                width: 130, // Set a reasonable column width
             },
         ],
         [deliveryCommentsOptions]
@@ -611,6 +613,7 @@ export default function ExcelDeliveryReport({
             .then((res) => {
                 setChangedRows([]);
                 setIsLoading(false);
+                fetchDeliveryReportExcel();
                 AlertToast("Saved successfully", 1);
             })
             .catch((err) => {
@@ -647,6 +650,8 @@ export default function ExcelDeliveryReport({
             .then((res) => {
                 setChangedRows([]);
                 setIsLoading(false);
+                fetchDeliveryReportExcel();
+                fetchDifotReportData();
                 AlertToast("Saved successfully", 1);
             })
             .catch((err) => {
@@ -800,7 +805,7 @@ export default function ExcelDeliveryReport({
                 <Button
                     className="bg-dark text-white px-4 py-2"
                     onClick={() => SaveComments()}
-                    isDisabled={changedRows?.length === 0}
+                    isDisabled={changedRows?.length === 0 || isLoading}
                     size="sm"
                 >
                     Save
@@ -808,7 +813,7 @@ export default function ExcelDeliveryReport({
                 <Button
                     className="bg-dark text-white px-4 py-2"
                     onClick={() => CheckComments()}
-                    // isDisabled={changedRows.length === 0}
+                    isDisabled={isLoading || !commentsCheck}
                     size="sm"
                 >
                     Check

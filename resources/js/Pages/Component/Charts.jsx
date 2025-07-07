@@ -64,6 +64,7 @@ export default function charts({
     const current = new Date();
     const month = current.getMonth() + 1;
     const [KPIData, setKPIData] = useState([]);
+    const [commentsCheck, setCommentsCheck] = useState(false);
     const [NewKPIData, setNewKPIData] = useState([]);
     const [transitDays, setTransitDays] = useState();
     const [newTransitDays, setNewTransitDays] = useState();
@@ -2310,6 +2311,9 @@ export default function charts({
                     Authorization: `Bearer ${AToken}`,
                 },
             });
+            setCommentsCheck(res.data.some(
+                (item) => item.Comment && item.Comment.trim().length > 0
+            ))
             setExcelDailyReportData(res.data || []);
 
             // Check if setCellLoading exists before calling it
@@ -2350,20 +2354,20 @@ export default function charts({
                     Authorization: `Bearer ${AToken}`,
                 },
             });
-           if(res.data == "" || res.data == []){
-            setDifotData([]);
-           }else{
+            if (res.data == "" || res.data == []) {
+                setDifotData([]);
+            } else {
                 setDifotData(
-                res?.data?.map((item) => {
-                    return {
-                        ...item,
-                        Spaces: item?.Spaces?.toString(),
-                        Pallets: item?.Pallets?.toString(),
-                        Weight: item?.Weight?.toString(),
-                    };
-                }) || []
-            );
-           }
+                    res?.data?.map((item) => {
+                        return {
+                            ...item,
+                            Spaces: item?.Spaces?.toString(),
+                            Pallets: item?.Pallets?.toString(),
+                            Weight: item?.Weight?.toString(),
+                        };
+                    }) || []
+                );
+            }
         } catch (err) {
             if (err.response && err.response.status === 401) {
                 // Handle 401 error using SweetAlert
@@ -2831,9 +2835,11 @@ export default function charts({
             AToken={AToken}
             currentUser={currentUser}
             setactiveCon={setactiveCon}
+            commentsCheck={commentsCheck}
             setActiveIndexGTRS={setActiveIndexGTRS}
             deliveryReportData={excelDailyReportData}
-            fetchDeliveryReport={fetchDeliveryReport}
+            fetchDifotReportData={fetchDifotReportData}
+            fetchDeliveryReportExcel={fetchDeliveryReportExcel}
             deliveryCommentsOptions={deliveryReportComments}
         />,
         <DeliveryReportCommentsPage
