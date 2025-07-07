@@ -245,6 +245,7 @@ export default function DifotReport({
             Reason: "Reason",
             ReasonDesc: "Reason Description",
             ChangedAt: "ChangedAt",
+            DeliveryComment: "Delivery Comment",
             LTLFTL: "LTL/FTL",
             ActualDeliveyDate: "Actual Delivery Date",
             OnTime: "On Time",
@@ -698,6 +699,15 @@ export default function DifotReport({
                     ? ""
                     : moment(value).format("DD-MM-YYYY hh:mm A");
             },
+        },
+        {
+            name: "DeliveryComment",
+            header: "Delivery Comment",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
         },
         {
             name: "LTLFTL",

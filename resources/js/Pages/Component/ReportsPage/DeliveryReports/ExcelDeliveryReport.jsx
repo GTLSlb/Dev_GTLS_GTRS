@@ -110,26 +110,50 @@ export default function ExcelDeliveryReport({
             .filter((index) => index !== null);
 
         // Add data rows
+        const approvedCommentsIndex =
+            selectedColumns.indexOf("Approved Comments");
+
+
         exportData.forEach((rowData) => {
+            if (approvedCommentsIndex !== -1) {
+                const commentsArray = rowData[approvedCommentsIndex];
+                if (Array.isArray(commentsArray)) {
+            const formattedComments = commentsArray.map((commentObj) => {
+                const comment = commentObj.Comment || "";
+                const addedAt = commentObj.AddedAt
+                    ? new Date(commentObj.AddedAt).toLocaleString("en-GB", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                      })
+                    : "Unknown time";
+
+                return `${addedAt}: ${comment}`;
+            });
+
+                    rowData[approvedCommentsIndex] =
+                        formattedComments.join("\n");
+                }
+            }
+
             const row = worksheet.addRow(rowData);
 
-            let maxHeight = 15; // Default row height
+            let maxHeight = 15;
             row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
                 const cellValue = cell.value?.toString() || "";
 
-                // Apply text wrapping
                 cell.alignment = { wrapText: true, vertical: "top" };
 
-                // Format date fields
                 if (dateColumnIndexes.includes(colNumber - 1)) {
                     const parsedDate = new Date(cellValue);
                     if (!isNaN(parsedDate)) {
                         cell.value = parsedDate;
-                        cell.numFmt = "dd-mm-yyy hh:mm"; // Excel date format
+                        cell.numFmt = "dd-mm-yyy hh:mm";
                     }
                 }
 
-                // Calculate row height based on content
                 maxHeight = Math.max(maxHeight, calculateRowHeight(cellValue));
             });
 
@@ -718,7 +742,6 @@ export default function ExcelDeliveryReport({
     useEffect(() => {
         applyHiddenColumns();
     }, [visibleColumns, tableData]);
-
 
     const colHeaders = useMemo(
         () => hotColumns.map((col) => col.title),

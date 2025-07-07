@@ -2267,13 +2267,49 @@ export default function charts({
     const [dailyReportData, setDailyReportData] = useState(deliveryReportData);
     const fetchDeliveryReport = async (setCellLoading) => {
         try {
-            const res = await axios.get(`${url}DeliveryReport`, {
+            const res = await axios.get(`${url}Delivery`, {
                 headers: {
                     UserId: currentUser.UserId,
                     Authorization: `Bearer ${AToken}`,
                 },
             });
             setDailyReportData(res.data || []);
+
+            // Check if setCellLoading exists before calling it
+            if (typeof setCellLoading === "function") {
+                setCellLoading(null);
+            }
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again",
+                    type: "success",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                }).then(async function () {
+                    await handleSessionExpiration();
+                });
+            } else {
+                // Handle other errors
+                console.log(err);
+                // Check if setCellLoading exists before calling it
+                if (typeof setCellLoading === "function") {
+                    setCellLoading(null);
+                }
+            }
+        }
+    };
+
+    const fetchDeliveryReportExcel = async (setCellLoading) => {
+        try {
+            const res = await axios.get(`${url}DeliveryReport`, {
+                headers: {
+                    UserId: currentUser.UserId,
+                    Authorization: `Bearer ${AToken}`,
+                },
+            });
             setExcelDailyReportData(res.data || []);
 
             // Check if setCellLoading exists before calling it
@@ -2417,6 +2453,7 @@ export default function charts({
         if (currentUser) {
             fetchDeliveryReport();
             fetchDifotReportData();
+            fetchDeliveryReportExcel();
             fetchDeliveryReportCommentsData();
             fetchUtilizationReportData();
         }

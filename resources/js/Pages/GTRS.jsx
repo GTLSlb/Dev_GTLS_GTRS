@@ -74,9 +74,8 @@ export default function Gtrs({
     }, []);
 
     const fetchDeliveryReport = () => {
-        console.log("fetchDeliveryReport");
         axios
-            .get(`${gtrsUrl}DeliveryReport`, {
+            .get(`${gtrsUrl}Delivery`, {
                 headers: {
                     UserId: currentUser.UserId,
                     Authorization: `Bearer ${AToken}`,
