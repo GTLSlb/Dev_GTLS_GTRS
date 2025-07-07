@@ -29,6 +29,11 @@ export default function Utilization({
 }) {
     const hotTableRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [tableData, setTableData] = useState(utilizationData);
+
+    useEffect(() => {
+        setTableData(utilizationData);
+    }, [utilizationData]);
 
     const buttonClickCallback = async () => {
         const hot = hotTableRef.current?.hotInstance;
@@ -219,7 +224,7 @@ export default function Utilization({
         return moment.utc(diff * 60000).format("HH:mm:ss");
     };
 
-    const calculateNorthRockAllowTime = (timeIn, timeOut) => {
+    const calculateAllowTime = (timeIn, timeOut, allowance) => {
         const timeInMoment = moment(timeIn, "HH:mm");
         const timeOutMoment = moment(timeOut, "HH:mm");
 
@@ -235,11 +240,13 @@ export default function Utilization({
         let collectionTurnaroundTime = diff;
 
         // Apply the formula (adjusting for 45 minutes)
-        if (collectionTurnaroundTime <= 0) {
+        if (
+            collectionTurnaroundTime <= 0 ||
+            collectionTurnaroundTime <= allowance
+        ) {
             collectionTurnaroundTime = 0;
         } else {
-            collectionTurnaroundTime =
-                collectionTurnaroundTime - 0.03125 * 1440; // 0.03125 days = 45 minutes
+            collectionTurnaroundTime = collectionTurnaroundTime - allowance;
         }
 
         // Format the result (convert minutes to HH:mm format)
@@ -384,12 +391,16 @@ export default function Utilization({
             type: "text",
             readOnly: false, // Format as time //editable //10:00
             allowInvalid: true,
-            allowEmpty: true,
-            numericFormat: null,
+            fillHandle: "vertical",
             renderer: (instance, td, row, col, prop, value, cellProperties) => {
+                // TextRenderer(instance, td, row, col, prop, value, cellProperties);
                 td.classList.remove("htInvalid");
+                td.classList.add("htLeft"); // Ensure alignment is always applied
+
+                // Step 3: Apply your custom formatting and validation display
                 if (value != "" && value != null && value != undefined) {
                     if (timeValidatorRegexp.test(value)) {
+                        // If value is valid and needs formatting, apply it
                         const formattedTime = value.replace(
                             timeValidatorRegexp,
                             (match, hour, minute, second) => {
@@ -403,14 +414,16 @@ export default function Utilization({
                                 return `${hours}:${minutes}:${seconds}`;
                             }
                         );
-                        td.innerText = formattedTime;
+                        td.innerText = formattedTime; // Overwrite with formatted time
                     } else {
+                        // If value is not valid according to regex
                         td.classList.add("htInvalid");
                     }
                 } else {
-                    td.innerText = value;
+                    // If value is explicitly null, undefined, or empty string,
+                    td.innerText = ""; // TextRenderer usually handles this.
                 }
-                td.classList.add("htLeft");
+
                 return td;
             },
         },
@@ -464,9 +477,9 @@ export default function Utilization({
                     row,
                     instance.propToCol("PickupTimeOut")
                 );
-
+                const hasValidValues = timeIn != null && timeOut != null && timeIn != "" && timeOut != "" && timeIn != undefined && timeOut != undefined;
                 // Use the reusable function to calculate the time difference
-                const formattedDiff = calculateTimeDifference(timeIn, timeOut);
+                const formattedDiff = hasValidValues ? calculateTimeDifference(timeIn, timeOut) : '';
 
                 td.innerText = formattedDiff; // Set the result into the table cell
                 td.classList.add("htLeft"); // Align text to the left
@@ -475,30 +488,27 @@ export default function Utilization({
         },
         {
             data: "PickupAllowTime",
-            title: "North Rock Allow Time (Min)", //calculate based on time in and time out and allowed time
+            title: "North Rock Allow Time (45Min)", //calculate based on time in and time out and allowed time
             type: "text",
             readOnly: true,
-            // renderer: (instance, td, row, col, prop, value, cellProperties) => {
-            //     const timeIn = instance.getDataAtCell(
-            //         row,
-            //         instance.propToCol("PickupTimeIn")
-            //     );
-            //     const timeOut = instance.getDataAtCell(
-            //         row,
-            //         instance.propToCol("PickupTimeOut")
-            //     );
-            //     // If TimeIn or TimeOut is missing
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
+                const timeIn = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("PickupTimeIn")
+                );
+                const timeOut = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("PickupTimeOut")
+                );
+                // If TimeIn or TimeOut is missing
 
-            //     // Convert to moments (or Date objects)
-            //     const formattedDiff = calculateNorthRockAllowTime(
-            //         timeIn,
-            //         timeOut
-            //     );
-            //     td.innerText = formattedDiff;
+                // Convert to moments (or Date objects)
+                const formattedDiff = calculateAllowTime(timeIn, timeOut, 45); // 0.03125 days = 45 minutes
+                td.innerText = formattedDiff;
 
-            //     td.classList.add("htLeft"); // Align text to the left
-            //     return td;
-            // },
+                td.classList.add("htLeft"); // Align text to the left
+                return td;
+            },
         },
         {
             data: "CollectionDemurrageCharges", //calculate based on pickup time in and time out //debatable
@@ -514,11 +524,11 @@ export default function Utilization({
                     row,
                     instance.propToCol("PickupTimeOut")
                 );
-                const allowTime = instance.getDataAtCell(
-                    row,
-                    instance.propToCol("PickupAllowTime")
-                )
-                const demurrageCharges = calculateDemurrageCharges(timeIn, timeOut, allowTime);
+                const demurrageCharges = calculateDemurrageCharges(
+                    timeIn,
+                    timeOut,
+                    45
+                );
                 td.innerText = demurrageCharges.toFixed(2); // Display with 2 decimal places
                 td.classList.add("htLeft"); // Align text to the left
                 return td;
@@ -557,25 +567,9 @@ export default function Utilization({
         },
         {
             data: "DeliveryAllowTime",
-            title: "Ingleburn Allow Time (Min)",
+            title: "Ingleburn Allow Time (30Min)",
             type: "text",
             readOnly: true,
-        },
-        {
-            data: "DeliveryReason", //editable
-            title: "Delivery Reason",
-            type: "text",
-            readOnly: false,
-        },
-        {
-            data: "UnloadDemurrageCharges", //db
-            title: "Unload Demurrage Charges ($97.85 Per Hr or $1.63 Per Minute)",
-            type: "numeric",
-            readOnly: true,
-            // renderer: (instance, td, row, col, prop, value, cellProperties) => {
-            //     td.classList.add("htLeft"); // Align text to the left
-            //     return td;
-            // },
             renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 const timeIn = instance.getDataAtCell(
                     row,
@@ -585,15 +579,46 @@ export default function Utilization({
                     row,
                     instance.propToCol("DelTimeOut")
                 );
-                const allowTime = instance.getDataAtCell(
+                // If TimeIn or TimeOut is missing
+                const hasValidValues = timeIn != null && timeOut != null && timeIn != "" && timeOut != "" && timeIn != undefined && timeOut != undefined;
+
+                // Convert to moments (or Date objects)
+                const formattedDiff = hasValidValues ? calculateAllowTime(timeIn, timeOut, 30) : ""; // 0.0208333 days = 30 minutes
+                td.innerText = formattedDiff;
+
+                td.classList.add("htLeft"); // Align text to the left
+                return td;
+            },
+        },
+        {
+            data: "UnloadDemurrageCharges", //db
+            title: "Unload Demurrage Charges ($97.85 Per Hr or $1.63 Per Minute)",
+            type: "numeric",
+            readOnly: true,
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
+                const timeIn = instance.getDataAtCell(
                     row,
-                    instance.propToCol("DeliveryAllowTime")
-                )
-                const demurrageCharges = calculateDemurrageCharges(timeIn, timeOut, allowTime);
+                    instance.propToCol("DelTimeIn")
+                );
+                const timeOut = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("DelTimeOut")
+                );
+                const demurrageCharges = calculateDemurrageCharges(
+                    timeIn,
+                    timeOut,
+                    30
+                );
                 td.innerText = demurrageCharges.toFixed(2); // Display with 2 decimal places
                 td.classList.add("htLeft"); // Align text to the left
                 return td;
             },
+        },
+        {
+            data: "DeliveryReason", //editable
+            title: "Delivery Reason",
+            type: "text",
+            readOnly: false,
         },
         {
             data: "TravelTime", //editable
@@ -626,27 +651,44 @@ export default function Utilization({
             type: "numeric",
             readOnly: true,
             renderer: (instance, td, row, col, prop, value, cellProperties) => {
-                const unloadDemurrage = instance.getDataAtCell(
+                const delTimeIn = instance.getDataAtCell(
                     row,
-                    instance.propToCol("UnloadDemurrageCharges")
+                    instance.propToCol("DelTimeIn")
                 );
-                const collectionDemurrage = instance.getDataAtCell(
+                const delTimeOut = instance.getDataAtCell(
                     row,
-                    instance.propToCol("CollectionDemurrageCharges")
+                    instance.propToCol("DelTimeOut")
                 );
-
+                const unloadDemurrageCharges = calculateDemurrageCharges(
+                    delTimeIn,
+                    delTimeOut,
+                    30
+                );
+                const pickupTimeIn = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("PickupTimeIn")
+                );
+                const pickupTimeOut = instance.getDataAtCell(
+                    row,
+                    instance.propToCol("PickupTimeOut")
+                );
+                const collectionDemurrageCharges = calculateDemurrageCharges(
+                    pickupTimeIn,
+                    pickupTimeOut,
+                    45
+                );
                 const unloadDemurrageNumber =
-                    typeof unloadDemurrage === "string"
-                        ? Number(unloadDemurrage)
-                        : unloadDemurrage;
+                    typeof unloadDemurrageCharges === "string"
+                        ? Number(unloadDemurrageCharges)
+                        : unloadDemurrageCharges;
                 const collectionDemurrageNumber =
-                    typeof collectionDemurrage === "string"
-                        ? Number(collectionDemurrage)
-                        : collectionDemurrage;
+                    typeof collectionDemurrageCharges === "string"
+                        ? Number(collectionDemurrageCharges)
+                        : collectionDemurrageCharges;
 
                 // Calculate the sum
                 const sum = unloadDemurrageNumber + collectionDemurrageNumber;
-                td.innerText = sum;
+                td.innerText = sum.toFixed(2);
                 td.classList.add("htLeft"); // Align text to the left
                 return td;
             },
@@ -691,20 +733,24 @@ export default function Utilization({
     ];
 
     const [changedRows, setChangedRows] = useState([]); // Stores changed rows
+
     const calculateDemurrageCharges = (timeIn, timeOut, allowTime) => {
-        const momentTimeIn = moment(timeIn, 'HH:mm:ss');
-        const momentTimeOut = moment(timeOut, 'HH:mm:ss');
+        const momentTimeIn = moment(timeIn, "HH:mm:ss");
+        const momentTimeOut = moment(timeOut, "HH:mm:ss");
 
         const timeDiff = momentTimeOut.diff(momentTimeIn);
-        const allowedTime = moment.duration(allowTime, 'minutes');
+        const allowedTime = moment.duration(allowTime, "minutes");
         const allowedTimeMs = allowedTime.asMilliseconds();
-        const timeDiffWithAllowance = timeDiff <= allowedTimeMs ? 0 : timeDiff - allowedTimeMs;
+        const timeDiffWithAllowance =
+            timeDiff <= allowedTimeMs ? 0 : timeDiff - allowedTimeMs;
 
         let demurrageCharges = 0;
 
         if (timeDiffWithAllowance > 0) {
             // Divide the time difference between hour and minutes
-            const timeDiffWithAllowanceDuration = moment.duration(timeDiffWithAllowance);
+            const timeDiffWithAllowanceDuration = moment.duration(
+                timeDiffWithAllowance
+            );
             const hours = timeDiffWithAllowanceDuration.hours();
             const minutes = timeDiffWithAllowanceDuration.minutes();
 
@@ -717,7 +763,11 @@ export default function Utilization({
     };
     const calculateTotalChargeAmount = (item) => {
         const unloadDemurrage = item.UnloadDemurrageCharges;
-        const collectionDemurrage = calculateDemurrageCharges(item.PickupTimeIn, item.PickupTimeOut, item.PickupAllowTime);
+        const collectionDemurrage = calculateDemurrageCharges(
+            item.PickupTimeIn,
+            item.PickupTimeOut,
+            45
+        );
 
         const unloadDemurrageNumber =
             typeof unloadDemurrage === "string"
@@ -738,15 +788,14 @@ export default function Utilization({
 
         // If either timeIn or timeOut is invalid, return empty string
         if (!timeInMoment.isValid() || !timeOutMoment.isValid()) {
-            return ""; // Return empty if invalid time
+            return "00:00"; // Return empty if invalid time
         }
 
         // Calculate the difference in minutes
         const diff = timeOutMoment.diff(timeInMoment, "minutes");
-        const minutes = convertToMinutes(diff);
 
         // Format the result (convert minutes to HH:mm format)
-        const formattedDiff = moment.utc(minutes * 60000).format("HH:mm");
+        const formattedDiff = moment.utc(diff * 60000).format("HH:mm");
 
         return formattedDiff;
     };
@@ -760,36 +809,77 @@ export default function Utilization({
             UtilizationId:
                 item.UtilizationId == undefined ? null : item.UtilizationId,
             ConsignmentId: item.ConsignmentID,
-            PickupTimeIn: item.PickupTimeIn.replace(
-                timeValidatorRegexp,
-                (match, hour, minute, second) => {
-                    const hours = hour.padStart(2, "0");
-                    const minutes = minute ? minute.padStart(2, "0") : "00";
-                    const seconds = second ? second.padStart(2, "0") : "00";
-                    return `${hours}:${minutes}:${seconds}`;
-                }
-            ),
-            PickupTimeOut: item.PickupTimeOut.replace(
-                timeValidatorRegexp,
-                (match, hour, minute, second) => {
-                    const hours = hour.padStart(2, "0");
-                    const minutes = minute ? minute.padStart(2, "0") : "00";
-                    const seconds = second ? second.padStart(2, "0") : "00";
-                    return `${hours}:${minutes}:${seconds}`;
-                }
-            ),
-            CollectionTime: getTimeDifference(
-                item.PickupTimeIn,
-                item.PickupTimeOut
-            ),
-            CollectionDemurrage: calculateDemurrageCharges(item.PickupTimeIn, item.PickupTimeOut, item.PickupAllowTime),
-            PickupReason: item.PickupReason == undefined ? '' : item.PickupReason,
-            DeliveryReason: item.DeliveryReason == undefined ? '' : item.DeliveryReason,
-            TravelTime: getTimeDifference(item.DelTimeIn, item.PickupTimeOut),
-            TotalChargeAmount: calculateTotalChargeAmount(item),
-            ExtraCollectionTime: moment(calculateTimeDifference(item.PickupTimeIn, item.PickupTimeOut), 'HH:mm:ss').subtract(item.PickupAllowTime, 'minutes').format('HH:mm:ss'),
+            PickupTimeIn: item.hasOwnProperty("PickupTimeIn")
+                ? item?.PickupTimeIn?.replace(
+                      timeValidatorRegexp,
+                      (match, hour, minute, second) => {
+                          const hours = hour.padStart(2, "0");
+                          const minutes = minute
+                              ? minute.padStart(2, "0")
+                              : "00";
+                          const seconds = second
+                              ? second.padStart(2, "0")
+                              : "00";
+                          return `${hours}:${minutes}:${seconds}`;
+                      }
+                  )
+                : null,
+            PickupTimeOut: item.hasOwnProperty("PickupTimeOut")
+                ? item?.PickupTimeOut?.replace(
+                      timeValidatorRegexp,
+                      (match, hour, minute, second) => {
+                          const hours = hour.padStart(2, "0");
+                          const minutes = minute
+                              ? minute.padStart(2, "0")
+                              : "00";
+                          const seconds = second
+                              ? second.padStart(2, "0")
+                              : "00";
+                          return `${hours}:${minutes}:${seconds}`;
+                      }
+                  )
+                : null,
+            CollectionTime:
+                item.hasOwnProperty("PickupTimeOut") &&
+                item.hasOwnProperty("PickupTimeIn")
+                    ? getTimeDifference(item.PickupTimeIn, item.PickupTimeOut)
+                    : null,
+            CollectionDemurrage:
+                item.hasOwnProperty("PickupTimeOut") &&
+                item.hasOwnProperty("PickupTimeIn")
+                    ? calculateDemurrageCharges(
+                          item.PickupTimeIn,
+                          item.PickupTimeOut,
+                          45
+                      )
+                    : null,
+            PickupReason:
+                item.PickupReason == undefined ? "" : item.PickupReason,
+            DeliveryReason:
+                item.DeliveryReason == undefined ? "" : item.DeliveryReason,
+            TravelTime: item.hasOwnProperty("PickupTimeOut")
+                ? getTimeDifference(item.DelTimeIn, item.PickupTimeOut)
+                : null,
+            TotalChargeAmount:
+                item.hasOwnProperty("PickupTimeOut") &&
+                item.hasOwnProperty("PickupTimeIn")
+                    ? calculateTotalChargeAmount(item)
+                    : null,
+            ExtraCollectionTime:
+                item.hasOwnProperty("PickupTimeOut") &&
+                item.hasOwnProperty("PickupTimeIn")
+                    ? moment(
+                          calculateTimeDifference(
+                              item.PickupTimeIn,
+                              item.PickupTimeOut
+                          ),
+                          "HH:mm:ss"
+                      )
+                          .subtract(item.PickupAllowTime, "minutes")
+                          .format("HH:mm:ss")
+                    : null,
         }));
-        console.log(inputValues);
+
         axios
             .post(`${url}Add/UtilizationReport`, inputValues, {
                 headers: {
@@ -799,22 +889,57 @@ export default function Utilization({
             })
             .then((res) => {
                 AlertToast("Saved successfully", 1);
+                setChangedRows([]);
                 setIsLoading(false);
             })
             .catch((err) => {
-                console.log(err);
+                console.error(err);
                 AlertToast("Something went wrong", 2);
                 setIsLoading(false);
             });
     };
+
     const handleAfterChange = (changes, source) => {
         if (source === "loadData" || !changes) return;
         setChangedRows((prevChanges) => {
-            let updatedChanges = [...prevChanges]; // clone current changes
+            let updatedChanges = [...prevChanges]; // Clone the existing changes array
+            const hotInstance = hotTableRef.current?.hotInstance;
 
             changes.forEach(([row, prop, oldValue, newValue]) => {
-                if (newValue !== oldValue) {
-                    const hotInstance = hotTableRef.current?.hotInstance;
+                let newValueToUse = newValue;
+                if (newValue !== oldValue || source === "Autofill.fill") {
+                    const selectedRange = hotInstance.getSelected();
+
+                    if (selectedRange[0] && selectedRange[0].length === 4) {
+                        const [startRow, startCol, endRow, endCol] =
+                            selectedRange[0];
+
+                        // If it's a single cell selection (which is typical for autofill source)
+                        if (startRow === endRow && startCol === endCol) {
+                            const valueToAutofill = hotInstance.getDataAtCell(
+                                startRow,
+                                startCol
+                            );
+
+                            newValueToUse = valueToAutofill;
+                        } else {
+                            console.warn(
+                                "Multiple cells or a different type of range is selected. Autofill usually starts from a single cell."
+                            );
+                            // Handle scenarios where a range might be selected before dragging the fill handle.
+                            // The value would still come from the top-left cell of the initial selection.
+                            const valueToAutofill = hotInstance.getDataAtCell(
+                                startRow,
+                                startCol
+                            );
+                            newValueToUse = valueToAutofill;
+                        }
+                    }
+                }
+                if (
+                    newValue !== oldValue ||
+                    (source === "Autofill.fill" && newValueToUse !== oldValue)
+                ) {
                     if (!hotInstance) {
                         console.error("❌ Handsontable instance is undefined!");
                         return updatedChanges;
@@ -823,7 +948,7 @@ export default function Utilization({
                     const rowData = hotInstance.getSourceDataAtRow(row);
                     if (!rowData || !rowData.ConsignmentID) {
                         console.warn(
-                            "⚠️ Row data missing ConsignmentID!",
+                            "⚠️ Row data is undefined or missing ConsignmentID!",
                             rowData
                         );
                         return updatedChanges;
@@ -834,65 +959,37 @@ export default function Utilization({
                     );
 
                     if (existingIndex > -1) {
+                        console.log("newValueToUse", newValueToUse);
                         updatedChanges[existingIndex] = {
                             ...updatedChanges[existingIndex],
-                            [prop]: newValue, // update only the changed field
+                            [prop]: newValueToUse,
                         };
                     } else {
+                        // console.log('newValueToUse',newValueToUse);
                         updatedChanges.push({
                             ...rowData,
-                            [prop]: newValue, // only override the changed prop
+                            [prop]: newValueToUse,
                         });
                     }
+                    const newTableData = [...tableData]; // Use tableData from state
+                    if (newTableData[row]) {
+                        newTableData[row][prop] = newValueToUse;
+                    } else {
+                        // This case handles new rows added by Handsontable (e.g., by autofilling past the last row)
+                        // If ConsignmentID is auto-generated on new rows, you'd handle that here.
+                        const newRowData = hotInstance.getSourceDataAtRow(row); // Get full new row data
+                        newTableData[row] = {
+                            ...newRowData,
+                            [prop]: newValueToUse,
+                        };
+                    }
+                    setTableData(newTableData);
                 }
             });
 
-            return updatedChanges;
+            return updatedChanges; // Ensure we return a new array
         });
     };
-    console.log("changes for each", changedRows);
-    function SaveComments() {
-        setIsLoading(true);
-        const inputValues = changedRows?.map((item) => ({
-            DeliveryCommentId: item.DeliveryCommentId
-                ? item.DeliveryCommentId
-                : null,
-            ConsId: item.ConsignmentID, // Rename ConsignmentID to ConsId
-            Comment: item.Comment, // Keep the Comment field as is
-        }));
-        axios
-            .post(`${url}Add/Delivery/Single/Comment`, inputValues, {
-                headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
-                },
-            })
-            .then((res) => {
-                setChangedRows([]);
-                setIsLoading(false);
-                AlertToast("Saved successfully", 1);
-            })
-            .catch((err) => {
-                AlertToast("Something went wrong", 2);
-
-                if (err.response && err.response.status === 401) {
-                    // Handle 401 error using SweetAlert
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        type: "success",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(async function () {
-                        await handleSessionExpiration();
-                    });
-                } else {
-                    // Handle other errors
-                    console.log(err);
-                    setIsLoading(false);
-                }
-            });
-    }
 
     useEffect(() => {
         if (hotTableRef.current) {
@@ -932,8 +1029,11 @@ export default function Utilization({
         // to use an external HyperFormula instance,
         // initialize it with the `'internal-use-in-handsontable'` license key
         licenseKey: "internal-use-in-handsontable",
-        autoWrapRow: true,
-        autoWrapCol: true,
+        autoWrapRow: false,
+        autoWrapCol: false,
+        autoFill: true,
+        autoInsertCol: false,
+        autoInsertRow: false,
     });
 
     return (
@@ -948,7 +1048,7 @@ export default function Utilization({
                 <Button
                     className="bg-dark text-white px-4 py-2"
                     onClick={() => handleAddEditUtilization()}
-                    isDisabled={changedRows.length === 0}
+                    isDisabled={changedRows.length === 0 || isLoading}
                     size="sm"
                 >
                     Save
@@ -969,11 +1069,11 @@ export default function Utilization({
                 </Button>
                 <UtilizationImport />
             </div>
-            {utilizationData && (
+            {tableData && (
                 <div id="" className="ht-theme-main mt-4 pb-10">
                     <HotTable
                         ref={hotTableRef}
-                        data={utilizationData.slice(0, 1000)}
+                        data={tableData?.slice(0, 1000)}
                         colHeaders={hotColumns.map((col) => col.title)}
                         columns={hotColumns}
                         fixedColumnsStart={1}
@@ -986,13 +1086,15 @@ export default function Utilization({
                         }}
                         licenseKey="non-commercial-and-evaluation"
                         rowHeaders={true}
+                        autoInsertRow={false}
+                        autoInsertCol={false}
                         afterChange={handleAfterChange}
-                        autoWrapRow={true}
+                        autoWrapRow={false}
                         manualColumnResize={true}
                         renderAllRows={false}
                         viewportRowRenderingOffset={10}
                         viewportColumnRenderingOffset={10}
-                        autoWrapCol={true}
+                        autoWrapCol={false}
                         filters={true} // ✅ Enable filtering
                         dropdownMenu={{
                             items: {
