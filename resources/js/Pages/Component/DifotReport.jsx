@@ -641,17 +641,12 @@ export default function DifotReport({
                 maxDate: maxDateNewRdd,
             },
             render: ({ value, cellProps }) => {
-                const dateValue =
-                    value == undefined || value == null
-                        ? ""
-                        : value
-                        ? value.replace(/\//g, "-")
-                        : "";
-                return (
-                    <span className="flex justify-start items-left text-left">
-                        {dateValue}
-                    </span>
-                );
+                return value == undefined || value == null
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A") ==
+                      "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A");
             },
         },
         {
