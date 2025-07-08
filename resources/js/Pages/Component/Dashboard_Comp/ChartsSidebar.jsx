@@ -18,9 +18,10 @@ import {
     RectangleStackIcon,
 } from "@heroicons/react/24/solid";
 import "../../../../css/scroll.css";
+import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import TaskIcon from "@mui/icons-material/Task";
-import ContactsIcon from '@mui/icons-material/Contacts';
-import DescriptionIcon from '@mui/icons-material/Description';
+import ContactsIcon from "@mui/icons-material/Contacts";
+import DescriptionIcon from "@mui/icons-material/Description";
 import { useEffect } from "react";
 import {
     Accordion,
@@ -29,6 +30,8 @@ import {
     AccordionItem,
 } from "react-headless-accordion";
 import { isDummyAccountWithDummyData } from "@/CommonFunctions";
+import { Sidebar, Menu, MenuItem, menuClasses } from "react-pro-sidebar";
+import { Button } from "@nextui-org/react";
 
 const navigation = [
     {
@@ -48,7 +51,7 @@ const navigation = [
         feature: "ConsignmetsReport_view",
     },
     {
-        id: 2,
+        id: 17,
         name: "KPI Report",
         href: "#",
         icon: ClipboardDocumentCheckIcon,
@@ -234,7 +237,8 @@ const navigation = [
         icon: DescriptionIcon,
         current: false,
         feature: "DifotReport_View",
-    },{
+    },
+    {
         id: 28,
         name: "Utilization Report",
         href: "#",
@@ -244,6 +248,89 @@ const navigation = [
     },
 ];
 
+const themes = {
+    light: {
+        sidebar: {
+            backgroundColor: "#ffffff",
+            color: "#607489",
+        },
+        menu: {
+            menuContent: "#fbfcfd",
+            icon: "#e2b540",
+            hover: {
+                backgroundColor: "#f3f4f6d9",
+                color: "#44596e",
+            },
+            disabled: {
+                color: "#9fb6cf",
+            },
+        },
+    },
+    dark: {
+        sidebar: {
+            backgroundColor: "#0b2948",
+            color: "#8ba1b7",
+        },
+        menu: {
+            menuContent: "#082440",
+            icon: "#59d0ff",
+            hover: {
+                backgroundColor: "#00458b",
+                color: "#b6c8d9",
+            },
+            disabled: {
+                color: "#3e5e7e",
+            },
+        },
+    },
+};
+const themescollapse = {
+    light: {
+        sidebar: {
+            backgroundColor: "#ffffff",
+            color: "#607489",
+        },
+        menu: {
+            menuContent: "#fbfcfd",
+            icon: "#e2b540",
+            hover: {
+                backgroundColor: "",
+                color: "#44596e",
+            },
+            disabled: {
+                color: "#9fb6cf",
+            },
+        },
+    },
+    dark: {
+        sidebar: {
+            backgroundColor: "#0b2948",
+            color: "#8ba1b7",
+        },
+        menu: {
+            menuContent: "#082440",
+            icon: "#59d0ff",
+            hover: {
+                backgroundColor: "#00458b",
+                color: "#b6c8d9",
+            },
+            disabled: {
+                color: "#3e5e7e",
+            },
+        },
+    },
+};
+
+
+// hex to rgba converter
+const hexToRgba = (hex, alpha) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
@@ -252,13 +339,70 @@ export default function ChartsSidebar({
     setCusomterAccounts,
     customerAccounts,
     setActiveIndexGTRS,
+    setToggled,
+    toggled,
+    broken,
+    setBroken,
     currentUser,
     user,
     onData,
 }) {
+     const [isOpen, setIsOpen] = useState(false);
+    const [collapsed, setCollapsed] = useState(false);
+    const [theme, setTheme] = useState("light");
+    const [hasImage, setHasImage] = useState(false);
+    const [rtl, setRtl] = useState(false);
     const [customerOptions, setCustomerOptions] = useState([]);
     const [showList, setShowList] = useState(false);
     const showSelect = customerOptions?.length > 0;
+
+    const menuItemStyles = {
+        root: {
+            fontSize: "13px",
+            // paddingLeft: "10px",
+            fontWeight: 400,
+        },
+        icon: {
+            color: collapsed
+                ? themescollapse[theme].menu.icon
+                : themes[theme].menu.icon,
+            [`&.${menuClasses.disabled}`]: {
+                color: themes[theme].menu.disabled.color,
+            },
+        },
+        SubMenuExpandIcon: {
+            color: "#b6b7b9",
+        },
+        subMenuContent: ({ level }) => ({
+            backgroundColor:
+                level === 0
+                    ? hexToRgba(
+                          themes[theme].menu.menuContent,
+                          hasImage && !collapsed ? 0.4 : 1
+                      )
+                    : "transparent",
+        }),
+        button: {
+            [`&.${menuClasses.disabled}`]: {
+                color: themes[theme].menu.disabled.color,
+            },
+            "&:hover": {
+                backgroundColor: hexToRgba(
+                    themes[theme].menu.hover.backgroundColor,
+                    hasImage ? 0.8 : 1
+                ),
+                color: themes[theme].menu.hover.color,
+            },
+            "&:hover .label-class": {
+                // Assuming the label has a class named 'label-class'
+                color: themes[theme].menu.hover.labelColor,
+            },
+        },
+        label: ({ open }) => ({
+            fontWeight: open ? 600 : undefined,
+            transition: "color 0.3s ease", // Smooth transition for color changes
+        }),
+    };
 
     const handleDivClick = () => {
         setShowList(!showList);
@@ -349,7 +493,6 @@ export default function ChartsSidebar({
     };
     const filterNavigation = (navigationitems, user) => {
         return navigationitems.filter((navItem) => {
-
             // Check if the navigation item has sub-options
             if (navItem.options) {
                 // Filter options based on user permissions
@@ -384,35 +527,147 @@ export default function ChartsSidebar({
         setSidebarElements(filteredNavigation);
         setActiveIndexGTRS(filteredNavigation[0]?.id);
     }, []);
+
+    // const handleClick = (id, item) => {
+    //     const updatedElements = sidebarElements?.map((element) => {
+    //         if (id == 12 || id == 13 || id == 14 || id == 17 || id == 18) {
+    //             if (element.options) {
+    //                 return {
+    //                     ...element,
+    //                     current: element.options.find(
+    //                         (option) => option.id == id
+    //                     )
+    //                         ? true
+    //                         : false,
+    //                     options: element.options.map((option) => {
+    //                         if (option.id == id) {
+    //                             return { ...option, current: true };
+    //                         } else {
+    //                             return { ...option, current: false };
+    //                         }
+    //                     }),
+    //                 };
+    //             } else {
+    //                 if (element.id === id) {
+    //                     return { ...element, current: true };
+    //                 } else {
+    //                     return { ...element, current: false };
+    //                 }
+    //             }
+    //         } else {
+    //             if (element.options) {
+    //                 return {
+    //                     ...element,
+    //                     current: element.options.find(
+    //                         (option) => option.id == id
+    //                     )
+    //                         ? true
+    //                         : false,
+    //                     ...(element.options
+    //                         ? {
+    //                               options: element.options.map((option) => {
+    //                                   if (option.id == id) {
+    //                                       return { ...option, current: true };
+    //                                   } else {
+    //                                       return { ...option, current: false };
+    //                                   }
+    //                               }),
+    //                           }
+    //                         : {}),
+    //                 };
+    //             } else {
+    //                 if (element.id === id) {
+    //                     return { ...element, current: true };
+    //                 } else {
+    //                     return { ...element, current: false };
+    //                 }
+    //             }
+    //         }
+    //     });
+
+    //     handleSelectOnClick();
+    //     setSidebarElements(updatedElements);
+    //     localStorage.setItem("current", JSON.stringify(id));
+    //     navigate(item.url);
+    // };
+    function handleSelectOnClick() {
+        if (collapsed) {
+            setCollapsed(false);
+            if (collapsed === false) {
+                setIsOpen(true);
+            }
+        } else {
+            setIsOpen(!isOpen);
+        }
+    }
+    function isItemActive(menuItemLabel) {
+        let active = false;
+
+        // Helper function to recursively check if any item or its sub-options are active
+        const checkActive = (items) => {
+            for (const item of items) {
+                if (item.current) {
+                    return true;
+                }
+                // Recursively check sub-options if they exist
+                if (item.options && checkActive(item.options)) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        // Find the item by name and check if it or its sub-options are active
+        const menuItem = sidebarElements.find(
+            (item) => item.name.toLowerCase() === menuItemLabel.toLowerCase()
+        );
+
+        if (menuItem) {
+            // Check if the current item or any of its sub-options is active
+            active = checkActive([menuItem]);
+        }
+
+        return active;
+    }
+
     return (
-        <div className="h-full xl:fixed xl:w-64 lg:h-full bg-gray-200 w-full ">
-            {/* Static sidebar for desktop */}
-            <div className=" h-[90%] md:inset-y-0 flex w-full md:flex-row ">
-                {/* Sidebar component, swap this element with another sidebar if you like */}
-                <div className=" h-full w-full overflow-y-scroll containerscroll">
-                    <div className="flex flex-col">
-                        <div className="flex flex-shrink-0  p-4 ">
-                            <div className="group block w-full flex-shrink-0">
-                                <div className="flex items-center">
-                                    <div className="hidden">
-                                        {!user.Picture ||
-                                        user.Picture.length == 0 ? (
-                                            <img
-                                                className="inline-block h-14 w-14"
-                                                src={`/app/icons/blank-profile.jpg`}
-                                                alt=""
-                                            />
-                                        ) : (
-                                            <img
-                                                className="inline-block h-14 w-14 object-contain"
-                                                src={`https://gtam-test.gtls.com.lb/${user.Picture}`}
-                                                alt=""
-                                            />
-                                        )}
-                                    </div>
-                                    <div className="ml-3">
-                                        <p className="text-sm font-medium text-gray-800">
-                                            {user.TypeId == 1 ? (
+        <div className="h-full relative z-30">
+            <Sidebar
+                collapsed={collapsed} // collapsed the menu
+                toggled={toggled}
+                width="240px"
+                onBackdropClick={() => setToggled(false)}
+                onBreakPoint={setBroken}
+                rtl={rtl}
+                breakPoint="lg"
+                backgroundColor={hexToRgba(
+                    collapsed
+                        ? themescollapse[theme].sidebar.backgroundColor
+                        : themes[theme].sidebar.backgroundColor,
+                    hasImage ? 0.9 : 1
+                )}
+                rootStyles={{
+                    color: collapsed
+                        ? themescollapse[theme].sidebar.color
+                        : themes[theme].sidebar.color,
+                    height: "100%",
+                    position: "relative",
+                    backgroundColor: "#f6f6f6",
+                }}
+            >
+                {/* Sidebar content */}
+                <div className="h-full ">
+                    {/* Arrow to close and open it  */}
+                    <div className="p-5 flex items-center justify-between">
+                        <div
+                            className={
+                                collapsed
+                                    ? " hidden transform transition"
+                                    : " block transform  transition"
+                            }
+                        >
+                            <p className="text-sm truncate w-24">
+                                  {user.TypeId == 1 ? (
                                                 <p>{user.CustomerName}</p>
                                             ) : (
                                                 <p>
@@ -420,15 +675,40 @@ export default function ChartsSidebar({
                                                     {user.LastName}
                                                 </p>
                                             )}
-                                        </p>
-                                        <p className=" text-[0.7rem] text-gray-500 ">
-                                            {user.Email}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
+                            </p>
+                            <p className="text-xs truncate w-36">
+                               {user.Email}
+                            </p>
                         </div>
-                        <div className="mt-5 flex-1 xl:flex-col space-y-1 px-2 w-full md:flex-row md:flex md:mt-0 hover:cursor-pointer containerscroll">
+                        <Button
+                            isIconOnly
+                            className="bg-zinc-300 hover:bg-zinc-200"
+                            aria-label="Like"
+                            size="sm"
+                            onClick={() => {
+                                setIsOpen(false);
+                                setCollapsed(!collapsed);
+                            }}
+                        >
+                            <div
+                                className={
+                                    collapsed
+                                        ? "rotate-0 transform transition"
+                                        : "rotate-180 transform  transition"
+                                }
+                            >
+                                <KeyboardDoubleArrowRightIcon
+                                    className={
+                                        collapsed
+                                            ? "p-[2px] w-2 h-2"
+                                            : "p-[2px] w-2 h-2"
+                                    }
+                                />
+                            </div>
+                        </Button>
+                    </div>
+                    {!collapsed && (
+                        <div className="mt-5 mb-5 flex-1 xl:flex-col space-y-1 px-2 w-full md:flex-row md:flex md:mt-0 hover:cursor-pointer containerscroll">
                             {showSelect && (
                                 <div className="group flex flex-col items-center px-2 py-2 text-gray-700 text-sm font-medium rounded-md w-full hover:bg-gray-100">
                                     <div
@@ -447,12 +727,10 @@ export default function ChartsSidebar({
                                         {showList && (
                                             <div className="text-left max-h-64 overflow-y-scroll mt-3 pt-1 pl-1 containerscroll">
                                                 {customerAccounts?.map(
-                                                    (option,index) => (
+                                                    (option, index) => (
                                                         <div
                                                             className="flex items-start"
-                                                            key={
-                                                                option.DebtorId
-                                                            }
+                                                            key={`${option.DebtorId}-${option.AccountNo}-${index}`}
                                                         >
                                                             <input
                                                                 type="checkbox"
@@ -478,10 +756,9 @@ export default function ChartsSidebar({
                                                                 }
                                                                 className="ml-2"
                                                             >
-                                                                {isDummyAccountWithDummyData(
-                                                                    `Account No.${index + 1} `,
+                                                                {
                                                                     option.AccountNo
-                                                                )}
+                                                                }
                                                             </label>
                                                         </div>
                                                     )
@@ -492,127 +769,166 @@ export default function ChartsSidebar({
                                 </div>
                             )}
                         </div>
-                    </div>
-                    <div className="pt-5 w-full">
-                        <nav className="mt-5 flex-1 hidden xl:flex-col space-y-1 px-2 w-full md:flex-row md:flex md:mt-0 ">
-                            {sidebarElements?.map((item) => (
-                                <div key={item.id}>
-                                    {item.options ? (
-                                        <Accordion
-                                            key={item.id}
-                                            transition={{
-                                                duration: "300ms",
-                                                timingFunction:
-                                                    "cubic-bezier(0, 0, 0.2, 1)",
-                                            }}
-                                        >
-                                            <AccordionItem>
-                                                {({ open }) => (
-                                                    <>
-                                                        <AccordionHeader
-                                                            // className=" "
-                                                            className={classNames(
-                                                                item.current
-                                                                    ? "bg-gray-300 text-gray-900"
-                                                                    : "text-gray-700 hover:bg-gray-500 hover:text-white",
-                                                                "group flex flex-row justify-between items-center px-2 py-2 text-sm font-medium rounded-md w-full"
-                                                            )}
-                                                        >
-                                                            <div className="flex items-center">
-                                                                {item.icon ? (
-                                                                    <item.icon
-                                                                        className={classNames(
-                                                                            item.current
-                                                                                ? "text-gray-800"
-                                                                                : "text-gray-700 group-hover:text-gray-300",
-                                                                            "mr-3 flex-shrink-0 h-6 w-6"
-                                                                        )}
-                                                                        aria-hidden="true"
-                                                                    />
-                                                                ) : (
-                                                                    <img
-                                                                        src={
-                                                                            item.img
-                                                                        }
-                                                                        className={classNames(
-                                                                            item.current
-                                                                                ? "text-yellow-400"
-                                                                                : "text-gray-400 group-hover:text-white",
-                                                                            "h-6 w-6"
-                                                                        )}
-                                                                        aria-hidden="true"
-                                                                    />
-                                                                )}
-                                                                <span>
-                                                                    {item.name}
-                                                                </span>
-                                                            </div>
-                                                            <ChevronDownIcon className="h-3" />
-                                                        </AccordionHeader>
+                    )}
 
-                                                        <AccordionBody className="pl-10 flex gap-y-1 mt-1 flex-col">
-                                                            {item.options.map(
-                                                                (option) => (
-                                                                    <button
-                                                                        id={
-                                                                            option.name
-                                                                        }
-                                                                        key={
-                                                                            option.id
-                                                                        }
-                                                                        onClick={() =>
-                                                                            handleClick(
-                                                                                option.id, item.id
-                                                                            )
-                                                                        }
-                                                                        className={classNames(
-                                                                            option.current
-                                                                                ? "bg-gray-300"
-                                                                                : "",
-                                                                            "p-2 font-semibold hover:bg-gray-300 rounded text-left text-dark text-xs"
-                                                                        )}
-                                                                    >
+                    {/* The menu it self */}
+                    <div className="flex w-full max-w-xs items-center gap-2"></div>
+                    <div
+                        style={{
+                            flex: 1,
+                            marginBottom: "32px",
+                        }}
+                        className=""
+                    >
+                        <Menu
+                            rootStyles="w-1/2  bg-gray-100 mx-10"
+                            menuItemStyles={menuItemStyles}
+                        >
+                            {sidebarElements?.map((menuItem, itemIndex) => (
+                                <>
+                                    {menuItem?.options && !collapsed ? (
+                                        <div className="px-5 py-2">
+                                            <Accordion
+                                                key={menuItem.id}
+                                                transition={{
+                                                    duration: "300ms",
+                                                    timingFunction:
+                                                        "cubic-bezier(0, 0, 0.2, 1)",
+                                                }}
+                                            >
+                                                <AccordionItem>
+                                                    {({ open }) => (
+                                                        <>
+                                                            <AccordionHeader
+                                                                className={classNames(
+                                                                    menuItem.current
+                                                                        ? "bg-gray-300 text-gray-900"
+                                                                        : "text-gray-600 hover:bg-gray-500 hover:text-white",
+                                                                    "group flex flex-row justify-between items-center px-2 py-2 text-sm rounded-md w-full"
+                                                                )}
+                                                            >
+                                                                <div className="flex items-center">
+                                                                    {menuItem.icon ? (
+                                                                        <menuItem.icon
+                                                                            className={classNames(
+                                                                                menuItem.current
+                                                                                    ? "text-gray-800"
+                                                                                    : "text-gray-700 group-hover:text-gray-300",
+                                                                                "mr-3 flex-shrink-0 h-6 w-6"
+                                                                            )}
+                                                                            aria-hidden="true"
+                                                                        />
+                                                                    ) : (
+                                                                        <img
+                                                                            src={
+                                                                                menuItem.img
+                                                                            }
+                                                                            className={classNames(
+                                                                                menuItem.current
+                                                                                    ? "text-yellow-400"
+                                                                                    : "text-gray-400 group-hover:text-white",
+                                                                                "h-6 w-6"
+                                                                            )}
+                                                                            aria-hidden="true"
+                                                                        />
+                                                                    )}
+                                                                    <span>
                                                                         {
-                                                                            option.name
+                                                                            menuItem.name
                                                                         }
-                                                                    </button>
-                                                                )
-                                                            )}
-                                                        </AccordionBody>
-                                                    </>
-                                                )}
-                                            </AccordionItem>
-                                        </Accordion>
+                                                                    </span>
+                                                                </div>
+                                                                <ChevronDownIcon className="h-3" />
+                                                            </AccordionHeader>
+
+                                                            <AccordionBody className="pl-10 flex gap-y-1 mt-1 flex-col">
+                                                                {menuItem.options.map(
+                                                                    (
+                                                                        option
+                                                                    ) => (
+                                                                        <button
+                                                                            id={
+                                                                                option.name
+                                                                            }
+                                                                            key={
+                                                                                option.id
+                                                                            }
+                                                                            onClick={() =>
+                                                                                handleClick(
+                                                                                    option.id,
+                                                                                    option
+                                                                                )
+                                                                            }
+                                                                            className={classNames(
+                                                                                option.current
+                                                                                    ? "bg-gray-300"
+                                                                                    : "",
+                                                                                "p-2 font-semibold hover:bg-gray-300 rounded text-left text-gray-600 text-xs"
+                                                                            )}
+                                                                        >
+                                                                            {
+                                                                                option.name
+                                                                            }
+                                                                        </button>
+                                                                    )
+                                                                )}
+                                                            </AccordionBody>
+                                                        </>
+                                                    )}
+                                                </AccordionItem>
+                                            </Accordion>
+                                        </div>
                                     ) : (
-                                        <a
-                                            onClick={() => handleClick(item.id)}
-                                            key={item.name}
-                                            href={item.href}
-                                            className={classNames(
-                                                item.current
-                                                    ? "bg-gray-300 text-gray-900"
-                                                    : "text-gray-700 hover:bg-gray-500 hover:text-white",
-                                                "group flex flex-row items-center px-2 py-2 text-sm font-medium rounded-md w-full"
-                                            )}
+                                        <MenuItem
+                                            className=""
+                                            key={itemIndex}
+                                            active={isItemActive(menuItem.name)}
+                                            component={
+                                                <div
+                                                    className="item"
+                                                    onClick={() => {
+                                                        setCollapsed(false);
+                                                        handleClick(
+                                                            menuItem.id,
+                                                            menuItem
+                                                        );
+                                                    }}
+                                                ></div>
+                                            }
                                         >
-                                            <item.icon
-                                                className={classNames(
-                                                    item.current
-                                                        ? "text-gray-800"
-                                                        : "text-gray-700 group-hover:text-gray-300",
-                                                    "mr-3 flex-shrink-0 h-6 w-6"
-                                                )}
-                                                aria-hidden="true"
-                                            />
-                                            {item.name}
-                                        </a>
+                                            <div
+                                                className={`flex items-center px-2 gap-2 ${
+                                                    isItemActive(menuItem.name)
+                                                        ? "bg-gray-300 text-gray-900 py-2 rounded-lg"
+                                                        : "bg-transparent text-gray-600 py-2 rounded-lg focus:ring-2 outline-0"
+                                                }
+                                                                       ${
+                                                                           collapsed
+                                                                               ? "px-0 w-full justify-center pl-4"
+                                                                               : ""
+                                                                       }`}
+                                            >
+                                                <div>
+                                                    {menuItem.icon && (
+                                                        <div className="w-7 flex items-center justify-center">
+                                                            <menuItem.icon className="" />
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <div className="">
+                                                    {!collapsed &&
+                                                        menuItem.name}
+                                                </div>
+                                            </div>
+                                        </MenuItem>
                                     )}
-                                </div>
+                                </>
                             ))}
-                        </nav>
+                        </Menu>
                     </div>
                 </div>
-            </div>
+            </Sidebar>
         </div>
     );
 }

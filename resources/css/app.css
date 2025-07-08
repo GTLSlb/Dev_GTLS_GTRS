@@ -2,7 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-
+.ps-sidebar-container{
+  overflow: visible !important;
+}
 
 .login-dropdown-option:hover{
   background-color: red !important;

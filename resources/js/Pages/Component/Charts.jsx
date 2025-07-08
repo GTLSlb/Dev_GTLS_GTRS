@@ -31,6 +31,8 @@ import DeliveryReportCommentsPage from "./ReportsPage/DeliveryReports/DeliveryRe
 import ContactRep from "./ContactsRep/ContactRep";
 import DifotReport from "./DifotReport";
 import Utilization from "./UtilizationReport/Utilization";
+import { Button } from "@nextui-org/react";
+import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 
 export default function charts({
     setCusomterAccounts,
@@ -64,6 +66,8 @@ export default function charts({
     const current = new Date();
     const month = current.getMonth() + 1;
     const [KPIData, setKPIData] = useState([]);
+    const [toggled, setToggled] = useState(false);
+    const [broken, setBroken] = useState(false);
     const [commentsCheck, setCommentsCheck] = useState(false);
     const [NewKPIData, setNewKPIData] = useState([]);
     const [transitDays, setTransitDays] = useState();
@@ -2311,9 +2315,11 @@ export default function charts({
                     Authorization: `Bearer ${AToken}`,
                 },
             });
-            setCommentsCheck(res.data.some(
-                (item) => item.Comment && item.Comment.trim().length > 0
-            ))
+            setCommentsCheck(
+                res.data.some(
+                    (item) => item.Comment && item.Comment.trim().length > 0
+                )
+            );
             setExcelDailyReportData(res.data || []);
 
             // Check if setCellLoading exists before calling it
@@ -2870,36 +2876,45 @@ export default function charts({
     return (
         <div className="h-full w-full bg-smooth">
             {/* <Sidebar /> */}
-            <div className="h-full flex">
-                {/* Left sidebar & main wrapper */}
-                <div className="h-full min-w-0 flex-1 bg-gray-100 xl:flex">
-                    <div className=" xl:w-64 flex-shrink-0 w-full h-auto md:block mb-4">
-                        <div className="h-full ">
-                            {/* Start left column area */}
-                            <div
-                                className="relative h-screen"
-                                style={{ minHeight: "6rem" }}
+            <div className=" h-full relative flex">
+                    {/* Left sidebar & main wrapper */}
+                    <div
+                        style={{ marginBottom: "16px" }}
+                        className="fixed left-0 top-20 z-10"
+                    >
+                        {broken && (
+                            <Button
+                                aria-label="chevron right icon"
+                                className="rounded-none rounded-r bg-dark"
+                                onClick={() => setToggled(!toggled)}
+                                isIconOnly
                             >
-                                <div className=" inset-0 rounded-lg border-dashed border-gray-200">
-                                    <ChartsSidebar
-                                        setCusomterAccounts={
-                                            setCusomterAccounts
-                                        }
-                                        customerAccounts={customerAccounts}
-                                        activeIndexGTRS={activeIndexGTRS}
-                                        sessionData={sessionData}
-                                        user={user}
-                                        onData={handleDataFromChild}
-                                        setActiveIndexGTRS={setActiveIndexGTRS}
-                                        currentUser={currentUser}
-                                    />
-                                </div>
-                            </div>
-                            {/* End left column area */}
-                        </div>
+                                <ChevronDoubleRightIcon className="w-5 text-white h-5" />
+                            </Button>
+                        )}
                     </div>
+                {/* Left sidebar & main wrapper */}
+                <div className="flex-1 h-full bg-gray-100 lg:flex">
+                    {/* Start left column area */}
+                    <div className="fixed z-40 lg:static lg:z-0 lg:pt-0 overflow-y-scroll containerscroll bg-white">
+                        <ChartsSidebar
+                            setCusomterAccounts={setCusomterAccounts}
+                            customerAccounts={customerAccounts}
+                            activeIndexGTRS={activeIndexGTRS}
+                            sessionData={sessionData}
+                            setToggled={setToggled}
+                            toggled={toggled}
+                            broken={broken}
+                            setBroken={setBroken}
+                            user={user}
+                            onData={handleDataFromChild}
+                            setActiveIndexGTRS={setActiveIndexGTRS}
+                            currentUser={currentUser}
+                        />
+                    </div>
+                    {/* End left column area */}
 
-                    <div className="bg-smooth w-full h-full lg:min-w-0 lg:flex-1">
+                    <div className="bg-smooth lg:min-w-0 lg:flex-1 overflow-y-auto containerscroll">
                         {/* Start main area*/}
                         <div
                             className="relative h-full"
