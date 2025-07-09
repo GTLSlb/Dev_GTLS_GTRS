@@ -38,6 +38,9 @@ import {
     canViewWoolworthsDeliveryReport,
     canViewOtherDeliveryReport,
     AlertToast,
+    canApproveCommentExcelDeliveryReport,
+    canEditCommentExcelDeliveryReport,
+    canViewCommentsExcelDeliveryReport,
 } from "@/permissions";
 import swal from "sweetalert";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
@@ -115,25 +118,29 @@ export default function ExcelDeliveryReport({
         const approvedCommentsIndex =
             selectedColumns.indexOf("Approved Comments");
 
-
         exportData.forEach((rowData) => {
             if (approvedCommentsIndex !== -1) {
                 const commentsArray = rowData[approvedCommentsIndex];
                 if (Array.isArray(commentsArray)) {
-            const formattedComments = commentsArray.map((commentObj) => {
-                const comment = commentObj.Comment || "";
-                const addedAt = commentObj.AddedAt
-                    ? new Date(commentObj.AddedAt).toLocaleString("en-GB", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                      })
-                    : "Unknown time";
+                    const formattedComments = commentsArray.map(
+                        (commentObj) => {
+                            const comment = commentObj.Comment || "";
+                            const addedAt = commentObj.AddedAt
+                                ? new Date(commentObj.AddedAt).toLocaleString(
+                                      "en-GB",
+                                      {
+                                          day: "2-digit",
+                                          month: "2-digit",
+                                          year: "numeric",
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                      }
+                                  )
+                                : "Unknown time";
 
-                return `${addedAt}: ${comment}`;
-            });
+                            return `${addedAt}: ${comment}`;
+                        }
+                    );
 
                     rowData[approvedCommentsIndex] =
                         formattedComments.join("\n");
@@ -336,7 +343,8 @@ export default function ExcelDeliveryReport({
             const rowData = instance.getSourceDataAtRow(row);
 
             // ✅ Only render button if there are approved comments
-            if (rowData?.ApprovedComments?.length > 0) {
+            if (rowData?.ApprovedComments?.length > 0 &&
+                canViewCommentsExcelDeliveryReport(currentUser)) {
                 const button = document.createElement("button");
                 button.textContent = "View Comments";
 
@@ -526,6 +534,9 @@ export default function ExcelDeliveryReport({
                 title: "Comments",
                 headerClassName: "htLeft",
                 type: "autocomplete",
+                readOnly: canEditCommentExcelDeliveryReport(currentUser)
+                    ? false
+                    : true,
                 source:
                     deliveryCommentsOptions?.length > 0
                         ? deliveryCommentsOptions
@@ -802,22 +813,28 @@ export default function ExcelDeliveryReport({
                 </ul>
             </div>
             <div className="my-1 flex w-full items-center gap-3 justify-end">
-                <Button
-                    className="bg-dark text-white px-4 py-2"
-                    onClick={() => SaveComments()}
-                    isDisabled={changedRows?.length === 0 || isLoading}
-                    size="sm"
-                >
-                    Save
-                </Button>
-                <Button
-                    className="bg-dark text-white px-4 py-2"
-                    onClick={() => CheckComments()}
-                    isDisabled={isLoading || !commentsCheck}
-                    size="sm"
-                >
-                    Check
-                </Button>
+                {canEditCommentExcelDeliveryReport(currentUser) && (
+                    <Button
+                        className="bg-dark text-white px-4 py-2"
+                        onClick={() => SaveComments()}
+                        isDisabled={changedRows?.length === 0 || isLoading}
+                        size="sm"
+                    >
+                        Save
+                    </Button>
+                )}
+
+                {canApproveCommentExcelDeliveryReport(currentUser) && (
+                    <Button
+                        className="bg-dark text-white px-4 py-2"
+                        onClick={() => CheckComments()}
+                        isDisabled={isLoading || !commentsCheck}
+                        size="sm"
+                    >
+                        Check
+                    </Button>
+                )}
+
                 <Dropdown>
                     <DropdownTrigger className="hidden xl:flex">
                         <Button
