@@ -1,4 +1,10 @@
-import { Fragment, useEffect, useState, useRef, useImperativeHandle, } from "react";
+import {
+    Fragment,
+    useEffect,
+    useState,
+    useRef,
+    useImperativeHandle,
+} from "react";
 import { Popover, Transition } from "@headlessui/react";
 import moment from "moment";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
@@ -381,12 +387,12 @@ export default function DifotReport({
             const fieldValue = item[fieldName];
             // Check if the label is not already included
             if (!uniqueLabels.has(fieldValue)) {
-                    uniqueLabels.add(fieldValue);
-                    const newObject = {
-                        id: fieldValue?.toString(),
-                        label: fieldValue?.toString(),
-                    };
-                    fieldValue == undefined ? null : newData.push(newObject);
+                uniqueLabels.add(fieldValue);
+                const newObject = {
+                    id: fieldValue?.toString(),
+                    label: fieldValue?.toString(),
+                };
+                fieldValue == undefined ? null : newData.push(newObject);
             }
         });
         return newData;
@@ -592,7 +598,7 @@ export default function DifotReport({
                       moment(value).format("DD-MM-YYYY hh:mm A") ==
                           "Invalid date"
                     ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+                    : moment(value).format("DD-MM-YYYY");
             },
         },
         {
@@ -646,7 +652,7 @@ export default function DifotReport({
                     : moment(value).format("DD-MM-YYYY hh:mm A") ==
                       "Invalid date"
                     ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+                    : moment(value).format("DD-MM-YYYY");
             },
         },
         {
@@ -782,50 +788,6 @@ export default function DifotReport({
             },
         },
         {
-            name: "DelayReason",
-            header: "Delay Reason",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-            render: ({ value }) => {
-                return (
-                    <span className="flex justify-start items-left text-left">
-                        {value}
-                    </span>
-                );
-            },
-        },
-        {
-            name: "POD",
-            header: "POD",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: false,
-                wrapMultiple: false,
-                dataSource: PODOptions,
-            },
-            render: ({ value }) => {
-                return value == true ? (
-                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                        {value?.toString()}
-                    </span>
-                ) : value == false ? (
-                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        {value?.toString()}
-                    </span>
-                ): (
-                    <span className="inline-flex items-center px-3 py-0.5 text-sm">
-                        {value ? value.toString() : ""}
-                    </span>
-                );
-            },
-        },
-        {
             name: "GtlsError",
             header: "GTLS Error",
             headerAlign: "center",
@@ -854,8 +816,8 @@ export default function DifotReport({
             },
         },
         {
-            name: "TransportComment",
-            header: "Transport Comments",
+            name: "DelayReason",
+            header: "Delay Reason",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
@@ -865,6 +827,61 @@ export default function DifotReport({
                 return (
                     <span className="flex justify-start items-left text-left">
                         {value}
+                    </span>
+                );
+            },
+        },
+        {
+            name: "DelayDescription",
+            header: "Delay Description",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
+        {
+            name: "Explanation",
+            header: "Explanation",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
+        {
+            name: "Resolution",
+            header: "Resolution",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
+        {
+            name: "POD",
+            header: "POD",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: false,
+                wrapMultiple: false,
+                dataSource: PODOptions,
+            },
+            render: ({ value }) => {
+                return value == true ? (
+                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                        {value?.toString()}
+                    </span>
+                ) : value == false ? (
+                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                        {value?.toString()}
+                    </span>
+                ) : (
+                    <span className="inline-flex items-center px-3 py-0.5 text-sm">
+                        {value ? value.toString() : ""}
                     </span>
                 );
             },
