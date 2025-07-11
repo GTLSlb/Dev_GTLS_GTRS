@@ -343,8 +343,10 @@ export default function ExcelDeliveryReport({
             const rowData = instance.getSourceDataAtRow(row);
 
             // ✅ Only render button if there are approved comments
-            if (rowData?.ApprovedComments?.length > 0 &&
-                canViewCommentsExcelDeliveryReport(currentUser)) {
+            if (
+                rowData?.ApprovedComments?.length > 0 &&
+                canViewCommentsExcelDeliveryReport(currentUser)
+            ) {
                 const button = document.createElement("button");
                 button.textContent = "View Comments";
 
@@ -564,24 +566,27 @@ export default function ExcelDeliveryReport({
 
     const handleAfterChange = (changes, source) => {
         if (source === "loadData" || !changes) return;
+
         setChangedRows((prevChanges) => {
             let updatedChanges = [...prevChanges]; // Clone the existing changes array
+            const hotInstance = hotTableRef.current?.hotInstance;
 
-            changes.forEach(([row, prop, oldValue, newValue]) => {
+            if (!hotInstance) {
+                console.error("❌ Handsontable instance is undefined!");
+                return updatedChanges;
+            }
+
+            changes.forEach(([visualRow, prop, oldValue, newValue]) => {
                 if (newValue !== oldValue) {
-                    const hotInstance = hotTableRef.current?.hotInstance;
-                    if (!hotInstance) {
-                        console.error("❌ Handsontable instance is undefined!");
-                        return updatedChanges;
-                    }
+                    const physicalRow = hotInstance.toPhysicalRow(visualRow);
+                    const rowData = hotInstance.getSourceDataAtRow(physicalRow);
 
-                    const rowData = hotInstance.getSourceDataAtRow(row);
                     if (!rowData || !rowData.ConsignmentID) {
                         console.warn(
                             "⚠️ Row data is undefined or missing ConsignmentID!",
                             rowData
                         );
-                        return updatedChanges;
+                        return;
                     }
 
                     const existingIndex = updatedChanges.findIndex(
@@ -601,7 +606,8 @@ export default function ExcelDeliveryReport({
                     }
                 }
             });
-            return updatedChanges; // Ensure we return a new array
+
+            return updatedChanges;
         });
     };
 
@@ -758,6 +764,10 @@ export default function ExcelDeliveryReport({
     useEffect(() => {
         applyHiddenColumns();
     }, [visibleColumns, tableData]);
+
+    useEffect(() => {
+        applyDefaultFilter();
+    }, [tableData]);
 
     const colHeaders = useMemo(
         () => hotColumns.map((col) => col.title),
