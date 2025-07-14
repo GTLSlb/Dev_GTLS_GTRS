@@ -66,7 +66,7 @@ export default function ExcelDeliveryReport({
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const hotTableRef = useRef(null);
     const [visibleColumns, setVisibleColumns] = useState(
-        new Set(["0", "1", "2", "7", "9", "10", "14", "15", "16", "17"])
+        new Set(["0", "1", "2", "7", "9", "10", "13", "15", "16", "17", "18"])
     );
     const [hiddenColumns, setHiddenColumns] = useState([
         3, 4, 5, 6, 8, 11, 12, 13,
@@ -117,6 +117,8 @@ export default function ExcelDeliveryReport({
         // Add data rows
         const approvedCommentsIndex =
             selectedColumns.indexOf("Approved Comments");
+        const approvedCommentIndex =
+            selectedColumns.indexOf("Approved Comment");
 
         exportData.forEach((rowData) => {
             if (approvedCommentsIndex !== -1) {
@@ -146,7 +148,35 @@ export default function ExcelDeliveryReport({
                         formattedComments.join("\n");
                 }
             }
+            if (approvedCommentIndex !== -1) {
+                const commentsArray = rowData[approvedCommentsIndex];
+                if (typeof commentsArray === "string") {
+                    rowData[approvedCommentIndex] = commentsArray;
+                } else if (
+                    Array.isArray(commentsArray) &&
+                    commentsArray.length > 0
+                ) {
+                    const lastCommentObj =
+                        commentsArray[commentsArray.length - 1];
+                    const comment = lastCommentObj.Comment || "";
+                    const addedAt = lastCommentObj.AddedAt
+                        ? new Date(lastCommentObj.AddedAt).toLocaleString(
+                              "en-GB",
+                              {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                              }
+                          )
+                        : "Unknown time";
 
+                    rowData[approvedCommentIndex] = `${addedAt}: ${comment}`;
+                } else {
+                    rowData[approvedCommentIndex] = ""; // No comments
+                }
+            }
             const row = worksheet.addRow(rowData);
 
             let maxHeight = 15;
@@ -548,6 +578,30 @@ export default function ExcelDeliveryReport({
                 strict: false,
                 wordWrap: true, // ✅ Enable text wrapping
                 width: 400, // Set a reasonable column width
+            },
+            {
+                data: "ApprovedComments",
+                title: "Approved Comment",
+                headerClassName: "htLeft",
+                renderer: (
+                    instance,
+                    td,
+                    row,
+                    col,
+                    prop,
+                    value,
+                    cellProperties
+                ) => {
+                    const lastValue =
+                        Array.isArray(value) && value.length > 0
+                            ? value[value.length - 1].Comment
+                            : ""; // handle empty or non-array
+                    td.textContent = lastValue;
+                    return td;
+                },
+                editor: false,
+                readOnly: true,
+                width: 130, // Set a reasonable column width
             },
             {
                 data: "ApprovedComments",

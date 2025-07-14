@@ -276,16 +276,29 @@ export default function DifotReport({
                 if (columnKey) {
                     if (
                         [
-                            "ActualDeliveyDate",
-                            "PickupDate",
                             "ChangedAt",
-                            "RDD",
+                            "OldRdd",
                         ].includes(columnKey)
                     ) {
                         const date = new Date(person[columnKey]);
                         if (!isNaN(date)) {
                             acc[columnKey] =
                                 moment(date)?.format("DD-MM-YYYY hh:mm A");
+                        } else {
+                            acc[columnKey] = "";
+                        }
+                    }if (
+                        [
+                            "ActualDeliveyDate",
+                            "PickupDate",
+                            "NewRdd",
+                            "RDD",
+                        ].includes(columnKey)
+                    ) {
+                        const date = new Date(person[columnKey]);
+                        if (!isNaN(date)) {
+                            acc[columnKey] =
+                                moment(date)?.format("DD-MM-YYYY");
                         } else {
                             acc[columnKey] = "";
                         }
