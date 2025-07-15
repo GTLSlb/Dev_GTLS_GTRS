@@ -274,11 +274,7 @@ export default function DifotReport({
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
-                    if (
-                        [
-                            "ChangedAt",
-                        ].includes(columnKey)
-                    ) {
+                    if (["ChangedAt"].includes(columnKey)) {
                         const date = new Date(person[columnKey]);
                         if (!isNaN(date)) {
                             acc[columnKey] =
@@ -286,7 +282,8 @@ export default function DifotReport({
                         } else {
                             acc[columnKey] = "";
                         }
-                    }if (
+                    }
+                    if (
                         [
                             "ActualDeliveyDate",
                             "PickupDate",
@@ -297,8 +294,7 @@ export default function DifotReport({
                     ) {
                         const date = new Date(person[columnKey]);
                         if (!isNaN(date)) {
-                            acc[columnKey] =
-                                moment(date)?.format("DD-MM-YYYY");
+                            acc[columnKey] = moment(date)?.format("DD-MM-YYYY");
                         } else {
                             acc[columnKey] = "";
                         }
@@ -428,7 +424,7 @@ export default function DifotReport({
             defaultWidth: 170,
             filterEditor: StringFilter,
         },
-         {
+        {
             name: "DebtorName",
             header: "Account name",
             headerAlign: "center",
@@ -641,16 +637,35 @@ export default function DifotReport({
                 minDate: minDateOldRdd,
                 maxDate: maxDateOldRdd,
             },
-            render: ({ value,cellProps }) => {
-                return (cellProps.data?.hasOwnProperty("OldRdd") &&
-                    value == undefined) ||
+            render: ({ value, cellProps }) => {
+                const dateValue =
                     value == null
-                    ? ""
-                    : cellProps.data?.hasOwnProperty("OldRdd") &&
-                      moment(value).format("DD-MM-YYYY hh:mm A") ==
-                          "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY");
+                        ? ""
+                        : moment(
+                              value.replace(/\//g, "-"),
+                              [
+                                  "DD-MM-YYYY hh:mm:ss A",
+                                  "DD-MM-YYYY",
+                                  "DD-MM-YYYY hh:mm A",
+                              ],
+                              true
+                          ).isValid()
+                        ? moment(
+                              value.replace(/\//g, "-"),
+                              [
+                                  "DD-MM-YYYY hh:mm:ss A",
+                                  "DD-MM-YYYY",
+                                  "DD-MM-YYYY hh:mm A",
+                              ],
+                              true
+                          ).format("DD-MM-YYYY")
+                        : "";
+
+                return (
+                    <span className="flex justify-center items-center text-left">
+                        {dateValue}
+                    </span>
+                );
             },
         },
         {
