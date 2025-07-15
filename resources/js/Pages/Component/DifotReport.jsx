@@ -282,13 +282,11 @@ export default function DifotReport({
                         } else {
                             acc[columnKey] = "";
                         }
-                    }
-                    if (
+                    } else if (
                         [
                             "ActualDeliveyDate",
                             "PickupDate",
                             "NewRdd",
-                            "OldRdd",
                             "RDD",
                         ].includes(columnKey)
                     ) {
@@ -298,7 +296,26 @@ export default function DifotReport({
                         } else {
                             acc[columnKey] = "";
                         }
-                    } else if (["OldRdd", "NewRdd"].includes(columnKey)) {
+                    } else if (["OldRdd"].includes(columnKey)) {
+                        const rawDate = person[columnKey];
+                        const parsed = moment(
+                            rawDate,
+                            [
+                                "DD/MM/YYYY hh:mm:ss A",
+                                "DD-MM-YYYY hh:mm:ss A",
+                                "DD/MM/YYYY hh:mm A",
+                                "DD-MM-YYYY hh:mm A",
+                                "DD/MM/YYYY",
+                                "DD-MM-YYYY",
+                                moment.ISO_8601,
+                            ],
+                            true
+                        ); // true = strict parsing
+
+                        acc[columnKey] = parsed.isValid()
+                            ? parsed.format("DD-MM-YYYY")
+                            : "";
+                    } else if (["NewRdd"].includes(columnKey)) {
                         acc[columnKey] = person[columnKey]?.replace(/\//g, "-");
                         //value.replace(/\//g, '-')
                     } else {
