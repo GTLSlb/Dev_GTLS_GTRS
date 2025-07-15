@@ -301,15 +301,14 @@ export default function DifotReport({
                         const parsed = moment(
                             rawDate,
                             [
-                                "DD/MM/YYYY hh:mm:ss A",
-                                "DD-MM-YYYY hh:mm:ss A",
-                                "DD/MM/YYYY hh:mm A",
-                                "DD-MM-YYYY hh:mm A",
-                                "DD/MM/YYYY",
-                                "DD-MM-YYYY",
+                                "D/M/YYYY hh:mm:ss A",
+                                "D-M-YYYY hh:mm:ss A",
+                                "D/M/YYYY hh:mm A",
+                                "D-M-YYYY hh:mm A",
+                                "D/M/YYYY",
+                                "D-M-YYYY",
                                 moment.ISO_8601,
-                            ],
-                            true
+                            ] // no strict mode
                         ); // true = strict parsing
 
                         acc[columnKey] = parsed.isValid()
@@ -661,23 +660,19 @@ export default function DifotReport({
                         : moment(
                               value.replace(/\//g, "-"),
                               [
-                                  "DD-MM-YYYY hh:mm:ss A",
-                                  "DD-MM-YYYY",
-                                  "DD-MM-YYYY hh:mm A",
-                              ],
-                              true
+                                  "D-M-YYYY hh:mm:ss A",
+                                  "D-M-YYYY hh:mm A",
+                                  "D-M-YYYY",
+                                  moment.ISO_8601,
+                              ] // No `true` → non-strict parsing
                           ).isValid()
-                        ? moment(
-                              value.replace(/\//g, "-"),
-                              [
-                                  "DD-MM-YYYY hh:mm:ss A",
-                                  "DD-MM-YYYY",
-                                  "DD-MM-YYYY hh:mm A",
-                              ],
-                              true
-                          ).format("DD-MM-YYYY")
+                        ? moment(value.replace(/\//g, "-"), [
+                              "D-M-YYYY hh:mm:ss A",
+                              "D-M-YYYY hh:mm A",
+                              "D-M-YYYY",
+                              moment.ISO_8601,
+                          ]).format("DD-MM-YYYY")
                         : "";
-
                 return (
                     <span className="flex justify-center items-center text-left">
                         {dateValue}
