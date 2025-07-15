@@ -157,7 +157,7 @@ export default function ExcelDeliveryReport({
                     commentsArray.length > 0
                 ) {
                     const lastCommentObj =
-                        commentsArray[commentsArray.length - 1];
+                        commentsArray[0];
                     const comment = lastCommentObj.Comment || "";
                     const addedAt = lastCommentObj.AddedAt
                         ? new Date(lastCommentObj.AddedAt).toLocaleString(
@@ -594,7 +594,7 @@ export default function ExcelDeliveryReport({
                 ) => {
                     const lastValue =
                         Array.isArray(value) && value.length > 0
-                            ? value[value.length - 1].Comment
+                            ? value[0].Comment
                             : ""; // handle empty or non-array
                     td.textContent = lastValue;
                     return td;

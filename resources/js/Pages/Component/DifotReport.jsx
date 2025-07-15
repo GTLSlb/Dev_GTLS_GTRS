@@ -277,7 +277,6 @@ export default function DifotReport({
                     if (
                         [
                             "ChangedAt",
-                            "OldRdd",
                         ].includes(columnKey)
                     ) {
                         const date = new Date(person[columnKey]);
@@ -292,6 +291,7 @@ export default function DifotReport({
                             "ActualDeliveyDate",
                             "PickupDate",
                             "NewRdd",
+                            "OldRdd",
                             "RDD",
                         ].includes(columnKey)
                     ) {
@@ -428,6 +428,14 @@ export default function DifotReport({
             defaultWidth: 170,
             filterEditor: StringFilter,
         },
+         {
+            name: "DebtorName",
+            header: "Account name",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
         {
             name: "PickupDate",
             header: "Pickup Date",
@@ -446,7 +454,7 @@ export default function DifotReport({
                     : moment(value).format("DD-MM-YYYY hh:mm A") ==
                       "Invalid date"
                     ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+                    : moment(value).format("DD-MM-YYYY");
             },
         },
         {
@@ -633,18 +641,16 @@ export default function DifotReport({
                 minDate: minDateOldRdd,
                 maxDate: maxDateOldRdd,
             },
-            render: ({ value }) => {
-                const dateValue =
-                    value == undefined || value == null
-                        ? ""
-                        : value
-                        ? value.replace(/\//g, "-")
-                        : "";
-                return (
-                    <span className="flex justify-start items-left text-left">
-                        {dateValue}
-                    </span>
-                );
+            render: ({ value,cellProps }) => {
+                return (cellProps.data?.hasOwnProperty("OldRdd") &&
+                    value == undefined) ||
+                    value == null
+                    ? ""
+                    : cellProps.data?.hasOwnProperty("OldRdd") &&
+                      moment(value).format("DD-MM-YYYY hh:mm A") ==
+                          "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY");
             },
         },
         {
@@ -764,7 +770,7 @@ export default function DifotReport({
                     : moment(value).format("DD-MM-YYYY hh:mm A") ==
                       "Invalid date"
                     ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+                    : moment(value).format("DD-MM-YYYY");
             },
         },
         {

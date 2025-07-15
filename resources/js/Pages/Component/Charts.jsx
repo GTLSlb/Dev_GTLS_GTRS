@@ -1452,6 +1452,13 @@ export default function charts({
             emptyValue: "",
         },
         {
+            name: "DebtorName",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
             name: "Pallets",
             operator: "eq",
             type: "string",
@@ -1570,7 +1577,7 @@ export default function charts({
             value: "",
             emptyValue: "",
         },
-         {
+        {
             name: "DelayDescription",
             operator: "contains",
             type: "string",
@@ -1584,7 +1591,7 @@ export default function charts({
             value: "",
             emptyValue: "",
         },
-         {
+        {
             name: "Resolution",
             operator: "contains",
             type: "string",
@@ -2339,9 +2346,11 @@ export default function charts({
                     Authorization: `Bearer ${AToken}`,
                 },
             });
-            setCommentsCheck(res.data.some(
-                (item) => item.Comment && item.Comment.trim().length > 0
-            ))
+            setCommentsCheck(
+                res.data.some(
+                    (item) => item.Comment && item.Comment.trim().length > 0
+                )
+            );
             setExcelDailyReportData(res.data || []);
 
             // Check if setCellLoading exists before calling it
