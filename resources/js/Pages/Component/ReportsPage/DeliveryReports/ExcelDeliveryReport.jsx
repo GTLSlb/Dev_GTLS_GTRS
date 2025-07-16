@@ -63,6 +63,30 @@ export default function ExcelDeliveryReport({
     fetchDeliveryReportExcel,
     deliveryCommentsOptions,
 }) {
+    const dateFields = ["DeliveryRequiredDateTime", "DeliveredDateTime"];
+    // useEffect(() => {
+    const formattedData = deliveryReportData.map((row) => {
+        const newRow = { ...row };
+
+        dateFields.forEach((field) => {
+            if (row[field]) {
+                const parsed = moment(row[field], [
+                    "DD-MM-YYYY hh:mm A",
+                    "DD/MM/YYYY hh:mm A",
+                    "YYYY-MM-DDTHH:mm:ssZ",
+                    "YYYY-MM-DD",
+                ]);
+
+                newRow[field] = parsed.isValid() ? parsed.toDate() : null;
+            } else {
+                newRow[field] = null;
+            }
+        });
+
+        return newRow;
+    });
+    // }, []);
+
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const hotTableRef = useRef(null);
     const [visibleColumns, setVisibleColumns] = useState(
@@ -156,8 +180,7 @@ export default function ExcelDeliveryReport({
                     Array.isArray(commentsArray) &&
                     commentsArray.length > 0
                 ) {
-                    const lastCommentObj =
-                        commentsArray[0];
+                    const lastCommentObj = commentsArray[0];
                     const comment = lastCommentObj.Comment || "";
                     const addedAt = lastCommentObj.AddedAt
                         ? new Date(lastCommentObj.AddedAt).toLocaleString(
@@ -247,25 +270,25 @@ export default function ExcelDeliveryReport({
 
     // Compute filtered data sets based on CustomerTypeId
     const [filteredMetcashData, setFilteredMetcashData] = useState(
-        deliveryReportData?.filter((item) => item?.CustomerTypeId === 1) || []
+        formattedData?.filter((item) => item?.CustomerTypeId === 1) || []
     );
     const [filteredWoolworthData, setFilteredWoolworthData] = useState(
-        deliveryReportData?.filter((item) => item?.CustomerTypeId === 2) || []
+        formattedData?.filter((item) => item?.CustomerTypeId === 2) || []
     );
     const [filteredOtherData, setFilteredOtherData] = useState(
-        deliveryReportData?.filter((item) => item?.CustomerTypeId === 3) || []
+        formattedData?.filter((item) => item?.CustomerTypeId === 3) || []
     );
 
     useEffect(() => {
         if (deliveryReportData?.length > 0) {
             setFilteredMetcashData(
-                deliveryReportData.filter((item) => item?.CustomerTypeId === 1)
+                formattedData.filter((item) => item?.CustomerTypeId === 1)
             );
             setFilteredWoolworthData(
-                deliveryReportData.filter((item) => item?.CustomerTypeId === 2)
+                formattedData.filter((item) => item?.CustomerTypeId === 2)
             );
             setFilteredOtherData(
-                deliveryReportData.filter((item) => item?.CustomerTypeId === 3)
+                formattedData.filter((item) => item?.CustomerTypeId === 3)
             );
         }
     }, [deliveryReportData]);
@@ -535,12 +558,14 @@ export default function ExcelDeliveryReport({
             {
                 data: "DeliveryRequiredDateTime",
                 title: "Delivery Required DateTime",
-                type: "date",
+                type: "date", // must stay as 'date'
+                dateFormat: "DD/MM/YYYY", // for filters and sorting
+                correctFormat: true, // try to auto-convert strings (optional)
                 readOnly: true,
-                headerClassName: "htLeft",
                 editor: false,
+                headerClassName: "htLeft",
                 width: 150,
-                renderer: dateRenderer, // ✅ Applies the custom renderer
+                renderer: dateRenderer,
             },
             {
                 data: "DeliveredDateTime",
@@ -666,6 +691,8 @@ export default function ExcelDeliveryReport({
     };
 
     function SaveComments() {
+        const hotInstance = hotTableRef.current?.hotInstance;
+        hotInstance?.deselectCell(); // 👈 clears selection
         setIsLoading(true);
         const inputValues = changedRows?.map((item) => ({
             DeliveryCommentId: item.DeliveryCommentId
@@ -746,18 +773,10 @@ export default function ExcelDeliveryReport({
                 }
             });
     }
-
-    // useEffect(() => {
-    //     if (hotTableRef.current) {
-    //         setTimeout(() => {
-    //             hotTableRef.current.hotInstance.render();
-    //         }, 100);
-    //     }
-    // }, []);
     const handleSaveShortcut = (event) => {
         if (event.ctrlKey && event.key === "s") {
             event.preventDefault(); // ✅ Prevent browser's default "Save Page" action
-            if (changedRows.length > 0) {
+            if (changedRows.length > 0 && !isLoading && canEditCommentExcelDeliveryReport(currentUser)) {
                 SaveComments(); // ✅ Call your save function here
             }
         }
