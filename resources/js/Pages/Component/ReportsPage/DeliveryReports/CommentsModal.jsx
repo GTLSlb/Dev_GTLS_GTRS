@@ -21,11 +21,11 @@ export default function CommentsModal({ commentsData, isOpen, onOpenChange }) {
                         <>
                             <ModalHeader className="flex flex-col gap-1">
                                 Approved Comments for:
-                                {commentsData?.ConsignmentNo}
+                                {commentsData[0]}
                             </ModalHeader>
                             <ModalBody>
                                 <div className="flex flex-col gap-3">
-                                    {commentsData?.ApprovedComments?.map(
+                                    {commentsData[18]?.map(
                                         (item) => (
                                             <div className="flex flex-col gap-1">
                                                 <Divider />

@@ -330,74 +330,18 @@ export default function ExcelDeliveryReport({
     /* ---------------------------
      Handsontable Columns Setup
   --------------------------- */
-    const handleButtonClick = (rowData) => {
-        // alert(`Action clicked for Consignment: ${rowData.ConsignmentNo}`);
-        // Example: Navigate to details page
-        navigate("/gtrs/consignment-details", {
-            state: { activeCons: rowData.ConsignmentID },
-        });
-    };
-
-    // 📌 Custom Button Renderer
-    // const buttonRenderer = (
-    //     instance,
-    //     td,
-    //     row,
-    //     col,
-    //     prop,
-    //     value,
-    //     cellProperties
-    // ) => {
-    //     td.innerHTML = ""; // Clear existing content
-
-    //     // Create container div for buttons
-    //     const buttonContainer = document.createElement("div");
-    //     buttonContainer.className = "flex space-x-2 w-[15rem]"; // Tailwind for spacing
-
-    //     // 🔍 View Button
-    //     const viewButton = document.createElement("button");
-    //     viewButton.className =
-    //         "flex items-center gap-2 px-3 py-1 bg-blue-500 text-white rounded shadow-md hover:bg-blue-600 transition";
-    //     viewButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-    //     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25M8.25 9V5.25M15.75 5.25V4.5a2.25 2.25 0 00-4.5 0v.75M8.25 5.25V4.5a2.25 2.25 0 00-4.5 0v.75"></path>
-    //     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9h-7.5a4.5 4.5 0 00-4.5 4.5v4.5a2.25 2.25 0 002.25 2.25h11.25a2.25 2.25 0 002.25-2.25v-4.5a4.5 4.5 0 00-4.5-4.5z"></path>
-    //     </svg> View`;
-    //     viewButton.onclick = () => {
-    //         const rowData = instance.getSourceDataAtRow(row);
-    //         handleButtonClick(rowData);
-    //     };
-
-    //     // 🗑️ Delete Button
-    //     const deleteButton = document.createElement("button");
-    //     deleteButton.className =
-    //         "flex items-center gap-2 px-3 py-1 bg-red-500 text-white rounded shadow-md hover:bg-red-600 transition";
-    //     deleteButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-    //     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
-    //     </svg> Delete`;
-    //     deleteButton.onclick = () => {
-    //         const rowData = instance.getSourceDataAtRow(row);
-    //         alert(`Deleting consignment: ${rowData.ConsignmentNo}`);
-    //         // TODO: Implement actual delete logic
-    //     };
-
-    //     // Append buttons to container
-    //     buttonContainer.appendChild(viewButton);
-    //     buttonContainer.appendChild(deleteButton);
-
-    //     // Append container to cell
-    //     td.appendChild(buttonContainer);
-
-    //     return td;
-    // };
-
-    const buttonRenderer = useCallback(
+     const buttonRenderer = useCallback(
         (instance, td, row, col, prop, value, cellProperties) => {
             Handsontable.dom.empty(td);
-            const rowData = instance.getSourceDataAtRow(row);
 
-            // ✅ Only render button if there are approved comments
+            const visualRowData = instance.getDataAtRow(row);
+            const colHeaders = instance.getColHeader(); // Optional for prop-based mapping
+            const approvedComments =
+                visualRowData?.[instance.propToCol("ApprovedComments")];
+
             if (
-                rowData?.ApprovedComments?.length > 0 &&
+                Array.isArray(approvedComments) &&
+                approvedComments.length > 0 &&
                 canViewCommentsExcelDeliveryReport(currentUser)
             ) {
                 const button = document.createElement("button");
@@ -415,7 +359,8 @@ export default function ExcelDeliveryReport({
             `;
 
                 button.addEventListener("click", () => {
-                    handleViewComments(rowData);
+                    // You might need to pass a full row object if needed
+                    handleViewComments(visualRowData);
                 });
 
                 td.style.textAlign = "center";
