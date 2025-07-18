@@ -346,17 +346,18 @@ export default function Utilization({
             readOnly: true,
         },
         {
-            title: "Vehicle Pallet Utilisation",
+            data: "PalletUtilization",
+            title: "Vehicle Pallet Utilisation (%)",
             type: "numeric",
             readOnly: true,
             renderer: (instance, td, row, col, prop, value, cellProperties) => {
-                const val = calculateUtilization(
-                    instance,
-                    row,
-                    "PalletsCollected",
-                    "PalletsVehicleCapacity"
-                );
-                td.innerText = val + "%";
+                // const val = calculateUtilization(
+                //     instance,
+                //     row,
+                //     "PalletsCollected",
+                //     "PalletsVehicleCapacity"
+                // );
+                td.innerText = value + "%";
                 td.classList.add("htLeft");
                 return td;
             },
@@ -374,18 +375,18 @@ export default function Utilization({
             readOnly: true,
         },
         {
-            data: "LoadWeightUtilisation",
+            data: "WeightUtilization",
             title: "Load Weight Utilisation (%)",
             type: "numeric",
             readOnly: true,
             renderer: (instance, td, row, col, prop, value, cellProperties) => {
-                const val = calculateUtilization(
-                    instance,
-                    row,
-                    "Weight",
-                    "WeightVehicleCapacity"
-                );
-                td.innerText = val + "%";
+                // const val = calculateUtilization(
+                //     instance,
+                //     row,
+                //     "Weight",
+                //     "WeightVehicleCapacity"
+                // );
+                td.innerText = value + "%";
                 td.classList.add("htLeft");
                 return td;
             },
