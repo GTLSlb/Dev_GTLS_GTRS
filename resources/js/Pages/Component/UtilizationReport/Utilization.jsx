@@ -535,7 +535,7 @@ export default function Utilization({
                     timeOut,
                     45
                 );
-                td.innerText = demurrageCharges.toFixed(2); // Display with 2 decimal places
+                td.innerText = `$ ${demurrageCharges.toFixed(2)}`; // Display with 2 decimal places
                 td.classList.add("htLeft"); // Align text to the left
                 return td;
             },
@@ -668,7 +668,7 @@ export default function Utilization({
                     timeOut,
                     30
                 );
-                td.innerText = demurrageCharges.toFixed(2); // Display with 2 decimal places
+                td.innerText = `$ ${demurrageCharges.toFixed(2)}`; // Display with 2 decimal places
                 td.classList.add("htLeft"); // Align text to the left
                 return td;
             },
@@ -747,7 +747,7 @@ export default function Utilization({
 
                 // Calculate the sum
                 const sum = unloadDemurrageNumber + collectionDemurrageNumber;
-                td.innerText = sum.toFixed(2);
+                td.innerText = `$ ${sum.toFixed(2)}`;
                 td.classList.add("htLeft"); // Align text to the left
                 return td;
             },
@@ -1126,7 +1126,7 @@ export default function Utilization({
                 >
                     Export
                 </Button>
-                <UtilizationImport />
+                {/*<UtilizationImport />*/}
             </div>
             {tableData && !isLoading && (
                 <div id="" className="ht-theme-main mt-4 pb-10">
