@@ -1,4 +1,10 @@
-import { Fragment, useEffect, useState, useRef, useImperativeHandle, } from "react";
+import {
+    Fragment,
+    useEffect,
+    useState,
+    useRef,
+    useImperativeHandle,
+} from "react";
 import { Popover, Transition } from "@headlessui/react";
 import moment from "moment";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
@@ -245,6 +251,7 @@ export default function DifotReport({
             Reason: "Reason",
             ReasonDesc: "Reason Description",
             ChangedAt: "ChangedAt",
+            DeliveryComment: "Delivery Comment",
             LTLFTL: "LTL/FTL",
             ActualDeliveyDate: "Actual Delivery Date",
             OnTime: "On Time",
@@ -267,14 +274,7 @@ export default function DifotReport({
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
-                    if (
-                        [
-                            "ActualDeliveyDate",
-                            "PickupDate",
-                            "ChangedAt",
-                            "RDD",
-                        ].includes(columnKey)
-                    ) {
+                    if (["ChangedAt"].includes(columnKey)) {
                         const date = new Date(person[columnKey]);
                         if (!isNaN(date)) {
                             acc[columnKey] =
@@ -282,7 +282,39 @@ export default function DifotReport({
                         } else {
                             acc[columnKey] = "";
                         }
-                    } else if (["OldRdd", "NewRdd"].includes(columnKey)) {
+                    } else if (
+                        [
+                            "ActualDeliveyDate",
+                            "PickupDate",
+                            "NewRdd",
+                            "RDD",
+                        ].includes(columnKey)
+                    ) {
+                        const date = new Date(person[columnKey]);
+                        if (!isNaN(date)) {
+                            acc[columnKey] = moment(date)?.format("DD-MM-YYYY");
+                        } else {
+                            acc[columnKey] = "";
+                        }
+                    } else if (["OldRdd"].includes(columnKey)) {
+                        const rawDate = person[columnKey];
+                        const parsed = moment(
+                            rawDate,
+                            [
+                                "D/M/YYYY hh:mm:ss A",
+                                "D-M-YYYY hh:mm:ss A",
+                                "D/M/YYYY hh:mm A",
+                                "D-M-YYYY hh:mm A",
+                                "D/M/YYYY",
+                                "D-M-YYYY",
+                                moment.ISO_8601,
+                            ] // no strict mode
+                        ); // true = strict parsing
+
+                        acc[columnKey] = parsed.isValid()
+                            ? parsed.format("DD-MM-YYYY")
+                            : "";
+                    } else if (["NewRdd"].includes(columnKey)) {
                         acc[columnKey] = person[columnKey]?.replace(/\//g, "-");
                         //value.replace(/\//g, '-')
                     } else {
@@ -380,12 +412,12 @@ export default function DifotReport({
             const fieldValue = item[fieldName];
             // Check if the label is not already included
             if (!uniqueLabels.has(fieldValue)) {
-                    uniqueLabels.add(fieldValue);
-                    const newObject = {
-                        id: fieldValue?.toString(),
-                        label: fieldValue?.toString(),
-                    };
-                    fieldValue == undefined ? null : newData.push(newObject);
+                uniqueLabels.add(fieldValue);
+                const newObject = {
+                    id: fieldValue?.toString(),
+                    label: fieldValue?.toString(),
+                };
+                fieldValue == undefined ? null : newData.push(newObject);
             }
         });
         return newData;
@@ -409,6 +441,14 @@ export default function DifotReport({
             filterEditor: StringFilter,
         },
         {
+            name: "DebtorName",
+            header: "Account name",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
+        {
             name: "PickupDate",
             header: "Pickup Date",
             headerAlign: "center",
@@ -426,7 +466,7 @@ export default function DifotReport({
                     : moment(value).format("DD-MM-YYYY hh:mm A") ==
                       "Invalid date"
                     ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+                    : moment(value).format("DD-MM-YYYY");
             },
         },
         {
@@ -591,7 +631,7 @@ export default function DifotReport({
                       moment(value).format("DD-MM-YYYY hh:mm A") ==
                           "Invalid date"
                     ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+                    : moment(value).format("DD-MM-YYYY");
             },
         },
         {
@@ -613,15 +653,28 @@ export default function DifotReport({
                 minDate: minDateOldRdd,
                 maxDate: maxDateOldRdd,
             },
-            render: ({ value }) => {
+            render: ({ value, cellProps }) => {
                 const dateValue =
-                    value == undefined || value == null
+                    value == null
                         ? ""
-                        : value
-                        ? value.replace(/\//g, "-")
+                        : moment(
+                              value.replace(/\//g, "-"),
+                              [
+                                  "D-M-YYYY hh:mm:ss A",
+                                  "D-M-YYYY hh:mm A",
+                                  "D-M-YYYY",
+                                  moment.ISO_8601,
+                              ] // No `true` → non-strict parsing
+                          ).isValid()
+                        ? moment(value.replace(/\//g, "-"), [
+                              "D-M-YYYY hh:mm:ss A",
+                              "D-M-YYYY hh:mm A",
+                              "D-M-YYYY",
+                              moment.ISO_8601,
+                          ]).format("DD-MM-YYYY")
                         : "";
                 return (
-                    <span className="flex justify-start items-left text-left">
+                    <span className="flex justify-center items-center text-left">
                         {dateValue}
                     </span>
                 );
@@ -640,17 +693,12 @@ export default function DifotReport({
                 maxDate: maxDateNewRdd,
             },
             render: ({ value, cellProps }) => {
-                const dateValue =
-                    value == undefined || value == null
-                        ? ""
-                        : value
-                        ? value.replace(/\//g, "-")
-                        : "";
-                return (
-                    <span className="flex justify-start items-left text-left">
-                        {dateValue}
-                    </span>
-                );
+                return value == undefined || value == null
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A") ==
+                      "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY");
             },
         },
         {
@@ -700,6 +748,15 @@ export default function DifotReport({
             },
         },
         {
+            name: "DeliveryComment",
+            header: "Delivery Comment",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
+        {
             name: "LTLFTL",
             header: "LTL/FTL",
             headerAlign: "center",
@@ -740,7 +797,7 @@ export default function DifotReport({
                     : moment(value).format("DD-MM-YYYY hh:mm A") ==
                       "Invalid date"
                     ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+                    : moment(value).format("DD-MM-YYYY");
             },
         },
         {
@@ -777,50 +834,6 @@ export default function DifotReport({
             },
         },
         {
-            name: "DelayReason",
-            header: "Delay Reason",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-            render: ({ value }) => {
-                return (
-                    <span className="flex justify-start items-left text-left">
-                        {value}
-                    </span>
-                );
-            },
-        },
-        {
-            name: "POD",
-            header: "POD",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: false,
-                wrapMultiple: false,
-                dataSource: PODOptions,
-            },
-            render: ({ value }) => {
-                return value == true ? (
-                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                        {value?.toString()}
-                    </span>
-                ) : value == false ? (
-                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        {value?.toString()}
-                    </span>
-                ): (
-                    <span className="inline-flex items-center px-3 py-0.5 text-sm">
-                        {value ? value.toString() : ""}
-                    </span>
-                );
-            },
-        },
-        {
             name: "GtlsError",
             header: "GTLS Error",
             headerAlign: "center",
@@ -849,8 +862,8 @@ export default function DifotReport({
             },
         },
         {
-            name: "TransportComment",
-            header: "Transport Comments",
+            name: "DelayReason",
+            header: "Delay Reason",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
@@ -860,6 +873,61 @@ export default function DifotReport({
                 return (
                     <span className="flex justify-start items-left text-left">
                         {value}
+                    </span>
+                );
+            },
+        },
+        {
+            name: "DelayDescription",
+            header: "Delay Description",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
+        {
+            name: "Explanation",
+            header: "Explanation",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
+        {
+            name: "Resolution",
+            header: "Resolution",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
+        {
+            name: "POD",
+            header: "POD",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: false,
+                wrapMultiple: false,
+                dataSource: PODOptions,
+            },
+            render: ({ value }) => {
+                return value == true ? (
+                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                        {value?.toString()}
+                    </span>
+                ) : value == false ? (
+                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                        {value?.toString()}
+                    </span>
+                ) : (
+                    <span className="inline-flex items-center px-3 py-0.5 text-sm">
+                        {value ? value.toString() : ""}
                     </span>
                 );
             },

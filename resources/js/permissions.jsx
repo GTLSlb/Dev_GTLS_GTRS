@@ -952,3 +952,116 @@ export function canViewChart(currentUser, chartPermission) {
         )
     );
 }
+
+export function canViewExcelDeliveryReport(currentUser) {
+    const targetPermissionName = "ExcelTable_View";
+    const pageName = "Excel Delivery Report";
+    const targetPage = currentUser.Pages.find(
+        (page) => page.PageName === pageName
+    );
+    return (
+        targetPage &&
+        targetPage.Features.some(
+            (feature) => feature.FunctionName === targetPermissionName
+        )
+    );
+}
+
+
+export function canViewCommentsExcelDeliveryReport(currentUser) {
+    const targetPermissionName = "DeliveryReportComments_View";
+    const pageName = "Excel Delivery Report";
+    const targetPage = currentUser.Pages.find(
+        (page) => page.PageName === pageName
+    );
+    return (
+        targetPage &&
+        targetPage.Features.some(
+            (feature) => feature.FunctionName === targetPermissionName
+        )
+    );
+}
+
+export function canViewMetcahsExcelDeliveryReport(currentUser) {
+    const targetPermissionName = "MetcashDeliveryReport_View";
+    const pageName = "Excel Delivery Report";
+    const targetPage = currentUser.Pages.find(
+        (page) => page.PageName === pageName
+    );
+    return (
+        targetPage &&
+        targetPage.Features.some(
+            (feature) => feature.FunctionName === targetPermissionName
+        )
+    );
+}
+
+export function canViewWoolworthsExcelDeliveryReport(currentUser) {
+    const targetPermissionName = "WoolworthsDeliveryReport_View";
+    const pageName = "Excel Delivery Report";
+    const targetPage = currentUser.Pages.find(
+        (page) => page.PageName === pageName
+    );
+    return (
+        targetPage &&
+        targetPage.Features.some(
+            (feature) => feature.FunctionName === targetPermissionName
+        )
+    );
+}
+
+export function canViewOthersExcelDeliveryReport(currentUser) {
+    const targetPermissionName = "OtherDeliveryReport_View";
+    const pageName = "Excel Delivery Report";
+    const targetPage = currentUser.Pages.find(
+        (page) => page.PageName === pageName
+    );
+    return (
+        targetPage &&
+        targetPage.Features.some(
+            (feature) => feature.FunctionName === targetPermissionName
+        )
+    );
+}
+
+export function canAddCommentExcelDeliveryReport(currentUser) {
+    const targetPermissionName = "DeliveryReportComment_add";
+    const pageName = "Excel Delivery Report";
+    const targetPage = currentUser.Pages.find(
+        (page) => page.PageName === pageName
+    );
+    return (
+        targetPage &&
+        targetPage.Features.some(
+            (feature) => feature.FunctionName === targetPermissionName
+        )
+    );
+}
+
+export function canEditCommentExcelDeliveryReport(currentUser) {
+    const targetPermissionName = "DeliveryReportComment_edit";
+    const pageName = "Excel Delivery Report";
+    const targetPage = currentUser.Pages.find(
+        (page) => page.PageName === pageName
+    );
+    return (
+        targetPage &&
+        targetPage.Features.some(
+            (feature) => feature.FunctionName === targetPermissionName
+        )
+    );
+}
+
+export function canApproveCommentExcelDeliveryReport(currentUser) {
+    const targetPermissionName = "Approve_Comments";
+    const pageName = "Excel Delivery Report";
+    const targetPage = currentUser.Pages.find(
+        (page) => page.PageName === pageName
+    );
+    return (
+        targetPage &&
+        targetPage.Features.some(
+            (feature) => feature.FunctionName === targetPermissionName
+        )
+    );
+}
