@@ -63,7 +63,11 @@ export default function ExcelDeliveryReport({
     fetchDeliveryReportExcel,
     deliveryCommentsOptions,
 }) {
-    const dateFields = ["DeliveryRequiredDateTime", "DeliveredDateTime"];
+    const dateFields = [
+        "DeliveryRequiredDateTime",
+        "DespatchDateTime",
+        "DeliveredDateTime",
+    ];
     // useEffect(() => {
     const formattedData = deliveryReportData.map((row) => {
         const newRow = { ...row };
@@ -330,7 +334,7 @@ export default function ExcelDeliveryReport({
     /* ---------------------------
      Handsontable Columns Setup
   --------------------------- */
-     const buttonRenderer = useCallback(
+    const buttonRenderer = useCallback(
         (instance, td, row, col, prop, value, cellProperties) => {
             Handsontable.dom.empty(td);
 
@@ -721,7 +725,11 @@ export default function ExcelDeliveryReport({
     const handleSaveShortcut = (event) => {
         if (event.ctrlKey && event.key === "s") {
             event.preventDefault(); // ✅ Prevent browser's default "Save Page" action
-            if (changedRows.length > 0 && !isLoading && canEditCommentExcelDeliveryReport(currentUser)) {
+            if (
+                changedRows.length > 0 &&
+                !isLoading &&
+                canEditCommentExcelDeliveryReport(currentUser)
+            ) {
                 SaveComments(); // ✅ Call your save function here
             }
         }
