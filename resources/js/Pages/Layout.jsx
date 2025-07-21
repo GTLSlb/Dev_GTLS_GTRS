@@ -185,7 +185,7 @@ export default function Sidebar(Boolean) {
         return (
             <div>
                 {Token ? (
-                    <div className="bg-smooth h-screen ">
+                    <div className="bg-smooth">
                         {/* <NmainSidebar/> */}
                         <MainSidebar
                             allowedApplications={allowedApplications}
