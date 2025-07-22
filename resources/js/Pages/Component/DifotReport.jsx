@@ -15,6 +15,7 @@ import { forwardRef } from "react";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
+import { formatDateToExcel } from "@/CommonFunctions";
 
 export default function DifotReport({
     difotData,
@@ -274,25 +275,28 @@ export default function DifotReport({
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
-                    if (["ChangedAt"].includes(columnKey)) {
-                        const date = new Date(person[columnKey]);
-                        if (!isNaN(date)) {
-                            acc[columnKey] =
-                                moment(date)?.format("DD-MM-YYYY hh:mm A");
-                        } else {
-                            acc[columnKey] = "";
-                        }
-                    } else if (
+                    // if (["ChangedAt"].includes(columnKey)) {
+                    //     const date = new Date(person[columnKey]);
+                    //     if (!isNaN(date)) {
+                    //         acc[columnKey] =
+                    //             moment(date)?.format("DD-MM-YYYY hh:mm A");
+                    //     } else {
+                    //         acc[columnKey] = "";
+                    //     }
+                    // } else 
+                        if (
                         [
                             "ActualDeliveyDate",
                             "PickupDate",
                             "NewRdd",
+                            "ChangedAt",
+                            "OldRdd",
                             "RDD",
                         ].includes(columnKey)
                     ) {
                         const date = new Date(person[columnKey]);
                         if (!isNaN(date)) {
-                            acc[columnKey] = moment(date)?.format("DD-MM-YYYY");
+                            acc[columnKey] = formatDateToExcel(person[columnKey]);
                         } else {
                             acc[columnKey] = "";
                         }
@@ -349,19 +353,47 @@ export default function DifotReport({
 
             // Apply date format to the DespatchDateTime column
             const despatchDateIndex =
-                newSelectedColumns.indexOf("Despatch DateTime");
+                newSelectedColumns.indexOf("Pickup Date");
             if (despatchDateIndex !== -1) {
                 const cell = row.getCell(despatchDateIndex + 1);
+                cell.numFmt = "dd-mm-yyyy";
+            }
+
+            const OldRddIndex =
+                newSelectedColumns.indexOf("Old RDD");
+            if (OldRddIndex !== -1) {
+                const cell = row.getCell(OldRddIndex + 1);
+                cell.numFmt = "dd-mm-yyyy";
+            }
+
+            const NewRDDIndex =
+                newSelectedColumns.indexOf("New RDD");
+            if (NewRDDIndex !== -1) {
+                const cell = row.getCell(NewRDDIndex + 1);
+                cell.numFmt = "dd-mm-yyyy";
+            }
+
+            const ChangedAtIndex =
+                newSelectedColumns.indexOf("ChangedAt");
+            if (ChangedAtIndex !== -1) {
+                const cell = row.getCell(ChangedAtIndex + 1);
                 cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+            }
+
+            const ActualDeliveryDateIndex =
+                newSelectedColumns.indexOf("Actual Delivery Date");
+            if (ActualDeliveryDateIndex !== -1) {
+                const cell = row.getCell(ActualDeliveryDateIndex + 1);
+                cell.numFmt = "dd-mm-yyyy";
             }
 
             // Apply date format to the DeliveryRequiredDateTime column
             const deliveryReqDateIndex = newSelectedColumns.indexOf(
-                "Delivery Required DateTime"
+                "RDD"
             );
             if (deliveryReqDateIndex !== -1) {
                 const cell = row.getCell(deliveryReqDateIndex + 1);
-                cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
+                cell.numFmt = "dd-mm-yyyy";
             }
         });
 
