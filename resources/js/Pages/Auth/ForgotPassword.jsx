@@ -78,7 +78,7 @@ export default function ForgotPassword({ status }) {
 
     const submitOTP = () => {
         setOTPLoading(true);
-        let concatenatedNumber = parseInt(inputs.join(""), 10);
+        let concatenatedNumber = inputs.join("");
         axios
             .get(`${gtamUrl}OTP/Verification`, {
                 headers: {
