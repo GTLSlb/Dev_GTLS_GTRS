@@ -13,7 +13,7 @@ export default function AddKPIReason({
     selectedReason,
     url,
     currentUser,
-    AToken,
+    Token,
     setSelectedReason,
     setShowAdd,
     fetchData,
@@ -51,7 +51,7 @@ export default function AddKPIReason({
             .post(`${url}Add/KpiReason`, inputValues, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then(() => {
@@ -135,11 +135,11 @@ export default function AddKPIReason({
 
 AddKPIReason.propTypes = {
     selectedReason: PropTypes.object,
-    url: PropTypes.string.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    AToken: PropTypes.string.isRequired,
-    setSelectedReason: PropTypes.func.isRequired,
-    setShowAdd: PropTypes.func.isRequired,
-    fetchData: PropTypes.func.isRequired,
-    closeModal: PropTypes.func.isRequired,
+    url: PropTypes.string,
+    currentUser: PropTypes.object,
+    Token: PropTypes.string,
+    setSelectedReason: PropTypes.func,
+    setShowAdd: PropTypes.func,
+    fetchData: PropTypes.func,
+    closeModal: PropTypes.func,
 };

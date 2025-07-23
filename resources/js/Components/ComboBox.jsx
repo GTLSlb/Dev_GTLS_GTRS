@@ -93,12 +93,12 @@ export default function ComboBox({idField, valueField, onChange, inputValue, opt
 }
 
 ComboBox.propTypes = {
-  idField: PropTypes.string.isRequired,
-  valueField: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
+  idField: PropTypes.string,
+  valueField: PropTypes.string,
+  onChange: PropTypes.func,
   inputValue: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
-  options: PropTypes.array.isRequired,
-  setInputValue: PropTypes.func.isRequired,
+  options: PropTypes.array,
+  setInputValue: PropTypes.func,
   onKeyDown: PropTypes.func,
   onCancel: PropTypes.func,
   isMulti: PropTypes.bool,

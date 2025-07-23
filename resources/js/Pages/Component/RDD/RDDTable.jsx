@@ -439,16 +439,16 @@ export default function RDDTable({
 }
 
 RDDTable.propTypes = {
-    setActiveIndexGTRS: PropTypes.func.isRequired,
-    rddData: PropTypes.array.isRequired,
-    url: PropTypes.string.isRequired,
-    setIncidentId: PropTypes.func.isRequired,
-    Token: PropTypes.string.isRequired,
-    setrddData: PropTypes.func.isRequired,
-    filterValue: PropTypes.object.isRequired,
-    setFilterValue: PropTypes.func.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    userPermission: PropTypes.object.isRequired,
-    rddReasons: PropTypes.array.isRequired,
-    accData: PropTypes.array.isRequired,
+    setActiveIndexGTRS: PropTypes.func,
+    rddData: PropTypes.array,
+    url: PropTypes.string,
+    setIncidentId: PropTypes.func,
+    Token: PropTypes.string,
+    setrddData: PropTypes.func,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    currentUser: PropTypes.object,
+    userPermission: PropTypes.object,
+    rddReasons: PropTypes.array,
+    accData: PropTypes.array,
 };  

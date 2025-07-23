@@ -21,7 +21,7 @@ const LottieComponent = ({ animationData ,height,width,loop,autoplay, }) => {
 };
 
 LottieComponent.propTypes = {
-  animationData: PropTypes.object.isRequired,
+  animationData: PropTypes.object,
   height: PropTypes.string,
   width: PropTypes.string,
   loop: PropTypes.bool,

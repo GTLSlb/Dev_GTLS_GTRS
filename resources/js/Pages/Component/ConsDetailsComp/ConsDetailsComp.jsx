@@ -115,17 +115,17 @@ function ConsDetailsComp({consDetails}) {
 ConsDetailsComp.propTypes = {
     consDetails: PropTypes.arrayOf(
         PropTypes.shape({
-            Description: PropTypes.string.isRequired,
-            Quantity: PropTypes.number.isRequired,
-            Weight: PropTypes.number.isRequired,
-            Length: PropTypes.number.isRequired,
-            Height: PropTypes.number.isRequired,
-            Width: PropTypes.number.isRequired,
-            Cubic: PropTypes.number.isRequired,
-            PalletSpace: PropTypes.number.isRequired,
-            RateUnit: PropTypes.string.isRequired,
+            Description: PropTypes.string,
+            Quantity: PropTypes.number,
+            Weight: PropTypes.number,
+            Length: PropTypes.number,
+            Height: PropTypes.number,
+            Width: PropTypes.number,
+            Cubic: PropTypes.number,
+            PalletSpace: PropTypes.number,
+            RateUnit: PropTypes.string,
         })
-    ).isRequired,
+    ),
 };
 
 export default ConsDetailsComp;

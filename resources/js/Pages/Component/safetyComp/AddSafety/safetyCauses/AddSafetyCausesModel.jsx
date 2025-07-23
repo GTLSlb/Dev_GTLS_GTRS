@@ -222,12 +222,12 @@ export default function AddSafetyCausesModal({
 }
 
 AddSafetyCausesModal.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    handleClose: PropTypes.func.isRequired,
-    url: PropTypes.string.isRequired,
-    AToken: PropTypes.string.isRequired,
+    isOpen: PropTypes.bool,
+    handleClose: PropTypes.func,
+    url: PropTypes.string,
+    Token: PropTypes.string,
     cause: PropTypes.object,
-    updateLocalData: PropTypes.func.isRequired,
-    safetyCauses: PropTypes.array.isRequired,
-    currentUser: PropTypes.object.isRequired,
+    updateLocalData: PropTypes.func,
+    safetyCauses: PropTypes.array,
+    currentUser: PropTypes.object,
 };

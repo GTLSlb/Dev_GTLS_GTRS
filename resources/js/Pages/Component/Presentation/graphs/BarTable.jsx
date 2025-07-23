@@ -111,12 +111,12 @@ function BarTable({ colLabel, colTotal, colOnTime, colKPI, colPOD, colWidth }) {
     );
 }
 BarTable.propTypes = {
-    colLabel: PropTypes.arrayOf(PropTypes.string).isRequired,
-    colTotal: PropTypes.arrayOf(PropTypes.number).isRequired,
-    colOnTime: PropTypes.arrayOf(PropTypes.number).isRequired,
-    colKPI: PropTypes.arrayOf(PropTypes.number).isRequired,
-    colPOD: PropTypes.arrayOf(PropTypes.number).isRequired,
-    colWidth: PropTypes.string.isRequired,
+    colLabel: PropTypes.arrayOf(PropTypes.string),
+    colTotal: PropTypes.arrayOf(PropTypes.number),
+    colOnTime: PropTypes.arrayOf(PropTypes.number),
+    colKPI: PropTypes.arrayOf(PropTypes.number),
+    colPOD: PropTypes.arrayOf(PropTypes.number),
+    colWidth: PropTypes.string,
 };
 
 export default BarTable;

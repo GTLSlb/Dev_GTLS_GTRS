@@ -592,10 +592,10 @@ export default function ExcelDeliveryReport({
 }
 
 ExcelDeliveryReport.propTypes = {
-    url: PropTypes.string.isRequired,
-    Token: PropTypes.string.isRequired,
-    deliveryReportData: PropTypes.array.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    userPermission: PropTypes.object.isRequired,
-    deliveryCommentsOptions: PropTypes.array.isRequired,
+    url: PropTypes.string,
+    Token: PropTypes.string,
+    deliveryReportData: PropTypes.array,
+    currentUser: PropTypes.object,
+    userPermission: PropTypes.object,
+    deliveryCommentsOptions: PropTypes.array,
 };

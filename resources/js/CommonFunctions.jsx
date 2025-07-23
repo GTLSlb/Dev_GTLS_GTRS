@@ -268,9 +268,9 @@ export function ProtectedRoute({ permission, route, element }) {
 }
 
 ProtectedRoute.propTypes = {
-    permission: PropTypes.object.isRequired,
-    route: PropTypes.oneOfType([PropTypes.string, PropTypes.array]).isRequired,
-    element: PropTypes.element.isRequired,
+    permission: PropTypes.object,
+    route: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+    element: PropTypes.element,
 };
 
 function checkUserPermission(permission, route) {

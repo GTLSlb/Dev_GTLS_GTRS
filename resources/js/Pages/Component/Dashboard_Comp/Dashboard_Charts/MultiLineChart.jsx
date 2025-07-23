@@ -57,8 +57,8 @@ const MultiChartLine = (props) => {
 };
 
 MultiChartLine.propTypes = {
-    chartData: PropTypes.array.isRequired,
-    chartTitle: PropTypes.string.isRequired,
+    chartData: PropTypes.array,
+    chartTitle: PropTypes.string,
 };
 
 export default MultiChartLine;

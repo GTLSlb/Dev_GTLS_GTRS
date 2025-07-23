@@ -136,7 +136,7 @@ function SenderReceiverDetails({ Consignment }) {
 }
 
 SenderReceiverDetails.propTypes = {
-    Consignment: PropTypes.array.isRequired,
+    Consignment: PropTypes.array,
 };
 
 export default SenderReceiverDetails;

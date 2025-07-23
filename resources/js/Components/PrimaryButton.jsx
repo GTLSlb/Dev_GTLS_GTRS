@@ -20,5 +20,5 @@ export default function PrimaryButton({ className = '', disabled, children, ...p
 PrimaryButton.propTypes = {
     className: PropTypes.string,
     disabled: PropTypes.bool,
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
 };

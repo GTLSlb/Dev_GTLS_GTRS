@@ -144,16 +144,16 @@ const BasicPieCharts = (props) => {
 };
 
 BasicPieCharts.propTypes = {
-    chartTitle: PropTypes.string.isRequired,
+    chartTitle: PropTypes.string,
     chartData: PropTypes.arrayOf(
         PropTypes.shape({
-            label: PropTypes.string.isRequired,
-            value: PropTypes.number.isRequired,
+            label: PropTypes.string,
+            value: PropTypes.number,
         })
-    ).isRequired,
-    setShowTable: PropTypes.func.isRequired,
-    setChartFilter: PropTypes.func.isRequired,
-    setChartName: PropTypes.func.isRequired,
+    ),
+    setShowTable: PropTypes.func,
+    setChartFilter: PropTypes.func,
+    setChartName: PropTypes.func,
 };
 
 export default BasicPieCharts;

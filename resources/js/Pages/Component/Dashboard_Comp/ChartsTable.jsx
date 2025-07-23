@@ -376,10 +376,10 @@ function ChartsTable({
 }
 
 ChartsTable.propTypes = {
-    chartsData: PropTypes.array.isRequired,
-    setShowTable: PropTypes.func.isRequired,    
-    setChartFilter: PropTypes.func.isRequired,
-    setChartName: PropTypes.func.isRequired,
+    chartsData: PropTypes.array,
+    setShowTable: PropTypes.func,    
+    setChartFilter: PropTypes.func,
+    setChartName: PropTypes.func,
 };
 
 export default ChartsTable;

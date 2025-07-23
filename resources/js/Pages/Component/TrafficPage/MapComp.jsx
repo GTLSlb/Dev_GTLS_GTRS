@@ -13,6 +13,6 @@ export default function MapComp({ consignmentToTrack, setActiveIndexGTRS }) {
     );
 }
 MapComp.propTypes = {
-    consignmentToTrack: PropTypes.object.isRequired,
-    setActiveIndexGTRS: PropTypes.func.isRequired,
+    consignmentToTrack: PropTypes.object,
+    setActiveIndexGTRS: PropTypes.func,
 };

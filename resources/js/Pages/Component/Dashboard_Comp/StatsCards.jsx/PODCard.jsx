@@ -26,8 +26,8 @@ function PODCard({ totalPODTrue, totalCount }) {
 }
 
 PODCard.propTypes = {
-    totalPODTrue: PropTypes.number.isRequired,
-    totalCount: PropTypes.number.isRequired,
+    totalPODTrue: PropTypes.number,
+    totalCount: PropTypes.number,
 };
 
 export default PODCard;

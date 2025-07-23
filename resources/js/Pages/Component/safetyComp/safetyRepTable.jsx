@@ -474,7 +474,7 @@ SafetyRepTable.propTypes = {
     safetyData: PropTypes.array,
     Token: PropTypes.string,
     url: PropTypes.string,
-    filterValue: PropTypes.object,
+    filterValue: PropTypes.array,
     customerAccounts: PropTypes.array,
     setFilterValue: PropTypes.func,
     currentUser: PropTypes.object,

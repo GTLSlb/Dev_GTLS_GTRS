@@ -450,13 +450,13 @@ function NewTransitDays({
 }
 
 NewTransitDays.propTypes = {
-    setNewTransitDays: PropTypes.func.isRequired,
-    newTransitDays: PropTypes.array.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    userPermission: PropTypes.object.isRequired,
-    filterValue: PropTypes.object.isRequired,
-    setFilterValue: PropTypes.func.isRequired,
-    url: PropTypes.string.isRequired,
+    setNewTransitDays: PropTypes.func,
+    newTransitDays: PropTypes.array,
+    currentUser: PropTypes.object,
+    userPermission: PropTypes.object,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    url: PropTypes.string,
 };
 
 export default NewTransitDays;

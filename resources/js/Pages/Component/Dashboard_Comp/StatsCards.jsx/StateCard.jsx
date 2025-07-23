@@ -20,7 +20,7 @@ function StateCard({ states }) {
 }
 
 StateCard.propTypes = {
-    states: PropTypes.arrayOf(PropTypes.string).isRequired,
+    states: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default StateCard;

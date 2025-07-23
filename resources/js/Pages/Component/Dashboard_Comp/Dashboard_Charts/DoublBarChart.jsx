@@ -67,11 +67,11 @@ const DoubleBarChart = (props) => {
 };
 
 DoubleBarChart.propTypes = {
-    chartTitle: PropTypes.string.isRequired,
-    chartData: PropTypes.array.isRequired,
-    setShowTable: PropTypes.func.isRequired,
-    setChartFilter: PropTypes.func.isRequired,
-    setChartName: PropTypes.func.isRequired,
+    chartTitle: PropTypes.string,
+    chartData: PropTypes.array,
+    setShowTable: PropTypes.func,
+    setChartFilter: PropTypes.func,
+    setChartName: PropTypes.func,
 };
 
 export default DoubleBarChart;

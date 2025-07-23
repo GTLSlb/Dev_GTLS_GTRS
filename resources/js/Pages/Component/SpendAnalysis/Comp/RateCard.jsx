@@ -801,7 +801,7 @@ function RateCard() {
 }
 
 RateCard.propTypes = {
-    companyDataOptimized: PropTypes.object.isRequired,
+    companyDataOptimized: PropTypes.object,
 };
 
 export default RateCard;

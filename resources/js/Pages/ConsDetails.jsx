@@ -233,6 +233,6 @@ export default function ConsDetails({ url, currentUser }) {
     }
 }
 ConsDetails.propTypes = {
-    url: PropTypes.string.isRequired,
-    currentUser: PropTypes.object.isRequired,
+    url: PropTypes.string,
+    currentUser: PropTypes.object,
 };

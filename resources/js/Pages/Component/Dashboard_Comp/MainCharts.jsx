@@ -424,10 +424,10 @@ export default function MainCharts({
 }
 
 MainCharts.propTypes = {
-    accData: PropTypes.array.isRequired,
-    chartsData: PropTypes.array.isRequired,
-    sideBarToggle: PropTypes.bool.isRequired,
-    chartName: PropTypes.string.isRequired,
-    setChartName: PropTypes.func.isRequired,
-    userPermission: PropTypes.object.isRequired,
+    accData: PropTypes.array,
+    chartsData: PropTypes.array,
+    sideBarToggle: PropTypes.bool,
+    chartName: PropTypes.string,
+    setChartName: PropTypes.func,
+    userPermission: PropTypes.object,
 };

@@ -23,7 +23,7 @@ function ConsCard({ totalCount }) {
 }
 
 ConsCard.propTypes = {
-    totalCount: PropTypes.number.isRequired,
+    totalCount: PropTypes.number,
 };
 
 export default ConsCard;

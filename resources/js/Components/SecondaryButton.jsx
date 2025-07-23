@@ -22,5 +22,5 @@ SecondaryButton.propTypes = {
     type: PropTypes.string,
     className: PropTypes.string,
     disabled: PropTypes.bool,
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
 };

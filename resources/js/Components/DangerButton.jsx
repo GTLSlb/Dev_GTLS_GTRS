@@ -20,5 +20,5 @@ export default function DangerButton({ className = '', disabled, children, ...pr
 DangerButton.propTypes = {
     className: PropTypes.string,
     disabled: PropTypes.bool,
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
 };

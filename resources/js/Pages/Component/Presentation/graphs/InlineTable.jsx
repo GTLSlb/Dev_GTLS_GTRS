@@ -15,7 +15,7 @@ function InlineTable({
     CustomerId,
     setGraphData,
     selectedReceiver,
-    AToken,
+    Token,
 }) {
     const jsonData = graphData;
     const [localGraphData, setLocalGraphData] = useState(graphData);
@@ -108,9 +108,9 @@ function InlineTable({
     }
     CustomNumericEditor.propTypes = {
         value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-        onChange: PropTypes.func.isRequired,
-        onComplete: PropTypes.func.isRequired,
-        cellProps: PropTypes.object.isRequired,
+        onChange: PropTypes.func,
+        onComplete: PropTypes.func,
+        cellProps: PropTypes.object,
     };
 
     jsonData.forEach((item) => {
@@ -332,7 +332,7 @@ function InlineTable({
                 .post(`${url}Add/KpiPackRecord`, baseRecord, {
                     headers: {
                         UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
+                        Authorization: `Bearer ${Token}`,
                     },
                 })
                 .then(() => {
@@ -423,13 +423,13 @@ function InlineTable({
     );
 }
 InlineTable.propTypes = {
-    graphData: PropTypes.array.isRequired,
-    url: PropTypes.string.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    CustomerId: PropTypes.string.isRequired,
-    setGraphData: PropTypes.func.isRequired,
-    AToken: PropTypes.string.isRequired,
-    selectedReceiver: PropTypes.string.isRequired,
+    graphData: PropTypes.array,
+    url: PropTypes.string,
+    currentUser: PropTypes.object,
+    CustomerId: PropTypes.number,
+    setGraphData: PropTypes.func,
+    Token: PropTypes.string,
+    selectedReceiver: PropTypes.object,
 };
 
 export default InlineTable;

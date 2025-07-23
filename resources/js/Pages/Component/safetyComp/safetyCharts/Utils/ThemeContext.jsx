@@ -36,7 +36,7 @@ export default function ThemeProvider({children}) {
   return <ThemeContext.Provider value={{ currentTheme: theme, changeCurrentTheme }}>{children}</ThemeContext.Provider>;
 }
 ThemeProvider.propTypes = {
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node,
 };
 
 export const useThemeProvider = () => useContext(ThemeContext);

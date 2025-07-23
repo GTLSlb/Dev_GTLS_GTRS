@@ -313,6 +313,6 @@ export default function SafetyRepChart({
     );
 }
 SafetyRepChart.propTypes = {
-    filteredData: propTypes.array.isRequired,
-    safetyTypes: propTypes.array.isRequired,
+    filteredData: propTypes.array,
+    safetyTypes: propTypes.array,
 };

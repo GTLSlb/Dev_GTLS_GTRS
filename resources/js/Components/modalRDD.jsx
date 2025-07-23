@@ -249,12 +249,11 @@ export default function ModalRDD({
 }
 
 ModalRDD.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    handleClose: PropTypes.func.isRequired,
-    url: PropTypes.string.isRequired,
-    AToken: PropTypes.string.isRequired,
-    consignment: PropTypes.object.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    updateLocalData: PropTypes.func.isRequired,
-    rddReasons: PropTypes.arrayOf(PropTypes.object).isRequired,
+    isOpen: PropTypes.bool,
+    handleClose: PropTypes.func,
+    url: PropTypes.string,
+    consignment: PropTypes.object,
+    currentUser: PropTypes.object,
+    updateLocalData: PropTypes.func,
+    rddReasons: PropTypes.arrayOf(PropTypes.object),
 };

@@ -48,7 +48,7 @@ function DashboardCard02(props) {
 }
 
 DashboardCard02.propTypes = {
-    consByMonthData: PropTypes.object.isRequired,
+    consByMonthData: PropTypes.object,
 };
 
 export default DashboardCard02;

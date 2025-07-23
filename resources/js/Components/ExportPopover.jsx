@@ -84,12 +84,12 @@ const ExportPopover = ({ columns, handleDownloadExcel, filteredData }) => {
 ExportPopover.propTypes = {
     columns: PropTypes.arrayOf(
         PropTypes.shape({
-            name: PropTypes.string.isRequired,
-            header: PropTypes.string.isRequired,
+            name: PropTypes.string,
+            header: PropTypes.string,
         })
-    ).isRequired,
-    handleDownloadExcel: PropTypes.func.isRequired,
-    filteredData: PropTypes.array.isRequired,
+    ),
+    handleDownloadExcel: PropTypes.func,
+    filteredData: PropTypes.array,
 };
 
 export default ExportPopover;

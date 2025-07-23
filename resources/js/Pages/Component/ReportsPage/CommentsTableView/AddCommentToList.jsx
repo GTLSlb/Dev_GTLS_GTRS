@@ -141,11 +141,11 @@ export default function AddCommentToList({
 
 AddCommentToList.propTypes = {
     selectedComment: PropTypes.object,
-    url: PropTypes.string.isRequired,
-    currentUser: PropTypes.object.isRequired,    
-    Token: PropTypes.string.isRequired,    
-    setSelectedComment: PropTypes.func.isRequired,
-    setShowAdd: PropTypes.func.isRequired,
-    fetchData: PropTypes.func.isRequired,
-    isOpen: PropTypes.bool.isRequired,
+    url: PropTypes.string,
+    currentUser: PropTypes.object,    
+    Token: PropTypes.string,    
+    setSelectedComment: PropTypes.func,
+    setShowAdd: PropTypes.func,
+    fetchData: PropTypes.func,
+    isOpen: PropTypes.bool,
 };

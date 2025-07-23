@@ -134,7 +134,7 @@ function Transition({ show, appear, ...rest }) {
 
 
 CSSTransition.propTypes = {
-    show: PropTypes.bool.isRequired,
+    show: PropTypes.bool,
     appear: PropTypes.bool,
     enter: PropTypes.string,
     enterStart: PropTypes.string,
@@ -144,11 +144,11 @@ CSSTransition.propTypes = {
     leaveEnd: PropTypes.string,
     unmountOnExit: PropTypes.bool,
     tag: PropTypes.string,
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
 };
 
 Transition.propTypes = {
-    show: PropTypes.bool.isRequired,
+    show: PropTypes.bool,
     appear: PropTypes.bool,
 };
 

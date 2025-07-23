@@ -44,9 +44,9 @@ export default function General({ item }) {
 
 General.propTypes = {
     item: PropTypes.shape({
-        ConsignmentStatus: PropTypes.string.isRequired,
-        AccountNumber: PropTypes.string.isRequired,
+        ConsignmentStatus: PropTypes.string,
+        AccountNumber: PropTypes.string,
         KpiDatetime: PropTypes.string,
-        Status: PropTypes.string.isRequired,
-    }).isRequired,
+        Status: PropTypes.string,
+    }),
 };

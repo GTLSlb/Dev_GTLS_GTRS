@@ -179,10 +179,10 @@ export default function DeliveryReportCommentsPage({
 }
 
 DeliveryReportCommentsPage.propTypes = {
-    url: PropTypes.string.isRequired,
-    Token: PropTypes.string.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    userPermission: PropTypes.object.isRequired,
-    data: PropTypes.array.isRequired,
-    fetchDeliveryReportCommentsData: PropTypes.func.isRequired,
+    url: PropTypes.string,
+    Token: PropTypes.string,
+    currentUser: PropTypes.object,
+    userPermission: PropTypes.object,
+    data: PropTypes.array,
+    fetchDeliveryReportCommentsData: PropTypes.func,
 };

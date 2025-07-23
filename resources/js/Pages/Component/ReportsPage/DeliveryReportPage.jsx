@@ -686,7 +686,7 @@ export default function DeliveryReportPage({
         );
     }
     CustomColumnEditor.propTypes = {
-        cellProps: PropTypes.object.isRequired,
+        cellProps: PropTypes.object,
         value: PropTypes.array,
         onCancel: PropTypes.func,
     };
@@ -1245,14 +1245,14 @@ export default function DeliveryReportPage({
 }
 
 DeliveryReportPage.propTypes = {
-    url: PropTypes.string.isRequired,
-    Token: PropTypes.string.isRequired,
-    deliveryReportData: PropTypes.array.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    userPermission: PropTypes.object.isRequired,
-    deliveryCommentsOptions: PropTypes.array.isRequired,
-    fetchDeliveryReport: PropTypes.func.isRequired,
-    fetchDeliveryReportCommentsData: PropTypes.func.isRequired,
-    deliveryReportComments: PropTypes.array.isRequired,
-    fetchDeliveryReportCommentsDataGTRS: PropTypes.func.isRequired,
+    url: PropTypes.string,
+    Token: PropTypes.string,
+    deliveryReportData: PropTypes.array,
+    currentUser: PropTypes.object,
+    userPermission: PropTypes.object,
+    deliveryCommentsOptions: PropTypes.array,
+    fetchDeliveryReport: PropTypes.func,
+    fetchDeliveryReportCommentsData: PropTypes.func,
+    deliveryReportComments: PropTypes.array,
+    fetchDeliveryReportCommentsDataGTRS: PropTypes.func,
 };

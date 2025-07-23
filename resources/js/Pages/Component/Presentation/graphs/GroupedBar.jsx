@@ -100,14 +100,14 @@ const GroupedBar = ({
 };
 
 GroupedBar.propTypes = {
-    collabel: PropTypes.arrayOf(PropTypes.string).isRequired,
-    firstLabel: PropTypes.string.isRequired,
-    secondLabel: PropTypes.string.isRequired,
-    thirdLabel: PropTypes.string.isRequired,
-    firstData: PropTypes.arrayOf(PropTypes.number).isRequired,
-    secondData: PropTypes.arrayOf(PropTypes.number).isRequired,
-    thirdData: PropTypes.arrayOf(PropTypes.number).isRequired,
-    title: PropTypes.string.isRequired,
+    collabel: PropTypes.arrayOf(PropTypes.string),
+    firstLabel: PropTypes.string,
+    secondLabel: PropTypes.string,
+    thirdLabel: PropTypes.string,
+    firstData: PropTypes.arrayOf(PropTypes.number),
+    secondData: PropTypes.arrayOf(PropTypes.number),
+    thirdData: PropTypes.arrayOf(PropTypes.number),
+    title: PropTypes.string,
 };
 
 export default GroupedBar;

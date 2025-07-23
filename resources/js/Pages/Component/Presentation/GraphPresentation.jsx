@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import ConsignmentGraph from "./ReportTabs/ConsignmentGraph";
 import TotalFailPODGraph from "./ReportTabs/TotalFailPODGraph";
 
-const MultiChartLine = ({ url, currentUser, AToken }) => {
+const MultiChartLine = ({ url, currentUser, Token }) => {
     const activeComponentIndex = 0; // Index of the active component to display
     const customers = [
         {
@@ -25,7 +25,7 @@ const MultiChartLine = ({ url, currentUser, AToken }) => {
             key={activeComponentIndex}
             url={url}
             currentUser={currentUser}
-            Token={AToken}
+            Token={Token}
             customers={customers}
             CustomerId={1}
         />, // Graph and Table
@@ -51,9 +51,9 @@ const MultiChartLine = ({ url, currentUser, AToken }) => {
 };
 
 MultiChartLine.propTypes = {
-    url: PropTypes.string.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    AToken: PropTypes.string.isRequired,
+    url: PropTypes.string,
+    currentUser: PropTypes.object,
+    Token: PropTypes.string,
 };
 
 export default MultiChartLine;

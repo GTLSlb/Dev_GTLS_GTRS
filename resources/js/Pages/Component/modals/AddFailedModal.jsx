@@ -260,9 +260,9 @@ export default function AddFailedModal({
 }
 
 AddFailedModal.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    handleClose: PropTypes.func.isRequired,
+    isOpen: PropTypes.bool,
+    handleClose: PropTypes.func,
     reason: PropTypes.object,
-    updateLocalData: PropTypes.func.isRequired,
-    failedReasons: PropTypes.array.isRequired,
+    updateLocalData: PropTypes.func,
+    failedReasons: PropTypes.array,
 };

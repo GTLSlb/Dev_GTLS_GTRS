@@ -195,9 +195,9 @@ export default function AddSafetyCauses({
 }
 
 AddSafetyCauses.propTypes = {
-    Token: PropTypes.string.isRequired,
-    safetyCauses: PropTypes.array.isRequired,
-    setSafetyCauses: PropTypes.func.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    url: PropTypes.string.isRequired,
+    Token: PropTypes.string,
+    safetyCauses: PropTypes.array,
+    setSafetyCauses: PropTypes.func,
+    currentUser: PropTypes.object,
+    url: PropTypes.string,
 };

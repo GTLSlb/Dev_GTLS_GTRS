@@ -772,14 +772,14 @@ export default function ExportBtn({ unileverClient, filteredData, gridRef }) {
 }
 
 ExportBtn.propTypes = {
-    filteredData: PropTypes.array.isRequired,
-    handleMouseEnter: PropTypes.func.isRequired,
-    isMessageVisible: PropTypes.bool.isRequired,
-    hoverMessage: PropTypes.string.isRequired,
-    unileverClient: PropTypes.string.isRequired,
-    allHeaderColumns: PropTypes.array.isRequired,
-    selectedColumns: PropTypes.array.isRequired,
-    setSelectedColumns: PropTypes.func.isRequired,
-    handleFilterTable: PropTypes.func.isRequired,
-    gridRef: PropTypes.object.isRequired,
+    filteredData: PropTypes.array,
+    handleMouseEnter: PropTypes.func,
+    isMessageVisible: PropTypes.bool,
+    hoverMessage: PropTypes.string,
+    unileverClient: PropTypes.string,
+    allHeaderColumns: PropTypes.array,
+    selectedColumns: PropTypes.array,
+    setSelectedColumns: PropTypes.func,
+    handleFilterTable: PropTypes.func,
+    gridRef: PropTypes.object,
 };

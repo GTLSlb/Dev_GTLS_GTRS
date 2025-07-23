@@ -362,10 +362,10 @@ export default function NoDelivery({
 
 NoDelivery.propTypes = {
     NoDelData: PropTypes.array,
-    setNoDelData: PropTypes.func.isRequired,
-    filterValue: PropTypes.object.isRequired,
-    setFilterValue: PropTypes.func.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    userPermission: PropTypes.object.isRequired,
-    url: PropTypes.string.isRequired,
+    setNoDelData: PropTypes.func,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    currentUser: PropTypes.object,
+    userPermission: PropTypes.object,
+    url: PropTypes.string,
 };

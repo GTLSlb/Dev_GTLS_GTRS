@@ -807,8 +807,8 @@ export default function IncidentDetails({
 }
 
 IncidentDetails.propTypes = {
-    incident: PropTypes.object.isRequired,
-    filters: PropTypes.object.isRequired,
-    userPermission: PropTypes.object.isRequired,
-    mainCauses: PropTypes.array.isRequired,
+    incident: PropTypes.object,
+    filters: PropTypes.object,
+    userPermission: PropTypes.object,
+    mainCauses: PropTypes.array,
 };

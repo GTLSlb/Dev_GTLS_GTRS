@@ -77,14 +77,14 @@ function MultiBarChart(props) {
 }
 
 MultiBarChart.propTypes = {
-    chartTitle: PropTypes.string.isRequired,
-    typesbymonth: PropTypes.object.isRequired,
+    chartTitle: PropTypes.string,
+    typesbymonth: PropTypes.object,
     safetyTypes: PropTypes.arrayOf(
         PropTypes.shape({
-            SafetyTypeId: PropTypes.number.isRequired,
-            SafetyTypeName: PropTypes.string.isRequired,
+            SafetyTypeId: PropTypes.number,
+            SafetyTypeName: PropTypes.string,
         })
-    ).isRequired,
+    ),
 };
 MultiBarChart.defaultProps = {
     chartTitle: "Safety Reports by Type",

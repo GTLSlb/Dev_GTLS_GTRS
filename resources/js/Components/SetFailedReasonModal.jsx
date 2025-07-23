@@ -658,11 +658,11 @@ export default function SetFailedReasonModal({
 }
 
 SetFailedReasonModal.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    handleClose: PropTypes.func.isRequired,
-    reason: PropTypes.object.isRequired,
-    setReason: PropTypes.func.isRequired,
-    failedReasons: PropTypes.array.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    updateLocalData: PropTypes.func.isRequired,
+    isOpen: PropTypes.bool,
+    handleClose: PropTypes.func,
+    reason: PropTypes.object,
+    setReason: PropTypes.func,
+    failedReasons: PropTypes.array,
+    currentUser: PropTypes.object,
+    updateLocalData: PropTypes.func,
 };

@@ -114,6 +114,6 @@ export default function Customers({ Token, currentUser }) {
 }
 
 Customers.propTypes = {
-    Token: PropTypes.string.isRequired,
-    currentUser: PropTypes.object.isRequired,
+    Token: PropTypes.string,
+    currentUser: PropTypes.object,
 };

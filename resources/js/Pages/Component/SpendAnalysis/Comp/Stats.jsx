@@ -101,5 +101,5 @@ export default function Stats() {
 }
 
 CustomSwiperCard.propTypes = {
-    slides: PropTypes.arrayOf(PropTypes.array).isRequired,
+    slides: PropTypes.arrayOf(PropTypes.array),
 };

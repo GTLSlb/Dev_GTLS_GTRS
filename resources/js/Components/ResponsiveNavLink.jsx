@@ -20,5 +20,5 @@ export default function ResponsiveNavLink({ active = false, className = '', chil
 ResponsiveNavLink.propTypes = {
     active: PropTypes.bool,
     className: PropTypes.string,
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
 };

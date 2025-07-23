@@ -10,6 +10,6 @@ export default function InputError({ message, className = '', ...props }) {
 }
 
 InputError.propTypes = {
-    message: PropTypes.string.isRequired,
+    message: PropTypes.string,
     className: PropTypes.string,
 };

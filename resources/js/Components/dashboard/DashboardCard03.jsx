@@ -92,7 +92,7 @@ function DashboardCard11(props) {
 }
 
 DashboardCard11.propTypes = {
-    weightStateData: PropTypes.object.isRequired,
+    weightStateData: PropTypes.object,
 };
 
 export default DashboardCard11;

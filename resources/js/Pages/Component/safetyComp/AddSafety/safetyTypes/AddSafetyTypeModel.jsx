@@ -221,9 +221,9 @@ export default function AddSafetyTypeModal({
     );
 }
 AddSafetyTypeModal.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    handleClose: PropTypes.func.isRequired,
+    isOpen: PropTypes.bool,
+    handleClose: PropTypes.func,
     type: PropTypes.object,
-    updateLocalData: PropTypes.func.isRequired,
-    safetyTypes: PropTypes.array.isRequired,
+    updateLocalData: PropTypes.func,
+    safetyTypes: PropTypes.array,
 };

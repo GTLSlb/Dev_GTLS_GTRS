@@ -68,8 +68,8 @@ function DashboardCard06(props) {
 }
 
 DashboardCard06.propTypes = {
-    chartTitle: PropTypes.string.isRequired,
-    consStatusData: PropTypes.object.isRequired,
+    chartTitle: PropTypes.string,
+    consStatusData: PropTypes.object,
 };
 
 export default DashboardCard06;

@@ -768,7 +768,7 @@ export default function ProductStockTable({ url, Token, currentUser }) {
 }
 
 ProductStockTable.propTypes = {
-    url: PropTypes.string.isRequired,
-    Token: PropTypes.string.isRequired,
-    currentUser: PropTypes.object.isRequired,
+    url: PropTypes.string,
+    Token: PropTypes.string,
+    currentUser: PropTypes.object,
 };

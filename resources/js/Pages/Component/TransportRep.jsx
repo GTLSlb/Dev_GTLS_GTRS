@@ -88,7 +88,7 @@ function TransportRep({
     RDDTimeFilter.displayName = "RDDTimeFilter";
     RDDTimeFilter.propTypes = {
         filterValue: PropTypes.object,
-        onChange: PropTypes.func.isRequired,
+        onChange: PropTypes.func,
     };
 
     const PickTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
@@ -157,8 +157,8 @@ function TransportRep({
     });
     PickTimeFilter.displayName = "PickTimeFilter";
     PickTimeFilter.propTypes = {
-        filterValue: PropTypes.object,
-        onChange: PropTypes.func.isRequired,
+        filterValue: PropTypes.array,
+        onChange: PropTypes.func,
     };
     const DeliveryTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
         const [value, setValue] = useState(
@@ -226,8 +226,8 @@ function TransportRep({
     });
     DeliveryTimeFilter.displayName = "DeliveryTimeFilter";
     DeliveryTimeFilter.propTypes = {
-        filterValue: PropTypes.object,
-        onChange: PropTypes.func.isRequired,
+        filterValue: PropTypes.array,
+        onChange: PropTypes.func,
     };
     window.moment = moment;
     const [filteredData, setFilteredData] = useState(transportData);
@@ -601,12 +601,12 @@ function TransportRep({
 }
 
 TransportRep.propTypes = {
-    transportData: PropTypes.array.isRequired,
-    minDate: PropTypes.string.isRequired,
-    maxDate: PropTypes.string.isRequired,
-    filterValue: PropTypes.object.isRequired,
-    setFilterValue: PropTypes.func.isRequired,
-    accData: PropTypes.array.isRequired,
+    transportData: PropTypes.array,
+    minDate: PropTypes.string,
+    maxDate: PropTypes.string,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    accData: PropTypes.array,
 };
 
 export default TransportRep;

@@ -28,10 +28,10 @@ export default function GtrsButton({
 }
 
 GtrsButton.propTypes = {
-    name: PropTypes.string.isRequired,
+    name: PropTypes.string,
     icon: PropTypes.node,
     className: PropTypes.string,
-    onClick: PropTypes.func.isRequired,
+    onClick: PropTypes.func,
     disabled: PropTypes.bool,
     type: PropTypes.oneOf(["button", "submit", "reset"]),
 };

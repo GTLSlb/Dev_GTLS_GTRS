@@ -90,7 +90,7 @@ function DashboardCard12(props) {
 }
 
 DashboardCard12.propTypes = {
-    stateCounterData: PropTypes.object.isRequired,
+    stateCounterData: PropTypes.object,
 };
 
 export default DashboardCard12;

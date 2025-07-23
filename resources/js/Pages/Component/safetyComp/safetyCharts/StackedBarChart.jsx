@@ -63,14 +63,14 @@ const StackedBarChart = (props) => {
 };
 
 StackedBarChart.propTypes = {
-    chartTitle: PropTypes.string.isRequired,
+    chartTitle: PropTypes.string,
     byStateAndType: PropTypes.arrayOf(
         PropTypes.shape({
-            state: PropTypes.string.isRequired,
-            type: PropTypes.string.isRequired,
-            value: PropTypes.number.isRequired,
+            state: PropTypes.string,
+            type: PropTypes.string,
+            value: PropTypes.number,
         })
-    ).isRequired,
+    ),
 };
 
 export default StackedBarChart;

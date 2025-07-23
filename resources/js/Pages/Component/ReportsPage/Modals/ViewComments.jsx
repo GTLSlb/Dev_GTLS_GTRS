@@ -14,7 +14,7 @@ export default function ViewComments({
     isOpen,
     url,
     handleClose,
-    AToken,
+    Token,
     currentUser,
     commentsData,
     deliveryCommentsOptions,
@@ -50,7 +50,7 @@ export default function ViewComments({
             .post(`${url}Add/Comment`, inputValues, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then(() => {
@@ -282,12 +282,12 @@ export default function ViewComments({
 }
 
 ViewComments.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    url: PropTypes.string.isRequired,
-    handleClose: PropTypes.func.isRequired,
-    AToken: PropTypes.string.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    commentsData: PropTypes.array.isRequired,
-    deliveryCommentsOptions: PropTypes.array.isRequired,
-    fetchDeliveryReportCommentsData: PropTypes.func.isRequired,
+    isOpen: PropTypes.bool,
+    url: PropTypes.string,
+    handleClose: PropTypes.func,
+    Token: PropTypes.string,
+    currentUser: PropTypes.object,
+    commentsData: PropTypes.array,
+    deliveryCommentsOptions: PropTypes.array,
+    fetchDeliveryReportCommentsData: PropTypes.func,
 };

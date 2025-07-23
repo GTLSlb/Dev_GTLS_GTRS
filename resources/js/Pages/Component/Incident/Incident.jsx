@@ -205,8 +205,8 @@ export default function Incident({
 }
 
 Incident.propTypes = {
-    gtccrUrl: PropTypes.string.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    Token: PropTypes.string.isRequired,
-    userPermission: PropTypes.object.isRequired,
+    gtccrUrl: PropTypes.string,
+    currentUser: PropTypes.object,
+    Token: PropTypes.string,
+    userPermission: PropTypes.object,
 };

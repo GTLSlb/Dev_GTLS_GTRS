@@ -41,6 +41,6 @@ export default function Login() {
 
 Login.propTypes = {
     currentUser: PropTypes.object,
-    setToken: PropTypes.func.isRequired,
-    setCurrentUser: PropTypes.func.isRequired,
+    setToken: PropTypes.func,
+    setCurrentUser: PropTypes.func,
 };

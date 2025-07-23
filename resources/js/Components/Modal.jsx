@@ -58,7 +58,7 @@ export default function Modal({ children, show = false, maxWidth = '2xl', closea
 }
 
 Modal.propTypes = {
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
     show: PropTypes.bool,
     maxWidth: PropTypes.oneOf(['sm', 'md', 'lg', 'xl', '2xl']),
     closeable: PropTypes.bool,

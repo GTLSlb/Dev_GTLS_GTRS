@@ -416,12 +416,12 @@ export default function KPIReasons({
     );
 }
 KPIReasons.propTypes = {
-    url: PropTypes.string.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    Token: PropTypes.string.isRequired,
-    userPermission: PropTypes.object.isRequired,
-    kpireasonsData: PropTypes.array.isRequired,
-    setkpireasonsData: PropTypes.func.isRequired,
-    filterValue: PropTypes.string,
-    setFilterValue: PropTypes.func.isRequired,
+    url: PropTypes.string,
+    currentUser: PropTypes.object,
+    Token: PropTypes.string,
+    userPermission: PropTypes.object,
+    kpireasonsData: PropTypes.array,
+    setkpireasonsData: PropTypes.func,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
 };

@@ -23,7 +23,7 @@ function AmountCard({ totalCost }) {
 }
 
 AmountCard.propTypes = {
-    totalCost: PropTypes.number.isRequired,
+    totalCost: PropTypes.number,
 };
 
 export default AmountCard;

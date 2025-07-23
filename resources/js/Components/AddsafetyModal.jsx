@@ -434,23 +434,23 @@ export default function SafetyModal({
     );
 }
 SafetyModal.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    handleClose: PropTypes.func.isRequired,
+    isOpen: PropTypes.bool,
+    handleClose: PropTypes.func,
     modalRepId: PropTypes.oneOfType([PropTypes.number, PropTypes.object]),
     modalSafetyType: PropTypes.string,
     modalMainCause: PropTypes.string,
     modalState: PropTypes.string,
-    Token: PropTypes.string.isRequired,
-    customerAccounts: PropTypes.array.isRequired,
+    Token: PropTypes.string,
+    customerAccounts: PropTypes.array,
     modalConsNo: PropTypes.string,
     modalDebtorId: PropTypes.string,
     modalExpl: PropTypes.string,
     modalResol: PropTypes.string,
     modalRefer: PropTypes.string,
     modalOccuredAt: PropTypes.string,
-    updateLocalData: PropTypes.func.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    safetyTypes: PropTypes.array.isRequired,
-    setIsSuccessfull: PropTypes.func.isRequired,
-    fetchData: PropTypes.func.isRequired
+    updateLocalData: PropTypes.func,
+    currentUser: PropTypes.object,
+    safetyTypes: PropTypes.array,
+    setIsSuccessfull: PropTypes.func,
+    fetchData: PropTypes.func
 };

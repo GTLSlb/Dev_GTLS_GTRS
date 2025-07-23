@@ -82,8 +82,8 @@ function SafetyRepByState(props) {
 }
 
 SafetyRepByState.propTypes = {
-    chartTitle: PropTypes.string.isRequired,
-    singleBarValue: PropTypes.object.isRequired,
+    chartTitle: PropTypes.string,
+    singleBarValue: PropTypes.object,
 };
 
 export default SafetyRepByState;

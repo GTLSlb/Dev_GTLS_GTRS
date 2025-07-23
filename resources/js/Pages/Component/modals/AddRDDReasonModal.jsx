@@ -257,9 +257,9 @@ export default function AddRDDReasonModal({
 }
 
 AddRDDReasonModal.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    handleClose: PropTypes.func.isRequired,
+    isOpen: PropTypes.bool,
+    handleClose: PropTypes.func,
     reason: PropTypes.object,
-    updateLocalData: PropTypes.func.isRequired,
-    rddReasons: PropTypes.array.isRequired,
+    updateLocalData: PropTypes.func,
+    rddReasons: PropTypes.array,
 };

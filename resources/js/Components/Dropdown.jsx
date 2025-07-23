@@ -31,7 +31,7 @@ const Trigger = ({ children }) => {
     );
 };
 Trigger.propTypes = {
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
 };
 
 const Content = ({ align = 'right', width = '48', contentClasses = 'py-1 bg-white', children }) => {
@@ -77,7 +77,7 @@ Content.propTypes = {
     align: PropTypes.oneOf(['left', 'right']),
     width: PropTypes.oneOf(['48']),
     contentClasses: PropTypes.string,
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
 };
 
 const DropdownLink = ({ className = '', children, ...props }) => {
@@ -95,11 +95,11 @@ const DropdownLink = ({ className = '', children, ...props }) => {
 };
 DropdownLink.propTypes = {
     className: PropTypes.string,
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
 };
 
 Dropdown.propTypes = {
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
 };
 
 Dropdown.Trigger = Trigger;

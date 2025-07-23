@@ -368,16 +368,16 @@ export default function ConsPerf({
 }
 
 ConsPerf.propTypes = {
-    PerfData: PropTypes.array.isRequired,
-    EDate: PropTypes.string.isRequired,
-    accData: PropTypes.array.isRequired,
-    setEDate: PropTypes.func.isRequired,
-    SDate: PropTypes.string.isRequired,
-    setSDate: PropTypes.func.isRequired,
-    oldestDate: PropTypes.string.isRequired,
-    latestDate: PropTypes.string.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    userPermission: PropTypes.object.isRequired,
-    setSharedStartDate: PropTypes.func.isRequired,
-    setSharedEndDate: PropTypes.func.isRequired,
+    PerfData: PropTypes.array,
+    EDate: PropTypes.string,
+    accData: PropTypes.array,
+    setEDate: PropTypes.func,
+    SDate: PropTypes.string,
+    setSDate: PropTypes.func,
+    oldestDate: PropTypes.string,
+    latestDate: PropTypes.string,
+    currentUser: PropTypes.object,
+    userPermission: PropTypes.object,
+    setSharedStartDate: PropTypes.func,
+    setSharedEndDate: PropTypes.func,
 };

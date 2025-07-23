@@ -247,10 +247,10 @@ export default function AdditionalCharges({
 
 AdditionalCharges.propTypes = {
     AdditionalData: PropTypes.array,
-    setAdditionalData: PropTypes.func.isRequired,
-    filterValue: PropTypes.object.isRequired,
-    setFilterValue: PropTypes.func.isRequired,
-    userPermission: PropTypes.object.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    url: PropTypes.string.isRequired,
+    setAdditionalData: PropTypes.func,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    userPermission: PropTypes.object,
+    currentUser: PropTypes.object,
+    url: PropTypes.string,
 };

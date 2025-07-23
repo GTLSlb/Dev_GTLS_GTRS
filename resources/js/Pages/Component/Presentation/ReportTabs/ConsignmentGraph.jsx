@@ -148,11 +148,11 @@ function ConsignmentGraph({ url, currentUser, Token, customers, CustomerId }) {
 }
 
 ConsignmentGraph.propTypes = {
-    url: PropTypes.string.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    Token: PropTypes.string.isRequired,
-    customers: PropTypes.array.isRequired,
-    CustomerId: PropTypes.number.isRequired,
+    url: PropTypes.string,
+    currentUser: PropTypes.object,
+    Token: PropTypes.string,
+    customers: PropTypes.array,
+    CustomerId: PropTypes.number,
 };
 
 export default ConsignmentGraph;

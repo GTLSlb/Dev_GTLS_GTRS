@@ -33,5 +33,5 @@ export default function MainNavbar({
 }
 
 MainNavbar.propTypes = {
-    setMobileMenuOpen: PropTypes.func.isRequired,
+    setMobileMenuOpen: PropTypes.func,
 };

@@ -12,7 +12,7 @@ function ExportBtn({ handleDownloadExcel }) {
     );
 }
 ExportBtn.propTypes = {
-    handleDownloadExcel: PropTypes.func.isRequired,
+    handleDownloadExcel: PropTypes.func,
 };
 
 export default ExportBtn;

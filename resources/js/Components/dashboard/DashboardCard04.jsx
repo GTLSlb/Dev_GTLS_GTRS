@@ -85,7 +85,7 @@ function DashboardCard04(props) {
 }
 
 DashboardCard04.propTypes = {
-    podCounterData: PropTypes.object.isRequired,
+    podCounterData: PropTypes.object,
 };
 
 export default DashboardCard04;

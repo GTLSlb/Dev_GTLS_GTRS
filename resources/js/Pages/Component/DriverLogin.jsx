@@ -311,9 +311,9 @@ export default function DriverLogin({
 
 DriverLogin.propTypes = {
     DriverData: PropTypes.array,
-    setDriverData: PropTypes.func.isRequired,
-    filterValue: PropTypes.object.isRequired,
-    setFilterValue: PropTypes.func.isRequired,
-    url: PropTypes.string.isRequired,
-    currentUser: PropTypes.object.isRequired,
+    setDriverData: PropTypes.func,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    url: PropTypes.string,
+    currentUser: PropTypes.object,
 };

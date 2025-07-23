@@ -326,9 +326,9 @@ export default function MissingPOD({
 }
 
 MissingPOD.propTypes = {
-    PerfData: PropTypes.array.isRequired,
-    filterValue: PropTypes.object.isRequired,
-    setFilterValue: PropTypes.func.isRequired,
-    userPermission: PropTypes.object.isRequired,
-    accData: PropTypes.array.isRequired,
+    PerfData: PropTypes.array,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    userPermission: PropTypes.object,
+    accData: PropTypes.array,
 };

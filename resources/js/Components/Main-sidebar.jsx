@@ -410,8 +410,8 @@ export default function MainSidebar({
 }
 
 MainSidebar.propTypes = {
-    allowedApplications: PropTypes.array.isRequired,
-    setMobileMenuOpen: PropTypes.func.isRequired,
-    mobileMenuOpen: PropTypes.bool.isRequired,
-    user: PropTypes.object.isRequired,
+    allowedApplications: PropTypes.array,
+    setMobileMenuOpen: PropTypes.func,
+    mobileMenuOpen: PropTypes.bool,
+    user: PropTypes.object,
 };

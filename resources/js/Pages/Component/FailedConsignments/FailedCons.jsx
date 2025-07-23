@@ -461,13 +461,13 @@ export default function FailedCons({
 }
 
 FailedCons.propTypes = {
-    url: PropTypes.string.isRequired,
-    PerfData: PropTypes.array.isRequired,
-    filterValue: PropTypes.object.isRequired,
-    setFilterValue: PropTypes.func.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    userPermission: PropTypes.object.isRequired,
-    accData: PropTypes.array.isRequired,
-    Token: PropTypes.string.isRequired,
+    url: PropTypes.string,
+    PerfData: PropTypes.array,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    currentUser: PropTypes.object,
+    userPermission: PropTypes.object,
+    accData: PropTypes.array,
+    Token: PropTypes.string,
     failedReasons: PropTypes.array,
 };

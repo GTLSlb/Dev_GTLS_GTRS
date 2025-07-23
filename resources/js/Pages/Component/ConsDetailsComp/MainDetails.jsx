@@ -131,21 +131,21 @@ function MainDetails({ mainDetail }) {
 
 MainDetails.propTypes = {
     mainDetail: PropTypes.shape({
-        ConsignmentNo: PropTypes.string.isRequired,
-        Status: PropTypes.string.isRequired,
-        Service: PropTypes.string.isRequired,
-        DateTime: PropTypes.string.isRequired,
-        DespatchDate: PropTypes.string.isRequired,
-        GeneralInstructions: PropTypes.string.isRequired,
-        DangerousGoods: PropTypes.string.isRequired,
-        FailedReason: PropTypes.string.isRequired,  
-        Faileddesc: PropTypes.string.isRequired,
-        FailedNote: PropTypes.string.isRequired,
-        Resolution: PropTypes.string.isRequired,
-        Reference: PropTypes.number.isRequired, 
-        Department: PropTypes.string.isRequired,
-        ChargeTo: PropTypes.string.isRequired,
-    }).isRequired,
+        ConsignmentNo: PropTypes.string,
+        Status: PropTypes.string,
+        Service: PropTypes.string,
+        DateTime: PropTypes.string,
+        DespatchDate: PropTypes.string,
+        GeneralInstructions: PropTypes.string,
+        DangerousGoods: PropTypes.string,
+        FailedReason: PropTypes.string,  
+        Faileddesc: PropTypes.string,
+        FailedNote: PropTypes.string,
+        Resolution: PropTypes.string,
+        Reference: PropTypes.number, 
+        Department: PropTypes.string,
+        ChargeTo: PropTypes.string,
+    }),
 };
 
 export default MainDetails;

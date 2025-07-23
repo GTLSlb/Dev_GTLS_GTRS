@@ -279,21 +279,21 @@ function DashboardCard07(props) {
 
 DashboardCard07.propTypes = {
     InfoData: PropTypes.shape({
-        numUniqueReceivers: PropTypes.number.isRequired,
-        totalWeight: PropTypes.number.isRequired,
-        totalPalletSpace: PropTypes.number.isRequired,
-        totalChep: PropTypes.number.isRequired,
-        totalLoscam: PropTypes.number.isRequired,
-        totalCustomerOwn: PropTypes.number.isRequired,
-        totalCost: PropTypes.number.isRequired,
-        fuelLevy: PropTypes.number.isRequired,
-        totalNoConsShipped: PropTypes.number.isRequired,
-        totalConsPending: PropTypes.number.isRequired,
-        totalNoConsPassed: PropTypes.number.isRequired,
-        totalConsFailed: PropTypes.number.isRequired,
-        podCounter: PropTypes.number.isRequired,
-        podPercentage: PropTypes.number.isRequired,
-    }).isRequired,
+        numUniqueReceivers: PropTypes.number,
+        totalWeight: PropTypes.number,
+        totalPalletSpace: PropTypes.number,
+        totalChep: PropTypes.number,
+        totalLoscam: PropTypes.number,
+        totalCustomerOwn: PropTypes.number,
+        totalCost: PropTypes.number,
+        fuelLevy: PropTypes.number,
+        totalNoConsShipped: PropTypes.number,
+        totalConsPending: PropTypes.number,
+        totalNoConsPassed: PropTypes.number,
+        totalConsFailed: PropTypes.number,
+        podCounter: PropTypes.number,
+        podPercentage: PropTypes.number,
+    }),
 };
 
 export default DashboardCard07;

@@ -58,10 +58,10 @@ function PickupDelInfo({
 PickupDelInfo.propTypes = {
     deliveryInfo: PropTypes.arrayOf(
         PropTypes.shape({
-            PODdateTime: PropTypes.string.isRequired,
-            PODimage: PropTypes.string.isRequired,
+            PODdateTime: PropTypes.string,
+            PODimage: PropTypes.string,
         })
-    ).isRequired,
+    ),
 };
 
 export default PickupDelInfo;

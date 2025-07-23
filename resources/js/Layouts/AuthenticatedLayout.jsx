@@ -129,7 +129,7 @@ export default function Authenticated({ auth, header, children }) {
 }
 
 Authenticated.propTypes = {
-    auth: PropTypes.object.isRequired,
-    header: PropTypes.node.isRequired,
-    children: PropTypes.node.isRequired,
+    auth: PropTypes.object,
+    header: PropTypes.node,
+    children: PropTypes.node,
 };

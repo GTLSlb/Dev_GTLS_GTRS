@@ -199,15 +199,15 @@ function BarGraph({
 }
 
 BarGraph.propTypes = {
-    graphData: PropTypes.array.isRequired,
-    url: PropTypes.string.isRequired,
-    Token: PropTypes.string.isRequired,
-    CustomerId: PropTypes.number.isRequired,
-    originalgraphData: PropTypes.array.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    setGraphData: PropTypes.func.isRequired,
-    getReportData: PropTypes.func.isRequired,
-    selectedReceiver: PropTypes.string.isRequired,
+    graphData: PropTypes.array,
+    url: PropTypes.string,
+    Token: PropTypes.string,
+    CustomerId: PropTypes.number,
+    originalgraphData: PropTypes.array,
+    currentUser: PropTypes.object,
+    setGraphData: PropTypes.func,
+    getReportData: PropTypes.func,
+    selectedReceiver: PropTypes.string,
 };
 
 export default BarGraph;

@@ -419,11 +419,11 @@ export default function Holidays({
 
 Holidays.propTypes = {
     holidays: PropTypes.array,
-    setHolidays: PropTypes.func.isRequired,
-    url: PropTypes.string.isRequired,
-    Token: PropTypes.string.isRequired,
-    filterValue: PropTypes.object.isRequired,
-    setFilterValue: PropTypes.func.isRequired,
-    userPermission: PropTypes.object.isRequired,
-    currentUser: PropTypes.object.isRequired,
+    setHolidays: PropTypes.func,
+    url: PropTypes.string,
+    Token: PropTypes.string,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    userPermission: PropTypes.object,
+    currentUser: PropTypes.object,
 };

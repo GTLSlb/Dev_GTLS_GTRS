@@ -24,7 +24,7 @@ function WeightCard({ totalWeight }) {
 }
 
 WeightCard.propTypes = {
-    totalWeight: PropTypes.number.isRequired,
+    totalWeight: PropTypes.number,
 };
 
 export default WeightCard;

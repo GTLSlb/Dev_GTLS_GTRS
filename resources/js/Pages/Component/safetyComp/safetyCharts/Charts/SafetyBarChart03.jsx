@@ -136,7 +136,7 @@ function BarChart03({
 }
 
 BarChart03.propTypes = {
-  data: PropTypes.object.isRequired,
+  data: PropTypes.object,
   width: PropTypes.number,
   height: PropTypes.number,
 };

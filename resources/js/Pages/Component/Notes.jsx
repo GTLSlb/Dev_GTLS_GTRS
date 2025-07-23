@@ -176,5 +176,5 @@ export default function Notes({
 }
 
 Notes.propTypes = {
-    incident: PropTypes.object.isRequired,
+    incident: PropTypes.object,
 };

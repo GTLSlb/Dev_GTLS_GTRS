@@ -749,7 +749,7 @@ NewKPI.propTypes = {
     userPermission: PropTypes.object,
     kpireasonsData: PropTypes.array,
     accData: PropTypes.array,
-    filterValue: PropTypes.object,
+    filterValue: PropTypes.array,
     setFilterValue: PropTypes.func,
     KPIData: PropTypes.array,
     setKPIData: PropTypes.func,

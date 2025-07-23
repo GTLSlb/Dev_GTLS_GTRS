@@ -211,9 +211,9 @@ export default function NewKPIModalAddReason({
 }
 
 NewKPIModalAddReason.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    handleClose: PropTypes.func.isRequired,
-    kpi: PropTypes.object.isRequired,
-    updateLocalData: PropTypes.func.isRequired,
-    kpiReasons: PropTypes.array.isRequired,
+    isOpen: PropTypes.bool,
+    handleClose: PropTypes.func,
+    kpi: PropTypes.object,
+    updateLocalData: PropTypes.func,
+    kpiReasons: PropTypes.array,
 };

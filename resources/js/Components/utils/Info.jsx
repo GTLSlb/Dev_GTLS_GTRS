@@ -48,7 +48,7 @@ function Info({
 }
 
 Info.propTypes = {
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node,
   className: PropTypes.string,
   containerClassName: PropTypes.string,
 };

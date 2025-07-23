@@ -47,8 +47,8 @@ function DeliveryDetails({
 DeliveryDetails.propTypes = {
     deliveryDetails: PropTypes.shape({
         DelReqDate: PropTypes.string,
-        TimeSlot: PropTypes.arrayOf(PropTypes.string).isRequired,
-    }).isRequired,
+        TimeSlot: PropTypes.arrayOf(PropTypes.string),
+    }),
 };
 
 export default DeliveryDetails;

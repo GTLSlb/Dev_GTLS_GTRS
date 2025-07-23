@@ -23,7 +23,7 @@ export default function AddHoliday({
     holiday,
     url,
     currentUser,
-    AToken,
+    Token,
     setHoliday,
     setShowAdd,
     fetchData,
@@ -71,7 +71,7 @@ export default function AddHoliday({
             .post(`${url}Add/Holiday`, inputValues, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then(() => {
@@ -277,13 +277,13 @@ export default function AddHoliday({
 }
 
 AddHoliday.propTypes = {
-    states: PropTypes.array.isRequired,
+    states: PropTypes.array,
     holiday: PropTypes.object,
-    url: PropTypes.string.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    AToken: PropTypes.string.isRequired,
-    setHoliday: PropTypes.func.isRequired,
-    setShowAdd: PropTypes.func.isRequired,    
-    fetchData: PropTypes.func.isRequired,
-    closeModal: PropTypes.func.isRequired,
+    url: PropTypes.string,
+    currentUser: PropTypes.object,
+    Token: PropTypes.string,
+    setHoliday: PropTypes.func,
+    setShowAdd: PropTypes.func,    
+    fetchData: PropTypes.func,
+    closeModal: PropTypes.func,
 };

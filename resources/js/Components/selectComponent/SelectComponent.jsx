@@ -18,8 +18,8 @@ const Option = (props) => {
     );
 };
 Option.propTypes = {
-    isSelected: PropTypes.bool.isRequired,
-    label: PropTypes.string.isRequired,
+    isSelected: PropTypes.bool,
+    label: PropTypes.string,
     // Add other prop types as needed
 };
 
@@ -84,7 +84,7 @@ const MultiSelect = ({ onMultiSelectChange }) => {
 };
 
 MultiSelect.propTypes = {
-    onMultiSelectChange: PropTypes.func.isRequired,
+    onMultiSelectChange: PropTypes.func,
 };
 
 // const rootElement = document.getElementById("root");

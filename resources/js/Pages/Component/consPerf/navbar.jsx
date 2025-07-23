@@ -124,5 +124,5 @@ export default function Navbar({item}) {
 }
 
 Navbar.propTypes = {
-    item: PropTypes.object.isRequired,
+    item: PropTypes.object,
 };

@@ -128,7 +128,7 @@ AddCommentToList.propTypes = {
     selectedComment: PropTypes.object,
     url: PropTypes.string,
     currentUser: PropTypes.object,
-    AToken: PropTypes.string,
+    Token: PropTypes.string,
     setSelectedComment: PropTypes.func,
     setShowAdd: PropTypes.func,
     fetchData: PropTypes.func,

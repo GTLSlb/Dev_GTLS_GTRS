@@ -157,7 +157,7 @@ function LineChart02({
 }
 
 LineChart02.propTypes = {
-  data: PropTypes.object.isRequired,
+  data: PropTypes.object,
   width: PropTypes.number,
   height: PropTypes.number,
 };

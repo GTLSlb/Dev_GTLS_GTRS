@@ -11,7 +11,6 @@ import { ToastContainer } from "react-toastify";
 function AddNewTransitDay({
     url,
     currentUser,
-    setNewTransitDay,
     setNewTransitDays,
     Token,
 }) {
@@ -124,7 +123,7 @@ function AddNewTransitDay({
             .then(() => {
                 AlertToast("Saved successfully", 1);
                 fetchData();
-                setNewTransitDay(null);
+                setNewTransitDays(null);
                 navigate(-1);
             })
             .catch((err) => {
@@ -147,7 +146,7 @@ function AddNewTransitDay({
     }
 
     function CancelHandle() {
-        setNewTransitDay(null);
+        setNewTransitDays(null);
         navigate(-1);
     }
     return (
@@ -524,11 +523,11 @@ function AddNewTransitDay({
 }
 
 AddNewTransitDay.propTypes = {
-    url: PropTypes.string.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    setNewTransitDay: PropTypes.func.isRequired,
-    setNewTransitDays: PropTypes.func.isRequired,
-    Token: PropTypes.string.isRequired,
+    url: PropTypes.string,
+    currentUser: PropTypes.object,
+    setNewTransitDay: PropTypes.func,
+    setNewTransitDays: PropTypes.func,
+    Token: PropTypes.string,
 };
 
 export default AddNewTransitDay;

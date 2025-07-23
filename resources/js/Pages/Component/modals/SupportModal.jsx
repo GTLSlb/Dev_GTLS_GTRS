@@ -50,6 +50,6 @@ export default function SupportModal({ isOpen, handleClose }) {
 }
 
 SupportModal.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    handleClose: PropTypes.func.isRequired,
+    isOpen: PropTypes.bool,
+    handleClose: PropTypes.func,
 };

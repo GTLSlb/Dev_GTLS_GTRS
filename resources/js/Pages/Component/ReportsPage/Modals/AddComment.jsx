@@ -168,8 +168,8 @@ export default function AddComment({
     );
 }
 AddComment.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    handleClose: PropTypes.func.isRequired,
-    consId: PropTypes.string.isRequired,
-    fetchData: PropTypes.func.isRequired,
+    isOpen: PropTypes.bool,
+    handleClose: PropTypes.func,
+    consId: PropTypes.string,
+    fetchData: PropTypes.func,
 };

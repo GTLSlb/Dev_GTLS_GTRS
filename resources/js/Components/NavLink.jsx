@@ -22,5 +22,5 @@ export default function NavLink({ active = false, className = '', children, ...p
 NavLink.propTypes = {
     active: PropTypes.bool,
     className: PropTypes.string,
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
 };

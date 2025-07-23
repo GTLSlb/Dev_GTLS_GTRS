@@ -204,10 +204,10 @@ export default function AddSafetyType({
 }
 
 AddSafetyType.propTypes = {
-    safetyTypes: PropTypes.array.isRequired,
-    setSafetyTypes: PropTypes.func.isRequired,
-    url: PropTypes.string.isRequired,
-    Token: PropTypes.string.isRequired,
-    currentUser: PropTypes.object.isRequired,
-    userPermission: PropTypes.object.isRequired,
+    safetyTypes: PropTypes.array,
+    setSafetyTypes: PropTypes.func,
+    url: PropTypes.string,
+    Token: PropTypes.string,
+    currentUser: PropTypes.object,
+    userPermission: PropTypes.object,
 };

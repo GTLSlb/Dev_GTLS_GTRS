@@ -71,5 +71,5 @@ export default function ContextProvider({ children }) {
 }
 
 ContextProvider.propTypes = {
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
 };

@@ -47,8 +47,8 @@ function SafetyCard02(props) {
 }
 
 SafetyCard02.propTypes = {
-    barValues: PropTypes.array.isRequired,
-    chartTitle: PropTypes.string.isRequired,
+    barValues: PropTypes.array,
+    chartTitle: PropTypes.string,
 };
 
 export default SafetyCard02;

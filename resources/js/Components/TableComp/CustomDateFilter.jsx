@@ -141,7 +141,7 @@ const CustomDateFilter = ({ value, onChange, minDate, maxDate }) => {
 
 CustomDateFilter.propTypes = {
     value: PropTypes.object,
-    onChange: PropTypes.func.isRequired,
+    onChange: PropTypes.func,
     minDate: PropTypes.string,
     maxDate: PropTypes.string,
 };

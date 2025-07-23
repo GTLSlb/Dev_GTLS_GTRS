@@ -173,12 +173,12 @@ function Charts({
 }
 
 Charts.propTypes = {
-    layout: PropTypes.array.isRequired,
-    filteredData: PropTypes.array.isRequired,
-    gridKey: PropTypes.string.isRequired,
-    setShowTable: PropTypes.func.isRequired,
-    setChartFilter: PropTypes.func.isRequired,
-    setChartName: PropTypes.func.isRequired,
+    layout: PropTypes.array,
+    filteredData: PropTypes.array,
+    gridKey: PropTypes.string,
+    setShowTable: PropTypes.func,
+    setChartFilter: PropTypes.func,
+    setChartName: PropTypes.func,
 };
 
 export default Charts;

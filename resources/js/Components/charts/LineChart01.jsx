@@ -75,7 +75,7 @@ function LineChart01({
 }
 
 LineChart01.propTypes = {
-  data: PropTypes.object.isRequired,
+  data: PropTypes.object,
   width: PropTypes.number,
   height: PropTypes.number,
 };

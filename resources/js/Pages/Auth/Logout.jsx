@@ -18,7 +18,7 @@ export default function Logout({ currentUser, setToken, setCurrentUser }) {
 }
 
 Logout.propTypes = {
-    currentUser: PropTypes.object.isRequired,
-    setToken: PropTypes.func.isRequired,
-    setCurrentUser: PropTypes.func.isRequired,
+    currentUser: PropTypes.object,
+    setToken: PropTypes.func,
+    setCurrentUser: PropTypes.func,
 };

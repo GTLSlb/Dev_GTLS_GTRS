@@ -26,5 +26,5 @@ export default function Guest({ children }) {
 }
 
 Guest.propTypes = {
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
 };

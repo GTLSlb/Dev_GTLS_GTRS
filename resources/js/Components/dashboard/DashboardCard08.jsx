@@ -98,7 +98,7 @@ function DashboardCard08(props) {
 }
 
 DashboardCard08.propTypes = {
-  transportData: PropTypes.object.isRequired,
+  transportData: PropTypes.object,
 };
 
 export default DashboardCard08;
