@@ -1,9 +1,9 @@
 import AnimatedLoading from "@/Components/AnimatedLoading";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 
 export default function SettingMiddleware({ currentUser }) {
-console.log("SettingMiddleware", currentUser);
 let navigate = useNavigate();
     useEffect(() => {
         if (currentUser && currentUser.TypeId === 1) {
@@ -19,3 +19,7 @@ let navigate = useNavigate();
         </div>
     );
 }
+
+SettingMiddleware.propTypes = {
+    currentUser: PropTypes.object,
+};

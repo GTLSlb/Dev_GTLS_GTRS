@@ -7,7 +7,7 @@ import {
     DirectionsRenderer,
 } from "@react-google-maps/api";
 import moment from "moment";
-import { Button, Card, Divider, Image } from "@nextui-org/react";
+import { Button, Card, Divider, Image } from "@heroui/react";
 import { ChevronLeftIcon, MapPinIcon } from "@heroicons/react/20/solid";
 import Roadworks from "@/assets/icons/RoadWork.png";
 import Alpine from "@/assets/icons/Alpine.png";

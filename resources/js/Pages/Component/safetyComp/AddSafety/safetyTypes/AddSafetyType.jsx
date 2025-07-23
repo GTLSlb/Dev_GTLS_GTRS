@@ -207,7 +207,7 @@ AddSafetyType.propTypes = {
     safetyTypes: PropTypes.array.isRequired,
     setSafetyTypes: PropTypes.func.isRequired,
     url: PropTypes.string.isRequired,
-    AToken: PropTypes.string.isRequired,
+    Token: PropTypes.string.isRequired,
     currentUser: PropTypes.object.isRequired,
     userPermission: PropTypes.object.isRequired,
 };

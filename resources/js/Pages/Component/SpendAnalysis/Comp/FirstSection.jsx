@@ -14,6 +14,7 @@ import {
     Cell,
 } from "recharts";
 import Stats from "./Stats";
+import React from "react";
 
 const dummyData = [
     { name: "Week 1", difot: 90, otd: 92, inFull: 95, returnRate: 5 },

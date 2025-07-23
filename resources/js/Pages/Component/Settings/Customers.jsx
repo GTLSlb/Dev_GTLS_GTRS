@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { UserIcon } from "@heroicons/react/24/solid";
-import { Card, CardBody, CardHeader } from "@heroui/react";
+import { Card, CardHeader } from "@heroui/react";
 import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import axios from "axios";
+import swal from "sweetalert";
+import PropTypes from "prop-types";
 
 export default function Customers({ Token, currentUser }) {
     const [accounts, setAccounts] = useState([]);
@@ -19,7 +22,7 @@ export default function Customers({ Token, currentUser }) {
             })
             .then((res) => {
                 const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
+                const parsedDataPromise = new Promise((resolve) => {
                     const parsedData = JSON.parse(x);
                     resolve(parsedData);
                 });
@@ -47,47 +50,20 @@ export default function Customers({ Token, currentUser }) {
                                 }
                             })
                             .catch((error) => {
-                                console.log(error);
+                                console.error(error);
                             });
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                 }
             });
     };
-    const [selectedUser, setSelectedUser] = useState(null);
 
     useEffect(() => {
         fetchDeliveryReport();
     }, []);
 
-    // const accounts = [
-    //     {
-    //         id: 1,
-    //         name: "Account Alpha",
-    //         description: "Alpha account for management.",
-    //     },
-    //     {
-    //         id: 2,
-    //         name: "Account Beta",
-    //         description: "Beta account for invoicing.",
-    //     },
-    //     {
-    //         id: 3,
-    //         name: "Account Gamma",
-    //         description: "Gamma account for sales.",
-    //     },
-    //     {
-    //         id: 4,
-    //         name: "Account Delta",
-    //         description: "Delta account for operations.",
-    //     },
-    // ];
-
-    const handleUserClick = (user) => {
-        setSelectedUser(user);
-    };
 
     const renderCustomerCard = (account) => (
         <Card
@@ -136,3 +112,8 @@ export default function Customers({ Token, currentUser }) {
         </div>
     );
 }
+
+Customers.propTypes = {
+    Token: PropTypes.string.isRequired,
+    currentUser: PropTypes.object.isRequired,
+};

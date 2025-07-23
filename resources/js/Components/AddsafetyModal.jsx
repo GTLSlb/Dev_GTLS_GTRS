@@ -440,7 +440,7 @@ SafetyModal.propTypes = {
     modalSafetyType: PropTypes.string,
     modalMainCause: PropTypes.string,
     modalState: PropTypes.string,
-    AToken: PropTypes.string.isRequired,
+    Token: PropTypes.string.isRequired,
     customerAccounts: PropTypes.array.isRequired,
     modalConsNo: PropTypes.string,
     modalDebtorId: PropTypes.string,

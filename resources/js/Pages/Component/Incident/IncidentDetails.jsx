@@ -2,7 +2,7 @@ import { canViewInternal } from "@/permissions";
 import React from "react";
 import PropTypes from "prop-types";
 import logo from "@/assets/pictures/Logoblack.png";
-import { Chip } from "@nextui-org/react";
+import { Chip } from "@heroui/react";
 import moment from "moment/moment";
 import { useNavigate } from "react-router-dom";
 

@@ -13,8 +13,10 @@ import {
     TableBody,
     TableColumn,
 } from "@heroui/react";
+import React from "react";
+import PropTypes from "prop-types";
 
-export default function AddModel({ isOpen, onOpen, onOpenChange }) {
+export default function AddModel({ isOpen, onOpenChange }) {
     const information = [
         {
             codeRef: "Timeslot",
@@ -116,3 +118,8 @@ export default function AddModel({ isOpen, onOpen, onOpenChange }) {
         </>
     );
 }
+
+AddModel.propTypes = {
+    isOpen: PropTypes.bool,
+    onOpenChange: PropTypes.func,
+};

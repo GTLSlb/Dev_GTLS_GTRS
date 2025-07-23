@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Tabs, Tab } from "@heroui/react";
 import SpendAnalysis from "./Comp/SpendAnalysis";
 import CostTable from "./Comp/CostTable";

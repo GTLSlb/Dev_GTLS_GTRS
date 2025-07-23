@@ -2,7 +2,7 @@ import {
     Progress,
     Tab,
     Tabs,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import axios from "axios";
 import React from "react";
 import PropTypes from "prop-types";
@@ -207,6 +207,6 @@ export default function Incident({
 Incident.propTypes = {
     gtccrUrl: PropTypes.string.isRequired,
     currentUser: PropTypes.object.isRequired,
-    AToken: PropTypes.string.isRequired,
+    Token: PropTypes.string.isRequired,
     userPermission: PropTypes.object.isRequired,
 };

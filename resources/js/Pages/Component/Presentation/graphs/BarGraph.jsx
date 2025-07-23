@@ -38,9 +38,6 @@ function BarGraph({
     selectedReceiver,
 }) {
 
-    // useEffect(() => {
-    //     getReportData();
-    // }, [graphData]);
     function generateMonthArrayFromJson(data) {
         const monthNames = [
             "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
@@ -204,7 +201,7 @@ function BarGraph({
 BarGraph.propTypes = {
     graphData: PropTypes.array.isRequired,
     url: PropTypes.string.isRequired,
-    AToken: PropTypes.string.isRequired,
+    Token: PropTypes.string.isRequired,
     CustomerId: PropTypes.number.isRequired,
     originalgraphData: PropTypes.array.isRequired,
     currentUser: PropTypes.object.isRequired,

@@ -100,7 +100,7 @@ FailedConsMain.propTypes = {
     currentUser: PropTypes.object.isRequired,
     userPermission: PropTypes.object.isRequired,
     accData: PropTypes.array.isRequired,
-    AToken: PropTypes.string.isRequired,
+    Token: PropTypes.string.isRequired,
     failedReasons: PropTypes.array,
     setFailedReasons: PropTypes.func.isRequired,
 };

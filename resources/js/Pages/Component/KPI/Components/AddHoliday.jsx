@@ -71,7 +71,7 @@ export default function AddHoliday({
             .post(`${url}Add/Holiday`, inputValues, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${Token}`,
+                    Authorization: `Bearer ${AToken}`,
                 },
             })
             .then(() => {

@@ -744,7 +744,7 @@ function NewKPI({
 
 NewKPI.propTypes = {
     url: PropTypes.string,
-    AToken: PropTypes.string,
+    Token: PropTypes.string,
     currentUser: PropTypes.object,
     userPermission: PropTypes.object,
     kpireasonsData: PropTypes.array,

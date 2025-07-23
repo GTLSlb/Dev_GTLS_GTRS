@@ -15,7 +15,6 @@ import {
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import Charts from "./Charts";
 import ChartsTable from "./ChartsTable";
-import SpendDashboard from "../SpendAnalysis/SpendDashboard";
 
 const customStyles = {
     control: (provided) => ({

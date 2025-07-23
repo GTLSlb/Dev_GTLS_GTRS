@@ -180,7 +180,7 @@ export default function DeliveryReportCommentsPage({
 
 DeliveryReportCommentsPage.propTypes = {
     url: PropTypes.string.isRequired,
-    AToken: PropTypes.string.isRequired,
+    Token: PropTypes.string.isRequired,
     currentUser: PropTypes.object.isRequired,
     userPermission: PropTypes.object.isRequired,
     data: PropTypes.array.isRequired,

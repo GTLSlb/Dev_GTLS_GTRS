@@ -27,7 +27,7 @@ function RealFoodKPIPack({ url, currentUser, AToken }) {
             key={activeComponentIndex}
             url={url}
             currentUser={currentUser}
-            Token={Token}
+            Token={AToken}
             customers={customers}
             CustomerId={2}
         />,

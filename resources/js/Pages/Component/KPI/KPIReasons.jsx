@@ -418,7 +418,7 @@ export default function KPIReasons({
 KPIReasons.propTypes = {
     url: PropTypes.string.isRequired,
     currentUser: PropTypes.object.isRequired,
-    AToken: PropTypes.string.isRequired,
+    Token: PropTypes.string.isRequired,
     userPermission: PropTypes.object.isRequired,
     kpireasonsData: PropTypes.array.isRequired,
     setkpireasonsData: PropTypes.func.isRequired,

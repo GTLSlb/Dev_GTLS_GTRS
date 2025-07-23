@@ -1,9 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import PropTypes from "prop-types";
-import Cookies from "js-cookie";
 import { clearMSALLocalStorage, pca } from "@/CommonFunctions";
-import { LogoutSVG } from "@/assets/svgs/LogoutSVG";
-import axios from "axios";
 import { LogoutPage } from "gtls-npm-libraries";
 export default function Logout({ currentUser, setToken, setCurrentUser }) {
     return (

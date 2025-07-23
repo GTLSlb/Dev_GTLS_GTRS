@@ -26,7 +26,7 @@ import {
 } from "@/Components/utils/filters";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import { Button } from "@heroui/react";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import ConsDetails from "../ConsDetails";
 import NotFoundRedirect from "../NotFoundRedirect";
@@ -57,6 +57,10 @@ import TrafficComp from "./TrafficPage/TrafficComp";
 import TransportRep from "./TransportRep";
 import ProductStockTable from "./ProductStock/ProductStockTable";
 import KPIReasons from "./KPI/KPIReasons";
+import SpendDashboard from "./SpendAnalysis/SpendDashboard";
+import SettingMiddleware from "./Settings/SettingMiddleware";
+import Customers from "./Settings/Customers";
+import CustomerProfile from "./Settings/CustomerProfile";
 
 export default function GtrsMain({
     setCustomerAccounts,
@@ -137,7 +141,6 @@ export default function GtrsMain({
 
     const [toggled, setToggled] = useState(false);
     const [broken, setBroken] = useState(false);
-    const rtl = false; // Assuming rtl is not used in this component
 
     // ********************************************************************
     // Each table FilterValue
@@ -1216,7 +1219,7 @@ export default function GtrsMain({
                                                 setCurrentUser={setCurrentUser}
                                             />
                                         }
-                                    />*/}
+                                    />
                                     <Route
                                         path="/transport"
                                         element={
@@ -1689,7 +1692,7 @@ export default function GtrsMain({
 GtrsMain.propTypes = {
     gtccrUrl: PropTypes.string.isRequired,
     currentUser: PropTypes.object.isRequired,
-    AToken: PropTypes.string.isRequired,
+    Token: PropTypes.string.isRequired,
     userPermission: PropTypes.object.isRequired,
     setCusomterAccounts: PropTypes.func.isRequired,
     setPerfData: PropTypes.func.isRequired,
@@ -1715,4 +1718,5 @@ GtrsMain.propTypes = {
     transportData: PropTypes.array.isRequired,
     kpireasonsData: PropTypes.array.isRequired,
     setkpireasonsData: PropTypes.func.isRequired,
+    setCustomerAccounts: PropTypes.func.isRequired,
 };

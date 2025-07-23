@@ -9,24 +9,20 @@ import {
     AccordionHeader,
     AccordionItem,
 } from "react-headless-accordion";
-import { useEffect, useContext, Fragment, useState} from "react";
+import React, { useEffect, useContext, Fragment, useState} from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import tiger from "../assets/pictures/tiger.png";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import SupportModal from "@/Pages/Component/modals/SupportModal";
-import { PublicClientApplication } from "@azure/msal-browser";
-import { clearMSALLocalStorage } from "@/CommonFunctions";
-import Cookies from "js-cookie";
 import { CustomContext } from "@/CommonContext";
+import PropTypes from "prop-types";
+import axios from "axios";
 
 export default function MainSidebar({
     setMobileMenuOpen,
     mobileMenuOpen,
 }) {
         const {
-            currentUser,
-            setCurrentUser,
-            setToken,
             user,
             allowedApplications,
         } = useContext(CustomContext);

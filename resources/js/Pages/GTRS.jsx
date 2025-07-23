@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import React from "react";
 import PropTypes from "prop-types";
 import swal from "sweetalert";
@@ -34,7 +34,6 @@ export default function Gtrs({
         setCanAccess,
         sidebarElements,
         setSidebarElements,
-        allowedApplications,
         DebtorsApi, setDebtorsApi,
         debtorsData, setdebtorsData,
         chartsApi, setchartsApi,
@@ -60,15 +59,6 @@ export default function Gtrs({
     const gtccrUrl = window.Laravel.gtccrUrl;
 
     const [deliveryReportData, setDeliveryReportData] = useState([]);
-    const debtorIdsArray = currentUser?.Accounts?.map((account) => {
-        return { UserId: account.DebtorId };
-    });
-    let debtorIds;
-    if (currentUser.TypeId == 1) {
-        debtorIds = debtorIdsArray;
-    } else {
-        debtorIds = currentUser.UserId;
-    }
 
     const fetchDeliveryReport = () => {
         axios

@@ -421,7 +421,7 @@ Holidays.propTypes = {
     holidays: PropTypes.array,
     setHolidays: PropTypes.func.isRequired,
     url: PropTypes.string.isRequired,
-    AToken: PropTypes.string.isRequired,
+    Token: PropTypes.string.isRequired,
     filterValue: PropTypes.object.isRequired,
     setFilterValue: PropTypes.func.isRequired,
     userPermission: PropTypes.object.isRequired,

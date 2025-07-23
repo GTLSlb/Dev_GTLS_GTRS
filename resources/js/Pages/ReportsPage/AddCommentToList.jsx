@@ -132,4 +132,5 @@ AddCommentToList.propTypes = {
     setSelectedComment: PropTypes.func,
     setShowAdd: PropTypes.func,
     fetchData: PropTypes.func,
+    Token: PropTypes.string,
 };

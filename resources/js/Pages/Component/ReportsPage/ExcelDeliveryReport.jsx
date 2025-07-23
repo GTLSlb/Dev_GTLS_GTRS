@@ -593,7 +593,7 @@ export default function ExcelDeliveryReport({
 
 ExcelDeliveryReport.propTypes = {
     url: PropTypes.string.isRequired,
-    AToken: PropTypes.string.isRequired,
+    Token: PropTypes.string.isRequired,
     deliveryReportData: PropTypes.array.isRequired,
     currentUser: PropTypes.object.isRequired,
     userPermission: PropTypes.object.isRequired,

@@ -201,7 +201,7 @@ RDDMain.propTypes = {
     setEDate: PropTypes.func.isRequired,
     SDate: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
-    AToken: PropTypes.string.isRequired,
+    Token: PropTypes.string.isRequired,
     userPermission: PropTypes.object.isRequired,
     setSDate: PropTypes.func.isRequired,
     currentUser: PropTypes.object.isRequired,

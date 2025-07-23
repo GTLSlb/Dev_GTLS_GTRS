@@ -51,7 +51,7 @@ export default function AddKPIReason({
             .post(`${url}Add/KpiReason`, inputValues, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${Token}`,
+                    Authorization: `Bearer ${AToken}`,
                 },
             })
             .then(() => {

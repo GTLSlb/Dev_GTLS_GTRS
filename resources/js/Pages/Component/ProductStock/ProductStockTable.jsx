@@ -12,8 +12,8 @@ import {
     SelectItem,
     Spinner,
 } from "@heroui/react";
+import { useInfiniteScroll } from "@heroui/use-infinite-scroll";
 import { useMemo } from "react";
-import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
 import moment from "moment/moment";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
@@ -769,6 +769,6 @@ export default function ProductStockTable({ url, Token, currentUser }) {
 
 ProductStockTable.propTypes = {
     url: PropTypes.string.isRequired,
-    AToken: PropTypes.string.isRequired,
+    Token: PropTypes.string.isRequired,
     currentUser: PropTypes.object.isRequired,
 };

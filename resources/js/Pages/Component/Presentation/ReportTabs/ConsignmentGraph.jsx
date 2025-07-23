@@ -150,7 +150,7 @@ function ConsignmentGraph({ url, currentUser, Token, customers, CustomerId }) {
 ConsignmentGraph.propTypes = {
     url: PropTypes.string.isRequired,
     currentUser: PropTypes.object.isRequired,
-    AToken: PropTypes.string.isRequired,
+    Token: PropTypes.string.isRequired,
     customers: PropTypes.array.isRequired,
     CustomerId: PropTypes.number.isRequired,
 };

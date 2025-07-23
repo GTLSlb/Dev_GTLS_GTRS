@@ -743,7 +743,7 @@ SmallTableKPI.propTypes = {
     showAddRow: PropTypes.bool.isRequired,
     setShowAddRow: PropTypes.func.isRequired,
     objects: PropTypes.array.isRequired,
-    AToken: PropTypes.string.isRequired,
+    Token: PropTypes.string.isRequired,
     addurl: PropTypes.string.isRequired,
     editIndex: PropTypes.number.isRequired,
     setEditIndex: PropTypes.func.isRequired,

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import React from "react";
 import { useEffect } from "react";
 import Gtrs from "@/Pages/GTRS";
@@ -15,7 +15,6 @@ import { CustomContext } from "@/CommonContext";
 
 export default function Sidebar() {
     const {
-        user,
         Token,
         setUser,
         setToken,
@@ -23,11 +22,9 @@ export default function Sidebar() {
         currentUser,
         setCanAccess,
         setCurrentUser,
-        allowedApplications,
         setAllowedApplications
     } = useContext(CustomContext);
 
-    const [sidebarElements, setSidebarElements] = useState();
     const Gtamurl = window.Laravel.gtamUrl;
     const appDomain = window.Laravel.appDomain;
 

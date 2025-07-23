@@ -443,7 +443,7 @@ RDDTable.propTypes = {
     rddData: PropTypes.array.isRequired,
     url: PropTypes.string.isRequired,
     setIncidentId: PropTypes.func.isRequired,
-    AToken: PropTypes.string.isRequired,
+    Token: PropTypes.string.isRequired,
     setrddData: PropTypes.func.isRequired,
     filterValue: PropTypes.object.isRequired,
     setFilterValue: PropTypes.func.isRequired,

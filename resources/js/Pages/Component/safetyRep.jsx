@@ -192,7 +192,7 @@ export default function SafetyRep({
         />,
         <SafetyRepChart
             key={currentPage}
-            AToken={AToken}
+            AToken={Token}
             filteredData={filteredData}
             safetyCauses={safetyCauses}
             safetyTypes={safetyTypes}
@@ -200,7 +200,7 @@ export default function SafetyRep({
         <AddSafetyType
             url={url}
             key={currentPage}
-            AToken={AToken}
+            AToken={Token}
             currentUser={currentUser}
             userPermission={userPermission}
             safetyTypes={safetyTypes}
@@ -348,7 +348,7 @@ SafetyRep.propTypes = {
     accData: propTypes.array,
     currentUser: propTypes.object,
     url: propTypes.string,
-    AToken: propTypes.string,
+    Token: propTypes.string,
     safetyDataState: propTypes.array,
     filterValue: propTypes.string,
     setFilterValue: propTypes.func,

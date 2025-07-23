@@ -11,7 +11,7 @@ import {
     ModalBody,
     ModalFooter,
     useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import React from "react";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";

@@ -7,7 +7,7 @@ import { PencilIcon } from "@heroicons/react/20/solid";
 import swal from "sweetalert";
 import axios from "axios";
 import { handleSessionExpiration } from "@/CommonFunctions";
-import { Spinner } from "@nextui-org/react";
+import { Spinner } from "@heroui/react";
 import ComboBox from "@/Components/ComboBox";
 
 export default function ViewComments({
@@ -50,7 +50,7 @@ export default function ViewComments({
             .post(`${url}Add/Comment`, inputValues, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${Token}`,
+                    Authorization: `Bearer ${AToken}`,
                 },
             })
             .then(() => {

@@ -1,4 +1,4 @@
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Sidebar, Menu, MenuItem, menuClasses } from "react-pro-sidebar";
@@ -625,4 +625,5 @@ CollapseSidebar.propTypes = {
     setCollapsed: PropTypes.func.isRequired,
     sidebarElements: PropTypes.array.isRequired,
     setSidebarElements: PropTypes.func.isRequired,
+    setCustomerAccounts: PropTypes.func.isRequired,
 };  

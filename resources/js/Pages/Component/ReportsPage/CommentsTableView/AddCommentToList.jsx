@@ -143,7 +143,7 @@ AddCommentToList.propTypes = {
     selectedComment: PropTypes.object,
     url: PropTypes.string.isRequired,
     currentUser: PropTypes.object.isRequired,    
-    AToken: PropTypes.string.isRequired,    
+    Token: PropTypes.string.isRequired,    
     setSelectedComment: PropTypes.func.isRequired,
     setShowAdd: PropTypes.func.isRequired,
     fetchData: PropTypes.func.isRequired,

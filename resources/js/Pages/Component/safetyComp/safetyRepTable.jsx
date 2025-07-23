@@ -472,7 +472,7 @@ export default function SafetyRepTable({
 SafetyRepTable.propTypes = {
     currentPageRep: PropTypes.string,
     safetyData: PropTypes.array,
-    AToken: PropTypes.string,
+    Token: PropTypes.string,
     url: PropTypes.string,
     filterValue: PropTypes.object,
     customerAccounts: PropTypes.array,

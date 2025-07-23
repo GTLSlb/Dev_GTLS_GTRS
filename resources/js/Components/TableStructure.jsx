@@ -217,4 +217,5 @@ TableStructure.propTypes = {
     id: PropTypes.string.isRequired,
     HeaderContent: PropTypes.node,
     setColumns: PropTypes.func.isRequired,
+    minHeight: PropTypes.number,
 };

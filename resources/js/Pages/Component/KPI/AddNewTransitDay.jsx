@@ -528,7 +528,7 @@ AddNewTransitDay.propTypes = {
     currentUser: PropTypes.object.isRequired,
     setNewTransitDay: PropTypes.func.isRequired,
     setNewTransitDays: PropTypes.func.isRequired,
-    AToken: PropTypes.string.isRequired,
+    Token: PropTypes.string.isRequired,
 };
 
 export default AddNewTransitDay;

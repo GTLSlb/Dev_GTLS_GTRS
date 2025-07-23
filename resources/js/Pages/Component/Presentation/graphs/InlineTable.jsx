@@ -332,7 +332,7 @@ function InlineTable({
                 .post(`${url}Add/KpiPackRecord`, baseRecord, {
                     headers: {
                         UserId: currentUser.UserId,
-                        Authorization: `Bearer ${Token}`,
+                        Authorization: `Bearer ${AToken}`,
                     },
                 })
                 .then(() => {
