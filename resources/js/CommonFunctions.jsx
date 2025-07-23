@@ -1,6 +1,7 @@
+import React from "react";
+import PropTypes from "prop-types";
 import NoAccessRedirect from "@/Pages/NoAccessRedirect";
 import menu from "@/SidebarMenuItems";
-import { PublicClientApplication } from "@azure/msal-browser";
 import Cookies from "js-cookie";
 import "react-toastify/dist/ReactToastify.css";
 import swal from "sweetalert";
@@ -60,11 +61,11 @@ export async function handleSessionExpiration() {
                     window.location.href = `/login`;
                 }
             } else {
-                console.log("Logout error:", response);
+                console.error("Logout error:", response);
             }
         })
         .catch((error) => {
-            console.log(error);
+            console.error(error);
             if (error.response && error.response.status === 401) {
                 // Handle 401 error using SweetAlert
                 swal({
@@ -170,7 +171,7 @@ export const fetchApiData = async (
                 await handleSessionExpiration();
             });
         } else {
-            console.log(err);
+            console.error(err);
         }
     }
 };
@@ -214,7 +215,7 @@ export function getApiRequest(url, headers = {}) {
             } else {
                 // Handle other errors
                 AlertToast("Something went wrong", 2);
-                console.log(err);
+                console.error(err);
             }
         });
 }
@@ -235,7 +236,7 @@ export const formatDateToExcel = (dateValue) => {
 
 export const formatDate = (dateString) => {
     if (dateString) {
-        const [date, time] = dateString.split("T");
+        const [date] = dateString.split("T");
         const [day, month, year] = date.split("-");
         // Using template literals to format the date
         return `${year}-${month}-${day}`;
@@ -264,6 +265,12 @@ export function ProtectedRoute({ permission, route, element }) {
     return userHasPermission ? element : <NoAccessRedirect />;
 }
 
+ProtectedRoute.propTypes = {
+    permission: PropTypes.object.isRequired,
+    route: PropTypes.oneOfType([PropTypes.string, PropTypes.array]).isRequired,
+    element: PropTypes.element.isRequired,
+};
+
 function checkUserPermission(permission, route) {
     if (typeof route == "string") {
         // Go over the flat permissions and check if the user has the required permission
@@ -290,7 +297,7 @@ function findCurrentItem(items, id) {
                     ? {
                           options: element.options.map((option) => {
                               if (option.id == id) {
-                                  targetElement = option;
+                                //   targetElement = option;
                                   return { ...option, current: true };
                               } else {
                                   return { ...option, current: false };
@@ -318,7 +325,7 @@ export function navigateToFirstAllowedPage({
     let items = [];
 
     menu?.forEach((menuItem) => {
-        if (menuItem.hasOwnProperty("options")) {
+        if (Object.prototype.hasOwnProperty.call(menuItem, "options")) {
             menuItem.options.forEach((option) => {
                 if (
                     user?.Features?.some(
@@ -356,8 +363,11 @@ console.log(items)
 console.log(window.location.pathname)
 
     // Navigate to the page specified in the browser URL
-    if(window.location.pathname != "/gtrs/" && window.location.pathname != "/gtrs" ){
-        setSidebarElements(findCurrentItem(items, window.location.pathname))
+    if (
+        window.location.pathname != "/gtrs/" &&
+        window.location.pathname != "/gtrs"
+    ) {
+        setSidebarElements(findCurrentItem(items, window.location.pathname));
         navigate(window.location.pathname);
     } else {
         // Navigate to the first allowed page

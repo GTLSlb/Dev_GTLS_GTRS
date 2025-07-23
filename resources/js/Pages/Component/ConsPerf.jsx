@@ -1,10 +1,12 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import Navbar from "./consPerf/navbar";
 import notFound from "../../assets/pictures/NotFound.png";
 import { useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import moment from "moment";
+import PropTypes from "prop-types";
 
 export default function ConsPerf({
     PerfData,
@@ -364,3 +366,18 @@ export default function ConsPerf({
         </div>
     );
 }
+
+ConsPerf.propTypes = {
+    PerfData: PropTypes.array.isRequired,
+    EDate: PropTypes.string.isRequired,
+    accData: PropTypes.array.isRequired,
+    setEDate: PropTypes.func.isRequired,
+    SDate: PropTypes.string.isRequired,
+    setSDate: PropTypes.func.isRequired,
+    oldestDate: PropTypes.string.isRequired,
+    latestDate: PropTypes.string.isRequired,
+    currentUser: PropTypes.object.isRequired,
+    userPermission: PropTypes.object.isRequired,
+    setSharedStartDate: PropTypes.func.isRequired,
+    setSharedEndDate: PropTypes.func.isRequired,
+};

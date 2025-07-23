@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 function PickupDelInfo({
     deliveryInfo,
@@ -30,7 +31,7 @@ function PickupDelInfo({
                             </thead>
                             <tbody className="bg-gray-100 rounded-xl">
                                 {deliveryInfo?.map((item) => (
-                                    <tr className=" ">
+                                    <tr key={item} className=" ">
                                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-600 sm:pl-3">
                                             {item.PODdateTime.replace("T", " ")}
                                         </td>
@@ -38,7 +39,7 @@ function PickupDelInfo({
                                             <a
                                                 href={item.PODimage}
                                                 target="_blank"
-                                                className="text-indigo-600 hover:text-goldds"
+                                                className="text-indigo-600 hover:text-goldds" rel="noreferrer"
                                             >
                                                 {item.PODimage}
                                             </a>
@@ -53,5 +54,14 @@ function PickupDelInfo({
         </div>
     );
 }
+
+PickupDelInfo.propTypes = {
+    deliveryInfo: PropTypes.arrayOf(
+        PropTypes.shape({
+            PODdateTime: PropTypes.string.isRequired,
+            PODimage: PropTypes.string.isRequired,
+        })
+    ).isRequired,
+};
 
 export default PickupDelInfo;

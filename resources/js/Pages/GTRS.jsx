@@ -1,4 +1,10 @@
-import { useState, useEffect, useContext } from "react";
+import { useState } from "react";
+import React from "react";
+import PropTypes from "prop-types";
+import swal from "sweetalert";
+import axios from "axios";
+import { handleSessionExpiration } from "@/CommonFunctions";
+import { useEffect } from "react";
 import NoAccess from "@/Components/NoAccess";
 import { fetchApiData } from "@/CommonFunctions";
 import MainSidebar from "@/Components/Main-sidebar";
@@ -74,7 +80,7 @@ export default function Gtrs({
             })
             .then((res) => {
                 const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
+                const parsedDataPromise = new Promise((resolve) => {
                     const parsedData = JSON.parse(x);
                     resolve(parsedData);
                 });
@@ -100,12 +106,12 @@ export default function Gtrs({
                                 }
                             })
                             .catch((error) => {
-                                console.log(error);
+                                console.error(error);
                             });
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                 }
             });
     };
@@ -134,7 +140,7 @@ export default function Gtrs({
                 });
             } else {
                 // Handle other errors
-                console.log(err);
+                console.error(err);
                 // Check if setCellLoading exists before calling it
                 if (typeof setCellLoading === "function") {
                     setCellLoading(null);
@@ -302,3 +308,19 @@ export default function Gtrs({
         return <AnimatedLoading />;
     }
 }
+
+Gtrs.propTypes = {
+    user: PropTypes.object,
+    setToken: PropTypes.func.isRequired,
+    setMobileMenuOpen: PropTypes.func.isRequired,
+    AToken: PropTypes.string,
+    setLoadingGtrs: PropTypes.func.isRequired,
+    currentUser: PropTypes.object,
+    loadingGtrs: PropTypes.bool.isRequired,
+    allowedApplications: PropTypes.array.isRequired,
+    mobileMenuOpen: PropTypes.bool.isRequired,
+    setcurrentUser: PropTypes.func.isRequired,
+    setSidebarElements: PropTypes.func.isRequired,
+    sidebarElements: PropTypes.array.isRequired,
+    setUser: PropTypes.func.isRequired,
+};

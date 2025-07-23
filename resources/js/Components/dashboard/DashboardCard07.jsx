@@ -1,16 +1,9 @@
 import { formatNumberWithCommas } from "@/CommonFunctions";
 import React from "react";
+import PropTypes from "prop-types";
 
 function DashboardCard07(props) {
     const data = props.InfoData;
-    const percentagePassed =
-        (data.totalNoConsPassed /
-            (data.totalConsFailed + data.totalNoConsPassed)) *
-        100;
-    const percentageFailed =
-        (data.totalConsFailed / data.totalNoConsShipped) * 100;
-    const percentagePending =
-        (data.totalConsPending / data.totalNoConsShipped) * 100;
 
     return (
         <div className="col-span-full h-full xl:col-span-4 bg-white shadow-lg rounded-sm border border-slate-200">
@@ -283,5 +276,24 @@ function DashboardCard07(props) {
         </div>
     );
 }
+
+DashboardCard07.propTypes = {
+    InfoData: PropTypes.shape({
+        numUniqueReceivers: PropTypes.number.isRequired,
+        totalWeight: PropTypes.number.isRequired,
+        totalPalletSpace: PropTypes.number.isRequired,
+        totalChep: PropTypes.number.isRequired,
+        totalLoscam: PropTypes.number.isRequired,
+        totalCustomerOwn: PropTypes.number.isRequired,
+        totalCost: PropTypes.number.isRequired,
+        fuelLevy: PropTypes.number.isRequired,
+        totalNoConsShipped: PropTypes.number.isRequired,
+        totalConsPending: PropTypes.number.isRequired,
+        totalNoConsPassed: PropTypes.number.isRequired,
+        totalConsFailed: PropTypes.number.isRequired,
+        podCounter: PropTypes.number.isRequired,
+        podPercentage: PropTypes.number.isRequired,
+    }).isRequired,
+};
 
 export default DashboardCard07;

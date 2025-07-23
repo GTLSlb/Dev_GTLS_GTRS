@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import {
     calculateStatistics,
     getConsStatusCounter,
@@ -24,7 +25,6 @@ function Charts({
     layout,
     filteredData,
     gridKey,
-    setLayout,
     setShowTable,
     setChartFilter,
     setChartName,
@@ -171,5 +171,14 @@ function Charts({
         </ReactGridLayout>
     );
 }
+
+Charts.propTypes = {
+    layout: PropTypes.array.isRequired,
+    filteredData: PropTypes.array.isRequired,
+    gridKey: PropTypes.string.isRequired,
+    setShowTable: PropTypes.func.isRequired,
+    setChartFilter: PropTypes.func.isRequired,
+    setChartName: PropTypes.func.isRequired,
+};
 
 export default Charts;

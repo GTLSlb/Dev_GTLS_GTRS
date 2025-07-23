@@ -13,10 +13,7 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import { useRef } from "react";
-import { useEffect } from "react";
-
-import { useState } from "react";
-import BarTable from "./BarTable";
+import PropTypes from "prop-types";
 import InlineTable from "./InlineTable";
 ChartJS.register(
     CategoryScale,
@@ -182,70 +179,7 @@ function BarGraph({
         },
     };
 
-    function updateLocalDataFromJson(newData) {
-        // Check if the newData object has the required properties
-        if (!newData || !newData.labels || !newData.datasets) {
-            console.error("Invalid data format. Please provide a valid JSON object.");
-            return;
-        }
 
-        // Use the chart reference to access the chart instance
-        const chart = chartRef.current;
-
-        if (!chart) {
-            console.error("Chart reference is not available.");
-            return;
-        }
-
-        // Update the labels by merging existing and new labels
-        const updatedLabels = Array.from(new Set([...chart.data.labels, ...newData.labels]));
-
-        // Update the datasets
-        newData.datasets.forEach((newDataset) => {
-            const existingDatasetIndex = chart.data.datasets.findIndex(
-                (dataset) => dataset.label === newDataset.label
-            );
-
-            if (existingDatasetIndex !== -1) {
-                // Update the existing dataset
-                chart.data.datasets[existingDatasetIndex].data = mergeData(
-                    updatedLabels,
-                    chart.data.datasets[existingDatasetIndex].data,
-                    newData.labels,
-                    newDataset.data
-                );
-            } else {
-                // Add new dataset
-                chart.data.datasets.push({
-                    ...newDataset,
-                    data: mergeData(updatedLabels, [], newData.labels, newDataset.data)
-                });
-            }
-        });
-
-        // Update the chart labels
-        chart.data.labels = updatedLabels;
-
-        // Update the chart
-        chart.update(); // Pass 'none' to skip animations
-
-        // Optional: Log updated data for debugging
-    }
-
-    // Helper function to merge dataset values based on matching labels
-    function mergeData(allLabels, existingData, newLabels, newData) {
-        // Create a map of new labels to their corresponding data values
-        const newDataMap = newLabels.reduce((map, label, index) => {
-            map[label] = newData[index];
-            return map;
-        }, {});
-
-        // Merge existing data with new data based on all labels
-        return allLabels.map((label, index) => {
-            // If the label is in the new data map, use its value; otherwise, use the existing value or 0
-            return newDataMap[label] !== undefined ? newDataMap[label] : (existingData[index] || 0);
-        });
-    }
 
     return (
         <div>
@@ -266,5 +200,17 @@ function BarGraph({
         </div>
     );
 }
+
+BarGraph.propTypes = {
+    graphData: PropTypes.array.isRequired,
+    url: PropTypes.string.isRequired,
+    AToken: PropTypes.string.isRequired,
+    CustomerId: PropTypes.number.isRequired,
+    originalgraphData: PropTypes.array.isRequired,
+    currentUser: PropTypes.object.isRequired,
+    setGraphData: PropTypes.func.isRequired,
+    getReportData: PropTypes.func.isRequired,
+    selectedReceiver: PropTypes.string.isRequired,
+};
 
 export default BarGraph;

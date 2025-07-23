@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import BarChart from "../charts/BarChart01";
 
 // Import utilities
-import { tailwindConfig } from "../utils/Utils";
+import PropTypes from "prop-types";
 import { useState } from "react";
 function DashboardCard04(props) {
     const { podCounterData } = props;
@@ -83,5 +83,9 @@ function DashboardCard04(props) {
         </div>
     );
 }
+
+DashboardCard04.propTypes = {
+    podCounterData: PropTypes.object.isRequired,
+};
 
 export default DashboardCard04;

@@ -1,4 +1,6 @@
 import React from "react";
+import moment from "moment";
+import PropTypes from "prop-types";
 
 function MainDetails({ mainDetail }) {
     return (
@@ -126,5 +128,24 @@ function MainDetails({ mainDetail }) {
         </div>
     );
 }
+
+MainDetails.propTypes = {
+    mainDetail: PropTypes.shape({
+        ConsignmentNo: PropTypes.string.isRequired,
+        Status: PropTypes.string.isRequired,
+        Service: PropTypes.string.isRequired,
+        DateTime: PropTypes.string.isRequired,
+        DespatchDate: PropTypes.string.isRequired,
+        GeneralInstructions: PropTypes.string.isRequired,
+        DangerousGoods: PropTypes.string.isRequired,
+        FailedReason: PropTypes.string.isRequired,  
+        Faileddesc: PropTypes.string.isRequired,
+        FailedNote: PropTypes.string.isRequired,
+        Resolution: PropTypes.string.isRequired,
+        Reference: PropTypes.number.isRequired, 
+        Department: PropTypes.string.isRequired,
+        ChargeTo: PropTypes.string.isRequired,
+    }).isRequired,
+};
 
 export default MainDetails;

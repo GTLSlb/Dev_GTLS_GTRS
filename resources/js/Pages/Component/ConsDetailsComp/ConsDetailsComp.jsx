@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 function ConsDetailsComp({consDetails}) {
     return (
@@ -71,7 +72,7 @@ function ConsDetailsComp({consDetails}) {
                             <tbody className="bg-gray-100 rounded-xl">
                                 {consDetails?.map(
                                     (item) => (
-                                        <tr className=" ">
+                                        <tr key={item} className=" ">
                                             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-600 sm:pl-3">
                                                 {item.Description}
                                             </td>
@@ -110,5 +111,21 @@ function ConsDetailsComp({consDetails}) {
         </div>
     );
 }
+
+ConsDetailsComp.propTypes = {
+    consDetails: PropTypes.arrayOf(
+        PropTypes.shape({
+            Description: PropTypes.string.isRequired,
+            Quantity: PropTypes.number.isRequired,
+            Weight: PropTypes.number.isRequired,
+            Length: PropTypes.number.isRequired,
+            Height: PropTypes.number.isRequired,
+            Width: PropTypes.number.isRequired,
+            Cubic: PropTypes.number.isRequired,
+            PalletSpace: PropTypes.number.isRequired,
+            RateUnit: PropTypes.string.isRequired,
+        })
+    ).isRequired,
+};
 
 export default ConsDetailsComp;

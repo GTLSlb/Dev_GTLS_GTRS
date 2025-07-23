@@ -1,14 +1,12 @@
 import React from "react";
 import BarChart03 from "@/Components/charts/BarChart03";
-import { tailwindConfig } from "@/Components/utils/Utils";
-import { useState } from "react";
-import { useEffect } from "react";
+import PropTypes from "prop-types";
 
 function SafetyRepByState(props) {
     function sumObjectValues(obj) {
         let sum = 0;
         for (let key in obj) {
-            if (obj.hasOwnProperty(key)) {
+            if (Object.prototype.hasOwnProperty.call(obj, key)) {
                 sum += obj[key];
             }
         }
@@ -17,14 +15,6 @@ function SafetyRepByState(props) {
     const chartTitle = props.chartTitle;
     const singleBarValue = props.singleBarValue;
     const totalSum = sumObjectValues(singleBarValue);
-    useEffect(() => {
-        if (singleBarValue !== null) {
-            const chartData = {
-                labels: ["Reasons"],
-                datasets: getChartData(singleBarValue),
-            };
-        }
-    }, [singleBarValue]);
 
     function getChartData(stateCounts) {
         const colorArray = [
@@ -90,5 +80,10 @@ function SafetyRepByState(props) {
         </div>
     );
 }
+
+SafetyRepByState.propTypes = {
+    chartTitle: PropTypes.string.isRequired,
+    singleBarValue: PropTypes.object.isRequired,
+};
 
 export default SafetyRepByState;

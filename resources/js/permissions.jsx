@@ -1,5 +1,4 @@
 import { toast } from "react-toastify";
-import swal from "sweetalert";
 
 export function AlertToast(msg, status) {
     if (status == 1) {

@@ -4,6 +4,7 @@ import {
   Chart, LineController, LineElement, Filler, PointElement, LinearScale, TimeScale, Tooltip,
 } from 'chart.js';
 import 'chartjs-adapter-moment';
+import PropTypes from 'prop-types';
 
 // Import utilities
 import { tailwindConfig, formatValue } from '../utils/Utils';
@@ -22,7 +23,7 @@ function RealtimeChart({
 
   useEffect(() => {
     const ctx = canvas.current;
-    // eslint-disable-next-line no-unused-vars
+     
     const chart = new Chart(ctx, {
       type: 'line',
       data: data,
@@ -87,7 +88,6 @@ function RealtimeChart({
       },
     });
     return () => chart.destroy();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   // Update header values
@@ -118,5 +118,11 @@ function RealtimeChart({
     </React.Fragment>
   );
 }
+
+RealtimeChart.propTypes = {
+  data: PropTypes.object.isRequired,
+  width: PropTypes.number,
+  height: PropTypes.number,
+};
 
 export default RealtimeChart;

@@ -1,5 +1,6 @@
 import React from "react";
-export const MenuIcon = ({ strokeWidth = 1.5,className, ...otherProps }) => (
+import PropTypes from "prop-types";
+export const MenuIcon = ({className, }) => (
     <svg
         width="18"
         height="12"
@@ -14,3 +15,6 @@ export const MenuIcon = ({ strokeWidth = 1.5,className, ...otherProps }) => (
         />
     </svg>
 );
+MenuIcon.propTypes = {
+    className: PropTypes.string,
+};

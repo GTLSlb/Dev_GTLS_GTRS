@@ -4,6 +4,7 @@ import axios from "axios";
 import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import RDDTable from "./RDDTable";
+import PropTypes from "prop-types";
 
 export default function RDDMain({
     setActiveIndexGTRS,
@@ -61,15 +62,6 @@ export default function RDDMain({
         if (!(date instanceof Date) || isNaN(date.getTime())) {
             return ""; // or return any other default value as needed
         }
-        const options = {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            timeZone: "UTC",
-        };
 
         return date.toISOString().slice(0, 19); // UTC time
     };
@@ -126,7 +118,7 @@ export default function RDDMain({
                 })
                 .then((res) => {
                     const x = JSON.stringify(res.data);
-                    const parsedDataPromise = new Promise((resolve, reject) => {
+                    const parsedDataPromise = new Promise((resolve) => {
                         const parsedData = JSON.parse(x);
                         resolve(parsedData);
                     });
@@ -149,7 +141,7 @@ export default function RDDMain({
                         });
                     } else {
                         // Handle other errors
-                        console.log(err);
+                        console.error(err);
                     }
                 });
         } catch (error) {
@@ -193,3 +185,28 @@ export default function RDDMain({
         </div>
     );
 }
+
+RDDMain.propTypes = {
+    setActiveIndexGTRS: PropTypes.func.isRequired,
+    setactiveCon: PropTypes.func.isRequired,
+    debtorsData: PropTypes.array.isRequired,
+    rddData: PropTypes.array.isRequired,
+    filterValue: PropTypes.object.isRequired,
+    setFilterValue: PropTypes.func.isRequired,
+    setrddData: PropTypes.func.isRequired,
+    setIncidentId: PropTypes.func.isRequired,
+    setLastIndex: PropTypes.func.isRequired,
+    accData: PropTypes.array.isRequired,
+    EDate: PropTypes.string.isRequired,
+    setEDate: PropTypes.func.isRequired,
+    SDate: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired,
+    AToken: PropTypes.string.isRequired,
+    userPermission: PropTypes.object.isRequired,
+    setSDate: PropTypes.func.isRequired,
+    currentUser: PropTypes.object.isRequired,
+    rddReasons: PropTypes.array.isRequired,
+    setrddReasons: PropTypes.func.isRequired,
+    oldestDate: PropTypes.string.isRequired,
+    latestDate: PropTypes.string.isRequired,
+};  

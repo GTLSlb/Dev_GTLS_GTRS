@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Transition from './Transition';
+import PropTypes from 'prop-types';
 
 function Info({
   children,
@@ -45,5 +46,11 @@ function Info({
     </div>
   );
 }
+
+Info.propTypes = {
+  children: PropTypes.node.isRequired,
+  className: PropTypes.string,
+  containerClassName: PropTypes.string,
+};
 
 export default Info;

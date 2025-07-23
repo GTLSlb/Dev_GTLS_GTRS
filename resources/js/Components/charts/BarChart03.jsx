@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 
+import PropTypes from 'prop-types';
 import {
   Chart, BarController, BarElement, LinearScale, CategoryScale, Tooltip, Legend,
 } from 'chart.js';
@@ -28,7 +29,7 @@ function BarChart03({
     const max = values?.reduce(reducer,initialValue);
 
     const ctx = canvas.current;
-    // eslint-disable-next-line no-unused-vars
+     
     const chart = new Chart(ctx, {
       type: 'bar',
       data: data,
@@ -76,7 +77,7 @@ function BarChart03({
       },
       plugins: [{
         id: 'htmlLegend',
-        afterUpdate(c, args, options) {
+        afterUpdate(c) {
           const ul = legend.current;
           if (!ul) return;
           // Remove old legend items
@@ -121,7 +122,6 @@ function BarChart03({
       }],
     });
     return () => chart.destroy();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   return (
@@ -136,5 +136,11 @@ function BarChart03({
     </div>
   );
 }
+
+BarChart03.propTypes = {
+  data: PropTypes.object.isRequired,
+  width: PropTypes.number,
+  height: PropTypes.number,
+};
 
 export default BarChart03;

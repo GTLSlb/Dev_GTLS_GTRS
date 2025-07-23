@@ -1,6 +1,7 @@
 import React, {useState } from "react";
 import { default as ReactSelect } from "react-select";
 import { components } from "react-select";
+import PropTypes from "prop-types";
 
 const Option = (props) => {
     return (
@@ -10,11 +11,16 @@ const Option = (props) => {
                     type="checkbox"
                     checked={props.isSelected}
                     onChange={() => null}
-                />{" "}
+                />
                 <label>{props.label}</label>
             </components.Option>
         </div>
     );
+};
+Option.propTypes = {
+    isSelected: PropTypes.bool.isRequired,
+    label: PropTypes.string.isRequired,
+    // Add other prop types as needed
 };
 
 const MultiSelect = ({ onMultiSelectChange }) => {
@@ -23,7 +29,7 @@ const MultiSelect = ({ onMultiSelectChange }) => {
       ...provided,
       // Add more styles here as needed
     }),
-    option: (provided, state) => ({
+    option: (provided) => ({
       ...provided,
       // Add more styles here as needed
     }),
@@ -75,6 +81,10 @@ const MultiSelect = ({ onMultiSelectChange }) => {
             />
         </span>
     );
+};
+
+MultiSelect.propTypes = {
+    onMultiSelectChange: PropTypes.func.isRequired,
 };
 
 // const rootElement = document.getElementById("root");

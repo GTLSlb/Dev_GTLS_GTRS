@@ -1,5 +1,5 @@
-import ApplicationLogo from "@/Components/ApplicationLogo";
-import { Link } from "@inertiajs/react";
+import React from "react";
+import PropTypes from "prop-types";
 import Logo from "../assets/pictures/Logo.png";
 
 export default function Guest({ children }) {
@@ -24,3 +24,7 @@ export default function Guest({ children }) {
         </div>
     );
 }
+
+Guest.propTypes = {
+    children: PropTypes.node.isRequired,
+};

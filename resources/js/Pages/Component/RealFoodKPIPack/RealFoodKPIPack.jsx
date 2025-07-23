@@ -1,9 +1,9 @@
 import React from "react";
-import { useState } from "react";
+import PropTypes from "prop-types";
 import ConsignmentGraph from "../Presentation/ReportTabs/ConsignmentGraph";
 // import axios from "axios";
-function RealFoodKPIPack({ url, currentUser, Token }) {
-    const [activeComponentIndex, setActiveComponentIndex] = useState(0);
+function RealFoodKPIPack({ url, currentUser, AToken }) {
+    const activeComponentIndex = 0; // Assuming you want to show the first component by default
     const customers = [
         {
             value: 4,
@@ -24,6 +24,7 @@ function RealFoodKPIPack({ url, currentUser, Token }) {
     ];
     let components = [
         <ConsignmentGraph
+            key={activeComponentIndex}
             url={url}
             currentUser={currentUser}
             Token={Token}
@@ -46,5 +47,10 @@ function RealFoodKPIPack({ url, currentUser, Token }) {
         </div>
     );
 }
+RealFoodKPIPack.propTypes = {
+    url: PropTypes.string.isRequired,
+    currentUser: PropTypes.object.isRequired,    
+    AToken: PropTypes.string.isRequired,    
+};
 
 export default RealFoodKPIPack;

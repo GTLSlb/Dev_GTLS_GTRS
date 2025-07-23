@@ -8,17 +8,18 @@ import {
     TableCell,
     Input,
     Button,
-    Pagination,
     Select,
     SelectItem,
     Spinner,
 } from "@heroui/react";
 import { useMemo } from "react";
-import { useRef } from "react";
-import { useInfiniteScroll } from "@heroui/use-infinite-scroll";
+import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
 import moment from "moment/moment";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import axios from "axios";
+import PropTypes from "prop-types";
+import swal from "sweetalert";
 export const SearchIcon = (props) => {
     return (
         <svg
@@ -52,7 +53,6 @@ export const SearchIcon = (props) => {
 export default function ProductStockTable({ url, Token, currentUser }) {
     const [productsData, setProductsData] = useState([]);
     const [debtors, setDebtors] = useState([]);
-    const [page, setPage] = React.useState(1);
     const [branches, setBranches] = useState([]);
     const [selectedDebtor, setSelectedDebtor] = useState("");
     const [selectedBranch, setSelectedBranch] = useState("");
@@ -169,7 +169,7 @@ export default function ProductStockTable({ url, Token, currentUser }) {
 
             return [
                 // Add items with index
-                ...group.items.map((item, itemIndex) => ({
+                ...group.items.map((item) => ({
                     ...item,
                     isItemRow: true,
                     index: rowIndex++, // Increment index for each item
@@ -386,18 +386,6 @@ export default function ProductStockTable({ url, Token, currentUser }) {
         }
     }, []);
 
-    const renderGroupedCell = (item, columnKey) => {
-        switch (columnKey) {
-            case "DebtorName":
-                return <strong>{item.DebtorName}</strong>;
-            case "BranchName":
-                return item.BranchName || "";
-            case "Total":
-                return item.Total?.toLocaleString() || "0";
-            default:
-                return null;
-        }
-    };
 
     const onClear = React.useCallback(() => {
         setFilterValue("");
@@ -778,3 +766,9 @@ export default function ProductStockTable({ url, Token, currentUser }) {
         </div>
     );
 }
+
+ProductStockTable.propTypes = {
+    url: PropTypes.string.isRequired,
+    AToken: PropTypes.string.isRequired,
+    currentUser: PropTypes.object.isRequired,
+};

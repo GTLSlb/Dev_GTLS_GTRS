@@ -1,11 +1,13 @@
 import Details from "./Details";
+import React from "react";
+import PropTypes from "prop-types";
 import General from "./General";
 import { useState } from "react";
 import Amount from "./Amount";
 import Sender from "./Sender";
 import Reciever from "./Reciever";
 
-export default function Navbar({ id, item,currentUser,userPermission }) {
+export default function Navbar({item}) {
 
     const tabs = [
         {
@@ -52,11 +54,11 @@ export default function Navbar({ id, item,currentUser,userPermission }) {
     const [sidebarElements, setSidebarElements] = useState(tabs);
     const [activeIndex, setActiveIndex] = useState(0);
     const components = [
-        <General item={item} />,
-        <Details item={item} />,
-        <Amount item={item} />,
-        <Sender item={item} />,
-        <Reciever item={item} />,
+        <General key={item.id} item={item} />,
+        <Details key={item.id} item={item} />,
+        <Amount key={item.id} item={item} />,
+        <Sender key={item.id} item={item} />,
+        <Reciever key={item.id} item={item} />,
     ];
     const handleClick = (index, e) => {
         e.preventDefault();
@@ -120,3 +122,7 @@ export default function Navbar({ id, item,currentUser,userPermission }) {
         </div>
     );
 }
+
+Navbar.propTypes = {
+    item: PropTypes.object.isRequired,
+};

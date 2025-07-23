@@ -1,5 +1,6 @@
 import React from "react";
 import { Bar } from "react-chartjs-2";
+import PropTypes from "prop-types";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -96,6 +97,17 @@ const GroupedBar = ({
             <Bar data={data} options={options} />
         </div>
     );
+};
+
+GroupedBar.propTypes = {
+    collabel: PropTypes.arrayOf(PropTypes.string).isRequired,
+    firstLabel: PropTypes.string.isRequired,
+    secondLabel: PropTypes.string.isRequired,
+    thirdLabel: PropTypes.string.isRequired,
+    firstData: PropTypes.arrayOf(PropTypes.number).isRequired,
+    secondData: PropTypes.arrayOf(PropTypes.number).isRequired,
+    thirdData: PropTypes.arrayOf(PropTypes.number).isRequired,
+    title: PropTypes.string.isRequired,
 };
 
 export default GroupedBar;

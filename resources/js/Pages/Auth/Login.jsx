@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
+import PropTypes from "prop-types";
 import Logo from "../../assets/pictures/Logo-upscaled.png";
 import "../../../css/scroll.css";
 import { LoginPage } from "gtls-npm-libraries";
@@ -37,3 +38,10 @@ export default function Login() {
     </div>
     );
 }
+
+
+Login.propTypes = {
+    currentUser: PropTypes.object,
+    setToken: PropTypes.func.isRequired,
+    setCurrentUser: PropTypes.func.isRequired,
+};

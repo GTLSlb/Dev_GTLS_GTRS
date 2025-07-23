@@ -1,6 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 import BarChart from "../charts/BarChart03";
+import PropTypes from "prop-types";
 
 // Import utilities
 import { tailwindConfig } from "../utils/Utils";
@@ -87,5 +88,9 @@ function DashboardCard12(props) {
         </div>
     );
 }
+
+DashboardCard12.propTypes = {
+    stateCounterData: PropTypes.object.isRequired,
+};
 
 export default DashboardCard12;

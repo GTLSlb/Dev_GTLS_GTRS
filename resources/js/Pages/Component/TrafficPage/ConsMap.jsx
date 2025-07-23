@@ -4,10 +4,10 @@ import {
     LoadScript,
     Marker,
     DirectionsService,
-    TrafficLayer,
     DirectionsRenderer,
 } from "@react-google-maps/api";
-import { Button, Card, Divider, Image } from "@heroui/react";
+import moment from "moment";
+import { Button, Card, Divider, Image } from "@nextui-org/react";
 import { ChevronLeftIcon, MapPinIcon } from "@heroicons/react/20/solid";
 import Roadworks from "@/assets/icons/RoadWork.png";
 import Alpine from "@/assets/icons/Alpine.png";
@@ -20,7 +20,6 @@ import Major from "@/assets/icons/Major.png";
 import Other from "@/assets/icons/Other.png";
 import ScheduleSendIcon from "@mui/icons-material/ScheduleSend";
 import AlarmOnIcon from "@mui/icons-material/AlarmOn";
-import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const eventTypeMapping = {
@@ -53,7 +52,7 @@ const iconMappings = {
     Other,
 };
 
-export default function ConsMap({ }) {
+export default function ConsMap() {
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -256,6 +255,7 @@ export default function ConsMap({ }) {
                         </span>
                         {location?.state.consignmentToTrack.events.map((event) => (
                             <Card
+                                key={event}
                                 variant="light"
                                 className="w-full items-start p-2"
                                 isPressable
@@ -269,7 +269,6 @@ export default function ConsMap({ }) {
                                     <div className="flex flex-col items-start gap-0">
                                         <span>{event.event_type}</span>
                                         <span className="text-[10px] truncate">
-                                            {" "}
                                             {event.description.length > 30
                                                 ? `${event.description.slice(
                                                       0,

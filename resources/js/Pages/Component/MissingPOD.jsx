@@ -1,5 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import moment from "moment";
+import React from "react";
+import PropTypes from "prop-types";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
@@ -9,7 +11,6 @@ import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { formatDateToExcel, renderConsDetailsLink } from "@/CommonFunctions";
-import { useNavigate } from "react-router-dom";
 
 export default function MissingPOD({
     PerfData,
@@ -19,7 +20,6 @@ export default function MissingPOD({
     accData,
 }) {
     window.moment = moment;
-    const navigate = useNavigate();
     const minDateDespatch = getMinMaxValue(PerfData, "DespatchDate", 1);
     const maxDateDespatch = getMinMaxValue(PerfData, "DespatchDate", 2);
     const minDaterdd = getMinMaxValue(PerfData, "DeliveryRequiredDateTime", 1);
@@ -33,7 +33,7 @@ export default function MissingPOD({
         return entry.POD === false;
     });
 
-    const [data, setData] = useState(falsePodOnly);
+    const data = falsePodOnly
     const [filteredData, setFilteredData] = useState(data);
     const filterData = () => {
         const intArray = accData?.map((str) => {
@@ -216,7 +216,7 @@ export default function MissingPOD({
                 minDate: minDateDespatch,
                 maxDate: maxDateDespatch,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -235,7 +235,7 @@ export default function MissingPOD({
                 minDate: minDaterdd,
                 maxDate: maxDaterdd,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -254,7 +254,7 @@ export default function MissingPOD({
                 minDate: minDateArrive,
                 maxDate: maxDateArrive,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -273,7 +273,7 @@ export default function MissingPOD({
                 minDate: minDateDel,
                 maxDate: maxDateDel,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -324,3 +324,11 @@ export default function MissingPOD({
         </div>
     );
 }
+
+MissingPOD.propTypes = {
+    PerfData: PropTypes.array.isRequired,
+    filterValue: PropTypes.object.isRequired,
+    setFilterValue: PropTypes.func.isRequired,
+    userPermission: PropTypes.object.isRequired,
+    accData: PropTypes.array.isRequired,
+};

@@ -1,62 +1,36 @@
 import ReactModal from "react-modal";
 import InputError from "@/Components/InputError";
-import TextInput from "@/Components/TextInput";
+import React from "react";
+import PropTypes from "prop-types";
+import swal from "sweetalert";
 import { useState } from "react";
-import axios from "axios";
 import { useEffect } from "react";
 import { handleSessionExpiration } from '@/CommonFunctions';
 
-const placeholder = "test";
 
 export default function AddSafetyCausesModal({
     isOpen,
     handleClose,
-    url,
-    Token,
     cause,
     updateLocalData,
     safetyCauses,
-    currentUser,
 }) {
-    const [Name, setName] = useState(null);
     const [isSaveEnabled, setIsSaveEnabled] = useState(true);
-    const [Status, setStatus] = useState(true);
     const [causeStatus, setCauseStatus] = useState(true);
     const [isLoading,SetIsLoading] = useState(false)
     const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
-    const [inputValue, setInputValue] = useState("");
 
     useEffect(() => {
         if (cause) {
-            setStatus(cause?.CauseStatus);
             setCauseStatus(cause?.CauseStatus);
-            setName(cause?.CauseName);
         } else {
             setCauseStatus(true);
-            setStatus(true);
-            setName("");
             // setdescription("");
         }
     }, [cause]);
-    const data = [
-        {
-            CauseId: cause ? cause.CauseId : null,
-            CauseName: Name,
-            CauseStatus: Status,
-        },
-    ];
-    const testData = [
-        {
-          "CauseId": null,
-          "CauseName": "rim test",
-          "CauseStatus": true
-        }
-      ]
     const handlePopUpClose = () => {
         setError(null); // Clear the error message
         // setInputValue("");
-        setName("");
         // setdescription("");
         handleClose(); // Clear the input value
     };
@@ -66,25 +40,12 @@ export default function AddSafetyCausesModal({
         try {
             SetIsLoading(true)
             // Make the API request using Axios or any other library
-            const response = await axios.post(
-                `${url}Add/SafetyCause`,
-                data,
-                {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${Token}`,
-                    },
-                }
-            );
             // Handle the response as needed
             // setInputValue("");
-            setSuccess(true);
 
             setTimeout(() => {
                 handleClose();
-                setName("");
                 // setdescription("");
-                setSuccess(false);
                 SetIsLoading(false)
                 updateLocalData();
             }, 1000);
@@ -105,7 +66,7 @@ export default function AddSafetyCausesModal({
                 });
                 } else {
                   // Handle other errors
-                  console.log(err);
+                  console.error(error);
                 }
         }
     };
@@ -122,7 +83,6 @@ export default function AddSafetyCausesModal({
             setError("Name already exists. Please enter a unique name.");
         } else {
             setIsSaveEnabled(true);
-            setName(newName);
             setError(null); // Clear the error message if the name is valid
         }
     };
@@ -203,9 +163,8 @@ export default function AddSafetyCausesModal({
                                                 type="radio"
                                                 value="active"
                                                 checked={causeStatus === true}
-                                                onChange={(event) => {
+                                                onChange={() => {
                                                     setCauseStatus(true);
-                                                    setStatus(true);
                                                 }}
                                                 className="h-4 w-4 border-gray-300 text-dark focus:ring-goldd"
                                             />
@@ -223,9 +182,8 @@ export default function AddSafetyCausesModal({
                                                 type="radio"
                                                 value="inactive"
                                                 checked={causeStatus === false}
-                                                onChange={(event) => {
+                                                onChange={() => {
                                                     setCauseStatus(false);
-                                                    setStatus(false);
                                                 }}
                                                 className="h-4 w-4 border-gray-300 text-dark focus:ring-goldd"
                                             />
@@ -262,3 +220,14 @@ export default function AddSafetyCausesModal({
         </ReactModal>
     );
 }
+
+AddSafetyCausesModal.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    handleClose: PropTypes.func.isRequired,
+    url: PropTypes.string.isRequired,
+    AToken: PropTypes.string.isRequired,
+    cause: PropTypes.object,
+    updateLocalData: PropTypes.func.isRequired,
+    safetyCauses: PropTypes.array.isRequired,
+    currentUser: PropTypes.object.isRequired,
+};

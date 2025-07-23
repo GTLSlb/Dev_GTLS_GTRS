@@ -2,13 +2,17 @@ import {
     Progress,
     Tab,
     Tabs,
-} from "@heroui/react";
+} from "@nextui-org/react";
+import axios from "axios";
+import React from "react";
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import IncidentDetails from "./IncidentDetails";
 import swal from "sweetalert";
 import Notes from "../Notes";
 import { handleSessionExpiration } from '@/CommonFunctions';
 import { useLocation } from "react-router-dom";
+import { canViewIncidentDetails } from "@/permissions";
 
 export default function Incident({
     gtccrUrl,
@@ -64,7 +68,7 @@ export default function Incident({
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                 }
             });
     }
@@ -107,7 +111,7 @@ export default function Incident({
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                 }
             });
     }
@@ -125,7 +129,7 @@ export default function Incident({
                 setIncident(res.data[0]);
             })
             .catch((err) => {
-                console.log("Encountered an Error", err);
+                console.error("Encountered an Error", err);
             });
     }
 
@@ -139,7 +143,7 @@ export default function Incident({
 
             {incident && filters && mainCauses ? (
                 <div>
-                    {false ? (
+                    {canViewIncidentDetails(userPermission) ? (
                         <Tabs
                             aria-label="Options"
                             selectedKey={selected}
@@ -199,3 +203,10 @@ export default function Incident({
         </div>
     );
 }
+
+Incident.propTypes = {
+    gtccrUrl: PropTypes.string.isRequired,
+    currentUser: PropTypes.object.isRequired,
+    AToken: PropTypes.string.isRequired,
+    userPermission: PropTypes.object.isRequired,
+};

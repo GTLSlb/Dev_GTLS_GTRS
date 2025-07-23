@@ -85,7 +85,7 @@ export default function MainSidebar({
                 [app.AppId]: blobUrl,
             }));
         } catch (error) {
-            console.log(error);
+            console.error(error);
             setAppsImgs((prev) => ({
                 ...prev,
                 [app.AppId]: "/icons/NoPhoto.jpg",
@@ -125,7 +125,7 @@ export default function MainSidebar({
                                         key={item.AppId}
                                         target={
                                             item.id === 0 ? undefined : "_blank"
-                                        }
+                                        } rel="noreferrer"
                                     >
                                         {" "}
                                         <button
@@ -170,7 +170,7 @@ export default function MainSidebar({
                             <a
                                 href="https://support.gtls.com.au/help/2703577665"
                                 target="_blank"
-                                className="flex justify-center"
+                                className="flex justify-center" rel="noreferrer"
                             >
                                 {" "}
                                 <button
@@ -284,16 +284,16 @@ export default function MainSidebar({
                                                 >
                                                     <a
                                                         href={item.AppURL}
-                                                        onClick={() =>
-                                                            handleClick(
-                                                                item.AppId
-                                                            )
-                                                        }
+                                                        // onClick={() =>
+                                                        //     handleClick(
+                                                        //         item.AppId
+                                                        //     )
+                                                        // }
                                                     >
                                                         <AccordionItem
                                                             id={item.name}
                                                         >
-                                                            {({ open }) => (
+                                                            {() => (
                                                                 <>
                                                                     <AccordionHeader
                                                                         className={classNames(
@@ -335,12 +335,13 @@ export default function MainSidebar({
                                                                                     option
                                                                                 ) => (
                                                                                     <button
-                                                                                        onClick={() =>
-                                                                                            handleClickSide(
-                                                                                                item.id,
-                                                                                                option.id
-                                                                                            )
-                                                                                        }
+                                                                                        key={item}
+                                                                                        // onClick={() =>
+                                                                                        //     handleClickSide(
+                                                                                        //         item.id,
+                                                                                        //         option.id
+                                                                                        //     )
+                                                                                        // }
                                                                                         className="p-5 font-light text-left text-white"
                                                                                     >
                                                                                         {
@@ -366,7 +367,7 @@ export default function MainSidebar({
                                     <a
                                         href="https://support.gtls.com.au/help/2703577665"
                                         target="_blank"
-                                        className="flex"
+                                        className="flex" rel="noreferrer"
                                     >
                                         {" "}
                                         <button
@@ -411,3 +412,10 @@ export default function MainSidebar({
         </div>
     );
 }
+
+MainSidebar.propTypes = {
+    allowedApplications: PropTypes.array.isRequired,
+    setMobileMenuOpen: PropTypes.func.isRequired,
+    mobileMenuOpen: PropTypes.bool.isRequired,
+    user: PropTypes.object.isRequired,
+};

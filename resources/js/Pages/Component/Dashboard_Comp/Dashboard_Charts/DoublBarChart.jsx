@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { Column } from "@ant-design/plots";
 
 const DoubleBarChart = (props) => {
@@ -63,6 +64,14 @@ const DoubleBarChart = (props) => {
             <Column {...config} className="p-4" />
         </div>
     );
+};
+
+DoubleBarChart.propTypes = {
+    chartTitle: PropTypes.string.isRequired,
+    chartData: PropTypes.array.isRequired,
+    setShowTable: PropTypes.func.isRequired,
+    setChartFilter: PropTypes.func.isRequired,
+    setChartName: PropTypes.func.isRequired,
 };
 
 export default DoubleBarChart;

@@ -1,23 +1,21 @@
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
-import { useEffect, useCallback, useState, useMemo } from "react";
+import React, { useEffect, useCallback, useState, useMemo } from "react";
+import PropTypes from "prop-types";
 import ExportPopover from "./ExportPopover";
 
 export default function TableStructure({
     tableDataElements,
-    settableDataElements,
     filterValueElements,
     setFilterValueElements,
     groupsElements,
     columnsElements,
+    setColumns,
     filterTypesElements,
-    setFilterTypesElements,
     additionalButtons,
     title,
     handleDownloadExcel,
-    setSelected,
     gridRef,
-    selected,
     rowHeight,
     id,
     HeaderContent,
@@ -27,6 +25,7 @@ export default function TableStructure({
     const columns = useMemo(() => columnsElements, [columnsElements]);
     const filters = useMemo(() => filterValueElements, [filterValueElements]);
     const groups = useMemo(() => groupsElements, [groupsElements]);
+
     const filterTypes = useMemo(
         () => filterTypesElements,
         [filterTypesElements]
@@ -57,7 +56,6 @@ export default function TableStructure({
     useEffect(() => {
         const handleClick = (event) => {
             const target = event.target;
-            const textContent = target.textContent.trim();
             let columnHeader;
             // Handle filter settings button click
             if (
@@ -203,3 +201,20 @@ export default function TableStructure({
         </div>
     );
 }
+
+TableStructure.propTypes = {
+    tableDataElements: PropTypes.array.isRequired,
+    filterValueElements: PropTypes.array.isRequired,
+    setFilterValueElements: PropTypes.func.isRequired,
+    groupsElements: PropTypes.array.isRequired,
+    columnsElements: PropTypes.array.isRequired,
+    filterTypesElements: PropTypes.object.isRequired,
+    additionalButtons: PropTypes.node,
+    title: PropTypes.string.isRequired,
+    handleDownloadExcel: PropTypes.func,
+    gridRef: PropTypes.object.isRequired,
+    rowHeight: PropTypes.number,
+    id: PropTypes.string.isRequired,
+    HeaderContent: PropTypes.node,
+    setColumns: PropTypes.func.isRequired,
+};

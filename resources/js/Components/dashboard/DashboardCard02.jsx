@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import BarChart from "../charts/BarChart01";
 import { useEffect } from "react";
+import PropTypes from "prop-types";
 
 function DashboardCard02(props) {
     const { consByMonthData } = props;
@@ -45,5 +46,9 @@ function DashboardCard02(props) {
         </div>
     );
 }
+
+DashboardCard02.propTypes = {
+    consByMonthData: PropTypes.object.isRequired,
+};
 
 export default DashboardCard02;

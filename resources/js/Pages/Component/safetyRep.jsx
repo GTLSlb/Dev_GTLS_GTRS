@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useEffect } from "react";
+import React from "react";
+import propTypes from "prop-types";
 import SafetyRepTable from "./safetyComp/safetyRepTable";
 import SafetyRepChart from "./safetyComp/safetyRepChart";
 import AddSafetyType from "./safetyComp/AddSafety/safetyTypes/AddSafetyType";
 import { canViewSafetyType } from "@/permissions";
 import { getApiRequest } from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer } from "react-toastify";
 
 export default function SafetyRep({
     accData,
@@ -69,7 +71,7 @@ export default function SafetyRep({
     }
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     const [filteredData, setFilteredData] = useState(null);
-    const [selectedTypes, setSelectedTypes] = useState([]);
+    const selectedTypes = [];
     const [currentPage, setCurrentPage] = useState(0);
     const [isDataEdited, setDataEdited] = useState(false);
     const [isFetching, setIsFetching] = useState();
@@ -171,6 +173,7 @@ export default function SafetyRep({
 
     let components = [
         <SafetyRepTable
+            key={currentPage}
             url={url}
             fetchData={fetchData}
             Token={Token}
@@ -188,14 +191,16 @@ export default function SafetyRep({
             setDataEdited={setDataEdited}
         />,
         <SafetyRepChart
-            Token={Token}
+            key={currentPage}
+            AToken={AToken}
             filteredData={filteredData}
             safetyCauses={safetyCauses}
             safetyTypes={safetyTypes}
         />,
         <AddSafetyType
             url={url}
-            Token={Token}
+            key={currentPage}
+            AToken={AToken}
             currentUser={currentUser}
             userPermission={userPermission}
             safetyTypes={safetyTypes}
@@ -338,3 +343,24 @@ export default function SafetyRep({
         </div>
     );
 }
+
+SafetyRep.propTypes = {
+    accData: propTypes.array,
+    currentUser: propTypes.object,
+    url: propTypes.string,
+    AToken: propTypes.string,
+    safetyDataState: propTypes.array,
+    filterValue: propTypes.string,
+    setFilterValue: propTypes.func,
+    setsafetyDataState: propTypes.func,
+    setSafetyTypes: propTypes.func,
+    safetyTypes: propTypes.array,
+    customerAccounts: propTypes.array,
+    safetyCauses: propTypes.array,
+    setSafetyCauses: propTypes.func,
+    oldestDate: propTypes.string,
+    latestDate: propTypes.string,
+    DefaultSDate: propTypes.string,
+    DefaultEDate: propTypes.string,
+    userPermission: propTypes.object,
+};

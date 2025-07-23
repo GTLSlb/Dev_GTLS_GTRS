@@ -1,4 +1,6 @@
 import { Link } from '@inertiajs/react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
 export default function ResponsiveNavLink({ active = false, className = '', children, ...props }) {
     return (
@@ -14,3 +16,9 @@ export default function ResponsiveNavLink({ active = false, className = '', chil
         </Link>
     );
 }
+
+ResponsiveNavLink.propTypes = {
+    active: PropTypes.bool,
+    className: PropTypes.string,
+    children: PropTypes.node.isRequired,
+};

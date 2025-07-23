@@ -1,0 +1,29 @@
+name: Run Lint and Tests
+
+on:
+  push:
+    branches: [ production, staging, store ] # Customize your branches
+  pull_request:
+    branches: [ production, staging, store ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # or your desired Node version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run Tests
+        run: npm test
