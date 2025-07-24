@@ -17,6 +17,18 @@ import { saveAs } from "file-saver";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { formatDateToExcel } from "@/CommonFunctions";
 
+function parseDateString(dateString) {
+    // Check if it's a full datetime with time part
+    if (dateString.includes("AM") || dateString.includes("PM")) {
+        // Let JavaScript parse it directly
+        return new Date(dateString);
+    }
+
+    // Handle format like "25/07/2025"
+    const [day, month, year] = dateString.split("/");
+    return new Date(year, month - 1, day); // month is 0-indexed
+}
+
 export default function DifotReport({
     difotData,
     filterValue,
@@ -283,24 +295,85 @@ export default function DifotReport({
                     //     } else {
                     //         acc[columnKey] = "";
                     //     }
-                    // } else 
-                        if (
+                    // } else
+                    if (
                         [
                             "ActualDeliveyDate",
                             "PickupDate",
                             "NewRdd",
                             "ChangedAt",
-                            "OldRdd",
                             "RDD",
                         ].includes(columnKey)
                     ) {
                         const date = new Date(person[columnKey]);
                         if (!isNaN(date)) {
-                            acc[columnKey] = formatDateToExcel(person[columnKey]);
+                            acc[columnKey] = formatDateToExcel(
+                                person[columnKey]
+                            );
                         } else {
                             acc[columnKey] = "";
                         }
-                    } else if (["OldRdd"].includes(columnKey)) {
+                    }
+                    // if (["OldRdd"].includes(columnKey)) {
+                    //     const dateValue =
+                    // person[columnKey] == null
+                    //     ? ""
+                    //     : moment(
+                    //           person[columnKey].replace(/\//g, "-"),
+                    //           [
+                    //               "D-M-YYYY hh:mm:ss A",
+                    //               "D-M-YYYY hh:mm A",
+                    //               "D-M-YYYY",
+                    //               moment.ISO_8601,
+                    //           ] // No `true` → non-strict parsing
+                    //       ).isValid()
+                    //     ? moment(person[columnKey].replace(/\//g, "-"), [
+                    //           "D-M-YYYY hh:mm:ss A",
+                    //           "D-M-YYYY hh:mm A",
+                    //           "D-M-YYYY",
+                    //           moment.ISO_8601,
+                    //       ]).format("DD-MM-YYYY")
+                    //     : "";
+                        // const rawDate = person[columnKey];
+                        // console.log("Raw:", rawDate);
+
+                        // const parsedDate = parseDateString(rawDate);
+                        // console.log("Parsed:", parsedDate);
+                        // if (parsedDate && !isNaN(parsedDate.getTime())) {
+                        //     // Convert to Excel date number
+                        //     const excelDate =
+                        //         (parsedDate.getTime() -
+                        //             parsedDate.getTimezoneOffset() * 60000) /
+                        //             86400000 +
+                        //         25569;
+                        //     console.log("Excel Date:", excelDate);
+                        //     // Check for NaN just in case (e.g., if parsedDate is weirdly corrupted)
+                            
+                        //     acc[columnKey] = isNaN(excelDate) ? "" : excelDate;
+                        // } else {
+                        //     console.log(parsedDate);
+                        //      if (parsedDate == "Invalid Date") {
+                        //         console.log(formatDateToExcel(
+                        //             person[columnKey]
+                        //         ));
+                        //         acc[columnKey] = formatDateToExcel(
+                        //             person[columnKey]
+                        //         );
+                        //     } else {
+                        //         acc[columnKey] = "";
+                        //     }
+                        //     console.log(dateValue);
+                        //  const date = new Date(dateValue);
+                        // if (!isNaN(date)) {
+                        //     acc[columnKey] = formatDateToExcel(
+                        //         dateValue
+                        //     );
+                        // } else {
+                        //     acc[columnKey] = "";
+                        // }
+                        // }
+                    // }
+                     else if (["OldRdd"].includes(columnKey)) {
                         const rawDate = person[columnKey];
                         const parsed = moment(
                             rawDate,
@@ -352,45 +425,41 @@ export default function DifotReport({
             const row = worksheet.addRow(Object.values(rowData));
 
             // Apply date format to the DespatchDateTime column
-            const despatchDateIndex =
-                newSelectedColumns.indexOf("Pickup Date");
+            const despatchDateIndex = newSelectedColumns.indexOf("Pickup Date");
             if (despatchDateIndex !== -1) {
                 const cell = row.getCell(despatchDateIndex + 1);
                 cell.numFmt = "dd-mm-yyyy";
             }
 
-            const OldRddIndex =
-                newSelectedColumns.indexOf("Old RDD");
+            const OldRddIndex = newSelectedColumns.indexOf("Old RDD");
+            // console.log("OldRddIndex", OldRddIndex);
             if (OldRddIndex !== -1) {
                 const cell = row.getCell(OldRddIndex + 1);
                 cell.numFmt = "dd-mm-yyyy";
             }
 
-            const NewRDDIndex =
-                newSelectedColumns.indexOf("New RDD");
+            const NewRDDIndex = newSelectedColumns.indexOf("New RDD");
             if (NewRDDIndex !== -1) {
                 const cell = row.getCell(NewRDDIndex + 1);
                 cell.numFmt = "dd-mm-yyyy";
             }
 
-            const ChangedAtIndex =
-                newSelectedColumns.indexOf("ChangedAt");
+            const ChangedAtIndex = newSelectedColumns.indexOf("ChangedAt");
             if (ChangedAtIndex !== -1) {
                 const cell = row.getCell(ChangedAtIndex + 1);
                 cell.numFmt = "dd-mm-yyyy hh:mm AM/PM";
             }
 
-            const ActualDeliveryDateIndex =
-                newSelectedColumns.indexOf("Actual Delivery Date");
+            const ActualDeliveryDateIndex = newSelectedColumns.indexOf(
+                "Actual Delivery Date"
+            );
             if (ActualDeliveryDateIndex !== -1) {
                 const cell = row.getCell(ActualDeliveryDateIndex + 1);
                 cell.numFmt = "dd-mm-yyyy";
             }
 
             // Apply date format to the DeliveryRequiredDateTime column
-            const deliveryReqDateIndex = newSelectedColumns.indexOf(
-                "RDD"
-            );
+            const deliveryReqDateIndex = newSelectedColumns.indexOf("RDD");
             if (deliveryReqDateIndex !== -1) {
                 const cell = row.getCell(deliveryReqDateIndex + 1);
                 cell.numFmt = "dd-mm-yyyy";
