@@ -27,7 +27,7 @@ export default function SpendDashboard() {
     ]);
 
     return (
-        <div className=" px-4 sm:px-6 py-4 bg-smooth">
+        <div className=" px-4 sm:px-6 py-4 bg-smooth ">
             <Tabs
                 aria-label="Dynamic Tabs"
                 className="!py-0"
