@@ -287,17 +287,9 @@ export default function DifotReport({
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
-                    // if (["ChangedAt"].includes(columnKey)) {
-                    //     const date = new Date(person[columnKey]);
-                    //     if (!isNaN(date)) {
-                    //         acc[columnKey] =
-                    //             moment(date)?.format("DD-MM-YYYY hh:mm A");
-                    //     } else {
-                    //         acc[columnKey] = "";
-                    //     }
-                    // } else
                     if (
                         [
+                            "OldRdd",
                             "ActualDeliveyDate",
                             "PickupDate",
                             "NewRdd",
@@ -305,75 +297,46 @@ export default function DifotReport({
                             "RDD",
                         ].includes(columnKey)
                     ) {
-                        const date = new Date(person[columnKey]);
-                        if (!isNaN(date)) {
-                            acc[columnKey] = formatDateToExcel(
-                                person[columnKey]
+                        const rawDate = person[columnKey];
+
+                        // Step 1: Standardize the date string to DD-MM-YYYY using moment
+                        const dateValue =
+                            rawDate == null
+                                ? ""
+                                : moment(rawDate.replace(/\//g, "-"), [
+                                      "D-M-YYYY hh:mm:ss A",
+                                      "D-M-YYYY hh:mm A",
+                                      "D-M-YYYY",
+                                      moment.ISO_8601,
+                                  ]).isValid()
+                                ? moment(rawDate.replace(/\//g, "-"), [
+                                      "D-M-YYYY hh:mm:ss A",
+                                      "D-M-YYYY hh:mm A",
+                                      "D-M-YYYY",
+                                      moment.ISO_8601,
+                                  ]).format("DD-MM-YYYY")
+                                : "";
+
+                        // Step 2: Parse "DD-MM-YYYY" into a Date object
+                        let parsedDate = null;
+                        if (dateValue) {
+                            const [day, month, year] = dateValue.split("-");
+                            parsedDate = new Date(
+                                parseInt(year),
+                                parseInt(month) - 1,
+                                parseInt(day)
                             );
+                        }
+
+                        // Step 3: Convert to Excel serial number if valid
+                        if (parsedDate && !isNaN(parsedDate.getTime())) {
+                            parsedDate = formatDateToExcel(parsedDate);
+                            // console.log(parsedDate);
+                            acc[columnKey] = parsedDate;
                         } else {
                             acc[columnKey] = "";
                         }
-                    }
-                    // if (["OldRdd"].includes(columnKey)) {
-                    //     const dateValue =
-                    // person[columnKey] == null
-                    //     ? ""
-                    //     : moment(
-                    //           person[columnKey].replace(/\//g, "-"),
-                    //           [
-                    //               "D-M-YYYY hh:mm:ss A",
-                    //               "D-M-YYYY hh:mm A",
-                    //               "D-M-YYYY",
-                    //               moment.ISO_8601,
-                    //           ] // No `true` → non-strict parsing
-                    //       ).isValid()
-                    //     ? moment(person[columnKey].replace(/\//g, "-"), [
-                    //           "D-M-YYYY hh:mm:ss A",
-                    //           "D-M-YYYY hh:mm A",
-                    //           "D-M-YYYY",
-                    //           moment.ISO_8601,
-                    //       ]).format("DD-MM-YYYY")
-                    //     : "";
-                        // const rawDate = person[columnKey];
-                        // console.log("Raw:", rawDate);
-
-                        // const parsedDate = parseDateString(rawDate);
-                        // console.log("Parsed:", parsedDate);
-                        // if (parsedDate && !isNaN(parsedDate.getTime())) {
-                        //     // Convert to Excel date number
-                        //     const excelDate =
-                        //         (parsedDate.getTime() -
-                        //             parsedDate.getTimezoneOffset() * 60000) /
-                        //             86400000 +
-                        //         25569;
-                        //     console.log("Excel Date:", excelDate);
-                        //     // Check for NaN just in case (e.g., if parsedDate is weirdly corrupted)
-                            
-                        //     acc[columnKey] = isNaN(excelDate) ? "" : excelDate;
-                        // } else {
-                        //     console.log(parsedDate);
-                        //      if (parsedDate == "Invalid Date") {
-                        //         console.log(formatDateToExcel(
-                        //             person[columnKey]
-                        //         ));
-                        //         acc[columnKey] = formatDateToExcel(
-                        //             person[columnKey]
-                        //         );
-                        //     } else {
-                        //         acc[columnKey] = "";
-                        //     }
-                        //     console.log(dateValue);
-                        //  const date = new Date(dateValue);
-                        // if (!isNaN(date)) {
-                        //     acc[columnKey] = formatDateToExcel(
-                        //         dateValue
-                        //     );
-                        // } else {
-                        //     acc[columnKey] = "";
-                        // }
-                        // }
-                    // }
-                     else if (["OldRdd"].includes(columnKey)) {
+                    } else if (["OldRdd"].includes(columnKey)) {
                         const rawDate = person[columnKey];
                         const parsed = moment(
                             rawDate,
