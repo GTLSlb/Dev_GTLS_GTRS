@@ -3,26 +3,35 @@ import { Tabs, Tab } from "@heroui/react";
 import SpendAnalysis from "./Comp/SpendAnalysis";
 import CostTable from "./Comp/CostTable";
 import RateCard from "./Comp/RateCard";
-
+import AdditionalCharts from "./Comp/AdditionalCharts";
+import HeatMap from "./Comp/HeatMap";
 export default function SpendDashboard() {
     const [tabs] = useState([
         {
             key: "spend",
-            title: "Charts",
+            title: "Cost Overview",
             content: <SpendAnalysis />,
-            closable: false,
+        },
+        {
+            key: "additional",
+            title: "Operation Analysis",
+            content: <AdditionalCharts />,
+        },
+        {
+            key: "map",
+            title: "Heat Map",
+            content: <HeatMap />
         },
         {
             key: "table",
             title: "Table",
             content: <CostTable />,
-            closable: false,
         },
+
         {
-            key: "first",
+            key: "card",
             title: "Rate Card",
             content: <RateCard />,
-            closable: false,
         },
     ]);
 
@@ -30,8 +39,9 @@ export default function SpendDashboard() {
         <div className=" px-4 sm:px-6 py-4 bg-smooth ">
             <Tabs
                 aria-label="Dynamic Tabs"
-                className="!py-0"
-                classNames={{ tabList: "!py-0" }}
+                className=" !py-0 "
+                variant="underlined"
+                classNames={{ tabList: " !py-0", panel: " -mt-10", tab: "px-1" }}
             >
                 {tabs.map((tab) => (
                     <Tab

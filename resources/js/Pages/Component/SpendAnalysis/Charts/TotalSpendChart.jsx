@@ -4,71 +4,52 @@ import {
     BarChart,
     CartesianGrid,
     Legend,
-    ResponsiveContainer,
     Tooltip,
     XAxis,
-    YAxis,
+    YAxis
 } from "recharts";
+import { ChartWrapper } from "./Card/ChartWrapper";
+import { Divider, Select, SelectItem } from "@heroui/react";
+import { useDurationData } from "../assets/js/useDurationData.js";
+import { dummySpendData } from "../assets/js/dataHandler";
+import { DurationFilter } from "./Card/DurationFilter";
+import { formatNumberWithCommas } from "@/CommonFunctions";
 
-import { FunnelIcon } from "@heroicons/react/24/outline";
-import {
-    Button,
-    Card,
-    CardBody,
-    CardHeader,
-    DateRangePicker,
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@heroui/react";
-
-const dummySpendData = [
-    {
-        name: "Week 1",
-        cost: 10542,
-        additional: 5500,
-        fuelLevy: 150,
-        GST: 5,
-    },
-    {
-        name: "Week 2",
-        cost: 9450,
-        additional: 2000,
-        fuelLevy: 80,
-        GST: 4,
-    },
-    {
-        name: "Week 3",
-        cost: 8546,
-        additional: 3000,
-        fuelLevy: 300,
-        GST: 3,
-    },
-    {
-        name: "Week 4",
-        cost: 12355,
-        additional: 5500,
-        fuelLevy: 85,
-        GST: 3.5,
-    },
+const barTypeOptions = [
+    { label: "Cost", value: "cost" },
+    { label: "Fuel Levy", value: "fuelLevy" },
+    { label: "Additional Charges", value: "additional" },
+    { label: "GST", value: "GST" },
 ];
 
 function TotalSpendChart() {
-    const [activeLegend, setActiveLegend] = useState({
-        cost: true,
-        additional: true,
-        fuelLevy: true,
-        GST: true, // Keep this for consistency, even if not charted yet
-    });
+
+
+    const [selectedBarTypes, setSelectedBarTypes] = useState(
+        new Set(barTypeOptions.map(option => option.value))
+    );
+
+    const {
+        getChartData,
+        selectedPeriodKey,
+        setSelectedPeriodKey,
+        selectedYearKey,
+        setSelectedYearKey,
+        selectedMonthKey,
+        setSelectedMonthKey,
+        availableYears,
+        selectedPeriodValue,
+        selectedQuarterKey,
+        setSelectedQuarterKey
+    } = useDurationData(dummySpendData);
 
     const handleLegendClick = (dataKey) => {
-        // Check if the clicked dataKey is the ONLY one currently active
         const isCurrentlyIsolated =
             activeLegend[dataKey] &&
             Object.values(activeLegend).filter((val) => val).length === 1;
 
         if (isCurrentlyIsolated) {
-            // If it's currently isolated, reset to show all
+            // If the clicked item is the only one active, show all
             setActiveLegend({
                 cost: true,
                 additional: true,
@@ -76,7 +57,7 @@ function TotalSpendChart() {
                 GST: true,
             });
         } else {
-            // Otherwise, isolate the clicked dataKey
+            // Otherwise, isolate the clicked item
             setActiveLegend({
                 cost: dataKey === "cost",
                 additional: dataKey === "additional",
@@ -87,73 +68,101 @@ function TotalSpendChart() {
     };
 
     return (
-        <Card className="">
-            <CardHeader className="flex justify-between">
-                Total Spend
-                <Popover placement="bottom-end" showArrow={true}>
-                    <PopoverTrigger>
-                        <Button variant="bordered" isIconOnly>
-                            <FunnelIcon className="max-w-4 max-h-4" />
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0">
-                        <DateRangePicker
+        <ChartWrapper
+            title={"Total Spend"}
+            filterChildren={
+                <>
+                    <DurationFilter selectedPeriodKey={selectedPeriodKey}
+                        setSelectedPeriodKey={setSelectedPeriodKey}
+                        selectedYearKey={selectedYearKey}
+                        setSelectedYearKey={setSelectedYearKey}
+                        selectedMonthKey={selectedMonthKey}
+                        setSelectedMonthKey={setSelectedMonthKey}
+                        availableYears={availableYears}
+                        selectedPeriodValue={selectedPeriodValue}
+                        selectedQuarterKey={selectedQuarterKey}
+                        setSelectedQuarterKey={setSelectedQuarterKey}
+                    />
+                    < div className="w-48">
+                        <Divider />
+                        <Select
+                            placeholder="Select Bar Types"
+                            disallowEmptySelection
                             size="sm"
-                            label="Date Range"
-                            variant="underline"
-                        />
-                    </PopoverContent>
-                </Popover>
-            </CardHeader>
-            <CardBody className="h-60">
-                <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={dummySpendData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend
-                            verticalAlign="top"
-                            height={50}
-                            onClick={(e) => handleLegendClick(e.dataKey)}
-                        />
-                        {activeLegend.cost && (
-                            <Bar
-                                type="monotone"
-                                dataKey="cost"
-                                name="Cost"
-                                fill="#ff7300"
-                            />
-                        )}
-                        {activeLegend.additional && (
-                            <Bar
-                                type="basis"
-                                dataKey="additional"
-                                name="Add Charges"
-                                fill="#8884d8"
-                            />
-                        )}
-                        {activeLegend.fuelLevy && (
-                            <Bar
-                                type="basis"
-                                dataKey="fuelLevy"
-                                name="Fuel Levy"
-                                fill="#82ca9d"
-                            />
-                        )}
-                        {/* If you uncomment the GST bar, apply the same conditional rendering */}
-                        {/* {activeLegend.GST && (
-                            <Bar
-                                type="basis"
-                                dataKey="GST"
-                                name="GST"
-                                fill="#FFC658"
-                            />
-                        )} */}
-                    </BarChart>
-                </ResponsiveContainer>
-            </CardBody>
-        </Card>
+                            selectionMode="multiple" // Key property for multi-select
+                            selectedKeys={selectedBarTypes}
+                            onSelectionChange={setSelectedBarTypes}
+                            className="max-w-xs mt-2"
+                        >
+                            {barTypeOptions.map((option) => (
+                                <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                </SelectItem>
+                            ))}
+                        </Select>
+                    </div>
+                </>
+            }
+        >
+            <BarChart
+                data={getChartData}
+                width={700}
+                height={600}
+                margin={{
+                    top: 0, right: 30, left: 0, bottom: 5,
+                }}
+            >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                <YAxis
+                    tick={{ fontSize: 12 }}
+                    tickFormatter={(v) => `$${formatNumberWithCommas(v)}`}
+                    angle={-45} />
+                <Tooltip
+                    contentStyle={{
+                        fontSize: 12,
+                        backgroundColor: "white",
+                        borderRadius: 8,
+                    }}
+                    formatter={(value) => `$${value.toLocaleString()}`} />
+                <Legend
+                    verticalAlign="top"
+                    height={50}
+                    fontSize={10}
+                    className="!text-sm"
+                    wrapperStyle={{ fontSize: 12 }}
+                    onClick={(e) => handleLegendClick(e.dataKey)}
+                />
+                {selectedBarTypes.has("cost") && (
+                    <Bar
+                        dataKey="cost"
+                        name="Cost"
+                        fill="#ff7300"
+                    />
+                )}
+                {selectedBarTypes.has("additional") && (
+                    <Bar
+                        dataKey="additional"
+                        name="Add Charges"
+                        fill="#8884d8"
+                    />
+                )}
+                {selectedBarTypes.has("fuelLevy") && (
+                    <Bar
+                        dataKey="fuelLevy"
+                        name="Fuel Levy"
+                        fill="#82ca9d"
+                    />
+                )}
+                {selectedBarTypes.has("GST") && (
+                    <Bar
+                        dataKey="GST"
+                        name="GST"
+                        fill="#FFC658"
+                    />
+                )}
+            </BarChart>
+        </ChartWrapper>
     );
 }
 

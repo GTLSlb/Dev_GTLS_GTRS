@@ -14,7 +14,7 @@ import {
 
 import { Phone, PinDrop, Search } from "@mui/icons-material";
 import { useCallback, useMemo, useState } from "react";
-import CompLogo from "../pics/logo.png"; // Assuming pics folder is in the same directory
+import CompLogo from "../assets/pics/logo.png"; // Assuming pics folder is in the same directory
 
 // --- Data Definitions (Unchanged) ---
 const rateCardInfo = [
@@ -687,7 +687,7 @@ function RateCard() {
     }, [globalFilterValue]);
 
     return (
-        <div className="mt-2">
+        <div className="mt-12">
             <Card>
                 <CardHeader className="font-bold border-b-1">
                     <div className="flex items-center space-x-4">

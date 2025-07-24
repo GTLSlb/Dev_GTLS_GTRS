@@ -1,21 +1,17 @@
+import { ChartWrapper } from "./Card/ChartWrapper";
 import {
     Bar,
     CartesianGrid,
     ComposedChart,
     Legend,
-    Line,
-    Tooltip,
+    Line, Tooltip,
     XAxis,
     YAxis
 } from "recharts";
-import { ChartWrapper } from "./Card/ChartWrapper";
-import { useState, useEffect } from "react"; // Import useEffect for initial state
-import { useDurationData } from "../assets/js/useDurationData";
-import { dummySpendData } from "../assets/js/dataHandler";
 import { DurationFilter } from "./Card/DurationFilter";
-import { formatNumberWithCommas } from "@/CommonFunctions";
-
-function TopReceiversCharts() {
+import { dummySpendData } from "../assets/js/dataHandler";
+import { useDurationData } from "../assets/js/useDurationData";
+export function AmtVsType() {
 
     const {
         getChartData,
@@ -31,24 +27,9 @@ function TopReceiversCharts() {
         setSelectedQuarterKey
     } = useDurationData(dummySpendData);
 
-    const Receiverdata = getChartData;
-
-    const [displayAllReceivers, setDisplayAllReceivers] = useState(false);
-    const sortedReceiverData = [...Receiverdata].sort((a, b) => b.cost - a.cost);
-    const chartData = displayAllReceivers ? sortedReceiverData : sortedReceiverData.slice(0, 5);
-    const handleChartModalOpen = () => {
-        setDisplayAllReceivers(true);
-    };
-    const handleChartModalClose = () => {
-        setDisplayAllReceivers(false);
-    }
-
     return (
         <ChartWrapper
-            title={"Top Receivers and Spend"}
-            cardClassName={"col-span-2"}
-            onModalOpen={handleChartModalOpen}
-            onModalClose={handleChartModalClose}
+            title={"Amount vs Type"}
             filterChildren={
                 <>
                     <DurationFilter
@@ -67,37 +48,29 @@ function TopReceiversCharts() {
             }
             children={
                 <ComposedChart
-                    data={chartData} // Use the conditionally sliced data
-                    width={displayAllReceivers ? 900 : 400} // Adjust width based on view
-                    height={displayAllReceivers ? 600 : 300} // Adjust height based on view
-                    interval={0}
-                    margin={{
-                        top: 0,
-                        right: 5,
-                        bottom: 30,
-                        left: 0,
-                    }}
-                    syncId="chart-sync-id"
+                    width={700}
+                    height={600}
+                    data={getChartData}
+                    syncId="chart-sync-id" // Synchronize all axes
                 >
                     <CartesianGrid stroke="#f5f5f5" />
                     <XAxis
-                        dataKey="receiver"
-                        tick={{ fontSize: displayAllReceivers ? 10 : 12 }}
-                        angle={-45}
-                        textAnchor="end"
+                        dataKey="name"
+                        scale="band"
+                        tick={{ fontSize: 12 }}
+                        tickSize={10}
                     />
                     <YAxis
                         yAxisId="left"
                         tick={{ fontSize: 12 }}
-                        tickFormatter={(v) => `$${formatNumberWithCommas(v)}`}
+                        tickFormatter={(v) => `$${v}`}
                         domain={["auto", "auto"]}
                         syncId="chart-sync-id"
-                        angle={-45}
                     />
                     <YAxis
                         yAxisId="right"
-                        tick={{ fontSize: 12 }}
                         orientation="right"
+                        tick={{ fontSize: 12 }}
                         tickFormatter={(v) => v}
                         domain={["auto", "auto"]}
                         syncId="chart-sync-id"
@@ -110,23 +83,27 @@ function TopReceiversCharts() {
                     <Legend verticalAlign="top" height={50} />
                     <Bar
                         dataKey="cost"
-                        name="Amount"
+                        name="cost"
                         fill="#413ea0"
                         yAxisId="left"
                         intercept={0}
                     />
                     <Line
                         type="monotone"
-                        name="Cons Nb"
-                        dataKey="receiverCount"
+                        name="Weight "
+                        dataKey="weight"
+                        stroke="#8DC77B"
+                        yAxisId="right"
+                        intercept={0}
+                    />
+                    <Line
+                        type="monotone"
+                        name="Pallet Space"
+                        dataKey="palletSpace"
                         stroke="#ff7300"
                         yAxisId="right"
                         intercept={0}
                     />
-                </ComposedChart>
-            }
-        />
-    );
+                </ComposedChart>} />
+    )
 }
-
-export default TopReceiversCharts;

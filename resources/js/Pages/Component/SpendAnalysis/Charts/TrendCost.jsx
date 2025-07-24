@@ -1,21 +1,11 @@
-import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend
-} from "recharts";
-
 import { ChartWrapper } from "./Card/ChartWrapper";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { DurationFilter } from "./Card/DurationFilter";
 import { dummySpendData } from "../assets/js/dataHandler";
 import { useDurationData } from "../assets/js/useDurationData";
-import { DurationFilter } from "./Card/DurationFilter";
 import { formatNumberWithCommas } from "@/CommonFunctions";
 
-function CostByStateChart() {
-
+export function TrendCost() {
     const {
         getChartData,
         selectedPeriodKey,
@@ -32,7 +22,7 @@ function CostByStateChart() {
 
     return (
         <ChartWrapper
-            title={"Cost By State"}
+            title={"Cost Trend"}
             filterChildren={
                 <>
                     <DurationFilter
@@ -48,49 +38,32 @@ function CostByStateChart() {
                         setSelectedQuarterKey={setSelectedQuarterKey}
                     />
                 </>
-            } children={
-                <BarChart
+            }
+            children={
+                <LineChart
                     width={700}
                     height={600}
                     data={getChartData}
                     margin={{
-                        top: 0,
-                        right: 20,
-                        bottom: 0,
-                        left: 0,
+                        right: 30,
                     }}
                 >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                    <YAxis tick={{ fontSize: 12 }}
+                    <YAxis
+                        angle={-45}
+                        tick={{ fontSize: 12 }}
                         tickFormatter={(v) => `$${formatNumberWithCommas(v)}`}
-                        angle={-45} />
+                    />
                     <Tooltip contentStyle={{
                         fontSize: 12,
                         backgroundColor: "white",
                         borderRadius: 8,
                     }} />
-                    <Legend verticalAlign="top" height={50} />
-                    <Bar
-                        dataKey="qld"
-                        stackId="a"
-                        name="QLD"
-                        fill="#8884d8"
-                    />
-                    <Bar
-                        dataKey="nsw"
-                        stackId="a"
-                        name="NSW"
-                        fill="#82ca9d"
-                    />
-                    <Bar
-                        dataKey="sa"
-                        stackId="a"
-                        name="SA"
-                        fill="#952988"
-                    />
-                </BarChart>} />
-    );
+                    <Legend />
+                    <Line type="monotone" dataKey="cost" stroke="#8884d8" />
+                    <Line type="monotone" dataKey="additional" stroke="#82ca9d" />
+                </LineChart>}
+        />
+    )
 }
-
-export default CostByStateChart;
