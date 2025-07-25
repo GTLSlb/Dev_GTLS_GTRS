@@ -36,6 +36,10 @@
             appDomain: "{{ env('SESSION_DOMAIN') }}",
             appUrl: "{{ env('APP_URL') }}",
             gtrsWeb: "{{ env('GTRS_WEB_URL') }}",
+            azureClientId: "{{ env('AZURE_CLIENT_ID') }}",
+            azureClientSecret: "{{ env('AZURE_CLIENT_SECRET') }}",
+            azureRedirectUrl: "{{ env('AZURE_REDIRECT_URI') }}",
+            azureTenantId: "{{ env('AZURE_TENANT_ID') }}",
             azureCallback: "{{ env('AZURE_CALLBACK_URL') }}",
             backToHomeURL: "{{ env('BACK_TO_HOME_URL') }}",
             googleMapsKey: "{{ env('GOOGLE_MAPS_KEY') }}",
@@ -54,7 +58,7 @@
     <link rel="stylesheet" href="public/manifest.json" />
 
     <!-- Scripts -->
-    
+
     @routes
     @viteReactRefresh
     @vite(['resources/js/app.jsx', "resources/js/Pages/{$page['component']}.jsx"])

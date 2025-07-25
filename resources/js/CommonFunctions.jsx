@@ -12,10 +12,10 @@ import {
 import { Link } from "react-router-dom";
 const msalConfig = {
     auth: {
-        clientId: "05f70999-6ca7-4ee8-ac70-f2d136c50288",
-        authority:
-            "https://login.microsoftonline.com/647bf8f1-fc82-468e-b769-65fd9dacd442",
+        clientId: window.Laravel.azureClientId,
+        authority: `https://login.microsoftonline.com/${window.Laravel.azureTenantId}`,
         redirectUri: window.Laravel.azureCallback,
+        failureRedirectUri: "/failed-login",
     },
     cache: {
         cacheLocation: "sessionStorage",
@@ -46,6 +46,9 @@ export async function handleSessionExpiration() {
                 // Clear MSAL-related data from localStorage
                 clearMSALLocalStorage();
                 Cookies.remove("access_token");
+
+                // Remove all items
+                sessionStorage.clear();
 
                 if (isMicrosoftLogin === "true") {
                     // Redirect to Microsoft logout URL
@@ -87,7 +90,13 @@ export function clearMSALLocalStorage() {
     msalKeys.forEach((key) => {
         localStorage.removeItem(key);
     });
-
+    // Find all keys in sessionStorage starting with 'msal' and remove them
+    const msalSessionKeys = Object.keys(sessionStorage).filter((key) =>
+        key.startsWith("msal")
+    );
+    msalSessionKeys.forEach((key) => {
+        sessionStorage.removeItem(key);
+    });
     // Remove the msal.isMicrosoftLogin cookie
     Cookies.set("msal.isMicrosoftLogin", "", {
         expires: -1,
@@ -314,7 +323,7 @@ export function navigateToFirstAllowedPage({
     navigate,
 }) {
     let items = [];
-    
+
     menu?.forEach((menuItem) => {
         if (menuItem.hasOwnProperty("options")) {
             menuItem.options.forEach((option) => {
@@ -352,12 +361,15 @@ export function navigateToFirstAllowedPage({
     });
 
     // Navigate to the page specified in the browser URL
-    if(window.location.pathname != "/gtrs/" && window.location.pathname != "/gtrs" ){
-        setSidebarElements(findCurrentItem(items, window.location.pathname))
+    if (
+        window.location.pathname != "/gtrs/" &&
+        window.location.pathname != "/gtrs"
+    ) {
+        setSidebarElements(findCurrentItem(items, window.location.pathname));
         navigate(window.location.pathname);
     } else {
-        // Navigate to the first allowed page 
-        items[0].current = true; 
+        // Navigate to the first allowed page
+        items[0].current = true;
         navigate(items[0].url);
         setSidebarElements(items);
     }

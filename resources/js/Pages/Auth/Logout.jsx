@@ -1,22 +1,8 @@
 import { useEffect } from "react";
 import Cookies from "js-cookie";
 import { clearMSALLocalStorage } from "@/CommonFunctions";
-import { PublicClientApplication } from "@azure/msal-browser";
 import { LogoutSVG } from "@/assets/svgs/LogoutSVG";
 export default function Logout({ currentUser, setToken, setCurrentUser }) {
-    const msalConfig = {
-        auth: {
-            clientId: "05f70999-6ca7-4ee8-ac70-f2d136c50288",
-            authority:
-                "https://login.microsoftonline.com/647bf8f1-fc82-468e-b769-65fd9dacd442",
-            redirectUri: window.Laravel.azureCallback,
-        },
-        cache: {
-            cacheLocation: "localStorage",
-            storeAuthStateInCookie: true, // Set this to true if dealing with IE11 or issues with sessionStorage
-        },
-    };
-    const pca = new PublicClientApplication(msalConfig);
     const appUrl = window.Laravel.appUrl;
 
     const handleLogout = async () => {
@@ -26,7 +12,6 @@ export default function Logout({ currentUser, setToken, setCurrentUser }) {
                 CurrentUser: currentUser,
                 SessionDomain: window.Laravel.appDomain,
             };
-            await pca.initialize();
             const response = await axios.post("/composerLogout", credentials);
             if (response.status === 200 && response.data.status === 200) {
                 localStorage.removeItem("current");
@@ -36,6 +21,8 @@ export default function Logout({ currentUser, setToken, setCurrentUser }) {
                 clearMSALLocalStorage();
                 Cookies.remove("access_token");
 
+                // Remove all items
+                sessionStorage.clear();
                 if (isMicrosoftLogin === "true") {
                     window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=${appUrl}/login`;
                     setToken(null);
@@ -52,7 +39,7 @@ export default function Logout({ currentUser, setToken, setCurrentUser }) {
     };
 
     useEffect(() => {
-        if(currentUser){
+        if (currentUser) {
             handleLogout();
         }
     }, [currentUser]);
@@ -77,7 +64,9 @@ export default function Logout({ currentUser, setToken, setCurrentUser }) {
                 <div className="text-dark mt-4 font-bold">
                     Please wait while we log you out.
                 </div>
-                <span className="text-gray-400 text-sm">Thank you for using our services !</span>
+                <span className="text-gray-400 text-sm">
+                    Thank you for using our services !
+                </span>
             </div>
         </div>
     );

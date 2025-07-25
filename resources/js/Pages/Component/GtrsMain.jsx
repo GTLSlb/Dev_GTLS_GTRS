@@ -38,7 +38,7 @@ import Holidays from "./KPI/Holidays";
 import NewKPI from "./KPI/NewKPI";
 import NewTransitDays from "./KPI/NewTransitDays";
 import MissingPOD from "./MissingPOD";
-import NewConsignmentTracking from "./New Consignment Tracking/NewConsignmentTracking";
+// import NewConsignmentTracking from "./New Consignment Tracking/NewConsignmentTracking";
 import NoDelivery from "./NoDelivery";
 import GraphPresentation from "./Presentation/GraphPresentation";
 import RDDMain from "./RDD/RDDMain";
@@ -47,8 +47,8 @@ import DeliveryReportPage from "./ReportsPage/DeliveryReportPage";
 import ExcelDeliveryReport from "./ReportsPage/ExcelDeliveryReport";
 import DeliveryReportCommentsPage from "./ReportsPage/CommentsTableView/DeliveryReportCommentsPage";
 import SafetyRep from "./safetyRep";
-import ConsMap from "./TrafficPage/ConsMap";
-import TrafficComp from "./TrafficPage/TrafficComp";
+// import ConsMap from "./TrafficPage/ConsMap";
+// import TrafficComp from "./TrafficPage/TrafficComp";
 import TransportRep from "./TransportRep";
 import ProductStockTable from "./ProductStock/ProductStockTable";
 import KPIReasons from "./KPI/KPIReasons";
@@ -1386,7 +1386,7 @@ export default function GtrsMain({
                                             />
                                         }
                                     />
-                                    <Route
+                                    {/* <Route
                                         path="/traffic-report"
                                         element={
                                             <ProtectedRoute
@@ -1398,7 +1398,7 @@ export default function GtrsMain({
                                         currentUser={currentUser}
                                         setToken={setToken}
                                         setCurrentUser={setCurrentUser}
-                                    />
+                                    /> */}
                                     <Route
                                         path="/incident"
                                         element={
@@ -1556,7 +1556,7 @@ export default function GtrsMain({
                                         setToken={setToken}
                                         setCurrentUser={setCurrentUser}
                                     />
-                                    <Route
+                                    {/* <Route
                                         path="/consignment-map"
                                         element={
                                             <ProtectedRoute
@@ -1568,8 +1568,8 @@ export default function GtrsMain({
                                         currentUser={currentUser}
                                         setToken={setToken}
                                         setCurrentUser={setCurrentUser}
-                                    />
-                                    <Route
+                                    /> */}
+                                    {/* <Route
                                         path="/consignment-tracking"
                                         element={
                                             <ProtectedRoute
@@ -1583,7 +1583,7 @@ export default function GtrsMain({
                                         currentUser={currentUser}
                                         setToken={setToken}
                                         setCurrentUser={setCurrentUser}
-                                    />
+                                    /> */}
                                     <Route
                                         path="/*"
                                         element={<NotFoundRedirect />}
