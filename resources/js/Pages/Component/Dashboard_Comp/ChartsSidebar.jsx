@@ -178,21 +178,21 @@ const navigation = [
         feature: "RealFoodReport_View",
     },
     {
-        id: 21,
+        id: 24,
         name: "Delivery Report",
         href: "#",
         options: [
-            {
-                id: 21,
-                name: "Delivery Report",
-                href: "#",
-                current: false,
-                icon: DocumentDuplicateIcon,
-                feature: "DeliveryReport_View",
-            },
+            // {
+            //     id: 21,
+            //     name: "Delivery Report",
+            //     href: "#",
+            //     current: false,
+            //     icon: DocumentDuplicateIcon,
+            //     feature: "DeliveryReport_View",
+            // },
             {
                 id: 24,
-                name: "Excel Delivery Report",
+                name: "Delivery Report",
                 href: "#",
                 current: false,
                 icon: DocumentDuplicateIcon,
