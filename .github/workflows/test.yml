@@ -2,9 +2,9 @@ name: Run Lint and Tests
 
 on:
   push:
-    branches: [ production, staging, store ] # Customize your branches
+    branches: [ staging, store ] # Customize your branches
   pull_request:
-    branches: [ production, staging, store ]
+    branches: [ staging, store ]
 
 jobs:
   lint-and-test:
