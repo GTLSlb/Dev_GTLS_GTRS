@@ -10,6 +10,8 @@ import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { HeroUIProvider } from "@heroui/react";
 import { BrowserRouter } from "react-router-dom";
 import ContextProvider from "./CommonContext";
+import { useAuthStore } from "./store/authStores";
+
 ReactGA.initialize("G-0KMJRECLV1");
 
 const appName =
@@ -29,7 +31,9 @@ createInertiaApp({
             <BrowserRouter>
                 <HeroUIProvider>
                     <ContextProvider>
-                        <App {...props} />
+                        <useAuthStore>
+                            <App {...props} />
+                        </useAuthStore>
                     </ContextProvider>
                 </HeroUIProvider>
             </BrowserRouter>
