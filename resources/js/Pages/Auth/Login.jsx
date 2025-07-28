@@ -1,8 +1,8 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
+import PropTypes from "prop-types";
 import Logo from "../../assets/pictures/Logo-upscaled.png";
 import "../../../css/scroll.css";
 import { LoginPage } from "gtls-npm-libraries";
-import MicrosoftLogo from "@/assets/icons/microsoft-logo.png";
 import { clearMSALLocalStorage, pca } from "@/CommonFunctions";
 
 export default function Login() {
@@ -37,3 +37,10 @@ export default function Login() {
     </div>
     );
 }
+
+
+Login.propTypes = {
+    currentUser: PropTypes.object,
+    setToken: PropTypes.func,
+    setCurrentUser: PropTypes.func,
+};

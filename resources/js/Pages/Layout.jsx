@@ -1,4 +1,6 @@
-import { useState, useEffect, useContext } from "react";
+import { useContext, useState } from "react";
+import React from "react";
+import { useEffect } from "react";
 import Gtrs from "@/Pages/GTRS";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -13,7 +15,6 @@ import { CustomContext } from "@/CommonContext";
 
 export default function Sidebar() {
     const {
-        user,
         Token,
         setUser,
         setToken,
@@ -21,11 +22,9 @@ export default function Sidebar() {
         currentUser,
         setCanAccess,
         setCurrentUser,
-        allowedApplications,
         setAllowedApplications
     } = useContext(CustomContext);
 
-    const [sidebarElements, setSidebarElements] = useState();
     const Gtamurl = window.Laravel.gtamUrl;
     const appDomain = window.Laravel.appDomain;
 
@@ -44,7 +43,7 @@ export default function Sidebar() {
                 }
             })
             .catch((err) => {
-                console.log(err);
+                console.error(err);
             });
     };
 
@@ -66,7 +65,7 @@ export default function Sidebar() {
                     handleSessionExpiration();
                 }
 
-                console.log(error)
+                console.error(error)
             }
         );
     }, []);
@@ -107,7 +106,7 @@ export default function Sidebar() {
                 });
             })
             .catch((err) => {
-                console.log(err);
+                console.error(err);
             });
     };
 
@@ -155,7 +154,7 @@ export default function Sidebar() {
                     });
                 })
                 .catch((err) => {
-                    console.log(err);
+                    console.error(err);
                     if(err.response.status === 401) {
                         handleSessionExpiration();
                     }

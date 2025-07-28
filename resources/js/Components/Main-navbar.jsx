@@ -1,6 +1,8 @@
 import {
     Bars3BottomLeftIcon,
 } from "@heroicons/react/24/outline";
+import React from "react";
+import PropTypes from "prop-types";
 export default function MainNavbar({
     setMobileMenuOpen,
 }) {
@@ -29,3 +31,7 @@ export default function MainNavbar({
         </header>
     );
 }
+
+MainNavbar.propTypes = {
+    setMobileMenuOpen: PropTypes.func,
+};

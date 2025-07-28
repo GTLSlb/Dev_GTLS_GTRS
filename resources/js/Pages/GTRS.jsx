@@ -1,4 +1,10 @@
-import { useState, useEffect, useContext } from "react";
+import { useContext, useState } from "react";
+import React from "react";
+import PropTypes from "prop-types";
+import swal from "sweetalert";
+import axios from "axios";
+import { handleSessionExpiration } from "@/CommonFunctions";
+import { useEffect } from "react";
 import NoAccess from "@/Components/NoAccess";
 import { fetchApiData } from "@/CommonFunctions";
 import MainSidebar from "@/Components/Main-sidebar";
@@ -28,7 +34,6 @@ export default function Gtrs({
         setCanAccess,
         sidebarElements,
         setSidebarElements,
-        allowedApplications,
         DebtorsApi, setDebtorsApi,
         debtorsData, setdebtorsData,
         chartsApi, setchartsApi,
@@ -54,15 +59,6 @@ export default function Gtrs({
     const gtccrUrl = window.Laravel.gtccrUrl;
 
     const [deliveryReportData, setDeliveryReportData] = useState([]);
-    const debtorIdsArray = currentUser?.Accounts?.map((account) => {
-        return { UserId: account.DebtorId };
-    });
-    let debtorIds;
-    if (currentUser.TypeId == 1) {
-        debtorIds = debtorIdsArray;
-    } else {
-        debtorIds = currentUser.UserId;
-    }
 
     const fetchDeliveryReport = () => {
         axios
@@ -74,7 +70,7 @@ export default function Gtrs({
             })
             .then((res) => {
                 const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
+                const parsedDataPromise = new Promise((resolve) => {
                     const parsedData = JSON.parse(x);
                     resolve(parsedData);
                 });
@@ -100,12 +96,12 @@ export default function Gtrs({
                                 }
                             })
                             .catch((error) => {
-                                console.log(error);
+                                console.error(error);
                             });
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                 }
             });
     };
@@ -134,7 +130,7 @@ export default function Gtrs({
                 });
             } else {
                 // Handle other errors
-                console.log(err);
+                console.error(err);
                 // Check if setCellLoading exists before calling it
                 if (typeof setCellLoading === "function") {
                     setCellLoading(null);
@@ -302,3 +298,19 @@ export default function Gtrs({
         return <AnimatedLoading />;
     }
 }
+
+Gtrs.propTypes = {
+    user: PropTypes.object,
+    setToken: PropTypes.func,
+    setMobileMenuOpen: PropTypes.func,
+    Token: PropTypes.string,
+    setLoadingGtrs: PropTypes.func,
+    currentUser: PropTypes.object,
+    loadingGtrs: PropTypes.bool,
+    allowedApplications: PropTypes.array,
+    mobileMenuOpen: PropTypes.bool,
+    setcurrentUser: PropTypes.func,
+    setSidebarElements: PropTypes.func,
+    sidebarElements: PropTypes.array,
+    setUser: PropTypes.func,
+};

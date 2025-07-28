@@ -1,4 +1,6 @@
 import moment from "moment";
+import React from "react";
+import PropTypes from "prop-types";
 
 export default function General({ item }) {
     return (
@@ -39,3 +41,12 @@ export default function General({ item }) {
         </div>
     );
 }
+
+General.propTypes = {
+    item: PropTypes.shape({
+        ConsignmentStatus: PropTypes.string,
+        AccountNumber: PropTypes.string,
+        KpiDatetime: PropTypes.string,
+        Status: PropTypes.string,
+    }),
+};

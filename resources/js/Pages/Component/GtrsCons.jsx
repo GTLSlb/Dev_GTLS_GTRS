@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import "../../../css/reactdatagrid.css";
 import TableStructure from "@/Components/TableStructure";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
+import React from "react";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import moment from "moment";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
@@ -148,7 +149,7 @@ export default function GtrsCons({
                 minDate: minDate,
                 maxDate: maxDate,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -303,7 +304,7 @@ export default function GtrsCons({
                 wrapMultiple: false,
                 dataSource: ConsStatusOptions,
             },
-            render: ({ value, data }) => {
+            render: ({ value }) => {
                 return (
                     <div>
                         {value == "PASS" ? (
@@ -375,7 +376,7 @@ export default function GtrsCons({
     ]);
 
     useEffect(() => {
-        const observer = new MutationObserver((mutations) => {
+        const observer = new MutationObserver(() => {
             const menu = document.querySelector(
                 ".inovua-react-toolkit-menu__table"
             );

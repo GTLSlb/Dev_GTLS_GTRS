@@ -1,4 +1,6 @@
 import React from "react";
+import moment from "moment";
+import PropTypes from "prop-types";
 
 function DeliveryDetails({
     deliveryDetails
@@ -41,5 +43,12 @@ function DeliveryDetails({
         </div>
     );
 }
+
+DeliveryDetails.propTypes = {
+    deliveryDetails: PropTypes.shape({
+        DelReqDate: PropTypes.string,
+        TimeSlot: PropTypes.arrayOf(PropTypes.string),
+    }),
+};
 
 export default DeliveryDetails;

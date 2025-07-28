@@ -1,16 +1,9 @@
 import { formatNumberWithCommas } from "@/CommonFunctions";
 import React from "react";
+import PropTypes from "prop-types";
 
 function DashboardCard07(props) {
     const data = props.InfoData;
-    const percentagePassed =
-        (data.totalNoConsPassed /
-            (data.totalConsFailed + data.totalNoConsPassed)) *
-        100;
-    const percentageFailed =
-        (data.totalConsFailed / data.totalNoConsShipped) * 100;
-    const percentagePending =
-        (data.totalConsPending / data.totalNoConsShipped) * 100;
 
     return (
         <div className="col-span-full h-full xl:col-span-4 bg-white shadow-lg rounded-sm border border-slate-200">
@@ -283,5 +276,24 @@ function DashboardCard07(props) {
         </div>
     );
 }
+
+DashboardCard07.propTypes = {
+    InfoData: PropTypes.shape({
+        numUniqueReceivers: PropTypes.number,
+        totalWeight: PropTypes.number,
+        totalPalletSpace: PropTypes.number,
+        totalChep: PropTypes.number,
+        totalLoscam: PropTypes.number,
+        totalCustomerOwn: PropTypes.number,
+        totalCost: PropTypes.number,
+        fuelLevy: PropTypes.number,
+        totalNoConsShipped: PropTypes.number,
+        totalConsPending: PropTypes.number,
+        totalNoConsPassed: PropTypes.number,
+        totalConsFailed: PropTypes.number,
+        podCounter: PropTypes.number,
+        podPercentage: PropTypes.number,
+    }),
+};
 
 export default DashboardCard07;

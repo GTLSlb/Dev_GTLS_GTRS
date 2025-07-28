@@ -1,11 +1,4 @@
-import {
-    Card,
-    CardBody,
-    CardFooter,
-    CardHeader,
-    Divider,
-    Progress,
-} from "@heroui/react";
+import { Card, CardBody, CardHeader, Divider, Progress } from "@heroui/react";
 import {
     FaBox,
     FaChartLine,
@@ -18,7 +11,7 @@ import {
     FaUserShield,
     FaWeightHanging,
 } from "react-icons/fa";
-
+import React from "react";
 import {
     Bar,
     BarChart,

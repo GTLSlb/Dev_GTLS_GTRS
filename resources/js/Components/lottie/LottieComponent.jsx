@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import lottie from 'lottie-web';
+import PropTypes from 'prop-types';
 
 const LottieComponent = ({ animationData ,height,width,loop,autoplay, }) => {
   const animationContainer = useRef(null);
@@ -17,6 +18,14 @@ const LottieComponent = ({ animationData ,height,width,loop,autoplay, }) => {
   }, [animationData]);
 
   return <div ref={animationContainer} style={{ height: height, width: width }} />;
+};
+
+LottieComponent.propTypes = {
+  animationData: PropTypes.object,
+  height: PropTypes.string,
+  width: PropTypes.string,
+  loop: PropTypes.bool,
+  autoplay: PropTypes.bool,  
 };
 
 export default LottieComponent;

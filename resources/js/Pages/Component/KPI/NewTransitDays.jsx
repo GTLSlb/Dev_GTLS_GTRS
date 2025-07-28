@@ -1,10 +1,12 @@
 import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
+import React from "react";
+import PropTypes from "prop-types";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import { useState, useEffect, useRef } from "react";
 import TableStructure from "@/Components/TableStructure";
 import { PencilIcon } from "@heroicons/react/20/solid";
-import { AlertToast, canAddNewTransitDays, canEditTransitDays } from "@/permissions";
+import { canAddNewTransitDays, canEditTransitDays } from "@/permissions";
 import { getApiRequest } from "@/CommonFunctions";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
@@ -150,7 +152,7 @@ function NewTransitDays({
                             wrapMultiple: false,
                             dataSource: types,
                         },
-                        render: ({ value, data }) => {
+                        render: ({ data }) => {
                             return <div>{data.CustomerType}</div>;
                         },
                     },
@@ -236,7 +238,7 @@ function NewTransitDays({
                         textAlign: "center",
                         minWidth: 170,
                         defaultFlex: 1,
-                        render: ({ value, data }) => {
+                        render: ({ data }) => {
                             return (
                                 <div>
                                     <button
@@ -288,7 +290,7 @@ function NewTransitDays({
                             wrapMultiple: false,
                             dataSource: types,
                         },
-                        render: ({ value, data }) => {
+                        render: ({ data }) => {
                             return <div>{data.CustomerType}</div>;
                         },
                     },
@@ -446,4 +448,15 @@ function NewTransitDays({
         </div>
     );
 }
+
+NewTransitDays.propTypes = {
+    setNewTransitDays: PropTypes.func,
+    newTransitDays: PropTypes.array,
+    currentUser: PropTypes.object,
+    userPermission: PropTypes.object,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    url: PropTypes.string,
+};
+
 export default NewTransitDays;

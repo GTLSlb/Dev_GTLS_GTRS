@@ -1,5 +1,6 @@
 import { Button } from "@heroui/react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { Sidebar, Menu, MenuItem, menuClasses } from "react-pro-sidebar";
 import { useNavigate } from "react-router-dom";
 import { CircleStackIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
@@ -110,8 +111,8 @@ export default function CollapseSidebar({
     setSidebarElements,
 }) {
     const [isOpen, setIsOpen] = useState(false);
-    const [hasImage, setHasImage] = useState(false);
-    const [theme, setTheme] = useState("light");
+    const hasImage = false;
+    const theme = "light";
     const [customerOptions, setCustomerOptions] = useState([]);
     const [showList, setShowList] = useState(false);
     const showSelect = customerOptions?.length > 0;
@@ -398,7 +399,7 @@ export default function CollapseSidebar({
                                             {showList && (
                                                 <div className="text-left max-h-64 overflow-y-scroll mt-3 pt-1 pl-1 containerscroll">
                                                     {customerAccounts?.map(
-                                                        (option) => (
+                                                        (option, index) => (
                                                             <div
                                                                 className="flex items-start"
                                                                 key={`${option.DebtorId}-${option.AccountNo}-${index}`}
@@ -470,7 +471,7 @@ export default function CollapseSidebar({
                                                     }}
                                                 >
                                                     <AccordionItem>
-                                                        {({ open }) => (
+                                                        {() => (
                                                             <>
                                                                 <AccordionHeader
                                                                     className={classNames(
@@ -610,3 +611,19 @@ export default function CollapseSidebar({
         )
     );
 }
+
+CollapseSidebar.propTypes = {
+    setBroken: PropTypes.func,
+    rtl: PropTypes.bool,
+    toggled: PropTypes.bool,
+    setToggled: PropTypes.func,
+    currentUser: PropTypes.object,
+    setCusomterAccounts: PropTypes.func,
+    customerAccounts: PropTypes.array,
+    onData: PropTypes.func,
+    collapsed: PropTypes.bool,
+    setCollapsed: PropTypes.func,
+    sidebarElements: PropTypes.array,
+    setSidebarElements: PropTypes.func,
+    setCustomerAccounts: PropTypes.func,
+};  

@@ -1,8 +1,6 @@
-import { useEffect } from "react";
-import Cookies from "js-cookie";
+import React from "react";
+import PropTypes from "prop-types";
 import { clearMSALLocalStorage, pca } from "@/CommonFunctions";
-import { LogoutSVG } from "@/assets/svgs/LogoutSVG";
-import axios from "axios";
 import { LogoutPage } from "gtls-npm-libraries";
 export default function Logout({ currentUser, setToken, setCurrentUser }) {
     return (
@@ -16,5 +14,11 @@ export default function Logout({ currentUser, setToken, setCurrentUser }) {
             setCurrentUser={setCurrentUser}
             setToken={setToken}
         />
-    )
+    );
 }
+
+Logout.propTypes = {
+    currentUser: PropTypes.object,
+    setToken: PropTypes.func,
+    setCurrentUser: PropTypes.func,
+};

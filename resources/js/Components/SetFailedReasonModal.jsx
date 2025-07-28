@@ -1,32 +1,22 @@
 import ReactModal from "react-modal";
-import TextInput from "./TextInput";
-import InputError from "./InputError";
-import axios from "axios";
-import { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import { People } from "@mui/icons-material";
-const placeholder = "test";
 import swal from 'sweetalert';
+import PropTypes from "prop-types";
 import { handleSessionExpiration } from '@/CommonFunctions';
 
 export default function SetFailedReasonModal({
     isOpen,
     handleClose,
     reason,
-    url,
-    Token,
     setReason,
     failedReasons,
-    currentUser,
-    userPermission,
     updateLocalData,
 }) {
     const [consignment, setConsignment] = useState();
     const [note, setNote] = useState();
     const [resolution, setResolution] = useState();
-    const [description, setDescription] = useState();
-    const [reasonname, setReasonName] = useState();
     const [isLoading, SetIsLoading] = useState(false);
     const [selected, setSelected] = useState();
     const [showDesc, setShowDesc] = useState();
@@ -57,12 +47,6 @@ export default function SetFailedReasonModal({
         const foundState = states.find((state) => state.name === stateName);
         return foundState ? foundState.id - 1 : 0;
     }
-    function getReferenceIdByName(referenceName) {
-        const foundReference = reference.find(
-            (item) => item.name === referenceName
-        );
-        return foundReference ? foundReference.id : 0;
-    }
     function getDepartmentIdByName(departmentName) {
         const foundDepartment = departments.find(
             (department) => department.name === departmentName
@@ -77,10 +61,6 @@ export default function SetFailedReasonModal({
     useEffect(() => {
         setShowDesc();
         setConsignment(reason);
-        setReasonName(
-            failedReasons?.find((i) => i.ReasonId === reason?.FailedReason)
-                ?.ReasonName
-        );
         if (reason) {
             const state = reason.State;
             const department = reason.Department;
@@ -109,52 +89,21 @@ export default function SetFailedReasonModal({
                 }
             }
         }
-        setDescription(selected?.ReasonDesc);
         setNote(reason?.FailedNote);
         setResolution(reason?.Resolution);
     }, [reason]);
     function classNames(...classes) {
         return classes.filter(Boolean).join(" ");
     }
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
-    const data = [
-        {
-            ConsId: consignment?.CONSIGNMNENTID,
-            ReasonId: selected?.ReasonId,
-            Description: selected?.ReasonDesc,
-            note: note,
-            State: selectedState?.name,
-            Department: selectedDepartment?.name,
-            Resolution: resolution,
-            Reference: selectedReference?.id,
-            OccuredAt: occurredAt
-        },
-    ];
     const handleSubmit = async (event) => {
         event.preventDefault();
         // Prevent the default form submission behavior
 
         try {
             SetIsLoading(true);
-            // Make the API request using Axios or any other library
-            const response = await axios.post(
-                `${url}add/ConsFailedReason`,
-                data,
-                {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${Token}`,
-                    },
-                }
-            );
-            // Handle the response as needed
-            // setInputValue("");
-            setSuccess(true);
 
             setTimeout(() => {
                 handleClose();
-                setSuccess(false);
                 SetIsLoading(false);
                 updateLocalData(
                     reason.CONSIGNMNENTID,
@@ -170,7 +119,7 @@ export default function SetFailedReasonModal({
             }, 1000);
         } catch (error) {
             SetIsLoading(false);
-            if (err.response && err.response.status === 401) {
+            if (error.response && error.response.status === 401) {
                 // Handle 401 error using SweetAlert
                 swal({
                   title: 'Session Expired!',
@@ -183,8 +132,7 @@ export default function SetFailedReasonModal({
                 });
               } else {
                 // Handle other errors
-                setError("Error occurred while saving the data. Please try again."); // Set the error message
-                console.log(err);
+                console.error(error);
               }
 
         }
@@ -708,3 +656,13 @@ export default function SetFailedReasonModal({
         </ReactModal>
     );
 }
+
+SetFailedReasonModal.propTypes = {
+    isOpen: PropTypes.bool,
+    handleClose: PropTypes.func,
+    reason: PropTypes.object,
+    setReason: PropTypes.func,
+    failedReasons: PropTypes.array,
+    currentUser: PropTypes.object,
+    updateLocalData: PropTypes.func,
+};

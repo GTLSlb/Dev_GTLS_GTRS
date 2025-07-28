@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import { Column } from "@ant-design/plots";
 import { each, groupBy } from "@antv/util";
-import StackedData from "./ChartsData/StackedData";
-import { useRef } from "react";
 
 const StackedBarChart = (props) => {
-    const chartRef = useRef(null);
     const chartTitle = props.chartTitle;
-    const byStateAndType = props.byStateAndType;
-    const [data, setData] = useState(byStateAndType);
+    const data = props.byStateAndType;
     // Generate annotations for each year
     const generateAnnotations = () => {
         const annotations = [];
@@ -63,6 +60,17 @@ const StackedBarChart = (props) => {
             <Column {...config} className="p-4"/>
         </div>
     );
+};
+
+StackedBarChart.propTypes = {
+    chartTitle: PropTypes.string,
+    byStateAndType: PropTypes.arrayOf(
+        PropTypes.shape({
+            state: PropTypes.string,
+            type: PropTypes.string,
+            value: PropTypes.number,
+        })
+    ),
 };
 
 export default StackedBarChart;

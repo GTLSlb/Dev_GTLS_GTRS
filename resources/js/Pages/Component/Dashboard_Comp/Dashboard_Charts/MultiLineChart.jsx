@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Line } from "@ant-design/plots";
+import PropTypes from "prop-types";
 
 const MultiChartLine = (props) => {
     const chartData = props.chartData;
@@ -53,6 +54,11 @@ const MultiChartLine = (props) => {
             <Line {...config} className="p-4" />
         </div>
     );
+};
+
+MultiChartLine.propTypes = {
+    chartData: PropTypes.array,
+    chartTitle: PropTypes.string,
 };
 
 export default MultiChartLine;

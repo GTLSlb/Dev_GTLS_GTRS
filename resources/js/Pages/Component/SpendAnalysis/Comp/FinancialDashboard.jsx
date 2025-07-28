@@ -16,6 +16,7 @@ import {
     Area,
 } from "recharts";
 import Stats from "./Stats";
+import React from "react";
 
 // Dummy data for the charts
 const dummyLineData = [

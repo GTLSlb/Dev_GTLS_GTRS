@@ -1,10 +1,11 @@
-import React, { useRef, useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
+import PropTypes from "prop-types";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
 import axios from "axios";
 import "../../../../../css/graphTable.css";
 import { AlertToast } from "@/permissions";
-import {ToastContainer,toast} from 'react-toastify';
+import { ToastContainer } from "react-toastify";
 
 // Component
 function InlineTable({
@@ -12,14 +13,11 @@ function InlineTable({
     url,
     currentUser,
     CustomerId,
-    userPermission,
     setGraphData,
-    getReportData,
     selectedReceiver,
-    updateLocalDataFromJson,
     Token,
 }) {
-    const [jsonData, setJsonData] = useState(graphData);
+    const jsonData = graphData;
     const [localGraphData, setLocalGraphData] = useState(graphData);
 
     useEffect(() => {
@@ -108,6 +106,12 @@ function InlineTable({
             />
         );
     }
+    CustomNumericEditor.propTypes = {
+        value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        onChange: PropTypes.func,
+        onComplete: PropTypes.func,
+        cellProps: PropTypes.object,
+    };
 
     jsonData.forEach((item) => {
         const columnName = formatDateToColumnName(item.MonthDate);
@@ -121,9 +125,11 @@ function InlineTable({
 
             // Adjusted the editable function to properly log the row data
             // Use closure to capture row data
-            editable: (editValue, cellProps) => {
+            editable: (cellProps) => {
                 return Promise.resolve(
+                    // eslint-disable-next-line react/prop-types
                     cellProps.data.metric !== "Ontime %" &&
+                    // eslint-disable-next-line react/prop-types
                         cellProps.data.metric !== "POD %"
                 );
             },
@@ -182,7 +188,6 @@ function InlineTable({
             };
         }
     });
-
 
     const [dataSource, setDataSource] = useState(originalData);
     const [validationErrors, setValidationErrors] = useState({});
@@ -308,9 +313,6 @@ function InlineTable({
                 baseRecord.KpiBenchMark === "" ||
                 Number.isNaN(baseRecord.KpiBenchMark)
             ) {
-                console.log(
-                    "Validation failed: One or more required fields are null, empty, or NaN"
-                );
                 setValidationErrors((prev) => ({
                     ...prev,
                     [`${columnId}`]: true,
@@ -326,7 +328,6 @@ function InlineTable({
             // Update recordMap with the updated baseRecord
             recordMap[columnId] = baseRecord;
 
-
             axios
                 .post(`${url}Add/KpiPackRecord`, baseRecord, {
                     headers: {
@@ -334,15 +335,18 @@ function InlineTable({
                         Authorization: `Bearer ${Token}`,
                     },
                 })
-                .then((res) => {
+                .then(() => {
                     // Use functional updates to ensure you're working with the latest data
-                    const updatedData = updateLocalData(localGraphData, baseRecord);
+                    const updatedData = updateLocalData(
+                        localGraphData,
+                        baseRecord
+                    );
                     // Persist updates
                     setLocalGraphData(updatedData);
                     setGraphData(updatedData); // Optional: If parent component needs the updates
                 })
                 .catch((err) => {
-                    console.log(err);
+                    console.error(err);
                     AlertToast(err.response.data.Message, 2);
                 });
 
@@ -377,23 +381,25 @@ function InlineTable({
     const modifiedColumns = columns.map((col) => ({
         ...col,
         onRender: (cellProps, { value }) => {
-            const hasError = validationErrors[cellProps.name];
-            // Apply bold style only for the "metric" column
+    // eslint-disable-next-line react/prop-types
+    const hasError = validationErrors[cellProps.name];
+    const isMetricColumn = col.name === "metric";
 
-            const isMetricColumn = col.name == "metric";
-            cellProps.style.background = hasError ? "#f6d3d0" : "transparent";
-            return (
-                <div
-                    style={{
-                        fontWeight: isMetricColumn ? "bold" : "normal", // Bold for "metric" column, normal for others
-                        color: hasError ? "black" : "black",
-                        backgroundColor: hasError ? "#f6d3d0" : "transparent",
-                    }}
-                >
-                    <div className="test"> {value}</div>
-                </div>
-            );
-        },
+    // eslint-disable-next-line react/prop-types
+    cellProps.style.background = hasError ? "#f6d3d0" : "transparent";
+
+    return (
+        <div
+            style={{
+                fontWeight: isMetricColumn ? "bold" : "normal",
+                color: hasError ? "black" : "black",
+                backgroundColor: hasError ? "#f6d3d0" : "transparent",
+            }}
+        >
+            <div className="test">{value}</div>
+        </div>
+    );
+}
     }));
 
     const editableColumns = modifiedColumns.map((col) => ({
@@ -416,5 +422,14 @@ function InlineTable({
         </div>
     );
 }
+InlineTable.propTypes = {
+    graphData: PropTypes.array,
+    url: PropTypes.string,
+    currentUser: PropTypes.object,
+    CustomerId: PropTypes.number,
+    setGraphData: PropTypes.func,
+    Token: PropTypes.string,
+    selectedReceiver: PropTypes.object,
+};
 
 export default InlineTable;

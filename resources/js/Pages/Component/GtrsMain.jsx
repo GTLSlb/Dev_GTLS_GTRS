@@ -1,4 +1,10 @@
 import { navigateToFirstAllowedPage, ProtectedRoute } from "@/CommonFunctions";
+import axios from "axios";
+import swal from "sweetalert";
+import moment from "moment";
+import { handleSessionExpiration } from "@/CommonFunctions";
+import React from "react";
+import PropTypes from "prop-types";
 import {
     getLatestDespatchDate,
     getMinMaxValue,
@@ -7,7 +13,6 @@ import {
 import {
     getFiltersAddCharges,
     getFiltersCons,
-    getFiltersConsTrack,
     getFiltersDrivers,
     getFiltersFailed,
     getFiltersHolidays,
@@ -21,7 +26,7 @@ import {
 } from "@/Components/utils/filters";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import { Button } from "@heroui/react";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import ConsDetails from "../ConsDetails";
 import NotFoundRedirect from "../NotFoundRedirect";
@@ -51,11 +56,11 @@ import ConsMap from "./TrafficPage/ConsMap";
 import TrafficComp from "./TrafficPage/TrafficComp";
 import TransportRep from "./TransportRep";
 import ProductStockTable from "./ProductStock/ProductStockTable";
-import { CustomContext } from "@/CommonContext";
+import KPIReasons from "./KPI/KPIReasons";
+import SpendDashboard from "./SpendAnalysis/SpendDashboard";
+import SettingMiddleware from "./Settings/SettingMiddleware";
 import Customers from "./Settings/Customers";
 import CustomerProfile from "./Settings/CustomerProfile";
-import SettingMiddleware from "./Settings/SettingMiddleware";
-import SpendDashboard from "./SpendAnalysis/SpendDashboard";
 
 export default function GtrsMain({
     setCustomerAccounts,
@@ -75,6 +80,7 @@ export default function GtrsMain({
     Token,
     chartsData,
     kpireasonsData,
+    setkpireasonsData,
     userPermission,
     sidebarElements,
     setSidebarElements,
@@ -85,7 +91,7 @@ export default function GtrsMain({
     fetchDeliveryReportCommentsData,
 }) {
     window.moment = moment;
-    const [KPIData, setKPIData] = useState([]);
+    const KPIData = [];
     const [NewKPIData, setNewKPIData] = useState([]);
     const [newTransitDays, setNewTransitDays] = useState();
     const [holidays, setHolidays] = useState();
@@ -102,8 +108,6 @@ export default function GtrsMain({
     const oldestDate = getOldestDespatchDate(consData);
     const latestDate = getLatestDespatchDate(consData);
     const [dataFromChild, setDataFromChild] = useState(null);
-    const [newtransitDay, setNewTransitDay] = useState(null);
-    const [incidentId, setIncidentId] = useState(null);
 
     const [sharedStartDate, setSharedStartDate] = useState(
         getOldestDespatchDate(consData)
@@ -175,16 +179,12 @@ export default function GtrsMain({
         getFiltersAddCharges(minDateAdd, maxDateAdd)
     );
     const [filtersDriver, setFiltersDriver] = useState(getFiltersDrivers());
-    const [filtersConsTrack, setFiltersConsTrack] = useState(
-        getFiltersConsTrack(minDispatchDate, maxDispatchDate)
-    );
 
     // ********************************************************************
 
     const handleDataFromChild = (data) => {
         setDataFromChild(data);
     };
-    const [lastIndex, setLastIndex] = useState(0);
     // Function to format the date
     const formatDate = (dateString) => {
         if (dateString) {
@@ -488,7 +488,7 @@ export default function GtrsMain({
                 });
             } else {
                 // Handle other errors
-                console.log(err);
+                console.error(err);
                 // Check if setCellLoading exists before calling it
                 if (typeof setCellLoading === "function") {
                     setCellLoading(null);
@@ -526,7 +526,7 @@ export default function GtrsMain({
                 });
             } else {
                 // Handle other errors
-                console.log(err);
+                console.error(err);
                 // Check if setCellLoading exists before calling it
                 if (typeof setCellLoading === "function") {
                     setCellLoading(null);
@@ -874,9 +874,6 @@ export default function GtrsMain({
                                                     <FailedConsMain
                                                         oldestDate={oldestDate}
                                                         latestDate={latestDate}
-                                                        setIncidentId={
-                                                            setIncidentId
-                                                        }
                                                         url={url}
                                                         filterValue={
                                                             filtersFailed
@@ -894,9 +891,6 @@ export default function GtrsMain({
                                                         PerfData={PerfData}
                                                         setactiveCon={
                                                             setactiveCon
-                                                        }
-                                                        setLastIndex={
-                                                            setLastIndex
                                                         }
                                                         EDate={EDate}
                                                         gtccrUrl={gtccrUrl}
@@ -1029,9 +1023,6 @@ export default function GtrsMain({
                                                     <RDDMain
                                                         oldestDate={oldestDate}
                                                         latestDate={latestDate}
-                                                        setIncidentId={
-                                                            setIncidentId
-                                                        }
                                                         currentUser={
                                                             currentUser
                                                         }
@@ -1048,9 +1039,6 @@ export default function GtrsMain({
                                                         }
                                                         setactiveCon={
                                                             setactiveCon
-                                                        }
-                                                        setLastIndex={
-                                                            setLastIndex
                                                         }
                                                         EDate={EDate}
                                                         setEDate={setEDate}
@@ -1110,9 +1098,6 @@ export default function GtrsMain({
                                                         }
                                                         safetyData={safetyData}
                                                         accData={dataFromChild}
-                                                        setLastIndex={
-                                                            setLastIndex
-                                                        }
                                                         DefaultEDate={EDate}
                                                         DefaultSDate={SDate}
                                                         safetyDataState={
@@ -1193,7 +1178,7 @@ export default function GtrsMain({
                                             />
                                         }
                                     />
-                                    {/*<Route
+                                    <Route
                                         path="/kpi/reasons"
                                         element={
                                             <ProtectedRoute
@@ -1234,7 +1219,7 @@ export default function GtrsMain({
                                                 setCurrentUser={setCurrentUser}
                                             />
                                         }
-                                    />*/}
+                                    />
                                     <Route
                                         path="/transport"
                                         element={
@@ -1347,9 +1332,6 @@ export default function GtrsMain({
                                                         url={url}
                                                         currentUser={
                                                             currentUser
-                                                        }
-                                                        setNewTransitDay={
-                                                            setNewTransitDay
                                                         }
                                                         setNewTransitDays={
                                                             setNewTransitDays
@@ -1706,3 +1688,35 @@ export default function GtrsMain({
         </div>
     );
 }
+
+GtrsMain.propTypes = {
+    gtccrUrl: PropTypes.string,
+    currentUser: PropTypes.object,
+    Token: PropTypes.string,
+    userPermission: PropTypes.object,
+    setCusomterAccounts: PropTypes.func,
+    setPerfData: PropTypes.func,
+    userBody: PropTypes.object,
+    safetyData: PropTypes.array,
+    debtorsData: PropTypes.array,
+    customerAccounts: PropTypes.array,
+    setactiveCons: PropTypes.func,
+    consData: PropTypes.array,
+    rddReasons: PropTypes.array,
+    setrddReasons: PropTypes.func,
+    chartsData: PropTypes.array,
+    sidebarElements: PropTypes.array,
+    setSidebarElements: PropTypes.func,
+    deliveryReportData: PropTypes.array,
+    setCurrentUser: PropTypes.func,
+    setToken: PropTypes.func,
+    url: PropTypes.string,
+    PerfData: PropTypes.array,
+    fetchDeliveryReportCommentsData: PropTypes.func,
+    deliveryReportComments: PropTypes.array,
+    setactiveCon: PropTypes.func,
+    transportData: PropTypes.array,
+    kpireasonsData: PropTypes.array,
+    setkpireasonsData: PropTypes.func,
+    setCustomerAccounts: PropTypes.func,
+};

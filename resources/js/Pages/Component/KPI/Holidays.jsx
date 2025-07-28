@@ -2,6 +2,8 @@ import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import { useState } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import TableStructure from "@/Components/TableStructure";
 import { useEffect, useRef } from "react";
 import moment from "moment";
@@ -92,7 +94,7 @@ export default function Holidays({
             textAlign: "center",
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY") === "Invalid date"
                     ? ""
                     : moment(value).format("DD-MM-YYYY");
@@ -177,7 +179,7 @@ export default function Holidays({
                         textAlign: "center",
                         dateFormat: "DD-MM-YYYY",
                         filterEditor: DateFilter,
-                        render: ({ value, cellProps }) => {
+                        render: ({ value }) => {
                             return moment(value).format("DD-MM-YYYY") ==
                                 "Invalid date"
                                 ? ""
@@ -233,7 +235,7 @@ export default function Holidays({
                         headerAlign: "center",
                         textAlign: "center",
                         defaultWidth: 100,
-                        render: ({ value, data }) => {
+                        render: ({ data }) => {
                             return (
                                 <div>
                                     {canEditHolidays(userPermission) ? (
@@ -282,7 +284,7 @@ export default function Holidays({
                         textAlign: "center",
                         dateFormat: "DD-MM-YYYY",
                         filterEditor: DateFilter,
-                        render: ({ value, cellProps }) => {
+                        render: ({ value }) => {
                             return moment(value).format("DD-MM-YYYY") ==
                                 "Invalid date"
                                 ? ""
@@ -414,3 +416,14 @@ export default function Holidays({
         </div>
     );
 }
+
+Holidays.propTypes = {
+    holidays: PropTypes.array,
+    setHolidays: PropTypes.func,
+    url: PropTypes.string,
+    Token: PropTypes.string,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    userPermission: PropTypes.object,
+    currentUser: PropTypes.object,
+};
