@@ -7,7 +7,7 @@ export default function ForgotPassword({ }) {
 
     const gtamUrl = window.Laravel.gtamUrl;
     return (
-       <ForgotPasswordPage
+<ForgotPasswordPage
             gtamURl={gtamUrl}
             gtlsLogo={Logo}
             truck={truck}

@@ -22,7 +22,7 @@ const msalConfig = {
         storeAuthStateInCookie: true, // Set this to true if dealing with IE11 or issues with sessionStorage
     },
 };
-const pca = new PublicClientApplication(msalConfig);
+export const pca = new PublicClientApplication(msalConfig);
 
 export async function handleSessionExpiration() {
     const appUrl = window.Laravel.appUrl;
