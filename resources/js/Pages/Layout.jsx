@@ -49,10 +49,12 @@ export default function Sidebar() {
 
     useEffect(() => {
         axios
-            .get("/users")
+            // .get("/users")
+            .get("/session-info")
             .then((res) => {
                 if (typeof res.data == "object") {
-                    setCurrentUser(res.data);
+                    // setCurrentUser(res.data);
+                    console.log(res)
                 }
             })
             .catch((error) => {

@@ -107,6 +107,17 @@ Route::middleware('custom.auth')->group(function () {
     Route::get('/{path?}', function (Request $request) {
         return Inertia::render('Layout');
     })->where('path', '.*');
+    Route::middleware('auth:sanctum')->get('/session-info', function (Request $request) {
+    return response()->json([
+        'user' => $request->session()->get('user'),
+        'user_id' => $request->session()->get('user_id'),
+        'session_id' => $request->session()->getId(),
+        '_token' => $request->session()->token(),
+        'newRoute' => $request->session()->get('newRoute'),
+        'last_activity' => now()->timestamp,
+    ]);
+});
+
 });
 
 Route::post('/getAppLogo', [ImageController::class, 'showAppLogo'])->name('logo.show');
