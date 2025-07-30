@@ -155,20 +155,20 @@ export default function MainSidebar({
             feature: "RealFoodReport_View",
         },
         {
-            id: 21,
+            id: 24,
             name: "Delivery Report",
             href: "#",
             options: [
-                {
-                    id: 21,
-                    name: "Delivery Report",
-                    href: "#",
-                    current: false,
-                    feature: "DeliveryReport_View",
-                },
+                // {
+                //     id: 21,
+                //     name: "Delivery Report",
+                //     href: "#",
+                //     current: false,
+                //     feature: "DeliveryReport_View",
+                // },
                 {
                     id: 24,
-                    name: "Excel Delivery Report",
+                    name: "Delivery Report",
                     href: "#",
                     current: false,
                     feature: "ExcelTable_View",

@@ -955,7 +955,7 @@ export function canViewChart(currentUser, chartPermission) {
 
 export function canViewExcelDeliveryReport(currentUser) {
     const targetPermissionName = "ExcelTable_View";
-    const pageName = "Excel Delivery Report";
+    const pageName = "Delivery Report";
     const targetPage = currentUser.Pages.find(
         (page) => page.PageName === pageName
     );
@@ -970,7 +970,7 @@ export function canViewExcelDeliveryReport(currentUser) {
 
 export function canViewCommentsExcelDeliveryReport(currentUser) {
     const targetPermissionName = "DeliveryReportComments_View";
-    const pageName = "Excel Delivery Report";
+    const pageName = "Delivery Report";
     const targetPage = currentUser.Pages.find(
         (page) => page.PageName === pageName
     );
@@ -984,7 +984,7 @@ export function canViewCommentsExcelDeliveryReport(currentUser) {
 
 export function canViewMetcahsExcelDeliveryReport(currentUser) {
     const targetPermissionName = "MetcashDeliveryReport_View";
-    const pageName = "Excel Delivery Report";
+    const pageName = "Delivery Report";
     const targetPage = currentUser.Pages.find(
         (page) => page.PageName === pageName
     );
@@ -998,7 +998,7 @@ export function canViewMetcahsExcelDeliveryReport(currentUser) {
 
 export function canViewWoolworthsExcelDeliveryReport(currentUser) {
     const targetPermissionName = "WoolworthsDeliveryReport_View";
-    const pageName = "Excel Delivery Report";
+    const pageName = "Delivery Report";
     const targetPage = currentUser.Pages.find(
         (page) => page.PageName === pageName
     );
@@ -1012,7 +1012,7 @@ export function canViewWoolworthsExcelDeliveryReport(currentUser) {
 
 export function canViewOthersExcelDeliveryReport(currentUser) {
     const targetPermissionName = "OtherDeliveryReport_View";
-    const pageName = "Excel Delivery Report";
+    const pageName = "Delivery Report";
     const targetPage = currentUser.Pages.find(
         (page) => page.PageName === pageName
     );
@@ -1026,7 +1026,7 @@ export function canViewOthersExcelDeliveryReport(currentUser) {
 
 export function canAddCommentExcelDeliveryReport(currentUser) {
     const targetPermissionName = "DeliveryReportComment_add";
-    const pageName = "Excel Delivery Report";
+    const pageName = "Delivery Report";
     const targetPage = currentUser.Pages.find(
         (page) => page.PageName === pageName
     );
@@ -1040,7 +1040,7 @@ export function canAddCommentExcelDeliveryReport(currentUser) {
 
 export function canEditCommentExcelDeliveryReport(currentUser) {
     const targetPermissionName = "DeliveryReportComment_edit";
-    const pageName = "Excel Delivery Report";
+    const pageName = "Delivery Report";
     const targetPage = currentUser.Pages.find(
         (page) => page.PageName === pageName
     );
@@ -1054,7 +1054,7 @@ export function canEditCommentExcelDeliveryReport(currentUser) {
 
 export function canApproveCommentExcelDeliveryReport(currentUser) {
     const targetPermissionName = "Approve_Comments";
-    const pageName = "Excel Delivery Report";
+    const pageName = "Delivery Report";
     const targetPage = currentUser.Pages.find(
         (page) => page.PageName === pageName
     );
