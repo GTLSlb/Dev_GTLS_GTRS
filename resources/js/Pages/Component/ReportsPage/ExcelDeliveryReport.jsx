@@ -1,4 +1,6 @@
 import { HotTable } from "@handsontable/react-wrapper";
+import React from "react";
+import PropTypes from "prop-types";
 import { registerAllModules } from "handsontable/registry";
 import { useEffect, useMemo, useRef, useState } from "react";
 // import "handsontable/styles/handsontable.css";
@@ -11,7 +13,6 @@ import "handsontable/styles/handsontable.min.css";
 import "handsontable/styles/ht-theme-horizon.css";
 import "handsontable/styles/ht-theme-main.min.css";
 import moment from "moment";
-import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 registerAllModules();
@@ -20,6 +21,7 @@ import {
     AlertToast, canViewMetcashDeliveryReport, canViewOtherDeliveryReport, canViewWoolworthsDeliveryReport
 } from "@/permissions";
 import swal from "sweetalert";
+import { handleSessionExpiration } from "@/CommonFunctions";
 
 export default function ExcelDeliveryReport({
     url,
@@ -29,9 +31,7 @@ export default function ExcelDeliveryReport({
     userPermission,
     deliveryCommentsOptions,
 }) {
-    const navigate = useNavigate();
     const hotTableRef = useRef(null);
-    const [isLoading, setIsLoading] = useState(false);
 
     const buttonClickCallback = async () => {
         const hot = hotTableRef.current?.hotInstance;
@@ -114,22 +114,10 @@ export default function ExcelDeliveryReport({
         });
     };
 
-    // Navigation when clicking a consignment number
-    const handleClick = (consignmentID) => {
-        navigate("/gtrs/consignment-details", {
-            state: { activeCons: consignmentID },
-        });
-    };
 
     // States for modals and comment details
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [commentsData, setCommentsData] = useState(null);
-    const [consId, setConsId] = useState(null);
-    const handleViewComments = (data) => {
-        setCommentsData(data?.Comments);
-        setConsId(data?.ConsignmentID);
-        setIsViewModalOpen(true);
-    };
     const handleViewClose = () => {
         setIsViewModalOpen(false);
         setCommentsData(null);
@@ -138,7 +126,7 @@ export default function ExcelDeliveryReport({
     // Tab (report type) state
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     // Used to show a spinner in the cell when saving changes
-    const [cellLoading, setCellLoading] = useState(null);
+    const cellLoading = null;
 
     // Compute filtered data sets based on CustomerTypeId
     const [filteredMetcashData, setFilteredMetcashData] = useState(
@@ -202,23 +190,12 @@ export default function ExcelDeliveryReport({
     /* ---------------------------
      Handsontable Columns Setup
   --------------------------- */
-    const handleButtonClick = (rowData) => {
-        // alert(`Action clicked for Consignment: ${rowData.ConsignmentNo}`);
-        // Example: Navigate to details page
-        navigate("/gtrs/consignment-details", {
-            state: { activeCons: rowData.ConsignmentID },
-        });
-    };
 
+    // 📌 Custom Button Renderer
 
     const dateRenderer = (
-        instance,
         td,
-        row,
-        col,
-        prop,
         value,
-        cellProperties
     ) => {
         // If the cell has a value, format it
         if (value) {
@@ -371,7 +348,7 @@ export default function ExcelDeliveryReport({
         setChangedRows((prevChanges) => {
             let updatedChanges = [...prevChanges]; // Clone the existing changes array
 
-            changes.forEach(([row, prop, oldValue, newValue]) => {
+            changes.forEach(([row, oldValue, newValue]) => {
                 if (newValue !== oldValue) {
                     const hotInstance = hotTableRef.current?.hotInstance;
                     if (!hotInstance) {
@@ -410,7 +387,6 @@ export default function ExcelDeliveryReport({
     };
 
     function SaveComments() {
-        setIsLoading(true);
         const inputValues = changedRows?.map((item) => ({
             DeliveryCommentId: item.DeliveryCommentId
                 ? item.DeliveryCommentId
@@ -425,9 +401,8 @@ export default function ExcelDeliveryReport({
                     Authorization: `Bearer ${Token}`,
                 },
             })
-            .then((res) => {
+            .then(() => {
                 setChangedRows([]);
-                setIsLoading(false);
                 AlertToast("Saved successfully", 1);
             })
             .catch((err) => {
@@ -446,8 +421,7 @@ export default function ExcelDeliveryReport({
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
-                    setIsLoading(false);
+                    console.error(err);
                 }
             });
     }
@@ -616,3 +590,12 @@ export default function ExcelDeliveryReport({
         </div>
     );
 }
+
+ExcelDeliveryReport.propTypes = {
+    url: PropTypes.string,
+    Token: PropTypes.string,
+    deliveryReportData: PropTypes.array,
+    currentUser: PropTypes.object,
+    userPermission: PropTypes.object,
+    deliveryCommentsOptions: PropTypes.array,
+};

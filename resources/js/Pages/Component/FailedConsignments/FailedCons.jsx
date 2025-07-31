@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
+import PropTypes from "prop-types";
 import { useEffect } from "react";
 import moment from "moment";
 import SetFailedReasonModal from "@/Components/SetFailedReasonModal";
@@ -12,7 +13,6 @@ import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { formatDateToExcel, renderConsDetailsLink, renderIncidentDetailsLink } from "@/CommonFunctions";
-import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 
 export default function FailedCons({
@@ -27,7 +27,6 @@ export default function FailedCons({
     accData,
 }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const navigate = useNavigate();
     const [reason, setReason] = useState();
     const handleEditClick = (reason) => {
         setReason(reason);
@@ -130,7 +129,7 @@ export default function FailedCons({
             type: "string",
             headerAlign: "center",
             textAlign: "center",
-            render: ({ value, data }) => {
+            render: ({ value }) => {
                 return <span className=""> {value}</span>;
             },
             filterEditor: StringFilter,
@@ -141,7 +140,7 @@ export default function FailedCons({
             type: "string",
             headerAlign: "center",
             textAlign: "center",
-            render: ({ value, data }) => {
+            render: ({ data }) => {
                 return <span className=""> {data.IncidentStatusName}</span>;
             },
         },
@@ -233,7 +232,7 @@ export default function FailedCons({
                 maxDate: maxKPIDate,
             },
             filterEditor: DateFilter,
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -252,7 +251,7 @@ export default function FailedCons({
                 minDate: minDespatchDate,
                 maxDate: maxDespatchDate,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -271,7 +270,7 @@ export default function FailedCons({
                 maxDate: maxRddDate,
             },
             filterEditor: DateFilter,
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -290,7 +289,7 @@ export default function FailedCons({
                 maxDate: maxArrivedDate,
             },
             filterEditor: DateFilter,
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -309,7 +308,7 @@ export default function FailedCons({
                 maxDate: maxDeliveredDate,
             },
             filterEditor: DateFilter,
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -460,3 +459,15 @@ export default function FailedCons({
         </div>
     );
 }
+
+FailedCons.propTypes = {
+    url: PropTypes.string,
+    PerfData: PropTypes.array,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    currentUser: PropTypes.object,
+    userPermission: PropTypes.object,
+    accData: PropTypes.array,
+    Token: PropTypes.string,
+    failedReasons: PropTypes.array,
+};

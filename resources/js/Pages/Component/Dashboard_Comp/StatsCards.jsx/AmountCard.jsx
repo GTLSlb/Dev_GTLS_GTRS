@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { Card, CardHeader, CardBody, Divider } from "@heroui/react";
 import PaidIcon from "@mui/icons-material/Paid";
 import { formatNumberWithCommas } from "@/CommonFunctions";
@@ -20,5 +21,9 @@ function AmountCard({ totalCost }) {
         </Card>
     );
 }
+
+AmountCard.propTypes = {
+    totalCost: PropTypes.number,
+};
 
 export default AmountCard;

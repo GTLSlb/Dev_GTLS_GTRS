@@ -1,6 +1,5 @@
 const shuttleDebtorIds = [1514, 244];
 export const calculateStatistics = (data, filteredSafety) => {
-    
     let safetyCounter = 0;
     const uniqueReceivers = new Set();
     let totalWeight = 0;
@@ -61,7 +60,6 @@ export const calculateStatistics = (data, filteredSafety) => {
         totalConsPending + totalConsFailed + totalNoConsPassed;
     const numUniqueReceivers = uniqueReceivers.size;
     const podPercentage = (podCounter / data.length) * 100;
-
 
     fuelLevy = isNaN(fuelLevy) ? 0 : fuelLevy;
     return {
@@ -168,12 +166,11 @@ export const getMonthlyData = (data) => {
         const amount = Math.round(Number(item.NetAmount) * 100);
         const despatchDate = new Date(item.DespatchDate);
         const year = despatchDate.getFullYear();
-        const day = despatchDate.getDate();
         const month = (despatchDate.getMonth() + 1).toString().padStart(2, "0");
         const formattedDate = `${year}-${month}`;
         const key = `${formattedDate}-${state}`;
 
-        if (firstDayData.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(firstDayData, key)) {
             firstDayData[key].amount += amount;
         } else {
             firstDayData[key] = {
@@ -200,7 +197,7 @@ export const getMonthlyRecordCounts = (data) => {
         const year = despatchDate.getFullYear();
         const monthYear = `${year}-${month.toString().padStart(2, "0")}`;
 
-        if (monthlyCounts.hasOwnProperty(monthYear)) {
+        if (Object.prototype.hasOwnProperty.call(monthlyCounts, monthYear)) {
             monthlyCounts[monthYear]++;
         } else {
             monthlyCounts[monthYear] = 1;
@@ -234,7 +231,7 @@ export const getPODCounts = (data) => {
         const monthYear = `${year}-${month.toString().padStart(2, "0")}`;
         const pod = item.POD;
 
-        if (podCounts.hasOwnProperty(monthYear)) {
+        if (Object.prototype.hasOwnProperty.call(podCounts, monthYear)) {
             if (pod) {
                 podCounts[monthYear].true++;
             } else {
@@ -296,9 +293,9 @@ export const getKPIPerformanceCounter = (data) => {
             continue;
         }
         if (consStatus === "PASS") {
-            consStatus = "Delivered on Time"; 
+            consStatus = "Delivered on Time";
         } else if (consStatus === "FAIL") {
-            consStatus = "Not Delivered on Time"; 
+            consStatus = "Not Delivered on Time";
         }
 
         const existingStatus = counter.find((obj) => obj.label === consStatus);

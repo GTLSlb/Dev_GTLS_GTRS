@@ -1,6 +1,8 @@
 import { Card, CardHeader, CardBody, Divider } from "@heroui/react";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import { formatNumberWithCommas } from "@/CommonFunctions";
+import React from "react";
+import PropTypes from "prop-types";
 function ConsCard({ totalCount }) {
     return (
         <Card className="min-w-[190px] max-w-[400px]">
@@ -19,5 +21,9 @@ function ConsCard({ totalCount }) {
         </Card>
     );
 }
+
+ConsCard.propTypes = {
+    totalCount: PropTypes.number,
+};
 
 export default ConsCard;

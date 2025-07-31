@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Tab,
     Tabs,
@@ -6,12 +6,12 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { getApiRequest } from "@/CommonFunctions";
 import GtrsButton from "../GtrsButton";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import { ToastContainer } from "react-toastify";
 import Accounts from "./Accounts";
 import Users from "./Users";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
+import PropTypes from "prop-types";
 
 export default function CustomerProfile({ currentUser, userPermission }) {
     const [customer, setCustomer] = useState([]);
@@ -88,3 +88,8 @@ export default function CustomerProfile({ currentUser, userPermission }) {
         </>
     );
 }
+
+CustomerProfile.propTypes = {
+    currentUser: PropTypes.object,
+    userPermission: PropTypes.object,
+};

@@ -1,3 +1,6 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 export default function PrimaryButton({ className = '', disabled, children, ...props }) {
     return (
         <button
@@ -13,3 +16,9 @@ export default function PrimaryButton({ className = '', disabled, children, ...p
         </button>
     );
 }
+
+PrimaryButton.propTypes = {
+    className: PropTypes.string,
+    disabled: PropTypes.bool,
+    children: PropTypes.node,
+};

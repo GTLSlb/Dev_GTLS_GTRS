@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 
-const CustomDateFilter = ({ value, onChange, minDate, maxDate }, props) => {
+const CustomDateFilter = ({ value, onChange, minDate, maxDate }) => {
     const [filterType, setFilterType] = useState("eq"); // Default filter type
     const [selectedDate, setSelectedDate] = useState(value?.date || null);
     const [startDate, setStartDate] = useState(value?.start || null);
@@ -136,6 +137,13 @@ const CustomDateFilter = ({ value, onChange, minDate, maxDate }, props) => {
             <button onClick={clearDate}>Clear</button>
         </div>
     );
+};
+
+CustomDateFilter.propTypes = {
+    value: PropTypes.object,
+    onChange: PropTypes.func,
+    minDate: PropTypes.string,
+    maxDate: PropTypes.string,
 };
 
 export default CustomDateFilter;

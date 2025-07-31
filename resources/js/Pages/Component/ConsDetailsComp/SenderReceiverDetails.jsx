@@ -1,6 +1,7 @@
 import React from "react";
+import PropTypes from "prop-types";
 
-function SenderReceiverDetails({ details, Consignment }) {
+function SenderReceiverDetails({ Consignment }) {
 
 
     const generateOptions = (Consignment) => {
@@ -133,5 +134,9 @@ function SenderReceiverDetails({ details, Consignment }) {
         </div>
     );
 }
+
+SenderReceiverDetails.propTypes = {
+    Consignment: PropTypes.array,
+};
 
 export default SenderReceiverDetails;

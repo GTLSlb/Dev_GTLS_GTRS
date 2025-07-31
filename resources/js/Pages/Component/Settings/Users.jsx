@@ -1,8 +1,20 @@
-import { canEditUsers } from "@/permissions";
-import { Button, Card, CardHeader, Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, Switch, useDisclosure } from "@heroui/react";
-import { useState } from "react";
+import { AlertToast, canEditUsers } from "@/permissions";
+import {
+    Button,
+    Card,
+    CardHeader,
+    Drawer,
+    DrawerBody,
+    DrawerContent,
+    DrawerFooter,
+    DrawerHeader,
+    Switch,
+    useDisclosure,
+} from "@heroui/react";
+import React, { useState } from "react";
+import PropTypes from "prop-types";
 
-export default function Users({ customer,userPermission }) {
+export default function Users({ customer, userPermission }) {
     const [editMode, setEditMode] = useState(false);
     const [accountStates, setAccountStates] = useState({});
     const [selectedUser, setSelectedUser] = useState(null);
@@ -26,12 +38,6 @@ export default function Users({ customer,userPermission }) {
 
     const renderDrawerContent = () => {
         if (!selectedUser) return null;
-
-        const handleUserClick = (user) => {
-            setSelectedUser(user);
-            setUserStatus(user?.IsActive ?? true); // Assuming there's an IsActive flag
-            onOpen();
-        };
 
         const toggleEditMode = () => {
             if (!editMode) {
@@ -73,7 +79,6 @@ export default function Users({ customer,userPermission }) {
                 },
                 []
             );
-
 
             // Build email details
             const subject = `Account Changes for ${selectedUser.Username}`;
@@ -236,3 +241,8 @@ export default function Users({ customer,userPermission }) {
         </div>
     );
 }
+
+Users.propTypes = {
+    customer: PropTypes.object,
+    userPermission: PropTypes.object,
+};

@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Switch, Button } from "@heroui/react";
 import { AlertToast, canEditUsers } from "@/permissions"; // Or replace with your toast system
+import PropTypes from "prop-types";
 
 export default function Accounts({ customer, userPermission }) {
     const [editMode, setEditMode] = useState(false);
@@ -154,3 +155,8 @@ export default function Accounts({ customer, userPermission }) {
         </div>
     );
 }
+
+Accounts.propTypes = {
+    customer: PropTypes.object,
+    userPermission: PropTypes.object,
+};

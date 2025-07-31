@@ -11,7 +11,8 @@ import {
     TableRow,
     Input,
 } from "@heroui/react";
-
+import React from "react";
+import PropTypes from "prop-types";
 import { Phone, PinDrop, Search } from "@mui/icons-material";
 import { useCallback, useMemo, useState } from "react";
 import CompLogo from "../assets/pics/logo.png"; // Assuming pics folder is in the same directory
@@ -645,6 +646,11 @@ function SingleLogisticsTable({ tableConfig, globalFilterValue }) {
     );
 }
 
+SingleLogisticsTable.propTypes = {
+    tableConfig: PropTypes.object,
+    globalFilterValue: PropTypes.string,
+};
+
 // --- Main RateCard Component ---
 function RateCard() {
     const [globalFilterValue, setGlobalFilterValue] = useState("");
@@ -793,5 +799,9 @@ function RateCard() {
         </div>
     );
 }
+
+RateCard.propTypes = {
+    companyDataOptimized: PropTypes.object,
+};
 
 export default RateCard;

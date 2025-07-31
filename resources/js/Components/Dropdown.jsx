@@ -1,6 +1,7 @@
-import { useState, createContext, useContext, Fragment } from 'react';
+import React, { useState, createContext, useContext, Fragment } from 'react';
 import { Link } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
+import PropTypes from 'prop-types';
 
 const DropDownContext = createContext();
 
@@ -28,6 +29,9 @@ const Trigger = ({ children }) => {
             {open && <div className="fixed inset-0 z-40" onClick={() => setOpen(false)}></div>}
         </>
     );
+};
+Trigger.propTypes = {
+    children: PropTypes.node,
 };
 
 const Content = ({ align = 'right', width = '48', contentClasses = 'py-1 bg-white', children }) => {
@@ -69,6 +73,12 @@ const Content = ({ align = 'right', width = '48', contentClasses = 'py-1 bg-whit
         </>
     );
 };
+Content.propTypes = {
+    align: PropTypes.oneOf(['left', 'right']),
+    width: PropTypes.oneOf(['48']),
+    contentClasses: PropTypes.string,
+    children: PropTypes.node,
+};
 
 const DropdownLink = ({ className = '', children, ...props }) => {
     return (
@@ -82,6 +92,14 @@ const DropdownLink = ({ className = '', children, ...props }) => {
             {children}
         </Link>
     );
+};
+DropdownLink.propTypes = {
+    className: PropTypes.string,
+    children: PropTypes.node,
+};
+
+Dropdown.propTypes = {
+    children: PropTypes.node,
 };
 
 Dropdown.Trigger = Trigger;

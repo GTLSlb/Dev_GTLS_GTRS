@@ -1,9 +1,8 @@
 import React from "react";
+import PropTypes from "prop-types";
 // import BarChart01 from '../../charts/BarChart01';
 import BarChart01 from "./Charts/SafetyBarChart01";
 // Import utilities
-import { tailwindConfig } from "@/Components/utils/Utils";
-
 function MultiBarChart(props) {
     const chartTitle = props.chartTitle;
     const typesbymonth = props.typesbymonth;
@@ -76,5 +75,21 @@ function MultiBarChart(props) {
         </div>
     );
 }
+
+MultiBarChart.propTypes = {
+    chartTitle: PropTypes.string,
+    typesbymonth: PropTypes.object,
+    safetyTypes: PropTypes.arrayOf(
+        PropTypes.shape({
+            SafetyTypeId: PropTypes.number,
+            SafetyTypeName: PropTypes.string,
+        })
+    ),
+};
+MultiBarChart.defaultProps = {
+    chartTitle: "Safety Reports by Type",
+    typesbymonth: {},
+    safetyTypes: [],
+};
 
 export default MultiBarChart;

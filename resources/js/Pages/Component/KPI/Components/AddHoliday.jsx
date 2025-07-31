@@ -1,4 +1,6 @@
 import { useState } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import { Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import {
@@ -21,7 +23,6 @@ export default function AddHoliday({
     holiday,
     url,
     currentUser,
-    userPermission,
     Token,
     setHoliday,
     setShowAdd,
@@ -73,7 +74,7 @@ export default function AddHoliday({
                     Authorization: `Bearer ${Token}`,
                 },
             })
-            .then((res) => {
+            .then(() => {
                 setHoliday(null);
                 fetchData();
                 setShowAdd(false);
@@ -94,7 +95,7 @@ export default function AddHoliday({
                     });
                   } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                     setIsLoading(false);
                     AlertToast("Something went wrong", 2);
                   }
@@ -274,3 +275,15 @@ export default function AddHoliday({
         </div>
     );
 }
+
+AddHoliday.propTypes = {
+    states: PropTypes.array,
+    holiday: PropTypes.object,
+    url: PropTypes.string,
+    currentUser: PropTypes.object,
+    Token: PropTypes.string,
+    setHoliday: PropTypes.func,
+    setShowAdd: PropTypes.func,    
+    fetchData: PropTypes.func,
+    closeModal: PropTypes.func,
+};

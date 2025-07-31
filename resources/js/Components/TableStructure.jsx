@@ -1,23 +1,21 @@
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
-import { useEffect, useCallback, useState, useMemo } from "react";
+import React, { useEffect, useCallback, useState, useMemo } from "react";
+import PropTypes from "prop-types";
 import ExportPopover from "./ExportPopover";
 
 export default function TableStructure({
     tableDataElements,
-    settableDataElements,
     filterValueElements,
     setFilterValueElements,
     groupsElements,
     columnsElements,
+    setColumns,
     filterTypesElements,
-    setFilterTypesElements,
     additionalButtons,
     title,
     handleDownloadExcel,
-    setSelected,
     gridRef,
-    selected,
     rowHeight,
     id,
     HeaderContent,
@@ -27,6 +25,7 @@ export default function TableStructure({
     const columns = useMemo(() => columnsElements, [columnsElements]);
     const filters = useMemo(() => filterValueElements, [filterValueElements]);
     const groups = useMemo(() => groupsElements, [groupsElements]);
+
     const filterTypes = useMemo(
         () => filterTypesElements,
         [filterTypesElements]
@@ -57,7 +56,6 @@ export default function TableStructure({
     useEffect(() => {
         const handleClick = (event) => {
             const target = event.target;
-            const textContent = target.textContent.trim();
             let columnHeader;
             // Handle filter settings button click
             if (
@@ -203,3 +201,21 @@ export default function TableStructure({
         </div>
     );
 }
+
+TableStructure.propTypes = {
+    tableDataElements: PropTypes.array,
+    filterValueElements: PropTypes.array,
+    setFilterValueElements: PropTypes.func,
+    groupsElements: PropTypes.array,
+    columnsElements: PropTypes.array,
+    filterTypesElements: PropTypes.object,
+    additionalButtons: PropTypes.node,
+    title: PropTypes.string,
+    handleDownloadExcel: PropTypes.func,
+    gridRef: PropTypes.object,
+    rowHeight: PropTypes.number,
+    id: PropTypes.string,
+    HeaderContent: PropTypes.node,
+    setColumns: PropTypes.func,
+    minHeight: PropTypes.number,
+};

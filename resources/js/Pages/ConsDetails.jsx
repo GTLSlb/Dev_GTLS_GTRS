@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useEffect } from "react";
 import "../../css/scroll.css";
-import moment from "moment";
+import React from "react";
+import PropTypes from "prop-types";
 import { getApiRequest } from "@/CommonFunctions";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -231,3 +232,7 @@ export default function ConsDetails({ url, currentUser }) {
         );
     }
 }
+ConsDetails.propTypes = {
+    url: PropTypes.string,
+    currentUser: PropTypes.object,
+};

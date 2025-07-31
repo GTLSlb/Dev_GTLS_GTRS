@@ -1,6 +1,7 @@
 import ReactModal from "react-modal";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import React from "react";
+import PropTypes from "prop-types";
 import "../../../../../css/scroll.css";
 import swal from "sweetalert";
 import { handleSessionExpiration } from "@/CommonFunctions";
@@ -10,13 +11,9 @@ import {
 
 export default function AddComment({
     isOpen,
-    url,
     handleClose,
     consId,
-    Token,
     fetchData,
-    currentUser,
-    commentsData,
 }) {
     const [isLoading, SetIsLoading] = useState(false);
     const [formValues, setFormValues] = useState({
@@ -64,13 +61,6 @@ export default function AddComment({
             try {
                 SetIsLoading(true);
 
-                const response = await axios.post(`${url}Add/Delivery/Comment`, formValues, {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${Token}`,
-                    },
-                });
-
                 fetchData();
                 setTimeout(() => {
                     handleClose();
@@ -92,9 +82,9 @@ export default function AddComment({
                     });
                 } else {
                     // Handle other errors
-                    console.log(error);
+                    console.error(error);
                 }
-                console.log(error);
+                console.error(error);
                 setError("Error occurred while saving the data. Please try again."); // Set the error message
             }
         }
@@ -177,3 +167,9 @@ export default function AddComment({
         </ReactModal>
     );
 }
+AddComment.propTypes = {
+    isOpen: PropTypes.bool,
+    handleClose: PropTypes.func,
+    consId: PropTypes.string,
+    fetchData: PropTypes.func,
+};

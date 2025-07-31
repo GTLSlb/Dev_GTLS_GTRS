@@ -3,16 +3,21 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "test": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/MainPortal_Development/test-reports,reportFilename=testResults,timestamp,autoOpen 'tests/*.js'",
-        "test:parallel": "npx mocha --no-timeout -p --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/MainPortal_Development/test-reports,reportFilename=testResults,timestamp,autoOpen 'tests/*.js'"
+        "test": "npx mocha --no-timeout --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/MainPortal_Development/test-reports,reportFilename=testResults,timestamp,autoOpen 'tests/*.js' jest",
+        "test:parallel": "npx mocha --no-timeout -p --reporter mochawesome --require mochawesome/register --reporter-options reportDir=C:/xampp/htdocs/MainPortal_Development/test-reports,reportFilename=testResults,timestamp,autoOpen 'tests/*.js'",
+        "lint": "eslint ."
     },
     "devDependencies": {
+        "@eslint/js": "^9.29.0",
         "@headlessui/react": "^1.4.2",
         "@inertiajs/react": "^1.0.0",
         "@tailwindcss/forms": "^0.5.3",
         "@vitejs/plugin-react": "^3.0.0",
         "autoprefixer": "^10.4.13",
         "axios": "^1.1.2",
+        "eslint": "^9.29.0",
+        "eslint-plugin-react": "^7.37.5",
+        "eslint-plugin-unicorn": "^59.0.1",
         "globals": "^16.2.0",
         "laravel-vite-plugin": "^0.7.2",
         "postcss": "^8.4.21",
@@ -57,7 +62,7 @@
         "file-saver": "^2.0.5",
         "flowbite-react": "^0.5.0",
         "framer-motion": "^11.3.24",
-        "gtls-npm-libraries": "^1.1.22",
+        "gtls-npm-libraries": "^1.2.2",
         "handsontable": "^15.1.0",
         "http-proxy-middleware": "^2.0.6",
         "js-cookie": "^3.0.5",

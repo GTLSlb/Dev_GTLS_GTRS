@@ -1,5 +1,7 @@
 import "../../../../css/dashboard.css";
 import Select from "react-select";
+import React from "react";
+import PropTypes from "prop-types";
 // import ReactGridLayout from 'react-grid-layout';
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
@@ -13,7 +15,6 @@ import {
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import Charts from "./Charts";
 import ChartsTable from "./ChartsTable";
-import SpendDashboard from "../SpendAnalysis/SpendDashboard";
 
 const customStyles = {
     control: (provided) => ({
@@ -22,7 +23,7 @@ const customStyles = {
         height: "auto",
         // Add more styles here as needed
     }),
-    option: (provided, state) => ({
+    option: (provided) => ({
         ...provided,
         color: "black",
         // Add more styles here as needed
@@ -117,7 +118,7 @@ export default function MainCharts({
     const uniqueStates = Array.from(
         new Set(chartsData.map((item) => item.ReceiverState))
     );
-    const statesOptions = uniqueStates.map((name, index) => ({
+    const statesOptions = uniqueStates.map((name) => ({
         value: name,
         label: name,
     }));
@@ -187,7 +188,7 @@ export default function MainCharts({
 
         // Convert Set to an array for dropdown options
         const updatedReceiverOptions = Array.from(receiversSet).map(
-            (name, index) => ({
+            (name) => ({
                 value: name,
                 label: name,
             })
@@ -421,3 +422,12 @@ export default function MainCharts({
         return <AnimatedLoading />;
     }
 }
+
+MainCharts.propTypes = {
+    accData: PropTypes.array,
+    chartsData: PropTypes.array,
+    sideBarToggle: PropTypes.bool,
+    chartName: PropTypes.string,
+    setChartName: PropTypes.func,
+    userPermission: PropTypes.object,
+};

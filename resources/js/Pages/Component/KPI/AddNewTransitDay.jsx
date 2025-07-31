@@ -1,5 +1,7 @@
 import { getApiRequest, handleSessionExpiration } from "@/CommonFunctions";
 import { AlertToast } from "@/permissions";
+import React from "react";
+import PropTypes from "prop-types";
 import axios from "axios";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -9,7 +11,6 @@ import { ToastContainer } from "react-toastify";
 function AddNewTransitDay({
     url,
     currentUser,
-    setNewTransitDay,
     setNewTransitDays,
     Token,
 }) {
@@ -66,8 +67,7 @@ function AddNewTransitDay({
         { id: 99, label: "None" },
     ];
     const location = useLocation();
-    const [object, setObject] = useState(location?.state?.newTransitDay);
-    const [isLoading, setIsLoading] = useState(false);
+    const object=location?.state?.newTransitDay
     const [selectedRstate, setSelectedRstate] = useState(
         location?.state?.newTransitDay?.ReceiverState || null
     );
@@ -93,7 +93,6 @@ function AddNewTransitDay({
 
     function AddTransit(e) {
         e.preventDefault();
-        setIsLoading(true);
         const inputValues = {
             TransitId: object ? object.TransitId : null,
             CustomerId: selectedCustomer,
@@ -121,12 +120,11 @@ function AddNewTransitDay({
                     Authorization: `Bearer ${Token}`,
                 },
             })
-            .then((res) => {
+            .then(() => {
                 AlertToast("Saved successfully", 1);
                 fetchData();
-                setNewTransitDay(null);
+                setNewTransitDays(null);
                 navigate(-1);
-                setIsLoading(false);
             })
             .catch((err) => {
                 if (err.response && err.response.status === 401) {
@@ -142,14 +140,13 @@ function AddNewTransitDay({
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
-                    setIsLoading(false);
+                    console.error(err);
                 }
             });
     }
 
     function CancelHandle() {
-        setNewTransitDay(null);
+        setNewTransitDays(null);
         navigate(-1);
     }
     return (
@@ -524,5 +521,13 @@ function AddNewTransitDay({
         </div>
     );
 }
+
+AddNewTransitDay.propTypes = {
+    url: PropTypes.string,
+    currentUser: PropTypes.object,
+    setNewTransitDay: PropTypes.func,
+    setNewTransitDays: PropTypes.func,
+    Token: PropTypes.string,
+};
 
 export default AddNewTransitDay;

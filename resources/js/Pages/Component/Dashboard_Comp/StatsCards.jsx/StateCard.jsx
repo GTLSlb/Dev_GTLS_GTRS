@@ -1,5 +1,7 @@
 import { Card, CardHeader, CardBody, Divider } from "@heroui/react";
 import { MapIcon } from "@heroicons/react/24/outline";
+import React from "react";
+import PropTypes from "prop-types";
 function StateCard({ states }) {
     return (
         <Card className="min-w-[190px] max-w-[400px]">
@@ -16,5 +18,9 @@ function StateCard({ states }) {
         </Card>
     );
 }
+
+StateCard.propTypes = {
+    states: PropTypes.arrayOf(PropTypes.string),
+};
 
 export default StateCard;

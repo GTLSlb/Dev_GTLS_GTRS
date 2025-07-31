@@ -5,11 +5,15 @@ import React, {
     useMemo,
     useRef,
 } from "react";
+import PropTypes from "prop-types";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import moment from "moment";
-import { EyeIcon, PencilIcon, PlusIcon } from "@heroicons/react/20/solid";
+import axios from "axios";
+import swal from "sweetalert";
+import { handleSessionExpiration } from "@/CommonFunctions";
+import { EyeIcon } from "@heroicons/react/20/solid";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { Spinner } from "@heroui/react";
 import ComboBox from "@/Components/ComboBox";
@@ -19,7 +23,6 @@ import { exportToExcel } from "@/Components/utils/excelUtils";
 import { formatDateToExcel, formatDate } from "@/CommonFunctions";
 import {
     canAddDeliveryReportComment,
-    canEditDeliveryReportComment,
     canViewMetcashDeliveryReport,
     canViewWoolworthsDeliveryReport,
     canViewOtherDeliveryReport,
@@ -75,18 +78,25 @@ export default function DeliveryReportPage({
 
         return newData;
     };
-    const [receiverZoneOptions, setReceiverZoneOptions] = useState(
-        createNewLabelObjects(deliveryReportData, "ReceiverZone")
+    const receiverZoneOptions = createNewLabelObjects(
+        deliveryReportData,
+        "ReceiverZone"
     );
-    const [senderZoneOptions, setSenderZoneOptions] = useState(
-        createNewLabelObjects(deliveryReportData, "SenderZone")
+    const senderZoneOptions = createNewLabelObjects(
+        deliveryReportData,
+        "SenderZone"
     );
-    const [receiverStateOptions, setReceiverStateOptions] = useState(
-        createNewLabelObjects(deliveryReportData, "ReceiverState")
+
+    const receiverStateOptions = createNewLabelObjects(
+        deliveryReportData,
+        "ReceiverState"
     );
-    const [senderStateOptions, setSenderStateOptions] = useState(
-        createNewLabelObjects(deliveryReportData, "SenderState")
+
+    const senderStateOptions = createNewLabelObjects(
+        deliveryReportData,
+        "SenderState"
     );
+
     const consStateOptions = createNewLabelObjects(
         deliveryReportData,
         "ConsignmentStatus"
@@ -375,15 +385,15 @@ export default function DeliveryReportPage({
                 });
             } else {
                 // Handle other errors
-                console.log(err);
+                console.error(err);
             }
         }
     };
 
     function CustomColumnEditor(props) {
-        const { value, onChange, onComplete, cellProps, onCancel } = props; // Destructure relevant props
+        const { value, cellProps, onCancel } = props; // Destructure relevant props
 
-        const [deliveryCommentId, setDeliveryCommentId] = useState(null);
+        const deliveryCommentId = null;
         const [defaultDeliveryComment, setDefaultDeliveryComment] = useState(
             value && value?.length > 0 ? [value[0]] : []
         );
@@ -442,7 +452,7 @@ export default function DeliveryReportPage({
                                                 },
                                             }
                                         )
-                                        .then((response) => {
+                                        .then(() => {
                                             fetchDeliveryReport(setCellLoading);
                                             fetchDeliveryReportCommentsDataGTRS();
                                             setAddedComment(true);
@@ -475,12 +485,12 @@ export default function DeliveryReportPage({
                                                             }
                                                         })
                                                         .catch((error) => {
-                                                            console.log(error);
+                                                            console.error(error);
                                                         });
                                                 });
                                             } else {
                                                 // Handle other errors
-                                                console.log(error);
+                                                console.error(error);
                                             }
                                         });
                                 }
@@ -501,7 +511,7 @@ export default function DeliveryReportPage({
                         });
                     } else {
                         // Handle other errors
-                        console.log(err);
+                        console.error(err);
                     }
                 });
         }
@@ -521,10 +531,9 @@ export default function DeliveryReportPage({
         );
 
         const [event, setEvent] = useState(null);
-        const [isAddingNewComment, setIsAddingNewComment] = useState(true);
         const [newCommentsArr, setNewCommentsArr] = useState([]);
 
-        const onSelectComment = (e, newValue, value) => {
+        const onSelectComment = (e, newValue) => {
             setEvent(e);
             setNewCommentsArr(newValue);
         };
@@ -557,7 +566,7 @@ export default function DeliveryReportPage({
                             },
                         }
                     )
-                    .then((response) => {
+                    .then(() => {
                         fetchDeliveryReport(setCellLoading);
                         setAddedComment(true);
                         setCellLoading(null);
@@ -581,12 +590,12 @@ export default function DeliveryReportPage({
                                         }
                                     })
                                     .catch((error) => {
-                                        console.log(error);
+                                        console.error(error);
                                     });
                             });
                         } else {
                             // Handle other errors
-                            console.log(error);
+                            console.error(error);
                         }
                     });
             }
@@ -613,7 +622,6 @@ export default function DeliveryReportPage({
                                 : true;
                         if (isAddingNewComment) {
                             // Adding a new comment to the list not to the consignment
-                            setIsAddingNewComment(true);
                             setNewCommentValue(
                                 typeof item?.CommentId === "string"
                                     ? item.CommentId.trim()
@@ -624,7 +632,6 @@ export default function DeliveryReportPage({
                         } else {
                             // Adding a new comment to the consignment
                             setAddedComment(true);
-                            setIsAddingNewComment(false);
                             setNewCommentValue("");
                             handleComplete(item?.CommentId, false);
                         }
@@ -639,12 +646,10 @@ export default function DeliveryReportPage({
                         // Adding a new comment to the list not to the consignment
                         setNewCommentValue(check?.trim());
                         setAddedComment(false);
-                        setIsAddingNewComment(true);
                         AddComment(check, check?.trim());
                     } else {
                         // Adding a new comment to the consignment
                         setAddedComment(true);
-                        setIsAddingNewComment(false);
                         setNewCommentValue("");
                         handleComplete(check, false);
                     }
@@ -680,6 +685,11 @@ export default function DeliveryReportPage({
             )
         );
     }
+    CustomColumnEditor.propTypes = {
+        cellProps: PropTypes.object,
+        value: PropTypes.array,
+        onCancel: PropTypes.func,
+    };
 
     const GetLastValue = ({ comments }) => {
         function getLatestElement(arr) {
@@ -693,6 +703,10 @@ export default function DeliveryReportPage({
         return comments?.length > 0 ? (
             <div>{getLatestElement(comments)?.Comment}</div>
         ) : null;
+    };
+
+    GetLastValue.propTypes = {
+        comments: PropTypes.array,
     };
 
     const columns = [
@@ -728,7 +742,7 @@ export default function DeliveryReportPage({
                     2
                 ),
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -886,7 +900,7 @@ export default function DeliveryReportPage({
                     2
                 ),
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -914,7 +928,7 @@ export default function DeliveryReportPage({
                     2
                 ),
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return value
                     ? moment(value).format("DD-MM-YYYY") == "Invalid date"
                         ? ""
@@ -934,7 +948,7 @@ export default function DeliveryReportPage({
                 wrapMultiple: false,
                 dataSource: podAvlOptions,
             },
-            render: ({ value, data }) => {
+            render: ({ data }) => {
                 return (
                     <div>
                         {data?.POD ? (
@@ -999,7 +1013,7 @@ export default function DeliveryReportPage({
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 200,
-            render: ({ value, data }) => {
+            render: ({ data }) => {
                 return (
                     <div className="flex gap-4 items-center justify-center px-2">
                         <span
@@ -1015,10 +1029,6 @@ export default function DeliveryReportPage({
     ];
 
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const handleAddClose = () => {
-        setIsAddModalOpen(false);
-    };
     const handleViewClose = () => {
         setIsViewModalOpen(false);
         setCommentsData(null);
@@ -1061,13 +1071,14 @@ export default function DeliveryReportPage({
     const gridRef = useRef(null);
     const [selected, setSelected] = useState([]);
     function handleDownloadExcel() {
-        const filteredData = activeComponentIndex == 0
-        ? filteredMetcashData
-        : activeComponentIndex == 1
-        ? filteredWoolworthData
-        : activeComponentIndex == 2
-        ? filteredOtherData
-        : deliveryReportData
+        const filteredData =
+            activeComponentIndex == 0
+                ? filteredMetcashData
+                : activeComponentIndex == 1
+                ? filteredWoolworthData
+                : activeComponentIndex == 2
+                ? filteredOtherData
+                : deliveryReportData;
         const jsonData = handleFilterTable(gridRef, filteredData);
 
         // Dynamically create column mapping from the `columns` array
@@ -1082,12 +1093,19 @@ export default function DeliveryReportPage({
             DeliveryRequiredDateTime: (value) => formatDateToExcel(value),
             DeliveredDateTime: (value) => formatDateToExcel(value),
             Comments: (value) =>
-                value
-                    ?.map(
-                        (item) => `${formatDate(item.AddedAt)}, ${item.Comment}`
-                    )
-                    .join("\n"),
+                Array.isArray(value)
+                    ? 
+                // eslint-disable-next-line react/prop-types
+                    value.map(
+                              (item) =>
+                                  `${formatDate(item.AddedAt)}, ${item.Comment}`
+                          )
+                          .join("\n")
+                    : "",
             POD: (value) => (value ? value : "FALSE"),
+        };
+        customCellHandlers.PropTypes = {
+            value: PropTypes.string,
         };
 
         // Call the `exportToExcel` function
@@ -1112,7 +1130,7 @@ export default function DeliveryReportPage({
         );
     }
     const renderTable = useMemo(() => {
-        return () => (
+        const MemoizedTable = () => (
             <TableStructure
                 rowHeight={50}
                 id={"ReportId"}
@@ -1135,6 +1153,8 @@ export default function DeliveryReportPage({
                 columnsElements={columns}
             />
         );
+
+        return MemoizedTable;
     }, [
         activeComponentIndex,
         filterValue,
@@ -1223,3 +1243,16 @@ export default function DeliveryReportPage({
         </div>
     );
 }
+
+DeliveryReportPage.propTypes = {
+    url: PropTypes.string,
+    Token: PropTypes.string,
+    deliveryReportData: PropTypes.array,
+    currentUser: PropTypes.object,
+    userPermission: PropTypes.object,
+    deliveryCommentsOptions: PropTypes.array,
+    fetchDeliveryReport: PropTypes.func,
+    fetchDeliveryReportCommentsData: PropTypes.func,
+    deliveryReportComments: PropTypes.array,
+    fetchDeliveryReportCommentsDataGTRS: PropTypes.func,
+};

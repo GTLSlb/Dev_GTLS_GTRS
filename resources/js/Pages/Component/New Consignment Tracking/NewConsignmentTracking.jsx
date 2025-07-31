@@ -30,6 +30,7 @@ import {
 } from "@heroui/react";
 import { ChevronLeftIcon, MapPinIcon } from "@heroicons/react/20/solid";
 import { AlertToast } from "@/permissions";
+import axios from "axios";
 
 const googleMapsKey = window.Laravel.googleMapsKey;
 const center = { lat: -25.2744, lng: 133.7751 };
@@ -90,7 +91,8 @@ function NewConsignmentTracking() {
     const mapRef = useRef(null); // Create a ref for the map instance
     const gtrsWebUrl = window.Laravel.gtrsWeb;
     const [consignmentDetails, setConsignmentDetails] = useState(null);
-    const getConsignmentRoute = (e) => {
+
+    const getConsignmentRoute = () => {
         setPolyline(null);
         setEventsMarkers([]);
         setLoading(true);
@@ -117,9 +119,7 @@ function NewConsignmentTracking() {
                             ...event, // Keep existing event data
                             description:
                                 event.description || "No description available", // Add default description if missing
-                            icon: event.severity
-                                ? getMarkerIcon(event.severity)
-                                : "defaultIcon", // Example: change marker icon based on event severity
+                            icon: "defaultIcon", // Example: change marker icon based on event severity
                             // Add or modify other fields as needed
                         };
                     }
@@ -150,7 +150,7 @@ function NewConsignmentTracking() {
             })
             .catch((error) => {
                 setLoading(false);
-                console.log(error);
+                console.error(error);
                 AlertToast(error.response.data.message, 2);
             });
     };

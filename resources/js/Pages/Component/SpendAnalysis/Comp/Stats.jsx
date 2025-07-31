@@ -1,13 +1,13 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, A11y } from "swiper/modules";
+import { Navigation, A11y } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import "../../../../../css/swiper.css";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
+import PropTypes from "prop-types";
 
-function CustomSwiperCard({ title, slides }) {
+function CustomSwiperCard({ slides }) {
     const prevRef = useRef(null);
     const nextRef = useRef(null);
 
@@ -99,3 +99,7 @@ export default function Stats() {
         </div>
     );
 }
+
+CustomSwiperCard.propTypes = {
+    slides: PropTypes.arrayOf(PropTypes.array),
+};

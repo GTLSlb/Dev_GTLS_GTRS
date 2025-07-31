@@ -9,24 +9,20 @@ import {
     AccordionHeader,
     AccordionItem,
 } from "react-headless-accordion";
-import { useEffect, useContext, Fragment, useState} from "react";
+import React, { useEffect, useContext, Fragment, useState} from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import tiger from "../assets/pictures/tiger.png";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import SupportModal from "@/Pages/Component/modals/SupportModal";
-import { PublicClientApplication } from "@azure/msal-browser";
-import { clearMSALLocalStorage } from "@/CommonFunctions";
-import Cookies from "js-cookie";
 import { CustomContext } from "@/CommonContext";
+import PropTypes from "prop-types";
+import axios from "axios";
 
 export default function MainSidebar({
     setMobileMenuOpen,
     mobileMenuOpen,
 }) {
         const {
-            currentUser,
-            setCurrentUser,
-            setToken,
             user,
             allowedApplications,
         } = useContext(CustomContext);
@@ -50,53 +46,7 @@ export default function MainSidebar({
         setIsModalOpen(isModalCurrentlyOpen);
         setMobileMenuOpen(false);
     };
-    const msalConfig = {
-        auth: {
-            clientId: "05f70999-6ca7-4ee8-ac70-f2d136c50288",
-            authority:
-                "https://login.microsoftonline.com/647bf8f1-fc82-468e-b769-65fd9dacd442",
-            redirectUri: window.Laravel.azureCallback,
-        },
-        cache: {
-            cacheLocation: "localStorage",
-            storeAuthStateInCookie: true, // Set this to true if dealing with IE11 or issues with sessionStorage
-        },
-    };
-    const pca = new PublicClientApplication(msalConfig);
-    const handleLogout = async () => {
-        const credentials = {
-            URL: window.Laravel.gtamUrl,
-            CurrentUser: currentUser,
-            SessionDomain: window.Laravel.appDomain,
-        };
 
-        await pca.initialize();
-
-        axios
-            .post("/composerLogout", credentials)
-            .then((response) => {
-                if (response.status === 200 && response.data.status === 200) {
-
-                    const isMicrosoftLogin = Cookies.get(
-                        "msal.isMicrosoftLogin"
-                    );
-                    clearMSALLocalStorage();
-                    Cookies.remove('access_token');
-
-                    if (isMicrosoftLogin == "true") {
-                        window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=${window.Laravel.appUrl}/login`;
-                    } else {
-                        window.location.href = `${window.Laravel.appUrl}/login`;
-                    }
-                    localStorage.removeItem("current");
-                    setToken(null);
-                    setCurrentUser(null);
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    };
     const currentAppId = window.Laravel.appId;
     function moveToHead(array, id) {
         // Find the index of the object with the matching AppId
@@ -131,7 +81,7 @@ export default function MainSidebar({
                 [app.AppId]: blobUrl,
             }));
         } catch (error) {
-            console.log(error);
+            console.error(error);
             setAppsImgs((prev) => ({
                 ...prev,
                 [app.AppId]: "/icons/NoPhoto.jpg",
@@ -171,7 +121,7 @@ export default function MainSidebar({
                                         key={item.AppId}
                                         target={
                                             item.id === 0 ? undefined : "_blank"
-                                        }
+                                        } rel="noreferrer"
                                     >
                                         {" "}
                                         <button
@@ -216,7 +166,7 @@ export default function MainSidebar({
                             <a
                                 href="https://support.gtls.com.au/help/2703577665"
                                 target="_blank"
-                                className="flex justify-center"
+                                className="flex justify-center" rel="noreferrer"
                             >
                                 {" "}
                                 <button
@@ -330,16 +280,16 @@ export default function MainSidebar({
                                                 >
                                                     <a
                                                         href={item.AppURL}
-                                                        onClick={() =>
-                                                            handleClick(
-                                                                item.AppId
-                                                            )
-                                                        }
+                                                        // onClick={() =>
+                                                        //     handleClick(
+                                                        //         item.AppId
+                                                        //     )
+                                                        // }
                                                     >
                                                         <AccordionItem
                                                             id={item.name}
                                                         >
-                                                            {({ open }) => (
+                                                            {() => (
                                                                 <>
                                                                     <AccordionHeader
                                                                         className={classNames(
@@ -381,12 +331,13 @@ export default function MainSidebar({
                                                                                     option
                                                                                 ) => (
                                                                                     <button
-                                                                                        onClick={() =>
-                                                                                            handleClickSide(
-                                                                                                item.id,
-                                                                                                option.id
-                                                                                            )
-                                                                                        }
+                                                                                        key={item}
+                                                                                        // onClick={() =>
+                                                                                        //     handleClickSide(
+                                                                                        //         item.id,
+                                                                                        //         option.id
+                                                                                        //     )
+                                                                                        // }
                                                                                         className="p-5 font-light text-left text-white"
                                                                                     >
                                                                                         {
@@ -412,7 +363,7 @@ export default function MainSidebar({
                                     <a
                                         href="https://support.gtls.com.au/help/2703577665"
                                         target="_blank"
-                                        className="flex"
+                                        className="flex" rel="noreferrer"
                                     >
                                         {" "}
                                         <button
@@ -457,3 +408,10 @@ export default function MainSidebar({
         </div>
     );
 }
+
+MainSidebar.propTypes = {
+    allowedApplications: PropTypes.array,
+    setMobileMenuOpen: PropTypes.func,
+    mobileMenuOpen: PropTypes.bool,
+    user: PropTypes.object,
+};

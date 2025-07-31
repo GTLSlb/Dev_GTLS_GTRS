@@ -1,25 +1,26 @@
+import moment from "moment/moment";
+
 export const handleFilterTable = (gridRef, filteredData) => {
     // Get the selected columns or use all columns if none are selected
     let selectedColumns = Array.from(
         document.querySelectorAll('input[name="column"]:checked')
     ).map((checkbox) => checkbox.value);
 
-    let allHeaderColumns = gridRef != null &&gridRef?.current?.visibleColumns.map((column) => ({
-        name: column.name,
-        value: column.computedFilterValue?.value,
-        type: column.computedFilterValue?.type,
-        operator: column.computedFilterValue?.operator,
-    }));
-    let selectedColVal = allHeaderColumns?.filter(
-        (col) => col.name !== "edit"
-    );
+    let allHeaderColumns =
+        gridRef != null &&
+        gridRef?.current?.visibleColumns.map((column) => ({
+            name: column.name,
+            value: column.computedFilterValue?.value,
+            type: column.computedFilterValue?.type,
+            operator: column.computedFilterValue?.operator,
+        }));
+    let selectedColVal = allHeaderColumns?.filter((col) => col.name !== "edit");
     const filterValue = [];
     filteredData?.map((val) => {
         let isMatch = true;
         for (const col of selectedColVal) {
-            const { name, value, type, operator } = col;
+            const { value, type, operator } = col;
             const cellValue = value;
-            const typeValue = type;
             let conditionMet = false;
             // Skip the filter condition if no filter is set (cellValue is null or empty)
             if (!cellValue || cellValue.length === 0) {
@@ -112,7 +113,7 @@ export const handleFilterTable = (gridRef, filteredData) => {
                             numericValue != "" &&
                             numericValue <= numericCellValue;
                         break;
-                    case "inrange":
+                    case "inrange": {
                         const rangeValues = value.split(",");
                         const minRangeValue = parseFloat(rangeValues[0]);
                         const maxRangeValue = parseFloat(rangeValues[1]);
@@ -121,7 +122,8 @@ export const handleFilterTable = (gridRef, filteredData) => {
                             numericCellValue >= minRangeValue &&
                             numericCellValue <= maxRangeValue;
                         break;
-                    case "notinrange":
+                    }
+                    case "notinrange": {
                         const rangeValuesNotBetween = value.split(",");
                         const minRangeValueNotBetween = parseFloat(
                             rangeValuesNotBetween[0]
@@ -134,6 +136,7 @@ export const handleFilterTable = (gridRef, filteredData) => {
                             (numericCellValue < minRangeValueNotBetween ||
                                 numericCellValue > maxRangeValueNotBetween);
                         break;
+                    }
                     // ... (add other number type conditions here if necessary)
                 }
             } else if (type === "boolean") {
@@ -170,7 +173,7 @@ export const handleFilterTable = (gridRef, filteredData) => {
                             cellValue?.length > 0 &&
                             cellValueLowerCase !== valLowerCase;
                         break;
-                    case "inlist":
+                    case "inlist": {
                         const listValues = Array.isArray(value)
                             ? value.map((v) =>
                                   typeof v === "string"
@@ -188,7 +191,8 @@ export const handleFilterTable = (gridRef, filteredData) => {
                             listValues.includes(valLowerCase);
 
                         break;
-                    case "notinlist":
+                    }
+                    case "notinlist": {
                         const listValuesNotIn = Array.isArray(value)
                             ? value.map((v) => v.toLowerCase())
                             : [value?.toLowerCase()];
@@ -196,6 +200,7 @@ export const handleFilterTable = (gridRef, filteredData) => {
                             cellValue?.length > 0 &&
                             !listValuesNotIn.includes(valLowerCase);
                         break;
+                    }
                     // ... (add other select type conditions here if necessary)
                 }
             } else if (type === "date") {
@@ -214,7 +219,7 @@ export const handleFilterTable = (gridRef, filteredData) => {
                     : null;
 
                 switch (operator) {
-                    case "after":
+                    case "after": {
                         // Parse the cellValue date with the format you know it might have
                         const afterd = moment(cellValue, "DD-MM-YYYY", true);
 
@@ -228,7 +233,8 @@ export const handleFilterTable = (gridRef, filteredData) => {
                             afterdateToCompare.isAfter(afterd);
 
                         break;
-                    case "afterOrOn":
+                    }
+                    case "afterOrOn": {
                         const afterOrOnd = moment(
                             cellValue,
                             "DD-MM-YYYY",
@@ -241,8 +247,9 @@ export const handleFilterTable = (gridRef, filteredData) => {
                             afterOrOnDateToCompare.isValid() &&
                             afterOrOnDateToCompare.isSameOrAfter(afterOrOnd);
                         break;
+                    }
 
-                    case "before":
+                    case "before": {
                         const befored = moment(cellValue, "DD-MM-YYYY", true);
                         const beforeDateToCompare = moment(dateValue);
 
@@ -252,8 +259,9 @@ export const handleFilterTable = (gridRef, filteredData) => {
                             beforeDateToCompare.isBefore(befored);
 
                         break;
+                    }
 
-                    case "beforeOrOn":
+                    case "beforeOrOn": {
                         const beforeOrOnd = moment(
                             cellValue,
                             "DD-MM-YYYY",
@@ -267,7 +275,8 @@ export const handleFilterTable = (gridRef, filteredData) => {
                             beforeOrOnDateToCompare.isSameOrBefore(beforeOrOnd);
 
                         break;
-                    case "eq":
+                    }
+                    case "eq": {
                         // Parse the cellValue date with the format you know it might have
                         const d = moment(
                             cellValue,
@@ -290,7 +299,8 @@ export const handleFilterTable = (gridRef, filteredData) => {
                             d.isSame(dateToCompare, "day");
 
                         break;
-                    case "neq":
+                    }
+                    case "neq": {
                         const neqd = moment(cellValue, "DD-MM-YYYY", true);
                         const neqDateToCompare = moment(dateValue);
 
@@ -300,6 +310,7 @@ export const handleFilterTable = (gridRef, filteredData) => {
                             !neqd.isSame(neqDateToCompare, "day");
 
                         break;
+                    }
 
                     case "inrange":
                         conditionMet =
