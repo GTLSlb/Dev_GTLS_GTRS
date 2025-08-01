@@ -6,7 +6,7 @@ import {
     Line,
     Tooltip,
     XAxis,
-    YAxis
+    YAxis,
 } from "recharts";
 import { ChartWrapper } from "./Card/ChartWrapper";
 import { useState, useEffect } from "react"; // Import useEffect for initial state
@@ -16,7 +16,6 @@ import { DurationFilter } from "./Card/DurationFilter";
 import { formatNumberWithCommas } from "@/CommonFunctions";
 
 function TopReceiversCharts() {
-
     const {
         getChartData,
         selectedPeriodKey,
@@ -28,20 +27,24 @@ function TopReceiversCharts() {
         availableYears,
         selectedPeriodValue,
         selectedQuarterKey,
-        setSelectedQuarterKey
+        setSelectedQuarterKey,
     } = useDurationData(dummySpendData);
 
     const Receiverdata = getChartData;
 
     const [displayAllReceivers, setDisplayAllReceivers] = useState(false);
-    const sortedReceiverData = [...Receiverdata].sort((a, b) => b.cost - a.cost);
-    const chartData = displayAllReceivers ? sortedReceiverData : sortedReceiverData.slice(0, 5);
+    const sortedReceiverData = [...Receiverdata].sort(
+        (a, b) => b.cost - a.cost
+    );
+    const chartData = displayAllReceivers
+        ? sortedReceiverData
+        : sortedReceiverData.slice(0, 5);
     const handleChartModalOpen = () => {
         setDisplayAllReceivers(true);
     };
     const handleChartModalClose = () => {
         setDisplayAllReceivers(false);
-    }
+    };
 
     return (
         <ChartWrapper
@@ -68,13 +71,13 @@ function TopReceiversCharts() {
             children={
                 <ComposedChart
                     data={chartData} // Use the conditionally sliced data
-                    width={displayAllReceivers ? 900 : 400} // Adjust width based on view
+                    width={displayAllReceivers ? 700 : 400} // Adjust width based on view
                     height={displayAllReceivers ? 600 : 300} // Adjust height based on view
                     interval={0}
                     margin={{
                         top: 0,
-                        right: 5,
-                        bottom: 30,
+                        right: 20,
+                        bottom: displayAllReceivers ? 30 : 10,
                         left: 0,
                     }}
                     syncId="chart-sync-id"
@@ -83,8 +86,8 @@ function TopReceiversCharts() {
                     <XAxis
                         dataKey="receiver"
                         tick={{ fontSize: displayAllReceivers ? 10 : 12 }}
-                        angle={-45}
-                        textAnchor="end"
+                        angle={displayAllReceivers ? -45 : 0}
+                        textAnchor={displayAllReceivers ? "end" : "middle"}
                     />
                     <YAxis
                         yAxisId="left"
@@ -102,11 +105,13 @@ function TopReceiversCharts() {
                         domain={["auto", "auto"]}
                         syncId="chart-sync-id"
                     />
-                    <Tooltip contentStyle={{
-                        fontSize: 12,
-                        backgroundColor: "white",
-                        borderRadius: 8,
-                    }} />
+                    <Tooltip
+                        contentStyle={{
+                            fontSize: 12,
+                            backgroundColor: "white",
+                            borderRadius: 8,
+                        }}
+                    />
                     <Legend verticalAlign="top" height={50} />
                     <Bar
                         dataKey="cost"

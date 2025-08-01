@@ -1,16 +1,17 @@
 import "./bootstrap";
-import React from "react";
 import "../css/app.css";
+import React from "react";
 import "../css/table.css";
 import "../css/sideBar.css";
 import "../css/chartsPage.css";
-import { createRoot } from "react-dom/client";
 import ReactGA from "react-ga";
-import { createInertiaApp } from "@inertiajs/react";
-import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
+import 'leaflet/dist/leaflet.css';
+import ContextProvider from "./CommonContext";
+import { createRoot } from "react-dom/client";
 import { HeroUIProvider } from "@heroui/react";
 import { BrowserRouter } from "react-router-dom";
-import ContextProvider from "./CommonContext";
+import { createInertiaApp } from "@inertiajs/react";
+import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 ReactGA.initialize("G-0KMJRECLV1");
 
 const appName =

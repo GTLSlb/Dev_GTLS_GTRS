@@ -66,6 +66,8 @@
         "handsontable": "^15.1.0",
         "http-proxy-middleware": "^2.0.6",
         "js-cookie": "^3.0.5",
+        "leaflet": "^1.9.4",
+        "leaflet.heat": "^0.2.0",
         "lodash.debounce": "^4.0.8",
         "lord-icon-element": "^4.1.1",
         "lottie-web": "^5.11.0",

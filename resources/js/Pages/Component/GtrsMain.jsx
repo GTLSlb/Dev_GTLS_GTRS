@@ -27,7 +27,6 @@ import {
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import { Button } from "@heroui/react";
 import { useEffect, useState } from "react";
-import { useEffect, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import ConsDetails from "../ConsDetails";
 import NotFoundRedirect from "../NotFoundRedirect";

@@ -1,7 +1,6 @@
-const australianStates = ["nsw", "qld", "vic", "sa"];
+const australianStates = ["nsw", "qld", "vic", "sa", "wa", "tas", "nt"]; // Added more states for better representation
 const demurrageTypes = ["Rigid Demurrage", "Semi Demurrage", "BD Demurrage", "Demurrage"];
 const serviceTypes = ["Express", "Normal"];
-
 
 const additionalCostTypes = [
   "Demurrage",
@@ -10,6 +9,19 @@ const additionalCostTypes = [
   "Split Fee",
   "Incorrect Data",
 ];
+
+// 1. Define Australian State Coordinates
+// These are approximate central points for each state/territory.
+const australiaStateCoordinates = {
+  nsw: { lat: -31.8152, lng: 147.1656 }, // New South Wales (approx. centre)
+  qld: { lat: -20.9176, lng: 142.7028 }, // Queensland (approx. centre)
+  vic: { lat: -36.5986, lng: 144.6780 }, // Victoria (approx. centre)
+  sa: { lat: -30.0000, lng: 135.0000 }, // South Australia (approx. centre)
+  wa: { lat: -25.0000, lng: 120.0000 }, // Western Australia (approx. centre)
+  tas: { lat: -41.6667, lng: 146.7500 }, // Tasmania (approx. centre)
+  nt: { lat: -19.4914, lng: 132.5510 }, // Northern Territory (approx. centre)
+  act: { lat: -35.2809, lng: 149.1300 }, // Australian Capital Territory (Canberra)
+};
 
 const getRandomState = () => {
   const randomIndex = Math.floor(Math.random() * australianStates.length);
@@ -26,17 +38,32 @@ const getRandomService = () => {
   return serviceTypes[randomIndex];
 };
 
-
 const generateAdditionalCosts = () => {
   const costs = [];
   const numCosts = Math.floor(Math.random() * (additionalCostTypes.length + 1));
-  const shuffledTypes = [...additionalCostTypes].sort(() => 0.5 - Math.random());     // Shuffle the types to pick a random subset
+  const shuffledTypes = [...additionalCostTypes].sort(() => 0.5 - Math.random());
   for (let i = 0; i < numCosts; i++) {
     const type = shuffledTypes[i];
     const cost = Math.floor(Math.random() * 401) + 100; // random number from 100 to 400
     costs.push({ name: type, cost: cost });
   }
   return costs;
+};
+
+// New helper function to get coordinates for a given state
+const getReceiverLocation = (state) => {
+  const coords = australiaStateCoordinates[state.toLowerCase()]; // Ensure case-insensitivity
+  if (coords) {
+    // Add some random "jitter" to simulate different locations within a state
+    const jitterLat = (Math.random() - 0.5) * 2; // +/- 1 degree
+    const jitterLng = (Math.random() - 0.5) * 2; // +/- 1 degree
+    return {
+      receiverLat: coords.lat + jitterLat,
+      receiverLng: coords.lng + jitterLng,
+    };
+  }
+  // Fallback for states not defined (shouldn't happen if australianStates matches keys)
+  return { receiverLat: null, receiverLng: null };
 };
 
 
@@ -100,15 +127,23 @@ export const dummySpendData = [
     { date: "2025-06-08", cost: 11200, additional: 4900, fuelLevy: 125, GST: 4.4 },
     { date: "2025-06-15", cost: 9100, additional: 3300, fuelLevy: 90, GST: 3.5 },
     { date: "2025-06-22", cost: 12800, additional: 5600, fuelLevy: 115, GST: 4.8 },
-  ].map((item, i) => ({
-    ...item,
-    state: getRandomState(),
-    receiver: `Receiver ${(i % 2) + 1}`,
-    demurrageType: getRandomDemurrage(),
-    demurrageCost: Math.floor(Math.random() * 5000),
-    serviceType: getRandomService(),
-    weight: Math.floor(Math.random() * 100),
-    palletSpace: Math.floor(Math.random() * 50),
-    additionalCost: generateAdditionalCosts(),
-  }))
+  ].map((item, i) => {
+    const state = getRandomState(); // Get the state first
+    const location = getReceiverLocation(state); // Then get coordinates based on the state
+
+    return {
+      ...item,
+      state: state,
+      receiver: `Receiver ${(i % 2) + 1}`,
+      demurrageType: getRandomDemurrage(),
+      demurrageCost: Math.floor(Math.random() * 5000),
+      serviceType: getRandomService(),
+      weight: Math.floor(Math.random() * 100),
+      palletSpace: Math.floor(Math.random() * 50),
+      additionalCost: generateAdditionalCosts(),
+      // Add the receiver location
+      receiverLat: location.receiverLat,
+      receiverLng: location.receiverLng,
+    };
+  })
 ];
