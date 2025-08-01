@@ -5,8 +5,8 @@ import HeatSidebar from "./HeatSidebar";
 
 function HeatMapContainer() {
     return (
-        <div className="mt-10">
-            <h2 className="mb-5">Australia Object Density Heat Map</h2>
+        <div className="">
+            <h2 className="py-3">Australia Object Density Heat Map</h2>
             <div className="w-full flex gap-4 ">
                 <div className="w-3/4">
                     <HeatMap />
