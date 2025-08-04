@@ -1,5 +1,9 @@
 import { Select, SelectItem } from "@heroui/react";
-import { months, periodOptions, quarters } from "../../assets/js/useDurationData";
+import {
+    months,
+    periodOptions,
+    quarters,
+} from "../../assets/js/useDurationData";
 
 export function DurationFilter({
     selectedPeriodKey,
@@ -14,15 +18,16 @@ export function DurationFilter({
     setSelectedQuarterKey,
 }) {
     return (
-        <div className="flex flex-col gap-4 mb-2 items-center">
-            <div className="w-48">
+        <div className="flex flex-col gap-4 mb-2 items-start">
+            <div className="min-w-44 w-full">
                 <Select
                     disallowEmptySelection
                     placeholder="Select Period"
                     size="sm"
                     selectedKeys={selectedPeriodKey}
                     onSelectionChange={setSelectedPeriodKey}
-                    className="max-w-xs"
+                    className="w-full"
+                    aria-label="Select time period for filtering data"
                 >
                     {periodOptions.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
@@ -31,14 +36,15 @@ export function DurationFilter({
                     ))}
                 </Select>
             </div>
-            <div className="w-48">
+            <div className="min-w-44 w-full">
                 <Select
                     disallowEmptySelection
                     placeholder="Select Year"
                     size="sm"
                     selectedKeys={selectedYearKey}
                     onSelectionChange={setSelectedYearKey}
-                    className="max-w-xs"
+                    className="w-full"
+                    aria-label="Select year for filtering data"
                 >
                     {availableYears.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
@@ -49,18 +55,21 @@ export function DurationFilter({
             </div>
             {/* Conditionally render Quarter Select */}
             {selectedPeriodValue === "quarterly" && (
-                <div className="w-48">
+                <div className="min-w-44 w-full">
                     <Select
-                        placeholder="Select Quarter (Optional)" // Make it optional
+                        placeholder="Select Quarter (Optional)"
                         size="sm"
                         selectedKeys={selectedQuarterKey}
                         onSelectionChange={setSelectedQuarterKey}
-                        className="max-w-xs"
-                        // allowEmptySelection to enable the "Select Quarter" placeholder
+                        className="w-full"
                         allowEmptySelection
+                        aria-label="Select quarter for filtering data (optional)"
                     >
                         {quarters.map((option) => (
-                            <SelectItem key={String(option.value)} value={String(option.value)}>
+                            <SelectItem
+                                key={String(option.value)}
+                                value={String(option.value)}
+                            >
                                 {option.label}
                             </SelectItem>
                         ))}
@@ -69,17 +78,21 @@ export function DurationFilter({
             )}
 
             {selectedPeriodValue === "monthly" && (
-                <div className="w-48">
+                <div className="min-w-44 w-full">
                     <Select
                         disallowEmptySelection
                         placeholder="Select Month"
                         size="sm"
                         selectedKeys={selectedMonthKey}
                         onSelectionChange={setSelectedMonthKey}
-                        className="max-w-xs"
+                        className="w-full"
+                        aria-label="Select month for filtering data"
                     >
                         {months.map((option) => (
-                            <SelectItem key={String(option.value)} value={String(option.value)}>
+                            <SelectItem
+                                key={String(option.value)}
+                                value={String(option.value)}
+                            >
                                 {option.label}
                             </SelectItem>
                         ))}
@@ -87,5 +100,5 @@ export function DurationFilter({
                 </div>
             )}
         </div>
-    )
+    );
 }

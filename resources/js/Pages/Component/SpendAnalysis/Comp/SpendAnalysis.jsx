@@ -47,10 +47,6 @@ function SpendAnalysis() {
             </div>
             <div className="flex gap-2 mt-2 h-[80vh]">
                 <div className="w-full h-full grid grid-cols-1 lg:grid-cols-3 grid-rows-2 gap-2">
-                    {/* <TotalSpendChart />
-                    <CostByStateChart />
-                    <TopReceiversCharts />
-                    <DemurrageCost /> */}
                     <TotalSpendChart />
                     <AddCostTree />
                     <ServiceTypeChart />

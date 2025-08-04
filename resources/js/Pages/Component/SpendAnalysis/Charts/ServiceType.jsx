@@ -1,22 +1,45 @@
-import { PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
-import { ChartWrapper } from './Card/ChartWrapper';
-import { DurationFilter } from './Card/DurationFilter';
-import { dummySpendData } from '../assets/js/dataHandler';
-import { useDurationData } from '../assets/js/useDurationData';
-import { useMemo } from 'react'; // Don't forget to import useMemo
+import { PieChart, Pie, Cell, Legend, Tooltip } from "recharts";
+import { ChartWrapper } from "./Card/ChartWrapper";
+import { DurationFilter } from "./Card/DurationFilter";
+import { dummySpendData } from "../assets/js/dataHandler";
+import { useDurationData } from "../assets/js/useDurationData";
+import { useMemo, useState } from "react";
+import { Divider, Select, SelectItem } from "@heroui/react";
 
 export function ServiceTypeChart() {
-    // You can expand these colors if you expect more service types
-    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658', '#d0ed57'];
+    const COLORS = [
+        "#0088FE",
+        "#00C49F",
+        "#FFBB28",
+        "#FF8042",
+        "#8884d8",
+        "#82ca9d",
+        "#ffc658",
+        "#d0ed57",
+    ];
 
     const RADIAN = Math.PI / 180;
-    const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index, name }) => {
+    const renderCustomizedLabel = ({
+        cx,
+        cy,
+        midAngle,
+        innerRadius,
+        outerRadius,
+        percent,
+    }) => {
         const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
         const x = cx + radius * Math.cos(-midAngle * RADIAN);
         const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
         return (
-            <text x={x} y={y} fill="white" textAnchor={x > cx ? 'middle' : 'middle'} dominantBaseline="central" className='text-sm'>
+            <text
+                x={x}
+                y={y}
+                fill="white"
+                textAnchor={x > cx ? "middle" : "middle"}
+                dominantBaseline="central"
+                className="text-sm"
+            >
                 {`${(percent * 100).toFixed(2)}%`}
             </text>
         );
@@ -33,45 +56,86 @@ export function ServiceTypeChart() {
         availableYears,
         selectedPeriodValue,
         selectedQuarterKey,
-        setSelectedQuarterKey
+        setSelectedQuarterKey,
     } = useDurationData(dummySpendData);
 
-    // Use useMemo to prepare the data for the PieChart
+    const [selectedServiceType, setSelectedServiceType] = useState(new Set());
+
+    const availableServiceTypes = useMemo(() => {
+        const serviceTypes = new Set();
+        getChartData.forEach((periodData) => {
+            if (
+                periodData.serviceTypeOccurrences &&
+                Array.isArray(periodData.serviceTypeOccurrences)
+            ) {
+                periodData.serviceTypeOccurrences.forEach((serviceTypeItem) => {
+                    serviceTypes.add(serviceTypeItem.type);
+                });
+            }
+        });
+        return Array.from(serviceTypes);
+    }, [getChartData]);
+
     const pieChartData = useMemo(() => {
         const aggregatedServiceTypes = {};
-        let totalOverallItems = 0; // Keep track of the total number of items across all aggregated periods
+        let totalOverallItems = 0;
 
-        getChartData.forEach(periodData => {
-            if (periodData.serviceTypeOccurrences && Array.isArray(periodData.serviceTypeOccurrences)) {
-                // Add the totalItems from this specific period to the overall total
-                totalOverallItems += periodData.totalItems || 0;
-
-                periodData.serviceTypeOccurrences.forEach(serviceTypeItem => {
+        getChartData.forEach((periodData) => {
+            if (
+                periodData.serviceTypeOccurrences &&
+                Array.isArray(periodData.serviceTypeOccurrences)
+            ) {
+                periodData.serviceTypeOccurrences.forEach((serviceTypeItem) => {
                     const { type, count } = serviceTypeItem;
-                    if (aggregatedServiceTypes[type]) {
-                        aggregatedServiceTypes[type] += count;
-                    } else {
-                        aggregatedServiceTypes[type] = count;
+
+                    // Fix 2: Proper filtering logic for Set
+                    // If nothing selected (size 0) or if the type is in the selected set
+                    if (
+                        selectedServiceType.size === 0 ||
+                        selectedServiceType.has(type)
+                    ) {
+                        totalOverallItems += count;
+                        if (aggregatedServiceTypes[type]) {
+                            aggregatedServiceTypes[type] += count;
+                        } else {
+                            aggregatedServiceTypes[type] = count;
+                        }
                     }
                 });
             }
         });
 
-        // Transform the aggregated counts into { name, value } pairs for the PieChart
-        // And recalculate percentages based on the overall total items
-        return Object.entries(aggregatedServiceTypes).map(([type, count]) => ({
-            name: type,
-            value: count, // The value for the pie chart is the count of occurrences
-            percentage: totalOverallItems > 0 ? (count / totalOverallItems) * 100 : 0
-        }));
-    }, [getChartData]);
+        const filteredData = Object.entries(aggregatedServiceTypes).filter(
+            ([type, count]) => count > 0
+        );
 
-    // Check if there is any service type data to display
-    const hasServiceTypeData = pieChartData.length > 0 && pieChartData.some(item => item.value > 0);
+        return filteredData.map(([type, count]) => ({
+            name: type,
+            value: count,
+            percentage:
+                totalOverallItems > 0 ? (count / totalOverallItems) * 100 : 0,
+        }));
+    }, [getChartData, selectedServiceType]);
+
+    const hasServiceTypeData =
+        pieChartData.length > 0 && pieChartData.some((item) => item.value > 0);
+
+    const getColors = (data) => {
+        if (data.length === 1) {
+            const serviceTypeIndex = availableServiceTypes.findIndex(
+                (type) => type === data[0].name
+            );
+            return [COLORS[serviceTypeIndex % COLORS.length]];
+        }
+        return data.map((entry, index) => COLORS[index % COLORS.length]);
+    };
+
+    const pieChartColors = getColors(pieChartData);
 
     return (
         <ChartWrapper
             title={"Service Type Distribution"}
+            modalSize="xl"
             filterChildren={
                 <>
                     <DurationFilter
@@ -86,25 +150,43 @@ export function ServiceTypeChart() {
                         selectedQuarterKey={selectedQuarterKey}
                         setSelectedQuarterKey={setSelectedQuarterKey}
                     />
+                    <div className="w-full">
+                        <Divider />
+                        <Select
+                            placeholder="Select Service Types"
+                            size="sm"
+                            selectionMode="multiple"
+                            selectedKeys={selectedServiceType}
+                            onSelectionChange={setSelectedServiceType}
+                            className="mt-2"
+                        >
+                            {availableServiceTypes.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                    {option}
+                                </SelectItem>
+                            ))}
+                        </Select>
+                    </div>
                 </>
             }
             children={
                 hasServiceTypeData ? (
-                    <PieChart
-                        width={400}
-                        height={400}>
+                    <PieChart width={400} height={300}>
                         <Pie
-                            data={pieChartData} // Use the processed data
+                            data={pieChartData}
                             cx="50%"
                             cy="50%"
                             labelLine={false}
                             label={renderCustomizedLabel}
-                            outerRadius={80}
+                            outerRadius={100}
                             fill="#8884d8"
-                            dataKey="value" // This should still be 'value' as we formatted it that way
+                            dataKey="value"
                         >
                             {pieChartData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                <Cell
+                                    key={`cell-${index}`}
+                                    fill={pieChartColors[index]}
+                                />
                             ))}
                         </Pie>
                         <Tooltip
@@ -113,13 +195,16 @@ export function ServiceTypeChart() {
                                 backgroundColor: "white",
                                 borderRadius: 8,
                             }}
-                            formatter={(value, name, props) => [`${props.payload.percentage.toFixed(2)}%`, name]}
+                            formatter={(value, name, props) => [
+                                `${props.payload.percentage.toFixed(2)}%`,
+                                name,
+                            ]}
                         />
                         <Legend
-                            layout='horizontal'
+                            layout="horizontal"
                             verticalAlign="bottom"
                             align="center"
-                            wrapperStyle={{ paddingTop: '20px' }}
+                            wrapperStyle={{ paddingTop: "20px" }}
                         />
                     </PieChart>
                 ) : (
@@ -127,6 +212,7 @@ export function ServiceTypeChart() {
                         No Service Type Data Available for the Selected Period.
                     </div>
                 )
-            } />
+            }
+        />
     );
 }

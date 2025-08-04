@@ -4,14 +4,21 @@ import {
     CartesianGrid,
     ComposedChart,
     Legend,
-    Line, Tooltip,
+    Line,
+    Tooltip,
     XAxis,
-    YAxis
+    YAxis,
 } from "recharts";
 import { DurationFilter } from "./Card/DurationFilter";
 import { dummySpendData } from "../assets/js/dataHandler";
 import { useDurationData } from "../assets/js/useDurationData";
+import { Divider, Select, SelectItem } from "@heroui/react";
+import { useState } from "react";
 export function AmtVsType() {
+    const cosTypeOptions = [
+        { label: "Weight", value: "weight" },
+        { label: "Pallet Space", value: "pallet-space" },
+    ];
 
     const {
         getChartData,
@@ -24,9 +31,12 @@ export function AmtVsType() {
         availableYears,
         selectedPeriodValue,
         selectedQuarterKey,
-        setSelectedQuarterKey
+        setSelectedQuarterKey,
     } = useDurationData(dummySpendData);
 
+    const [selectedCosType, setSelectedCosType] = useState(
+        new Set(cosTypeOptions.map((option) => option.value))
+    );
     return (
         <ChartWrapper
             title={"Amount vs Type"}
@@ -44,6 +54,27 @@ export function AmtVsType() {
                         selectedQuarterKey={selectedQuarterKey}
                         setSelectedQuarterKey={setSelectedQuarterKey}
                     />
+                    <div className="w-full">
+                        <Divider />
+                        <Select
+                            placeholder="Select Bar Types"
+                            disallowEmptySelection
+                            size="sm"
+                            selectionMode="multiple" // Key property for multi-select
+                            selectedKeys={selectedCosType}
+                            onSelectionChange={setSelectedCosType}
+                            className="mt-2"
+                        >
+                            {cosTypeOptions.map((option) => (
+                                <SelectItem
+                                    key={option.value}
+                                    value={option.value}
+                                >
+                                    {option.label}
+                                </SelectItem>
+                            ))}
+                        </Select>
+                    </div>
                 </>
             }
             children={
@@ -75,11 +106,13 @@ export function AmtVsType() {
                         domain={["auto", "auto"]}
                         syncId="chart-sync-id"
                     />
-                    <Tooltip contentStyle={{
-                        fontSize: 12,
-                        backgroundColor: "white",
-                        borderRadius: 8,
-                    }} />
+                    <Tooltip
+                        contentStyle={{
+                            fontSize: 12,
+                            backgroundColor: "white",
+                            borderRadius: 8,
+                        }}
+                    />
                     <Legend verticalAlign="top" height={50} />
                     <Bar
                         dataKey="cost"
@@ -88,22 +121,28 @@ export function AmtVsType() {
                         yAxisId="left"
                         intercept={0}
                     />
-                    <Line
-                        type="monotone"
-                        name="Weight "
-                        dataKey="weight"
-                        stroke="#8DC77B"
-                        yAxisId="right"
-                        intercept={0}
-                    />
-                    <Line
-                        type="monotone"
-                        name="Pallet Space"
-                        dataKey="palletSpace"
-                        stroke="#ff7300"
-                        yAxisId="right"
-                        intercept={0}
-                    />
-                </ComposedChart>} />
-    )
+                    {selectedCosType.has("weight") && (
+                        <Line
+                            type="monotone"
+                            name="Weight "
+                            dataKey="weight"
+                            stroke="#8DC77B"
+                            yAxisId="right"
+                            intercept={0}
+                        />
+                    )}
+                    {selectedCosType.has("pallet-space") && (
+                        <Line
+                            type="monotone"
+                            name="Pallet Space"
+                            dataKey="palletSpace"
+                            stroke="#ff7300"
+                            yAxisId="right"
+                            intercept={0}
+                        />
+                    )}
+                </ComposedChart>
+            }
+        />
+    );
 }

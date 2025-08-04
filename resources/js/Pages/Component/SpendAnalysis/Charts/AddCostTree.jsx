@@ -18,9 +18,12 @@ const CustomizedContent = (props) => {
     const { root, depth, x, y, width, height, index, colors, name, totalCost } =
         props;
 
-    const fillColor = depth < 2 && root && root.children && root.children.length > 0
-        ? colors[Math.floor((index / root.children.length) * colors.length)]
-        : (depth === 0 ? colors[0] : "none");
+    const fillColor =
+        depth < 2 && root && root.children && root.children.length > 0
+            ? colors[Math.floor((index / root.children.length) * colors.length)]
+            : depth === 0
+            ? colors[0]
+            : "none";
 
     return (
         <g>
@@ -44,14 +47,27 @@ const CustomizedContent = (props) => {
                     textAnchor="middle"
                     fill="#fff"
                     fontSize={12}
+                    fontWeight="50"
+                    letterSpacing={1}
                 >
                     {name}
                 </text>
             ) : null}
             {depth === 1 ? (
-                <text x={x + 4} y={y + 18} fill="#fff" fontSize={12} className="font-light">
-                    {`${name}: $${totalCost ? totalCost.toFixed(2) : 0}`}
-                </text>
+                <>
+                    <text
+                        x={x + 8}
+                        y={y + 15}
+                        fill="#fff"
+                        fontSize={11}
+                        fontWeight="0"
+                        // stroke="#000"
+                        strokeWidth="0.5"
+                        letterSpacing={1}
+                    >
+                        {`$${totalCost ? totalCost.toFixed(2) : 0}`}
+                    </text>
+                </>
             ) : null}
         </g>
     );
@@ -69,9 +85,8 @@ export default function AddCostTree() {
         availableYears,
         selectedPeriodValue,
         selectedQuarterKey,
-        setSelectedQuarterKey
+        setSelectedQuarterKey,
     } = useDurationData(dummySpendData);
-
 
     const treemapData = useMemo(() => {
         const chartData = getChartData;
@@ -81,36 +96,45 @@ export default function AddCostTree() {
         }
 
         const combinedAdditionalCostsMap = {};
-        chartData.forEach(periodData => {
+        chartData.forEach((periodData) => {
             if (periodData.additionalCosts) {
-                periodData.additionalCosts.forEach(costItem => {
+                periodData.additionalCosts.forEach((costItem) => {
                     combinedAdditionalCostsMap[costItem.name] =
-                        (combinedAdditionalCostsMap[costItem.name] || 0) + costItem.totalCost;
+                        (combinedAdditionalCostsMap[costItem.name] || 0) +
+                        costItem.totalCost;
                 });
             }
         });
 
-        return Object.entries(combinedAdditionalCostsMap).map(([name, totalCost]) => ({
-            name,
-            totalCost: totalCost
-        }));
-
+        return Object.entries(combinedAdditionalCostsMap).map(
+            ([name, totalCost]) => ({
+                name,
+                totalCost: totalCost,
+            })
+        );
     }, [getChartData]);
 
-    const CustomTooltip = ({ active, payload, label, name }) => {
-        const isVisible = active && payload && payload.length;
-        return (
-            <div className="bg-white p-2 rounded-lg text-sm" style={{ visibility: isVisible ? 'visible' : 'hidden' }}>
-                {isVisible && (
-                    <p className="label">{`${active}  : ${payload[0].value}`}</p>
-                )}
-            </div>
-        );
+    
+
+    const CustomTooltip = ({ active, payload }) => {
+        if (active && payload && payload.length > 0) {
+            const data = payload[0].payload;
+            return (
+                <div className="bg-white p-2 rounded-lg shadow-lg border text-sm">
+                    <p className="font-medium">{data.name}</p>
+                    <p className="text-gray-600">
+                        ${data.totalCost?.toFixed(2) || 0}
+                    </p>
+                </div>
+            );
+        }
+        return null;
     };
 
     return (
         <ChartWrapper
             cardClassName={"col-span-2 p-2"}
+            modalSize={"2xl"}
             filterChildren={
                 <>
                     <DurationFilter

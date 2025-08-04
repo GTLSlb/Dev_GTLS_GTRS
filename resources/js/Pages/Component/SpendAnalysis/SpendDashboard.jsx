@@ -56,6 +56,7 @@ export default function SpendDashboard() {
                     panel: " -mt-10",
                     tab: "px-1",
                 }}
+                children={<div>Hello</div>}
             >
                 {tabs.map((tab) => (
                     <Tab

@@ -1,11 +1,26 @@
 import { ChartWrapper } from "./Card/ChartWrapper";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    Legend,
+} from "recharts";
 import { DurationFilter } from "./Card/DurationFilter";
 import { dummySpendData } from "../assets/js/dataHandler";
 import { useDurationData } from "../assets/js/useDurationData";
 import { formatNumberWithCommas } from "@/CommonFunctions";
+import { Divider, Select, SelectItem } from "@heroui/react";
+import { useState } from "react";
 
 export function TrendCost() {
+    const costTypeOptions = [
+        { label: "Cost", value: "cost" },
+        { label: "Additional Charges", value: "additional" },
+    ];
+
     const {
         getChartData,
         selectedPeriodKey,
@@ -17,8 +32,12 @@ export function TrendCost() {
         availableYears,
         selectedPeriodValue,
         selectedQuarterKey,
-        setSelectedQuarterKey
+        setSelectedQuarterKey,
     } = useDurationData(dummySpendData);
+
+    const [selectedCostType, setSelectedCostType] = useState(
+        new Set(costTypeOptions.map((option) => option.value))
+    );
 
     return (
         <ChartWrapper
@@ -37,6 +56,27 @@ export function TrendCost() {
                         selectedQuarterKey={selectedQuarterKey}
                         setSelectedQuarterKey={setSelectedQuarterKey}
                     />
+                    <div className="w-full">
+                        <Divider />
+                        <Select
+                            placeholder="Select Bar Types"
+                            disallowEmptySelection
+                            size="sm"
+                            selectionMode="multiple" // Key property for multi-select
+                            selectedKeys={selectedCostType}
+                            onSelectionChange={setSelectedCostType}
+                            className="mt-2"
+                        >
+                            {costTypeOptions.map((option) => (
+                                <SelectItem
+                                    key={option.value}
+                                    value={option.value}
+                                >
+                                    {option.label}
+                                </SelectItem>
+                            ))}
+                        </Select>
+                    </div>
                 </>
             }
             children={
@@ -55,15 +95,26 @@ export function TrendCost() {
                         tick={{ fontSize: 12 }}
                         tickFormatter={(v) => `$${formatNumberWithCommas(v)}`}
                     />
-                    <Tooltip contentStyle={{
-                        fontSize: 12,
-                        backgroundColor: "white",
-                        borderRadius: 8,
-                    }} />
+                    <Tooltip
+                        contentStyle={{
+                            fontSize: 12,
+                            backgroundColor: "white",
+                            borderRadius: 8,
+                        }}
+                    />
                     <Legend />
-                    <Line type="monotone" dataKey="cost" stroke="#8884d8" />
-                    <Line type="monotone" dataKey="additional" stroke="#82ca9d" />
-                </LineChart>}
+                    {selectedCostType.has("cost") && (
+                        <Line type="monotone" dataKey="cost" stroke="#8884d8" />
+                    )}
+                    {selectedCostType.has("additional") && (
+                        <Line
+                            type="monotone"
+                            dataKey="additional"
+                            stroke="#82ca9d"
+                        />
+                    )}
+                </LineChart>
+            }
         />
-    )
+    );
 }

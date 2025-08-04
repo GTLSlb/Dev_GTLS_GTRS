@@ -1,13 +1,38 @@
-import { PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, Legend, Tooltip } from "recharts";
 import { ChartWrapper } from "./Card/ChartWrapper";
-import { DurationFilter } from './Card/DurationFilter';
-import { dummySpendData } from '../assets/js/dataHandler';
-import { useDurationData } from '../assets/js/useDurationData';
-import { useMemo } from 'react';
+import { DurationFilter } from "./Card/DurationFilter";
+import { dummySpendData } from "../assets/js/dataHandler";
+import { useDurationData } from "../assets/js/useDurationData";
+import { useMemo, useState } from "react";
+import { Divider, Select, SelectItem } from "@heroui/react";
+
 function DemurrageCost() {
-    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658', '#d0ed57'];
+    const demmurageTypeOptions = [
+        { label: "Semi Demurrage", value: "Semi Demurrage" },
+        { label: "BD Demurrage", value: "BD Demurrage" },
+        { label: "Rigid Demurrage", value: "Rigid Demurrage" },
+        { label: "Demurrage", value: "Demurrage" },
+    ];
+    const COLORS = [
+        "#0088FE",
+        "#00C49F",
+        "#FFBB28",
+        "#FF8042",
+        "#8884d8",
+        "#82ca9d",
+        "#ffc658",
+        "#d0ed57",
+    ];
     const RADIAN = Math.PI / 180;
-    const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, index, name }, props) => {
+
+    const renderCustomizedLabel = ({
+        cx,
+        cy,
+        midAngle,
+        outerRadius,
+        percent,
+        index,
+    }) => {
         const sin = Math.sin(-RADIAN * midAngle);
         const cos = Math.cos(-RADIAN * midAngle);
         const sx = cx + (outerRadius + 0) * cos;
@@ -16,17 +41,38 @@ function DemurrageCost() {
         const my = cy + (outerRadius + 0) * sin;
         const ex = mx + (cos >= 0 ? 1 : -1) * 20;
         const ey = my;
-        const textAnchor = cos >= 0 ? 'start' : 'end';
+        const textAnchor = cos >= 0 ? "start" : "end";
+
+        const filteredData = pieChartData.filter((entry) =>
+            selectedTypes.has(entry.name)
+        );
+        const originalIndex = demmurageTypeOptions.findIndex(
+            (option) => option.value === filteredData[index].name
+        );
+        const color = COLORS[originalIndex % COLORS.length];
+
         return (
             <g>
-                <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={COLORS[index]} fill="none" />
-                <circle cx={ex} cy={ey} r={2} fill={COLORS[index]} stroke="none" />
-                <text className='text-sm' x={ex + (cos >= 0 ? 1 : -1) * 8} y={ey} fill={COLORS[index]} textAnchor={textAnchor} dominantBaseline="central">
+                <path
+                    d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`}
+                    stroke={color}
+                    fill="none"
+                />
+                <circle cx={ex} cy={ey} r={2} fill={color} stroke="none" />
+                <text
+                    className="text-sm"
+                    x={ex + (cos >= 0 ? 1 : -1) * 8}
+                    y={ey}
+                    fill={color}
+                    textAnchor={textAnchor}
+                    dominantBaseline="central"
+                >
                     {`(${(percent * 100).toFixed(0)}%)`}
                 </text>
             </g>
         );
     };
+
     const {
         getChartData,
         selectedPeriodKey,
@@ -38,14 +84,14 @@ function DemurrageCost() {
         availableYears,
         selectedPeriodValue,
         selectedQuarterKey,
-        setSelectedQuarterKey
+        setSelectedQuarterKey,
     } = useDurationData(dummySpendData);
 
     const pieChartData = useMemo(() => {
         const aggregatedDemurrage = {};
-        getChartData.forEach(periodData => {
+        getChartData.forEach((periodData) => {
             if (periodData.demurrage && Array.isArray(periodData.demurrage)) {
-                periodData.demurrage.forEach(demurrageItem => {
+                periodData.demurrage.forEach((demurrageItem) => {
                     const { type, totalCost } = demurrageItem;
                     if (aggregatedDemurrage[type]) {
                         aggregatedDemurrage[type] += totalCost;
@@ -61,11 +107,22 @@ function DemurrageCost() {
         }));
     }, [getChartData]);
 
-    const hasDemurrageData = pieChartData.length > 0 && pieChartData.some(item => item.value > 0);
+    const [selectedTypes, setSelectedTypes] = useState(
+        new Set(demmurageTypeOptions.map((option) => option.value))
+    );
+
+    const filteredPieChartData = useMemo(() => {
+        return pieChartData.filter((entry) => selectedTypes.has(entry.name));
+    }, [pieChartData, selectedTypes]);
+
+    const hasDemurrageData =
+        filteredPieChartData.length > 0 &&
+        filteredPieChartData.some((item) => item.value > 0);
 
     return (
         <ChartWrapper
             title={"Demurrage Cost"}
+            modalSize={"xl"}
             filterChildren={
                 <>
                     <DurationFilter
@@ -80,29 +137,53 @@ function DemurrageCost() {
                         selectedQuarterKey={selectedQuarterKey}
                         setSelectedQuarterKey={setSelectedQuarterKey}
                     />
+                    <div className="w-full">
+                        <Divider />
+                        <Select
+                            placeholder="Select Bar Types"
+                            disallowEmptySelection
+                            size="sm"
+                            selectionMode="multiple"
+                            selectedKeys={selectedTypes}
+                            onSelectionChange={setSelectedTypes}
+                            className="mt-2"
+                        >
+                            {demmurageTypeOptions.map((option) => (
+                                <SelectItem
+                                    key={option.value}
+                                    value={option.value}
+                                >
+                                    {option.label}
+                                </SelectItem>
+                            ))}
+                        </Select>
+                    </div>
                 </>
             }
             children={
                 hasDemurrageData ? (
-                    <PieChart
-                        className=''
-                        width={400}
-                        height={400}>
+                    <PieChart className="" width={400} height={400}>
                         <Pie
-                            data={pieChartData}
+                            data={filteredPieChartData}
                             cx="50%"
                             cy="50%"
                             labelLine={false}
                             label={renderCustomizedLabel}
-                            // outerRadius={50}
                             fill="#8884d8"
                             dataKey="value"
-                        // label={{ offsetRadius: 10, position: 'outside' }} // Adjust offsetRadius as needed
-
                         >
-                            {pieChartData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                            ))}
+                            {/* Map over the filtered data to create cells with the correct colors */}
+                            {filteredPieChartData.map((entry, index) => {
+                                const originalIndex =
+                                    demmurageTypeOptions.findIndex(
+                                        (option) => option.value === entry.name
+                                    );
+                                const color =
+                                    COLORS[originalIndex % COLORS.length];
+                                return (
+                                    <Cell key={`cell-${index}`} fill={color} />
+                                );
+                            })}
                         </Pie>
                         <Tooltip
                             contentStyle={{
@@ -110,14 +191,17 @@ function DemurrageCost() {
                                 backgroundColor: "white",
                                 borderRadius: 8,
                             }}
-                            formatter={(value, name) => [`$${value.toFixed(2)}`, name]}
+                            formatter={(value, name) => [
+                                `$${value.toFixed(2)}`,
+                                name,
+                            ]}
                         />
                         <Legend
-                            layout='horizontal'
+                            layout="horizontal"
                             verticalAlign="bottom"
                             align="center"
                             fontSize={10}
-                            wrapperStyle={{ fontSize: 12, paddingTop: '20px' }}
+                            wrapperStyle={{ fontSize: 12, paddingTop: "20px" }}
                         />
                     </PieChart>
                 ) : (
@@ -129,4 +213,5 @@ function DemurrageCost() {
         />
     );
 }
+
 export default DemurrageCost;

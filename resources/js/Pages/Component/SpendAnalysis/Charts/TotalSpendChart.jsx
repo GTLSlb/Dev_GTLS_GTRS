@@ -6,7 +6,7 @@ import {
     Legend,
     Tooltip,
     XAxis,
-    YAxis
+    YAxis,
 } from "recharts";
 import { ChartWrapper } from "./Card/ChartWrapper";
 import { Divider, Select, SelectItem } from "@heroui/react";
@@ -23,10 +23,8 @@ const barTypeOptions = [
 ];
 
 function TotalSpendChart() {
-
-
     const [selectedBarTypes, setSelectedBarTypes] = useState(
-        new Set(barTypeOptions.map(option => option.value))
+        new Set(barTypeOptions.map((option) => option.value))
     );
 
     const {
@@ -40,7 +38,7 @@ function TotalSpendChart() {
         availableYears,
         selectedPeriodValue,
         selectedQuarterKey,
-        setSelectedQuarterKey
+        setSelectedQuarterKey,
     } = useDurationData(dummySpendData);
 
     const handleLegendClick = (dataKey) => {
@@ -72,7 +70,8 @@ function TotalSpendChart() {
             title={"Total Spend"}
             filterChildren={
                 <>
-                    <DurationFilter selectedPeriodKey={selectedPeriodKey}
+                    <DurationFilter
+                        selectedPeriodKey={selectedPeriodKey}
                         setSelectedPeriodKey={setSelectedPeriodKey}
                         selectedYearKey={selectedYearKey}
                         setSelectedYearKey={setSelectedYearKey}
@@ -83,7 +82,7 @@ function TotalSpendChart() {
                         selectedQuarterKey={selectedQuarterKey}
                         setSelectedQuarterKey={setSelectedQuarterKey}
                     />
-                    < div className="w-48">
+                    <div className="w-full ">
                         <Divider />
                         <Select
                             placeholder="Select Bar Types"
@@ -92,10 +91,14 @@ function TotalSpendChart() {
                             selectionMode="multiple" // Key property for multi-select
                             selectedKeys={selectedBarTypes}
                             onSelectionChange={setSelectedBarTypes}
-                            className="max-w-xs mt-2"
+                            className=" mt-2"
+                            aria-label="Select bar types for chart"
                         >
                             {barTypeOptions.map((option) => (
-                                <SelectItem key={option.value} value={option.value}>
+                                <SelectItem
+                                    key={option.value}
+                                    value={option.value}
+                                >
                                     {option.label}
                                 </SelectItem>
                             ))}
@@ -109,7 +112,10 @@ function TotalSpendChart() {
                 width={700}
                 height={600}
                 margin={{
-                    top: 0, right: 30, left: 0, bottom: 5,
+                    top: 0,
+                    right: 30,
+                    left: 0,
+                    bottom: 5,
                 }}
             >
                 <CartesianGrid strokeDasharray="3 3" />
@@ -117,14 +123,16 @@ function TotalSpendChart() {
                 <YAxis
                     tick={{ fontSize: 12 }}
                     tickFormatter={(v) => `$${formatNumberWithCommas(v)}`}
-                    angle={-45} />
+                    angle={-45}
+                />
                 <Tooltip
                     contentStyle={{
                         fontSize: 12,
                         backgroundColor: "white",
                         borderRadius: 8,
                     }}
-                    formatter={(value) => `$${value.toLocaleString()}`} />
+                    formatter={(value) => `$${value.toLocaleString()}`}
+                />
                 <Legend
                     verticalAlign="top"
                     height={50}
@@ -134,11 +142,7 @@ function TotalSpendChart() {
                     onClick={(e) => handleLegendClick(e.dataKey)}
                 />
                 {selectedBarTypes.has("cost") && (
-                    <Bar
-                        dataKey="cost"
-                        name="Cost"
-                        fill="#ff7300"
-                    />
+                    <Bar dataKey="cost" name="Cost" fill="#ff7300" />
                 )}
                 {selectedBarTypes.has("additional") && (
                     <Bar
@@ -148,18 +152,10 @@ function TotalSpendChart() {
                     />
                 )}
                 {selectedBarTypes.has("fuelLevy") && (
-                    <Bar
-                        dataKey="fuelLevy"
-                        name="Fuel Levy"
-                        fill="#82ca9d"
-                    />
+                    <Bar dataKey="fuelLevy" name="Fuel Levy" fill="#82ca9d" />
                 )}
                 {selectedBarTypes.has("GST") && (
-                    <Bar
-                        dataKey="GST"
-                        name="GST"
-                        fill="#FFC658"
-                    />
+                    <Bar dataKey="GST" name="GST" fill="#FFC658" />
                 )}
             </BarChart>
         </ChartWrapper>
