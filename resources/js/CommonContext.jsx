@@ -12,7 +12,7 @@ export default function ContextProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
 
     const [sidebarElements, setSidebarElements] = useState(menu);
-    const [Token, setToken] = useState(Cookies.get("access_token"));
+    const [Token, setToken] = useState(null);
     const [allowedApplications, setAllowedApplications] = useState([]);
 
     const [states, setStates] = useState([]);

@@ -119,15 +119,14 @@ export default function Sidebar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [loadingGtrs, setLoadingGtrs] = useState(false);
 
-    useEffect(() => {
+   useEffect(() => {
         if (currentUser && !Token) {
             const headers = {
-                UserId: currentUser.UserId,
-                OwnerId: currentUser.OwnerId,
                 "Content-Type": "application/x-www-form-urlencoded",
             };
             const data = {
-                grant_type: "password",
+                UserId: currentUser.UserId,
+                OwnerId: currentUser.OwnerId,
             };
             axios
                 .post(`${Gtamurl}/Token`, data, {
@@ -145,19 +144,11 @@ export default function Sidebar() {
                     });
                     parsedDataPromise.then((parsedData) => {
                         setToken(parsedData.access_token);
-                        Cookies.set("access_token", parsedData.access_token, {
-                            domain: appDomain,
-                            path: "/",
-                            secure: true, // Use this if your site is served over HTTPS
-                            sameSite: "Lax", // Optional, depending on your needs
-                        });
                     });
                 })
-                .catch((err) => {
+                .catch(async (err) => {
                     console.error(err);
-                    if(err.response.status === 401) {
-                        handleSessionExpiration();
-                    }
+                    await handleSessionExpiration();
                 });
         }
     }, [currentUser]);

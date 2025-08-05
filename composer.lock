@@ -859,17 +859,21 @@
         },
         {
             "name": "gtls/loginstory",
-            "version": "v1.0.7",
+            "version": "v1.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/GTLSlb/Composer_Libraries.git",
-                "reference": "0d49b88c5d03be16c90977e03d8094fff2980aa2"
+                "reference": "090641d21b8f1b7e60c85fdf9f44787b48207e18"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/GTLSlb/Composer_Libraries/zipball/0d49b88c5d03be16c90977e03d8094fff2980aa2",
-                "reference": "0d49b88c5d03be16c90977e03d8094fff2980aa2",
+                "url": "https://api.github.com/repos/GTLSlb/Composer_Libraries/zipball/090641d21b8f1b7e60c85fdf9f44787b48207e18",
+                "reference": "090641d21b8f1b7e60c85fdf9f44787b48207e18",
                 "shasum": ""
+            },
+            "require": {
+                "illuminate/http": "^10.0",
+                "laravel/socialite": "^5.23"
             },
             "type": "library",
             "autoload": {
@@ -891,9 +895,9 @@
             "description": "[]",
             "support": {
                 "issues": "https://github.com/GTLSlb/Composer_Libraries/issues",
-                "source": "https://github.com/GTLSlb/Composer_Libraries/tree/v1.0.7"
+                "source": "https://github.com/GTLSlb/Composer_Libraries/tree/v1.0.10"
             },
-            "time": "2025-06-10T11:57:47+00:00"
+            "time": "2025-08-01T11:07:27+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -9302,12 +9306,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.1"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "platform-dev": {},
+    "plugin-api-version": "2.6.0"
 }
