@@ -52,7 +52,7 @@ export default function Sidebar() {
             .get("/users")
             .then((res) => {
                 if (typeof res.data == "object") {
-                    setCurrentUser(res.data);
+                    setCurrentUser(res.data.user);
                 }
             })
             .catch((error) => {
