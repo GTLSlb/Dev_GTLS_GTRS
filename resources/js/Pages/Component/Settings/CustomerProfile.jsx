@@ -13,9 +13,10 @@ import Users from "./Users";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 import PropTypes from "prop-types";
 
-const { getApiRequest } = useApiRequests();
+
 
 export default function CustomerProfile({ currentUser, userPermission }) {
+    const { getApiRequest } = useApiRequests();
     const [customer, setCustomer] = useState([]);
     const [loading, setLoading] = useState(true);
     const gtamUrl = window.Laravel.gtamUrl;

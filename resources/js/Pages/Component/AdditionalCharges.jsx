@@ -17,8 +17,6 @@ import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 
-const { getApiRequest } = useApiRequests();
-
 export default function AdditionalCharges({
     AdditionalData,
     setAdditionalData,
@@ -28,6 +26,7 @@ export default function AdditionalCharges({
     currentUser,
     url,
 }) {
+    const { getApiRequest } = useApiRequests();
     window.moment = moment;
     const [isFetching, setIsFetching] = useState();
     useEffect(() => {

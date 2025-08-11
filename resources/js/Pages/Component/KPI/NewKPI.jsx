@@ -29,8 +29,6 @@ import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import { PencilIcon } from "@heroicons/react/20/solid";
 
-const { getApiRequest } = useApiRequests();
-
 function NewKPI({
     url,
     currentUser,
@@ -43,6 +41,7 @@ function NewKPI({
     accData,
     kpireasonsData,
 }) {
+    const { getApiRequest } = useApiRequests();
     window.moment = moment;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -479,10 +478,12 @@ function NewKPI({
             },
 
             render: ({ value }) => {
-                return  (
+                return (
                     <div>
                         <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-0.5 text-sm font-medium text-gray-800">
-                            {kpireasonsData?.find((reason) => reason.ReasonId === value)?.ReasonName || ""}
+                            {kpireasonsData?.find(
+                                (reason) => reason.ReasonId === value
+                            )?.ReasonName || ""}
                         </span>
                     </div>
                 );
@@ -515,7 +516,7 @@ function NewKPI({
                     </div>
                 );
             },
-        }
+        },
     ];
     const newArray = columns.slice(0, -1);
     const [newColumns, setNewColumns] = useState([]);

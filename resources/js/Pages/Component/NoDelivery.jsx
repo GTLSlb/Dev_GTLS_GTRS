@@ -18,8 +18,6 @@ import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 
-const { getApiRequest } = useApiRequests();
-
 export default function NoDelivery({
     NoDelData,
     setNoDelData,
@@ -29,6 +27,7 @@ export default function NoDelivery({
     userPermission,
     url,
 }) {
+    const { getApiRequest } = useApiRequests();
     window.moment = moment;
 
     const [isFetching, setIsFetching] = useState();
@@ -126,11 +125,7 @@ export default function NoDelivery({
             filterEditor: StringFilter,
 
             render: ({ value, data }) => {
-                return renderConsDetailsLink(
-                    userPermission,
-                    value,
-                    data
-                );
+                return renderConsDetailsLink(userPermission, value, data);
             },
         },
         {

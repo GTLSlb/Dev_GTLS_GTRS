@@ -6,7 +6,7 @@ import AnimatedLoading from "@/Components/AnimatedLoading";
 import RDDTable from "./RDDTable";
 import PropTypes from "prop-types";
 
-const { getApiRequest } = useApiRequests();
+
 
 export default function RDDMain({
     setActiveIndexGTRS,
@@ -32,6 +32,7 @@ export default function RDDMain({
     oldestDate,
     latestDate,
 }) {
+    const { getApiRequest } = useApiRequests();
     const [isFetching, setIsFetching] = useState();
     const [isFetchingReasons, setIsFetchingReasons] = useState();
     const parseDateString = (dateString) => {

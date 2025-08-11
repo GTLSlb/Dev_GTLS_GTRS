@@ -15,8 +15,10 @@ import PalletDetails from "./Component/ConsDetailsComp/PalletDetails";
 import PickupDelInfo from "./Component/ConsDetailsComp/PickupDelInfo";
 import BackButton from "@/Components/BackButton";
 
-const { getApiRequest } = useApiRequests();
+
+
 export default function ConsDetails({ url, currentUser }) {
+    const { getApiRequest } = useApiRequests();
     const navigate = useNavigate();
     const location = useLocation();
 

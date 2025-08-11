@@ -7,7 +7,7 @@ import AddSafetyTypeModal from "./AddSafetyTypeModel";
 import { canAddSafetyType, canEditSafetyType } from "@/permissions";
 import { useApiRequests } from '@/CommonFunctions';
 
-const { getApiRequest } = useApiRequests();
+
 
 export default function AddSafetyType({
     safetyTypes,
@@ -17,6 +17,7 @@ export default function AddSafetyType({
     currentUser,
     userPermission,
 }) {
+    const { getApiRequest } = useApiRequests();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [Data, setData] = useState(safetyTypes);
     const [type, setType] = useState();

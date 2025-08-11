@@ -6,7 +6,7 @@ import { useApiRequests } from "@/CommonFunctions";
 import PropTypes from "prop-types";
 import React from "react";
 
-const { getApiRequest } = useApiRequests();
+
 
 export default function AddSafetyCauses({
     Token,
@@ -15,6 +15,7 @@ export default function AddSafetyCauses({
     currentUser,
     url,
 }) {
+    const { getApiRequest } = useApiRequests();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [Data, setData] = useState(safetyCauses);
     const [cause, setCause] = useState();

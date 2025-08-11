@@ -695,7 +695,7 @@ export default function GtrsMain({
         if (userPermission) {
             navigateToFirstAllowedPage({
                 setSidebarElements,
-                user: userPermission,
+                user: currentUser,
                 navigate,
             });
         }

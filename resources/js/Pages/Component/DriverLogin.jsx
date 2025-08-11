@@ -13,8 +13,6 @@ import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 
-const { getApiRequest } = useApiRequests();
-
 export default function DriverLogin({
     DriverData,
     setDriverData,
@@ -23,6 +21,7 @@ export default function DriverLogin({
     url,
     currentUser,
 }) {
+    const { getApiRequest } = useApiRequests();
     window.moment = moment;
 
     const [isFetching, setIsFetching] = useState();

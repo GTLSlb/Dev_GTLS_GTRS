@@ -15,7 +15,6 @@ import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import GtrsButton from "../GtrsButton";
 
-const { getApiRequest } = useApiRequests();
 
 function NewTransitDays({
     setNewTransitDays,
@@ -26,6 +25,7 @@ function NewTransitDays({
     setFilterValue,
     url,
 }) {
+    const { getApiRequest } = useApiRequests();
     const [isFetching, setIsFetching] = useState(true);
     const [selected, setSelected] = useState([]);
     const [filteredData, setFilteredData] = useState(newTransitDays);

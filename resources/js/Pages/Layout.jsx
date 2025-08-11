@@ -12,10 +12,10 @@ import { handleSessionExpiration, useApiRequests } from "@/CommonFunctions";
 import NoAccess from "@/Components/NoAccess";
 import Logout from "@/Pages/Auth/Logout";
 import { CustomContext } from "@/CommonContext";
-const { getApiRequest } = useApiRequests();
 
 export default function Sidebar() {
     const {
+        url,
         Token,
         setUser,
         setToken,
@@ -26,79 +26,85 @@ export default function Sidebar() {
         setCurrentUser,
         setAllowedApplications,
     } = useContext(CustomContext);
-
-    const Gtamurl = window.Laravel.gtamUrl;
+    const [loading, setLoading] = useState(true);
+    const { getApiRequest, postApiRequest } = useApiRequests();
+    const gtamUrl = window.Laravel.gtamUrl;
     const appId = window.Laravel?.appId;
     const appDomain = window.Laravel.appDomain;
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [loadingGtrs, setLoadingGtrs] = useState(false);
 
-    const getAppPermisions = () => {
-        //user permissions
-        axios
-            .get(`${Gtamurl}User/AppPermissions`, {
-                headers: {
-                    UserId: currentUser?.UserId,
-                    AppId: window.Laravel.appId,
-                },
-            })
-            .then((res) => {
-                if (typeof res.data == "object") {
-                    setUser(res.data);
-                }
-            })
-            .catch((err) => {
-                console.error(err);
-            });
-    };
+    function addUserIdToFeatures(jsonData, userId, state, group, owner) {
+        return {
+            Features: jsonData,
+            UserId: userId,
+            OwnerId: owner,
+            StateId: state,
+            GroupId: group,
+        };
+    }
 
-    useEffect(() => {
-        axios
-            .get("/users")
-            .then((res) => {
-                if (typeof res.data == "object") {
-                    setCurrentUser(res.data.user);
-                }
-            })
-            .catch((error) => {
-                if(error.status == 401) {
-                    //Session not found
-                    handleSessionExpiration();
-                }
-                if(error.status == 404) {
-                    //Session not found
-                    handleSessionExpiration();
-                }
-
-                console.error(error)
-            }
-        );
-    }, []);
-
-    useEffect(() => {
-        if (currentUser) {
-            getAppPermisions();
+    const fetchUserData = async () => {
+        if (!gtamUrl || !appId) {
+            console.error(
+                "Error: window.Laravel.gtamUrl or window.Laravel.appId is undefined. Environment not properly configured."
+            );
+            setLoading(false);
+            setCanAccess(false);
+            return;
         }
-    }, [currentUser]);
 
-    const getUserPermissions = () => {
-        //apps user is allowed to access
-        axios
-            .get(`${Gtamurl}User/Permissions`, {
-                headers: {
-                    UserId: currentUser?.UserId,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    try {
-                        const parsedData = JSON.parse(x);
-                        resolve(parsedData || []); // Use an empty array if parsedData is null
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setAllowedApplications(parsedData);
+        try {
+            const userResponse = await getApiRequest(`/users`, {});
+            const { user } = userResponse;
+
+            setUser(user);
+
+            const token_headers = {
+                "Content-Type": "application/x-www-form-urlencoded",
+            };
+            const token_data = {
+                UserId: user.UserId,
+                OwnerId: user.OwnerId,
+            };
+
+            const tokenResponse = await postApiRequest(
+                `${gtamUrl}/Token`,
+                token_headers,
+                token_data
+            );
+
+            const { access_token } = tokenResponse;
+            setToken(access_token);
+
+            const appPermissionsHeaders = {
+                UserId: user.UserId,
+                AppId: appId,
+                Authorization: `Bearer ${access_token}`,
+            };
+            const appPermissionsResponse = await getApiRequest(
+                `${gtamUrl}User/AppPermissions`,
+                appPermissionsHeaders
+            );
+
+            const updatedCurrentUser = addUserIdToFeatures(
+                appPermissionsResponse.Features,
+                user.UserId,
+                user.StateId,
+                user.GroupId,
+                user.OwnerId
+            );
+            setCurrentUser(updatedCurrentUser);
+
+            const userPermissionsHeaders = {
+                UserId: user.UserId,
+                Authorization: `Bearer ${access_token}`,
+            };
+            const userPermissionsResponse = await getApiRequest(
+                `${gtamUrl}User/Permissions`,
+                userPermissionsHeaders
+            );
+            setAllowedApplications(userPermissionsResponse);
 
             const isAllowed = allowedApplications?.find(
                 (item) => item.AppId == window.Laravel.appId
@@ -108,29 +114,18 @@ export default function Sidebar() {
                 !isAllowed &&
                 window.location.pathname != "/logout"
             ) {
+                console.log("No access to this application");
                 setCanAccess(false);
             } else {
                 setCanAccess(true);
             }
 
-            const userAccessHeaders = {
-                UserId: user.UserId,
-                GTISUserId: null,
-                Authorization: `Bearer ${access_token}`,
-            };
-            const userAccessResponse = await getApiRequest(
-                `${url}User/Access`,
-                userAccessHeaders
-            );
-            const access = userAccessResponse?.find(
-                (u) => u?.UserId === user.UserId
-            );
-            setUserAccess(access);
 
             setLoading(false);
         } catch (err) {
             console.error("Error during initial data fetch:", err);
             setLoading(false);
+            console.log("Error details:", err.response?.data || err.message);
             setCanAccess(false);
             if (err.response && err.response.status === 401) {
                 swal({
@@ -146,41 +141,26 @@ export default function Sidebar() {
 
     useEffect(() => {
         fetchUserData();
-    }, [Gtamurl, appId]);
+    }, [gtamUrl, appId]);
 
-   useEffect(() => {
-        if (currentUser && !Token) {
-            const headers = {
-                "Content-Type": "application/x-www-form-urlencoded",
-            };
-            const data = {
-                UserId: currentUser.UserId,
-                OwnerId: currentUser.OwnerId,
-            };
-            axios
-                .post(`${Gtamurl}/Token`, data, {
-                    headers: headers,
-                })
-                .then((res) => {
-                    const x = JSON.stringify(res.data);
-                    const parsedDataPromise = new Promise((resolve, reject) => {
-                        try {
-                            const parsedData = JSON.parse(x);
-                            resolve(parsedData || []); // Use an empty array if parsedData is null
-                        } catch (error) {
-                            reject(error);
-                        }
-                    });
-                    parsedDataPromise.then((parsedData) => {
-                        setToken(parsedData.access_token);
-                    });
-                })
-                .catch(async (err) => {
-                    console.error(err);
-                    await handleSessionExpiration();
-                });
+    useEffect(() => {
+        if (
+            currentUser &&
+            allowedApplications?.length > 0 &&
+            !Object.prototype.hasOwnProperty.call(currentUser, "AppRoleId")
+        ) {
+            const userAppRole = allowedApplications.find(
+                (item) => item.AppId === appId
+            );
+            setCurrentUser({
+                ...currentUser,
+                AppRoleId: userAppRole?.AppRoleId,
+                AppRoleName: userAppRole?.AppRoleName,
+            });
         }
-    }, [currentUser]);
+    }, [currentUser, allowedApplications, appId]);
+
+    console.log(canAccess)
 
     if (!currentUser) {
         return null; // Render nothing
@@ -190,7 +170,7 @@ export default function Sidebar() {
         } else {
             return (
                 <div className="h-screen">
-                    {canAccess && currentUser && Token ? (
+                    { Token ? (
                         <div className="bg-smooth h-full ">
                             <Routes>
                                 <Route

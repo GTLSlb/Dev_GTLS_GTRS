@@ -10,8 +10,6 @@ import AnimatedLoading from "@/Components/AnimatedLoading";
 import { ToastContainer } from "react-toastify";
 import { useApiRequests } from "@/CommonFunctions";
 
-const { getApiRequest } = useApiRequests();
-
 export default function SafetyRep({
     accData,
     currentUser,
@@ -32,6 +30,7 @@ export default function SafetyRep({
     DefaultEDate,
     userPermission,
 }) {
+    const { getApiRequest } = useApiRequests();
     const [SDate, setSDate] = useState(DefaultSDate);
     const [EDate, setEDate] = useState(DefaultEDate);
     useEffect(() => {

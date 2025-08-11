@@ -22,7 +22,6 @@ export default function Gtrs({
     loadingGtrs,
     mobileMenuOpen,
 }) {
-
     const {
         currentUser,
         setCurrentUser,
@@ -34,16 +33,26 @@ export default function Gtrs({
         setCanAccess,
         sidebarElements,
         setSidebarElements,
-        DebtorsApi, setDebtorsApi,
-        debtorsData, setdebtorsData,
-        chartsApi, setchartsApi,
-        consApi, setConsApi,
-        reportApi, setReportApi,
-        transportApi, setTransportApi,
-        KPIReasonsApi, setKPIReasonsApi,
-        customerAccounts, setCustomerAccounts,
-        transportData, setTransportData,
-        kpireasonsData, setkpireasonsData,
+        DebtorsApi,
+        setDebtorsApi,
+        debtorsData,
+        setdebtorsData,
+        chartsApi,
+        setchartsApi,
+        consApi,
+        setConsApi,
+        reportApi,
+        setReportApi,
+        transportApi,
+        setTransportApi,
+        KPIReasonsApi,
+        setKPIReasonsApi,
+        customerAccounts,
+        setCustomerAccounts,
+        transportData,
+        setTransportData,
+        kpireasonsData,
+        setkpireasonsData,
     } = useContext(CustomContext);
 
     const [chartsData, setchartsData] = useState([]);
@@ -190,26 +199,32 @@ export default function Gtrs({
     useEffect(() => {
         if (loadingGtrs && currentUser != "") {
             if (currentUser == {}) {
+                console.log("currentUser", currentUser);
                 setCanAccess(false);
             } else if (currentUser) {
                 if (Object.keys(currentUser)?.length > 0) {
                     setCanAccess(true);
                 } else {
+                    console.log("currentUser", currentUser);
                     setCanAccess(false);
                 }
             }
         } else if (loadingGtrs && currentUser == "") {
+             console.log("currentUser", currentUser);
             setCanAccess(false);
         }
     }, [currentUser, loadingGtrs]);
 
-
     const navigate = useNavigate();
     useEffect(() => {
-        if(user){
-            navigateToFirstAllowedPage({setSidebarElements, user, navigate})
+        if (user) {
+            navigateToFirstAllowedPage({
+                setSidebarElements,
+                user: currentUser,
+                navigate,
+            });
         }
-    },[user])
+    }, [user]);
 
     if (
         consApi &&
@@ -274,9 +289,15 @@ export default function Gtrs({
                                             setSidebarElements={
                                                 setSidebarElements
                                             }
-                                            deliveryReportData ={deliveryReportData}
-                                            deliveryReportComments={deliveryReportComments}
-                                            fetchDeliveryReportCommentsData={fetchDeliveryReportCommentsData}
+                                            deliveryReportData={
+                                                deliveryReportData
+                                            }
+                                            deliveryReportComments={
+                                                deliveryReportComments
+                                            }
+                                            fetchDeliveryReportCommentsData={
+                                                fetchDeliveryReportCommentsData
+                                            }
                                         />
                                     </div>
                                 </div>

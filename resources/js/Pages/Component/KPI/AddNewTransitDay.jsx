@@ -9,14 +9,8 @@ import swal from "sweetalert";
 import GtrsButton from "../GtrsButton";
 import { ToastContainer } from "react-toastify";
 
-const { getApiRequest } = useApiRequests();
-
-function AddNewTransitDay({
-    url,
-    currentUser,
-    setNewTransitDays,
-    Token,
-}) {
+function AddNewTransitDay({ url, currentUser, setNewTransitDays, Token }) {
+    const { getApiRequest } = useApiRequests();
     const states = [
         {
             id: "ACT",
@@ -70,7 +64,7 @@ function AddNewTransitDay({
         { id: 99, label: "None" },
     ];
     const location = useLocation();
-    const object=location?.state?.newTransitDay
+    const object = location?.state?.newTransitDay;
     const [selectedRstate, setSelectedRstate] = useState(
         location?.state?.newTransitDay?.ReceiverState || null
     );

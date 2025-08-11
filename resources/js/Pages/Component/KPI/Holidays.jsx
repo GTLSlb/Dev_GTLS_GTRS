@@ -16,9 +16,7 @@ import AnimatedLoading from "@/Components/AnimatedLoading";
 import GtrsButton from "../GtrsButton";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
-import {ToastContainer} from 'react-toastify';
-
-const { getApiRequest } = useApiRequests();
+import { ToastContainer } from "react-toastify";
 
 window.moment = moment;
 export default function Holidays({
@@ -31,6 +29,7 @@ export default function Holidays({
     userPermission,
     currentUser,
 }) {
+    const { getApiRequest } = useApiRequests();
     const [isFetching, setIsFetching] = useState();
     const [showAdd, setShowAdd] = useState(false);
     const [holiday, setHoliday] = useState();
@@ -62,7 +61,9 @@ export default function Holidays({
         });
 
         if (data) {
-            const sortedHolidays = data.sort((a, b) => b.HolidayDate.localeCompare(a.HolidayDate));
+            const sortedHolidays = data.sort((a, b) =>
+                b.HolidayDate.localeCompare(a.HolidayDate)
+            );
             setHolidays(sortedHolidays);
             setIsFetching(false);
         }
@@ -147,12 +148,16 @@ export default function Holidays({
             },
         },
     ]);
-    const scrollIntoView = ()=>{
-        const button = document.getElementById('addSection');
-        if(button){
-            button.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+    const scrollIntoView = () => {
+        const button = document.getElementById("addSection");
+        if (button) {
+            button.scrollIntoView({
+                behavior: "smooth",
+                block: "end",
+                inline: "nearest",
+            });
         }
-    }
+    };
 
     useEffect(() => {
         if (holidayOptions && stateOptions) {
@@ -385,18 +390,18 @@ export default function Holidays({
                 <div className="pt-4 px-4 sm:pt-6 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
                     {showAdd ? (
                         <div id="addSection">
-                        <AddHoliday
-                            states={stateOptions}
-                            holiday={holiday}
-                            url={url}
-                            Token={Token}
-                            currentUser={currentUser}
-                            userPermission={userPermission}
-                            setHoliday={setHoliday}
-                            setShowAdd={setShowAdd}
-                            fetchData={fetchData}
-                            closeModal={ToggleShow}
-                        />
+                            <AddHoliday
+                                states={stateOptions}
+                                holiday={holiday}
+                                url={url}
+                                Token={Token}
+                                currentUser={currentUser}
+                                userPermission={userPermission}
+                                setHoliday={setHoliday}
+                                setShowAdd={setShowAdd}
+                                fetchData={fetchData}
+                                closeModal={ToggleShow}
+                            />
                         </div>
                     ) : null}
 

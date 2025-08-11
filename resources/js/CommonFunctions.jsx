@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import NoAccessRedirect from "@/Pages/NoAccessRedirect";
 import menu from "@/SidebarMenuItems";
@@ -13,6 +13,7 @@ import {
 } from "./permissions";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { CustomContext } from "./CommonContext";
 
 const msalConfig = {
     auth: {
@@ -361,7 +362,6 @@ export function navigateToFirstAllowedPage({
             }
         }
     });
-
     // Navigate to the page specified in the browser URL
     if (
         window.location.pathname != "/gtrs/" &&
@@ -427,7 +427,7 @@ export const formatNumberWithCommas = (value) => {
 };
 
 export function useApiRequests() {
-    const { Token, userAccess } = useContext(CustomContext);
+    const { Token } = useContext(CustomContext);
 
 
     const getApiRequest = (url, headers = {}, passedToken = null) => {
@@ -508,18 +508,5 @@ export function useApiRequests() {
             });
     };
 
-    /**
-     * Checks if a given price is within the user's approval limit.
-     *
-     * @param {number} price - The price to check.
-     * @returns {boolean} True if the price is within the limit, false otherwise.
-     */
-    const WithinLimit = (price) => {
-        if (userAccess?.ApprovalLimit) {
-            return price <= userAccess.ApprovalLimit;
-        }
-        return true; // If no limit is defined, assume it's within limit
-    };
-
-    return { getApiRequest, postApiRequest, WithinLimit };
+    return { getApiRequest, postApiRequest };
 }
