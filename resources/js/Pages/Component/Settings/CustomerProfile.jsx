@@ -4,7 +4,7 @@ import {
     Tabs,
 } from "@heroui/react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getApiRequest } from "@/CommonFunctions";
+import { useApiRequests } from "@/CommonFunctions";
 import GtrsButton from "../GtrsButton";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import { ToastContainer } from "react-toastify";
@@ -12,6 +12,8 @@ import Accounts from "./Accounts";
 import Users from "./Users";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 import PropTypes from "prop-types";
+
+const { getApiRequest } = useApiRequests();
 
 export default function CustomerProfile({ currentUser, userPermission }) {
     const [customer, setCustomer] = useState([]);

@@ -1,4 +1,4 @@
-import { getApiRequest, handleSessionExpiration } from "@/CommonFunctions";
+import { handleSessionExpiration, useApiRequests } from "@/CommonFunctions";
 import { AlertToast } from "@/permissions";
 import React from "react";
 import PropTypes from "prop-types";
@@ -8,6 +8,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import GtrsButton from "../GtrsButton";
 import { ToastContainer } from "react-toastify";
+
+const { getApiRequest } = useApiRequests();
+
 function AddNewTransitDay({
     url,
     currentUser,

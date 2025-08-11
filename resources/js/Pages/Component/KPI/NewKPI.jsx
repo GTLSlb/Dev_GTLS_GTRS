@@ -18,9 +18,9 @@ import NewKPIModalAddReason from "./NEWKPIModal";
 import {
     formatDateFromExcelWithNoTime,
     formatDateToExcel,
-    getApiRequest,
     handleSessionExpiration,
     renderConsDetailsLink,
+    useApiRequests,
 } from "@/CommonFunctions";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
@@ -28,6 +28,8 @@ import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import { PencilIcon } from "@heroicons/react/20/solid";
+
+const { getApiRequest } = useApiRequests();
 
 function NewKPI({
     url,

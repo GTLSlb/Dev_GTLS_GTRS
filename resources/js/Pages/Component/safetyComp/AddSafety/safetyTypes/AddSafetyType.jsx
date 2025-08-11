@@ -5,7 +5,9 @@ import { PencilIcon } from "@heroicons/react/24/outline";
 import notFound from "../../../../../assets/pictures/NotFound.png";
 import AddSafetyTypeModal from "./AddSafetyTypeModel";
 import { canAddSafetyType, canEditSafetyType } from "@/permissions";
-import { getApiRequest } from '@/CommonFunctions';
+import { useApiRequests } from '@/CommonFunctions';
+
+const { getApiRequest } = useApiRequests();
 
 export default function AddSafetyType({
     safetyTypes,

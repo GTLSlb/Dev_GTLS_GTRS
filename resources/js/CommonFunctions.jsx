@@ -185,42 +185,42 @@ export const fetchApiData = async (
  * @param {object} headers - Optional headers to include in the request.
  * @return {Promise} A Promise that resolves with the data from the response or handles errors.
  */
-export function getApiRequest(url, headers = {}) {
-    const Token = Cookies.get("access_token");
-    const tokenHeaders = { ...headers, Authorization: `Bearer ${Token}` };
-    return axios
-        .get(url, {
-            headers: tokenHeaders,
-        })
-        .then((res) => {
-            return res.data;
-        })
-        .catch((err) => {
-            if (err.response && err.response.status === 401) {
-                // Handle 401 error using SweetAlert
-                swal({
-                    title: "Session Expired!",
-                    text: "Please login again",
-                    icon: "info",
-                    buttons: {
-                        confirm: {
-                            text: "OK",
-                            value: true,
-                            visible: true,
-                            className: "",
-                            closeModal: true,
-                        },
-                    },
-                }).then(function () {
-                    handleSessionExpiration();
-                });
-            } else {
-                // Handle other errors
-                AlertToast("Something went wrong", 2);
-                console.error(err);
-            }
-        });
-}
+// export function getApiRequest(url, headers = {}) {
+//     const Token = Cookies.get("access_token");
+//     const tokenHeaders = { ...headers, Authorization: `Bearer ${Token}` };
+//     return axios
+//         .get(url, {
+//             headers: tokenHeaders,
+//         })
+//         .then((res) => {
+//             return res.data;
+//         })
+//         .catch((err) => {
+//             if (err.response && err.response.status === 401) {
+//                 // Handle 401 error using SweetAlert
+//                 swal({
+//                     title: "Session Expired!",
+//                     text: "Please login again",
+//                     icon: "info",
+//                     buttons: {
+//                         confirm: {
+//                             text: "OK",
+//                             value: true,
+//                             visible: true,
+//                             className: "",
+//                             closeModal: true,
+//                         },
+//                     },
+//                 }).then(function () {
+//                     handleSessionExpiration();
+//                 });
+//             } else {
+//                 // Handle other errors
+//                 AlertToast("Something went wrong", 2);
+//                 console.error(err);
+//             }
+//         });
+// }
 
 export const formatDateToExcel = (dateValue) => {
     const date = new Date(dateValue);
@@ -425,3 +425,101 @@ export const formatNumberWithCommas = (value) => {
         return parts.join(".");
     }
 };
+
+export function useApiRequests() {
+    const { Token, userAccess } = useContext(CustomContext);
+
+
+    const getApiRequest = (url, headers = {}, passedToken = null) => {
+        // Create a new headers object to avoid mutating the original
+        const tokenHeaders = {
+            ...headers,
+        };
+        // Check if the Authorization header is missing and a token is provided
+        if (!tokenHeaders.Authorization && passedToken) {
+            tokenHeaders.Authorization = `Bearer ${passedToken}`;
+        } else if (!tokenHeaders.Authorization && Token && !passedToken) {
+            tokenHeaders.Authorization = `Bearer ${Token}`;
+        }
+        return axios
+            .get(url, { headers: tokenHeaders })
+            .then((res) => res.data)
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        icon: "info",
+                        buttons: {
+                            confirm: {
+                                text: "OK",
+                                value: true,
+                                visible: true,
+                                className: "",
+                                closeModal: true,
+                            },
+                        },
+                    }).then(() => handleSessionExpiration());
+                    throw err;
+                } else {
+                    console.error("API GET request error:", err);
+                    throw err;
+                }
+            });
+    };
+
+    const postApiRequest = (
+        url,
+        headers = {},
+        body = {},
+        passedToken = null
+    ) => {
+        const tokenHeaders = {
+            ...headers,
+        };
+
+        if (!tokenHeaders.Authorization && passedToken) {
+            tokenHeaders.Authorization = `Bearer ${passedToken}`;
+        }
+        return axios
+            .post(url, body, { headers: tokenHeaders })
+            .then((res) => res.data)
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        icon: "info",
+                        buttons: {
+                            confirm: {
+                                text: "OK",
+                                value: true,
+                                visible: true,
+                                className: "",
+                                closeModal: true,
+                            },
+                        },
+                    }).then(() => handleSessionExpiration());
+                    throw err;
+                } else {
+                    console.error("API POST request error:", err);
+                    throw err;
+                }
+            });
+    };
+
+    /**
+     * Checks if a given price is within the user's approval limit.
+     *
+     * @param {number} price - The price to check.
+     * @returns {boolean} True if the price is within the limit, false otherwise.
+     */
+    const WithinLimit = (price) => {
+        if (userAccess?.ApprovalLimit) {
+            return price <= userAccess.ApprovalLimit;
+        }
+        return true; // If no limit is defined, assume it's within limit
+    };
+
+    return { getApiRequest, postApiRequest, WithinLimit };
+}

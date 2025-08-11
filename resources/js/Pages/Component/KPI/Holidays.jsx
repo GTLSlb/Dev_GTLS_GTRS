@@ -10,13 +10,15 @@ import moment from "moment";
 import AddHoliday from "./Components/AddHoliday";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import { canAddHolidays, canEditHolidays } from "@/permissions";
-import { getApiRequest } from "@/CommonFunctions";
+import { useApiRequests } from "@/CommonFunctions";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import GtrsButton from "../GtrsButton";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import {ToastContainer} from 'react-toastify';
+
+const { getApiRequest } = useApiRequests();
 
 window.moment = moment;
 export default function Holidays({

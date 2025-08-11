@@ -7,11 +7,13 @@ import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import TableStructure from "@/Components/TableStructure";
-import { formatDateToExcel, getApiRequest } from "@/CommonFunctions";
+import { formatDateToExcel, useApiRequests } from "@/CommonFunctions";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+
+const { getApiRequest } = useApiRequests();
 
 export default function DriverLogin({
     DriverData,

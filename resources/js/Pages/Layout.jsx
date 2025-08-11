@@ -8,10 +8,11 @@ import { Routes, Route } from "react-router-dom";
 import NotFound from "./NotFoundPage";
 import Login from "./Auth/Login";
 import AnimatedLoading from "@/Components/AnimatedLoading";
-import { handleSessionExpiration } from "@/CommonFunctions";
+import { handleSessionExpiration, useApiRequests } from "@/CommonFunctions";
 import NoAccess from "@/Components/NoAccess";
 import Logout from "@/Pages/Auth/Logout";
 import { CustomContext } from "@/CommonContext";
+const { getApiRequest } = useApiRequests();
 
 export default function Sidebar() {
     const {
@@ -20,12 +21,14 @@ export default function Sidebar() {
         setToken,
         canAccess,
         currentUser,
+        allowedApplications,
         setCanAccess,
         setCurrentUser,
-        setAllowedApplications
+        setAllowedApplications,
     } = useContext(CustomContext);
 
     const Gtamurl = window.Laravel.gtamUrl;
+    const appId = window.Laravel?.appId;
     const appDomain = window.Laravel.appDomain;
 
     const getAppPermisions = () => {
@@ -97,27 +100,53 @@ export default function Sidebar() {
                 parsedDataPromise.then((parsedData) => {
                     setAllowedApplications(parsedData);
 
-                    let hasAccessToApp = parsedData?.find((app) => app.AppId == window.Laravel.appId);
-                    if (!hasAccessToApp) {
-                        setCanAccess(false);
-                    }else{
-                        setCanAccess(true);
-                    }
-                });
-            })
-            .catch((err) => {
-                console.error(err);
-            });
+            const isAllowed = allowedApplications?.find(
+                (item) => item.AppId == window.Laravel.appId
+            );
+            if (
+                currentUser?.Features?.length == 0 &&
+                !isAllowed &&
+                window.location.pathname != "/logout"
+            ) {
+                setCanAccess(false);
+            } else {
+                setCanAccess(true);
+            }
+
+            const userAccessHeaders = {
+                UserId: user.UserId,
+                GTISUserId: null,
+                Authorization: `Bearer ${access_token}`,
+            };
+            const userAccessResponse = await getApiRequest(
+                `${url}User/Access`,
+                userAccessHeaders
+            );
+            const access = userAccessResponse?.find(
+                (u) => u?.UserId === user.UserId
+            );
+            setUserAccess(access);
+
+            setLoading(false);
+        } catch (err) {
+            console.error("Error during initial data fetch:", err);
+            setLoading(false);
+            setCanAccess(false);
+            if (err.response && err.response.status === 401) {
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again",
+                    type: "info",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                }).then(() => {});
+            }
+        }
     };
 
     useEffect(() => {
-        if (currentUser) {
-            getUserPermissions();
-        }
-    }, [currentUser]);
-
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [loadingGtrs, setLoadingGtrs] = useState(false);
+        fetchUserData();
+    }, [Gtamurl, appId]);
 
    useEffect(() => {
         if (currentUser && !Token) {
@@ -156,19 +185,21 @@ export default function Sidebar() {
     if (!currentUser) {
         return null; // Render nothing
     } else {
-        if(canAccess === false) {
-            return <NoAccess />
-        }else{
+        if (canAccess === false) {
+            return <NoAccess />;
+        } else {
             return (
                 <div className="h-screen">
-                    {Token ? (
+                    {canAccess && currentUser && Token ? (
                         <div className="bg-smooth h-full ">
                             <Routes>
                                 <Route
                                     path="/*"
                                     element={
                                         <Gtrs
-                                            setMobileMenuOpen={setMobileMenuOpen}
+                                            setMobileMenuOpen={
+                                                setMobileMenuOpen
+                                            }
                                             mobileMenuOpen={mobileMenuOpen}
                                             loadingGtrs={loadingGtrs}
                                             setLoadingGtrs={setLoadingGtrs}
@@ -180,8 +211,20 @@ export default function Sidebar() {
                                     path="/notFound"
                                     element={<NotFound />}
                                 />
-                                <Route path="/logout" element={<Logout setCurrentUser={setCurrentUser} setToken={setToken} currentUser={currentUser}/>} />
-                                <Route path="/no-access" element ={<NoAccess />} />
+                                <Route
+                                    path="/logout"
+                                    element={
+                                        <Logout
+                                            setCurrentUser={setCurrentUser}
+                                            setToken={setToken}
+                                            currentUser={currentUser}
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path="/no-access"
+                                    element={<NoAccess />}
+                                />
                                 <Route path="/*" element={<NotFound />} />
                             </Routes>
                         </div>

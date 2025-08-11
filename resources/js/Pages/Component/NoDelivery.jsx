@@ -9,14 +9,16 @@ import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import TableStructure from "@/Components/TableStructure";
 import {
     formatDateToExcel,
-    getApiRequest,
     renderConsDetailsLink,
+    useApiRequests,
 } from "@/CommonFunctions";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+
+const { getApiRequest } = useApiRequests();
 
 export default function NoDelivery({
     NoDelData,

@@ -2,9 +2,12 @@ import { useState } from "react";
 import { PencilIcon } from "@heroicons/react/24/outline";
 import notFound from "../../../../../assets/pictures/NotFound.png";
 import AddSafetyCausesModal from "./AddSafetyCausesModel";
-import { getApiRequest } from "@/CommonFunctions";
+import { useApiRequests } from "@/CommonFunctions";
 import PropTypes from "prop-types";
 import React from "react";
+
+const { getApiRequest } = useApiRequests();
+
 export default function AddSafetyCauses({
     Token,
     safetyCauses,

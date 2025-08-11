@@ -7,13 +7,15 @@ import { useState, useEffect, useRef } from "react";
 import TableStructure from "@/Components/TableStructure";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import { canAddNewTransitDays, canEditTransitDays } from "@/permissions";
-import { getApiRequest } from "@/CommonFunctions";
+import { useApiRequests } from "@/CommonFunctions";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import GtrsButton from "../GtrsButton";
+
+const { getApiRequest } = useApiRequests();
 
 function NewTransitDays({
     setNewTransitDays,

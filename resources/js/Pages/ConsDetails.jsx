@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import "../../css/scroll.css";
 import React from "react";
 import PropTypes from "prop-types";
-import { getApiRequest } from "@/CommonFunctions";
+import { useApiRequests } from "@/CommonFunctions";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
@@ -14,6 +14,8 @@ import DeliveryDetails from "./Component/ConsDetailsComp/DeliveryDetails";
 import PalletDetails from "./Component/ConsDetailsComp/PalletDetails";
 import PickupDelInfo from "./Component/ConsDetailsComp/PickupDelInfo";
 import BackButton from "@/Components/BackButton";
+
+const { getApiRequest } = useApiRequests();
 export default function ConsDetails({ url, currentUser }) {
     const navigate = useNavigate();
     const location = useLocation();

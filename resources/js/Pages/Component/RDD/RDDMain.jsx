@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import swal from "sweetalert";
 import axios from "axios";
-import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
+import { handleSessionExpiration, useApiRequests } from '@/CommonFunctions';
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import RDDTable from "./RDDTable";
 import PropTypes from "prop-types";
+
+const { getApiRequest } = useApiRequests();
 
 export default function RDDMain({
     setActiveIndexGTRS,

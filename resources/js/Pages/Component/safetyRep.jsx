@@ -6,9 +6,11 @@ import SafetyRepTable from "./safetyComp/safetyRepTable";
 import SafetyRepChart from "./safetyComp/safetyRepChart";
 import AddSafetyType from "./safetyComp/AddSafety/safetyTypes/AddSafetyType";
 import { canViewSafetyType } from "@/permissions";
-import { getApiRequest } from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import { ToastContainer } from "react-toastify";
+import { useApiRequests } from "@/CommonFunctions";
+
+const { getApiRequest } = useApiRequests();
 
 export default function SafetyRep({
     accData,
