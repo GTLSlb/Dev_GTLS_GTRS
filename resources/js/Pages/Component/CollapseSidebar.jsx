@@ -10,7 +10,7 @@ import {
     AccordionHeader,
     AccordionItem,
 } from "react-headless-accordion";
-import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
+import MenuIcon from '@mui/icons-material/Menu';
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -109,6 +109,7 @@ export default function CollapseSidebar({
     setCollapsed,
     sidebarElements,
     setSidebarElements,
+    user,
 }) {
     const [isOpen, setIsOpen] = useState(false);
     const hasImage = false;
@@ -343,18 +344,17 @@ export default function CollapseSidebar({
                                 }
                             >
                                 <p className="text-sm truncate w-24">
-                                    {currentUser.FirstName}{" "}
-                                    {currentUser.LastName}
+                                    {user.FirstName}{" "}
+                                    {user.LastName}
                                 </p>
                                 <p className="text-xs truncate w-36">
-                                    {currentUser.Email}
+                                    {user.Email}
                                 </p>
                             </div>
                             <Button
                                 isIconOnly
-                                className="bg-zinc-300 hover:bg-zinc-200"
+                                className="bg-zinc-300 hover:bg-zinc-200 rounded-xl text-black font-bold"
                                 aria-label="Like"
-                                size="sm"
                                 onClick={() => {
                                     setIsOpen(false);
                                     setCollapsed(!collapsed);
@@ -367,11 +367,9 @@ export default function CollapseSidebar({
                                             : "rotate-180 transform  transition"
                                     }
                                 >
-                                    <KeyboardDoubleArrowRightIcon
+                                    <MenuIcon
                                         className={
-                                            collapsed
-                                                ? "p-[2px] min-w-2 min-h-2"
-                                                : "p-[2px] min-w-2 min-h-2"
+                                            "w-[0.1rem] h-[0.1rem]"
                                         }
                                     />
                                 </div>
@@ -626,4 +624,4 @@ CollapseSidebar.propTypes = {
     sidebarElements: PropTypes.array,
     setSidebarElements: PropTypes.func,
     setCustomerAccounts: PropTypes.func,
-};  
+};

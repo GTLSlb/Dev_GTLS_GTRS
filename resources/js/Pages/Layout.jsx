@@ -114,7 +114,6 @@ export default function Sidebar() {
                 !isAllowed &&
                 window.location.pathname != "/logout"
             ) {
-                console.log("No access to this application");
                 setCanAccess(false);
             } else {
                 setCanAccess(true);
@@ -125,7 +124,6 @@ export default function Sidebar() {
         } catch (err) {
             console.error("Error during initial data fetch:", err);
             setLoading(false);
-            console.log("Error details:", err.response?.data || err.message);
             setCanAccess(false);
             if (err.response && err.response.status === 401) {
                 swal({
@@ -159,8 +157,6 @@ export default function Sidebar() {
             });
         }
     }, [currentUser, allowedApplications, appId]);
-
-    console.log(canAccess)
 
     if (!currentUser) {
         return null; // Render nothing

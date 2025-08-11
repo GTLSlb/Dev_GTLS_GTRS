@@ -744,7 +744,7 @@ export default function GtrsMain({
                                         path="/dashboard"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="Dashboard_view"
                                                 element={
                                                     <MainCharts
@@ -770,7 +770,7 @@ export default function GtrsMain({
                                         path="/spendanalysis"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="Dashboard_view"
                                                 element={<SpendDashboard />}
                                                 currentUser={currentUser}
@@ -783,7 +783,7 @@ export default function GtrsMain({
                                         path="/consignments"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="ConsignmetsReport_view"
                                                 element={
                                                     <GtrsCons
@@ -812,7 +812,7 @@ export default function GtrsMain({
                                         path="/consignment-details"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="ConsignmentsDetails_view"
                                                 element={
                                                     <ConsDetails
@@ -832,7 +832,7 @@ export default function GtrsMain({
                                         path="/performance"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="Performance_view"
                                                 element={
                                                     <ConsPerf
@@ -868,7 +868,7 @@ export default function GtrsMain({
                                         path="/failed-consignments"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="View_failedConsignment"
                                                 element={
                                                     <FailedConsMain
@@ -919,7 +919,7 @@ export default function GtrsMain({
                                         path="/no-delivery"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="NoDeliveryInfo_view"
                                                 element={
                                                     <NoDelivery
@@ -952,7 +952,7 @@ export default function GtrsMain({
                                         path="/additional-charges"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="AdditionalCharges_view"
                                                 element={
                                                     <AdditionalCharges
@@ -987,7 +987,7 @@ export default function GtrsMain({
                                         path="/driver-login"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="DriverLogin_view"
                                                 element={
                                                     <DriverLogin
@@ -1017,7 +1017,7 @@ export default function GtrsMain({
                                         path="/rdd"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="View_RDD"
                                                 element={
                                                     <RDDMain
@@ -1064,7 +1064,7 @@ export default function GtrsMain({
                                         path="/safety"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="View_safety"
                                                 element={
                                                     <SafetyRep
@@ -1121,7 +1121,7 @@ export default function GtrsMain({
                                         path="/missing-pod"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="MissingPOD_view"
                                                 element={
                                                     <MissingPOD
@@ -1148,7 +1148,7 @@ export default function GtrsMain({
                                         path="/kpi/holidays"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="View_Holidays"
                                                 element={
                                                     <Holidays
@@ -1182,7 +1182,7 @@ export default function GtrsMain({
                                         path="/kpi/reasons"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="View_KPIReasons"
                                                 element={
                                                     <Route
@@ -1224,7 +1224,7 @@ export default function GtrsMain({
                                         path="/transport"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="View_Transport"
                                                 element={
                                                     <TransportRep
@@ -1252,7 +1252,7 @@ export default function GtrsMain({
                                         path="/kpi"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="KPI_view"
                                                 element={
                                                     <NewKPI
@@ -1290,7 +1290,7 @@ export default function GtrsMain({
                                         path="/kpi/transit-days"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="View_TransitDays"
                                                 element={
                                                     <NewTransitDays
@@ -1325,7 +1325,7 @@ export default function GtrsMain({
                                         path="/add-transit"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="TransitDays_add"
                                                 element={
                                                     <AddNewTransitDay
@@ -1349,7 +1349,7 @@ export default function GtrsMain({
                                         path="/pack-report"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="UnileverReport_View"
                                                 element={
                                                     <GraphPresentation
@@ -1370,7 +1370,7 @@ export default function GtrsMain({
                                         path="/real-food-report"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="RealFoodReport_View"
                                                 element={
                                                     <RealFoodKPIPack
@@ -1391,7 +1391,7 @@ export default function GtrsMain({
                                         path="/traffic-report"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="TrafficReport_View"
                                                 element={<TrafficComp />}
                                             />
@@ -1404,7 +1404,7 @@ export default function GtrsMain({
                                         path="/incident"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="IncidentDetails_View"
                                                 element={
                                                     <Incident
@@ -1428,7 +1428,7 @@ export default function GtrsMain({
                                         path="/consignment-tracking"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="ConsignmentTracking_View"
                                                 element={
                                                     <ConsTrack
@@ -1450,7 +1450,7 @@ export default function GtrsMain({
                                         path="/delivery-report"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route={[
                                                     "DeliveryReport_View",
                                                     "MetcashDeliveryReport_View",
@@ -1491,7 +1491,7 @@ export default function GtrsMain({
                                         path="/excel-delivery-report"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route={[
                                                     "DeliveryReport_View",
                                                     "MetcashDeliveryReport_View",
@@ -1529,7 +1529,7 @@ export default function GtrsMain({
                                         path="/delivery-report/comments"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route={
                                                     "DeliveryReportCommentsTable_View"
                                                 }
@@ -1561,7 +1561,7 @@ export default function GtrsMain({
                                         path="/consignment-map"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="ConsignmentMap_View"
                                                 element={<ConsMap />}
                                             />
@@ -1574,7 +1574,7 @@ export default function GtrsMain({
                                         path="/consignment-tracking"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="View_Tracking2"
                                                 element={
                                                     <NewConsignmentTracking />
@@ -1593,7 +1593,7 @@ export default function GtrsMain({
                                         path="/SOH"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="StockReport_View"
                                                 element={
                                                     <ProductStockTable
@@ -1614,7 +1614,7 @@ export default function GtrsMain({
                                         path="/settings"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="Settings_View"
                                                 element={
                                                     <SettingMiddleware
@@ -1635,7 +1635,7 @@ export default function GtrsMain({
                                         path="/customer-settings"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="Settings_View"
                                                 element={
                                                     <Customers
@@ -1659,7 +1659,7 @@ export default function GtrsMain({
                                         path="/customer-profile"
                                         element={
                                             <ProtectedRoute
-                                                permission={userPermission}
+                                                permission={currentUser}
                                                 route="Settings_View"
                                                 element={
                                                     <CustomerProfile
