@@ -1,5 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 
+import PropTypes from 'prop-types';
+
 import {
   Chart, LineController, LineElement, Filler, PointElement, LinearScale, TimeScale, Tooltip,
 } from 'chart.js';
@@ -20,7 +22,7 @@ function LineChart01({
 
   useEffect(() => {
     const ctx = canvas.current;
-    // eslint-disable-next-line no-unused-vars
+     
     const chart = new Chart(ctx, {
       type: 'line',
       data: data,
@@ -65,12 +67,17 @@ function LineChart01({
       },
     });
     return () => chart.destroy();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <canvas ref={canvas} width={width} height={height}></canvas>
   );
 }
+
+LineChart01.propTypes = {
+  data: PropTypes.object,
+  width: PropTypes.number,
+  height: PropTypes.number,
+};
 
 export default LineChart01;

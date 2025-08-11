@@ -1,0 +1,248 @@
+import { AlertToast, canEditUsers } from "@/permissions";
+import {
+    Button,
+    Card,
+    CardHeader,
+    Drawer,
+    DrawerBody,
+    DrawerContent,
+    DrawerFooter,
+    DrawerHeader,
+    Switch,
+    useDisclosure,
+} from "@heroui/react";
+import React, { useState } from "react";
+import PropTypes from "prop-types";
+
+export default function Users({ customer, userPermission }) {
+    const [editMode, setEditMode] = useState(false);
+    const [accountStates, setAccountStates] = useState({});
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [originalAccountStates, setOriginalAccountStates] = useState({});
+    const [userStatus, setUserStatus] = useState(true); // true = enabled
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+    const handleUserClick = (user) => {
+        setSelectedUser(user);
+        setUserStatus(user?.IsActive ?? true); // Reset user switch
+        const initialStates = {};
+        customer.Accounts.forEach((account) => {
+            const isLinked = user.Accounts?.includes(account.AccountId);
+            initialStates[account.AccountId] = isLinked;
+        });
+        setAccountStates(initialStates);
+        setOriginalAccountStates(initialStates);
+        setEditMode(false); // Reset edit mode too
+        onOpen();
+    };
+
+    const renderDrawerContent = () => {
+        if (!selectedUser) return null;
+
+        const toggleEditMode = () => {
+            if (!editMode) {
+                const initialStates = {};
+                customer.Accounts.forEach((account) => {
+                    const isLinked = selectedUser.Accounts?.includes(
+                        account.AccountId
+                    );
+                    initialStates[account.AccountId] = isLinked;
+                });
+                setAccountStates(initialStates);
+                setOriginalAccountStates(initialStates); // <--- store original snapshot
+            }
+            setEditMode((prev) => !prev);
+        };
+
+        const handleSwitchChange = (accountId, value) => {
+            setAccountStates((prev) => ({
+                ...prev,
+                [accountId]: value,
+            }));
+        };
+        const handleSave = () => {
+            const changes = Object.entries(accountStates).reduce(
+                (acc, [accountId, newValue]) => {
+                    const originalValue = originalAccountStates[accountId];
+                    if (originalValue !== newValue) {
+                        const account = customer.Accounts.find(
+                            (acc) => acc.AccountId === parseInt(accountId)
+                        );
+                        acc.push({
+                            Username: selectedUser.Username,
+                            AccountName:
+                                account?.AccountName || `Account ${accountId}`,
+                            Status: newValue ? "Enabled" : "Disabled",
+                        });
+                    }
+                    return acc;
+                },
+                []
+            );
+
+            // Build email details
+            const subject = `Account Changes for ${selectedUser.Username}`;
+
+            const userStatusLine = `User Status: ${
+                userStatus ? "Enabled" : "Disabled"
+            }`;
+
+            const bodyLines = changes.map(
+                (change) => `• ${change.AccountName}: ${change.Status}`
+            );
+            const body = `Hello,\n\nThe following account changes have been requested for ${
+                selectedUser.Username
+            }:\n\n${userStatusLine}\n\n${bodyLines.join("\n")}\n\nThanks`;
+
+            const mailtoLink = `mailto:recipient@example.com?cc=cc@example.com&subject=${encodeURIComponent(
+                subject
+            )}&body=${encodeURIComponent(body)}`;
+
+            // Open default mail client
+            window.location.href = mailtoLink;
+            // You can send `changes` to backend here...
+            AlertToast("Request submitted successfully", 1);
+            setEditMode(false);
+        };
+
+        return (
+            <DrawerContent>
+                {(onClose) => (
+                    <>
+                        <DrawerHeader className="flex justify-between items-center">
+                            <div className="flex gap-2 items-center">
+                                All Accounts for {selectedUser.Username}
+                                <Switch
+                                    isSelected={userStatus}
+                                    onValueChange={setUserStatus}
+                                    isDisabled={!editMode}
+                                    color="success"
+                                    size="sm"
+                                />
+                            </div>
+                            {canEditUsers(userPermission) && (
+                                <div className="flex gap-2 mr-5">
+                                    {editMode ? (
+                                        <Button
+                                            color="success"
+                                            size="sm"
+                                            onPress={() => {
+                                                handleSave();
+                                                onClose();
+                                            }}
+                                        >
+                                            Submit Request
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            size="sm"
+                                            className="bg-gray-800 text-white"
+                                            onPress={toggleEditMode}
+                                        >
+                                            Edit
+                                        </Button>
+                                    )}
+                                </div>
+                            )}
+                        </DrawerHeader>
+
+                        <DrawerBody>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {customer.Accounts.map((account) => {
+                                    const accountId = account.AccountId;
+                                    const isSelected = editMode
+                                        ? accountStates[accountId]
+                                        : selectedUser.Accounts?.includes(
+                                              accountId
+                                          );
+
+                                    return (
+                                        <div
+                                            key={accountId}
+                                            className="bg-white shadow-md rounded-xl min-h-[120px] border p-4"
+                                        >
+                                            <div className="flex items-start justify-between mb-2">
+                                                <h2 className="text-lg font-semibold">
+                                                    {account.AccountName}
+                                                </h2>
+                                                <Switch
+                                                    isSelected={isSelected}
+                                                    onValueChange={(value) =>
+                                                        handleSwitchChange(
+                                                            accountId,
+                                                            value
+                                                        )
+                                                    }
+                                                    isDisabled={!editMode}
+                                                    color="success"
+                                                    size="sm"
+                                                />
+                                            </div>
+                                            <p>{account.AccountNo}</p>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </DrawerBody>
+
+                        <DrawerFooter>
+                            <Button
+                                color="danger"
+                                variant="light"
+                                onPress={onClose}
+                            >
+                                Close
+                            </Button>
+                        </DrawerFooter>
+                    </>
+                )}
+            </DrawerContent>
+        );
+    };
+
+    return (
+        <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {customer.Users?.map((user) => (
+                    <Card
+                        key={user.UserId}
+                        isHoverable
+                        isPressable
+                        shadow="sm"
+                        onPress={() => handleUserClick(user)}
+                    >
+                        <CardHeader className="flex flex-col items-start gap-1">
+                            <div className="flex items-start w-full gap-2 justify-between mb-2">
+                                <h3 className="text-lg font-semibold">
+                                    {user.Username}
+                                </h3>
+                                <Switch
+                                    color="success"
+                                    isDisabled
+                                    defaultSelected
+                                    size="sm"
+                                />
+                            </div>
+                            <p className="text-sm text-gray-600">
+                                {user.Username}
+                            </p>
+                        </CardHeader>
+                    </Card>
+                ))}
+            </div>
+            <Drawer
+                isOpen={isOpen}
+                onOpenChange={onOpenChange}
+                placement="bottom"
+                className=""
+            >
+                {renderDrawerContent()}
+            </Drawer>
+        </div>
+    );
+}
+
+Users.propTypes = {
+    customer: PropTypes.object,
+    userPermission: PropTypes.object,
+};

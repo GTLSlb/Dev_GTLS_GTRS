@@ -26,9 +26,18 @@ Route::get('/', function () {
     return Inertia::render('Layout');
 })->middleware(['custom.auth'])->name('Main');
 
+
 Route::get('/login', function () {
     return Inertia::render('Auth/Login');
 })->name('login');
+
+Route::get('/failed-login', function () {
+    return Inertia::render('Auth/FailedLogin');
+})->name('failed-login');
+
+Route::get('/maintenance', function () {
+    return Inertia::render('MaintenancePage');
+})->name('maintenance');
 
 Route::get('/forgot-password', function () {
     return Inertia::render('Auth/ForgotPassword');

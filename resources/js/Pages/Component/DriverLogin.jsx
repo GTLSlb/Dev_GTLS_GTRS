@@ -1,11 +1,13 @@
 import { useRef, useState } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import { useEffect } from "react";
 import moment from "moment";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import TableStructure from "@/Components/TableStructure";
-import { formatDateToExcel, getApiRequest } from "@/CommonFunctions";
+import { formatDateToExcel, useApiRequests } from "@/CommonFunctions";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
@@ -19,6 +21,7 @@ export default function DriverLogin({
     url,
     currentUser,
 }) {
+    const { getApiRequest } = useApiRequests();
     window.moment = moment;
 
     const [isFetching, setIsFetching] = useState();
@@ -200,7 +203,7 @@ export default function DriverLogin({
             defaultWidth: 170,
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -306,3 +309,12 @@ export default function DriverLogin({
         </div>
     );
 }
+
+DriverLogin.propTypes = {
+    DriverData: PropTypes.array,
+    setDriverData: PropTypes.func,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    url: PropTypes.string,
+    currentUser: PropTypes.object,
+};

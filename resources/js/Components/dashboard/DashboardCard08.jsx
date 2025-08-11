@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
+import PropTypes from 'prop-types';
 // import LineChart from '../../charts/LineChart02';
 import LineChart from '../charts/LineChart02';
 // Import utilities
@@ -15,7 +16,6 @@ function DashboardCard08(props) {
 
   useEffect(()=>{
     if (transportData !== null) {
-      const stateArray = Array.from(transportData.uniqueState);
       const tempchart = 
       {labels: transportData.firstDaysOfMonth,
       datasets: [
@@ -96,5 +96,9 @@ function DashboardCard08(props) {
     </div>
   );
 }
+
+DashboardCard08.propTypes = {
+  transportData: PropTypes.object,
+};
 
 export default DashboardCard08;

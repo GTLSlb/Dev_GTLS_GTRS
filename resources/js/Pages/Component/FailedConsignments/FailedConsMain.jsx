@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import FailedCons from "./FailedCons";
 import swal from "sweetalert";
 import axios from "axios";
@@ -13,7 +14,7 @@ export default function FailedConsMain({
     currentUser,
     userPermission,
     accData,
-    AToken,
+    Token,
     failedReasons,
     setFailedReasons,
 }) {
@@ -31,12 +32,12 @@ export default function FailedConsMain({
                 .get(`${url}FailureReasons`, {
                     headers: {
                         UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
+                        Authorization: `Bearer ${Token}`,
                     },
                 })
                 .then((res) => {
                     const x = JSON.stringify(res.data);
-                    const parsedDataPromise = new Promise((resolve, reject) => {
+                    const parsedDataPromise = new Promise((resolve) => {
                         const parsedData = JSON.parse(x);
                         resolve(parsedData);
                     });
@@ -59,7 +60,7 @@ export default function FailedConsMain({
                         });
                     } else {
                         // Handle other errors
-                        console.log(err);
+                        console.error(err);
                     }
                 });
         } catch (error) {
@@ -82,7 +83,7 @@ export default function FailedConsMain({
                         PerfData={PerfData}
                         filterValue={filterValue}
                         setFilterValue={setFilterValue}
-                        AToken={AToken}
+                        Token={Token}
                     />
                 </div>
             )}
@@ -90,3 +91,16 @@ export default function FailedConsMain({
     );
 
 }
+
+FailedConsMain.propTypes = {
+    url: PropTypes.string,
+    PerfData: PropTypes.array,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    currentUser: PropTypes.object,
+    userPermission: PropTypes.object,
+    accData: PropTypes.array,
+    Token: PropTypes.string,
+    failedReasons: PropTypes.array,
+    setFailedReasons: PropTypes.func,
+};

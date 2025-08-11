@@ -1,5 +1,6 @@
 import React from "react";
 import BarCharData from "./safetyCharts/SafetyCard02";
+import propTypes from "prop-types";
 import RGL, { WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 const ReactGridLayout = WidthProvider(RGL);
@@ -15,7 +16,6 @@ import {
 import StackedBarChart from "./safetyCharts/StackedBarChart";
 export default function SafetyRepChart({
     filteredData,
-    safetyCauses,
     safetyTypes,
 }) {
     const [layout, setLayout] = useState([
@@ -75,30 +75,6 @@ export default function SafetyRepChart({
         });
 
         return counts;
-    };
-    const calculateSafetyTypePercentage = (data) => {
-        const totalCount = data.length;
-        const typeCounts = {};
-
-        data.forEach((item) => {
-            const safetyType = item.SafetyType;
-
-            if (typeCounts[safetyType]) {
-                typeCounts[safetyType]++;
-            } else {
-                typeCounts[safetyType] = 1;
-            }
-        });
-
-        const typePercentages = {};
-
-        for (const type in typeCounts) {
-            const count = typeCounts[type];
-            const percentage = (count / totalCount) * 100;
-            typePercentages[type] = percentage.toFixed(0);
-        }
-
-        return typePercentages;
     };
 
     const countReportsBySafetyType = (jsonData) => {
@@ -238,7 +214,6 @@ export default function SafetyRepChart({
     const problemsByState = getCountByState(filteredData);
     const typesbymonth = countSafetyTypesByMonth(filteredData);
     const recordCounts = countRecordsByMonth(filteredData);
-    const percentage = calculateSafetyTypePercentage(filteredData);
     const byStateAndType = countRecordsByStateAndType(filteredData);
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
@@ -326,9 +301,9 @@ export default function SafetyRepChart({
                 </ReactGridLayout>
             ) : (
                 <div className="h-64 flex items-center justify-center mt-10">
-                    <div class="text-center flex justify-center flex-col">
+                    <div className="text-center flex justify-center flex-col">
                         {/* <img src={notFound} alt="" className="w-52 h-auto " /> */}
-                        <h1 class="text-3xl font-bold text-gray-900">
+                        <h1 className="text-3xl font-bold text-gray-900">
                             Congrats! <br/> Nothing To Show
                         </h1>
                     </div>
@@ -337,3 +312,7 @@ export default function SafetyRepChart({
         </div>
     );
 }
+SafetyRepChart.propTypes = {
+    filteredData: propTypes.array,
+    safetyTypes: propTypes.array,
+};

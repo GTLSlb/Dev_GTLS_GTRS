@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import moment from "moment";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
@@ -16,15 +18,14 @@ import NewKPIModalAddReason from "./NEWKPIModal";
 import {
     formatDateFromExcelWithNoTime,
     formatDateToExcel,
-    getApiRequest,
     handleSessionExpiration,
     renderConsDetailsLink,
+    useApiRequests,
 } from "@/CommonFunctions";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
-import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import { PencilIcon } from "@heroicons/react/20/solid";
 
@@ -32,7 +33,7 @@ function NewKPI({
     url,
     currentUser,
     filterValue,
-    AToken,
+    Token,
     setFilterValue,
     KPIData,
     setKPIData,
@@ -40,8 +41,8 @@ function NewKPI({
     accData,
     kpireasonsData,
 }) {
+    const { getApiRequest } = useApiRequests();
     window.moment = moment;
-    const navigate = useNavigate;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isFetching, setIsFetching] = useState();
@@ -362,7 +363,8 @@ function NewKPI({
                 minDate: minDispatchDate,
                 maxDate: maxDispatchDate,
             },
-            render: ({ value, cellProps }) => {
+
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -382,7 +384,7 @@ function NewKPI({
                 minDate: minRDDDate,
                 maxDate: maxRDDDate,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -402,7 +404,7 @@ function NewKPI({
                 minDate: minDeliveryDate,
                 maxDate: maxDeliveryDate,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -431,7 +433,7 @@ function NewKPI({
                 minDate: minCalcDate,
                 maxDate: maxCalcDate,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY") == "Invalid date"
                     ? ""
                     : moment(value).format("DD-MM-YYYY");
@@ -476,10 +478,12 @@ function NewKPI({
             },
 
             render: ({ value }) => {
-                return  (
+                return (
                     <div>
                         <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-0.5 text-sm font-medium text-gray-800">
-                            {kpireasonsData?.find((reason) => reason.ReasonId === value)?.ReasonName || ""}
+                            {kpireasonsData?.find(
+                                (reason) => reason.ReasonId === value
+                            )?.ReasonName || ""}
                         </span>
                     </div>
                 );
@@ -491,7 +495,7 @@ function NewKPI({
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 100,
-            render: ({ value, data }) => {
+            render: ({ data }) => {
                 return (
                     <div>
                         {canEditKPI(userPermission) ? (
@@ -512,7 +516,7 @@ function NewKPI({
                     </div>
                 );
             },
-        }
+        },
     ];
     const newArray = columns.slice(0, -1);
     const [newColumns, setNewColumns] = useState([]);
@@ -567,10 +571,10 @@ function NewKPI({
             .get(`${url}KPIReportNew`, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
-            .then((res) => {
+            .then(() => {
                 setStatusMessage("Success!");
                 setTimeout(clearStatusMessage, messageDisplayTime);
                 setLoading(false);
@@ -592,7 +596,7 @@ function NewKPI({
                     // Handle other errors
                     setLoading(false);
                     setTimeout(clearStatusMessage, messageDisplayTime);
-                    console.log(err);
+                    console.error(err);
                 }
             });
     }
@@ -726,7 +730,7 @@ function NewKPI({
                 renderTable()
             )}
             <NewKPIModalAddReason
-                AToken={AToken}
+                Token={Token}
                 url={url}
                 isOpen={isModalOpen}
                 kpi={reason}
@@ -740,5 +744,18 @@ function NewKPI({
         </div>
     );
 }
+
+NewKPI.propTypes = {
+    url: PropTypes.string,
+    Token: PropTypes.string,
+    currentUser: PropTypes.object,
+    userPermission: PropTypes.object,
+    kpireasonsData: PropTypes.array,
+    accData: PropTypes.array,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    KPIData: PropTypes.array,
+    setKPIData: PropTypes.func,
+};
 
 export default NewKPI;

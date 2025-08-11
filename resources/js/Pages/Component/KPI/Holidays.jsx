@@ -2,31 +2,34 @@ import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import { useState } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import TableStructure from "@/Components/TableStructure";
 import { useEffect, useRef } from "react";
 import moment from "moment";
 import AddHoliday from "./Components/AddHoliday";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import { canAddHolidays, canEditHolidays } from "@/permissions";
-import { getApiRequest } from "@/CommonFunctions";
+import { useApiRequests } from "@/CommonFunctions";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import GtrsButton from "../GtrsButton";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
-import {ToastContainer} from 'react-toastify';
+import { ToastContainer } from "react-toastify";
 
 window.moment = moment;
 export default function Holidays({
     holidays,
     setHolidays,
     url,
-    AToken,
+    Token,
     filterValue,
     setFilterValue,
     userPermission,
     currentUser,
 }) {
+    const { getApiRequest } = useApiRequests();
     const [isFetching, setIsFetching] = useState();
     const [showAdd, setShowAdd] = useState(false);
     const [holiday, setHoliday] = useState();
@@ -58,7 +61,9 @@ export default function Holidays({
         });
 
         if (data) {
-            const sortedHolidays = data.sort((a, b) => b.HolidayDate.localeCompare(a.HolidayDate));
+            const sortedHolidays = data.sort((a, b) =>
+                b.HolidayDate.localeCompare(a.HolidayDate)
+            );
             setHolidays(sortedHolidays);
             setIsFetching(false);
         }
@@ -92,7 +97,7 @@ export default function Holidays({
             textAlign: "center",
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY") === "Invalid date"
                     ? ""
                     : moment(value).format("DD-MM-YYYY");
@@ -143,12 +148,16 @@ export default function Holidays({
             },
         },
     ]);
-    const scrollIntoView = ()=>{
-        const button = document.getElementById('addSection');
-        if(button){
-            button.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+    const scrollIntoView = () => {
+        const button = document.getElementById("addSection");
+        if (button) {
+            button.scrollIntoView({
+                behavior: "smooth",
+                block: "end",
+                inline: "nearest",
+            });
         }
-    }
+    };
 
     useEffect(() => {
         if (holidayOptions && stateOptions) {
@@ -177,7 +186,7 @@ export default function Holidays({
                         textAlign: "center",
                         dateFormat: "DD-MM-YYYY",
                         filterEditor: DateFilter,
-                        render: ({ value, cellProps }) => {
+                        render: ({ value }) => {
                             return moment(value).format("DD-MM-YYYY") ==
                                 "Invalid date"
                                 ? ""
@@ -233,7 +242,7 @@ export default function Holidays({
                         headerAlign: "center",
                         textAlign: "center",
                         defaultWidth: 100,
-                        render: ({ value, data }) => {
+                        render: ({ data }) => {
                             return (
                                 <div>
                                     {canEditHolidays(userPermission) ? (
@@ -282,7 +291,7 @@ export default function Holidays({
                         textAlign: "center",
                         dateFormat: "DD-MM-YYYY",
                         filterEditor: DateFilter,
-                        render: ({ value, cellProps }) => {
+                        render: ({ value }) => {
                             return moment(value).format("DD-MM-YYYY") ==
                                 "Invalid date"
                                 ? ""
@@ -381,18 +390,18 @@ export default function Holidays({
                 <div className="pt-4 px-4 sm:pt-6 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
                     {showAdd ? (
                         <div id="addSection">
-                        <AddHoliday
-                            states={stateOptions}
-                            holiday={holiday}
-                            url={url}
-                            AToken={AToken}
-                            currentUser={currentUser}
-                            userPermission={userPermission}
-                            setHoliday={setHoliday}
-                            setShowAdd={setShowAdd}
-                            fetchData={fetchData}
-                            closeModal={ToggleShow}
-                        />
+                            <AddHoliday
+                                states={stateOptions}
+                                holiday={holiday}
+                                url={url}
+                                Token={Token}
+                                currentUser={currentUser}
+                                userPermission={userPermission}
+                                setHoliday={setHoliday}
+                                setShowAdd={setShowAdd}
+                                fetchData={fetchData}
+                                closeModal={ToggleShow}
+                            />
                         </div>
                     ) : null}
 
@@ -414,3 +423,14 @@ export default function Holidays({
         </div>
     );
 }
+
+Holidays.propTypes = {
+    holidays: PropTypes.array,
+    setHolidays: PropTypes.func,
+    url: PropTypes.string,
+    Token: PropTypes.string,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    userPermission: PropTypes.object,
+    currentUser: PropTypes.object,
+};

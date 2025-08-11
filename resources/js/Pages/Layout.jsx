@@ -1,202 +1,207 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import React from "react";
 import { useEffect } from "react";
 import Gtrs from "@/Pages/GTRS";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { Routes, Route } from "react-router-dom";
-import NotFoundPage from "./NotFoundPage";
+import NotFound from "./NotFoundPage";
 import Login from "./Auth/Login";
 import AnimatedLoading from "@/Components/AnimatedLoading";
-import { handleSessionExpiration } from "@/CommonFunctions";
+import { handleSessionExpiration, useApiRequests } from "@/CommonFunctions";
 import NoAccess from "@/Components/NoAccess";
 import Logout from "@/Pages/Auth/Logout";
+import { CustomContext } from "@/CommonContext";
 
-export default function Sidebar(Boolean) {
-    const [currentUser, setcurrentUser] = useState(null);
-    const [user, setUser] = useState(null);
-    const [allowedApplications, setAllowedApplications] = useState([]);
-    const [Token, setToken] = useState(Cookies.get("access_token"));
-    const [canAccess, setCanAccess] = useState(true);
-    const [sidebarElements, setSidebarElements] = useState();
-    const Gtamurl = window.Laravel.gtamUrl;
+export default function Sidebar() {
+    const {
+        url,
+        Token,
+        setUser,
+        setToken,
+        canAccess,
+        currentUser,
+        allowedApplications,
+        setCanAccess,
+        setCurrentUser,
+        setAllowedApplications,
+    } = useContext(CustomContext);
+    const [loading, setLoading] = useState(true);
+    const { getApiRequest, postApiRequest } = useApiRequests();
+    const gtamUrl = window.Laravel.gtamUrl;
+    const appId = window.Laravel?.appId;
     const appDomain = window.Laravel.appDomain;
-
-    const getAppPermisions = () => {
-        //user permissions
-        axios
-            .get(`${Gtamurl}User/AppPermissions`, {
-                headers: {
-                    UserId: currentUser?.UserId,
-                    AppId: window.Laravel.appId,
-                },
-            })
-            .then((res) => {
-                if (typeof res.data == "object") {
-                    setUser(res.data);
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    };
-
-    useEffect(() => {
-        axios
-            .get("/users")
-            .then((res) => {
-                if (typeof res.data == "object") {
-                    setcurrentUser(res.data);
-                }
-            })
-            .catch((error) => {
-                if(error.status == 401) {
-                    //Session not found
-                    handleSessionExpiration();
-                }
-                if(error.status == 404) {
-                    //Session not found
-                    handleSessionExpiration();
-                }
-
-                console.log(error)
-            }
-        );
-    }, []);
-
-    useEffect(() => {
-        if (currentUser) {
-            getAppPermisions();
-        }
-    }, [currentUser]);
-
-    const getUserPermissions = () => {
-        //apps user is allowed to access
-        axios
-            .get(`${Gtamurl}User/Permissions`, {
-                headers: {
-                    UserId: currentUser?.UserId,
-                },
-            })
-            .then((res) => {
-                const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
-                    try {
-                        const parsedData = JSON.parse(x);
-                        resolve(parsedData || []); // Use an empty array if parsedData is null
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-                parsedDataPromise.then((parsedData) => {
-                    setAllowedApplications(parsedData);
-
-                    let hasAccessToApp = parsedData?.find((app) => app.AppId == window.Laravel.appId);
-                    if (!hasAccessToApp) {
-                        setCanAccess(false);
-                    }else{
-                        setCanAccess(true);
-                    }
-                });
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    };
-
-    useEffect(() => {
-        if (currentUser) {
-            getUserPermissions();
-        }
-    }, [currentUser]);
-
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [loadingGtrs, setLoadingGtrs] = useState(false);
 
-    useEffect(() => {
-        if (currentUser && !Token) {
-            const headers = {
-                UserId: currentUser.UserId,
-                OwnerId: currentUser.OwnerId,
+    function addUserIdToFeatures(jsonData, userId, state, group, owner) {
+        return {
+            Features: jsonData,
+            UserId: userId,
+            OwnerId: owner,
+            StateId: state,
+            GroupId: group,
+        };
+    }
+
+    const fetchUserData = async () => {
+        if (!gtamUrl || !appId) {
+            console.error(
+                "Error: window.Laravel.gtamUrl or window.Laravel.appId is undefined. Environment not properly configured."
+            );
+            setLoading(false);
+            setCanAccess(false);
+            return;
+        }
+
+        try {
+            const userResponse = await getApiRequest(`/users`, {});
+            const { user } = userResponse;
+
+            setUser(user);
+
+            const token_headers = {
                 "Content-Type": "application/x-www-form-urlencoded",
             };
-            const data = {
-                grant_type: "password",
+            const token_data = {
+                UserId: user.UserId,
+                OwnerId: user.OwnerId,
             };
-            axios
-                .post(`${Gtamurl}/Token`, data, {
-                    headers: headers,
-                })
-                .then((res) => {
-                    const x = JSON.stringify(res.data);
-                    const parsedDataPromise = new Promise((resolve, reject) => {
-                        try {
-                            const parsedData = JSON.parse(x);
-                            resolve(parsedData || []); // Use an empty array if parsedData is null
-                        } catch (error) {
-                            reject(error);
-                        }
-                    });
-                    parsedDataPromise.then((parsedData) => {
-                        setToken(parsedData.access_token);
-                        Cookies.set("access_token", parsedData.access_token, {
-                            domain: appDomain,
-                            path: "/",
-                            secure: true, // Use this if your site is served over HTTPS
-                            sameSite: "Lax", // Optional, depending on your needs
-                        });
-                    });
-                })
-                .catch((err) => {
-                    console.log(err);
-                    if(err.response.status === 401) {
-                        handleSessionExpiration();
-                    }
-                });
+
+            const tokenResponse = await postApiRequest(
+                `${gtamUrl}/Token`,
+                token_headers,
+                token_data
+            );
+
+            const { access_token } = tokenResponse;
+            setToken(access_token);
+
+            const appPermissionsHeaders = {
+                UserId: user.UserId,
+                AppId: appId,
+                Authorization: `Bearer ${access_token}`,
+            };
+            const appPermissionsResponse = await getApiRequest(
+                `${gtamUrl}User/AppPermissions`,
+                appPermissionsHeaders
+            );
+
+            const updatedCurrentUser = addUserIdToFeatures(
+                appPermissionsResponse.Features,
+                user.UserId,
+                user.StateId,
+                user.GroupId,
+                user.OwnerId
+            );
+            setCurrentUser(updatedCurrentUser);
+
+            const userPermissionsHeaders = {
+                UserId: user.UserId,
+                Authorization: `Bearer ${access_token}`,
+            };
+            const userPermissionsResponse = await getApiRequest(
+                `${gtamUrl}User/Permissions`,
+                userPermissionsHeaders
+            );
+            setAllowedApplications(userPermissionsResponse);
+
+            const isAllowed = allowedApplications?.find(
+                (item) => item.AppId == window.Laravel.appId
+            );
+            if (
+                currentUser?.Features?.length == 0 &&
+                !isAllowed &&
+                window.location.pathname != "/logout"
+            ) {
+                setCanAccess(false);
+            } else {
+                setCanAccess(true);
+            }
+
+
+            setLoading(false);
+        } catch (err) {
+            console.error("Error during initial data fetch:", err);
+            setLoading(false);
+            setCanAccess(false);
+            if (err.response && err.response.status === 401) {
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again",
+                    type: "info",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                }).then(() => {});
+            }
         }
-    }, [currentUser]);
+    };
+
+    useEffect(() => {
+        fetchUserData();
+    }, [gtamUrl, appId]);
+
+    useEffect(() => {
+        if (
+            currentUser &&
+            allowedApplications?.length > 0 &&
+            !Object.prototype.hasOwnProperty.call(currentUser, "AppRoleId")
+        ) {
+            const userAppRole = allowedApplications.find(
+                (item) => item.AppId === appId
+            );
+            setCurrentUser({
+                ...currentUser,
+                AppRoleId: userAppRole?.AppRoleId,
+                AppRoleName: userAppRole?.AppRoleName,
+            });
+        }
+    }, [currentUser, allowedApplications, appId]);
 
     if (!currentUser) {
         return null; // Render nothing
     } else {
-        if(canAccess === false) {
-            return <NoAccess currentUser={currentUser} setToken={setToken} setCurrentUser={setcurrentUser}/>
-        }else{
+        if (canAccess === false) {
+            return <NoAccess />;
+        } else {
             return (
                 <div className="h-screen">
-                    {Token ? (
+                    { Token ? (
                         <div className="bg-smooth h-full ">
                             <Routes>
                                 <Route
                                     path="/*"
                                     element={
                                         <Gtrs
-                                            setToken={setToken}
-                                            user={user}
-                                            setMobileMenuOpen={setMobileMenuOpen}
+                                            setMobileMenuOpen={
+                                                setMobileMenuOpen
+                                            }
                                             mobileMenuOpen={mobileMenuOpen}
                                             loadingGtrs={loadingGtrs}
                                             setLoadingGtrs={setLoadingGtrs}
-                                            currentUser={currentUser}
-                                            AToken={Token}
-                                            setCurrentUser={setcurrentUser}
-                                            allowedApplications={
-                                                allowedApplications
-                                            }
-                                            setUser={setUser}
-                                            setSidebarElements={setSidebarElements}
-                                            sidebarElements={sidebarElements}
-                                            setcurrentUser={setcurrentUser}
                                         />
                                     }
                                 />
                                 <Route path="/login" element={<Login />} />
                                 <Route
                                     path="/notFound"
-                                    element={<NotFoundPage />}
+                                    element={<NotFound />}
                                 />
-                                <Route path="/logout" element={<Logout  currentUser={currentUser} setToken={setToken} setCurrentUser={setcurrentUser}/>} />
-                                <Route path="/no-access" element ={<NoAccess currentUser={currentUser} setToken={setToken} setCurrentUser={setcurrentUser}/>} />
-                                <Route path="/*" element={<NotFoundPage />} />
+                                <Route
+                                    path="/logout"
+                                    element={
+                                        <Logout
+                                            setCurrentUser={setCurrentUser}
+                                            setToken={setToken}
+                                            currentUser={currentUser}
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path="/no-access"
+                                    element={<NoAccess />}
+                                />
+                                <Route path="/*" element={<NotFound />} />
                             </Routes>
                         </div>
                     ) : (

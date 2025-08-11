@@ -1,9 +1,11 @@
 import { HotTable } from "@handsontable/react-wrapper";
+import React from "react";
+import PropTypes from "prop-types";
 import { registerAllModules } from "handsontable/registry";
 import { useEffect, useMemo, useRef, useState } from "react";
 // import "handsontable/styles/handsontable.css";
 // import "handsontable/styles/ht-theme-main.css";
-import { Button, Spinner } from "@nextui-org/react";
+import { Button, Spinner } from "@heroui/react";
 import axios from "axios";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
@@ -11,7 +13,6 @@ import "handsontable/styles/handsontable.min.css";
 import "handsontable/styles/ht-theme-horizon.css";
 import "handsontable/styles/ht-theme-main.min.css";
 import moment from "moment";
-import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 registerAllModules();
@@ -20,18 +21,17 @@ import {
     AlertToast, canViewMetcashDeliveryReport, canViewOtherDeliveryReport, canViewWoolworthsDeliveryReport
 } from "@/permissions";
 import swal from "sweetalert";
+import { handleSessionExpiration } from "@/CommonFunctions";
 
 export default function ExcelDeliveryReport({
     url,
-    AToken,
+    Token,
     deliveryReportData,
     currentUser,
     userPermission,
     deliveryCommentsOptions,
 }) {
-    const navigate = useNavigate();
     const hotTableRef = useRef(null);
-    const [isLoading, setIsLoading] = useState(false);
 
     const buttonClickCallback = async () => {
         const hot = hotTableRef.current?.hotInstance;
@@ -114,22 +114,10 @@ export default function ExcelDeliveryReport({
         });
     };
 
-    // Navigation when clicking a consignment number
-    const handleClick = (consignmentID) => {
-        navigate("/gtrs/consignment-details", {
-            state: { activeCons: consignmentID },
-        });
-    };
 
     // States for modals and comment details
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [commentsData, setCommentsData] = useState(null);
-    const [consId, setConsId] = useState(null);
-    const handleViewComments = (data) => {
-        setCommentsData(data?.Comments);
-        setConsId(data?.ConsignmentID);
-        setIsViewModalOpen(true);
-    };
     const handleViewClose = () => {
         setIsViewModalOpen(false);
         setCommentsData(null);
@@ -138,7 +126,7 @@ export default function ExcelDeliveryReport({
     // Tab (report type) state
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     // Used to show a spinner in the cell when saving changes
-    const [cellLoading, setCellLoading] = useState(null);
+    const cellLoading = null;
 
     // Compute filtered data sets based on CustomerTypeId
     const [filteredMetcashData, setFilteredMetcashData] = useState(
@@ -202,74 +190,12 @@ export default function ExcelDeliveryReport({
     /* ---------------------------
      Handsontable Columns Setup
   --------------------------- */
-    const handleButtonClick = (rowData) => {
-        // alert(`Action clicked for Consignment: ${rowData.ConsignmentNo}`);
-        // Example: Navigate to details page
-        navigate("/gtrs/consignment-details", {
-            state: { activeCons: rowData.ConsignmentID },
-        });
-    };
 
     // 📌 Custom Button Renderer
-    const buttonRenderer = (
-        instance,
-        td,
-        row,
-        col,
-        prop,
-        value,
-        cellProperties
-    ) => {
-        td.innerHTML = ""; // Clear existing content
-
-        // Create container div for buttons
-        const buttonContainer = document.createElement("div");
-        buttonContainer.className = "flex space-x-2 w-[15rem]"; // Tailwind for spacing
-
-        // 🔍 View Button
-        const viewButton = document.createElement("button");
-        viewButton.className =
-            "flex items-center gap-2 px-3 py-1 bg-blue-500 text-white rounded shadow-md hover:bg-blue-600 transition";
-        viewButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25M8.25 9V5.25M15.75 5.25V4.5a2.25 2.25 0 00-4.5 0v.75M8.25 5.25V4.5a2.25 2.25 0 00-4.5 0v.75"></path>
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9h-7.5a4.5 4.5 0 00-4.5 4.5v4.5a2.25 2.25 0 002.25 2.25h11.25a2.25 2.25 0 002.25-2.25v-4.5a4.5 4.5 0 00-4.5-4.5z"></path>
-        </svg> View`;
-        viewButton.onclick = () => {
-            const rowData = instance.getSourceDataAtRow(row);
-            handleButtonClick(rowData);
-        };
-
-        // 🗑️ Delete Button
-        const deleteButton = document.createElement("button");
-        deleteButton.className =
-            "flex items-center gap-2 px-3 py-1 bg-red-500 text-white rounded shadow-md hover:bg-red-600 transition";
-        deleteButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
-        </svg> Delete`;
-        deleteButton.onclick = () => {
-            const rowData = instance.getSourceDataAtRow(row);
-            alert(`Deleting consignment: ${rowData.ConsignmentNo}`);
-            // TODO: Implement actual delete logic
-        };
-
-        // Append buttons to container
-        buttonContainer.appendChild(viewButton);
-        buttonContainer.appendChild(deleteButton);
-
-        // Append container to cell
-        td.appendChild(buttonContainer);
-
-        return td;
-    };
 
     const dateRenderer = (
-        instance,
         td,
-        row,
-        col,
-        prop,
         value,
-        cellProperties
     ) => {
         // If the cell has a value, format it
         if (value) {
@@ -422,7 +348,7 @@ export default function ExcelDeliveryReport({
         setChangedRows((prevChanges) => {
             let updatedChanges = [...prevChanges]; // Clone the existing changes array
 
-            changes.forEach(([row, prop, oldValue, newValue]) => {
+            changes.forEach(([row, oldValue, newValue]) => {
                 if (newValue !== oldValue) {
                     const hotInstance = hotTableRef.current?.hotInstance;
                     if (!hotInstance) {
@@ -461,7 +387,6 @@ export default function ExcelDeliveryReport({
     };
 
     function SaveComments() {
-        setIsLoading(true);
         const inputValues = changedRows?.map((item) => ({
             DeliveryCommentId: item.DeliveryCommentId
                 ? item.DeliveryCommentId
@@ -473,12 +398,11 @@ export default function ExcelDeliveryReport({
             .post(`${url}Add/Delivery/Single/Comment`, inputValues, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
-            .then((res) => {
+            .then(() => {
                 setChangedRows([]);
-                setIsLoading(false);
                 AlertToast("Saved successfully", 1);
             })
             .catch((err) => {
@@ -497,8 +421,7 @@ export default function ExcelDeliveryReport({
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
-                    setIsLoading(false);
+                    console.error(err);
                 }
             });
     }
@@ -629,8 +552,8 @@ export default function ExcelDeliveryReport({
                         dropdownMenu={{
                             items: {
                                 filter_by_condition: {}, // ✅ Keep filters
-                                filter_by_value: {}, 
-                                filter_action_bar: {}, 
+                                filter_by_value: {},
+                                filter_action_bar: {},
                                 separator1: "---------",
                             },
                         }} // ✅ Show dropdown for filtering
@@ -667,3 +590,12 @@ export default function ExcelDeliveryReport({
         </div>
     );
 }
+
+ExcelDeliveryReport.propTypes = {
+    url: PropTypes.string,
+    Token: PropTypes.string,
+    deliveryReportData: PropTypes.array,
+    currentUser: PropTypes.object,
+    userPermission: PropTypes.object,
+    deliveryCommentsOptions: PropTypes.array,
+};

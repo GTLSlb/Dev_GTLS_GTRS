@@ -44,6 +44,7 @@
             backToHomeURL: "{{ env('BACK_TO_HOME_URL') }}",
             googleMapsKey: "{{ env('GOOGLE_MAPS_KEY') }}",
             googleKey: "{{ env('RECAPTHCA_API') }}",
+            isTest: "{{ env('IS_TESTING') }}",
         };
     </script>
     <!-- resources/views/layouts/app.blade.php -->

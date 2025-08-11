@@ -1,12 +1,12 @@
 import React, { useRef, useEffect } from 'react';
-
+import PropTypes from 'prop-types';
 import {
   Chart, BarController, BarElement, LinearScale, TimeScale, Tooltip, Legend,
 } from 'chart.js';
 import 'chartjs-adapter-moment';
 
 // Import utilities
-import { tailwindConfig, formatValue } from '@/Components/utils/Utils';
+import { tailwindConfig } from '@/Components/utils/Utils';
 
 Chart.register(BarController, BarElement, LinearScale, TimeScale, Tooltip, Legend);
 
@@ -21,7 +21,7 @@ function BarChart01({
 
   useEffect(() => {
     const ctx = canvas.current;
-    // eslint-disable-next-line no-unused-vars
+     
     const chart = new Chart(ctx, {
       type: 'bar',
       data: data,
@@ -84,7 +84,7 @@ function BarChart01({
       },
       plugins: [{
         id: 'htmlLegend',
-        afterUpdate(c, args, options) {
+        afterUpdate(c) {
           const ul = legend.current;
           if (!ul) return;
           // Remove old legend items
@@ -146,7 +146,6 @@ function BarChart01({
       }],
     });
     return () => chart.destroy();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   return (
@@ -160,5 +159,10 @@ function BarChart01({
     </React.Fragment>
   );
 }
+BarChart01.propTypes = {
+  data: PropTypes.object,
+  width: PropTypes.number,
+  height: PropTypes.number,
+};
 
 export default BarChart01;

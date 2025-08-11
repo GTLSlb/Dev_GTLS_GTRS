@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import swal from "sweetalert";
 import axios from "axios";
-import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
+import { handleSessionExpiration, useApiRequests } from '@/CommonFunctions';
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import RDDTable from "./RDDTable";
+import PropTypes from "prop-types";
+
+
 
 export default function RDDMain({
     setActiveIndexGTRS,
@@ -20,7 +23,7 @@ export default function RDDMain({
     setEDate,
     SDate,
     url,
-    AToken,
+    Token,
     userPermission,
     setSDate,
     currentUser,
@@ -29,6 +32,7 @@ export default function RDDMain({
     oldestDate,
     latestDate,
 }) {
+    const { getApiRequest } = useApiRequests();
     const [isFetching, setIsFetching] = useState();
     const [isFetchingReasons, setIsFetchingReasons] = useState();
     const parseDateString = (dateString) => {
@@ -61,15 +65,6 @@ export default function RDDMain({
         if (!(date instanceof Date) || isNaN(date.getTime())) {
             return ""; // or return any other default value as needed
         }
-        const options = {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            timeZone: "UTC",
-        };
 
         return date.toISOString().slice(0, 19); // UTC time
     };
@@ -121,12 +116,12 @@ export default function RDDMain({
                 .get(`${url}RddChangeReason`, {
                     headers: {
                         UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
+                        Authorization: `Bearer ${Token}`,
                     },
                 })
                 .then((res) => {
                     const x = JSON.stringify(res.data);
-                    const parsedDataPromise = new Promise((resolve, reject) => {
+                    const parsedDataPromise = new Promise((resolve) => {
                         const parsedData = JSON.parse(x);
                         resolve(parsedData);
                     });
@@ -149,7 +144,7 @@ export default function RDDMain({
                         });
                     } else {
                         // Handle other errors
-                        console.log(err);
+                        console.error(err);
                     }
                 });
         } catch (error) {
@@ -181,7 +176,7 @@ export default function RDDMain({
                             setIncidentId={setIncidentId}
                             setEDate={setEDate}
                             SDate={SDate}
-                            AToken={AToken}
+                            Token={Token}
                             setSDate={setSDate}
                             rddReasons={rddReasons}
                             oldestDate={oldestDate}
@@ -193,3 +188,28 @@ export default function RDDMain({
         </div>
     );
 }
+
+RDDMain.propTypes = {
+    setActiveIndexGTRS: PropTypes.func,
+    setactiveCon: PropTypes.func,
+    debtorsData: PropTypes.array,
+    rddData: PropTypes.array,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    setrddData: PropTypes.func,
+    setIncidentId: PropTypes.func,
+    setLastIndex: PropTypes.func,
+    accData: PropTypes.array,
+    EDate: PropTypes.string,
+    setEDate: PropTypes.func,
+    SDate: PropTypes.string,
+    url: PropTypes.string,
+    Token: PropTypes.string,
+    userPermission: PropTypes.object,
+    setSDate: PropTypes.func,
+    currentUser: PropTypes.object,
+    rddReasons: PropTypes.array,
+    setrddReasons: PropTypes.func,
+    oldestDate: PropTypes.string,
+    latestDate: PropTypes.string,
+};  

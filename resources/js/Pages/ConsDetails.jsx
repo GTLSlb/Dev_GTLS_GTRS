@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useEffect } from "react";
 import "../../css/scroll.css";
-import moment from "moment";
-import { getApiRequest } from "@/CommonFunctions";
+import React from "react";
+import PropTypes from "prop-types";
+import { useApiRequests } from "@/CommonFunctions";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
@@ -13,7 +14,11 @@ import DeliveryDetails from "./Component/ConsDetailsComp/DeliveryDetails";
 import PalletDetails from "./Component/ConsDetailsComp/PalletDetails";
 import PickupDelInfo from "./Component/ConsDetailsComp/PickupDelInfo";
 import BackButton from "@/Components/BackButton";
+
+
+
 export default function ConsDetails({ url, currentUser }) {
+    const { getApiRequest } = useApiRequests();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -231,3 +236,7 @@ export default function ConsDetails({ url, currentUser }) {
         );
     }
 }
+ConsDetails.propTypes = {
+    url: PropTypes.string,
+    currentUser: PropTypes.object,
+};

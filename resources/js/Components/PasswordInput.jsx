@@ -1,24 +1,25 @@
-import { useState } from "react";
-import { forwardRef, useEffect, useRef } from "react";
+import PropTypes from "prop-types";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
 
-export default forwardRef(function TextInput(
-  { type = "text", className = "", isFocused = false, ...props },
+const TextInput = forwardRef(function TextInput(
+  { className = "", isFocused = false, ...props },
   ref
 ) {
   const input = ref ? ref : useRef();
   const [passwordType, setPasswordType] = useState("password");
+
   const togglePassword = () => {
-    if (passwordType === "password") {
-      setPasswordType("text");
-      return;
-    }
-    setPasswordType("password");
+    setPasswordType(prev =>
+      prev === "password" ? "text" : "password"
+    );
   };
+
   useEffect(() => {
     if (isFocused) {
       input.current.focus();
     }
   }, []);
+
   return (
     <div className="flex flex-col items-start">
       <div className="relative">
@@ -71,3 +72,22 @@ export default forwardRef(function TextInput(
     </div>
   );
 });
+
+// ✅ Add PropTypes
+TextInput.propTypes = {
+  className: PropTypes.string,
+  isFocused: PropTypes.bool,
+  // Spread props (like `name`, `onChange`, etc.) will be handled by the input,
+  // but if you want to explicitly type any expected props, add them here:
+  name: PropTypes.string,
+  placeholder: PropTypes.string,
+  onChange: PropTypes.func,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
+
+TextInput.defaultProps = {
+  className: "",
+  isFocused: false,
+};
+
+export default TextInput;

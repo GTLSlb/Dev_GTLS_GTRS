@@ -1,4 +1,6 @@
 import { useRef, useState } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import { useEffect } from "react";
 import moment from "moment";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
@@ -7,16 +9,14 @@ import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import TableStructure from "@/Components/TableStructure";
 import {
     formatDateToExcel,
-    getApiRequest,
     renderConsDetailsLink,
+    useApiRequests,
 } from "@/CommonFunctions";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
-import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
-import { canViewDetails } from "@/permissions";
 
 export default function NoDelivery({
     NoDelData,
@@ -27,8 +27,8 @@ export default function NoDelivery({
     userPermission,
     url,
 }) {
+    const { getApiRequest } = useApiRequests();
     window.moment = moment;
-    const navigate = useNavigate();
 
     const [isFetching, setIsFetching] = useState();
     useEffect(() => {
@@ -125,11 +125,7 @@ export default function NoDelivery({
             filterEditor: StringFilter,
 
             render: ({ value, data }) => {
-                return renderConsDetailsLink(
-                    userPermission,
-                    value,
-                    data
-                );
+                return renderConsDetailsLink(userPermission, value, data);
             },
         },
         {
@@ -144,7 +140,7 @@ export default function NoDelivery({
                 minDate: minDate,
                 maxDate: maxDate,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -313,7 +309,7 @@ export default function NoDelivery({
                 minDate: minDaterdd,
                 maxDate: maxDaterdd,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -360,3 +356,13 @@ export default function NoDelivery({
         </div>
     );
 }
+
+NoDelivery.propTypes = {
+    NoDelData: PropTypes.array,
+    setNoDelData: PropTypes.func,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    currentUser: PropTypes.object,
+    userPermission: PropTypes.object,
+    url: PropTypes.string,
+};

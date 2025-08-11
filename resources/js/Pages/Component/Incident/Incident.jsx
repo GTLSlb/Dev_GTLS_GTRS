@@ -2,18 +2,22 @@ import {
     Progress,
     Tab,
     Tabs,
-} from "@nextui-org/react";
+} from "@heroui/react";
+import axios from "axios";
+import React from "react";
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import IncidentDetails from "./IncidentDetails";
 import swal from "sweetalert";
 import Notes from "../Notes";
 import { handleSessionExpiration } from '@/CommonFunctions';
 import { useLocation } from "react-router-dom";
+import { canViewIncidentDetails } from "@/permissions";
 
 export default function Incident({
     gtccrUrl,
     currentUser,
-    AToken,
+    Token,
     userPermission,
 }) {
     const location = useLocation();
@@ -32,7 +36,7 @@ export default function Incident({
             .get(`${gtccrUrl}IncidentAssets`, {
                 headers: {
                     UserId: currentUser?.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {
@@ -64,7 +68,7 @@ export default function Incident({
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                 }
             });
     }
@@ -75,7 +79,7 @@ export default function Incident({
                 headers: {
                     UserId: currentUser?.UserId,
                     // UserId: 1,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {
@@ -107,7 +111,7 @@ export default function Incident({
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                 }
             });
     }
@@ -117,7 +121,7 @@ export default function Incident({
                 headers: {
                     // UserId: 1,
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                     Incident_Id: location?.state?.incidentId,
                 },
             })
@@ -125,7 +129,7 @@ export default function Incident({
                 setIncident(res.data[0]);
             })
             .catch((err) => {
-                console.log("Encountered an Error", err);
+                console.error("Encountered an Error", err);
             });
     }
 
@@ -139,7 +143,7 @@ export default function Incident({
 
             {incident && filters && mainCauses ? (
                 <div>
-                    {false ? (
+                    {canViewIncidentDetails(userPermission) ? (
                         <Tabs
                             aria-label="Options"
                             selectedKey={selected}
@@ -164,7 +168,7 @@ export default function Incident({
                             <Tab key="notes" title="Notes">
                                 <Notes
                                     incident={incident}
-                                    AToken={AToken}
+                                    Token={Token}
                                     getIncident={getIncident}
                                     filters={filters}
                                     currentUser={currentUser}
@@ -199,3 +203,10 @@ export default function Incident({
         </div>
     );
 }
+
+Incident.propTypes = {
+    gtccrUrl: PropTypes.string,
+    currentUser: PropTypes.object,
+    Token: PropTypes.string,
+    userPermission: PropTypes.object,
+};

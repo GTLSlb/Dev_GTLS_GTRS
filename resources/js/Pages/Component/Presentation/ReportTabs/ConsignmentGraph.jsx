@@ -3,32 +3,15 @@ import { useEffect } from "react";
 import { useState } from "react";
 import Select from "react-select";
 import BarGraph from "../graphs/BarGraph";
+import axios from "axios";
+import PropTypes from "prop-types";
 
-function ConsignmentGraph({ url, currentUser, AToken, customers, CustomerId }) {
+function ConsignmentGraph({ url, currentUser, Token, customers, CustomerId }) {
     const [graphData, setGraphData] = useState();
     const [originalgraphData, setGraphOriginalData] = useState();
     const [loading, setLoading] = useState(true);
     const [selectedReceiver, setselectedReceiver] = useState(customers[0]);
-    function addCalculatedFields(data) {
-        data.forEach((item) => {
-            if (item.Record && item.Record.length > 0) {
-                item.Record.forEach((record) => {
-                    // Calculate onTime %
-                    record.onTimePercentage =
-                        ((record.TotalCons - record.TotalFails) /
-                            record.TotalCons) *
-                        100;
 
-                    // Calculate POD %
-                    record.PODPercentage =
-                        ((record.TotalCons - record.TotalNoPod) /
-                            record.TotalCons) *
-                        100;
-                });
-            }
-        });
-        return data;
-    }
     function getReportData() {
         setLoading(true);
         axios
@@ -37,18 +20,17 @@ function ConsignmentGraph({ url, currentUser, AToken, customers, CustomerId }) {
                     UserId: currentUser.UserId,
                     CustomerId: CustomerId,
                     CustomerTypeId: selectedReceiver.value,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {
                 setLoading(false);
-                const calculatedData = addCalculatedFields(res.data); // it updates the data it self there's no need to update the state using calculated data
 
                 setGraphOriginalData(res.data);
                 setGraphData(res.data);
             })
             .catch((err) => {
-                console.log(err);
+                console.error(err);
             });
     }
 
@@ -153,7 +135,7 @@ function ConsignmentGraph({ url, currentUser, AToken, customers, CustomerId }) {
                     graphData={graphData}
                     url={url}
                     CustomerId={CustomerId}
-                    AToken={AToken}
+                    Token={Token}
                     currentUser={currentUser}
                     selectedReceiver={selectedReceiver}
                     originalgraphData={originalgraphData}
@@ -164,5 +146,13 @@ function ConsignmentGraph({ url, currentUser, AToken, customers, CustomerId }) {
         </div>
     );
 }
+
+ConsignmentGraph.propTypes = {
+    url: PropTypes.string,
+    currentUser: PropTypes.object,
+    Token: PropTypes.string,
+    customers: PropTypes.array,
+    CustomerId: PropTypes.number,
+};
 
 export default ConsignmentGraph;

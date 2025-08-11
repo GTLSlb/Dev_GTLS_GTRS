@@ -1,4 +1,6 @@
 import { useState } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import { useEffect } from "react";
 import swal from "sweetalert";
 import axios from "axios";
@@ -6,15 +8,12 @@ import { handleSessionExpiration } from '@/CommonFunctions';
 import GtrsButton from "../../GtrsButton";
 import ReactModal from "react-modal";
 
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
 
 export default function AddCommentToList({
     selectedComment,
     url,
     currentUser,
-    AToken,
+    Token,
     setSelectedComment,
     setShowAdd,
     fetchData,
@@ -52,10 +51,10 @@ export default function AddCommentToList({
             .post(`${url}Add/Comment`, inputValues, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
-            .then((res) => {
+            .then(() => {
                 setSelectedComment(null);
                 fetchData();
                 setShowAdd(false);
@@ -78,7 +77,7 @@ export default function AddCommentToList({
                     });
                   } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                     setIsLoading(false);
                   }
             });
@@ -139,3 +138,14 @@ export default function AddCommentToList({
         </ReactModal>
     );
 }
+
+AddCommentToList.propTypes = {
+    selectedComment: PropTypes.object,
+    url: PropTypes.string,
+    currentUser: PropTypes.object,    
+    Token: PropTypes.string,    
+    setSelectedComment: PropTypes.func,
+    setShowAdd: PropTypes.func,
+    fetchData: PropTypes.func,
+    isOpen: PropTypes.bool,
+};

@@ -1,18 +1,20 @@
 import { useState } from "react";
 import { useEffect } from "react";
+import React from "react";
+import propTypes from "prop-types";
 import SafetyRepTable from "./safetyComp/safetyRepTable";
 import SafetyRepChart from "./safetyComp/safetyRepChart";
 import AddSafetyType from "./safetyComp/AddSafety/safetyTypes/AddSafetyType";
 import { canViewSafetyType } from "@/permissions";
-import { getApiRequest } from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer } from "react-toastify";
+import { useApiRequests } from "@/CommonFunctions";
 
 export default function SafetyRep({
     accData,
     currentUser,
     url,
-    AToken,
+    Token,
     safetyDataState,
     filterValue,
     setFilterValue,
@@ -28,6 +30,7 @@ export default function SafetyRep({
     DefaultEDate,
     userPermission,
 }) {
+    const { getApiRequest } = useApiRequests();
     const [SDate, setSDate] = useState(DefaultSDate);
     const [EDate, setEDate] = useState(DefaultEDate);
     useEffect(() => {
@@ -69,7 +72,7 @@ export default function SafetyRep({
     }
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     const [filteredData, setFilteredData] = useState(null);
-    const [selectedTypes, setSelectedTypes] = useState([]);
+    const selectedTypes = [];
     const [currentPage, setCurrentPage] = useState(0);
     const [isDataEdited, setDataEdited] = useState(false);
     const [isFetching, setIsFetching] = useState();
@@ -171,9 +174,10 @@ export default function SafetyRep({
 
     let components = [
         <SafetyRepTable
+            key={currentPage}
             url={url}
             fetchData={fetchData}
-            AToken={AToken}
+            Token={Token}
             customerAccounts={customerAccounts}
             safetyCauses={safetyCauses}
             filterValue={filterValue}
@@ -188,14 +192,16 @@ export default function SafetyRep({
             setDataEdited={setDataEdited}
         />,
         <SafetyRepChart
-            AToken={AToken}
+            key={currentPage}
+            Token={Token}
             filteredData={filteredData}
             safetyCauses={safetyCauses}
             safetyTypes={safetyTypes}
         />,
         <AddSafetyType
             url={url}
-            AToken={AToken}
+            key={currentPage}
+            Token={Token}
             currentUser={currentUser}
             userPermission={userPermission}
             safetyTypes={safetyTypes}
@@ -338,3 +344,24 @@ export default function SafetyRep({
         </div>
     );
 }
+
+SafetyRep.propTypes = {
+    accData: propTypes.array,
+    currentUser: propTypes.object,
+    url: propTypes.string,
+    Token: propTypes.string,
+    safetyDataState: propTypes.array,
+    filterValue: propTypes.array,
+    setFilterValue: propTypes.func,
+    setsafetyDataState: propTypes.func,
+    setSafetyTypes: propTypes.func,
+    safetyTypes: propTypes.array,
+    customerAccounts: propTypes.array,
+    safetyCauses: propTypes.array,
+    setSafetyCauses: propTypes.func,
+    oldestDate: propTypes.string,
+    latestDate: propTypes.string,
+    DefaultSDate: propTypes.string,
+    DefaultEDate: propTypes.string,
+    userPermission: propTypes.object,
+};

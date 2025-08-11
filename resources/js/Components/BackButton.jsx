@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { ChevronLeftIcon } from "@heroicons/react/20/solid";
 function BackButton({ onClickFunction, buttonText }) {
     return (
@@ -14,5 +15,10 @@ function BackButton({ onClickFunction, buttonText }) {
         </button>
     );
 }
+
+BackButton.propTypes = {
+    onClickFunction: PropTypes.func,
+    buttonText: PropTypes.string,
+};
 
 export default BackButton;

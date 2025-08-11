@@ -6,11 +6,14 @@ import {
     ExclamationTriangleIcon,
     NoSymbolIcon,
     CurrencyDollarIcon,
-    UserIcon, ClockIcon, ShieldCheckIcon,
+    UserIcon,
+    ClockIcon,
+    ShieldCheckIcon,
     CameraIcon,
     DocumentTextIcon,
     ClipboardDocumentIcon,
-    RectangleStackIcon
+    RectangleStackIcon,
+    CogIcon,
 } from "@heroicons/react/24/solid";
 import TaskIcon from "@mui/icons-material/Task";
 import ReportIcon from "@mui/icons-material/Report";
@@ -24,6 +27,15 @@ const menu = [
         current: true,
         feature: "Dashboard_view",
         url: "/gtrs/dashboard",
+    },
+    {
+        id: 32,
+        name: "Spend Analysis",
+        href: "#",
+        icon: ChartPieIcon,
+        current: false,
+        feature: "Dashboard_view",
+        url: "/gtrs/spendanalysis",
     },
     {
         id: 1,
@@ -160,7 +172,7 @@ const menu = [
                 feature: "DeliveryReportCommentsTable_View",
                 url: "/gtrs/delivery-report/comments",
             },
-        ]
+        ],
     },
     {
         id: 20,
@@ -251,6 +263,15 @@ const menu = [
         current: false,
         feature: "StockReport_View",
         url: "/gtrs/SOH",
+    },
+    {
+        id: 31,
+        name: "Settings",
+        href: "#",
+        icon: CogIcon,
+        current: false,
+        feature: "Settings_View",
+        url: "/gtrs/settings",
     },
 ];
 

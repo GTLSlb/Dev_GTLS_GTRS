@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Column } from "@ant-design/plots";
+import PropTypes from "prop-types";
 
 const BasicColumnCharts = (props) => {
     const {
@@ -81,6 +82,14 @@ const BasicColumnCharts = (props) => {
             <Column {...config} className="p-4" />
         </div>
     );
+};
+
+BasicColumnCharts.propTypes = {
+    chartTitle: PropTypes.string,
+    chartData: PropTypes.array,
+    setShowTable: PropTypes.func,
+    setChartFilter: PropTypes.func,
+    setChartName: PropTypes.func,
 };
 
 export default BasicColumnCharts;

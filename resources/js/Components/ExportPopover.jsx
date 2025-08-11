@@ -1,3 +1,5 @@
+import React from "react";
+import PropTypes from "prop-types";
 import { Popover, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { Fragment } from "react";
@@ -77,6 +79,17 @@ const ExportPopover = ({ columns, handleDownloadExcel, filteredData }) => {
             </Transition>
         </Popover>
     );
+};
+
+ExportPopover.propTypes = {
+    columns: PropTypes.arrayOf(
+        PropTypes.shape({
+            name: PropTypes.string,
+            header: PropTypes.string,
+        })
+    ),
+    handleDownloadExcel: PropTypes.func,
+    filteredData: PropTypes.array,
 };
 
 export default ExportPopover;

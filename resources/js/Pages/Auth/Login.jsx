@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import PropTypes from "prop-types";
 import Logo from "../../assets/pictures/Logo-upscaled.png";
 import "../../../css/scroll.css";
 import { LoginPage } from "gtls-npm-libraries";
@@ -19,7 +20,7 @@ export default function Login() {
         <LoginPage
             appDomain={appDomain}
             googlekey={googleKey}
-            redirectURL="/"
+            redirectURL="/gtrs/"
             loginURL="/loginComp"
             gtamURl={gtamURl}
             pca={pca}
@@ -36,3 +37,10 @@ export default function Login() {
     </div>
     );
 }
+
+
+Login.propTypes = {
+    currentUser: PropTypes.object,
+    setToken: PropTypes.func,
+    setCurrentUser: PropTypes.func,
+};

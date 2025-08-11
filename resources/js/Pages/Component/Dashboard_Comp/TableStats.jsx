@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import AmountCard from "./StatsCards.jsx/AmountCard";
 import ConsCard from "./StatsCards.jsx/ConsCard";
 import PODCard from "./StatsCards.jsx/PODCard";
@@ -59,5 +60,9 @@ function TableStats({ consSummary }) {
         </>
     );
 }
+
+TableStats.propTypes = {
+    consSummary: PropTypes.object,
+};
 
 export default TableStats;

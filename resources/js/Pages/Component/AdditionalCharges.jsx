@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import moment from "moment";
 import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
@@ -8,14 +8,13 @@ import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import TableStructure from "@/Components/TableStructure";
 import {
     formatDateToExcel,
-    getApiRequest,
     renderConsDetailsLink,
+    useApiRequests,
 } from "@/CommonFunctions";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
-import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 
 export default function AdditionalCharges({
@@ -27,8 +26,8 @@ export default function AdditionalCharges({
     currentUser,
     url,
 }) {
+    const { getApiRequest } = useApiRequests();
     window.moment = moment;
-    const navigate = useNavigate();
     const [isFetching, setIsFetching] = useState();
     useEffect(() => {
         if (AdditionalData === null || AdditionalData === undefined) {
@@ -178,7 +177,7 @@ export default function AdditionalCharges({
                 minDate: minDate,
                 maxDate: maxDate,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -246,3 +245,13 @@ export default function AdditionalCharges({
         </div>
     );
 }
+
+AdditionalCharges.propTypes = {
+    AdditionalData: PropTypes.array,
+    setAdditionalData: PropTypes.func,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    userPermission: PropTypes.object,
+    currentUser: PropTypes.object,
+    url: PropTypes.string,
+};

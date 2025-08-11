@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+import React from "react";
 export default function GtrsButton({
     name,
     icon,
@@ -24,3 +26,12 @@ export default function GtrsButton({
         </button>
     );
 }
+
+GtrsButton.propTypes = {
+    name: PropTypes.string,
+    icon: PropTypes.node,
+    className: PropTypes.string,
+    onClick: PropTypes.func,
+    disabled: PropTypes.bool,
+    type: PropTypes.oneOf(["button", "submit", "reset"]),
+};

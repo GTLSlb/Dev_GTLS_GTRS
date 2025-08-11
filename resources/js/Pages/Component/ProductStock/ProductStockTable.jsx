@@ -8,17 +8,18 @@ import {
     TableCell,
     Input,
     Button,
-    Pagination,
     Select,
     SelectItem,
     Spinner,
-} from "@nextui-org/react";
+} from "@heroui/react";
+import { useInfiniteScroll } from "@heroui/use-infinite-scroll";
 import { useMemo } from "react";
-import { useRef } from "react";
-import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
 import moment from "moment/moment";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import axios from "axios";
+import PropTypes from "prop-types";
+import swal from "sweetalert";
 export const SearchIcon = (props) => {
     return (
         <svg
@@ -49,10 +50,9 @@ export const SearchIcon = (props) => {
     );
 };
 
-export default function ProductStockTable({ url, AToken, currentUser }) {
+export default function ProductStockTable({ url, Token, currentUser }) {
     const [productsData, setProductsData] = useState([]);
     const [debtors, setDebtors] = useState([]);
-    const [page, setPage] = React.useState(1);
     const [branches, setBranches] = useState([]);
     const [selectedDebtor, setSelectedDebtor] = useState("");
     const [selectedBranch, setSelectedBranch] = useState("");
@@ -71,7 +71,7 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
             const response = await axios.get(`${url}/SOH`, {
                 headers: {
                     UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             });
 
@@ -169,7 +169,7 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
 
             return [
                 // Add items with index
-                ...group.items.map((item, itemIndex) => ({
+                ...group.items.map((item) => ({
                     ...item,
                     isItemRow: true,
                     index: rowIndex++, // Increment index for each item
@@ -386,18 +386,6 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
         }
     }, []);
 
-    const renderGroupedCell = (item, columnKey) => {
-        switch (columnKey) {
-            case "DebtorName":
-                return <strong>{item.DebtorName}</strong>;
-            case "BranchName":
-                return item.BranchName || "";
-            case "Total":
-                return item.Total?.toLocaleString() || "0";
-            default:
-                return null;
-        }
-    };
 
     const onClear = React.useCallback(() => {
         setFilterValue("");
@@ -778,3 +766,9 @@ export default function ProductStockTable({ url, AToken, currentUser }) {
         </div>
     );
 }
+
+ProductStockTable.propTypes = {
+    url: PropTypes.string,
+    Token: PropTypes.string,
+    currentUser: PropTypes.object,
+};

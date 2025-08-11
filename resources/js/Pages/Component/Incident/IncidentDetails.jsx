@@ -1,38 +1,45 @@
 import { canViewInternal } from "@/permissions";
+import React from "react";
+import PropTypes from "prop-types";
 import logo from "@/assets/pictures/Logoblack.png";
-import { Checkbox, Chip } from "@nextui-org/react";
+import { Chip } from "@heroui/react";
 import moment from "moment/moment";
 import { useNavigate } from "react-router-dom";
 
-export default function IncidentDetails({ incident, filters, mainCauses,currentUser, userPermission }) {
+export default function IncidentDetails({
+    incident,
+    filters,
+    mainCauses,
+    userPermission,
+}) {
     const navigate = useNavigate();
     return (
         <div>
             <div className="py-2">
-            <div className="h-8 flex mb-4">
-                                <button
-                                    type="button"
-                                    className="mr-7 h-full inline-flex items-center rounded-md border border-transparent bg-gray-800 px-5 py-2 text-sm font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                    onClick={() => navigate(-1)}
-                                >
-                                    <svg
-                                        viewBox="0 0 64 64"
-                                        fill="currentColor"
-                                        height="1.25em"
-                                        width="1.25em"
-                                    >
-                                        <path
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeLinejoin="bevel"
-                                            strokeMiterlimit={10}
-                                            strokeWidth={5}
-                                            d="M37 15L20 32l17 17"
-                                        />
-                                    </svg>
-                                    <span> Back</span>
-                                </button>
-                            </div>
+                <div className="h-8 flex mb-4">
+                    <button
+                        type="button"
+                        className="mr-7 h-full inline-flex items-center rounded-md border border-transparent bg-gray-800 px-5 py-2 text-sm font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        onClick={() => navigate(-1)}
+                    >
+                        <svg
+                            viewBox="0 0 64 64"
+                            fill="currentColor"
+                            height="1.25em"
+                            width="1.25em"
+                        >
+                            <path
+                                fill="none"
+                                stroke="currentColor"
+                                strokeLinejoin="bevel"
+                                strokeMiterlimit={10}
+                                strokeWidth={5}
+                                d="M37 15L20 32l17 17"
+                            />
+                        </svg>
+                        <span> Back</span>
+                    </button>
+                </div>
                 <div
                     id="CdirForm"
                     className="p-4 sm:p-10 bg-white rounded-xl shadow-md border-1 border-gray-100"
@@ -142,35 +149,36 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                         {incident.Consignment[0].ChargeCode}
                                     </label>
                                 </div>
-                                {incident.Consignment[0].CustomerContacts?.filter((contact) =>
-                                    incident.Consignment[0].ActiveContacts?.includes(
-                                        contact.ContactId
-                                    )
-                                )
-                                ?.map((contact) => (
-                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 bg-[#F2F2F2] rounded-xl p-4">
-                                    <div className="flex flex-col sm:flex-row w-full gap-5">
-                                        <label
-                                            htmlFor=""
-                                            className="font-bold "
-                                        >
-                                            Contact Name
-                                        </label>
-                                        <label htmlFor="" className="">
-                                            {contact.ContactName}
-                                        </label>
+                                {incident.Consignment[0].CustomerContacts?.filter(
+                                    (contact) =>
+                                        incident.Consignment[0].ActiveContacts?.includes(
+                                            contact.ContactId
+                                        )
+                                )?.map((contact) => (
+                                    <div key={contact.ContactId} className="grid grid-cols-1 xl:grid-cols-2 gap-3 bg-[#F2F2F2] rounded-xl p-4">
+                                        <div className="flex flex-col sm:flex-row w-full gap-5">
+                                            <label
+                                                htmlFor=""
+                                                className="font-bold "
+                                            >
+                                                Contact Name
+                                            </label>
+                                            <label htmlFor="" className="">
+                                                {contact.ContactName}
+                                            </label>
+                                        </div>
+                                        <div className=" flex flex-col gap-5 sm:flex-row w-full">
+                                            <label
+                                                htmlFor=""
+                                                className="font-bold"
+                                            >
+                                                Email
+                                            </label>
+                                            <label htmlFor="" className="">
+                                                {contact.ContactEmailAddress}
+                                            </label>
+                                        </div>
                                     </div>
-                                    <div className=" flex flex-col gap-5 sm:flex-row w-full">
-                                        <label htmlFor="" className="font-bold">
-                                            Email
-                                        </label>
-                                        <label htmlFor="" className="">
-                                            {
-                                                contact.ContactEmailAddress
-                                            }
-                                        </label>
-                                    </div>
-                                </div>
                                 ))}
                             </div>
                         </div>
@@ -400,7 +408,10 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                             Original Pallet Qty
                                         </label>
                                         <label htmlFor="" className="">
-                                            {incident?.Consignment[0]?.PalletQty}
+                                            {
+                                                incident?.Consignment[0]
+                                                    ?.PalletQty
+                                            }
                                         </label>
                                     </div>
                                     <div className="flex  w-full">
@@ -486,41 +497,41 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                                     </div>
                                     {canViewInternal(userPermission) && (
                                         <div className="flex flex-col gap-y-3 w-full sm:flex-row">
-                                        <label
-                                            htmlFor=""
-                                            className="font-bold w-52"
-                                        >
-                                            State Responsible
-                                        </label>
-                                        <label htmlFor="" className="">
-                                            {
-                                                filters?.States?.find(
-                                                    (item) =>
-                                                        item?.StateId ===
-                                                        incident?.StateResponsibleId
-                                                )?.StateCode
-                                            }
-                                        </label>
-                                    </div>
+                                            <label
+                                                htmlFor=""
+                                                className="font-bold w-52"
+                                            >
+                                                State Responsible
+                                            </label>
+                                            <label htmlFor="" className="">
+                                                {
+                                                    filters?.States?.find(
+                                                        (item) =>
+                                                            item?.StateId ===
+                                                            incident?.StateResponsibleId
+                                                    )?.StateCode
+                                                }
+                                            </label>
+                                        </div>
                                     )}
                                     {canViewInternal(userPermission) && (
                                         <div className="flex flex-col gap-y-3 w-full sm:flex-row">
-                                        <label
-                                            htmlFor=""
-                                            className="font-bold w-52"
-                                        >
-                                            Department Responsible
-                                        </label>
-                                        <label htmlFor="" className="">
-                                            {
-                                                filters.Departments.find(
-                                                    (item) =>
-                                                        item?.DepartmentId ===
-                                                        incident?.DepartmentId
-                                                )?.DepartmentName
-                                            }
-                                        </label>
-                                    </div>
+                                            <label
+                                                htmlFor=""
+                                                className="font-bold w-52"
+                                            >
+                                                Department Responsible
+                                            </label>
+                                            <label htmlFor="" className="">
+                                                {
+                                                    filters.Departments.find(
+                                                        (item) =>
+                                                            item?.DepartmentId ===
+                                                            incident?.DepartmentId
+                                                    )?.DepartmentName
+                                                }
+                                            </label>
+                                        </div>
                                     )}
                                     {/* <div className="flex flex-col gap-y-3 w-full sm:flex-row">
                                         <label
@@ -592,7 +603,9 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
                             <div className="px-1 sm:px-4 grid grid-cols-1  gap-x-10 gap-y-3">
                                 <div className="flex gap-x-10 w-full">
                                     <label htmlFor="" className="w-10">
-                                        {incident?.PalletRequired ? "YES" : "NO"}
+                                        {incident?.PalletRequired
+                                            ? "YES"
+                                            : "NO"}
                                     </label>
                                     <label htmlFor="" className="font-bold ">
                                         Is pallet work required Y/N
@@ -792,3 +805,10 @@ export default function IncidentDetails({ incident, filters, mainCauses,currentU
         </div>
     );
 }
+
+IncidentDetails.propTypes = {
+    incident: PropTypes.object,
+    filters: PropTypes.object,
+    userPermission: PropTypes.object,
+    mainCauses: PropTypes.array,
+};

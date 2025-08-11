@@ -9,24 +9,24 @@ import {
     AccordionHeader,
     AccordionItem,
 } from "react-headless-accordion";
-import { useEffect } from "react";
-import { Fragment, useState } from "react";
+import React, { useEffect, useContext, Fragment, useState} from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import tiger from "../assets/pictures/tiger.png";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import SupportModal from "@/Pages/Component/modals/SupportModal";
-import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
+import { CustomContext } from "@/CommonContext";
+import PropTypes from "prop-types";
+import axios from "axios";
+
 export default function MainSidebar({
-    allowedApplications,
     setMobileMenuOpen,
     mobileMenuOpen,
-    setToken,
-    setCurrentUser,
-    currentUser,
-    user,
 }) {
-    const appUrl = window.Laravel.appUrl;
+        const {
+            user,
+            allowedApplications,
+        } = useContext(CustomContext);
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [sidebarNavigation, setSidebarNavigation] = useState([]);
     useEffect(() => {
@@ -81,7 +81,7 @@ export default function MainSidebar({
                 [app.AppId]: blobUrl,
             }));
         } catch (error) {
-            console.log(error);
+            console.error(error);
             setAppsImgs((prev) => ({
                 ...prev,
                 [app.AppId]: "/icons/NoPhoto.jpg",
@@ -121,7 +121,7 @@ export default function MainSidebar({
                                         key={item.AppId}
                                         target={
                                             item.id === 0 ? undefined : "_blank"
-                                        }
+                                        } rel="noreferrer"
                                     >
                                         {" "}
                                         <button
@@ -166,7 +166,7 @@ export default function MainSidebar({
                             <a
                                 href="https://support.gtls.com.au/help/2703577665"
                                 target="_blank"
-                                className="flex justify-center"
+                                className="flex justify-center" rel="noreferrer"
                             >
                                 {" "}
                                 <button
@@ -280,16 +280,16 @@ export default function MainSidebar({
                                                 >
                                                     <a
                                                         href={item.AppURL}
-                                                        onClick={() =>
-                                                            handleClick(
-                                                                item.AppId
-                                                            )
-                                                        }
+                                                        // onClick={() =>
+                                                        //     handleClick(
+                                                        //         item.AppId
+                                                        //     )
+                                                        // }
                                                     >
                                                         <AccordionItem
                                                             id={item.name}
                                                         >
-                                                            {({ open }) => (
+                                                            {() => (
                                                                 <>
                                                                     <AccordionHeader
                                                                         className={classNames(
@@ -331,12 +331,13 @@ export default function MainSidebar({
                                                                                     option
                                                                                 ) => (
                                                                                     <button
-                                                                                        onClick={() =>
-                                                                                            handleClickSide(
-                                                                                                item.id,
-                                                                                                option.id
-                                                                                            )
-                                                                                        }
+                                                                                        key={item}
+                                                                                        // onClick={() =>
+                                                                                        //     handleClickSide(
+                                                                                        //         item.id,
+                                                                                        //         option.id
+                                                                                        //     )
+                                                                                        // }
                                                                                         className="p-5 font-light text-left text-white"
                                                                                     >
                                                                                         {
@@ -362,7 +363,7 @@ export default function MainSidebar({
                                     <a
                                         href="https://support.gtls.com.au/help/2703577665"
                                         target="_blank"
-                                        className="flex"
+                                        className="flex" rel="noreferrer"
                                     >
                                         {" "}
                                         <button
@@ -407,3 +408,10 @@ export default function MainSidebar({
         </div>
     );
 }
+
+MainSidebar.propTypes = {
+    allowedApplications: PropTypes.array,
+    setMobileMenuOpen: PropTypes.func,
+    mobileMenuOpen: PropTypes.bool,
+    user: PropTypes.object,
+};

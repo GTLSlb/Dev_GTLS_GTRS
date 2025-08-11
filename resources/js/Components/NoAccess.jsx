@@ -1,12 +1,19 @@
-import LottieComponent from "@/Components/LottieComponent/LottieComponent";
-import Lock from "@/Components/LottieComponent/lock.json";
-import { NoAccessPage } from "gtls-npm-libraries";
 import React from "react";
+import PropTypes from "prop-types";
+import LottieComponent from "./LottieComponent/LottieComponent";
+import Lock from "@/Components/LottieComponent/lock.json";
+import {NoAccessPage} from 'gtls-npm-libraries';
 
 function NoAccess() {
     return (
-       <NoAccessPage Lock={Lock} LottieComponent={LottieComponent}/>
+       <NoAccessPage LottieComponent={LottieComponent} Lock={Lock}/>
     );
 }
+
+NoAccess.propTypes = {
+    currentUser: PropTypes.object,
+    setToken: PropTypes.func,
+    setCurrentUser: PropTypes.func,
+};
 
 export default NoAccess;
