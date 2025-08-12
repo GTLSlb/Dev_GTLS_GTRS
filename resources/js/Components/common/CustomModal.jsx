@@ -13,6 +13,9 @@ export const CustomModal = ({
     title,
     children,
     filterChildren,
+    noTitle = false,
+    noFilters = false,
+    noCloseButton = false,
     size = "2xl",
 }) => {
     const modalRef = useRef(null);
@@ -122,17 +125,23 @@ export const CustomModal = ({
             {/* Modal Content - removed excessive backdrop blur */}
             <div ref={modalRef} className={modalClasses}>
                 {/* Modal Header */}
-                <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                        {title}
-                    </h2>
-                    <button
-                        onClick={handleClose}
-                        className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
-                        aria-label="Close modal"
-                    >
-                        <XMarkIcon className="h-6 w-6 text-gray-600 dark:text-gray-400" />
-                    </button>
+                <div className="flex items-center justify-between p-2 px-4 border-b border-gray-200 dark:border-gray-700">
+                    {!noTitle ? (
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                            {title}
+                        </h2>
+                    ) : (
+                        <div></div>
+                    )}
+                    {!noCloseButton && (
+                        <button
+                            onClick={handleClose}
+                            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
+                            aria-label="Close modal"
+                        >
+                            <XMarkIcon className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+                        </button>
+                    )}
                 </div>
 
                 {/* Modal Body - simplified structure */}
@@ -142,12 +151,16 @@ export const CustomModal = ({
                             {children}
                             <div className="w-px bg-gray-300 dark:bg-gray-600 mx-4 self-stretch" />
                         </div>
-                        <div className="w-full">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                                Filters
-                            </h3>
-                            <div className="space-y-4 w-full">{filterChildren}</div>
-                        </div>
+                        {!noFilters && (
+                            <div className="w-1/4">
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                                    Filters
+                                </h3>
+                                <div className="space-y-4">
+                                    {filterChildren}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

@@ -133,7 +133,7 @@ export default function AddCostTree() {
 
     return (
         <ChartWrapper
-            cardClassName={"col-span-2 p-2"}
+            cardClassName={"col-span-2 p-2 pt-0"}
             modalSize={"2xl"}
             filterChildren={
                 <>
@@ -151,7 +151,7 @@ export default function AddCostTree() {
                     />
                 </>
             }
-            title={"Additional Cost Type"}
+            title={"Additional Charges Type"}
             children={
                 <Treemap
                     width={700}

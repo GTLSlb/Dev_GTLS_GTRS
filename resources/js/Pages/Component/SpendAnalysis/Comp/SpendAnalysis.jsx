@@ -1,7 +1,3 @@
-import {
-    Select,
-    SelectItem
-} from "@heroui/react";
 import "../assets/css/chart.css";
 import TotalSpendChart from "../Charts/TotalSpendChart";
 import { ServiceTypeChart } from "../Charts/ServiceType";

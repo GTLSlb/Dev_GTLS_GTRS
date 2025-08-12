@@ -115,7 +115,7 @@ function TopReceiversCharts() {
                     <Legend verticalAlign="top" height={50} />
                     <Bar
                         dataKey="cost"
-                        name="Amount"
+                        name="Spend"
                         fill="#413ea0"
                         yAxisId="left"
                         intercept={0}

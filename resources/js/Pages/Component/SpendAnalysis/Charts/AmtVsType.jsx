@@ -39,7 +39,7 @@ export function AmtVsType() {
     );
     return (
         <ChartWrapper
-            title={"Amount vs Type"}
+            title={"Spend vs Type"}
             filterChildren={
                 <>
                     <DurationFilter
@@ -116,7 +116,7 @@ export function AmtVsType() {
                     <Legend verticalAlign="top" height={50} />
                     <Bar
                         dataKey="cost"
-                        name="cost"
+                        name="Spend"
                         fill="#413ea0"
                         yAxisId="left"
                         intercept={0}
@@ -124,7 +124,7 @@ export function AmtVsType() {
                     {selectedCosType.has("weight") && (
                         <Line
                             type="monotone"
-                            name="Weight "
+                            name="Weight"
                             dataKey="weight"
                             stroke="#8DC77B"
                             yAxisId="right"

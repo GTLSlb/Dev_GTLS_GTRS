@@ -41,7 +41,7 @@ export function TrendCost() {
 
     return (
         <ChartWrapper
-            title={"Cost Trend"}
+            title={"Spend Trend"}
             filterChildren={
                 <>
                     <DurationFilter
@@ -104,13 +104,14 @@ export function TrendCost() {
                     />
                     <Legend />
                     {selectedCostType.has("cost") && (
-                        <Line type="monotone" dataKey="cost" stroke="#8884d8" />
+                        <Line type="monotone" dataKey="cost" stroke="#8884d8" name="Cost"/>
                     )}
                     {selectedCostType.has("additional") && (
                         <Line
                             type="monotone"
                             dataKey="additional"
                             stroke="#82ca9d"
+                            name="Add Charges"
                         />
                     )}
                 </LineChart>

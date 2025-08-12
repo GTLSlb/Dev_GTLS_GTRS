@@ -26,7 +26,7 @@ function AdditionalCharts() {
     const information = [
         { label: "# of Receivers", value: "1,437", icon: <FaUsers /> },
         {
-            label: "Total Cost",
+            label: "Total Spend",
             value: "$11,952,429.18",
             icon: <FaDollarSign />,
         },
@@ -59,10 +59,6 @@ function AdditionalCharts() {
         <div>
             <div className="flex gap-2 mt-2 h-[80vh]">
                 <div className="w-2/3 h-full grid grid-cols-1 lg:grid-cols-2 grid-rows-2 gap-2">
-                    {/* <ServiceTypeChart />
-                    <AddCostTree />
-                    <TrendCost />
-                    <AmtVsType /> */}
                     <CostByStateChart />
                     <DemurrageCost />
                     <TopReceiversCharts />

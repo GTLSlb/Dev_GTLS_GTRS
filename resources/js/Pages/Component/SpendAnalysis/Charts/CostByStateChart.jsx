@@ -43,7 +43,7 @@ function CostByStateChart() {
 
     return (
         <ChartWrapper
-            title={"Cost By State"}
+            title={"Spend By State"}
             filterChildren={
                 <>
                     <DurationFilter
