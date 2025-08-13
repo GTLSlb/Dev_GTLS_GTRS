@@ -12,7 +12,11 @@ import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
-import { formatDateToExcel, renderConsDetailsLink, renderIncidentDetailsLink } from "@/CommonFunctions";
+import {
+    formatDateToExcel,
+    renderConsDetailsLink,
+    renderIncidentDetailsLink,
+} from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 
 export default function FailedCons({
@@ -72,8 +76,26 @@ export default function FailedCons({
             headerAlign: "center",
         },
     ];
+     const reasonOptions = failedReasons?.map((reason) => ({
+        id: reason.ReasonId,
+        label: reason.ReasonName,
+    }));
     const senderZoneOptions = createNewLabelObjects(data, "SenderState");
-    const receiverZoneOptions = createNewLabelObjects(data, "ReceiverState");
+    const receiverZoneOptions = createNewLabelObjects(data, "RECEIVERSTATE");
+    const senderZoneOptions1 = createNewLabelObjects(data, "SENDERZONE");
+    const receiverZoneOptions1 = createNewLabelObjects(data, "RECEIVERZONE");
+    const states = createNewLabelObjects(data, "State");
+    const departments = createNewLabelObjects(data, "Department");
+    const referenceOptions = [
+        {
+            id: 1,
+            label: "Internal",
+        },
+        {
+            id: 2,
+            label: "External",
+        },
+    ];
     // Usage example remains the same
     const minKPIDate = getMinMaxValue(data, "KpiDatetime", 1);
     const maxKPIDate = getMinMaxValue(data, "KpiDatetime", 2);
@@ -99,10 +121,13 @@ export default function FailedCons({
             group: "personalInfo",
             filterEditor: StringFilter,
             render: ({ value, data }) => {
-                return renderConsDetailsLink(
-                    userPermission,
-                    value,
-                    data.ConsignmentID
+                return (
+                    <span
+                        className="underline text-blue-500 hover:cursor-pointer"
+                        onClick={() => handleClick(data.CONSIGNMNENTID)}
+                    >
+                        {isDummyAccount(value)}
+                    </span>
                 );
             },
         },
@@ -154,6 +179,9 @@ export default function FailedCons({
 
             group: "senderInfo",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SenderReference",
@@ -164,6 +192,9 @@ export default function FailedCons({
             textAlign: "center",
             group: "senderInfo",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SenderState",
@@ -180,6 +211,20 @@ export default function FailedCons({
             },
         },
         {
+            name: "SenderZone",
+            header: "Sender Zone",
+            headerAlign: "center",
+            group: "senderInfo",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: senderZoneOptions1,
+            },
+        },
+        {
             name: "ReceiverName",
             header: "Receiver Name",
             type: "string",
@@ -188,6 +233,9 @@ export default function FailedCons({
             textAlign: "center",
             group: "receiverInfo",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "ReceiverReference",
@@ -198,6 +246,9 @@ export default function FailedCons({
             textAlign: "center",
             group: "receiverInfo",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "ReceiverState",
@@ -210,6 +261,20 @@ export default function FailedCons({
                 multiple: true,
                 wrapMultiple: false,
                 dataSource: receiverZoneOptions,
+            },
+        },
+        {
+            name: "ReceiverZone",
+            header: "Receiver Zone",
+            headerAlign: "center",
+            group: "receiverInfo",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: receiverZoneOptions1,
             },
         },
         {
@@ -232,7 +297,7 @@ export default function FailedCons({
                 maxDate: maxKPIDate,
             },
             filterEditor: DateFilter,
-            render: ({ value }) => {
+            render: ({ value, cellProps }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -251,7 +316,7 @@ export default function FailedCons({
                 minDate: minDespatchDate,
                 maxDate: maxDespatchDate,
             },
-            render: ({ value }) => {
+            render: ({ value, cellProps }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -270,7 +335,7 @@ export default function FailedCons({
                 maxDate: maxRddDate,
             },
             filterEditor: DateFilter,
-            render: ({ value }) => {
+            render: ({ value, cellProps }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -289,7 +354,7 @@ export default function FailedCons({
                 maxDate: maxArrivedDate,
             },
             filterEditor: DateFilter,
-            render: ({ value }) => {
+            render: ({ value, cellProps }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -308,7 +373,7 @@ export default function FailedCons({
                 maxDate: maxDeliveredDate,
             },
             filterEditor: DateFilter,
-            render: ({ value }) => {
+            render: ({ value, cellProps }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -332,7 +397,136 @@ export default function FailedCons({
                 );
             },
         },
+        // {
+        //     name: "FailedReason",
+        //     header: "Reason",
+        //     headerAlign: "center",
+        //     textAlign: "start",
+        //     defaultWidth: 300,
+        //     filterEditor: SelectFilter,
+        //     filterEditorProps: {
+        //         multiple: true,
+        //         wrapMultiple: false,
+        //         dataSource: reasonOptions,
+        //     },
+        //     render: ({ value }) => {
+        //         return (
+        //             <div>
+        //                 {/* {value} */}
+        //                 {
+        //                     failedReasons?.find(
+        //                         (reason) => reason.ReasonId === value
+        //                     )?.ReasonName
+        //                 }
+        //             </div>
+        //         );
+        //     },
+        // },
+        // {
+        //     name: "FailedReasonDesc",
+        //     header: "Main cause",
+        //     headerAlign: "center",
+        //     textAlign: "start",
+        //     defaultWidth: 300,
+        //     filterEditor: StringFilter,
+        // },
+        // {
+        //     name: "State",
+        //     header: "State",
+        //     headerAlign: "center",
+        //     textAlign: "center",
+        //     filterEditor: SelectFilter,
+        //     filterEditorProps: {
+        //         multiple: true,
+        //         wrapMultiple: false,
+        //         dataSource: states,
+        //     },
+        // },
+        // {
+        //     name: "Reference",
+        //     header: "Reference",
+        //     headerAlign: "center",
+        //     textAlign: "center",
+        //     filterEditor: SelectFilter,
+        //     filterEditorProps: {
+        //         multiple: true,
+        //         wrapMultiple: false,
+        //         dataSource: referenceOptions,
+        //     },
+        //     render: ({ value }) => {
+        //         return value == 1 ? (
+        //             <span>Internal</span>
+        //         ) : value == 2 ? (
+        //             <span>External</span>
+        //         ) : (
+        //             <span></span>
+        //         );
+        //     },
+        // },
+        // {
+        //     name: "Department",
+        //     header: "Department",
+        //     headerAlign: "center",
+        //     textAlign: "start",
+        //     filterEditor: SelectFilter,
+        //     filterEditorProps: {
+        //         multiple: true,
+        //         wrapMultiple: false,
+        //         dataSource: departments,
+        //     },
+        // },
+        // {
+        //     name: "OccuredAt",
+        //     header: "Occured at",
+        //     headerAlign: "center",
+        //     textAlign: "center",
+        //     defaultWidth: 170,
+        //     dateFormat: "DD-MM-YYYY",
+        //     filterEditor: DateFilter,
+        //     render: ({ value, cellProps }) => {
+        //         return moment(value).format("DD-MM-YYYY hh:mm A") ==
+        //             "Invalid date"
+        //             ? ""
+        //             : moment(value).format("DD-MM-YYYY hh:mm A");
+        //     },
+        // },
+        // {
+        //     name: "FailedNote",
+        //     header: "Explanation",
+        //     headerAlign: "center",
+        //     textAlign: "start",
+        // },
+        // {
+        //     header: "Edit",
+        //     headerAlign: "center",
+        //     textAlign: "center",
+        //     defaultWidth: 100,
+        //     render: ({ value, data }) => {
+        //         return (
+        //             <div>
+        //                 {canEditFailedConsignments(currentUser) ? (
+        //                     <button
+        //                         className={
+        //                             "rounded text-blue-500 justify-center items-center  "
+        //                         }
+        //                         onClick={() => {
+        //                             handleEditClick(data);
+        //                         }}
+        //                     >
+        //                         <span className="flex gap-x-1">
+        //                             <PencilIcon className="h-4" />
+        //                             Edit
+        //                         </span>
+        //                     </button>
+        //                 ) : (
+        //                     <div></div>
+        //                 )}
+        //             </div>
+        //         );
+        //     },
+        // },
     ];
+    
     const newArray = columns.slice(0, -1);
     const [newColumns, setNewColumns] = useState();
 

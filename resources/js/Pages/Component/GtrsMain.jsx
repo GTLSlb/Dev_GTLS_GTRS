@@ -13,6 +13,7 @@ import {
 import {
     getFiltersAddCharges,
     getFiltersCons,
+    getFiltersDifot,
     getFiltersDrivers,
     getFiltersFailed,
     getFiltersHolidays,
@@ -61,6 +62,9 @@ import SpendDashboard from "./SpendAnalysis/SpendDashboard";
 import SettingMiddleware from "./Settings/SettingMiddleware";
 import Customers from "./Settings/Customers";
 import CustomerProfile from "./Settings/CustomerProfile";
+import ContactRep from "./ContactsRep/ContactRep";
+import DifotReport from "./DifotReport";
+import Utilization from "./UtilizationReport/Utilization";
 
 export default function GtrsMain({
     setCustomerAccounts,
@@ -179,6 +183,7 @@ export default function GtrsMain({
         getFiltersAddCharges(minDateAdd, maxDateAdd)
     );
     const [filtersDriver, setFiltersDriver] = useState(getFiltersDrivers());
+    const [filtersDifot, setFiltersDifot] = useState(getFiltersDifot());
 
     // ********************************************************************
 
@@ -1595,6 +1600,76 @@ export default function GtrsMain({
                                             <ProtectedRoute
                                                 permission={currentUser}
                                                 route="StockReport_View"
+                                                element={
+                                                    <ProductStockTable
+                                                        url={url}
+                                                        Token={Token}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                    />
+                                                }
+                                            />
+                                        }
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
+                                    />
+                                    <Route
+                                        path="/contacts-report"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={currentUser}
+                                                route="ContactsRep_View"
+                                                element={
+                                                    <ContactRep
+                                                        url={url}
+                                                        Token={Token}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                    />
+                                                }
+                                            />
+                                        }
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
+                                    />
+                                    <Route
+                                        path="/difot-report"
+                                        element={
+                                            <DifotReport
+                                                permission={currentUser}
+                                                route="DifotReport_View"
+                                                element={
+                                                    <ProductStockTable
+                                                        url={url}
+                                                        Token={Token}
+                                                        currentUser={
+                                                            currentUser
+                                                        }
+                                                        filterValue={
+                                                            filtersDifot
+                                                        }
+                                                        accData={dataFromChild}
+                                                        setFilterValue={
+                                                            setFiltersDifot
+                                                        }
+                                                    />
+                                                }
+                                            />
+                                        }
+                                        currentUser={currentUser}
+                                        setToken={setToken}
+                                        setCurrentUser={setCurrentUser}
+                                    />
+                                    <Route
+                                        path="/utilization-report"
+                                        element={
+                                            <Utilization
+                                                permission={currentUser}
+                                                route="UtilizationReport_View"
                                                 element={
                                                     <ProductStockTable
                                                         url={url}

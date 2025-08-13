@@ -16,6 +16,8 @@ import {
     CogIcon,
 } from "@heroicons/react/24/solid";
 import TaskIcon from "@mui/icons-material/Task";
+import ContactsIcon from '@mui/icons-material/Contacts';
+import DescriptionIcon from '@mui/icons-material/Description';
 import ReportIcon from "@mui/icons-material/Report";
 
 const menu = [
@@ -263,6 +265,33 @@ const menu = [
         current: false,
         feature: "StockReport_View",
         url: "/gtrs/SOH",
+    },
+    {
+        id: 32,
+        name: "Contacts Report",
+        href: "#",
+        icon: ContactsIcon,
+        current: false,
+        feature: "ContactsRep_View",
+        url: "/gtrs/contacts-report",
+    },
+    {
+        id: 33,
+        name: "DIFOT Report",
+        href: "#",
+        icon: DescriptionIcon,
+        current: false,
+        feature: "DifotReport_View",
+        url: "/gtrs/difot-report",
+    },
+    {
+        id: 34,
+        name: "Utilization Report",
+        href: "#",
+        icon: DocumentTextIcon,
+        current: false,
+        feature: "UtilizationReport_View",
+        url: "/gtrs/utilization-report",
     },
     {
         id: 31,
