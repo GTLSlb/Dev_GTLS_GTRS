@@ -73,7 +73,7 @@ export default function Gtrs({
         axios
             .get(`${gtrsUrl}Delivery`, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             })
@@ -120,7 +120,7 @@ export default function Gtrs({
         try {
             const res = await axios.get(`${gtrsUrl}Delivery/Comments`, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             });
@@ -190,27 +190,25 @@ export default function Gtrs({
                     setApiStatus: setTransportApi,
                 },
             ];
+            console.log(user)
             urls.forEach(({ url, setData, setApiStatus }) => {
-                fetchApiData(url, setData, currentUser, Token, setApiStatus);
+                fetchApiData(url, setData, user, Token, setApiStatus);
             });
         }
-    }, [Token, currentUser]);
+    }, [Token, user]);
 
     useEffect(() => {
         if (loadingGtrs && currentUser != "") {
             if (currentUser == {}) {
-                console.log("currentUser", currentUser);
                 setCanAccess(false);
             } else if (currentUser) {
                 if (Object.keys(currentUser)?.length > 0) {
                     setCanAccess(true);
                 } else {
-                    console.log("currentUser", currentUser);
                     setCanAccess(false);
                 }
             }
         } else if (loadingGtrs && currentUser == "") {
-             console.log("currentUser", currentUser);
             setCanAccess(false);
         }
     }, [currentUser, loadingGtrs]);

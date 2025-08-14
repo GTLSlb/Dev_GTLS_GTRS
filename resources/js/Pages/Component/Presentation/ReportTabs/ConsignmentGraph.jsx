@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import Select from "react-select";
 import BarGraph from "../graphs/BarGraph";
 import axios from "axios";
 import PropTypes from "prop-types";
+import { CustomContext } from "@/CommonContext";
 
-function ConsignmentGraph({ url, currentUser, Token, customers, CustomerId }) {
+function ConsignmentGraph({ customers, CustomerId }) {
+    const { Token, user, currentUser, url } = useContext(CustomContext);
     const [graphData, setGraphData] = useState();
     const [originalgraphData, setGraphOriginalData] = useState();
     const [loading, setLoading] = useState(true);
@@ -17,7 +19,7 @@ function ConsignmentGraph({ url, currentUser, Token, customers, CustomerId }) {
         axios
             .get(`${url}KpiPackRecord`, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     CustomerId: CustomerId,
                     CustomerTypeId: selectedReceiver.value,
                     Authorization: `Bearer ${Token}`,

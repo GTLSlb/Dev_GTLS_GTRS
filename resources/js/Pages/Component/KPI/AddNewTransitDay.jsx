@@ -1,6 +1,6 @@
 import { handleSessionExpiration, useApiRequests } from "@/CommonFunctions";
 import { AlertToast } from "@/permissions";
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import { useState } from "react";
@@ -8,8 +8,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import GtrsButton from "../GtrsButton";
 import { ToastContainer } from "react-toastify";
+import { CustomContext } from "@/CommonContext";
 
-function AddNewTransitDay({ url, currentUser, setNewTransitDays, Token }) {
+function AddNewTransitDay({ setNewTransitDays }) {
+    const { Token, user, currentUser, url } = useContext(CustomContext);
+
     const { getApiRequest } = useApiRequests();
     const states = [
         {
@@ -80,7 +83,7 @@ function AddNewTransitDay({ url, currentUser, setNewTransitDays, Token }) {
 
     async function fetchData() {
         const data = await getApiRequest(`${url}TransitNew`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {
@@ -113,7 +116,7 @@ function AddNewTransitDay({ url, currentUser, setNewTransitDays, Token }) {
         axios
             .post(`${url}Add/TransitNew`, inputValues, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             })

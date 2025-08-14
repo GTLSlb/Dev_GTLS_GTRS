@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
     Table,
     TableHeader,
@@ -20,6 +20,7 @@ import { saveAs } from "file-saver";
 import axios from "axios";
 import PropTypes from "prop-types";
 import swal from "sweetalert";
+import { CustomContext } from "@/CommonContext";
 export const SearchIcon = (props) => {
     return (
         <svg
@@ -50,7 +51,8 @@ export const SearchIcon = (props) => {
     );
 };
 
-export default function ProductStockTable({ url, Token, currentUser }) {
+export default function ProductStockTable() {
+    const { Token, user, currentUser, url } = useContext(CustomContext);
     const [productsData, setProductsData] = useState([]);
     const [debtors, setDebtors] = useState([]);
     const [branches, setBranches] = useState([]);
@@ -70,7 +72,7 @@ export default function ProductStockTable({ url, Token, currentUser }) {
         try {
             const response = await axios.get(`${url}/SOH`, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             });

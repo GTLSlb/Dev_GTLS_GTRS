@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import React from "react";
 import PropTypes from "prop-types";
 import { useEffect } from "react";
@@ -17,16 +17,16 @@ import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import { CustomContext } from "@/CommonContext";
 
 export default function NoDelivery({
     NoDelData,
     setNoDelData,
     filterValue,
     setFilterValue,
-    currentUser,
     userPermission,
-    url,
 }) {
+    const { user, url } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     window.moment = moment;
 
@@ -40,7 +40,7 @@ export default function NoDelivery({
 
     async function fetchData() {
         const data = await getApiRequest(`${url}NoDelInfo`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {

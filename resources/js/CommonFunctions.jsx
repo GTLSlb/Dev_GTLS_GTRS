@@ -151,14 +151,15 @@ export function getMinMaxValue(data, fieldName, identifier) {
 export const fetchApiData = async (
     url,
     setData,
-    currentUser,
+    user,
     Token,
     setApiStatus
 ) => {
+    console.log(user)
     try {
         const response = await axios.get(url, {
             headers: {
-                UserId: currentUser.UserId,
+                UserId: user.UserId,
                 Authorization: `Bearer ${Token}`,
             },
         });
@@ -286,12 +287,12 @@ ProtectedRoute.propTypes = {
 function checkUserPermission(permission, route) {
     if (typeof route == "string") {
         // Go over the flat permissions and check if the user has the required permission
-        return permission?.Features?.some((feature) => {
+        return permission?.some((feature) => {
             return feature.FunctionName == route;
         });
     } else if (typeof route == "object") {
         // Map over permissions and check if the user has the required permission
-        return permission?.Features?.some((feature) => {
+        return permission?.some((feature) => {
             return route?.includes(feature.FunctionName);
         });
     }
@@ -334,13 +335,14 @@ export function navigateToFirstAllowedPage({
     user,
     navigate,
 }) {
+    console.log(user);
     let items = [];
 
     menu?.forEach((menuItem) => {
         if (Object.prototype.hasOwnProperty.call(menuItem, "options")) {
             menuItem.options.forEach((option) => {
                 if (
-                    user?.Features?.some(
+                    user?.some(
                         (item) => item?.FunctionName === option?.feature
                     )
                 ) {
@@ -363,7 +365,7 @@ export function navigateToFirstAllowedPage({
             });
         } else {
             if (
-                user?.Features?.some(
+                user?.some(
                     (item) => item?.FunctionName === menuItem?.feature
                 )
             ) {

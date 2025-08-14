@@ -50,7 +50,7 @@ export default function DifotReport({
         try {
             const res = await axios.get(`${url}Difot/Report`, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             });

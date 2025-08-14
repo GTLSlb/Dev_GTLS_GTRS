@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import React from "react";
 import PropTypes from "prop-types";
 import { Fragment } from "react";
@@ -13,6 +13,7 @@ import axios from "axios";
 import { handleSessionExpiration } from '@/CommonFunctions';
 import GtrsButton from "../../GtrsButton";
 import { AlertToast } from "@/permissions";
+import { CustomContext } from "@/CommonContext";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -21,14 +22,12 @@ function classNames(...classes) {
 export default function AddHoliday({
     states,
     holiday,
-    url,
-    currentUser,
-    Token,
     setHoliday,
     setShowAdd,
     fetchData,
     closeModal
 }) {
+    const { Token, user, currentUser, url } = useContext(CustomContext);
     const [selected, setSelected] = useState(states[0]);
     const [isChecked, setIsChecked] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -70,7 +69,7 @@ export default function AddHoliday({
         axios
             .post(`${url}Add/Holiday`, inputValues, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: url.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             })

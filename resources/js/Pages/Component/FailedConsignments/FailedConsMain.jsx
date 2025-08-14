@@ -1,23 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import FailedCons from "./FailedCons";
 import swal from "sweetalert";
 import axios from "axios";
 import { handleSessionExpiration } from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import { CustomContext } from "@/CommonContext";
 
 export default function FailedConsMain({
-    url,
     PerfData,
     filterValue,
     setFilterValue,
-    currentUser,
     userPermission,
     accData,
-    Token,
     failedReasons,
     setFailedReasons,
 }) {
+    const { url, Token, user, currentUser } = useContext(CustomContext);
     const [isFetching, setIsfetching] = useState();
 
     useEffect(() => {
@@ -31,7 +30,7 @@ export default function FailedConsMain({
             axios
                 .get(`${url}FailureReasons`, {
                     headers: {
-                        UserId: currentUser.UserId,
+                        UserId: user.UserId,
                         Authorization: `Bearer ${Token}`,
                     },
                 })
@@ -89,7 +88,6 @@ export default function FailedConsMain({
             )}
         </div>
     );
-
 }
 
 FailedConsMain.propTypes = {

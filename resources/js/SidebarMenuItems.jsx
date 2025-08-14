@@ -147,18 +147,18 @@ const menu = [
         feature: "DeliveryReport_View",
         url: "/gtrs/delivery-report",
         options: [
-            {
-                id: 28,
-                name: "Delivery Report",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "DeliveryReport_View",
-                url: "/gtrs/delivery-report",
-            },
+            // {
+            //     id: 28,
+            //     name: "Delivery Report",
+            //     href: "#",
+            //     current: false,
+            //     icon: ClipboardDocumentCheckIcon,
+            //     feature: "DeliveryReport_View",
+            //     url: "/gtrs/delivery-report",
+            // },
             {
                 id: 30,
-                name: "Excel Delivery Report",
+                name: "Delivery Report",
                 href: "#",
                 current: false,
                 icon: ClipboardDocumentCheckIcon,

@@ -1,5 +1,5 @@
 import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
@@ -14,17 +14,17 @@ import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import GtrsButton from "../GtrsButton";
+import { CustomContext } from "@/CommonContext";
 
 
 function NewTransitDays({
     setNewTransitDays,
     newTransitDays,
-    currentUser,
     userPermission,
     filterValue,
     setFilterValue,
-    url,
 }) {
+    const { user, url } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     const [isFetching, setIsFetching] = useState(true);
     const [selected, setSelected] = useState([]);
@@ -34,7 +34,7 @@ function NewTransitDays({
 
     async function fetchData() {
         const data = await getApiRequest(`${url}TransitNew`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {

@@ -1,8 +1,5 @@
-import React, { useEffect, useState } from "react";
-import {
-    Tab,
-    Tabs,
-} from "@heroui/react";
+import React, { useContext, useEffect, useState } from "react";
+import { Tab, Tabs } from "@heroui/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useApiRequests } from "@/CommonFunctions";
 import GtrsButton from "../GtrsButton";
@@ -12,10 +9,10 @@ import Accounts from "./Accounts";
 import Users from "./Users";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 import PropTypes from "prop-types";
+import { CustomContext } from "@/CommonContext";
 
-
-
-export default function CustomerProfile({ currentUser, userPermission }) {
+export default function CustomerProfile({ userPermission }) {
+    const { user } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     const [customer, setCustomer] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -26,8 +23,8 @@ export default function CustomerProfile({ currentUser, userPermission }) {
     const customerId = location?.state?.CustomerId;
     async function fetchData() {
         const data = await getApiRequest(`${gtamUrl}CustomerById`, {
-            UserId: currentUser?.UserId,
-            Customer_Id: customerId ? customerId : currentUser?.OwnerId,
+            UserId: user?.UserId,
+            Customer_Id: customerId ? customerId : user?.OwnerId,
         });
 
         if (data) {
@@ -41,11 +38,10 @@ export default function CustomerProfile({ currentUser, userPermission }) {
 
     const [selectedTab, setSelectedTab] = useState("accounts");
 
-
     return (
         <>
             <div className="container mx-auto flex flex-col gap-4 p-5">
-                {currentUser?.TypeId !== 1 && (
+                {user?.TypeId !== 1 && (
                     <GtrsButton
                         name="Back"
                         className={"py-4"}

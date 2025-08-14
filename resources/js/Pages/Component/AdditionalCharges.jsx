@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
 import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
@@ -16,6 +16,7 @@ import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import { CustomContext } from "@/CommonContext";
 
 export default function AdditionalCharges({
     AdditionalData,
@@ -23,9 +24,8 @@ export default function AdditionalCharges({
     filterValue,
     setFilterValue,
     userPermission,
-    currentUser,
-    url,
 }) {
+    const { user, url } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     window.moment = moment;
     const [isFetching, setIsFetching] = useState();
@@ -38,7 +38,7 @@ export default function AdditionalCharges({
 
     async function fetchData() {
         const data = await getApiRequest(`${url}AddCharges`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {

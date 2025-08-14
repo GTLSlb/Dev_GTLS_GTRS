@@ -18,7 +18,7 @@ import React, {
 import swal from "sweetalert";
 
 function ContactRep() {
-    const { url, Token, currentUser } = useContext(CustomContext);
+    const { url, Token, user, currentUser } = useContext(CustomContext);
     const gridRef = useRef(null);
     const [selected] = useState({});
     const [contactsData, setcontactsData] = useState([]);
@@ -29,7 +29,7 @@ function ContactRep() {
         axios
             .get(`${url}/Contacts`, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             })

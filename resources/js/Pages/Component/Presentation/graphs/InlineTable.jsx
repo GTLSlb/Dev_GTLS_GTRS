@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
@@ -6,17 +6,16 @@ import axios from "axios";
 import "../../../../../css/graphTable.css";
 import { AlertToast } from "@/permissions";
 import { ToastContainer } from "react-toastify";
+import { CustomContext } from "@/CommonContext";
 
 // Component
 function InlineTable({
     graphData,
-    url,
-    currentUser,
     CustomerId,
     setGraphData,
     selectedReceiver,
-    Token,
 }) {
+    const { Token, user, url } = useContext(CustomContext);
     const jsonData = graphData;
     const [localGraphData, setLocalGraphData] = useState(graphData);
 
@@ -331,7 +330,7 @@ function InlineTable({
             axios
                 .post(`${url}Add/KpiPackRecord`, baseRecord, {
                     headers: {
-                        UserId: currentUser.UserId,
+                        UserId: user.UserId,
                         Authorization: `Bearer ${Token}`,
                     },
                 })

@@ -3,7 +3,7 @@ import axios from "axios";
 import swal from "sweetalert";
 import moment from "moment";
 import { handleSessionExpiration } from "@/CommonFunctions";
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import {
     getLatestDespatchDate,
@@ -65,6 +65,7 @@ import CustomerProfile from "./Settings/CustomerProfile";
 import ContactRep from "./ContactsRep/ContactRep";
 import DifotReport from "./DifotReport";
 import Utilization from "./UtilizationReport/Utilization";
+import { CustomContext } from "@/CommonContext";
 
 export default function GtrsMain({
     setCustomerAccounts,
@@ -75,25 +76,28 @@ export default function GtrsMain({
     customerAccounts,
     setactiveCon,
     consData,
-    currentUser,
     PerfData,
     rddReasons,
     setrddReasons,
     transportData,
-    url,
-    Token,
     chartsData,
     kpireasonsData,
     setkpireasonsData,
     userPermission,
     sidebarElements,
     setSidebarElements,
-    setToken,
-    setCurrentUser,
     deliveryReportData,
     deliveryReportComments,
     fetchDeliveryReportCommentsData,
 }) {
+    const {
+            url,
+            user,
+            Token,
+            setToken,
+            currentUser,
+            setCurrentUser,
+        } = useContext(CustomContext);
     window.moment = moment;
     const KPIData = [];
     const [NewKPIData, setNewKPIData] = useState([]);
@@ -469,7 +473,7 @@ export default function GtrsMain({
         try {
             const res = await axios.get(`${url}Delivery`, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             });
@@ -507,7 +511,7 @@ export default function GtrsMain({
         try {
             const res = await axios.get(`${url}DeliveryReport`, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             });

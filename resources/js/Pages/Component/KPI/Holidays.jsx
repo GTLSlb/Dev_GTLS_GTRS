@@ -1,7 +1,7 @@
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import React from "react";
 import PropTypes from "prop-types";
 import TableStructure from "@/Components/TableStructure";
@@ -17,18 +17,17 @@ import GtrsButton from "../GtrsButton";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { ToastContainer } from "react-toastify";
+import { CustomContext } from "@/CommonContext";
 
 window.moment = moment;
 export default function Holidays({
     holidays,
     setHolidays,
-    url,
-    Token,
     filterValue,
     setFilterValue,
     userPermission,
-    currentUser,
 }) {
+    const { user, url, Token, currentUser } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     const [isFetching, setIsFetching] = useState();
     const [showAdd, setShowAdd] = useState(false);
@@ -57,7 +56,7 @@ export default function Holidays({
     const gridRef = useRef(null);
     async function fetchData() {
         const data = await getApiRequest(`${url}Holidays`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {

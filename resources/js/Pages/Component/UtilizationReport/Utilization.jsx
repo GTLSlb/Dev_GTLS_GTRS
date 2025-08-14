@@ -23,7 +23,7 @@ import { handleSessionExpiration } from "@/CommonFunctions";
 import { Spinner,Button } from "@heroui/react";
 
 export default function Utilization() {
-    const { url, Token, currentUser } = useContext(CustomContext);
+    const { url, Token, currentUser, user } = useContext(CustomContext);
     const [utilizationData, setUtilizationData] = useState();
     useEffect(() => {
         fetchUtilizationReportData();
@@ -32,7 +32,7 @@ export default function Utilization() {
         try {
             const res = await axios.get(`${url}Utilization/Report`, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             });
@@ -957,8 +957,8 @@ export default function Utilization() {
         axios
             .post(`${url}Add/UtilizationReport`, inputValues, {
                 headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    UserId: user.UserId,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {

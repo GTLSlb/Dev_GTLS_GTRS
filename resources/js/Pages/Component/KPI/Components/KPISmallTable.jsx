@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import { useLayoutEffect, useRef, useState } from "react";
 import ReactPaginate from "react-paginate";
@@ -10,12 +10,12 @@ import { CheckIcon } from "@heroicons/react/20/solid";
 import { useEffect } from "react";
 import { canEditKpiReasons } from "@/permissions";
 import { handleSessionExpiration } from '@/CommonFunctions';
+import { CustomContext } from "@/CommonContext";
 
 export default function SmallTableKPI({
     showAddRow,
     setShowAddRow,
     objects,
-    Token,
     editIndex,
     setEditIndex,
     dynamicHeaders,
@@ -23,10 +23,11 @@ export default function SmallTableKPI({
     userPermission,
     getfunction,
     addurl,
-    currentUser,
     currentPage,
     setCurrentPage,
 }) {
+
+    const { Token, user, currentUser } = useContext(CustomContext);
 
     const [data, setData] = useState(objects);
 
@@ -63,7 +64,7 @@ export default function SmallTableKPI({
             axios
                 .post(addurl, editedObject, {
                     headers: {
-                        UserId: currentUser.UserId,
+                        UserId: user.UserId,
                         Authorization: `Bearer ${Token}`,
                     },
                 })
@@ -103,7 +104,7 @@ export default function SmallTableKPI({
             axios
                 .post(addurl, dataToSend, {
                     headers: {
-                        UserId: currentUser.UserId,
+                        UserId: user.UserId,
                         Authorization: `Bearer ${Token}`,
                     },
                 })

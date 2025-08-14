@@ -4,6 +4,7 @@ import React, {
     useCallback,
     useMemo,
     useRef,
+    useContext,
 } from "react";
 import PropTypes from "prop-types";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
@@ -31,17 +32,16 @@ import {
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import TableStructure from "@/Components/TableStructure";
+import { CustomContext } from "@/CommonContext";
 
 export default function DeliveryReportPage({
-    url,
-    Token,
     deliveryReportData,
-    currentUser,
     userPermission,
     fetchDeliveryReport,
     deliveryReportComments,
     fetchDeliveryReportCommentsDataGTRS,
 }) {
+    const { Token, user, currentUser, url } = useContext(CustomContext);
     const navigate = useNavigate();
     const handleClick = (coindex) => {
         navigate("/gtrs/consignment-details", {
@@ -365,7 +365,7 @@ export default function DeliveryReportPage({
         try {
             const res = await axios.get(`${url}Delivery/Comments`, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             });
@@ -410,7 +410,7 @@ export default function DeliveryReportPage({
             axios
                 .post(`${url}Add/Comment`, inputValues, {
                     headers: {
-                        UserId: currentUser.UserId,
+                        UserId: user.UserId,
                         Authorization: `Bearer ${Token}`,
                     },
                 })
@@ -418,7 +418,7 @@ export default function DeliveryReportPage({
                     await axios
                         .get(`${url}Delivery/Comments`, {
                             headers: {
-                                UserId: currentUser.UserId,
+                                UserId: user.UserId,
                                 Authorization: `Bearer ${Token}`,
                             },
                         })
@@ -447,7 +447,7 @@ export default function DeliveryReportPage({
                                             },
                                             {
                                                 headers: {
-                                                    UserId: currentUser.UserId,
+                                                    UserId: user.UserId,
                                                     Authorization: `Bearer ${Token}`,
                                                 },
                                             }
@@ -561,7 +561,7 @@ export default function DeliveryReportPage({
                         },
                         {
                             headers: {
-                                UserId: currentUser.UserId,
+                                UserId: user.UserId,
                                 Authorization: `Bearer ${Token}`,
                             },
                         }

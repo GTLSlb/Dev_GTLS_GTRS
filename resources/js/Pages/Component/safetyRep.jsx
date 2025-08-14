@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useEffect } from "react";
 import React from "react";
 import propTypes from "prop-types";
@@ -9,12 +9,10 @@ import { canViewSafetyType } from "@/permissions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import { ToastContainer } from "react-toastify";
 import { useApiRequests } from "@/CommonFunctions";
+import { CustomContext } from "@/CommonContext";
 
 export default function SafetyRep({
     accData,
-    currentUser,
-    url,
-    Token,
     safetyDataState,
     filterValue,
     setFilterValue,
@@ -29,7 +27,7 @@ export default function SafetyRep({
     DefaultSDate,
     DefaultEDate,
     userPermission,
-}) {
+}) {const { user, url, Token, currentUser } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     const [SDate, setSDate] = useState(DefaultSDate);
     const [EDate, setEDate] = useState(DefaultEDate);
@@ -93,7 +91,7 @@ export default function SafetyRep({
     async function fetchData() {
         setIsFetching(true);
         const data = await getApiRequest(`${url}SafetyReport`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {
@@ -107,7 +105,7 @@ export default function SafetyRep({
 
     async function fetchDataTypes() {
         const data = await getApiRequest(`${url}SafetyTypes`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {
@@ -118,7 +116,7 @@ export default function SafetyRep({
 
     async function fetchDataCauses() {
         const data = await getApiRequest(`${url}SafetyCauses`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {

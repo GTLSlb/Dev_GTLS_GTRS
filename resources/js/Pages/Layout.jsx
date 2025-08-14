@@ -87,14 +87,7 @@ export default function Sidebar() {
                 appPermissionsHeaders
             );
 
-            const updatedCurrentUser = addUserIdToFeatures(
-                appPermissionsResponse.Features,
-                user.UserId,
-                user.StateId,
-                user.GroupId,
-                user.OwnerId
-            );
-            setCurrentUser(updatedCurrentUser);
+            setCurrentUser(appPermissionsResponse.Features);
 
             const userPermissionsHeaders = {
                 UserId: user.UserId,
@@ -110,7 +103,7 @@ export default function Sidebar() {
                 (item) => item.AppId == window.Laravel.appId
             );
             if (
-                currentUser?.Features?.length == 0 &&
+                currentUser?.length == 0 &&
                 !isAllowed &&
                 window.location.pathname != "/logout"
             ) {
@@ -141,22 +134,22 @@ export default function Sidebar() {
         fetchUserData();
     }, [gtamUrl, appId]);
 
-    useEffect(() => {
-        if (
-            currentUser &&
-            allowedApplications?.length > 0 &&
-            !Object.prototype.hasOwnProperty.call(currentUser, "AppRoleId")
-        ) {
-            const userAppRole = allowedApplications.find(
-                (item) => item.AppId === appId
-            );
-            setCurrentUser({
-                ...currentUser,
-                AppRoleId: userAppRole?.AppRoleId,
-                AppRoleName: userAppRole?.AppRoleName,
-            });
-        }
-    }, [currentUser, allowedApplications, appId]);
+    // useEffect(() => {
+    //     if (
+    //         currentUser &&
+    //         allowedApplications?.length > 0 &&
+    //         !Object.prototype.hasOwnProperty.call(currentUser, "AppRoleId")
+    //     ) {
+    //         const userAppRole = allowedApplications.find(
+    //             (item) => item.AppId === appId
+    //         );
+    //         setCurrentUser({
+    //             ...currentUser,
+    //             AppRoleId: userAppRole?.AppRoleId,
+    //             AppRoleName: userAppRole?.AppRoleName,
+    //         });
+    //     }
+    // }, [currentUser, allowedApplications, appId]);
 
     if (!currentUser) {
         return null; // Render nothing

@@ -5,16 +5,15 @@ import AddSafetyCausesModal from "./AddSafetyCausesModel";
 import { useApiRequests } from "@/CommonFunctions";
 import PropTypes from "prop-types";
 import React from "react";
+import { CustomContext } from "@/CommonContext";
 
 
 
 export default function AddSafetyCauses({
-    Token,
     safetyCauses,
     setSafetyCauses,
-    currentUser,
-    url,
 }) {
+    const { user, url, Token, currentUser } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [Data, setData] = useState(safetyCauses);
@@ -28,7 +27,7 @@ export default function AddSafetyCauses({
 
     async function fetchData() {
         const data = await getApiRequest(`${url}SafetyCauses`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {

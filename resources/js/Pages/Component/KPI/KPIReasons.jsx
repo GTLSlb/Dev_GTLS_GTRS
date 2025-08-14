@@ -6,18 +6,16 @@ import { PencilIcon } from "@heroicons/react/20/solid";
 import TableStructure from "@/Components/TableStructure";
 import { canAddKpiReasons, canEditKpiReasons } from "@/permissions";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useContext } from "react";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import AddKPIReason from "./Components/AddKPIReason";
 import { ToastContainer } from "react-toastify";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
+import { CustomContext } from "@/CommonContext";
 
 export default function KPIReasons({
-    url,
-    currentUser,
-    Token,
     userPermission,
     kpireasonsData,
     setkpireasonsData,
@@ -25,6 +23,7 @@ export default function KPIReasons({
     setFilterValue,
 }) {
 
+    const { Token, user, currentUser, url } = useContext(CustomContext);
 
     const gridRef = useRef(null);
     const [filteredData, setFilteredData] = useState(kpireasonsData);
@@ -144,7 +143,7 @@ export default function KPIReasons({
         axios
             .get(`${url}KpiReasons`, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             })

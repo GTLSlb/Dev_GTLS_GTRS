@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import React from "react";
 import PropTypes from "prop-types";
 import { useEffect } from "react";
@@ -7,18 +7,17 @@ import axios from "axios";
 import { handleSessionExpiration } from '@/CommonFunctions';
 import GtrsButton from "../../GtrsButton";
 import ReactModal from "react-modal";
+import { CustomContext } from "@/CommonContext";
 
 
 export default function AddCommentToList({
     selectedComment,
-    url,
-    currentUser,
-    Token,
     setSelectedComment,
     setShowAdd,
     fetchData,
     isOpen,
 }) {
+    const { Token, user, currentUser, url } = useContext(CustomContext);
     const [isChecked, setIsChecked] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [object, setObject] = useState();
@@ -50,7 +49,7 @@ export default function AddCommentToList({
         axios
             .post(`${url}Add/Comment`, inputValues, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             })

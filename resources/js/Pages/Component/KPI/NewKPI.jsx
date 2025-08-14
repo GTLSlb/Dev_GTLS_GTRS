@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useContext } from "react";
 import React from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
@@ -28,12 +28,10 @@ import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import { PencilIcon } from "@heroicons/react/20/solid";
+import { CustomContext } from "@/CommonContext";
 
 function NewKPI({
-    url,
-    currentUser,
     filterValue,
-    Token,
     setFilterValue,
     KPIData,
     setKPIData,
@@ -41,6 +39,7 @@ function NewKPI({
     accData,
     kpireasonsData,
 }) {
+    const { Token, user, currentUser, url } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     window.moment = moment;
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -60,7 +59,7 @@ function NewKPI({
 
     async function fetchData() {
         const data = await getApiRequest(`${url}/KPINew`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {
@@ -570,7 +569,7 @@ function NewKPI({
         axios
             .get(`${url}KPIReportNew`, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             })

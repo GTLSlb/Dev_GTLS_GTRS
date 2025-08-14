@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import React from "react";
 import PropTypes from "prop-types";
 import { PencilIcon } from "@heroicons/react/24/outline";
@@ -6,17 +6,16 @@ import notFound from "../../../../../assets/pictures/NotFound.png";
 import AddSafetyTypeModal from "./AddSafetyTypeModel";
 import { canAddSafetyType, canEditSafetyType } from "@/permissions";
 import { useApiRequests } from '@/CommonFunctions';
+import { CustomContext } from "@/CommonContext";
 
 
 
 export default function AddSafetyType({
     safetyTypes,
     setSafetyTypes,
-    url,
-    Token,
-    currentUser,
     userPermission,
 }) {
+     const { user, url, Token, currentUser } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [Data, setData] = useState(safetyTypes);
@@ -31,7 +30,7 @@ export default function AddSafetyType({
 
     async function fetchData() {
         const data = await getApiRequest(`${url}SafetyTypes`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {

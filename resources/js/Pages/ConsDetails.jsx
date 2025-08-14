@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useEffect } from "react";
 import "../../css/scroll.css";
 import React from "react";
@@ -14,10 +14,12 @@ import DeliveryDetails from "./Component/ConsDetailsComp/DeliveryDetails";
 import PalletDetails from "./Component/ConsDetailsComp/PalletDetails";
 import PickupDelInfo from "./Component/ConsDetailsComp/PickupDelInfo";
 import BackButton from "@/Components/BackButton";
+import { CustomContext } from "@/CommonContext";
 
 
 
-export default function ConsDetails({ url, currentUser }) {
+export default function ConsDetails() {
+    const { user, url } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     const navigate = useNavigate();
     const location = useLocation();
@@ -42,7 +44,7 @@ export default function ConsDetails({ url, currentUser }) {
 
     async function fetchData() {
         const data = await getApiRequest(`${url}ConsignmentById`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
             Consignment_id: location?.state?.activeCons,
         });
 
