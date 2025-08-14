@@ -1,6 +1,6 @@
 import "../../../../css/dashboard.css";
 import Select from "react-select";
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 // import ReactGridLayout from 'react-grid-layout';
 import "react-grid-layout/css/styles.css";
@@ -15,6 +15,7 @@ import {
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import Charts from "./Charts";
 import ChartsTable from "./ChartsTable";
+import { CustomContext } from "@/CommonContext";
 
 const customStyles = {
     control: (provided) => ({
@@ -63,8 +64,8 @@ export default function MainCharts({
     sideBarToggle,
     chartName,
     setChartName,
-    userPermission,
 }) {
+    const { userPermissions } = useContext(CustomContext);
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
     const [EDate, setEDate] = useState(getLatestDespatchDate(chartsData));
     const [filteredData, setFilteredData] = useState([chartsData]);
@@ -235,7 +236,7 @@ export default function MainCharts({
                                 setChartFilter={setChartFilter}
                                 chartName={chartName}
                                 setChartName={setChartName}
-                                userPermission={userPermission}
+                                userPermissions={userPermissions}
                             />
                         </div>
                     ) : (
@@ -429,5 +430,5 @@ MainCharts.propTypes = {
     sideBarToggle: PropTypes.bool,
     chartName: PropTypes.string,
     setChartName: PropTypes.func,
-    userPermission: PropTypes.object,
+    userPermissions: PropTypes.object,
 };

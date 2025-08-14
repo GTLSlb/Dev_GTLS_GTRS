@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import moment from "moment";
 import React from "react";
 import PropTypes from "prop-types";
@@ -11,14 +11,15 @@ import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { formatDateToExcel, renderConsDetailsLink } from "@/CommonFunctions";
+import { CustomContext } from "@/CommonContext";
 
 export default function MissingPOD({
     PerfData,
     filterValue,
     setFilterValue,
-    userPermission,
     accData,
 }) {
+    const { userPermissions } = useContext(CustomContext);
     window.moment = moment;
     const minDateDespatch = getMinMaxValue(PerfData, "DespatchDate", 1);
     const maxDateDespatch = getMinMaxValue(PerfData, "DespatchDate", 2);
@@ -115,7 +116,7 @@ export default function MissingPOD({
             filterEditor: StringFilter,
             render: ({ value, data }) => {
                 return renderConsDetailsLink(
-                    userPermission,
+                    userPermissions,
                     value,
                     data.ConsignmentID
                 );
@@ -329,6 +330,6 @@ MissingPOD.propTypes = {
     PerfData: PropTypes.array,
     filterValue: PropTypes.array,
     setFilterValue: PropTypes.func,
-    userPermission: PropTypes.object,
+    userPermissions: PropTypes.object,
     accData: PropTypes.array,
 };

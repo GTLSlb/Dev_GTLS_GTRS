@@ -1,5 +1,5 @@
 import ReactModal from "react-modal";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import PropTypes from "prop-types";
 import { useEffect } from "react";
 import "../../css/scroll.css";
@@ -8,6 +8,7 @@ import { handleSessionExpiration } from "@/CommonFunctions";
 import Select from "react-select";
 import {ToastContainer} from 'react-toastify';
 import { AlertToast } from "@/permissions";
+import { CustomContext } from "@/CommonContext";
 
 export default function SafetyModal({
     isOpen,
@@ -16,7 +17,6 @@ export default function SafetyModal({
     modalSafetyType,
     modalMainCause,
     modalState,
-    Token,
     customerAccounts,
     modalConsNo,
     modalDebtorId,
@@ -25,11 +25,11 @@ export default function SafetyModal({
     modalRefer,
     modalOccuredAt,
     updateLocalData,
-    currentUser,
     safetyTypes,
     setIsSuccessfull,
     fetchData
 }) {
+     const { user, Token } = useContext(CustomContext);
     const date = new Date(modalOccuredAt);
     const formattedDate = date?.toLocaleDateString("en-CA");
     let id = 0;
@@ -75,7 +75,7 @@ export default function SafetyModal({
         modalRefer,
         formattedDate,
         Token,
-        currentUser.name,
+        user.name,
     ]);
     const handlePopUpClose = () => {
         setError(null);
@@ -449,7 +449,7 @@ SafetyModal.propTypes = {
     modalRefer: PropTypes.string,
     modalOccuredAt: PropTypes.string,
     updateLocalData: PropTypes.func,
-    currentUser: PropTypes.object,
+    user: PropTypes.object,
     safetyTypes: PropTypes.array,
     setIsSuccessfull: PropTypes.func,
     fetchData: PropTypes.func

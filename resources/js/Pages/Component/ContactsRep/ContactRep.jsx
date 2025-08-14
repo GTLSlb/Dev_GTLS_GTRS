@@ -18,7 +18,7 @@ import React, {
 import swal from "sweetalert";
 
 function ContactRep() {
-    const { url, Token, user, currentUser } = useContext(CustomContext);
+    const { url, Token, user, userPermissions } = useContext(CustomContext);
     const gridRef = useRef(null);
     const [selected] = useState({});
     const [contactsData, setcontactsData] = useState([]);
@@ -130,7 +130,7 @@ function ContactRep() {
                     console.log(err);
                 }
             });
-    }, [currentUser, Token, url]);
+    }, [userPermissions, Token, url]);
 
     const [filtersValue, setFiltersValue] = useState(getFiltersContactsTable());
 

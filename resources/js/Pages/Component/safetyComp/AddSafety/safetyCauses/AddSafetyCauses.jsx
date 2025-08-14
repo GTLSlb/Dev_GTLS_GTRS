@@ -13,7 +13,7 @@ export default function AddSafetyCauses({
     safetyCauses,
     setSafetyCauses,
 }) {
-    const { user, url, Token, currentUser } = useContext(CustomContext);
+    const { user, url, Token, userPermissions } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [Data, setData] = useState(safetyCauses);
@@ -184,7 +184,7 @@ export default function AddSafetyCauses({
             <AddSafetyCausesModal
                 url={url}
                 Token={Token}
-                currentUser={currentUser}
+                userPermissions={userPermissions}
                 ariaHideApp={false}
                 isOpen={isModalOpen}
                 cause={cause}
@@ -198,9 +198,6 @@ export default function AddSafetyCauses({
 }
 
 AddSafetyCauses.propTypes = {
-    Token: PropTypes.string,
     safetyCauses: PropTypes.array,
     setSafetyCauses: PropTypes.func,
-    currentUser: PropTypes.object,
-    url: PropTypes.string,
 };

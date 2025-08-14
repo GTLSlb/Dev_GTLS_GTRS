@@ -23,8 +23,8 @@ export default function Gtrs({
     mobileMenuOpen,
 }) {
     const {
-        currentUser,
-        setCurrentUser,
+        userPermissions,
+        setUserPermissions,
         Token,
         setToken,
         user,
@@ -149,7 +149,7 @@ export default function Gtrs({
     };
 
     useEffect(() => {
-        if (Token != null && currentUser) {
+        if (Token != null && user) {
             setLoadingGtrs(false);
             fetchDeliveryReport();
             fetchDeliveryReportCommentsData();
@@ -190,7 +190,7 @@ export default function Gtrs({
                     setApiStatus: setTransportApi,
                 },
             ];
-            console.log(user)
+            console.log(user);
             urls.forEach(({ url, setData, setApiStatus }) => {
                 fetchApiData(url, setData, user, Token, setApiStatus);
             });
@@ -198,31 +198,31 @@ export default function Gtrs({
     }, [Token, user]);
 
     useEffect(() => {
-        if (loadingGtrs && currentUser != "") {
-            if (currentUser == {}) {
+        if (loadingGtrs && userPermissions != "") {
+            if (userPermissions == {}) {
                 setCanAccess(false);
-            } else if (currentUser) {
-                if (Object.keys(currentUser)?.length > 0) {
+            } else if (userPermissions) {
+                if (Object.keys(userPermissions)?.length > 0) {
                     setCanAccess(true);
                 } else {
                     setCanAccess(false);
                 }
             }
-        } else if (loadingGtrs && currentUser == "") {
+        } else if (loadingGtrs && userPermissions == "") {
             setCanAccess(false);
         }
-    }, [currentUser, loadingGtrs]);
+    }, [userPermissions, loadingGtrs]);
 
     const navigate = useNavigate();
     useEffect(() => {
-        if (user) {
+        if (userPermissions) {
             navigateToFirstAllowedPage({
                 setSidebarElements,
-                user: currentUser,
+                userPermissions: userPermissions,
                 navigate,
             });
         }
-    }, [user]);
+    }, [userPermissions]);
 
     if (
         consApi &&
@@ -271,9 +271,8 @@ export default function Gtrs({
                                             safetyData={safetyData}
                                             debtorsData={debtorsData}
                                             customerAccounts={customerAccounts}
-                                            currentUser={currentUser}
+                                            userPermissions={userPermissions}
                                             user={user}
-                                            userPermission={user}
                                             dashData={PerfData}
                                             setactiveCon={setactiveCon}
                                             consData={consData}
@@ -282,7 +281,9 @@ export default function Gtrs({
                                             PerfData={PerfData}
                                             setPerfData={setPerfData}
                                             setToken={setToken}
-                                            setCurrentUser={setCurrentUser}
+                                            setUserPermissions={
+                                                setUserPermissions
+                                            }
                                             sidebarElements={sidebarElements}
                                             setSidebarElements={
                                                 setSidebarElements
@@ -305,13 +306,7 @@ export default function Gtrs({
                 </Routes>
             );
         } else {
-            return (
-                <NoAccess
-                    currentUser={currentUser}
-                    setToken={setToken}
-                    setCurrentUser={setCurrentUser}
-                />
-            );
+            return <NoAccess />;
         }
     } else {
         return <AnimatedLoading />;
@@ -324,11 +319,11 @@ Gtrs.propTypes = {
     setMobileMenuOpen: PropTypes.func,
     Token: PropTypes.string,
     setLoadingGtrs: PropTypes.func,
-    currentUser: PropTypes.object,
+    userPermissions: PropTypes.object,
     loadingGtrs: PropTypes.bool,
     allowedApplications: PropTypes.array,
     mobileMenuOpen: PropTypes.bool,
-    setcurrentUser: PropTypes.func,
+    setUserPermission: PropTypes.func,
     setSidebarElements: PropTypes.func,
     sidebarElements: PropTypes.array,
     setUser: PropTypes.func,

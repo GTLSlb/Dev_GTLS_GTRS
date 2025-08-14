@@ -16,14 +16,13 @@ import { exportToExcel } from "@/Components/utils/excelUtils";
 import { CustomContext } from "@/CommonContext";
 
 export default function KPIReasons({
-    userPermission,
     kpireasonsData,
     setkpireasonsData,
     filterValue,
     setFilterValue,
 }) {
 
-    const { Token, user, currentUser, url } = useContext(CustomContext);
+    const { Token, user, userPermissions, url } = useContext(CustomContext);
 
     const gridRef = useRef(null);
     const [filteredData, setFilteredData] = useState(kpireasonsData);
@@ -401,8 +400,7 @@ export default function KPIReasons({
                         selectedReason={selectedReason}
                         url={url}
                         Token={Token}
-                        currentUser={currentUser}
-                        userPermission={userPermission}
+                        userPermissions={userPermissions}
                         setSelectedReason={setSelectedReason}
                         setShowAdd={setShowAddRow}
                         fetchData={getKPIReasons}
@@ -415,9 +413,6 @@ export default function KPIReasons({
     );
 }
 KPIReasons.propTypes = {
-    url: PropTypes.string,
-    currentUser: PropTypes.object,
-    Token: PropTypes.string,
     userPermission: PropTypes.object,
     kpireasonsData: PropTypes.array,
     setkpireasonsData: PropTypes.func,

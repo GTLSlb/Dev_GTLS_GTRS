@@ -251,9 +251,7 @@ export default function ModalRDD({
 ModalRDD.propTypes = {
     isOpen: PropTypes.bool,
     handleClose: PropTypes.func,
-    url: PropTypes.string,
     consignment: PropTypes.object,
-    currentUser: PropTypes.object,
     updateLocalData: PropTypes.func,
     rddReasons: PropTypes.arrayOf(PropTypes.object),
 };

@@ -11,8 +11,8 @@ import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 import PropTypes from "prop-types";
 import { CustomContext } from "@/CommonContext";
 
-export default function CustomerProfile({ userPermission }) {
-    const { user } = useContext(CustomContext);
+export default function CustomerProfile() {
+    const { user, userPermissions } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     const [customer, setCustomer] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -73,12 +73,12 @@ export default function CustomerProfile({ userPermission }) {
                     ) : selectedTab === "accounts" ? (
                         <Accounts
                             customer={customer}
-                            userPermission={userPermission}
+                            userPermissions={userPermissions}
                         />
                     ) : (
                         <Users
                             customer={customer}
-                            userPermission={userPermission}
+                            userPermissions={userPermissions}
                         />
                     )}
                 </div>
@@ -87,8 +87,3 @@ export default function CustomerProfile({ userPermission }) {
         </>
     );
 }
-
-CustomerProfile.propTypes = {
-    currentUser: PropTypes.object,
-    userPermission: PropTypes.object,
-};

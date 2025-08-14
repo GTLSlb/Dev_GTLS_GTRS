@@ -37,10 +37,3 @@ export default function Login() {
     </div>
     );
 }
-
-
-Login.propTypes = {
-    currentUser: PropTypes.object,
-    setToken: PropTypes.func,
-    setCurrentUser: PropTypes.func,
-};

@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import ConsignmentGraph from "../Presentation/ReportTabs/ConsignmentGraph";
+import { CustomContext } from "@/CommonContext";
 // import axios from "axios";
-function RealFoodKPIPack({ url, currentUser, Token }) {
+function RealFoodKPIPack() {
+    const { user, url, userPermissions, Token } = useContext(CustomContext);
     const activeComponentIndex = 0; // Assuming you want to show the first component by default
     const customers = [
         {
@@ -26,7 +28,7 @@ function RealFoodKPIPack({ url, currentUser, Token }) {
         <ConsignmentGraph
             key={activeComponentIndex}
             url={url}
-            currentUser={currentUser}
+            userPermissions={userPermissions}
             Token={Token}
             customers={customers}
             CustomerId={2}
@@ -47,10 +49,5 @@ function RealFoodKPIPack({ url, currentUser, Token }) {
         </div>
     );
 }
-RealFoodKPIPack.propTypes = {
-    url: PropTypes.string,
-    currentUser: PropTypes.object,    
-    Token: PropTypes.string,    
-};
 
 export default RealFoodKPIPack;

@@ -18,7 +18,7 @@ export default function ViewComments({
     deliveryCommentsOptions,
     fetchDeliveryReportCommentsData,
 }) {
-    const { Token, user, currentUser, url } = useContext(CustomContext);
+    const { Token, user, url } = useContext(CustomContext);
     const [data, setData] = useState([]);
     const [comment, setComment] = useState(null);
     const [commentId, setCommentId] = useState(null);
@@ -282,10 +282,7 @@ export default function ViewComments({
 
 ViewComments.propTypes = {
     isOpen: PropTypes.bool,
-    url: PropTypes.string,
     handleClose: PropTypes.func,
-    Token: PropTypes.string,
-    currentUser: PropTypes.object,
     commentsData: PropTypes.array,
     deliveryCommentsOptions: PropTypes.array,
     fetchDeliveryReportCommentsData: PropTypes.func,

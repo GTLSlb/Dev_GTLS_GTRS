@@ -39,7 +39,7 @@ function NewKPI({
     accData,
     kpireasonsData,
 }) {
-    const { Token, user, currentUser, url } = useContext(CustomContext);
+    const { Token, user, userPermissions, url } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     window.moment = moment;
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -737,7 +737,7 @@ function NewKPI({
                 handleClose={handleEditClick}
                 updateLocalData={updateLocalData}
                 kpiReasons={kpireasonsData}
-                currentUser={currentUser}
+                userPermissions={userPermissions}
                 userPermission={userPermission}
             />
         </div>
@@ -745,9 +745,6 @@ function NewKPI({
 }
 
 NewKPI.propTypes = {
-    url: PropTypes.string,
-    Token: PropTypes.string,
-    currentUser: PropTypes.object,
     userPermission: PropTypes.object,
     kpireasonsData: PropTypes.array,
     accData: PropTypes.array,

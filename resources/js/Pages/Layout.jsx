@@ -17,13 +17,14 @@ export default function Sidebar() {
     const {
         url,
         Token,
+        user,
         setUser,
         setToken,
         canAccess,
-        currentUser,
+        userPermissions,
         allowedApplications,
         setCanAccess,
-        setCurrentUser,
+        setUserPermissions,
         setAllowedApplications,
     } = useContext(CustomContext);
     const [loading, setLoading] = useState(true);
@@ -87,7 +88,7 @@ export default function Sidebar() {
                 appPermissionsHeaders
             );
 
-            setCurrentUser(appPermissionsResponse.Features);
+            setUserPermissions(appPermissionsResponse.Features);
 
             const userPermissionsHeaders = {
                 UserId: user.UserId,
@@ -103,7 +104,7 @@ export default function Sidebar() {
                 (item) => item.AppId == window.Laravel.appId
             );
             if (
-                currentUser?.length == 0 &&
+                userPermissions?.length == 0 &&
                 !isAllowed &&
                 window.location.pathname != "/logout"
             ) {
@@ -151,7 +152,7 @@ export default function Sidebar() {
     //     }
     // }, [currentUser, allowedApplications, appId]);
 
-    if (!currentUser) {
+    if (!userPermissions) {
         return null; // Render nothing
     } else {
         if (canAccess === false) {
@@ -184,9 +185,9 @@ export default function Sidebar() {
                                     path="/logout"
                                     element={
                                         <Logout
-                                            setCurrentUser={setCurrentUser}
+                                            user={user}
                                             setToken={setToken}
-                                            currentUser={currentUser}
+                                            setUser={setUser}
                                         />
                                     }
                                 />

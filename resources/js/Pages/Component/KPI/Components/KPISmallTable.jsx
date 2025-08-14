@@ -27,7 +27,7 @@ export default function SmallTableKPI({
     setCurrentPage,
 }) {
 
-    const { Token, user, currentUser } = useContext(CustomContext);
+    const { Token, user } = useContext(CustomContext);
 
     const [data, setData] = useState(objects);
 
@@ -752,6 +752,5 @@ SmallTableKPI.propTypes = {
     AlertToast: PropTypes.func,
     currentPage: PropTypes.number,
     setCurrentPage: PropTypes.func,
-    currentUser: PropTypes.object,
     dynamicHeaders: PropTypes.array,
 };

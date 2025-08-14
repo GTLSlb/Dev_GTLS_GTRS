@@ -9,7 +9,7 @@ export default function ContextProvider({ children }) {
     const url = window.Laravel.gtrsUrl;
     const [user, setUser] = useState(null);
     const [canAccess, setCanAccess] = useState(true);
-    const [currentUser, setCurrentUser] = useState(null);
+    const [userPermissions, setUserPermissions] = useState(null);
 
     const [sidebarElements, setSidebarElements] = useState(menu);
     const [Token, setToken] = useState(null);
@@ -40,8 +40,8 @@ export default function ContextProvider({ children }) {
                 setStates,
                 canAccess,
                 setCanAccess,
-                currentUser,
-                setCurrentUser,
+                userPermissions,
+                setUserPermissions,
                 debtorsData,
                 setdebtorsData,
                 DebtorsApi,

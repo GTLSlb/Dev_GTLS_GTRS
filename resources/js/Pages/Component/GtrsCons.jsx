@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useContext } from "react";
 import "../../../css/reactdatagrid.css";
 import TableStructure from "@/Components/TableStructure";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
@@ -12,6 +12,7 @@ import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { formatNumberWithCommas, renderConsDetailsLink } from "@/CommonFunctions";
 import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
+import { CustomContext } from "@/CommonContext";
 export default function GtrsCons({
     consData,
     minDate,
@@ -19,9 +20,8 @@ export default function GtrsCons({
     filterValue,
     setFilterValue,
     accData,
-    userPermission,
 }) {
-
+const { userPermissions } = useContext(CustomContext);
     window.moment = moment;
     const [filteredData, setFilteredData] = useState(consData);
     const [selected, setSelected] = useState({});
@@ -106,7 +106,7 @@ export default function GtrsCons({
             textAlign: "center",
             render: ({ value, data }) => {
                 return renderConsDetailsLink(
-                    userPermission,
+                    userPermissions,
                     value,
                     data.ConsignmentId
                 );

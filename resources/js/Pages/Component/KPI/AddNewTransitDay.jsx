@@ -11,7 +11,7 @@ import { ToastContainer } from "react-toastify";
 import { CustomContext } from "@/CommonContext";
 
 function AddNewTransitDay({ setNewTransitDays }) {
-    const { Token, user, currentUser, url } = useContext(CustomContext);
+    const { Token, user, url } = useContext(CustomContext);
 
     const { getApiRequest } = useApiRequests();
     const states = [
@@ -524,7 +524,6 @@ function AddNewTransitDay({ setNewTransitDays }) {
 
 AddNewTransitDay.propTypes = {
     url: PropTypes.string,
-    currentUser: PropTypes.object,
     setNewTransitDay: PropTypes.func,
     setNewTransitDays: PropTypes.func,
     Token: PropTypes.string,

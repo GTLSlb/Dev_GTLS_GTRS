@@ -57,7 +57,7 @@ export default function ExcelDeliveryReport({
     fetchDeliveryReportExcel,
     deliveryCommentsOptions,
 }) {
-    const { Token, user, currentUser, url } = useContext(CustomContext);
+    const { Token, user, userPermissions, url } = useContext(CustomContext);
     const dateFields = [
         "DeliveryRequiredDateTime",
         "DespatchDateTime",
@@ -294,16 +294,16 @@ export default function ExcelDeliveryReport({
 
     // Set the active tab based on permissions
     useEffect(() => {
-        if (currentUser) {
-            if (canViewMetcashDeliveryReport(currentUser)) {
+        if (userPermissions) {
+            if (canViewMetcashDeliveryReport(userPermissions)) {
                 setActiveComponentIndex(0);
-            } else if (canViewWoolworthsDeliveryReport(currentUser)) {
+            } else if (canViewWoolworthsDeliveryReport(userPermissions)) {
                 setActiveComponentIndex(1);
-            } else if (canViewOtherDeliveryReport(currentUser)) {
+            } else if (canViewOtherDeliveryReport(userPermissions)) {
                 setActiveComponentIndex(2);
             }
         }
-    }, [currentUser]);
+    }, [userPermissions]);
 
     useEffect(() => {
         clearAllFilters();
@@ -341,7 +341,7 @@ export default function ExcelDeliveryReport({
             if (
                 Array.isArray(approvedComments) &&
                 approvedComments.length > 0 &&
-                canViewCommentsExcelDeliveryReport(currentUser)
+                canViewCommentsExcelDeliveryReport(userPermissions)
             ) {
                 const button = document.createElement("button");
                 button.textContent = "View Comments";
@@ -535,7 +535,7 @@ export default function ExcelDeliveryReport({
                 title: "Comments",
                 headerClassName: "htLeft",
                 type: "autocomplete",
-                readOnly: canEditCommentExcelDeliveryReport(currentUser)
+                readOnly: canEditCommentExcelDeliveryReport(userPermissions)
                     ? false
                     : true,
                 source:
@@ -723,7 +723,7 @@ export default function ExcelDeliveryReport({
             if (
                 changedRows.length > 0 &&
                 !isLoading &&
-                canEditCommentExcelDeliveryReport(currentUser)
+                canEditCommentExcelDeliveryReport(userPermissions)
             ) {
                 SaveComments(); // ✅ Call your save function here
             }
@@ -805,7 +805,7 @@ export default function ExcelDeliveryReport({
             </div>
             <div className="w-full flex gap-4 items-center mt-4">
                 <ul className="flex space-x-0">
-                    {canViewMetcashDeliveryReport(currentUser) && (
+                    {canViewMetcashDeliveryReport(userPermissions) && (
                         <li
                             className={`cursor-pointer ${
                                 activeComponentIndex === 0
@@ -817,7 +817,7 @@ export default function ExcelDeliveryReport({
                             <div className="px-2">Metcash</div>
                         </li>
                     )}
-                    {canViewWoolworthsDeliveryReport(currentUser) && (
+                    {canViewWoolworthsDeliveryReport(userPermissions) && (
                         <li
                             className={`cursor-pointer ${
                                 activeComponentIndex === 1
@@ -829,7 +829,7 @@ export default function ExcelDeliveryReport({
                             <div className="px-2">Woolworths</div>
                         </li>
                     )}
-                    {canViewOtherDeliveryReport(currentUser) && (
+                    {canViewOtherDeliveryReport(userPermissions) && (
                         <li
                             className={`cursor-pointer ${
                                 activeComponentIndex === 2
@@ -844,7 +844,7 @@ export default function ExcelDeliveryReport({
                 </ul>
             </div>
             <div className="my-1 flex w-full items-center gap-3 justify-end">
-                {canEditCommentExcelDeliveryReport(currentUser) && (
+                {canEditCommentExcelDeliveryReport(userPermissions) && (
                     <Button
                         className="bg-dark text-white px-4 py-2"
                         onClick={() => SaveComments()}
@@ -855,7 +855,7 @@ export default function ExcelDeliveryReport({
                     </Button>
                 )}
 
-                {canApproveCommentExcelDeliveryReport(currentUser) && (
+                {canApproveCommentExcelDeliveryReport(userPermissions) && (
                     <Button
                         className="bg-dark text-white px-4 py-2"
                         onClick={() => CheckComments()}

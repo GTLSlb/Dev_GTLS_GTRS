@@ -126,9 +126,6 @@ export default function AddCommentToList({
 
 AddCommentToList.propTypes = {
     selectedComment: PropTypes.object,
-    url: PropTypes.string,
-    currentUser: PropTypes.object,
-    Token: PropTypes.string,
     setSelectedComment: PropTypes.func,
     setShowAdd: PropTypes.func,
     fetchData: PropTypes.func,

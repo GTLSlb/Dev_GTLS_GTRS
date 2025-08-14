@@ -83,7 +83,6 @@ export default function GtrsMain({
     chartsData,
     kpireasonsData,
     setkpireasonsData,
-    userPermission,
     sidebarElements,
     setSidebarElements,
     deliveryReportData,
@@ -95,8 +94,8 @@ export default function GtrsMain({
             user,
             Token,
             setToken,
-            currentUser,
-            setCurrentUser,
+            userPermissions,
+            setUserPermissions,
         } = useContext(CustomContext);
     window.moment = moment;
     const KPIData = [];
@@ -544,12 +543,12 @@ export default function GtrsMain({
         }
     };
     useEffect(() => {
-        if (currentUser) {
+        if (userPermissions) {
             fetchDeliveryReport();
             fetchExcelDeliveryReportData();
             fetchDeliveryReportCommentsData();
         }
-    }, [currentUser]);
+    }, [userPermissions]);
 
     // Update filters if the change is in kpi
     useEffect(() => {
@@ -701,10 +700,10 @@ export default function GtrsMain({
 
     const navigate = useNavigate();
     useEffect(() => {
-        if (userPermission) {
+        if (userPermissions) {
             navigateToFirstAllowedPage({
                 setSidebarElements,
-                user: currentUser,
+                user: userPermissions,
                 navigate,
             });
         }
@@ -727,8 +726,8 @@ export default function GtrsMain({
                         setCustomerAccounts={setCustomerAccounts}
                         customerAccounts={customerAccounts}
                         onData={handleDataFromChild}
-                        currentUser={currentUser}
-                        user={userPermission}
+                        userPermissions={userPermissions}
+                        user={userPermissions}
                     />
 
                     <main className="w-full overflow-y-auto">
@@ -753,7 +752,7 @@ export default function GtrsMain({
                                         path="/dashboard"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="Dashboard_view"
                                                 element={
                                                     <MainCharts
@@ -764,14 +763,14 @@ export default function GtrsMain({
                                                         setChartName={
                                                             setChartName
                                                         }
-                                                        userPermission={
-                                                            userPermission
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                     />
                                                 }
-                                                currentUser={currentUser}
+                                                userPermissions={userPermissions}
                                                 setToken={setToken}
-                                                setCurrentUser={setCurrentUser}
+                                                setUserPermissions={setUserPermissions}
                                             />
                                         }
                                     />
@@ -779,12 +778,12 @@ export default function GtrsMain({
                                         path="/spendanalysis"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="Dashboard_view"
                                                 element={<SpendDashboard />}
-                                                currentUser={currentUser}
+                                                userPermissions={userPermissions}
                                                 setToken={setToken}
-                                                setCurrentUser={setCurrentUser}
+                                                setUserPermissions={setUserPermissions}
                                             />
                                         }
                                     />
@@ -792,7 +791,7 @@ export default function GtrsMain({
                                         path="/consignments"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="ConsignmetsReport_view"
                                                 element={
                                                     <GtrsCons
@@ -806,14 +805,14 @@ export default function GtrsMain({
                                                         }
                                                         minDate={minDate}
                                                         maxDate={maxDate}
-                                                        userPermission={
-                                                            userPermission
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                     />
                                                 }
-                                                currentUser={currentUser}
+                                                userPermissions={userPermissions}
                                                 setToken={setToken}
-                                                setCurrentUser={setCurrentUser}
+                                                setUserPermissions={setUserPermissions}
                                             />
                                         }
                                     />
@@ -821,19 +820,19 @@ export default function GtrsMain({
                                         path="/consignment-details"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="ConsignmentsDetails_view"
                                                 element={
                                                     <ConsDetails
                                                         url={url}
-                                                        currentUser={
-                                                            currentUser
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                     />
                                                 }
-                                                currentUser={currentUser}
+                                                userPermissions={userPermissions}
                                                 setToken={setToken}
-                                                setCurrentUser={setCurrentUser}
+                                                setUserPermissions={setUserPermissions}
                                             />
                                         }
                                     />
@@ -841,7 +840,7 @@ export default function GtrsMain({
                                         path="/performance"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="Performance_view"
                                                 element={
                                                     <ConsPerf
@@ -853,8 +852,8 @@ export default function GtrsMain({
                                                         }
                                                         oldestDate={oldestDate}
                                                         latestDate={latestDate}
-                                                        currentUser={
-                                                            currentUser
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                         accData={dataFromChild}
                                                         PerfData={PerfData}
@@ -862,14 +861,11 @@ export default function GtrsMain({
                                                         setEDate={setEDate}
                                                         SDate={SDate}
                                                         setSDate={setSDate}
-                                                        userPermission={
-                                                            userPermission
-                                                        }
                                                     />
                                                 }
-                                                currentUser={currentUser}
+                                                userPermissions={userPermissions}
                                                 setToken={setToken}
-                                                setCurrentUser={setCurrentUser}
+                                                setUserPermissions={setUserPermissions}
                                             />
                                         }
                                     />
@@ -877,7 +873,7 @@ export default function GtrsMain({
                                         path="/failed-consignments"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="View_failedConsignment"
                                                 element={
                                                     <FailedConsMain
@@ -893,8 +889,8 @@ export default function GtrsMain({
                                                         failedReasons={
                                                             failedReasons
                                                         }
-                                                        currentUser={
-                                                            currentUser
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                         accData={dataFromChild}
                                                         PerfData={PerfData}
@@ -913,14 +909,11 @@ export default function GtrsMain({
                                                         setFailedReasons={
                                                             setFailedReasons
                                                         }
-                                                        userPermission={
-                                                            userPermission
-                                                        }
                                                     />
                                                 }
-                                                currentUser={currentUser}
+                                                userPermissions={userPermissions}
                                                 setToken={setToken}
-                                                setCurrentUser={setCurrentUser}
+                                                setUserPermissions={setUserPermissions}
                                             />
                                         }
                                     />
@@ -928,7 +921,7 @@ export default function GtrsMain({
                                         path="/no-delivery"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="NoDeliveryInfo_view"
                                                 element={
                                                     <NoDelivery
@@ -939,21 +932,18 @@ export default function GtrsMain({
                                                         setFilterValue={
                                                             setFiltersNoDelInfo
                                                         }
-                                                        currentUser={
-                                                            currentUser
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                         NoDelData={NoDelData}
                                                         setNoDelData={
                                                             setNoDelData
                                                         }
-                                                        userPermission={
-                                                            userPermission
-                                                        }
                                                     />
                                                 }
-                                                currentUser={currentUser}
+                                                userPermissions={userPermissions}
                                                 setToken={setToken}
-                                                setCurrentUser={setCurrentUser}
+                                                setUserPermissions={setUserPermissions}
                                             />
                                         }
                                     />
@@ -961,7 +951,7 @@ export default function GtrsMain({
                                         path="/additional-charges"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="AdditionalCharges_view"
                                                 element={
                                                     <AdditionalCharges
@@ -972,8 +962,8 @@ export default function GtrsMain({
                                                         setFilterValue={
                                                             setFiltersAddCharges
                                                         }
-                                                        currentUser={
-                                                            currentUser
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                         AdditionalData={
                                                             AdditionalData
@@ -981,14 +971,11 @@ export default function GtrsMain({
                                                         setAdditionalData={
                                                             setAdditionalData
                                                         }
-                                                        userPermission={
-                                                            userPermission
-                                                        }
                                                     />
                                                 }
-                                                currentUser={currentUser}
+                                                userPermissions={userPermissions}
                                                 setToken={setToken}
-                                                setCurrentUser={setCurrentUser}
+                                                setUserPermissions={setUserPermissions}
                                             />
                                         }
                                     />
@@ -996,13 +983,13 @@ export default function GtrsMain({
                                         path="/driver-login"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="DriverLogin_view"
                                                 element={
                                                     <DriverLogin
                                                         url={url}
-                                                        currentUser={
-                                                            currentUser
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                         DriverData={DriverData}
                                                         setDriverData={
@@ -1016,9 +1003,9 @@ export default function GtrsMain({
                                                         }
                                                     />
                                                 }
-                                                currentUser={currentUser}
+                                                userPermissions={userPermissions}
                                                 setToken={setToken}
-                                                setCurrentUser={setCurrentUser}
+                                                setUserPermissions={setUserPermissions}
                                             />
                                         }
                                     />
@@ -1026,14 +1013,14 @@ export default function GtrsMain({
                                         path="/rdd"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="View_RDD"
                                                 element={
                                                     <RDDMain
                                                         oldestDate={oldestDate}
                                                         latestDate={latestDate}
-                                                        currentUser={
-                                                            currentUser
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                         url={url}
                                                         filterValue={filtersRDD}
@@ -1058,14 +1045,11 @@ export default function GtrsMain({
                                                         setrddReasons={
                                                             setrddReasons
                                                         }
-                                                        userPermission={
-                                                            userPermission
-                                                        }
                                                     />
                                                 }
-                                                currentUser={currentUser}
+                                                userPermissions={userPermissions}
                                                 setToken={setToken}
-                                                setCurrentUser={setCurrentUser}
+                                                setUserPermissions={setUserPermissions}
                                             />
                                         }
                                     />
@@ -1073,7 +1057,7 @@ export default function GtrsMain({
                                         path="/safety"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="View_safety"
                                                 element={
                                                     <SafetyRep
@@ -1102,8 +1086,8 @@ export default function GtrsMain({
                                                         setSafetyCauses={
                                                             setSafetyCauses
                                                         }
-                                                        currentUser={
-                                                            currentUser
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                         safetyData={safetyData}
                                                         accData={dataFromChild}
@@ -1115,14 +1099,11 @@ export default function GtrsMain({
                                                         setsafetyDataState={
                                                             setsafetyDataState
                                                         }
-                                                        userPermission={
-                                                            userPermission
-                                                        }
                                                     />
                                                 }
-                                                currentUser={currentUser}
+                                                userPermissions={userPermissions}
                                                 setToken={setToken}
-                                                setCurrentUser={setCurrentUser}
+                                                setUserPermissions={setUserPermissions}
                                             />
                                         }
                                     />
@@ -1130,7 +1111,7 @@ export default function GtrsMain({
                                         path="/missing-pod"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="MissingPOD_view"
                                                 element={
                                                     <MissingPOD
@@ -1142,14 +1123,14 @@ export default function GtrsMain({
                                                         }
                                                         accData={dataFromChild}
                                                         PerfData={PerfData}
-                                                        userPermission={
-                                                            userPermission
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                     />
                                                 }
-                                                currentUser={currentUser}
+                                                userPermissions={userPermissions}
                                                 setToken={setToken}
-                                                setCurrentUser={setCurrentUser}
+                                                setUserPermissions={setUserPermissions}
                                             />
                                         }
                                     />
@@ -1157,7 +1138,7 @@ export default function GtrsMain({
                                         path="/kpi/holidays"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="View_Holidays"
                                                 element={
                                                     <Holidays
@@ -1168,22 +1149,19 @@ export default function GtrsMain({
                                                         setFilterValue={
                                                             setFiltersHolidays
                                                         }
-                                                        currentUser={
-                                                            currentUser
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                         setHolidays={
                                                             setHolidays
                                                         }
                                                         url={url}
                                                         Token={Token}
-                                                        userPermission={
-                                                            userPermission
-                                                        }
                                                     />
                                                 }
-                                                currentUser={currentUser}
+                                                userPermissions={userPermissions}
                                                 setToken={setToken}
-                                                setCurrentUser={setCurrentUser}
+                                                setUserPermissions={setUserPermissions}
                                             />
                                         }
                                     />
@@ -1191,7 +1169,7 @@ export default function GtrsMain({
                                         path="/kpi/reasons"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="View_KPIReasons"
                                                 element={
                                                     <Route
@@ -1199,8 +1177,8 @@ export default function GtrsMain({
                                                         element={
                                                             <KPIReasons
                                                                 url={url}
-                                                                currentUser={
-                                                                    currentUser
+                                                                userPermissions={
+                                                                    userPermissions
                                                                 }
                                                                 kpireasonsData={
                                                                     kpireasonsData
@@ -1209,23 +1187,20 @@ export default function GtrsMain({
                                                                 setkpireasonsData={
                                                                     setkpireasonsData
                                                                 }
-                                                                userPermission={
-                                                                    userPermission
-                                                                }
                                                             />
                                                         }
-                                                        currentUser={
-                                                            currentUser
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                         setToken={setToken}
-                                                        setCurrentUser={
-                                                            setCurrentUser
+                                                        setUserPermissions={
+                                                            setUserPermissions
                                                         }
                                                     />
                                                 }
-                                                currentUser={currentUser}
+                                                userPermissions={userPermissions}
                                                 setToken={setToken}
-                                                setCurrentUser={setCurrentUser}
+                                                setUserPermissions={setUserPermissions}
                                             />
                                         }
                                     />
@@ -1233,7 +1208,7 @@ export default function GtrsMain({
                                         path="/transport"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="View_Transport"
                                                 element={
                                                     <TransportRep
@@ -1251,9 +1226,9 @@ export default function GtrsMain({
                                                         maxDate={maxDate}
                                                     />
                                                 }
-                                                currentUser={currentUser}
+                                                userPermissions={userPermissions}
                                                 setToken={setToken}
-                                                setCurrentUser={setCurrentUser}
+                                                setUserPermissions={setUserPermissions}
                                             />
                                         }
                                     />
@@ -1261,7 +1236,7 @@ export default function GtrsMain({
                                         path="/kpi"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="KPI_view"
                                                 element={
                                                     <NewKPI
@@ -1278,20 +1253,17 @@ export default function GtrsMain({
                                                         setKPIData={
                                                             setNewKPIData
                                                         }
-                                                        currentUser={
-                                                            currentUser
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                         accData={dataFromChild}
                                                         url={url}
                                                         Token={Token}
-                                                        userPermission={
-                                                            userPermission
-                                                        }
                                                     />
                                                 }
-                                                currentUser={currentUser}
+                                                userPermissions={userPermissions}
                                                 setToken={setToken}
-                                                setCurrentUser={setCurrentUser}
+                                                setUserPermissions={setUserPermissions}
                                             />
                                         }
                                     />
@@ -1299,7 +1271,7 @@ export default function GtrsMain({
                                         path="/kpi/transit-days"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="View_TransitDays"
                                                 element={
                                                     <NewTransitDays
@@ -1315,18 +1287,15 @@ export default function GtrsMain({
                                                         filterValue={
                                                             filtersNewTransit
                                                         }
-                                                        currentUser={
-                                                            currentUser
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                         url={url}
-                                                        userPermission={
-                                                            userPermission
-                                                        }
                                                     />
                                                 }
-                                                currentUser={currentUser}
+                                                userPermissions={userPermissions}
                                                 setToken={setToken}
-                                                setCurrentUser={setCurrentUser}
+                                                setUserPermissions={setUserPermissions}
                                             />
                                         }
                                     />
@@ -1334,13 +1303,13 @@ export default function GtrsMain({
                                         path="/add-transit"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="TransitDays_add"
                                                 element={
                                                     <AddNewTransitDay
                                                         url={url}
-                                                        currentUser={
-                                                            currentUser
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                         setNewTransitDays={
                                                             setNewTransitDays
@@ -1348,9 +1317,9 @@ export default function GtrsMain({
                                                         Token={Token}
                                                     />
                                                 }
-                                                currentUser={currentUser}
+                                                userPermissions={userPermissions}
                                                 setToken={setToken}
-                                                setCurrentUser={setCurrentUser}
+                                                setUserPermissions={setUserPermissions}
                                             />
                                         }
                                     />
@@ -1358,20 +1327,20 @@ export default function GtrsMain({
                                         path="/pack-report"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="UnileverReport_View"
                                                 element={
                                                     <GraphPresentation
                                                         url={url}
-                                                        currentUser={
-                                                            currentUser
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                         Token={Token}
                                                     />
                                                 }
-                                                currentUser={currentUser}
+                                                userPermissions={userPermissions}
                                                 setToken={setToken}
-                                                setCurrentUser={setCurrentUser}
+                                                setUserPermissions={setUserPermissions}
                                             />
                                         }
                                     />
@@ -1379,20 +1348,20 @@ export default function GtrsMain({
                                         path="/real-food-report"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="RealFoodReport_View"
                                                 element={
                                                     <RealFoodKPIPack
                                                         url={url}
-                                                        currentUser={
-                                                            currentUser
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                         Token={Token}
                                                     />
                                                 }
-                                                currentUser={currentUser}
+                                                userPermissions={userPermissions}
                                                 setToken={setToken}
-                                                setCurrentUser={setCurrentUser}
+                                                setUserPermissions={setUserPermissions}
                                             />
                                         }
                                     />
@@ -1400,44 +1369,41 @@ export default function GtrsMain({
                                         path="/traffic-report"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="TrafficReport_View"
                                                 element={<TrafficComp />}
                                             />
                                         }
-                                        currentUser={currentUser}
+                                        userPermissions={userPermissions}
                                         setToken={setToken}
-                                        setCurrentUser={setCurrentUser}
+                                        setUserPermissions={setUserPermissions}
                                     /> */}
                                     <Route
                                         path="/incident"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="IncidentDetails_View"
                                                 element={
                                                     <Incident
                                                         Token={Token}
                                                         gtccrUrl={gtccrUrl}
-                                                        currentUser={
-                                                            currentUser
-                                                        }
-                                                        userPermission={
-                                                            userPermission
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                     />
                                                 }
                                             />
                                         }
-                                        currentUser={currentUser}
+                                        userPermissions={userPermissions}
                                         setToken={setToken}
-                                        setCurrentUser={setCurrentUser}
+                                        setUserPermissions={setUserPermissions}
                                     />
                                     {/* <Route
                                         path="/consignment-tracking"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="ConsignmentTracking_View"
                                                 element={
                                                     <ConsTrack
@@ -1451,15 +1417,15 @@ export default function GtrsMain({
                                                 }
                                             />
                                         }
-                                        currentUser={currentUser}
+                                        userPermissions={userPermissions}
                                         setToken={setToken}
-                                        setCurrentUser={setCurrentUser}
+                                        setUserPermissions={setUserPermissions}
                                     /> */}
                                     <Route
                                         path="/delivery-report"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route={[
                                                     "DeliveryReport_View",
                                                     "MetcashDeliveryReport_View",
@@ -1470,11 +1436,8 @@ export default function GtrsMain({
                                                     <DeliveryReportPage
                                                         url={url}
                                                         Token={Token}
-                                                        currentUser={
-                                                            currentUser
-                                                        }
-                                                        userPermission={
-                                                            userPermission
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                         deliveryReportData={
                                                             dailyReportData
@@ -1492,15 +1455,15 @@ export default function GtrsMain({
                                                 }
                                             />
                                         }
-                                        currentUser={currentUser}
+                                        userPermissions={userPermissions}
                                         setToken={setToken}
-                                        setCurrentUser={setCurrentUser}
+                                        setUserPermissions={setUserPermissions}
                                     />
                                     <Route
                                         path="/excel-delivery-report"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route={[
                                                     "DeliveryReport_View",
                                                     "MetcashDeliveryReport_View",
@@ -1511,11 +1474,8 @@ export default function GtrsMain({
                                                     <ExcelDeliveryReport
                                                         url={url}
                                                         Token={Token}
-                                                        currentUser={
-                                                            currentUser
-                                                        }
-                                                        userPermission={
-                                                            userPermission
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                         deliveryReportData={
                                                             excelDailyReportData
@@ -1530,15 +1490,15 @@ export default function GtrsMain({
                                                 }
                                             />
                                         }
-                                        currentUser={currentUser}
+                                        userPermissions={userPermissions}
                                         setToken={setToken}
-                                        setCurrentUser={setCurrentUser}
+                                        setUserPermissions={setUserPermissions}
                                     />
                                     <Route
                                         path="/delivery-report/comments"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route={
                                                     "DeliveryReportCommentsTable_View"
                                                 }
@@ -1546,11 +1506,8 @@ export default function GtrsMain({
                                                     <DeliveryReportCommentsPage
                                                         url={url}
                                                         Token={Token}
-                                                        currentUser={
-                                                            currentUser
-                                                        }
-                                                        userPermission={
-                                                            userPermission
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                         data={
                                                             deliveryReportComments
@@ -1562,37 +1519,37 @@ export default function GtrsMain({
                                                 }
                                             />
                                         }
-                                        currentUser={currentUser}
+                                        userPermissions={userPermissions}
                                         setToken={setToken}
-                                        setCurrentUser={setCurrentUser}
+                                        setUserPermissions={setUserPermissions}
                                     />
                                     {/* <Route
                                         path="/consignment-map"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="ConsignmentMap_View"
                                                 element={<ConsMap />}
                                             />
                                         }
-                                        currentUser={currentUser}
+                                        userPermissions={userPermissions}
                                         setToken={setToken}
-                                        setCurrentUser={setCurrentUser}
+                                        setUserPermissions={setUserPermissions}
                                     /> */}
                                     {/* <Route
                                         path="/consignment-tracking"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="View_Tracking2"
                                                 element={
                                                     <NewConsignmentTracking />
                                                 }
                                             />
                                         }
-                                        currentUser={currentUser}
+                                        userPermissions={userPermissions}
                                         setToken={setToken}
-                                        setCurrentUser={setCurrentUser}
+                                        setUserPermissions={setUserPermissions}
                                     /> */}
                                     <Route
                                         path="/*"
@@ -1602,56 +1559,56 @@ export default function GtrsMain({
                                         path="/SOH"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="StockReport_View"
                                                 element={
                                                     <ProductStockTable
                                                         url={url}
                                                         Token={Token}
-                                                        currentUser={
-                                                            currentUser
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                     />
                                                 }
                                             />
                                         }
-                                        currentUser={currentUser}
+                                        userPermissions={userPermissions}
                                         setToken={setToken}
-                                        setCurrentUser={setCurrentUser}
+                                        setUserPermissions={setUserPermissions}
                                     />
                                     <Route
                                         path="/contacts-report"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="ContactsRep_View"
                                                 element={
                                                     <ContactRep
                                                         url={url}
                                                         Token={Token}
-                                                        currentUser={
-                                                            currentUser
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                     />
                                                 }
                                             />
                                         }
-                                        currentUser={currentUser}
+                                        userPermissions={userPermissions}
                                         setToken={setToken}
-                                        setCurrentUser={setCurrentUser}
+                                        setUserPermissions={setUserPermissions}
                                     />
                                     <Route
                                         path="/difot-report"
                                         element={
                                             <DifotReport
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="DifotReport_View"
                                                 element={
                                                     <ProductStockTable
                                                         url={url}
                                                         Token={Token}
-                                                        currentUser={
-                                                            currentUser
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                         filterValue={
                                                             filtersDifot
@@ -1664,99 +1621,93 @@ export default function GtrsMain({
                                                 }
                                             />
                                         }
-                                        currentUser={currentUser}
+                                        userPermissions={userPermissions}
                                         setToken={setToken}
-                                        setCurrentUser={setCurrentUser}
+                                        setUserPermissions={setUserPermissions}
                                     />
                                     <Route
                                         path="/utilization-report"
                                         element={
                                             <Utilization
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="UtilizationReport_View"
                                                 element={
                                                     <ProductStockTable
                                                         url={url}
                                                         Token={Token}
-                                                        currentUser={
-                                                            currentUser
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                     />
                                                 }
                                             />
                                         }
-                                        currentUser={currentUser}
+                                        userPermissions={userPermissions}
                                         setToken={setToken}
-                                        setCurrentUser={setCurrentUser}
+                                        setUserPermissions={setUserPermissions}
                                     />
                                     <Route
                                         path="/settings"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="Settings_View"
                                                 element={
                                                     <SettingMiddleware
                                                         url={url}
                                                         Token={Token}
-                                                        currentUser={
-                                                            currentUser
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                     />
                                                 }
                                             />
                                         }
-                                        currentUser={currentUser}
+                                        userPermissions={userPermissions}
                                         setToken={setToken}
-                                        setCurrentUser={setCurrentUser}
+                                        setUserPermissions={setUserPermissions}
                                     />
                                     <Route
                                         path="/customer-settings"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="Settings_View"
                                                 element={
                                                     <Customers
                                                         url={url}
-                                                        userPermission={
-                                                            userPermission
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                         Token={Token}
-                                                        currentUser={
-                                                            currentUser
-                                                        }
                                                     />
                                                 }
                                             />
                                         }
-                                        currentUser={currentUser}
+                                        userPermissions={userPermissions}
                                         setToken={setToken}
-                                        setCurrentUser={setCurrentUser}
+                                        setUserPermissions={setUserPermissions}
                                     />
                                     <Route
                                         path="/customer-profile"
                                         element={
                                             <ProtectedRoute
-                                                permission={currentUser}
+                                                permission={userPermissions}
                                                 route="Settings_View"
                                                 element={
                                                     <CustomerProfile
                                                         url={url}
-                                                        userPermission={
-                                                            userPermission
+                                                        userPermissions={
+                                                            userPermissions
                                                         }
                                                         Token={Token}
-                                                        currentUser={
-                                                            currentUser
-                                                        }
                                                     />
                                                 }
                                             />
                                         }
-                                        currentUser={currentUser}
+                                        userPermissions={userPermissions}
                                         setToken={setToken}
-                                        setCurrentUser={setCurrentUser}
+                                        setUserPermissions={setUserPermissions}
                                     />
                                 </Routes>
                             </div>
@@ -1770,9 +1721,9 @@ export default function GtrsMain({
 
 GtrsMain.propTypes = {
     gtccrUrl: PropTypes.string,
-    currentUser: PropTypes.object,
+    userPermissions: PropTypes.object,
     Token: PropTypes.string,
-    userPermission: PropTypes.object,
+    userPermissions: PropTypes.object,
     setCusomterAccounts: PropTypes.func,
     setPerfData: PropTypes.func,
     userBody: PropTypes.object,
@@ -1787,7 +1738,7 @@ GtrsMain.propTypes = {
     sidebarElements: PropTypes.array,
     setSidebarElements: PropTypes.func,
     deliveryReportData: PropTypes.array,
-    setCurrentUser: PropTypes.func,
+    setUserPermissions: PropTypes.func,
     setToken: PropTypes.func,
     url: PropTypes.string,
     PerfData: PropTypes.array,

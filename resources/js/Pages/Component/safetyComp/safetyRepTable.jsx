@@ -1,5 +1,5 @@
 import { formatDateToExcel } from "@/CommonFunctions";
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import SafetyModal from "@/Components/AddsafetyModal";
 import AnimatedLoading from "@/Components/AnimatedLoading";
@@ -18,22 +18,20 @@ import moment from "moment";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ToastContainer } from 'react-toastify';
 import { AlertToast } from "@/permissions";
+import { CustomContext } from "@/CommonContext";
 
 export default function SafetyRepTable({
     safetyData,
-    Token,
-    url,
     filterValue,
     customerAccounts,
     setFilterValue,
-    currentUser,
-    userPermission,
     setDataEdited,
     safetyTypes,
     fetchData,
     setsafetyData,
     safetyCauses,
 }) {
+    const { user, url, userPermissions, Token } = useContext(CustomContext);
     window.moment = moment;
     const minDate = getMinMaxValue(safetyData, "OccuredAt", 1);
     const maxDate = getMinMaxValue(safetyData, "OccuredAt", 2);
@@ -460,8 +458,7 @@ export default function SafetyRepTable({
                 modalResol={modalResol}
                 modalRefer={modalRefer}
                 modalOccuredAt={modalOccuredAt}
-                currentUser={currentUser}
-                userPermission={userPermission}
+                userPermissions={userPermissions}
                 buttonAction={buttonAction}
                 updateLocalData={updateLocalData}
                 fetchData={fetchData}
@@ -472,12 +469,9 @@ export default function SafetyRepTable({
 SafetyRepTable.propTypes = {
     currentPageRep: PropTypes.string,
     safetyData: PropTypes.array,
-    Token: PropTypes.string,
-    url: PropTypes.string,
     filterValue: PropTypes.array,
     customerAccounts: PropTypes.array,
     setFilterValue: PropTypes.func,
-    currentUser: PropTypes.object,
     userPermission: PropTypes.object,
     setDataEdited: PropTypes.func,
     safetyTypes: PropTypes.array,

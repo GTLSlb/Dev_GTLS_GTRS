@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
 import { CustomContext } from "@/CommonContext";
 
 function ConsignmentGraph({ customers, CustomerId }) {
-    const { Token, user, currentUser, url } = useContext(CustomContext);
+    const { Token, user, userPermissions, url } = useContext(CustomContext);
     const [graphData, setGraphData] = useState();
     const [originalgraphData, setGraphOriginalData] = useState();
     const [loading, setLoading] = useState(true);
@@ -138,7 +138,7 @@ function ConsignmentGraph({ customers, CustomerId }) {
                     url={url}
                     CustomerId={CustomerId}
                     Token={Token}
-                    currentUser={currentUser}
+                    userPermissions={userPermissions}
                     selectedReceiver={selectedReceiver}
                     originalgraphData={originalgraphData}
                     getReportData={getReportData}
@@ -150,9 +150,6 @@ function ConsignmentGraph({ customers, CustomerId }) {
 }
 
 ConsignmentGraph.propTypes = {
-    url: PropTypes.string,
-    currentUser: PropTypes.object,
-    Token: PropTypes.string,
     customers: PropTypes.array,
     CustomerId: PropTypes.number,
 };

@@ -39,7 +39,7 @@ export async function handleSessionExpiration() {
         .getAttribute("content");
     axios;
     const credentials = {
-        CurrentUser: {},
+        user: {},
         URL: window.Laravel.gtamUrl,
         SessionDomain: window.Laravel.appDomain,
     };
@@ -274,7 +274,7 @@ export function formatDateFromExcelWithNoTime(dateValue) {
 }
 
 export function ProtectedRoute({ permission, route, element }) {
-    const userHasPermission = checkUserPermission(permission, route);
+    const userHasPermission = checkuserPermissions(permission, route);
     return userHasPermission ? element : <NoAccessRedirect />;
 }
 
@@ -284,7 +284,7 @@ ProtectedRoute.propTypes = {
     element: PropTypes.element,
 };
 
-function checkUserPermission(permission, route) {
+function checkuserPermissions(permission, route) {
     if (typeof route == "string") {
         // Go over the flat permissions and check if the user has the required permission
         return permission?.some((feature) => {
@@ -332,17 +332,16 @@ function findCurrentItem(items, id) {
 
 export function navigateToFirstAllowedPage({
     setSidebarElements,
-    user,
+    userPermissionss,
     navigate,
 }) {
-    console.log(user);
     let items = [];
 
     menu?.forEach((menuItem) => {
         if (Object.prototype.hasOwnProperty.call(menuItem, "options")) {
             menuItem.options.forEach((option) => {
                 if (
-                    user?.some(
+                    userPermissionss?.some(
                         (item) => item?.FunctionName === option?.feature
                     )
                 ) {
@@ -365,7 +364,7 @@ export function navigateToFirstAllowedPage({
             });
         } else {
             if (
-                user?.some(
+                userPermissionss?.some(
                     (item) => item?.FunctionName === menuItem?.feature
                 )
             ) {
@@ -388,8 +387,8 @@ export function navigateToFirstAllowedPage({
     }
 }
 
-export function renderConsDetailsLink(userPermission, text, value) {
-    if (canViewDetails(userPermission)) {
+export function renderConsDetailsLink(userPermissions, text, value) {
+    if (canViewDetails(userPermissions)) {
         return (
             <Link
                 to={`/gtrs/consignment-details`}
@@ -404,8 +403,8 @@ export function renderConsDetailsLink(userPermission, text, value) {
     }
 }
 
-export function renderIncidentDetailsLink(userPermission, text, value) {
-    if (canViewIncidentDetails(userPermission)) {
+export function renderIncidentDetailsLink(userPermissions, text, value) {
+    if (canViewIncidentDetails(userPermissions)) {
         return (
             <Link
                 to={`/gtrs/incident`}

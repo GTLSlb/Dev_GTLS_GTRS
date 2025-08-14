@@ -18,18 +18,16 @@ import {
     renderIncidentDetailsLink,
 } from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import { CustomContext } from "@/CommonContext";
 
 export default function FailedCons({
     PerfData,
     failedReasons,
-    url,
-    Token,
     filterValue,
     setFilterValue,
-    currentUser,
-    userPermission,
     accData,
 }) {
+    const { url,Token, userPermissions } = useContext(CustomContext);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [reason, setReason] = useState();
     const handleEditClick = (reason) => {
@@ -140,7 +138,7 @@ export default function FailedCons({
             textAlign: "center",
             render: ({ value, data }) => {
                 return renderIncidentDetailsLink(
-                    userPermission,
+                    userPermissions,
                     value,
                     data.IncidentId
                 );
@@ -531,7 +529,7 @@ export default function FailedCons({
     const [newColumns, setNewColumns] = useState();
 
     useEffect(() => {
-        if (canEditFailedConsignments(userPermission)) {
+        if (canEditFailedConsignments(userPermissions)) {
             setNewColumns(columns);
         } else {
             setNewColumns(newArray);
@@ -646,8 +644,7 @@ export default function FailedCons({
                 setReason={setReason}
                 handleClose={handleEditClick}
                 failedReasons={failedReasons}
-                currentUser={currentUser}
-                userPermission={userPermission}
+                userPermissions={userPermissions}
                 updateLocalData={updateLocalData}
             />
         </div>
@@ -655,13 +652,9 @@ export default function FailedCons({
 }
 
 FailedCons.propTypes = {
-    url: PropTypes.string,
     PerfData: PropTypes.array,
     filterValue: PropTypes.array,
     setFilterValue: PropTypes.func,
-    currentUser: PropTypes.object,
-    userPermission: PropTypes.object,
     accData: PropTypes.array,
-    Token: PropTypes.string,
     failedReasons: PropTypes.array,
 };

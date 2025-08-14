@@ -27,7 +27,7 @@ export default function AddHoliday({
     fetchData,
     closeModal
 }) {
-    const { Token, user, currentUser, url } = useContext(CustomContext);
+    const { Token, url } = useContext(CustomContext);
     const [selected, setSelected] = useState(states[0]);
     const [isChecked, setIsChecked] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -279,7 +279,6 @@ AddHoliday.propTypes = {
     states: PropTypes.array,
     holiday: PropTypes.object,
     url: PropTypes.string,
-    currentUser: PropTypes.object,
     Token: PropTypes.string,
     setHoliday: PropTypes.func,
     setShowAdd: PropTypes.func,    

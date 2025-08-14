@@ -17,7 +17,7 @@ export default function AddCommentToList({
     fetchData,
     isOpen,
 }) {
-    const { Token, user, currentUser, url } = useContext(CustomContext);
+    const { Token, user,  url } = useContext(CustomContext);
     const [isChecked, setIsChecked] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [object, setObject] = useState();
@@ -140,9 +140,6 @@ export default function AddCommentToList({
 
 AddCommentToList.propTypes = {
     selectedComment: PropTypes.object,
-    url: PropTypes.string,
-    currentUser: PropTypes.object,    
-    Token: PropTypes.string,    
     setSelectedComment: PropTypes.func,
     setShowAdd: PropTypes.func,
     fetchData: PropTypes.func,

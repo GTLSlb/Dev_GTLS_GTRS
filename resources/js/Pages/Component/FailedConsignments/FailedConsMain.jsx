@@ -11,12 +11,11 @@ export default function FailedConsMain({
     PerfData,
     filterValue,
     setFilterValue,
-    userPermission,
     accData,
     failedReasons,
     setFailedReasons,
 }) {
-    const { url, Token, user, currentUser } = useContext(CustomContext);
+    const { url, Token, user, userPermissions } = useContext(CustomContext);
     const [isFetching, setIsfetching] = useState();
 
     useEffect(() => {
@@ -76,8 +75,7 @@ export default function FailedConsMain({
                     <FailedCons
                         url={url}
                         failedReasons={failedReasons}
-                        currentUser={currentUser}
-                        userPermission={userPermission}
+                        userPermissions={userPermissions}
                         accData={accData}
                         PerfData={PerfData}
                         filterValue={filterValue}
@@ -91,14 +89,10 @@ export default function FailedConsMain({
 }
 
 FailedConsMain.propTypes = {
-    url: PropTypes.string,
     PerfData: PropTypes.array,
     filterValue: PropTypes.array,
     setFilterValue: PropTypes.func,
-    currentUser: PropTypes.object,
-    userPermission: PropTypes.object,
     accData: PropTypes.array,
-    Token: PropTypes.string,
     failedReasons: PropTypes.array,
     setFailedReasons: PropTypes.func,
 };

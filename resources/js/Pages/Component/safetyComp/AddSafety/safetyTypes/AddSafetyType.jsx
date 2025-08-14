@@ -13,9 +13,8 @@ import { CustomContext } from "@/CommonContext";
 export default function AddSafetyType({
     safetyTypes,
     setSafetyTypes,
-    userPermission,
 }) {
-     const { user, url, Token, currentUser } = useContext(CustomContext);
+     const { user, url, Token, userPermissions } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [Data, setData] = useState(safetyTypes);
@@ -50,7 +49,7 @@ export default function AddSafetyType({
                     </h1>
                 </div>
                 <div className="inline-block  left-auto ">
-                    {canAddSafetyType(userPermission) ? (
+                    {canAddSafetyType(userPermissions) ? (
                         <button
                             type="button"
                             onClick={() => handleEditClick(type)}
@@ -124,7 +123,7 @@ export default function AddSafetyType({
                                                     </td>
                                                     <td className="relative whitespace-nowrap py-4 pl-3 sm:pr-4 pr-6 text-left text-sm font-medium">
                                                         {canEditSafetyType(
-                                                            userPermission
+                                                            userPermissions
                                                         ) ? (
                                                             <button
                                                                 onClick={() =>
@@ -190,8 +189,7 @@ export default function AddSafetyType({
             </div>
             <AddSafetyTypeModal
                 url={url}
-                currentUser={currentUser}
-                userPermission={userPermission}
+                userPermissions={userPermissions}
                 ariaHideApp={false}
                 isOpen={isModalOpen}
                 type={type}
@@ -208,8 +206,4 @@ export default function AddSafetyType({
 AddSafetyType.propTypes = {
     safetyTypes: PropTypes.array,
     setSafetyTypes: PropTypes.func,
-    url: PropTypes.string,
-    Token: PropTypes.string,
-    currentUser: PropTypes.object,
-    userPermission: PropTypes.object,
 };

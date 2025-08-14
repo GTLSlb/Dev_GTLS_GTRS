@@ -17,8 +17,6 @@ export default function ConsPerf({
     setSDate,
     oldestDate,
     latestDate,
-    currentUser,
-    userPermission,
     setSharedStartDate,
     setSharedEndDate,
 }) {
@@ -330,8 +328,6 @@ export default function ConsPerf({
                             key={item.id}
                             id={item.id}
                             item={item}
-                            currentUser={currentUser}
-                            userPermission={userPermission}
                         />
                     </div>
                 ))
@@ -376,8 +372,6 @@ ConsPerf.propTypes = {
     setSDate: PropTypes.func,
     oldestDate: PropTypes.string,
     latestDate: PropTypes.string,
-    currentUser: PropTypes.object,
-    userPermission: PropTypes.object,
     setSharedStartDate: PropTypes.func,
     setSharedEndDate: PropTypes.func,
 };

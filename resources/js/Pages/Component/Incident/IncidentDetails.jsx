@@ -5,13 +5,14 @@ import logo from "@/assets/pictures/Logoblack.png";
 import { Chip } from "@heroui/react";
 import moment from "moment/moment";
 import { useNavigate } from "react-router-dom";
+import { CustomContext } from "@/CommonContext";
 
 export default function IncidentDetails({
     incident,
     filters,
     mainCauses,
-    userPermission,
 }) {
+    const { userPermissions } = useContext(CustomContext);
     const navigate = useNavigate();
     return (
         <div>
@@ -495,7 +496,7 @@ export default function IncidentDetails({
                                             }
                                         </label>
                                     </div>
-                                    {canViewInternal(userPermission) && (
+                                    {canViewInternal(userPermissions) && (
                                         <div className="flex flex-col gap-y-3 w-full sm:flex-row">
                                             <label
                                                 htmlFor=""
@@ -514,7 +515,7 @@ export default function IncidentDetails({
                                             </label>
                                         </div>
                                     )}
-                                    {canViewInternal(userPermission) && (
+                                    {canViewInternal(userPermissions) && (
                                         <div className="flex flex-col gap-y-3 w-full sm:flex-row">
                                             <label
                                                 htmlFor=""
@@ -809,6 +810,6 @@ export default function IncidentDetails({
 IncidentDetails.propTypes = {
     incident: PropTypes.object,
     filters: PropTypes.object,
-    userPermission: PropTypes.object,
+    userPermissions: PropTypes.object,
     mainCauses: PropTypes.array,
 };

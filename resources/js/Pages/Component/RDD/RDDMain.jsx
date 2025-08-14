@@ -30,7 +30,7 @@ export default function RDDMain({
     oldestDate,
     latestDate,
 }) {
-    const { Token, user, currentUser, url } = useContext(CustomContext);
+    const { Token, user, userPermissions, url } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     const [isFetching, setIsFetching] = useState();
     const [isFetchingReasons, setIsFetchingReasons] = useState();
@@ -166,7 +166,7 @@ export default function RDDMain({
                             setFilterValue={setFilterValue}
                             setrddData={setrddData}
                             debtorsData={debtorsData}
-                            currentUser={currentUser}
+                            userPermissions={userPermissions}
                             userPermission={userPermission}
                             setActiveIndexGTRS={setActiveIndexGTRS}
                             setactiveCon={setactiveCon}
@@ -202,11 +202,8 @@ RDDMain.propTypes = {
     EDate: PropTypes.string,
     setEDate: PropTypes.func,
     SDate: PropTypes.string,
-    url: PropTypes.string,
-    Token: PropTypes.string,
     userPermission: PropTypes.object,
     setSDate: PropTypes.func,
-    currentUser: PropTypes.object,
     rddReasons: PropTypes.array,
     setrddReasons: PropTypes.func,
     oldestDate: PropTypes.string,

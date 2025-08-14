@@ -27,7 +27,7 @@ export default function Holidays({
     setFilterValue,
     userPermission,
 }) {
-    const { user, url, Token, currentUser } = useContext(CustomContext);
+    const { user, url, Token, userPermissions } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     const [isFetching, setIsFetching] = useState();
     const [showAdd, setShowAdd] = useState(false);
@@ -394,7 +394,7 @@ export default function Holidays({
                                 holiday={holiday}
                                 url={url}
                                 Token={Token}
-                                currentUser={currentUser}
+                                userPermissions={userPermissions}
                                 userPermission={userPermission}
                                 setHoliday={setHoliday}
                                 setShowAdd={setShowAdd}
@@ -426,10 +426,7 @@ export default function Holidays({
 Holidays.propTypes = {
     holidays: PropTypes.array,
     setHolidays: PropTypes.func,
-    url: PropTypes.string,
-    Token: PropTypes.string,
     filterValue: PropTypes.array,
     setFilterValue: PropTypes.func,
     userPermission: PropTypes.object,
-    currentUser: PropTypes.object,
 };

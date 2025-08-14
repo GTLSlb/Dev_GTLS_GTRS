@@ -39,7 +39,7 @@ export default function DifotReport({
     // fetchData,
     accData,
 }) {
-    const { url, Token, currentUser } = useContext(CustomContext);
+    const { url, Token } = useContext(CustomContext);
     const [filteredData, setFilteredData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [difotData, setDifotData] = useState([]);

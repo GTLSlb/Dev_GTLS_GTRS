@@ -23,9 +23,8 @@ export default function AdditionalCharges({
     setAdditionalData,
     filterValue,
     setFilterValue,
-    userPermission,
 }) {
-    const { user, url } = useContext(CustomContext);
+    const { user, url, userPermissions } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     window.moment = moment;
     const [isFetching, setIsFetching] = useState();
@@ -91,7 +90,7 @@ export default function AdditionalCharges({
             filterEditor: StringFilter,
             render: ({ value, data }) => {
                 return renderConsDetailsLink(
-                    userPermission,
+                    userPermissions,
                     value,
                     data.ConsignmentID
                 );
@@ -251,7 +250,6 @@ AdditionalCharges.propTypes = {
     setAdditionalData: PropTypes.func,
     filterValue: PropTypes.array,
     setFilterValue: PropTypes.func,
-    userPermission: PropTypes.object,
-    currentUser: PropTypes.object,
+    userPermissions: PropTypes.object,
     url: PropTypes.string,
 };

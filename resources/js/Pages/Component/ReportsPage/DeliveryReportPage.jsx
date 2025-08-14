@@ -41,7 +41,7 @@ export default function DeliveryReportPage({
     deliveryReportComments,
     fetchDeliveryReportCommentsDataGTRS,
 }) {
-    const { Token, user, currentUser, url } = useContext(CustomContext);
+    const { Token, user, userPermissions, url } = useContext(CustomContext);
     const navigate = useNavigate();
     const handleClick = (coindex) => {
         navigate("/gtrs/consignment-details", {
@@ -1233,7 +1233,7 @@ export default function DeliveryReportPage({
                 handleClose={handleViewClose}
                 consId={consId}
                 fetchData={fetchDeliveryReport}
-                currentUser={currentUser}
+                userPermissions={userPermissions}
                 commentsData={commentsData}
                 deliveryCommentsOptions={deliveryCommentsOptions}
                 fetchDeliveryReportCommentsData={
@@ -1245,10 +1245,7 @@ export default function DeliveryReportPage({
 }
 
 DeliveryReportPage.propTypes = {
-    url: PropTypes.string,
-    Token: PropTypes.string,
     deliveryReportData: PropTypes.array,
-    currentUser: PropTypes.object,
     userPermission: PropTypes.object,
     deliveryCommentsOptions: PropTypes.array,
     fetchDeliveryReport: PropTypes.func,

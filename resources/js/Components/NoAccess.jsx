@@ -10,10 +10,5 @@ function NoAccess() {
     );
 }
 
-NoAccess.propTypes = {
-    currentUser: PropTypes.object,
-    setToken: PropTypes.func,
-    setCurrentUser: PropTypes.func,
-};
 
 export default NoAccess;

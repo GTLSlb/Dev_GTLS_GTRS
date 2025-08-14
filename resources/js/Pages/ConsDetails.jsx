@@ -240,5 +240,4 @@ export default function ConsDetails() {
 }
 ConsDetails.propTypes = {
     url: PropTypes.string,
-    currentUser: PropTypes.object,
 };

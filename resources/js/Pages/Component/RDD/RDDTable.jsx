@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { useEffect } from "react";
 import ModalRDD from "@/Components/modalRDD";
@@ -15,21 +15,19 @@ import { exportToExcel } from "@/Components/utils/excelUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { formatDateToExcel, renderConsDetailsLink } from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import { CustomContext } from "@/CommonContext";
 
 export default function RDDTable({
     setActiveIndexGTRS,
     rddData,
-    url,
     setIncidentId,
-    Token,
     setrddData,
     filterValue,
     setFilterValue,
-    currentUser,
-    userPermission,
     rddReasons,
     accData,
 }) {
+    const {  url, userPermissions, Token } = useContext(CustomContext);
     window.moment = moment;
     const updateLocalData = (id, reason, note) => {
         // Find the item in the local data with the matching id
@@ -431,8 +429,7 @@ export default function RDDTable({
                 handleClose={handleEditClick}
                 consignment={consignment}
                 rddReasons={rddReasons}
-                currentUser={currentUser}
-                userPermission={userPermission}
+                userPermissions={userPermissions}
             />
         </div>
     );
@@ -441,14 +438,10 @@ export default function RDDTable({
 RDDTable.propTypes = {
     setActiveIndexGTRS: PropTypes.func,
     rddData: PropTypes.array,
-    url: PropTypes.string,
     setIncidentId: PropTypes.func,
-    Token: PropTypes.string,
     setrddData: PropTypes.func,
     filterValue: PropTypes.array,
     setFilterValue: PropTypes.func,
-    currentUser: PropTypes.object,
-    userPermission: PropTypes.object,
     rddReasons: PropTypes.array,
     accData: PropTypes.array,
 };  

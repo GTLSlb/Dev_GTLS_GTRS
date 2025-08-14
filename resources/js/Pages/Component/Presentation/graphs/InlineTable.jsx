@@ -424,7 +424,6 @@ function InlineTable({
 InlineTable.propTypes = {
     graphData: PropTypes.array,
     url: PropTypes.string,
-    currentUser: PropTypes.object,
     CustomerId: PropTypes.number,
     setGraphData: PropTypes.func,
     Token: PropTypes.string,

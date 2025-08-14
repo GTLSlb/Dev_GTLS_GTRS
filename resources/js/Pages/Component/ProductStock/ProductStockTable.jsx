@@ -52,7 +52,7 @@ export const SearchIcon = (props) => {
 };
 
 export default function ProductStockTable() {
-    const { Token, user, currentUser, url } = useContext(CustomContext);
+    const { Token, user, url } = useContext(CustomContext);
     const [productsData, setProductsData] = useState([]);
     const [debtors, setDebtors] = useState([]);
     const [branches, setBranches] = useState([]);
@@ -772,5 +772,4 @@ export default function ProductStockTable() {
 ProductStockTable.propTypes = {
     url: PropTypes.string,
     Token: PropTypes.string,
-    currentUser: PropTypes.object,
 };

@@ -315,6 +315,4 @@ DriverLogin.propTypes = {
     setDriverData: PropTypes.func,
     filterValue: PropTypes.array,
     setFilterValue: PropTypes.func,
-    url: PropTypes.string,
-    currentUser: PropTypes.object,
 };

@@ -28,16 +28,13 @@ ChartJS.register(
 );
 function BarGraph({
     graphData,
-    url,
-    Token,
     CustomerId,
     originalgraphData,
-    currentUser,
     setGraphData,
     getReportData,
     selectedReceiver,
 }) {
-
+const { user, url, Token, userPermissions } = useContext(CustomContext);
     function generateMonthArrayFromJson(data) {
         const monthNames = [
             "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
@@ -190,7 +187,7 @@ function BarGraph({
                 graphData={graphData}
                 originalgraphData={originalgraphData}
                 url={url}
-                currentUser={currentUser}
+                userPermissions={userPermissions}
                 setGraphData={setGraphData}
                 selectedReceiver={selectedReceiver}
             />
@@ -200,11 +197,8 @@ function BarGraph({
 
 BarGraph.propTypes = {
     graphData: PropTypes.array,
-    url: PropTypes.string,
-    Token: PropTypes.string,
     CustomerId: PropTypes.number,
     originalgraphData: PropTypes.array,
-    currentUser: PropTypes.object,
     setGraphData: PropTypes.func,
     getReportData: PropTypes.func,
     selectedReceiver: PropTypes.string,

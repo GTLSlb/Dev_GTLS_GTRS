@@ -114,8 +114,3 @@ export default function Customers() {
         </div>
     );
 }
-
-Customers.propTypes = {
-    Token: PropTypes.string,
-    currentUser: PropTypes.object,
-};

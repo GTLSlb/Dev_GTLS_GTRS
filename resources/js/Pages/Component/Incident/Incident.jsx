@@ -11,8 +11,8 @@ import { useLocation } from "react-router-dom";
 import { canViewIncidentDetails } from "@/permissions";
 import { CustomContext } from "@/CommonContext";
 
-export default function Incident({ gtccrUrl, userPermission }) {
-    const { Token, user, currentUser } = useContext(CustomContext);
+export default function Incident({ gtccrUrl }) {
+    const { Token, user, userPermissions } = useContext(CustomContext);
     const location = useLocation();
     const [selected, setSelected] = useState("details");
     const [filters, setFilters] = useState();
@@ -134,7 +134,7 @@ export default function Incident({ gtccrUrl, userPermission }) {
         <div className="relative p-5">
             {incident && filters && mainCauses ? (
                 <div>
-                    {canViewIncidentDetails(userPermission) ? (
+                    {canViewIncidentDetails(userPermissions) ? (
                         <Tabs
                             aria-label="Options"
                             selectedKey={selected}
@@ -153,7 +153,7 @@ export default function Incident({ gtccrUrl, userPermission }) {
                                     mainCauses={mainCauses}
                                     filters={filters}
                                     incident={incident}
-                                    userPermission={userPermission}
+                                    userPermissions={userPermissions}
                                 />
                             </Tab>
                             <Tab key="notes" title="Notes">
@@ -162,15 +162,14 @@ export default function Incident({ gtccrUrl, userPermission }) {
                                     Token={Token}
                                     getIncident={getIncident}
                                     filters={filters}
-                                    currentUser={currentUser}
-                                    userPermission={userPermission}
+                                    userPermissions={userPermissions}
                                 />
                             </Tab>
                         </Tabs>
                     ) : (
                         <div className="">
                             <IncidentDetails
-                                currentUser={currentUser}
+                                userPermissions={userPermissions}
                                 mainCauses={mainCauses}
                                 filters={filters}
                                 incident={incident}
@@ -197,7 +196,4 @@ export default function Incident({ gtccrUrl, userPermission }) {
 
 Incident.propTypes = {
     gtccrUrl: PropTypes.string,
-    currentUser: PropTypes.object,
-    Token: PropTypes.string,
-    userPermission: PropTypes.object,
 };

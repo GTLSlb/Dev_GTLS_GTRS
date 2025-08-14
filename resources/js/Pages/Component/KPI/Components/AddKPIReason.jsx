@@ -17,7 +17,7 @@ export default function AddKPIReason({
     fetchData,
     closeModal
 }) {
-    const { Token, user, currentUser, url } = useContext(CustomContext);
+    const { Token, user, url } = useContext(CustomContext);
     const [isChecked, setIsChecked] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [object, setObject] = useState();
@@ -135,7 +135,6 @@ export default function AddKPIReason({
 AddKPIReason.propTypes = {
     selectedReason: PropTypes.object,
     url: PropTypes.string,
-    currentUser: PropTypes.object,
     Token: PropTypes.string,
     setSelectedReason: PropTypes.func,
     setShowAdd: PropTypes.func,

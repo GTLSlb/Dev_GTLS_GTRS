@@ -26,8 +26,7 @@ export default function SafetyRep({
     latestDate,
     DefaultSDate,
     DefaultEDate,
-    userPermission,
-}) {const { user, url, Token, currentUser } = useContext(CustomContext);
+}) {const { user, url, Token, userPermissions } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     const [SDate, setSDate] = useState(DefaultSDate);
     const [EDate, setEDate] = useState(DefaultEDate);
@@ -184,8 +183,7 @@ export default function SafetyRep({
             safetyTypes={safetyTypes}
             safetyData={filteredData}
             currentPageRep={currentPage}
-            currentUser={currentUser}
-            userPermission={userPermission}
+            userPermissions={userPermissions}
             setFilteredData={setFilteredData}
             setDataEdited={setDataEdited}
         />,
@@ -200,8 +198,7 @@ export default function SafetyRep({
             url={url}
             key={currentPage}
             Token={Token}
-            currentUser={currentUser}
-            userPermission={userPermission}
+            userPermissions={userPermissions}
             safetyTypes={safetyTypes}
             setSafetyTypes={setSafetyTypes}
         />,
@@ -212,10 +209,10 @@ export default function SafetyRep({
     };
     const [canView, setCanView] = useState(true);
     useEffect(() => {
-        if (userPermission) {
-            setCanView(!canViewSafetyType(userPermission));
+        if (userPermissions) {
+            setCanView(!canViewSafetyType(userPermissions));
         }
-    }, [userPermission]);
+    }, [userPermissions]);
     return (
         <div>
             {/* Added toast container since it wasn't showing */}
@@ -345,7 +342,6 @@ export default function SafetyRep({
 
 SafetyRep.propTypes = {
     accData: propTypes.array,
-    currentUser: propTypes.object,
     url: propTypes.string,
     Token: propTypes.string,
     safetyDataState: propTypes.array,
@@ -361,5 +357,5 @@ SafetyRep.propTypes = {
     latestDate: propTypes.string,
     DefaultSDate: propTypes.string,
     DefaultEDate: propTypes.string,
-    userPermission: propTypes.object,
+    userPermissions: propTypes.object,
 };

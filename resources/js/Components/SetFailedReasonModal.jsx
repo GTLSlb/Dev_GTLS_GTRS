@@ -663,6 +663,5 @@ SetFailedReasonModal.propTypes = {
     reason: PropTypes.object,
     setReason: PropTypes.func,
     failedReasons: PropTypes.array,
-    currentUser: PropTypes.object,
     updateLocalData: PropTypes.func,
 };

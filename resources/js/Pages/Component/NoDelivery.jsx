@@ -24,9 +24,8 @@ export default function NoDelivery({
     setNoDelData,
     filterValue,
     setFilterValue,
-    userPermission,
 }) {
-    const { user, url } = useContext(CustomContext);
+    const { user, url, userPermissions } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     window.moment = moment;
 
@@ -125,7 +124,7 @@ export default function NoDelivery({
             filterEditor: StringFilter,
 
             render: ({ value, data }) => {
-                return renderConsDetailsLink(userPermission, value, data);
+                return renderConsDetailsLink(userPermissions, value, data);
             },
         },
         {
@@ -362,7 +361,4 @@ NoDelivery.propTypes = {
     setNoDelData: PropTypes.func,
     filterValue: PropTypes.array,
     setFilterValue: PropTypes.func,
-    currentUser: PropTypes.object,
-    userPermission: PropTypes.object,
-    url: PropTypes.string,
 };
