@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
+import PropTypes from "prop-types";
 import { useEffect } from "react";
 import ModalRDD from "@/Components/modalRDD";
 import moment from "moment";
@@ -13,25 +14,21 @@ import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { formatDateToExcel, renderConsDetailsLink } from "@/CommonFunctions";
-import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import { CustomContext } from "@/CommonContext";
 
 export default function RDDTable({
     setActiveIndexGTRS,
     rddData,
-    url,
     setIncidentId,
-    AToken,
     setrddData,
     filterValue,
     setFilterValue,
-    currentUser,
-    userPermission,
     rddReasons,
     accData,
 }) {
+    const {  url, userPermissions, Token } = useContext(CustomContext);
     window.moment = moment;
-    const navigate = useNavigate();
     const updateLocalData = (id, reason, note) => {
         // Find the item in the local data with the matching id
         const updatedData = rddData.map((item) => {
@@ -142,7 +139,7 @@ export default function RDDTable({
             filterEditor: StringFilter,
             render: ({ value, data }) => {
                 return renderConsDetailsLink(
-                    userPermission,
+                    userPermissions,
                     value,
                     data.ConsignmentId
                 );
@@ -201,7 +198,7 @@ export default function RDDTable({
             type: "string",
             headerAlign: "center",
             textAlign: "center",
-            render: ({ value, data }) => {
+            render: ({ value }) => {
                 return <span className=""> {value}</span>;
             },
             filterEditor: StringFilter,
@@ -212,7 +209,7 @@ export default function RDDTable({
             type: "string",
             headerAlign: "center",
             textAlign: "center",
-            render: ({ value, data }) => {
+            render: ({ data }) => {
                 return <span className=""> {data.IncidentStatusName}</span>;
             },
         },
@@ -348,7 +345,7 @@ export default function RDDTable({
                 minDate: minDespatchDate,
                 maxDate: maxDespatchDate,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -367,7 +364,7 @@ export default function RDDTable({
                 minDate: minOldRddDate,
                 maxDate: maxOldRddDate,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -386,7 +383,7 @@ export default function RDDTable({
                 minDate: minNewRddDate,
                 maxDate: maxNewRddDate,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD/MM/YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -397,7 +394,7 @@ export default function RDDTable({
     const newArray = columns.slice(0, -1);
     const [newColumns, setNewColumns] = useState();
     useEffect(() => {
-        if (canEditRDD(userPermission)) {
+        if (canEditRDD(userPermissions)) {
             setNewColumns(columns);
         } else {
             setNewColumns(newArray);
@@ -426,15 +423,25 @@ export default function RDDTable({
             )}
             <ModalRDD
                 url={url}
-                AToken={AToken}
+                Token={Token}
                 isOpen={isModalOpen}
                 updateLocalData={updateLocalData}
                 handleClose={handleEditClick}
                 consignment={consignment}
                 rddReasons={rddReasons}
-                currentUser={currentUser}
-                userPermission={userPermission}
+                userPermissions={userPermissions}
             />
         </div>
     );
 }
+
+RDDTable.propTypes = {
+    setActiveIndexGTRS: PropTypes.func,
+    rddData: PropTypes.array,
+    setIncidentId: PropTypes.func,
+    setrddData: PropTypes.func,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    rddReasons: PropTypes.array,
+    accData: PropTypes.array,
+};  

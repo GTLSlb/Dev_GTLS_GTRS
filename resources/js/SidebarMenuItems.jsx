@@ -6,13 +6,18 @@ import {
     ExclamationTriangleIcon,
     NoSymbolIcon,
     CurrencyDollarIcon,
-    UserIcon, ClockIcon, ShieldCheckIcon,
+    UserIcon,
+    ClockIcon,
+    ShieldCheckIcon,
     CameraIcon,
     DocumentTextIcon,
     ClipboardDocumentIcon,
-    RectangleStackIcon
+    RectangleStackIcon,
+    CogIcon,
 } from "@heroicons/react/24/solid";
 import TaskIcon from "@mui/icons-material/Task";
+import ContactsIcon from '@mui/icons-material/Contacts';
+import DescriptionIcon from '@mui/icons-material/Description';
 import ReportIcon from "@mui/icons-material/Report";
 
 const menu = [
@@ -24,6 +29,15 @@ const menu = [
         current: true,
         feature: "Dashboard_view",
         url: "/gtrs/dashboard",
+    },
+    {
+        id: 32,
+        name: "Spend Analysis",
+        href: "#",
+        icon: ChartPieIcon,
+        current: false,
+        feature: "Dashboard_view",
+        url: "/gtrs/spendanalysis",
     },
     {
         id: 1,
@@ -133,18 +147,18 @@ const menu = [
         feature: "DeliveryReport_View",
         url: "/gtrs/delivery-report",
         options: [
-            {
-                id: 28,
-                name: "Delivery Report",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "DeliveryReport_View",
-                url: "/gtrs/delivery-report",
-            },
+            // {
+            //     id: 28,
+            //     name: "Delivery Report",
+            //     href: "#",
+            //     current: false,
+            //     icon: ClipboardDocumentCheckIcon,
+            //     feature: "DeliveryReport_View",
+            //     url: "/gtrs/delivery-report",
+            // },
             {
                 id: 30,
-                name: "Excel Delivery Report",
+                name: "Delivery Report",
                 href: "#",
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
@@ -160,7 +174,7 @@ const menu = [
                 feature: "DeliveryReportCommentsTable_View",
                 url: "/gtrs/delivery-report/comments",
             },
-        ]
+        ],
     },
     {
         id: 20,
@@ -251,6 +265,42 @@ const menu = [
         current: false,
         feature: "StockReport_View",
         url: "/gtrs/SOH",
+    },
+    {
+        id: 32,
+        name: "Contacts Report",
+        href: "#",
+        icon: ContactsIcon,
+        current: false,
+        feature: "ContactsRep_View",
+        url: "/gtrs/contacts-report",
+    },
+    {
+        id: 33,
+        name: "DIFOT Report",
+        href: "#",
+        icon: DescriptionIcon,
+        current: false,
+        feature: "DifotReport_View",
+        url: "/gtrs/difot-report",
+    },
+    {
+        id: 34,
+        name: "Utilization Report",
+        href: "#",
+        icon: DocumentTextIcon,
+        current: false,
+        feature: "UtilizationReport_View",
+        url: "/gtrs/utilization-report",
+    },
+    {
+        id: 31,
+        name: "Settings",
+        href: "#",
+        icon: CogIcon,
+        current: false,
+        feature: "Settings_View",
+        url: "/gtrs/settings",
     },
 ];
 

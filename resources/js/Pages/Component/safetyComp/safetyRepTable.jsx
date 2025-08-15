@@ -1,4 +1,6 @@
 import { formatDateToExcel } from "@/CommonFunctions";
+import React, { useContext } from "react";
+import PropTypes from "prop-types";
 import SafetyModal from "@/Components/AddsafetyModal";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import DescriptionModal from "@/Components/DescriptionModal";
@@ -16,24 +18,20 @@ import moment from "moment";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ToastContainer } from 'react-toastify';
 import { AlertToast } from "@/permissions";
+import { CustomContext } from "@/CommonContext";
 
 export default function SafetyRepTable({
-    currentPageRep,
     safetyData,
-    AToken,
-    url,
     filterValue,
     customerAccounts,
     setFilterValue,
-    currentUser,
-    userPermission,
-    setFilteredData,
     setDataEdited,
     safetyTypes,
     fetchData,
     setsafetyData,
     safetyCauses,
 }) {
+    const { user, url, userPermissions, Token } = useContext(CustomContext);
     window.moment = moment;
     const minDate = getMinMaxValue(safetyData, "OccuredAt", 1);
     const maxDate = getMinMaxValue(safetyData, "OccuredAt", 2);
@@ -41,22 +39,10 @@ export default function SafetyRepTable({
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpendesc, setIsModalOpendesc] = useState(false);
     const [safetyDesc, setSafetyDesc] = useState();
-    const checkbox = useRef();
-    const [currentPage, setCurrentPage] = useState(currentPageRep);
-    const [checked, setChecked] = useState(false);
-    const [indeterminate, setIndeterminate] = useState(false);
-    const [selectedRecords, setselectedRecords] = useState([]);
     const [isSuccessfull, setIsSuccessfull] = useState(false);
     useLayoutEffect(() => {
-        const isIndeterminate =
-            selectedRecords?.length > 0 &&
-            selectedRecords?.length < safetyData?.length;
-        setChecked(selectedRecords?.length === safetyData?.length);
-        setIndeterminate(isIndeterminate);
-        if (checkbox.current) {
-            checkbox.current.indeterminate = isIndeterminate;
-        }
-    }, [selectedRecords]);
+        
+    }, []);
     const gridRef = useRef(null);
 
     const handleDownloadExcel = () => {
@@ -70,20 +56,20 @@ export default function SafetyRepTable({
 
         // Define custom cell handlers for specific columns
         const customCellHandlers = {
-            SafetyType: (value, item) => {
+            SafetyType: ( item) => {
                 const reason = safetyTypes?.find(
                     (reason) => reason.SafetyTypeId === item.SafetyType
                 );
                 return reason?.SafetyTypeName || "";
             },
-            DebtorId: (value, item) => {
+            DebtorId: ( item) => {
                 const account = customerAccounts?.find(
                     (acc) => acc.DebtorId == item.DebtorId
                 );
                 return account?.AccountNo || "";
             },
             OccuredAt: (value) => formatDateToExcel(value), // Convert date to Excel format
-            Reference: (value, item) => {
+            Reference: (value) => {
                 if (value === 1) return "Internal";
                 if (value === 2) return "External";
                 if (value === 3) return "Type 3";
@@ -107,7 +93,6 @@ export default function SafetyRepTable({
     const [modalMainCause, setmodalMainCause] = useState();
     const [modalState, setmodalState] = useState();
     const [modalDebtorId, setmodalDebtorId] = useState();
-    const [modalDepar, setmodalDepar] = useState();
     const [modalExpl, setmodalExpl] = useState();
     const [modalResol, setmodalResol] = useState();
     const [modalRefer, setmodalRefer] = useState(2);
@@ -191,10 +176,10 @@ export default function SafetyRepTable({
     const [canEdit, setCanEdit] = useState(true);
 
     useEffect(() => {
-        if (userPermission) {
-            setCanEdit(canEditSafetyReport(userPermission));
+        if (userPermissions) {
+            setCanEdit(canEditSafetyReport(userPermissions));
         }
-    }, [userPermission]);
+    }, [userPermissions]);
     const referenceOptions = [
         {
             id: 1,
@@ -335,7 +320,7 @@ export default function SafetyRepTable({
                 minDate: minDate,
                 maxDate: maxDate,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -356,7 +341,7 @@ export default function SafetyRepTable({
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 100,
-            render: ({ value, data }) => {
+            render: ({  data }) => {
                 return (
                     <div>
                         {canEdit ? (
@@ -394,16 +379,16 @@ export default function SafetyRepTable({
     const newArray = columns?.slice(0, -1);
     const [newColumns, setNewColumns] = useState();
     useEffect(() => {
-        if (userPermission) {
-            if (canEditSafetyReport(userPermission)) {
+        if (userPermissions) {
+            if (canEditSafetyReport(userPermissions)) {
                 setNewColumns(columns);
             } else {
                 setNewColumns(newArray);
             }
         }
-    }, [userPermission]);
+    }, [userPermissions]);
 
-    const additionalButtons = canAddSafetyReport(userPermission) ? (
+    const additionalButtons = canAddSafetyReport(userPermissions) ? (
         <button
             type="button"
             onClick={handleAddClick}
@@ -456,7 +441,7 @@ export default function SafetyRepTable({
             <SafetyModal
                 url={url}
                 setIsSuccessfull={setIsSuccessfull}
-                AToken={AToken}
+                Token={Token}
                 customerAccounts={debtorsOptions}
                 safetyTypes={safetyTypes}
                 safetyCauses={safetyCauses}
@@ -468,14 +453,12 @@ export default function SafetyRepTable({
                 modalSafetyType={modalSafetyType}
                 modalMainCause={modalMainCause}
                 modalState={modalState}
-                modalDepar={modalDepar}
                 modalDebtorId={modalDebtorId}
                 modalExpl={modalExpl}
                 modalResol={modalResol}
                 modalRefer={modalRefer}
                 modalOccuredAt={modalOccuredAt}
-                currentUser={currentUser}
-                userPermission={userPermission}
+                userPermissions={userPermissions}
                 buttonAction={buttonAction}
                 updateLocalData={updateLocalData}
                 fetchData={fetchData}
@@ -483,3 +466,15 @@ export default function SafetyRepTable({
         </div>
     );
 }
+SafetyRepTable.propTypes = {
+    currentPageRep: PropTypes.string,
+    safetyData: PropTypes.array,
+    filterValue: PropTypes.array,
+    customerAccounts: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    setDataEdited: PropTypes.func,
+    safetyTypes: PropTypes.array,
+    fetchData: PropTypes.func,
+    setsafetyData: PropTypes.func,
+    safetyCauses: PropTypes.array,
+};

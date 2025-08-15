@@ -1,34 +1,30 @@
 import axios from "axios";
+import PropTypes from "prop-types";
 import swal from "sweetalert";
 import GtrsButton from "@/Pages/Component/GtrsButton";
 import { PencilIcon } from "@heroicons/react/20/solid";
-import SmallTableKPI from "./Components/KPISmallTable";
 import TableStructure from "@/Components/TableStructure";
 import { canAddKpiReasons, canEditKpiReasons } from "@/permissions";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useContext } from "react";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import AddKPIReason from "./Components/AddKPIReason";
 import { ToastContainer } from "react-toastify";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { handleFilterTable } from "@/Components/utils/filterUtils";
+import { exportToExcel } from "@/Components/utils/excelUtils";
+import { CustomContext } from "@/CommonContext";
 
 export default function KPIReasons({
-    url,
-    currentUser,
-    AToken,
-    userPermission,
     kpireasonsData,
     setkpireasonsData,
     filterValue,
     setFilterValue,
 }) {
-    function fromModel() {
-        return 3;
-    }
-    const addurl = `${url}Add/KpiReason`;
+
+    const { Token, user, userPermissions, url } = useContext(CustomContext);
 
     const gridRef = useRef(null);
-    const [editIndex, setEditIndex] = useState(null);
     const [filteredData, setFilteredData] = useState(kpireasonsData);
     const [showAddRow, setShowAddRow] = useState(false);
     const [selectedReason, setSelectedReason] = useState(false);
@@ -90,14 +86,13 @@ export default function KPIReasons({
                 <MagnifyingGlassIcon className="absolute h-[0.88rem] w-[0.88rem] text-gray-500 top-[0.77rem] left-2"/>
                 <input placeholder="Search" onChange={(e)=>handleFilterChange(e)} className="border px-7 py-1.5 rounded-lg placeholder:text-gray-500"/>
             </div>
-            {canAddKpiReasons(userPermission) ? (
+            {canAddKpiReasons(userPermissions) ? (
                 <div className="flex flex-col sm:flex-row gap-x-5 gap-y-3">
                     <div className="col-span-2">
                         {!showAddRow && (
                             <GtrsButton
                                 name="Add Reason"
                                 onClick={() => {
-                                    setEditIndex(null);
                                     setShowAddRow(!showAddRow);
                                 }}
                                 disabled={showAddRow}
@@ -111,7 +106,7 @@ export default function KPIReasons({
     );
 
     const handleDownloadExcel = () => {
-        const jsonData = handleFilterTable(gridRef, holidays);
+        const jsonData = handleFilterTable(gridRef, kpireasonsData);
 
         const columnMapping = columns.reduce((acc, column) => {
             acc[column.name] = column.header;
@@ -147,8 +142,8 @@ export default function KPIReasons({
         axios
             .get(`${url}KpiReasons`, {
                 headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    UserId: user.UserId,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {
@@ -184,26 +179,20 @@ export default function KPIReasons({
                                 }
                             })
                             .catch((error) => {
-                                console.log(error);
+                                console.error(error);
                             });
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                 }
             });
     }
-    const dynamicHeaders = [
-        { label: "Reason", key: "ReasonName" },
-        { label: "Status", key: "Status" },
-    ];
-    // useEffect(() => {
-    //     setFilteredData(kpireasonsData);
-    // }, [kpireasonsData]);
+
 
     useEffect(() => {
         if (kpireasonsData?.length > 0 && reasonNameOptions) {
-            if (userPermission && canEditKpiReasons(userPermission)) {
+            if (userPermissions && canEditKpiReasons(userPermissions)) {
                 setColumns([
                     {
                         name: "ReasonName",
@@ -244,10 +233,10 @@ export default function KPIReasons({
                         headerAlign: "center",
                         textAlign: "center",
                         defaultWidth: 100,
-                        render: ({ value, data }) => {
+                        render: ({ data }) => {
                             return (
                                 <div>
-                                    {canEditKpiReasons(userPermission) ? (
+                                    {canEditKpiReasons(userPermissions) ? (
                                         <button
                                             className={
                                                 "rounded text-blue-500 justify-center items-center  "
@@ -305,7 +294,7 @@ export default function KPIReasons({
                 ]);
             }
         }
-    }, [userPermission, reasonNameOptions, kpireasonsData]);
+    }, [userPermissions, reasonNameOptions, kpireasonsData]);
 
     const renderTable = useCallback(() => {
         return (
@@ -392,7 +381,7 @@ export default function KPIReasons({
                 </div>
                 <SmallTableKPI
                     fromModel={fromModel}
-                    AToken={AToken}
+                    Token={Token}
                     showAddRow={showAddRow}
                     setShowAddRow={setShowAddRow}
                     objects={filteredData}
@@ -410,9 +399,8 @@ export default function KPIReasons({
                     <AddKPIReason
                         selectedReason={selectedReason}
                         url={url}
-                        AToken={AToken}
-                        currentUser={currentUser}
-                        userPermission={userPermission}
+                        Token={Token}
+                        userPermissions={userPermissions}
                         setSelectedReason={setSelectedReason}
                         setShowAdd={setShowAddRow}
                         fetchData={getKPIReasons}
@@ -424,3 +412,9 @@ export default function KPIReasons({
         </div>
     );
 }
+KPIReasons.propTypes = {
+    kpireasonsData: PropTypes.array,
+    setkpireasonsData: PropTypes.func,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+};

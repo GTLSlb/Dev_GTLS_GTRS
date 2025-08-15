@@ -1,4 +1,5 @@
 import "./bootstrap";
+import React from "react";
 import "../css/app.css";
 import "../css/table.css";
 import "../css/sideBar.css";
@@ -7,8 +8,9 @@ import { createRoot } from "react-dom/client";
 import ReactGA from "react-ga";
 import { createInertiaApp } from "@inertiajs/react";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
-import { NextUIProvider } from "@nextui-org/react";
+import { HeroUIProvider } from "@heroui/react";
 import { BrowserRouter } from "react-router-dom";
+import ContextProvider from "./CommonContext";
 ReactGA.initialize("G-0KMJRECLV1");
 
 const appName =
@@ -26,9 +28,11 @@ createInertiaApp({
         ReactGA.pageview(window.location.pathname + window.location.search);
         root.render(
             <BrowserRouter>
-                <NextUIProvider>
-                    <App {...props} />
-                </NextUIProvider>
+                <HeroUIProvider>
+                    <ContextProvider>
+                        <App {...props} />
+                    </ContextProvider>
+                </HeroUIProvider>
             </BrowserRouter>
         );
     },

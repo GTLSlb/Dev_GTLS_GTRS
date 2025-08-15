@@ -1,24 +1,27 @@
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import { useEffect } from "react";
 import moment from "moment";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import TableStructure from "@/Components/TableStructure";
-import { formatDateToExcel, getApiRequest } from "@/CommonFunctions";
+import { formatDateToExcel, useApiRequests } from "@/CommonFunctions";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import { CustomContext } from "@/CommonContext";
 
 export default function DriverLogin({
     DriverData,
     setDriverData,
     filterValue,
     setFilterValue,
-    url,
-    currentUser,
 }) {
+    const { user, url } = useContext(CustomContext);
+    const { getApiRequest } = useApiRequests();
     window.moment = moment;
 
     const [isFetching, setIsFetching] = useState();
@@ -30,7 +33,7 @@ export default function DriverLogin({
     }, []);
     async function fetchData() {
         const data = await getApiRequest(`${url}DriverLogin`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {
@@ -200,7 +203,7 @@ export default function DriverLogin({
             defaultWidth: 170,
             dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -306,3 +309,10 @@ export default function DriverLogin({
         </div>
     );
 }
+
+DriverLogin.propTypes = {
+    DriverData: PropTypes.array,
+    setDriverData: PropTypes.func,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+};

@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import {
     Table,
     TableHeader,
@@ -6,7 +7,7 @@ import {
     TableBody,
     TableRow,
     TableCell,
-} from "@nextui-org/react";
+} from "@heroui/react";
 function BarTable({ colLabel, colTotal, colOnTime, colKPI, colPOD, colWidth }) {
     return (
         <Table
@@ -19,6 +20,7 @@ function BarTable({ colLabel, colTotal, colOnTime, colKPI, colPOD, colWidth }) {
             <TableHeader>
                 {colLabel.map((item) => (
                     <TableColumn
+                        key={item}
                         minWidth={colWidth}
                         maxWidth={colWidth}
                         width={colWidth}
@@ -38,6 +40,7 @@ function BarTable({ colLabel, colTotal, colOnTime, colKPI, colPOD, colWidth }) {
                     </TableCell>
                     {colTotal.map((item) => (
                         <TableCell
+                            key={item}
                             minWidth={colWidth}
                             maxWidth={colWidth}
                             width={colWidth}
@@ -56,6 +59,7 @@ function BarTable({ colLabel, colTotal, colOnTime, colKPI, colPOD, colWidth }) {
                     </TableCell>
                     {colOnTime.map((item) => (
                         <TableCell
+                            key={item}
                             minWidth={colWidth}
                             maxWidth={colWidth}
                             width={colWidth}
@@ -74,6 +78,7 @@ function BarTable({ colLabel, colTotal, colOnTime, colKPI, colPOD, colWidth }) {
                     </TableCell>
                     {colKPI.map((item) => (
                         <TableCell
+                            key={item}
                             minWidth={colWidth}
                             maxWidth={colWidth}
                             width={colWidth}
@@ -92,6 +97,7 @@ function BarTable({ colLabel, colTotal, colOnTime, colKPI, colPOD, colWidth }) {
                     </TableCell>
                     {colPOD.map((item) => (
                         <TableCell
+                            key={item}
                             minWidth={colWidth}
                             maxWidth={colWidth}
                             width={colWidth}
@@ -104,5 +110,13 @@ function BarTable({ colLabel, colTotal, colOnTime, colKPI, colPOD, colWidth }) {
         </Table>
     );
 }
+BarTable.propTypes = {
+    colLabel: PropTypes.arrayOf(PropTypes.string),
+    colTotal: PropTypes.arrayOf(PropTypes.number),
+    colOnTime: PropTypes.arrayOf(PropTypes.number),
+    colKPI: PropTypes.arrayOf(PropTypes.number),
+    colPOD: PropTypes.arrayOf(PropTypes.number),
+    colWidth: PropTypes.string,
+};
 
 export default BarTable;

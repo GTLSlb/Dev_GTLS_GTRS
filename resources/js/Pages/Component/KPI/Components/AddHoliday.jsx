@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import { Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import {
@@ -11,6 +13,7 @@ import axios from "axios";
 import { handleSessionExpiration } from '@/CommonFunctions';
 import GtrsButton from "../../GtrsButton";
 import { AlertToast } from "@/permissions";
+import { CustomContext } from "@/CommonContext";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -19,15 +22,12 @@ function classNames(...classes) {
 export default function AddHoliday({
     states,
     holiday,
-    url,
-    currentUser,
-    userPermission,
-    AToken,
     setHoliday,
     setShowAdd,
     fetchData,
     closeModal
 }) {
+    const { Token, url } = useContext(CustomContext);
     const [selected, setSelected] = useState(states[0]);
     const [isChecked, setIsChecked] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -69,11 +69,11 @@ export default function AddHoliday({
         axios
             .post(`${url}Add/Holiday`, inputValues, {
                 headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    UserId: url.UserId,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
-            .then((res) => {
+            .then(() => {
                 setHoliday(null);
                 fetchData();
                 setShowAdd(false);
@@ -94,7 +94,7 @@ export default function AddHoliday({
                     });
                   } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                     setIsLoading(false);
                     AlertToast("Something went wrong", 2);
                   }
@@ -274,3 +274,14 @@ export default function AddHoliday({
         </div>
     );
 }
+
+AddHoliday.propTypes = {
+    states: PropTypes.array,
+    holiday: PropTypes.object,
+    url: PropTypes.string,
+    Token: PropTypes.string,
+    setHoliday: PropTypes.func,
+    setShowAdd: PropTypes.func,    
+    fetchData: PropTypes.func,
+    closeModal: PropTypes.func,
+};

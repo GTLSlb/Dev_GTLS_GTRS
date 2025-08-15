@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 export const ChevronDownIcon = ({strokeWidth = 1.5, ...otherProps}) => (
   <svg
     aria-hidden="true"
@@ -20,3 +21,6 @@ export const ChevronDownIcon = ({strokeWidth = 1.5, ...otherProps}) => (
     />
   </svg>
 );
+ChevronDownIcon.propTypes = {
+  strokeWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};

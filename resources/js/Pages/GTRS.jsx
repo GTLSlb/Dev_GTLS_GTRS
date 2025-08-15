@@ -1,4 +1,9 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import React from "react";
+import PropTypes from "prop-types";
+import swal from "sweetalert";
+import axios from "axios";
+import { handleSessionExpiration } from "@/CommonFunctions";
 import { useEffect } from "react";
 import NoAccess from "@/Components/NoAccess";
 import { fetchApiData } from "@/CommonFunctions";
@@ -9,66 +14,72 @@ import GtrsMain from "./Component/GtrsMain";
 import { Routes, Route } from "react-router-dom";
 import { navigateToFirstAllowedPage } from "@/CommonFunctions";
 import { useNavigate } from "react-router-dom";
+import { CustomContext } from "@/CommonContext";
+
 export default function Gtrs({
-    user,
-    setToken,
     setMobileMenuOpen,
-    AToken,
     setLoadingGtrs,
-    currentUser,
     loadingGtrs,
-    allowedApplications,
     mobileMenuOpen,
-    setcurrentUser,
-    setSidebarElements,
-    sidebarElements,
-    setUser,
 }) {
+    const {
+        userPermissions,
+        setUserPermissions,
+        Token,
+        setToken,
+        user,
+        setUser,
+        canAccess,
+        setCanAccess,
+        sidebarElements,
+        setSidebarElements,
+        DebtorsApi,
+        setDebtorsApi,
+        debtorsData,
+        setdebtorsData,
+        chartsApi,
+        setchartsApi,
+        consApi,
+        setConsApi,
+        reportApi,
+        setReportApi,
+        transportApi,
+        setTransportApi,
+        KPIReasonsApi,
+        setKPIReasonsApi,
+        customerAccounts,
+        setCustomerAccounts,
+        transportData,
+        setTransportData,
+        kpireasonsData,
+        setkpireasonsData,
+    } = useContext(CustomContext);
+
     const [chartsData, setchartsData] = useState([]);
-    const [debtorsData, setdebtorsData] = useState([]);
-    const [kpireasonsData, setkpireasonsData] = useState([]);
+
     const [rddReasons, setrddReasons] = useState([]);
     const [activeCon, setactiveCon] = useState(0);
-    const [chartsApi, setchartsApi] = useState(false);
-    const [consApi, setConsApi] = useState(false);
-    const [reportApi, setReportApi] = useState(false);
-    const [transportApi, setTransportApi] = useState(false);
-    const [DebtorsApi, setDebtorsApi] = useState(false);
-    const [KPIReasonsApi, setKPIReasonsApi] = useState(false);
     const [safetyData, setSafetyData] = useState([]);
     const [consData, setconsData] = useState([]);
-    const [transportData, setTransportData] = useState([]);
+
     const [PerfData, setPerfData] = useState([]);
-    const [userBody, setUserBody] = useState();
-    const [dataFromChild, setDataFromChild] = useState(null);
     const gtrsUrl = window.Laravel.gtrsUrl;
     const gtamUrl = window.Laravel.gtamUrl;
     const gtccrUrl = window.Laravel.gtccrUrl;
-    const [customerAccounts, setCusomterAccounts] = useState([]);
-    const userdata = currentUser;
-    const [canAccess, setCanAccess] = useState(true);
+
     const [deliveryReportData, setDeliveryReportData] = useState([]);
-    const debtorIdsArray = userdata?.Accounts?.map((account) => {
-        return { UserId: account.DebtorId };
-    });
-    let debtorIds;
-    if (userdata.TypeId == 1) {
-        debtorIds = debtorIdsArray;
-    } else {
-        debtorIds = currentUser.UserId;
-    }
 
     const fetchDeliveryReport = () => {
         axios
             .get(`${gtrsUrl}Delivery`, {
                 headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    UserId: user.UserId,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {
                 const x = JSON.stringify(res.data);
-                const parsedDataPromise = new Promise((resolve, reject) => {
+                const parsedDataPromise = new Promise((resolve) => {
                     const parsedData = JSON.parse(x);
                     resolve(parsedData);
                 });
@@ -94,12 +105,12 @@ export default function Gtrs({
                                 }
                             })
                             .catch((error) => {
-                                console.log(error);
+                                console.error(error);
                             });
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                 }
             });
     };
@@ -109,8 +120,8 @@ export default function Gtrs({
         try {
             const res = await axios.get(`${gtrsUrl}Delivery/Comments`, {
                 headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    UserId: user.UserId,
+                    Authorization: `Bearer ${Token}`,
                 },
             });
             setDeliveryReportComments(res.data || []);
@@ -128,7 +139,7 @@ export default function Gtrs({
                 });
             } else {
                 // Handle other errors
-                console.log(err);
+                console.error(err);
                 // Check if setCellLoading exists before calling it
                 if (typeof setCellLoading === "function") {
                     setCellLoading(null);
@@ -136,9 +147,9 @@ export default function Gtrs({
             }
         }
     };
+
     useEffect(() => {
-        if (AToken != null && currentUser) {
-            setUserBody(debtorIds);
+        if (Token != null && user) {
             setLoadingGtrs(false);
             fetchDeliveryReport();
             fetchDeliveryReportCommentsData();
@@ -150,7 +161,7 @@ export default function Gtrs({
                 },
                 {
                     url: `${gtamUrl}/Customer/Accounts`,
-                    setData: setCusomterAccounts,
+                    setData: setCustomerAccounts,
                 },
                 { url: `${gtrsUrl}/SafetyReport`, setData: setSafetyData },
                 {
@@ -180,34 +191,37 @@ export default function Gtrs({
                 },
             ];
             urls.forEach(({ url, setData, setApiStatus }) => {
-                fetchApiData(url, setData, currentUser, AToken, setApiStatus);
+                fetchApiData(url, setData, user, Token, setApiStatus);
             });
         }
-    }, [AToken, currentUser]);
+    }, [Token, user]);
 
     useEffect(() => {
-        if (loadingGtrs && currentUser != "") {
-            if (currentUser == {}) {
+        if (loadingGtrs && userPermissions != "") {
+            if (userPermissions == {}) {
                 setCanAccess(false);
-            } else if (currentUser) {
-                if (Object.keys(currentUser)?.length > 0) {
+            } else if (userPermissions) {
+                if (Object.keys(userPermissions)?.length > 0) {
                     setCanAccess(true);
                 } else {
                     setCanAccess(false);
                 }
             }
-        } else if (loadingGtrs && currentUser == "") {
+        } else if (loadingGtrs && userPermissions == "") {
             setCanAccess(false);
         }
-    }, [currentUser, loadingGtrs]);
-
+    }, [userPermissions, loadingGtrs]);
 
     const navigate = useNavigate();
     useEffect(() => {
-        if(user){
-            navigateToFirstAllowedPage({setSidebarElements, user, navigate})
+        if (userPermissions) {
+            navigateToFirstAllowedPage({
+                setSidebarElements,
+                userPermissions: userPermissions,
+                navigate,
+            });
         }
-    },[user])
+    }, [userPermissions]);
 
     if (
         consApi &&
@@ -219,7 +233,7 @@ export default function Gtrs({
     ) {
         setLoadingGtrs(true);
     }
-    if (loadingGtrs && AToken) {
+    if (loadingGtrs && Token) {
         if (canAccess) {
             return (
                 <Routes>
@@ -229,13 +243,8 @@ export default function Gtrs({
                             <div className="h-full">
                                 {/* <mainSidebar/> */}
                                 <MainSidebar
-                                    allowedApplications={allowedApplications}
                                     setMobileMenuOpen={setMobileMenuOpen}
                                     mobileMenuOpen={mobileMenuOpen}
-                                    setToken={setToken}
-                                    user={user}
-                                    currentUser={currentUser}
-                                    setCurrentUser={setcurrentUser}
                                 />
                                 <MainNavbar
                                     setMobileMenuOpen={setMobileMenuOpen}
@@ -245,14 +254,13 @@ export default function Gtrs({
                                     <div className="md:pl-20 pt-16 h-full">
                                         <GtrsMain
                                             transportData={transportData}
-                                            setCusomterAccounts={
-                                                setCusomterAccounts
+                                            setCustomerAccounts={
+                                                setCustomerAccounts
                                             }
                                             kpireasonsData={kpireasonsData}
                                             setkpireasonsData={
                                                 setkpireasonsData
                                             }
-                                            userBody={userBody}
                                             setUser={setUser}
                                             url={gtrsUrl}
                                             gtccrUrl={gtccrUrl}
@@ -262,26 +270,32 @@ export default function Gtrs({
                                             safetyData={safetyData}
                                             debtorsData={debtorsData}
                                             customerAccounts={customerAccounts}
-                                            IDfilter={dataFromChild}
-                                            currentUser={currentUser}
+                                            userPermissions={userPermissions}
                                             user={user}
-                                            userPermission={user}
                                             dashData={PerfData}
                                             setactiveCon={setactiveCon}
                                             consData={consData}
                                             activeCon={activeCon}
-                                            AToken={AToken}
+                                            Token={Token}
                                             PerfData={PerfData}
                                             setPerfData={setPerfData}
                                             setToken={setToken}
-                                            setCurrentUser={setcurrentUser}
+                                            setUserPermissions={
+                                                setUserPermissions
+                                            }
                                             sidebarElements={sidebarElements}
                                             setSidebarElements={
                                                 setSidebarElements
                                             }
-                                            deliveryReportData ={deliveryReportData}
-                                            deliveryReportComments={deliveryReportComments}
-                                            fetchDeliveryReportCommentsData={fetchDeliveryReportCommentsData}
+                                            deliveryReportData={
+                                                deliveryReportData
+                                            }
+                                            deliveryReportComments={
+                                                deliveryReportComments
+                                            }
+                                            fetchDeliveryReportCommentsData={
+                                                fetchDeliveryReportCommentsData
+                                            }
                                         />
                                     </div>
                                 </div>
@@ -291,15 +305,24 @@ export default function Gtrs({
                 </Routes>
             );
         } else {
-            return (
-                <NoAccess
-                    currentUser={currentUser}
-                    setToken={setToken}
-                    setCurrentUser={setcurrentUser}
-                />
-            );
+            return <NoAccess />;
         }
     } else {
         return <AnimatedLoading />;
     }
 }
+
+Gtrs.propTypes = {
+    user: PropTypes.object,
+    setToken: PropTypes.func,
+    setMobileMenuOpen: PropTypes.func,
+    Token: PropTypes.string,
+    setLoadingGtrs: PropTypes.func,
+    loadingGtrs: PropTypes.bool,
+    allowedApplications: PropTypes.array,
+    mobileMenuOpen: PropTypes.bool,
+    setUserPermission: PropTypes.func,
+    setSidebarElements: PropTypes.func,
+    sidebarElements: PropTypes.array,
+    setUser: PropTypes.func,
+};

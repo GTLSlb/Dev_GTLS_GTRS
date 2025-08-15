@@ -1,18 +1,18 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useEffect } from "react";
+import React from "react";
+import propTypes from "prop-types";
 import SafetyRepTable from "./safetyComp/safetyRepTable";
 import SafetyRepChart from "./safetyComp/safetyRepChart";
 import AddSafetyType from "./safetyComp/AddSafety/safetyTypes/AddSafetyType";
 import { canViewSafetyType } from "@/permissions";
-import { getApiRequest } from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer } from "react-toastify";
+import { useApiRequests } from "@/CommonFunctions";
+import { CustomContext } from "@/CommonContext";
 
 export default function SafetyRep({
     accData,
-    currentUser,
-    url,
-    AToken,
     safetyDataState,
     filterValue,
     setFilterValue,
@@ -26,8 +26,8 @@ export default function SafetyRep({
     latestDate,
     DefaultSDate,
     DefaultEDate,
-    userPermission,
-}) {
+}) {const { user, url, Token, userPermissions } = useContext(CustomContext);
+    const { getApiRequest } = useApiRequests();
     const [SDate, setSDate] = useState(DefaultSDate);
     const [EDate, setEDate] = useState(DefaultEDate);
     useEffect(() => {
@@ -69,7 +69,7 @@ export default function SafetyRep({
     }
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     const [filteredData, setFilteredData] = useState(null);
-    const [selectedTypes, setSelectedTypes] = useState([]);
+    const selectedTypes = [];
     const [currentPage, setCurrentPage] = useState(0);
     const [isDataEdited, setDataEdited] = useState(false);
     const [isFetching, setIsFetching] = useState();
@@ -90,7 +90,7 @@ export default function SafetyRep({
     async function fetchData() {
         setIsFetching(true);
         const data = await getApiRequest(`${url}SafetyReport`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {
@@ -104,7 +104,7 @@ export default function SafetyRep({
 
     async function fetchDataTypes() {
         const data = await getApiRequest(`${url}SafetyTypes`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {
@@ -115,7 +115,7 @@ export default function SafetyRep({
 
     async function fetchDataCauses() {
         const data = await getApiRequest(`${url}SafetyCauses`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {
@@ -171,9 +171,10 @@ export default function SafetyRep({
 
     let components = [
         <SafetyRepTable
+            key={currentPage}
             url={url}
             fetchData={fetchData}
-            AToken={AToken}
+            Token={Token}
             customerAccounts={customerAccounts}
             safetyCauses={safetyCauses}
             filterValue={filterValue}
@@ -182,22 +183,22 @@ export default function SafetyRep({
             safetyTypes={safetyTypes}
             safetyData={filteredData}
             currentPageRep={currentPage}
-            currentUser={currentUser}
-            userPermission={userPermission}
+            userPermissions={userPermissions}
             setFilteredData={setFilteredData}
             setDataEdited={setDataEdited}
         />,
         <SafetyRepChart
-            AToken={AToken}
+            key={currentPage}
+            Token={Token}
             filteredData={filteredData}
             safetyCauses={safetyCauses}
             safetyTypes={safetyTypes}
         />,
         <AddSafetyType
             url={url}
-            AToken={AToken}
-            currentUser={currentUser}
-            userPermission={userPermission}
+            key={currentPage}
+            Token={Token}
+            userPermissions={userPermissions}
             safetyTypes={safetyTypes}
             setSafetyTypes={setSafetyTypes}
         />,
@@ -208,10 +209,10 @@ export default function SafetyRep({
     };
     const [canView, setCanView] = useState(true);
     useEffect(() => {
-        if (userPermission) {
-            setCanView(!canViewSafetyType(userPermission));
+        if (userPermissions) {
+            setCanView(!canViewSafetyType(userPermissions));
         }
-    }, [userPermission]);
+    }, [userPermissions]);
     return (
         <div>
             {/* Added toast container since it wasn't showing */}
@@ -338,3 +339,22 @@ export default function SafetyRep({
         </div>
     );
 }
+
+SafetyRep.propTypes = {
+    accData: propTypes.array,
+    url: propTypes.string,
+    Token: propTypes.string,
+    safetyDataState: propTypes.array,
+    filterValue: propTypes.array,
+    setFilterValue: propTypes.func,
+    setsafetyDataState: propTypes.func,
+    setSafetyTypes: propTypes.func,
+    safetyTypes: propTypes.array,
+    customerAccounts: propTypes.array,
+    safetyCauses: propTypes.array,
+    setSafetyCauses: propTypes.func,
+    oldestDate: propTypes.string,
+    latestDate: propTypes.string,
+    DefaultSDate: propTypes.string,
+    DefaultEDate: propTypes.string,
+};

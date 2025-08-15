@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 import DoughnutChart from "../charts/DoughnutChart";
-
+import PropTypes from "prop-types";
 // Import utilities
 import { useState } from "react";
 import { tailwindConfig } from "../utils/Utils";
@@ -17,7 +17,6 @@ function DashboardCard06(props) {
     
     useEffect(() => {
       if (consStatusData !== null) {
-        const { PENDING, FAIL, PASS } = consStatusData;
     
         const tempChartData = {
           labels: Object.keys(consStatusData),
@@ -67,5 +66,10 @@ function DashboardCard06(props) {
         </div>
     );
 }
+
+DashboardCard06.propTypes = {
+    chartTitle: PropTypes.string,
+    consStatusData: PropTypes.object,
+};
 
 export default DashboardCard06;

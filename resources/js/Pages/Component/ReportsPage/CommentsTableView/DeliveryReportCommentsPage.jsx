@@ -2,24 +2,22 @@ import {
     canAddDeliveryReportCommentTableView,
     canEditDeliveryReportCommentTableView,
 } from "@/permissions";
-import React from "react";
-import { useEffect, useState, useRef } from "react";
+import React, { useContext } from "react";
+import PropTypes from "prop-types";
+import { useState, useRef } from "react";
 import TableStructure from "@/Components/TableStructure";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
-import { PencilIcon, PlusIcon } from "@heroicons/react/20/solid";
+import { PencilIcon } from "@heroicons/react/20/solid";
 import GtrsButton from "../../GtrsButton";
-import { canAddNewTransitDays } from "@/permissions";
 import AddCommentToList from "./AddCommentToList";
+import { CustomContext } from "@/CommonContext";
 
 export default function DeliveryReportCommentsPage({
-    url,
-    AToken,
-    currentUser,
-    userPermission,
     data,
     fetchDeliveryReportCommentsData,
 }) {
+    const { user, url, userPermissions ,Token} = useContext(CustomContext);
     const gridRef = useRef(null);
     const [selected, setSelected] = useState([]);
     const [showAdd, setShowAdd] = useState(false);
@@ -108,11 +106,11 @@ export default function DeliveryReportCommentsPage({
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 200,
-            render: ({ value, data }) => {
+            render: ({ data }) => {
                 return (
                     <div className="flex gap-4 items-center justify-center px-2">
                         {canEditDeliveryReportCommentTableView(
-                            userPermission
+                            userPermissions
                         ) ? (
                             <span
                                 className="underline text-blue-400 hover:cursor-pointer"
@@ -131,7 +129,7 @@ export default function DeliveryReportCommentsPage({
     ];
 
     const additionalButtons = canAddDeliveryReportCommentTableView(
-        userPermission
+        userPermissions
     ) ? (
         <GtrsButton
             name={"Add +"}
@@ -142,41 +140,6 @@ export default function DeliveryReportCommentsPage({
         />
     ) : null;
 
-    function handleDownloadExcel() {
-        const jsonData = handleFilterTable(gridRef, data);
-
-        // Dynamically create column mapping from the `columns` array
-        const columnMapping = columns.reduce((acc, column) => {
-            acc[column.name] = column.header;
-            return acc;
-        }, {});
-
-        // Define custom cell handlers
-        const customCellHandlers = {
-            DespatchDateTime: (value) => formatDateToExcel(value),
-            DeliveryRequiredDateTime: (value) => formatDateToExcel(value),
-            DeliveredDateTime: (value) => formatDateToExcel(value),
-            Comments: (value) =>
-                value
-                    ?.map(
-                        (item) => `${formatDate(item.AddedAt)}, ${item.Comment}`
-                    )
-                    .join("\n"),
-        };
-
-        // Call the `exportToExcel` function
-        exportToExcel(
-            jsonData, // Filtered data
-            columnMapping, // Dynamic column mapping from columns
-            "Delivery-Report-Comments.xlsx", // Export file name
-            customCellHandlers, // Custom handlers for formatting cells
-            [
-                "DespatchDateTime",
-                "DeliveryRequiredDateTime",
-                "DeliveredDateTime",
-            ]
-        );
-    }
     return (
         <div className="min-h-full px-8">
             {showAdd && (
@@ -185,8 +148,8 @@ export default function DeliveryReportCommentsPage({
                         selectedComment={selectedComment}
                         setSelectedComment={setSelectedComment}
                         url={url}
-                        AToken={AToken}
-                        currentUser={currentUser}
+                        Token={Token}
+                        userPermissions={userPermissions}
                         fetchData={fetchDeliveryReportCommentsData}
                         setShowAdd={setShowAdd}
                         isOpen={showAdd}
@@ -212,3 +175,8 @@ export default function DeliveryReportCommentsPage({
         </div>
     );
 }
+
+DeliveryReportCommentsPage.propTypes = {
+    data: PropTypes.array,
+    fetchDeliveryReportCommentsData: PropTypes.func,
+};

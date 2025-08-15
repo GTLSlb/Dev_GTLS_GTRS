@@ -1,21 +1,18 @@
-import {
-    Progress,
-    Tab,
-    Tabs,
-} from "@nextui-org/react";
+import { Progress, Tab, Tabs } from "@heroui/react";
+import axios from "axios";
+import React, { useContext } from "react";
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import IncidentDetails from "./IncidentDetails";
 import swal from "sweetalert";
 import Notes from "../Notes";
-import { handleSessionExpiration } from '@/CommonFunctions';
+import { handleSessionExpiration } from "@/CommonFunctions";
 import { useLocation } from "react-router-dom";
+import { canViewIncidentDetails } from "@/permissions";
+import { CustomContext } from "@/CommonContext";
 
-export default function Incident({
-    gtccrUrl,
-    currentUser,
-    AToken,
-    userPermission,
-}) {
+export default function Incident({ gtccrUrl }) {
+    const { Token, user, userPermissions } = useContext(CustomContext);
     const location = useLocation();
     const [selected, setSelected] = useState("details");
     const [filters, setFilters] = useState();
@@ -31,8 +28,8 @@ export default function Incident({
         axios
             .get(`${gtccrUrl}IncidentAssets`, {
                 headers: {
-                    UserId: currentUser?.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    UserId: user?.UserId,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {
@@ -64,7 +61,7 @@ export default function Incident({
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                 }
             });
     }
@@ -73,9 +70,9 @@ export default function Incident({
         axios
             .get(`${gtccrUrl}IncidentCauses`, {
                 headers: {
-                    UserId: currentUser?.UserId,
+                    UserId: user?.UserId,
                     // UserId: 1,
-                    Authorization: `Bearer ${AToken}`,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {
@@ -107,7 +104,7 @@ export default function Incident({
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                 }
             });
     }
@@ -116,8 +113,8 @@ export default function Incident({
             .get(`${gtccrUrl}IncidentById`, {
                 headers: {
                     // UserId: 1,
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    UserId: user.UserId,
+                    Authorization: `Bearer ${Token}`,
                     Incident_Id: location?.state?.incidentId,
                 },
             })
@@ -125,7 +122,7 @@ export default function Incident({
                 setIncident(res.data[0]);
             })
             .catch((err) => {
-                console.log("Encountered an Error", err);
+                console.error("Encountered an Error", err);
             });
     }
 
@@ -135,11 +132,9 @@ export default function Incident({
 
     return (
         <div className="relative p-5">
-
-
             {incident && filters && mainCauses ? (
                 <div>
-                    {false ? (
+                    {canViewIncidentDetails(userPermissions) ? (
                         <Tabs
                             aria-label="Options"
                             selectedKey={selected}
@@ -158,24 +153,23 @@ export default function Incident({
                                     mainCauses={mainCauses}
                                     filters={filters}
                                     incident={incident}
-                                    userPermission={userPermission}
+                                    userPermissions={userPermissions}
                                 />
                             </Tab>
                             <Tab key="notes" title="Notes">
                                 <Notes
                                     incident={incident}
-                                    AToken={AToken}
+                                    Token={Token}
                                     getIncident={getIncident}
                                     filters={filters}
-                                    currentUser={currentUser}
-                                    userPermission={userPermission}
+                                    userPermissions={userPermissions}
                                 />
                             </Tab>
                         </Tabs>
                     ) : (
                         <div className="">
                             <IncidentDetails
-                                currentUser={currentUser}
+                                userPermissions={userPermissions}
                                 mainCauses={mainCauses}
                                 filters={filters}
                                 incident={incident}
@@ -190,7 +184,7 @@ export default function Incident({
                         isIndeterminate
                         classNames={{
                             indicator: "bg-goldt",
-                          }}
+                        }}
                         aria-label="Loading..."
                         className="mt-10 w-10/12 "
                     />
@@ -199,3 +193,7 @@ export default function Incident({
         </div>
     );
 }
+
+Incident.propTypes = {
+    gtccrUrl: PropTypes.string,
+};

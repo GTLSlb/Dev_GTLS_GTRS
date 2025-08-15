@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 export const PlusIcon = ({size = 24, width, height, ...props}) => (
   <svg
     aria-hidden="true"
@@ -22,3 +23,8 @@ export const PlusIcon = ({size = 24, width, height, ...props}) => (
     </g>
   </svg>
 );
+PlusIcon.propTypes = {
+  size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};

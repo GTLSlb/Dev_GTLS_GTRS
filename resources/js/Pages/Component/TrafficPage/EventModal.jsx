@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import {
     Modal,
     ModalContent,
@@ -6,14 +7,11 @@ import {
     ModalBody,
     ModalFooter,
     Button,
-    Divider,
-    useDisclosure,
     Spinner,
     Accordion,
     AccordionItem,
-    Avatar,
     Image,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import Roadworks from "@/assets/icons/RoadWork.png";
 import Alpine from "@/assets/icons/Alpine.png";
 import Flooding from "@/assets/icons/Flooding.png";
@@ -57,7 +55,7 @@ const iconMappings = {
 function EventModal({
     onOpenChange,
     isOpen,
-    eventDetails,
+    eventDetails = [],
     loading,
 }) {
      const getIcon = (eventType) => {
@@ -127,5 +125,12 @@ function EventModal({
         </Modal>
     );
 }
+
+EventModal.propTypes = {
+    onOpenChange: PropTypes.func,
+    isOpen: PropTypes.bool,
+    eventDetails: PropTypes.array,
+    loading: PropTypes.bool,
+};
 
 export default EventModal;

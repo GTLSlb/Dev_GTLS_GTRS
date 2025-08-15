@@ -1,22 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import PropTypes from "prop-types";
 import FailedCons from "./FailedCons";
 import swal from "sweetalert";
 import axios from "axios";
 import { handleSessionExpiration } from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import { CustomContext } from "@/CommonContext";
 
 export default function FailedConsMain({
-    url,
     PerfData,
     filterValue,
     setFilterValue,
-    currentUser,
-    userPermission,
     accData,
-    AToken,
     failedReasons,
     setFailedReasons,
 }) {
+    const { url, Token, user, userPermissions } = useContext(CustomContext);
     const [isFetching, setIsfetching] = useState();
 
     useEffect(() => {
@@ -30,13 +29,13 @@ export default function FailedConsMain({
             axios
                 .get(`${url}FailureReasons`, {
                     headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
+                        UserId: user.UserId,
+                        Authorization: `Bearer ${Token}`,
                     },
                 })
                 .then((res) => {
                     const x = JSON.stringify(res.data);
-                    const parsedDataPromise = new Promise((resolve, reject) => {
+                    const parsedDataPromise = new Promise((resolve) => {
                         const parsedData = JSON.parse(x);
                         resolve(parsedData);
                     });
@@ -59,7 +58,7 @@ export default function FailedConsMain({
                         });
                     } else {
                         // Handle other errors
-                        console.log(err);
+                        console.error(err);
                     }
                 });
         } catch (error) {
@@ -76,17 +75,24 @@ export default function FailedConsMain({
                     <FailedCons
                         url={url}
                         failedReasons={failedReasons}
-                        currentUser={currentUser}
-                        userPermission={userPermission}
+                        userPermissions={userPermissions}
                         accData={accData}
                         PerfData={PerfData}
                         filterValue={filterValue}
                         setFilterValue={setFilterValue}
-                        AToken={AToken}
+                        Token={Token}
                     />
                 </div>
             )}
         </div>
     );
-
 }
+
+FailedConsMain.propTypes = {
+    PerfData: PropTypes.array,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    accData: PropTypes.array,
+    failedReasons: PropTypes.array,
+    setFailedReasons: PropTypes.func,
+};

@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 function PalletDetails({
     palletDetails,
@@ -51,5 +52,9 @@ function PalletDetails({
         </div>
     );
 }
+
+PalletDetails.propTypes = {
+    palletDetails: PropTypes.object,
+};
 
 export default PalletDetails;

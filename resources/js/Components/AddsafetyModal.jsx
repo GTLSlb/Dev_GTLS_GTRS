@@ -1,6 +1,6 @@
 import ReactModal from "react-modal";
-import { useState } from "react";
-import axios from "axios";
+import React, { useContext, useState } from "react";
+import PropTypes from "prop-types";
 import { useEffect } from "react";
 import "../../css/scroll.css";
 import swal from "sweetalert";
@@ -8,16 +8,15 @@ import { handleSessionExpiration } from "@/CommonFunctions";
 import Select from "react-select";
 import {ToastContainer} from 'react-toastify';
 import { AlertToast } from "@/permissions";
+import { CustomContext } from "@/CommonContext";
 
 export default function SafetyModal({
     isOpen,
-    url,
     handleClose,
     modalRepId,
     modalSafetyType,
     modalMainCause,
     modalState,
-    AToken,
     customerAccounts,
     modalConsNo,
     modalDebtorId,
@@ -26,11 +25,11 @@ export default function SafetyModal({
     modalRefer,
     modalOccuredAt,
     updateLocalData,
-    currentUser,
     safetyTypes,
     setIsSuccessfull,
     fetchData
 }) {
+     const { user, Token } = useContext(CustomContext);
     const date = new Date(modalOccuredAt);
     const formattedDate = date?.toLocaleDateString("en-CA");
     let id = 0;
@@ -75,8 +74,8 @@ export default function SafetyModal({
         modalResol,
         modalRefer,
         formattedDate,
-        AToken,
-        currentUser.name,
+        Token,
+        user.name,
     ]);
     const handlePopUpClose = () => {
         setError(null);
@@ -98,7 +97,7 @@ export default function SafetyModal({
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
     const handleChange = (e) => {
-        if (e.hasOwnProperty("target")) {
+       if (Object.prototype.hasOwnProperty.call(e, "target")) {
             setFormValues({ ...formValues, [e.target.name]: e.target.value });
         } else {
             setFormValues({ ...formValues, DebtorId: e.id });
@@ -109,17 +108,6 @@ export default function SafetyModal({
         event.preventDefault(); // Prevent the default form submission behavior
         try {
             SetIsLoading(true);
-            const response = await axios.post(
-                `${url}Add/SafetyReport`,
-                formValues,
-                {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
-                    },
-                }
-            );
-
             fetchData();
             updateLocalData(id, formValues);
             setSuccess(true);
@@ -146,9 +134,9 @@ export default function SafetyModal({
                     await handleSessionExpiration();
                 });
             } else {
-                console.log(err);
+                console.error(error);
             }
-            console.log(error);
+            console.error(error);
             setError("Error occurred while saving the data. Please try again."); // Set the error message
         }
     };
@@ -159,7 +147,7 @@ export default function SafetyModal({
             height: "auto",
             // Add more styles here as needed
         }),
-        option: (provided, state) => ({
+        option: (provided) => ({
             ...provided,
             color: "black",
             // Add more styles here as needed
@@ -445,3 +433,24 @@ export default function SafetyModal({
         </ReactModal>
     );
 }
+SafetyModal.propTypes = {
+    isOpen: PropTypes.bool,
+    handleClose: PropTypes.func,
+    modalRepId: PropTypes.oneOfType([PropTypes.number, PropTypes.object]),
+    modalSafetyType: PropTypes.string,
+    modalMainCause: PropTypes.string,
+    modalState: PropTypes.string,
+    Token: PropTypes.string,
+    customerAccounts: PropTypes.array,
+    modalConsNo: PropTypes.string,
+    modalDebtorId: PropTypes.string,
+    modalExpl: PropTypes.string,
+    modalResol: PropTypes.string,
+    modalRefer: PropTypes.string,
+    modalOccuredAt: PropTypes.string,
+    updateLocalData: PropTypes.func,
+    user: PropTypes.object,
+    safetyTypes: PropTypes.array,
+    setIsSuccessfull: PropTypes.func,
+    fetchData: PropTypes.func
+};

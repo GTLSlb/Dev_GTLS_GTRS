@@ -1,46 +1,13 @@
 import ReactModal from "react-modal";
-import TextInput from "../../../Components/TextInput";
-import InputError from "../../../Components/InputError";
-import { useState } from "react";
-import { useEffect } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import SupportForm from "../SupportComp/SupportForm";
-import "../../../../css/scroll.css"
+import "../../../../css/scroll.css";
 
-const placeholder = "test";
-
-export default function SupportModal({
-    isOpen,
-    handleClose,
-    url,
-    reason,
-    currentUser,
-    setReason,
-    updateLocalData,
-    failedReasons,
-}) {
-    const [Name, setName] = useState(null);
-    const [Description, setdescription] = useState(null);
-    const [isSaveEnabled, setIsSaveEnabled] = useState(true);
-    const [Status, setStatus] = useState(true);
-    const [reasonStatus, setReasonStatus] = useState(true);
-
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
-    const [inputValue, setInputValue] = useState("");
-
-    
-    
-
+export default function SupportModal({ isOpen, handleClose }) {
     const handlePopUpClose = () => {
-        setError(null); // Clear the error message
-        setName("");
-        setdescription("");
         handleClose(); // Clear the input value
     };
-   
-
-
-    
 
     return (
         <ReactModal
@@ -50,7 +17,7 @@ export default function SupportModal({
             overlayClassName="fixed inset-0 bg-black bg-opacity-60 z-50"
         >
             <div className="bg-white w-96 rounded-lg shadow-lg p-6  h-[30rem]">
-            <div className="flex justify-end">
+                <div className="flex justify-end">
                     <button
                         className="text-gray-500 hover:text-gray-700"
                         onClick={handlePopUpClose}
@@ -70,11 +37,10 @@ export default function SupportModal({
                             />
                         </svg>
                     </button>
-                    
                 </div>
                 <h2 className="text-base font-semibold leading-7 text-gray-900">
-                                Support application form
-                            </h2>
+                    Support application form
+                </h2>
                 <div className="h-[24rem] overflow-y-scroll containerscroll">
                     <SupportForm />
                 </div>
@@ -82,3 +48,8 @@ export default function SupportModal({
         </ReactModal>
     );
 }
+
+SupportModal.propTypes = {
+    isOpen: PropTypes.bool,
+    handleClose: PropTypes.func,
+};

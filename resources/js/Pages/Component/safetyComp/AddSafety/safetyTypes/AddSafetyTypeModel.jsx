@@ -1,55 +1,35 @@
 import ReactModal from "react-modal";
 import InputError from "@/Components/InputError";
+import React from "react";
+import PropTypes from "prop-types";
 import { useState } from "react";
-import axios from "axios";
 import { useEffect } from "react";
 import swal from 'sweetalert';
 import { handleSessionExpiration } from '@/CommonFunctions';
 
-const placeholder = "test";
 
 export default function AddSafetyTypeModal({
     isOpen,
-    url,
     handleClose,
     type,
-    AToken,
-    setType,
     updateLocalData,
     safetyTypes,
-    currentUser,
 }) {
-    const [Name, setName] = useState(null);
     const [isSaveEnabled, setIsSaveEnabled] = useState(true);
-    const [Status, setStatus] = useState(true);
     const [typeStatus, setTypeStatus] = useState(true);
     const [isLoading,SetIsLoading] = useState(false)
     const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
-    const [inputValue, setInputValue] = useState("");
 
     useEffect(() => {
         if (type) {
-            setStatus(type?.SafetyStatus);
             setTypeStatus(type?.SafetyStatus);
-            setName(type?.SafetyTypeName);
         } else {
             setTypeStatus(true);
-            setStatus(true);
-            setName("");
         }
     }, [type]);
-    const data = [
-        {
-            TypeId: type ? type.SafetyTypeId : null,
-            TypeName: Name,
-            TypeStatus: Status,
-        },
-    ];
 
     const handlePopUpClose = () => {
         setError(null); // Clear the error message
-        setName("");
         handleClose(); // Clear the input value
     };
     const handleSubmit = async (event) => {
@@ -59,24 +39,12 @@ export default function AddSafetyTypeModal({
         try {
             SetIsLoading(true)
             // Make the API request using Axios or any other library
-            const response = await axios.post(
-                `${url}Add/SafetyType`,
-                data,
-                {
-                    headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
-                    },
-                }
-            );
+          
             // Handle the response as needed
             // setInputValue("");
-            setSuccess(true);
             setTimeout(() => {
                 handleClose();
-                setName("");
                 // setdescription("");
-                setSuccess(false);
                 SetIsLoading(false)
                 updateLocalData();
             }, 1000);
@@ -96,7 +64,7 @@ export default function AddSafetyTypeModal({
                     await handleSessionExpiration();
                 });
                   // Handle other errors
-                  console.log(err);
+                  console.error(error);
                 }
         }
     };
@@ -113,7 +81,6 @@ export default function AddSafetyTypeModal({
             setError("Name already exists. Please enter a unique name.");
         } else {
             setIsSaveEnabled(true);
-            setName(newName);
             setError(null); // Clear the error message if the name is valid
         }
     };
@@ -196,9 +163,8 @@ export default function AddSafetyTypeModal({
                                                 type="radio"
                                                 value="active"
                                                 checked={typeStatus === true}
-                                                onChange={(event) => {
+                                                onChange={() => {
                                                     setTypeStatus(true);
-                                                    setStatus(true);
                                                 }}
                                                 className="h-4 w-4 border-gray-300 text-dark focus:ring-goldd"
                                             />
@@ -216,9 +182,8 @@ export default function AddSafetyTypeModal({
                                                 type="radio"
                                                 value="inactive"
                                                 checked={typeStatus === false}
-                                                onChange={(event) => {
+                                                onChange={() => {
                                                     setTypeStatus(false);
-                                                    setStatus(false);
                                                 }}
                                                 className="h-4 w-4 border-gray-300 text-dark focus:ring-goldd"
                                             />
@@ -255,3 +220,10 @@ export default function AddSafetyTypeModal({
         </ReactModal>
     );
 }
+AddSafetyTypeModal.propTypes = {
+    isOpen: PropTypes.bool,
+    handleClose: PropTypes.func,
+    type: PropTypes.object,
+    updateLocalData: PropTypes.func,
+    safetyTypes: PropTypes.array,
+};

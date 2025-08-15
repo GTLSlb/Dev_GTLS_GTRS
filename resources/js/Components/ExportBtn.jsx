@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 function ExportBtn({ handleDownloadExcel }) {
     return (
@@ -10,5 +11,8 @@ function ExportBtn({ handleDownloadExcel }) {
         </button>
     );
 }
+ExportBtn.propTypes = {
+    handleDownloadExcel: PropTypes.func,
+};
 
 export default ExportBtn;

@@ -1,32 +1,23 @@
-import { useState } from "react";
-import { Fragment } from "react";
-import { Listbox, Transition } from "@headlessui/react";
-import {
-    CheckIcon,
-    ChevronDownIcon,
-} from "@heroicons/react/20/solid";
+import { useContext, useState } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import { useEffect } from "react";
 import swal from "sweetalert";
 import axios from "axios";
 import { handleSessionExpiration } from '@/CommonFunctions';
 import GtrsButton from "../../GtrsButton";
 import { AlertToast } from "@/permissions";
+import { CustomContext } from "@/CommonContext";
 
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
 
 export default function AddKPIReason({
     selectedReason,
-    url,
-    currentUser,
-    userPermission,
-    AToken,
     setSelectedReason,
     setShowAdd,
     fetchData,
     closeModal
 }) {
+    const { Token, user, url } = useContext(CustomContext);
     const [isChecked, setIsChecked] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [object, setObject] = useState();
@@ -58,11 +49,11 @@ export default function AddKPIReason({
         axios
             .post(`${url}Add/KpiReason`, inputValues, {
                 headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    UserId: user.UserId,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
-            .then((res) => {
+            .then(() => {
                 setSelectedReason(null);
                 fetchData();
                 setShowAdd(false);
@@ -83,7 +74,7 @@ export default function AddKPIReason({
                     });
                   } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                     setIsLoading(false);
                     AlertToast("Something went wrong", 2);
                   }
@@ -140,3 +131,13 @@ export default function AddKPIReason({
         </div>
     );
 }
+
+AddKPIReason.propTypes = {
+    selectedReason: PropTypes.object,
+    url: PropTypes.string,
+    Token: PropTypes.string,
+    setSelectedReason: PropTypes.func,
+    setShowAdd: PropTypes.func,
+    fetchData: PropTypes.func,
+    closeModal: PropTypes.func,
+};

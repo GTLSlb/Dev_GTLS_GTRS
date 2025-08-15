@@ -86,10 +86,10 @@ class CustomAuth extends Middleware
                 }
             }
             else{
-                if ($path == 'loginComp' || $path == 'login' || $path == 'loginapi' || $path == 'forgot-password' || $path == 'auth/azure' || $path == 'auth/azure/callback' || $path == 'microsoftToken' || $path == 'logoutWithoutRequest' || $path == 'gtrs/logoutWithoutReq'|| $path == 'logoutWithoutReq') {
+                if ($path == 'loginComp' || $path == 'login' || $path == 'failed-login' || $path == 'loginapi' || $path == 'forgot-password' || $path == 'auth/azure' || $path == 'auth/azure/callback' || $path == 'microsoftToken' || $path == 'logoutWithoutRequest' || $path == 'gtrs/logoutWithoutReq'|| $path == 'logoutWithoutReq') {
                     return $next($request);
                 }
-                if (!$request->session()->has('user')) {
+                if ($path !== 'login' && $path != 'failed-login' && $path !== 'loginapi' && $path !== 'forgot-password' && !$request->session()->has('user')) {
                     return redirect()->route('login');
                 }
             }

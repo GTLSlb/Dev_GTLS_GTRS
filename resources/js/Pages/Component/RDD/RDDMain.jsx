@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import swal from "sweetalert";
 import axios from "axios";
-import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
+import { handleSessionExpiration, useApiRequests } from '@/CommonFunctions';
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import RDDTable from "./RDDTable";
+import PropTypes from "prop-types";
+import { CustomContext } from "@/CommonContext";
+
+
 
 export default function RDDMain({
     setActiveIndexGTRS,
@@ -19,16 +23,14 @@ export default function RDDMain({
     EDate,
     setEDate,
     SDate,
-    url,
-    AToken,
-    userPermission,
     setSDate,
-    currentUser,
     rddReasons,
     setrddReasons,
     oldestDate,
     latestDate,
 }) {
+    const { Token, user, userPermissions, url } = useContext(CustomContext);
+    const { getApiRequest } = useApiRequests();
     const [isFetching, setIsFetching] = useState();
     const [isFetchingReasons, setIsFetchingReasons] = useState();
     const parseDateString = (dateString) => {
@@ -61,15 +63,6 @@ export default function RDDMain({
         if (!(date instanceof Date) || isNaN(date.getTime())) {
             return ""; // or return any other default value as needed
         }
-        const options = {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            timeZone: "UTC",
-        };
 
         return date.toISOString().slice(0, 19); // UTC time
     };
@@ -99,7 +92,7 @@ export default function RDDMain({
 
     async function fetchData() {
         const data = await getApiRequest(`${url}RDD`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {
@@ -120,13 +113,13 @@ export default function RDDMain({
             axios
                 .get(`${url}RddChangeReason`, {
                     headers: {
-                        UserId: currentUser.UserId,
-                        Authorization: `Bearer ${AToken}`,
+                        UserId: user.UserId,
+                        Authorization: `Bearer ${Token}`,
                     },
                 })
                 .then((res) => {
                     const x = JSON.stringify(res.data);
-                    const parsedDataPromise = new Promise((resolve, reject) => {
+                    const parsedDataPromise = new Promise((resolve) => {
                         const parsedData = JSON.parse(x);
                         resolve(parsedData);
                     });
@@ -149,7 +142,7 @@ export default function RDDMain({
                         });
                     } else {
                         // Handle other errors
-                        console.log(err);
+                        console.error(err);
                     }
                 });
         } catch (error) {
@@ -172,8 +165,7 @@ export default function RDDMain({
                             setFilterValue={setFilterValue}
                             setrddData={setrddData}
                             debtorsData={debtorsData}
-                            currentUser={currentUser}
-                            userPermission={userPermission}
+                            userPermissions={userPermissions}
                             setActiveIndexGTRS={setActiveIndexGTRS}
                             setactiveCon={setactiveCon}
                             setLastIndex={setLastIndex}
@@ -181,7 +173,7 @@ export default function RDDMain({
                             setIncidentId={setIncidentId}
                             setEDate={setEDate}
                             SDate={SDate}
-                            AToken={AToken}
+                            Token={Token}
                             setSDate={setSDate}
                             rddReasons={rddReasons}
                             oldestDate={oldestDate}
@@ -193,3 +185,24 @@ export default function RDDMain({
         </div>
     );
 }
+
+RDDMain.propTypes = {
+    setActiveIndexGTRS: PropTypes.func,
+    setactiveCon: PropTypes.func,
+    debtorsData: PropTypes.array,
+    rddData: PropTypes.array,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    setrddData: PropTypes.func,
+    setIncidentId: PropTypes.func,
+    setLastIndex: PropTypes.func,
+    accData: PropTypes.array,
+    EDate: PropTypes.string,
+    setEDate: PropTypes.func,
+    SDate: PropTypes.string,
+    setSDate: PropTypes.func,
+    rddReasons: PropTypes.array,
+    setrddReasons: PropTypes.func,
+    oldestDate: PropTypes.string,
+    latestDate: PropTypes.string,
+};  

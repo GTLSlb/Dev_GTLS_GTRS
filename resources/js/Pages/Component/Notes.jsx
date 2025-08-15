@@ -11,7 +11,9 @@ import {
     ModalBody,
     ModalFooter,
     useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
+import React from "react";
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import {
     ChevronLeftIcon,
@@ -23,16 +25,9 @@ import moment from "moment/moment";
 export default function Notes({
     incident,
 }) {
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    const [addNotes, setAddNotes] = useState(false);
+    const { isOpen, onOpenChange } = useDisclosure();
     const [note, setNote] = useState();
-    const [deleteType, setDeleteType] = useState();
-
-    useEffect(() => {
-        if (!incident.IncidentNotes) {
-            setAddNotes(true);
-        }
-    }, []);
+    const deleteType=null
 
     useEffect(() => {
         if (note) {
@@ -40,7 +35,6 @@ export default function Notes({
         }
     }, [incident]);
 
-    let filenamesArray = [];
     function convertUtcToUserTimezone(utcDateString) {
         // Create a Date object from the UTC date string
         const utcDate = new Date(utcDateString);
@@ -114,7 +108,7 @@ export default function Notes({
                                 <div className="whitespace-pre-wrap">{item.NoteDescription}</div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-3 gap-y-2">
                                     {item.NoteAttachments?.map((item) => (
-                                        <div className="flex items-center gap-x-2 rounded-md shadow justify-between border border-gray-300 p-2">
+                                        <div key={item.AttachmentId} className="flex items-center gap-x-2 rounded-md shadow justify-between border border-gray-300 p-2">
                                             <Link
                                                 color=""
                                                 className="text-cyan-800"
@@ -168,7 +162,6 @@ export default function Notes({
                                     color="danger"
                                     onPress={() => {
                                         onClose();
-                                        deleteElement(deleteType);
                                     }}
                                 >
                                     Delete
@@ -181,3 +174,7 @@ export default function Notes({
         </div>
     );
 }
+
+Notes.propTypes = {
+    incident: PropTypes.object,
+};

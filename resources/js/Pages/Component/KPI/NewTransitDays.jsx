@@ -1,27 +1,29 @@
 import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
+import React, { useContext } from "react";
+import PropTypes from "prop-types";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import { useState, useEffect, useRef } from "react";
 import TableStructure from "@/Components/TableStructure";
 import { PencilIcon } from "@heroicons/react/20/solid";
-import { AlertToast, canAddNewTransitDays, canEditTransitDays } from "@/permissions";
-import { getApiRequest } from "@/CommonFunctions";
+import { canAddNewTransitDays, canEditTransitDays } from "@/permissions";
+import { useApiRequests } from "@/CommonFunctions";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import GtrsButton from "../GtrsButton";
+import { CustomContext } from "@/CommonContext";
 
 function NewTransitDays({
     setNewTransitDays,
     newTransitDays,
-    currentUser,
-    userPermission,
     filterValue,
     setFilterValue,
-    url,
 }) {
+    const { user, url, userPermissions } = useContext(CustomContext);
+    const { getApiRequest } = useApiRequests();
     const [isFetching, setIsFetching] = useState(true);
     const [selected, setSelected] = useState([]);
     const [filteredData, setFilteredData] = useState(newTransitDays);
@@ -30,11 +32,13 @@ function NewTransitDays({
 
     async function fetchData() {
         const data = await getApiRequest(`${url}TransitNew`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {
-            const sortedTransit = data.sort((a, b) => b.AddedAt.localeCompare(a.AddedAt));
+            const sortedTransit = data.sort((a, b) =>
+                b.AddedAt.localeCompare(a.AddedAt)
+            );
             setNewTransitDays(sortedTransit);
             setIsFetching(false);
         }
@@ -119,7 +123,7 @@ function NewTransitDays({
     const [columns, setColumns] = useState([]);
     useEffect(() => {
         if (senderStateOptions && receiverStateOptions) {
-            if (canEditTransitDays(userPermission)) {
+            if (canEditTransitDays(userPermissions)) {
                 setColumns([
                     {
                         name: "CustomerName",
@@ -150,7 +154,7 @@ function NewTransitDays({
                             wrapMultiple: false,
                             dataSource: types,
                         },
-                        render: ({ value, data }) => {
+                        render: ({ data }) => {
                             return <div>{data.CustomerType}</div>;
                         },
                     },
@@ -236,7 +240,7 @@ function NewTransitDays({
                         textAlign: "center",
                         minWidth: 170,
                         defaultFlex: 1,
-                        render: ({ value, data }) => {
+                        render: ({ data }) => {
                             return (
                                 <div>
                                     <button
@@ -288,7 +292,7 @@ function NewTransitDays({
                             wrapMultiple: false,
                             dataSource: types,
                         },
-                        render: ({ value, data }) => {
+                        render: ({ data }) => {
                             return <div>{data.CustomerType}</div>;
                         },
                     },
@@ -411,7 +415,7 @@ function NewTransitDays({
         );
     };
 
-    const additionalButtons = canAddNewTransitDays(userPermission) ? (
+    const additionalButtons = canAddNewTransitDays(userPermissions) ? (
         <GtrsButton
             name={"Add +"}
             onClick={AddTransit}
@@ -446,4 +450,13 @@ function NewTransitDays({
         </div>
     );
 }
+
+NewTransitDays.propTypes = {
+    setNewTransitDays: PropTypes.func,
+    newTransitDays: PropTypes.array,
+    filterValue: PropTypes.array,
+    setFilterValue: PropTypes.func,
+    url: PropTypes.string,
+};
+
 export default NewTransitDays;

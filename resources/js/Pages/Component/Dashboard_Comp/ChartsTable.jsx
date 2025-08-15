@@ -5,7 +5,9 @@ import { exportToExcel } from "@/Components/utils/excelUtils";
 import { getFiltersChartsTable } from "@/Components/utils/filters";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
-
+import moment from "moment";
+import React, { useContext } from "react";
+import PropTypes from "prop-types";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
@@ -15,6 +17,7 @@ import { useRef } from "react";
 import { useCallback } from "react";
 import { useState } from "react";
 import TableStats from "./TableStats";
+import { CustomContext } from "@/CommonContext";
 
 function ChartsTable({
     chartsData,
@@ -23,8 +26,8 @@ function ChartsTable({
     setChartFilter,
     chartName,
     setChartName,
-    userPermission
 }) {
+    const { userPermissions } = useContext(CustomContext);
     const gridRef = useRef(null);
     const [selected] = useState({});
 
@@ -73,7 +76,7 @@ function ChartsTable({
             filterEditor: StringFilter,
             render: ({ value, data }) => {
                 return renderConsDetailsLink(
-                    userPermission,
+                    userPermissions,
                     value,
                     data.consid
                 );
@@ -158,7 +161,7 @@ function ChartsTable({
             dateFormat: "DD-MM-YYYY",
             filterable: true,
             filterEditor: DateFilter,
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -193,7 +196,7 @@ function ChartsTable({
                 wrapMultiple: false,
                 dataSource: ConsStatusOptions,
             },
-            render: ({ value, data }) => {
+            render: ({ value }) => {
                 return (
                     <div>
                         {value == "PASS" ? (
@@ -225,7 +228,7 @@ function ChartsTable({
                 wrapMultiple: false,
                 dataSource: podAvlOptions,
             },
-            render: ({ value, data }) => {
+            render: ({ data }) => {
                 return (
                     <div>
                         {data?.POD ? (
@@ -372,5 +375,12 @@ function ChartsTable({
 
     return renderTable();
 }
+
+ChartsTable.propTypes = {
+    chartsData: PropTypes.array,
+    setShowTable: PropTypes.func,
+    setChartFilter: PropTypes.func,
+    setChartName: PropTypes.func,
+};
 
 export default ChartsTable;

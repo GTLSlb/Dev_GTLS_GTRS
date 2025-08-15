@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import ReactDOM from "react-dom";
+import PropTypes from "prop-types";
 import { Pie } from "@ant-design/plots";
 
 const BasicPieCharts = (props) => {
     const {
         chartTitle,
         chartData,
-        labelContent,
         setShowTable,
         setChartFilter,
         setChartName,
@@ -142,6 +141,19 @@ const BasicPieCharts = (props) => {
             <Pie {...config} className="p-4" />
         </div>
     );
+};
+
+BasicPieCharts.propTypes = {
+    chartTitle: PropTypes.string,
+    chartData: PropTypes.arrayOf(
+        PropTypes.shape({
+            label: PropTypes.string,
+            value: PropTypes.number,
+        })
+    ),
+    setShowTable: PropTypes.func,
+    setChartFilter: PropTypes.func,
+    setChartName: PropTypes.func,
 };
 
 export default BasicPieCharts;

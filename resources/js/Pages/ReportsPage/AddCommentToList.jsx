@@ -1,29 +1,20 @@
-import { useState } from "react";
-import { Fragment } from "react";
-import { Listbox, Transition } from "@headlessui/react";
-import {
-    CheckIcon,
-    ChevronDownIcon,
-} from "@heroicons/react/20/solid";
+import { useContext, useState } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import { useEffect } from "react";
 import swal from "sweetalert";
 import axios from "axios";
-import { handleSessionExpiration } from '@/CommonFunctions';
+import { handleSessionExpiration } from "@/CommonFunctions";
 import GtrsButton from "@/Pages/Component/GtrsButton";
-
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
+import { CustomContext } from "@/CommonContext";
 
 export default function AddCommentToList({
     selectedComment,
-    url,
-    currentUser,
-    AToken,
     setSelectedComment,
     setShowAdd,
     fetchData,
 }) {
+    const { Token, user, url } = useContext(CustomContext);
     const [isChecked, setIsChecked] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [object, setObject] = useState();
@@ -55,11 +46,11 @@ export default function AddCommentToList({
         axios
             .post(`${url}Add/Comment`, inputValues, {
                 headers: {
-                    UserId: currentUser.UserId,
-                    Authorization: `Bearer ${AToken}`,
+                    UserId: user.UserId,
+                    Authorization: `Bearer ${Token}`,
                 },
             })
-            .then((res) => {
+            .then(() => {
                 setSelectedComment(null);
                 fetchData();
                 setShowAdd(false);
@@ -72,26 +63,28 @@ export default function AddCommentToList({
                 if (err.response && err.response.status === 401) {
                     // Handle 401 error using SweetAlert
                     swal({
-                      title: 'Session Expired!',
-                      text: "Please login again",
-                      type: 'success',
-                      icon: "info",
-                      confirmButtonText: 'OK'
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
                     }).then(async function () {
                         await handleSessionExpiration();
                     });
-                  } else {
+                } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                     setIsLoading(false);
-                  }
+                }
             });
     }
 
     return (
         <div className="shadow bg-white p-6 rounded-lg ">
             <form onSubmit={AddComment}>
-                <p className="font-bold text-lg">{object ? "Edit " : "Add "} Comment</p>
+                <p className="font-bold text-lg">
+                    {object ? "Edit " : "Add "} Comment
+                </p>
                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-5 gap-y-5 items-center py-4">
                     <div className="col-span-2 flex items-center gap-x-2">
                         <label htmlFor="name" className="block w-32 ">
@@ -130,3 +123,10 @@ export default function AddCommentToList({
         </div>
     );
 }
+
+AddCommentToList.propTypes = {
+    selectedComment: PropTypes.object,
+    setSelectedComment: PropTypes.func,
+    setShowAdd: PropTypes.func,
+    fetchData: PropTypes.func,
+};

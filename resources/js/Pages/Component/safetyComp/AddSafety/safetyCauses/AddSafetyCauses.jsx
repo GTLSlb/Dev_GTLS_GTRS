@@ -1,23 +1,20 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { PencilIcon } from "@heroicons/react/24/outline";
-import axios from "axios";
-import { useEffect } from "react";
-import AddFailedModal from "../../../modals/AddFailedModal";
 import notFound from "../../../../../assets/pictures/NotFound.png";
 import AddSafetyCausesModal from "./AddSafetyCausesModel";
-import swal from "sweetalert";
-import { getApiRequest, handleSessionExpiration } from "@/CommonFunctions";
+import { useApiRequests } from "@/CommonFunctions";
+import PropTypes from "prop-types";
+import React from "react";
+import { CustomContext } from "@/CommonContext";
 
-function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-}
+
+
 export default function AddSafetyCauses({
-    AToken,
     safetyCauses,
     setSafetyCauses,
-    currentUser,
-    url,
 }) {
+    const { user, url, Token, userPermissions } = useContext(CustomContext);
+    const { getApiRequest } = useApiRequests();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [Data, setData] = useState(safetyCauses);
     const [cause, setCause] = useState();
@@ -27,11 +24,10 @@ export default function AddSafetyCauses({
         document.body.style.overflow = isModalCurrentlyOpen ? "hidden" : "auto";
         setIsModalOpen(isModalCurrentlyOpen);
     };
-    const [currentPage, setCurrentPage] = useState(0);
 
     async function fetchData() {
         const data = await getApiRequest(`${url}SafetyCauses`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {
@@ -150,14 +146,14 @@ export default function AddSafetyCauses({
                                         ) : (
                                             <tr>
                                                 <td colSpan="7">
-                                                    <div class=" h-64 flex items-center justify-center mt-10">
-                                                        <div class="text-center flex justify-center flex-col">
+                                                    <div className=" h-64 flex items-center justify-center mt-10">
+                                                        <div className="text-center flex justify-center flex-col">
                                                             <img
                                                                 src={notFound}
                                                                 alt=""
                                                                 className="w-52 h-auto "
                                                             />
-                                                            <h1 class="text-3xl font-bold text-gray-900">
+                                                            <h1 className="text-3xl font-bold text-gray-900">
                                                                 No Data Found
                                                             </h1>
                                                         </div>
@@ -169,14 +165,14 @@ export default function AddSafetyCauses({
                                 </table>
                             </div>
                         ) : (
-                            <div class=" h-64 flex items-center justify-center mt-10">
-                                <div class="text-center flex justify-center flex-col">
+                            <div className=" h-64 flex items-center justify-center mt-10">
+                                <div className="text-center flex justify-center flex-col">
                                     <img
                                         src={notFound}
                                         alt=""
                                         className="w-52 h-auto "
                                     />
-                                    <h1 class="text-3xl font-bold text-gray-900">
+                                    <h1 className="text-3xl font-bold text-gray-900">
                                         No Data Found
                                     </h1>
                                 </div>
@@ -187,8 +183,8 @@ export default function AddSafetyCauses({
             </div>
             <AddSafetyCausesModal
                 url={url}
-                AToken={AToken}
-                currentUser={currentUser}
+                Token={Token}
+                userPermissions={userPermissions}
                 ariaHideApp={false}
                 isOpen={isModalOpen}
                 cause={cause}
@@ -200,3 +196,8 @@ export default function AddSafetyCauses({
         </div>
     );
 }
+
+AddSafetyCauses.propTypes = {
+    safetyCauses: PropTypes.array,
+    setSafetyCauses: PropTypes.func,
+};
