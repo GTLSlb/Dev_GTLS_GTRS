@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -15,6 +15,7 @@ import { Bar } from "react-chartjs-2";
 import { useRef } from "react";
 import PropTypes from "prop-types";
 import InlineTable from "./InlineTable";
+import { CustomContext } from "@/CommonContext";
 ChartJS.register(
     CategoryScale,
     LinearScale,

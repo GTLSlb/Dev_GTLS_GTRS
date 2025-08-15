@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import ConsignmentGraph from "./ReportTabs/ConsignmentGraph";
 import TotalFailPODGraph from "./ReportTabs/TotalFailPODGraph";
+import { CustomContext } from "@/CommonContext";
 
 const MultiChartLine = () => {
     const { url, Token,userPermissions } = useContext(CustomContext);

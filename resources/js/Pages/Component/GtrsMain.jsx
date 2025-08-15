@@ -89,14 +89,8 @@ export default function GtrsMain({
     deliveryReportComments,
     fetchDeliveryReportCommentsData,
 }) {
-    const {
-            url,
-            user,
-            Token,
-            setToken,
-            userPermissions,
-            setUserPermissions,
-        } = useContext(CustomContext);
+    const { url, user, Token, setToken, userPermissions, setUserPermissions } =
+        useContext(CustomContext);
     window.moment = moment;
     const KPIData = [];
     const [NewKPIData, setNewKPIData] = useState([]);
@@ -768,9 +762,13 @@ export default function GtrsMain({
                                                         }
                                                     />
                                                 }
-                                                userPermissions={userPermissions}
+                                                userPermissions={
+                                                    userPermissions
+                                                }
                                                 setToken={setToken}
-                                                setUserPermissions={setUserPermissions}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
                                             />
                                         }
                                     />
@@ -781,9 +779,13 @@ export default function GtrsMain({
                                                 permission={userPermissions}
                                                 route="Dashboard_view"
                                                 element={<SpendDashboard />}
-                                                userPermissions={userPermissions}
+                                                userPermissions={
+                                                    userPermissions
+                                                }
                                                 setToken={setToken}
-                                                setUserPermissions={setUserPermissions}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
                                             />
                                         }
                                     />
@@ -810,9 +812,13 @@ export default function GtrsMain({
                                                         }
                                                     />
                                                 }
-                                                userPermissions={userPermissions}
+                                                userPermissions={
+                                                    userPermissions
+                                                }
                                                 setToken={setToken}
-                                                setUserPermissions={setUserPermissions}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
                                             />
                                         }
                                     />
@@ -830,9 +836,13 @@ export default function GtrsMain({
                                                         }
                                                     />
                                                 }
-                                                userPermissions={userPermissions}
+                                                userPermissions={
+                                                    userPermissions
+                                                }
                                                 setToken={setToken}
-                                                setUserPermissions={setUserPermissions}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
                                             />
                                         }
                                     />
@@ -863,9 +873,13 @@ export default function GtrsMain({
                                                         setSDate={setSDate}
                                                     />
                                                 }
-                                                userPermissions={userPermissions}
+                                                userPermissions={
+                                                    userPermissions
+                                                }
                                                 setToken={setToken}
-                                                setUserPermissions={setUserPermissions}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
                                             />
                                         }
                                     />
@@ -911,9 +925,13 @@ export default function GtrsMain({
                                                         }
                                                     />
                                                 }
-                                                userPermissions={userPermissions}
+                                                userPermissions={
+                                                    userPermissions
+                                                }
                                                 setToken={setToken}
-                                                setUserPermissions={setUserPermissions}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
                                             />
                                         }
                                     />
@@ -941,9 +959,13 @@ export default function GtrsMain({
                                                         }
                                                     />
                                                 }
-                                                userPermissions={userPermissions}
+                                                userPermissions={
+                                                    userPermissions
+                                                }
                                                 setToken={setToken}
-                                                setUserPermissions={setUserPermissions}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
                                             />
                                         }
                                     />
@@ -973,9 +995,13 @@ export default function GtrsMain({
                                                         }
                                                     />
                                                 }
-                                                userPermissions={userPermissions}
+                                                userPermissions={
+                                                    userPermissions
+                                                }
                                                 setToken={setToken}
-                                                setUserPermissions={setUserPermissions}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
                                             />
                                         }
                                     />
@@ -1003,9 +1029,13 @@ export default function GtrsMain({
                                                         }
                                                     />
                                                 }
-                                                userPermissions={userPermissions}
+                                                userPermissions={
+                                                    userPermissions
+                                                }
                                                 setToken={setToken}
-                                                setUserPermissions={setUserPermissions}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
                                             />
                                         }
                                     />
@@ -1047,9 +1077,13 @@ export default function GtrsMain({
                                                         }
                                                     />
                                                 }
-                                                userPermissions={userPermissions}
+                                                userPermissions={
+                                                    userPermissions
+                                                }
                                                 setToken={setToken}
-                                                setUserPermissions={setUserPermissions}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
                                             />
                                         }
                                     />
@@ -1101,9 +1135,13 @@ export default function GtrsMain({
                                                         }
                                                     />
                                                 }
-                                                userPermissions={userPermissions}
+                                                userPermissions={
+                                                    userPermissions
+                                                }
                                                 setToken={setToken}
-                                                setUserPermissions={setUserPermissions}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
                                             />
                                         }
                                     />
@@ -1128,9 +1166,13 @@ export default function GtrsMain({
                                                         }
                                                     />
                                                 }
-                                                userPermissions={userPermissions}
+                                                userPermissions={
+                                                    userPermissions
+                                                }
                                                 setToken={setToken}
-                                                setUserPermissions={setUserPermissions}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
                                             />
                                         }
                                     />
@@ -1159,9 +1201,13 @@ export default function GtrsMain({
                                                         Token={Token}
                                                     />
                                                 }
-                                                userPermissions={userPermissions}
+                                                userPermissions={
+                                                    userPermissions
+                                                }
                                                 setToken={setToken}
-                                                setUserPermissions={setUserPermissions}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
                                             />
                                         }
                                     />
@@ -1172,35 +1218,27 @@ export default function GtrsMain({
                                                 permission={userPermissions}
                                                 route="View_KPIReasons"
                                                 element={
-                                                    <Route
-                                                        path="/kpi-reasons"
-                                                        element={
-                                                            <KPIReasons
-                                                                url={url}
-                                                                userPermissions={
-                                                                    userPermissions
-                                                                }
-                                                                kpireasonsData={
-                                                                    kpireasonsData
-                                                                }
-                                                                Token={Token}
-                                                                setkpireasonsData={
-                                                                    setkpireasonsData
-                                                                }
-                                                            />
-                                                        }
+                                                    <KPIReasons
+                                                        url={url}
                                                         userPermissions={
                                                             userPermissions
                                                         }
-                                                        setToken={setToken}
-                                                        setUserPermissions={
-                                                            setUserPermissions
+                                                        kpireasonsData={
+                                                            kpireasonsData
+                                                        }
+                                                        Token={Token}
+                                                        setkpireasonsData={
+                                                            setkpireasonsData
                                                         }
                                                     />
                                                 }
-                                                userPermissions={userPermissions}
+                                                userPermissions={
+                                                    userPermissions
+                                                }
                                                 setToken={setToken}
-                                                setUserPermissions={setUserPermissions}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
                                             />
                                         }
                                     />
@@ -1226,9 +1264,13 @@ export default function GtrsMain({
                                                         maxDate={maxDate}
                                                     />
                                                 }
-                                                userPermissions={userPermissions}
+                                                userPermissions={
+                                                    userPermissions
+                                                }
                                                 setToken={setToken}
-                                                setUserPermissions={setUserPermissions}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
                                             />
                                         }
                                     />
@@ -1261,9 +1303,13 @@ export default function GtrsMain({
                                                         Token={Token}
                                                     />
                                                 }
-                                                userPermissions={userPermissions}
+                                                userPermissions={
+                                                    userPermissions
+                                                }
                                                 setToken={setToken}
-                                                setUserPermissions={setUserPermissions}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
                                             />
                                         }
                                     />
@@ -1293,9 +1339,13 @@ export default function GtrsMain({
                                                         url={url}
                                                     />
                                                 }
-                                                userPermissions={userPermissions}
+                                                userPermissions={
+                                                    userPermissions
+                                                }
                                                 setToken={setToken}
-                                                setUserPermissions={setUserPermissions}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
                                             />
                                         }
                                     />
@@ -1317,9 +1367,13 @@ export default function GtrsMain({
                                                         Token={Token}
                                                     />
                                                 }
-                                                userPermissions={userPermissions}
+                                                userPermissions={
+                                                    userPermissions
+                                                }
                                                 setToken={setToken}
-                                                setUserPermissions={setUserPermissions}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
                                             />
                                         }
                                     />
@@ -1338,9 +1392,13 @@ export default function GtrsMain({
                                                         Token={Token}
                                                     />
                                                 }
-                                                userPermissions={userPermissions}
+                                                userPermissions={
+                                                    userPermissions
+                                                }
                                                 setToken={setToken}
-                                                setUserPermissions={setUserPermissions}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
                                             />
                                         }
                                     />
@@ -1359,9 +1417,13 @@ export default function GtrsMain({
                                                         Token={Token}
                                                     />
                                                 }
-                                                userPermissions={userPermissions}
+                                                userPermissions={
+                                                    userPermissions
+                                                }
                                                 setToken={setToken}
-                                                setUserPermissions={setUserPermissions}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
                                             />
                                         }
                                     />
