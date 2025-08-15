@@ -703,7 +703,7 @@ export default function GtrsMain({
         if (userPermissions) {
             navigateToFirstAllowedPage({
                 setSidebarElements,
-                user: userPermissions,
+                userPermissions: userPermissions,
                 navigate,
             });
         }
@@ -1721,9 +1721,7 @@ export default function GtrsMain({
 
 GtrsMain.propTypes = {
     gtccrUrl: PropTypes.string,
-    userPermissions: PropTypes.object,
     Token: PropTypes.string,
-    userPermissions: PropTypes.object,
     setCusomterAccounts: PropTypes.func,
     setPerfData: PropTypes.func,
     userBody: PropTypes.object,

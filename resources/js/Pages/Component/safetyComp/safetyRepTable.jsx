@@ -176,10 +176,10 @@ export default function SafetyRepTable({
     const [canEdit, setCanEdit] = useState(true);
 
     useEffect(() => {
-        if (userPermission) {
-            setCanEdit(canEditSafetyReport(userPermission));
+        if (userPermissions) {
+            setCanEdit(canEditSafetyReport(userPermissions));
         }
-    }, [userPermission]);
+    }, [userPermissions]);
     const referenceOptions = [
         {
             id: 1,
@@ -379,16 +379,16 @@ export default function SafetyRepTable({
     const newArray = columns?.slice(0, -1);
     const [newColumns, setNewColumns] = useState();
     useEffect(() => {
-        if (userPermission) {
-            if (canEditSafetyReport(userPermission)) {
+        if (userPermissions) {
+            if (canEditSafetyReport(userPermissions)) {
                 setNewColumns(columns);
             } else {
                 setNewColumns(newArray);
             }
         }
-    }, [userPermission]);
+    }, [userPermissions]);
 
-    const additionalButtons = canAddSafetyReport(userPermission) ? (
+    const additionalButtons = canAddSafetyReport(userPermissions) ? (
         <button
             type="button"
             onClick={handleAddClick}
@@ -472,7 +472,6 @@ SafetyRepTable.propTypes = {
     filterValue: PropTypes.array,
     customerAccounts: PropTypes.array,
     setFilterValue: PropTypes.func,
-    userPermission: PropTypes.object,
     setDataEdited: PropTypes.func,
     safetyTypes: PropTypes.array,
     fetchData: PropTypes.func,

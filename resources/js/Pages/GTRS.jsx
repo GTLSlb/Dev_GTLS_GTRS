@@ -190,7 +190,6 @@ export default function Gtrs({
                     setApiStatus: setTransportApi,
                 },
             ];
-            console.log(user);
             urls.forEach(({ url, setData, setApiStatus }) => {
                 fetchApiData(url, setData, user, Token, setApiStatus);
             });
@@ -319,7 +318,6 @@ Gtrs.propTypes = {
     setMobileMenuOpen: PropTypes.func,
     Token: PropTypes.string,
     setLoadingGtrs: PropTypes.func,
-    userPermissions: PropTypes.object,
     loadingGtrs: PropTypes.bool,
     allowedApplications: PropTypes.array,
     mobileMenuOpen: PropTypes.bool,

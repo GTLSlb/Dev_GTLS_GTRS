@@ -25,7 +25,6 @@ export default function Holidays({
     setHolidays,
     filterValue,
     setFilterValue,
-    userPermission,
 }) {
     const { user, url, Token, userPermissions } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
@@ -160,7 +159,7 @@ export default function Holidays({
 
     useEffect(() => {
         if (holidayOptions && stateOptions) {
-            if (userPermission && canEditHolidays(userPermission)) {
+            if (userPermissions && canEditHolidays(userPermissions)) {
                 setColumns([
                     {
                         name: "HolidayName",
@@ -244,7 +243,7 @@ export default function Holidays({
                         render: ({ data }) => {
                             return (
                                 <div>
-                                    {canEditHolidays(userPermission) ? (
+                                    {canEditHolidays(userPermissions) ? (
                                         <button
                                             className={
                                                 "rounded text-blue-500 justify-center items-center  "
@@ -343,7 +342,7 @@ export default function Holidays({
                 ]);
             }
         }
-    }, [userPermission, holidayOptions, stateOptions]);
+    }, [userPermissions, holidayOptions, stateOptions]);
 
     const handleDownloadExcel = () => {
         const jsonData = handleFilterTable(gridRef, holidays);
@@ -366,7 +365,7 @@ export default function Holidays({
     };
     const additionalButtons = (
         <div>
-            {canAddHolidays(userPermission) ? (
+            {canAddHolidays(userPermissions) ? (
                 <div>
                     {!showAdd && (
                         <GtrsButton
@@ -395,7 +394,6 @@ export default function Holidays({
                                 url={url}
                                 Token={Token}
                                 userPermissions={userPermissions}
-                                userPermission={userPermission}
                                 setHoliday={setHoliday}
                                 setShowAdd={setShowAdd}
                                 fetchData={fetchData}
@@ -428,5 +426,4 @@ Holidays.propTypes = {
     setHolidays: PropTypes.func,
     filterValue: PropTypes.array,
     setFilterValue: PropTypes.func,
-    userPermission: PropTypes.object,
 };

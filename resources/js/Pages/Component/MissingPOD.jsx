@@ -330,6 +330,5 @@ MissingPOD.propTypes = {
     PerfData: PropTypes.array,
     filterValue: PropTypes.array,
     setFilterValue: PropTypes.func,
-    userPermissions: PropTypes.object,
     accData: PropTypes.array,
 };

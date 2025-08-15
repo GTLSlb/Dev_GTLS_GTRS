@@ -35,7 +35,6 @@ function NewKPI({
     setFilterValue,
     KPIData,
     setKPIData,
-    userPermission,
     accData,
     kpireasonsData,
 }) {
@@ -253,7 +252,7 @@ function NewKPI({
             filterEditor: StringFilter,
             render: ({ value, data }) => {
                 return renderConsDetailsLink(
-                    userPermission,
+                    userPermissions,
                     value,
                     data.ConsignmentId
                 );
@@ -497,7 +496,7 @@ function NewKPI({
             render: ({ data }) => {
                 return (
                     <div>
-                        {canEditKPI(userPermission) ? (
+                        {canEditKPI(userPermissions) ? (
                             <button
                                 className={
                                     "rounded text-blue-500 justify-center items-center  "
@@ -521,7 +520,7 @@ function NewKPI({
     const [newColumns, setNewColumns] = useState([]);
 
     useEffect(() => {
-        if (canEditKPI(userPermission)) {
+        if (canEditKPI(userPermissions)) {
             setNewColumns(columns);
         } else {
             setNewColumns(newArray);
@@ -687,7 +686,7 @@ function NewKPI({
                     width={35}
                 />
             )}
-            {canCalculateKPI(userPermission) ? (
+            {canCalculateKPI(userPermissions) ? (
                 <button
                     className={`inline-flex items-center justify-center w-[10rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
                     disabled={filteredData?.length === 0 || loading}
@@ -738,14 +737,12 @@ function NewKPI({
                 updateLocalData={updateLocalData}
                 kpiReasons={kpireasonsData}
                 userPermissions={userPermissions}
-                userPermission={userPermission}
             />
         </div>
     );
 }
 
 NewKPI.propTypes = {
-    userPermission: PropTypes.object,
     kpireasonsData: PropTypes.array,
     accData: PropTypes.array,
     filterValue: PropTypes.array,

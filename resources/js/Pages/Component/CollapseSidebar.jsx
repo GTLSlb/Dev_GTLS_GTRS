@@ -1,5 +1,5 @@
 import { Button } from "@heroui/react";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Sidebar, Menu, MenuItem, menuClasses } from "react-pro-sidebar";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +10,8 @@ import {
     AccordionHeader,
     AccordionItem,
 } from "react-headless-accordion";
-import MenuIcon from '@mui/icons-material/Menu';
+import MenuIcon from "@mui/icons-material/Menu";
+import { CustomContext } from "@/CommonContext";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -106,10 +107,9 @@ export default function CollapseSidebar({
     onData,
     collapsed,
     setCollapsed,
-    sidebarElements,
-    setSidebarElements,
-    user,
 }) {
+    const { user, sidebarElements, setSidebarElements } =
+        useContext(CustomContext);
     const [isOpen, setIsOpen] = useState(false);
     const hasImage = false;
     const theme = "light";
@@ -343,8 +343,7 @@ export default function CollapseSidebar({
                                 }
                             >
                                 <p className="text-sm truncate w-24">
-                                    {user.FirstName}{" "}
-                                    {user.LastName}
+                                    {user.FirstName} {user.LastName}
                                 </p>
                                 <p className="text-xs truncate w-36">
                                     {user.Email}
@@ -367,9 +366,7 @@ export default function CollapseSidebar({
                                     }
                                 >
                                     <MenuIcon
-                                        className={
-                                            "w-[0.1rem] h-[0.1rem]"
-                                        }
+                                        className={"w-[0.1rem] h-[0.1rem]"}
                                     />
                                 </div>
                             </Button>

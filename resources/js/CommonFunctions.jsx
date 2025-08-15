@@ -155,7 +155,6 @@ export const fetchApiData = async (
     Token,
     setApiStatus
 ) => {
-    console.log(user)
     try {
         const response = await axios.get(url, {
             headers: {
@@ -332,7 +331,7 @@ function findCurrentItem(items, id) {
 
 export function navigateToFirstAllowedPage({
     setSidebarElements,
-    userPermissionss,
+    userPermissions,
     navigate,
 }) {
     let items = [];
@@ -341,7 +340,7 @@ export function navigateToFirstAllowedPage({
         if (Object.prototype.hasOwnProperty.call(menuItem, "options")) {
             menuItem.options.forEach((option) => {
                 if (
-                    userPermissionss?.some(
+                    userPermissions?.some(
                         (item) => item?.FunctionName === option?.feature
                     )
                 ) {
@@ -364,7 +363,7 @@ export function navigateToFirstAllowedPage({
             });
         } else {
             if (
-                userPermissionss?.some(
+                userPermissions?.some(
                     (item) => item?.FunctionName === menuItem?.feature
                 )
             ) {

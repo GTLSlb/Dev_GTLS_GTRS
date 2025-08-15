@@ -250,6 +250,5 @@ AdditionalCharges.propTypes = {
     setAdditionalData: PropTypes.func,
     filterValue: PropTypes.array,
     setFilterValue: PropTypes.func,
-    userPermissions: PropTypes.object,
     url: PropTypes.string,
 };

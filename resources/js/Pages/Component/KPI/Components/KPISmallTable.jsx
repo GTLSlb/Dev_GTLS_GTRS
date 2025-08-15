@@ -20,14 +20,13 @@ export default function SmallTableKPI({
     setEditIndex,
     dynamicHeaders,
     AlertToast,
-    userPermission,
     getfunction,
     addurl,
     currentPage,
     setCurrentPage,
 }) {
 
-    const { Token, user } = useContext(CustomContext);
+    const { Token, user , userPermissions} = useContext(CustomContext);
 
     const [data, setData] = useState(objects);
 
@@ -275,7 +274,7 @@ export default function SmallTableKPI({
                                                                 </th>
                                                             )
                                                         )}
-                                                        {canEditKpiReasons(userPermission) ? (
+                                                        {canEditKpiReasons(userPermissions) ? (
                                                             <th
                                                                 scope="col"
                                                                 className="px-3 w-20 text-left text-sm font-semibold text-gray-400 border"
@@ -601,7 +600,7 @@ export default function SmallTableKPI({
                                                                                 </td>
                                                                             )
                                                                         )}
-                                                                        {canEditKpiReasons(userPermission) ? (
+                                                                        {canEditKpiReasons(userPermissions) ? (
                                                                             <td
                                                                                 className={`relative bg-white whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-0  ${
                                                                                     editError
@@ -639,7 +638,7 @@ export default function SmallTableKPI({
                                                                                     ) : (
                                                                                         <div>
                                                                                             {canEditKpiReasons(
-                                                                                                userPermission
+                                                                                                userPermissions
                                                                                             ) ? (
                                                                                                 <a
                                                                                                     id={`edit${index}`}
@@ -736,7 +735,6 @@ SmallTableKPI.propTypes = {
     data: PropTypes.array,
     headers: PropTypes.array,
     canEditKpiReasons: PropTypes.func,
-    userPermission: PropTypes.object,
     notFound: PropTypes.string,
     onAddRow: PropTypes.func,
     onEditRow: PropTypes.func,

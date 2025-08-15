@@ -430,5 +430,4 @@ MainCharts.propTypes = {
     sideBarToggle: PropTypes.bool,
     chartName: PropTypes.string,
     setChartName: PropTypes.func,
-    userPermissions: PropTypes.object,
 };

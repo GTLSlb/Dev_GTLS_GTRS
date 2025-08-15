@@ -357,5 +357,4 @@ SafetyRep.propTypes = {
     latestDate: propTypes.string,
     DefaultSDate: propTypes.string,
     DefaultEDate: propTypes.string,
-    userPermissions: propTypes.object,
 };

@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Switch, Button } from "@heroui/react";
 import { AlertToast, canEditUsers } from "@/permissions"; // Or replace with your toast system
 import PropTypes from "prop-types";
+import { CustomContext } from "@/CommonContext";
 
-export default function Accounts({ customer, userPermission }) {
+export default function Accounts({ customer }) {
+    const { userPermissions } = useContext(CustomContext);
     const [editMode, setEditMode] = useState(false);
     const [accountStates, setAccountStates] = useState({});
     const [originalAccountStates, setOriginalAccountStates] = useState({});
@@ -117,7 +119,7 @@ export default function Accounts({ customer, userPermission }) {
 
     return (
         <div className="">
-            {canEditUsers(userPermission) && (
+            {canEditUsers(userPermissions) && (
                 <div className="flex justify-end gap-2 mb-4">
                     {editMode ? (
                         <>
@@ -158,5 +160,4 @@ export default function Accounts({ customer, userPermission }) {
 
 Accounts.propTypes = {
     customer: PropTypes.object,
-    userPermission: PropTypes.object,
 };

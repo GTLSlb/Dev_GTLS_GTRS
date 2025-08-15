@@ -139,7 +139,7 @@ export default function RDDTable({
             filterEditor: StringFilter,
             render: ({ value, data }) => {
                 return renderConsDetailsLink(
-                    userPermission,
+                    userPermissions,
                     value,
                     data.ConsignmentId
                 );
@@ -394,7 +394,7 @@ export default function RDDTable({
     const newArray = columns.slice(0, -1);
     const [newColumns, setNewColumns] = useState();
     useEffect(() => {
-        if (canEditRDD(userPermission)) {
+        if (canEditRDD(userPermissions)) {
             setNewColumns(columns);
         } else {
             setNewColumns(newArray);

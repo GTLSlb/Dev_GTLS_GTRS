@@ -86,7 +86,7 @@ export default function KPIReasons({
                 <MagnifyingGlassIcon className="absolute h-[0.88rem] w-[0.88rem] text-gray-500 top-[0.77rem] left-2"/>
                 <input placeholder="Search" onChange={(e)=>handleFilterChange(e)} className="border px-7 py-1.5 rounded-lg placeholder:text-gray-500"/>
             </div>
-            {canAddKpiReasons(userPermission) ? (
+            {canAddKpiReasons(userPermissions) ? (
                 <div className="flex flex-col sm:flex-row gap-x-5 gap-y-3">
                     <div className="col-span-2">
                         {!showAddRow && (
@@ -192,7 +192,7 @@ export default function KPIReasons({
 
     useEffect(() => {
         if (kpireasonsData?.length > 0 && reasonNameOptions) {
-            if (userPermission && canEditKpiReasons(userPermission)) {
+            if (userPermissions && canEditKpiReasons(userPermissions)) {
                 setColumns([
                     {
                         name: "ReasonName",
@@ -236,7 +236,7 @@ export default function KPIReasons({
                         render: ({ data }) => {
                             return (
                                 <div>
-                                    {canEditKpiReasons(userPermission) ? (
+                                    {canEditKpiReasons(userPermissions) ? (
                                         <button
                                             className={
                                                 "rounded text-blue-500 justify-center items-center  "
@@ -294,7 +294,7 @@ export default function KPIReasons({
                 ]);
             }
         }
-    }, [userPermission, reasonNameOptions, kpireasonsData]);
+    }, [userPermissions, reasonNameOptions, kpireasonsData]);
 
     const renderTable = useCallback(() => {
         return (
@@ -413,7 +413,6 @@ export default function KPIReasons({
     );
 }
 KPIReasons.propTypes = {
-    userPermission: PropTypes.object,
     kpireasonsData: PropTypes.array,
     setkpireasonsData: PropTypes.func,
     filterValue: PropTypes.array,

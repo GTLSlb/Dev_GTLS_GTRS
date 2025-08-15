@@ -36,7 +36,6 @@ import { CustomContext } from "@/CommonContext";
 
 export default function DeliveryReportPage({
     deliveryReportData,
-    userPermission,
     fetchDeliveryReport,
     deliveryReportComments,
     fetchDeliveryReportCommentsDataGTRS,
@@ -665,7 +664,7 @@ export default function DeliveryReportPage({
         };
 
         return (
-            canAddDeliveryReportComment(userPermission) && (
+            canAddDeliveryReportComment(userPermissions) && (
                 <>
                     <ComboBox
                         onCancel={() => {}}
@@ -1057,16 +1056,16 @@ export default function DeliveryReportPage({
     }, [deliveryReportData]);
 
     useEffect(() => {
-        if (userPermission) {
-            canViewMetcashDeliveryReport(userPermission)
+        if (userPermissions) {
+            canViewMetcashDeliveryReport(userPermissions)
                 ? setActiveComponentIndex(0)
-                : canViewWoolworthsDeliveryReport(userPermission)
+                : canViewWoolworthsDeliveryReport(userPermissions)
                 ? setActiveComponentIndex(1)
-                : canViewOtherDeliveryReport(userPermission)
+                : canViewOtherDeliveryReport(userPermissions)
                 ? setActiveComponentIndex(2)
                 : null;
         }
-    }, [userPermission]);
+    }, [userPermissions]);
 
     const gridRef = useRef(null);
     const [selected, setSelected] = useState([]);
@@ -1176,7 +1175,7 @@ export default function DeliveryReportPage({
             </div>
             <div className="w-full flex gap-4 items-center mt-4">
                 <ul className="flex space-x-0">
-                    {canViewMetcashDeliveryReport(userPermission) && (
+                    {canViewMetcashDeliveryReport(userPermissions) && (
                         <li
                             className={`cursor-pointer ${
                                 activeComponentIndex === 0
@@ -1188,7 +1187,7 @@ export default function DeliveryReportPage({
                             <div className="px-2"> Metcash</div>
                         </li>
                     )}
-                    {canViewWoolworthsDeliveryReport(userPermission) && (
+                    {canViewWoolworthsDeliveryReport(userPermissions) && (
                         <li
                             className={`cursor-pointer ${
                                 activeComponentIndex === 1
@@ -1200,7 +1199,7 @@ export default function DeliveryReportPage({
                             <div className="px-2">Woolworths</div>
                         </li>
                     )}
-                    {canViewOtherDeliveryReport(userPermission) && (
+                    {canViewOtherDeliveryReport(userPermissions) && (
                         <li
                             className={`cursor-pointer ${
                                 activeComponentIndex === 2
@@ -1215,13 +1214,13 @@ export default function DeliveryReportPage({
                 </ul>
             </div>
             {activeComponentIndex == 0 &&
-            canViewMetcashDeliveryReport(userPermission) ? (
+            canViewMetcashDeliveryReport(userPermissions) ? (
                 <div>{renderTable()}</div>
             ) : activeComponentIndex == 1 &&
-              canViewWoolworthsDeliveryReport(userPermission) ? (
+              canViewWoolworthsDeliveryReport(userPermissions) ? (
                 <div>{renderTable()}</div>
             ) : activeComponentIndex == 2 &&
-              canViewOtherDeliveryReport(userPermission) ? (
+              canViewOtherDeliveryReport(userPermissions) ? (
                 <div>{renderTable()}</div>
             ) : (
                 <div></div>
@@ -1246,7 +1245,6 @@ export default function DeliveryReportPage({
 
 DeliveryReportPage.propTypes = {
     deliveryReportData: PropTypes.array,
-    userPermission: PropTypes.object,
     deliveryCommentsOptions: PropTypes.array,
     fetchDeliveryReport: PropTypes.func,
     fetchDeliveryReportCommentsData: PropTypes.func,

@@ -23,7 +23,6 @@ export default function RDDMain({
     EDate,
     setEDate,
     SDate,
-    userPermission,
     setSDate,
     rddReasons,
     setrddReasons,
@@ -167,7 +166,6 @@ export default function RDDMain({
                             setrddData={setrddData}
                             debtorsData={debtorsData}
                             userPermissions={userPermissions}
-                            userPermission={userPermission}
                             setActiveIndexGTRS={setActiveIndexGTRS}
                             setactiveCon={setactiveCon}
                             setLastIndex={setLastIndex}
@@ -202,7 +200,6 @@ RDDMain.propTypes = {
     EDate: PropTypes.string,
     setEDate: PropTypes.func,
     SDate: PropTypes.string,
-    userPermission: PropTypes.object,
     setSDate: PropTypes.func,
     rddReasons: PropTypes.array,
     setrddReasons: PropTypes.func,

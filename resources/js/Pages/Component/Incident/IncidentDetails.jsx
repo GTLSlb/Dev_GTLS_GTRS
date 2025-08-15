@@ -810,6 +810,5 @@ export default function IncidentDetails({
 IncidentDetails.propTypes = {
     incident: PropTypes.object,
     filters: PropTypes.object,
-    userPermissions: PropTypes.object,
     mainCauses: PropTypes.array,
 };
