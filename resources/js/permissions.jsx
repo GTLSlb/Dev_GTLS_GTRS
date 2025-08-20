@@ -91,24 +91,6 @@ export function canAddTransitDays(userPermissions) {
 }
 
 /**
- * Checks if the user can add Newtransit days based on their permissions for a specific page.
- *
- * @param {Object} userPermissions - The current user object with role, permissions, and pages.
- * @return {boolean} True if the user can add transit days on the specific page, false otherwise.
- */
-export function canAddNewTransitDays(userPermissions) {
-    // Define the specific permission to check for adding transit days
-    const targetPermissionName = "NewTransitDays_add";
-
-    // Check if the page is found and if the specified permission is present in its Features array
-    return userPermissions?.find(
-        (feature) => feature?.FunctionName === targetPermissionName
-    )
-        ? true
-        : false;
-}
-
-/**
  * Checks if the user can edit transit days based on their permissions for a specific page.
  *
  * @param {Object} userPermissions - The current user object with role, permissions, and pages.

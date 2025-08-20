@@ -6,7 +6,7 @@ import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import { useState, useEffect, useRef } from "react";
 import TableStructure from "@/Components/TableStructure";
 import { PencilIcon } from "@heroicons/react/20/solid";
-import { canAddNewTransitDays, canEditTransitDays } from "@/permissions";
+import { canAddTransitDays, canEditTransitDays } from "@/permissions";
 import { useApiRequests } from "@/CommonFunctions";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
@@ -415,7 +415,7 @@ function NewTransitDays({
         );
     };
 
-    const additionalButtons = canAddNewTransitDays(userPermissions) ? (
+    const additionalButtons = canAddTransitDays(userPermissions) ? (
         <GtrsButton
             name={"Add +"}
             onClick={AddTransit}
