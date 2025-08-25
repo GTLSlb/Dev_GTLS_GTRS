@@ -1006,6 +1006,13 @@ export default function charts({
             },
         },
         {
+            name: "ChangeType",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
             name: "OldRdd",
             operator: "inrange",
             type: "date",

@@ -543,9 +543,9 @@ export default function RDDreason({
                         } else {
                             acc[columnKey] = "";
                         }
-                    }else if (fieldsToCheck.includes(columnKey)) {
+                    } else if (fieldsToCheck.includes(columnKey)) {
                         acc[column] = isDummyAccount(person[columnKey]);
-                    }  else {
+                    } else {
                         acc[columnKey] = person[columnKey];
                     }
                 } else {
@@ -670,7 +670,10 @@ export default function RDDreason({
                 uniqueLabels.add(fieldValue);
                 const newObject = {
                     id: fieldValue,
-                    label: fieldName === "AccountNumber" ? isDummyAccount(fieldValue) : fieldValue,
+                    label:
+                        fieldName === "AccountNumber"
+                            ? isDummyAccount(fieldValue)
+                            : fieldValue,
                 };
                 newData.push(newObject);
             }
@@ -684,6 +687,7 @@ export default function RDDreason({
     const receiverZones = createNewLabelObjects(rddData, "ReceiverZone");
     const receiverSuburbs = createNewLabelObjects(rddData, "ReceiverSuburb");
     const receiverStates = createNewLabelObjects(rddData, "ReceiverState");
+    const changeTypesOptions = createNewLabelObjects(rddData, "ChangeType");
     function getMinMaxValue(data, fieldName, identifier) {
         // Check for null safety
         if (!data || !Array.isArray(data) || data.length === 0) {
@@ -810,7 +814,6 @@ export default function RDDreason({
             render: ({ value }) => {
                 return isDummyAccount(value);
             },
-            
         },
         {
             name: "SenderReference",
@@ -835,7 +838,7 @@ export default function RDDreason({
             filterEditor: StringFilter,
             group: "senderInfo",
             render: ({ value }) => {
-                return (value);
+                return value;
             },
         },
         {
@@ -919,7 +922,7 @@ export default function RDDreason({
             filterEditor: StringFilter,
             group: "receiverInfo",
             render: ({ value }) => {
-                return (value);
+                return value;
             },
         },
         {
@@ -984,6 +987,18 @@ export default function RDDreason({
                     "Invalid date"
                     ? ""
                     : moment(value).format("DD-MM-YYYY hh:mm A");
+            },
+        },
+        {
+            name: "ChangeType",
+            header: "Change Type",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: changeTypesOptions,
             },
         },
         {
@@ -1339,6 +1354,15 @@ export default function RDDreason({
                                                                 className="text-dark rounded focus:ring-goldd"
                                                             />{" "}
                                                             Despatch Date
+                                                        </label>
+                                                        <label className="">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="column"
+                                                                value="Change Type"
+                                                                className="text-dark rounded focus:ring-goldd"
+                                                            />{" "}
+                                                            Change Type
                                                         </label>
                                                         <label className="">
                                                             <input
