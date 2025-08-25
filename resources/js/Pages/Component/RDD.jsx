@@ -1,23 +1,18 @@
 import { useRef, useState } from "react";
 import { useEffect } from "react";
-import { useDownloadExcel, downloadExcel } from "react-export-table-to-excel";
 import ModalRDD from "@/Components/modalRDD";
 import moment from "moment";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
-import React from "react";
 import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import TableStructure from "@/Components/TableStructure";
-import Button from "@inovua/reactdatagrid-community/packages/Button";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
-import ReactDataGrid from "@inovua/reactdatagrid-community";
 import { PencilIcon } from "@heroicons/react/24/outline";
 import { canEditRDD } from "@/permissions";
-import { DataObject } from "@mui/icons-material";
 import { isDummyAccount } from "@/CommonFunctions";
 
 export default function RDDreason({
@@ -457,26 +452,6 @@ export default function RDDreason({
         }
         return { selectedColumns: selectedColVal, filterValue: filterValue };
     }
-    const headers = [
-        "ConsignmentNo",
-        "Debtor Name",
-        "Account Name",
-        "Sender Name",
-        "Sender Address",
-        "Sender Suburb",
-        "Sender State",
-        "Receiver Name",
-        "Receiver Address",
-        "Receiver Suburb",
-        "Receiver State",
-        "Despatch Date",
-        "Old Rdd",
-        "New Rdd",
-        "Reason",
-        "Reason Desc",
-        "ChangeAt",
-        "ChangedBy",
-    ];
     function handleDownloadExcel() {
         const jsonData = handleFilterTable();
         const columnMapping = {

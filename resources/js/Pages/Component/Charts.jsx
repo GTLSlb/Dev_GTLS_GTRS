@@ -1635,8 +1635,8 @@ export default function charts({
         },
         {
             name: "ChangeType",
-            operator: "contains",
-            type: "string",
+            operator: "inlist",
+            type: "select",
             value: null,
             emptyValue: "",
         },
