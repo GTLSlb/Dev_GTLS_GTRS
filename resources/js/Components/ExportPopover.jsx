@@ -49,8 +49,8 @@ const ExportPopover = ({ columns, handleDownloadExcel, filteredData }) => {
             >
                 <Popover.Panel className="absolute left-20 sm:-left-5 z-50 mt-2 flex w-screen max-w-max -translate-x-1/2">
                     <div className="max-w-md flex-auto overflow-hidden rounded-lg bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
-                        <div className="p-4">
-                            <div className=" flex flex-col">
+                        <div className="p-2">
+                            <div className=" flex flex-col max-h-[500px] containerscroll overflow-y-scroll p-4 ">
                                 {columns.filter((column) => column.name.toLowerCase() !== "actions" && column.name.toLowerCase() !== "edit").map(({ name, header }) => (
                                     <label key={name}>
                                         <input

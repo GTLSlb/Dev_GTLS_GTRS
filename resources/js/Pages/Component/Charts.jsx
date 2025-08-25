@@ -1634,6 +1634,13 @@ export default function charts({
             emptyValue: null,
         },
         {
+            name: "ChangeType",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
             name: "OldRdd",
             operator: "eq",
             type: "date",

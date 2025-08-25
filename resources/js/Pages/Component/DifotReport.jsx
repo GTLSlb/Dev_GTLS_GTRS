@@ -706,6 +706,13 @@ export default function DifotReport({
             filterEditor: RDDTimeFilter,
         },
         {
+            name: "ChangeType",
+            header: "Change Type",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
+        },
+        {
             name: "OldRdd",
             header: "Old RDD",
             headerAlign: "center",
