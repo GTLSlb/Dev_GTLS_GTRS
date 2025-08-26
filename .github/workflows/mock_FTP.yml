@@ -75,11 +75,9 @@ jobs:
         run: composer install --optimize-autoloader --no-dev --ignore-platform-reqs
 
       - name: Install NPM Dependencies
-        if: steps.cache-check.outputs.cache-hit != 'true'
         run: npm ci
 
       - name: Build Assets
-        if: steps.cache-check.outputs.cache-hit != 'true'
         run: npm run build
 
       - name: Cache Clear
