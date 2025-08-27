@@ -18,6 +18,7 @@ import { saveAs } from "file-saver";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { formatDateToExcel, handleSessionExpiration } from "@/CommonFunctions";
 import { CustomContext } from "@/CommonContext";
+import axios from "axios";
 
 export default function DifotReport({ filterValue, setFilterValue, accData }) {
     const { url, Token, user } = useContext(CustomContext);
@@ -36,7 +37,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                     Authorization: `Bearer ${Token}`,
                 },
             });
-            console.log(res.data);
+            
             if (res.data == "" || res.data == []) {
                 setDifotData([]);
             } else {
@@ -791,7 +792,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                 minDate: minDateNewRdd,
                 maxDate: maxDateNewRdd,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return value == undefined || value == null
                     ? ""
                     : moment(value).format("DD-MM-YYYY hh:mm A") ==
@@ -837,7 +838,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                 minDate: minDateChangedAt,
                 maxDate: maxDateChangedAt,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return value == undefined || value == null
                     ? ""
                     : moment(value).format("DD-MM-YYYY hh:mm A") ==
@@ -890,7 +891,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                 minDate: minDateActualDel,
                 maxDate: maxDateActualDel,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return value == undefined || value == null
                     ? ""
                     : moment(value).format("DD-MM-YYYY hh:mm A") ==
@@ -1082,4 +1083,5 @@ DifotReport.propTypes = {
     filterValue: PropTypes.object,
     setFilterValue: PropTypes.func,
     accData: PropTypes.array,
+    onChange: PropTypes.func,
 };

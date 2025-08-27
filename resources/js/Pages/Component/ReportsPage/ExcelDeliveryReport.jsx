@@ -52,8 +52,6 @@ function capitalize(str) {
 export default function ExcelDeliveryReport({
     deliveryReportData,
     commentsCheck,
-    setActiveIndexGTRS,
-    setactiveCon,
     fetchDifotReportData,
     fetchDeliveryReportExcel,
     deliveryCommentsOptions,

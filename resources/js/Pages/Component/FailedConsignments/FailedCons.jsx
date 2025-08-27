@@ -279,7 +279,7 @@ export default function FailedCons({
                 maxDate: maxKPIDate,
             },
             filterEditor: DateFilter,
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -298,7 +298,7 @@ export default function FailedCons({
                 minDate: minDespatchDate,
                 maxDate: maxDespatchDate,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -317,7 +317,7 @@ export default function FailedCons({
                 maxDate: maxRddDate,
             },
             filterEditor: DateFilter,
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -336,7 +336,7 @@ export default function FailedCons({
                 maxDate: maxArrivedDate,
             },
             filterEditor: DateFilter,
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""
@@ -355,7 +355,7 @@ export default function FailedCons({
                 maxDate: maxDeliveredDate,
             },
             filterEditor: DateFilter,
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 return moment(value).format("DD-MM-YYYY hh:mm A") ==
                     "Invalid date"
                     ? ""

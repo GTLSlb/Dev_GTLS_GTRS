@@ -24,7 +24,7 @@ export default function Reciever(item) {
                     <dt className="text-sm font-medium text-gray-900">
                     RECEIVER POSTCODE
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['ReceiverPostcode']}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['ReceiverPostCode']}</dd>
 
                 </div>
             </dl>

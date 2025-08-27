@@ -7,8 +7,9 @@ import {
     ModalFooter,
     ModalHeader,
 } from "@heroui/react";
-import moment from "moment";
 import React from "react";
+import moment from "moment";
+import PropTypes from "prop-types";
 
 export default function CommentsModal({ commentsData, isOpen, onOpenChange }) {
     return (
@@ -64,3 +65,9 @@ export default function CommentsModal({ commentsData, isOpen, onOpenChange }) {
         </>
     );
 }
+
+CommentsModal.propTypes = {
+    commentsData: PropTypes.array,
+    isOpen: PropTypes.bool,
+    onOpenChange: PropTypes.func
+};
