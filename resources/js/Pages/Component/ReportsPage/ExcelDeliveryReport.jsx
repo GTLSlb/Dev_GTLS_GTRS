@@ -43,6 +43,7 @@ import swal from "sweetalert";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import CommentsModal from "./Modals/CommentsModal";
 import { CustomContext } from "@/CommonContext";
+import { handleSessionExpiration } from "@/CommonFunctions";
 
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -241,31 +242,18 @@ export default function ExcelDeliveryReport({
             );
         });
     };
-
-    // Navigation when clicking a consignment number
-    const handleClick = (coindex) => {
-        setactiveCon(coindex);
-        setActiveIndexGTRS(3);
-    };
-
     // States for modals and comment details
-    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [commentsData, setCommentsData] = useState(null);
-    const [consId, setConsId] = useState(null);
     const handleViewComments = (data) => {
         setCommentsData(data);
-        setConsId(data?.ConsignmentID);
         onOpen();
     };
-    const handleViewClose = () => {
-        setIsViewModalOpen(false);
-        setCommentsData(null);
-    };
+
 
     // Tab (report type) state
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     // Used to show a spinner in the cell when saving changes
-    const [cellLoading, setCellLoading] = useState(null);
+    const [cellLoading] = useState(null);
 
     // Compute filtered data sets based on CustomerTypeId
     const [filteredMetcashData, setFilteredMetcashData] = useState(
@@ -330,11 +318,10 @@ export default function ExcelDeliveryReport({
      Handsontable Columns Setup
   --------------------------- */
     const buttonRenderer = useCallback(
-        (instance, td, row, col, prop, value, cellProperties) => {
+        (instance, td, row) => {
             Handsontable.dom.empty(td);
 
             const visualRowData = instance.getDataAtRow(row);
-            const colHeaders = instance.getColHeader(); // Optional for prop-based mapping
             const approvedComments =
                 visualRowData?.[instance.propToCol("ApprovedComments")];
 
@@ -495,7 +482,6 @@ export default function ExcelDeliveryReport({
                 type: "text",
                 readOnly: true,
                 headerClassName: "htLeft",
-                width: 400,
                 editor: false,
                 width: 150,
             },
@@ -553,13 +539,8 @@ export default function ExcelDeliveryReport({
                 title: "Approved Comment",
                 headerClassName: "htLeft",
                 renderer: (
-                    instance,
                     td,
-                    row,
-                    col,
-                    prop,
                     value,
-                    cellProperties
                 ) => {
                     const lastValue =
                         Array.isArray(value) && value.length > 0
@@ -599,7 +580,7 @@ export default function ExcelDeliveryReport({
                 return updatedChanges;
             }
 
-            changes.forEach(([visualRow, prop, oldValue, newValue]) => {
+            changes.forEach(([visualRow, oldValue, newValue]) => {
                 if (newValue !== oldValue) {
                     const physicalRow = hotInstance.toPhysicalRow(visualRow);
                     const rowData = hotInstance.getSourceDataAtRow(physicalRow);
@@ -652,7 +633,7 @@ export default function ExcelDeliveryReport({
                     Authorization: `Bearer ${Token}`,
                 },
             })
-            .then((res) => {
+            .then(() => {
                 setChangedRows([]);
                 setIsLoading(false);
                 fetchDeliveryReportExcel();
@@ -689,7 +670,7 @@ export default function ExcelDeliveryReport({
                     Authorization: `Bearer ${Token}`,
                 },
             })
-            .then((res) => {
+            .then(() => {
                 setChangedRows([]);
                 setIsLoading(false);
                 fetchDeliveryReportExcel();

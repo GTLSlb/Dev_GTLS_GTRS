@@ -17,7 +17,7 @@ export default function DeliveryReportCommentsPage({
     data,
     fetchDeliveryReportCommentsData,
 }) {
-    const { user, url, userPermissions ,Token} = useContext(CustomContext);
+    const { url, userPermissions, Token } = useContext(CustomContext);
     const gridRef = useRef(null);
     const [selected, setSelected] = useState([]);
     const [showAdd, setShowAdd] = useState(false);

@@ -13,21 +13,25 @@ import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
-import { formatDateToExcel, renderConsDetailsLink } from "@/CommonFunctions";
+import {
+    convertUtcToUserTimezone,
+    formatDateToExcel,
+    renderConsDetailsLink,
+} from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import { CustomContext } from "@/CommonContext";
+import { PencilIcon } from "@heroicons/react/24/outline";
 
 export default function RDDTable({
-    setActiveIndexGTRS,
+    accData,
     rddData,
-    setIncidentId,
     setrddData,
     filterValue,
     setFilterValue,
     rddReasons,
-    accData,
 }) {
-    const {  url, userPermissions, Token } = useContext(CustomContext);
+    const { url, userPermissions, Token, RDDReasonsData } =
+        useContext(CustomContext);
     window.moment = moment;
     const updateLocalData = (id, reason, note) => {
         // Find the item in the local data with the matching id
@@ -120,8 +124,11 @@ export default function RDDTable({
     const accountOptions = createNewLabelObjects(rddData, "AccountNumber");
     const senderSuburbs = createNewLabelObjects(rddData, "SenderSuburb");
     const senderStates = createNewLabelObjects(rddData, "SenderState");
+    const senderZones = createNewLabelObjects(rddData, "SenderZone");
     const receiverSuburbs = createNewLabelObjects(rddData, "ReceiverSuburb");
     const receiverStates = createNewLabelObjects(rddData, "ReceiverState");
+    const receiverZones = createNewLabelObjects(rddData, "ReceiverZone");
+    const changeTypesOptions = createNewLabelObjects(rddData, "ChangeType");
 
     const minDespatchDate = getMinMaxValue(rddData, "DespatchDate", 1);
     const maxDespatchDate = getMinMaxValue(rddData, "DespatchDate", 2);
@@ -129,6 +136,12 @@ export default function RDDTable({
     const maxOldRddDate = getMinMaxValue(rddData, "OldRdd", 2);
     const minNewRddDate = getMinMaxValue(rddData, "NewRdd", 1);
     const maxNewRddDate = getMinMaxValue(rddData, "NewRdd", 2);
+    const minChangeAtDate = getMinMaxValue(rddData, "ChangeAt", 1);
+    const maxChangeAtDate = getMinMaxValue(rddData, "ChangeAt", 2);
+    const reasonOptions = RDDReasonsData.map((reason) => ({
+        id: reason.ReasonId,
+        label: reason.ReasonName,
+    }));
     const columns = [
         {
             name: "ConsignmentNo",
@@ -166,51 +179,6 @@ export default function RDDTable({
                 multiple: true,
                 wrapMultiple: false,
                 dataSource: accountOptions,
-            },
-        },
-        {
-            name: "IncidentNo",
-            defaultWidth: 170,
-            header: "Incident No",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            render: ({ value, data }) => {
-                return (
-                    <span
-                        className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => {
-                            setIncidentId(data.IncidentId);
-                            setActiveIndexGTRS(22);
-                        }}
-                    >
-                        {" "}
-                        {value}
-                    </span>
-                );
-            },
-            filterEditor: StringFilter,
-        },
-        {
-            name: "IncidentTypeName",
-            defaultWidth: 170,
-            header: "Incident Type",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            render: ({ value }) => {
-                return <span className=""> {value}</span>;
-            },
-            filterEditor: StringFilter,
-        },
-        {
-            name: "IncidentStatusName",
-            header: "Status",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            render: ({ data }) => {
-                return <span className=""> {data.IncidentStatusName}</span>;
             },
         },
         {
@@ -270,6 +238,22 @@ export default function RDDTable({
                 multiple: true,
                 wrapMultiple: false,
                 dataSource: senderStates,
+            },
+            group: "senderInfo",
+        },
+
+        {
+            name: "SenderZone",
+            header: "Sender Zone",
+            type: "string",
+            defaultWidth: 170,
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: senderZones,
             },
             group: "senderInfo",
         },
@@ -334,6 +318,21 @@ export default function RDDTable({
             group: "receiverInfo",
         },
         {
+            name: "ReceiverZone",
+            header: "Receiver Zone",
+            type: "string",
+            defaultWidth: 170,
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: receiverZones,
+            },
+            group: "receiverInfo",
+        },
+        {
             name: "DespatchDate",
             header: "Despatch Date",
             headerAlign: "center",
@@ -350,6 +349,19 @@ export default function RDDTable({
                     "Invalid date"
                     ? ""
                     : moment(value).format("DD-MM-YYYY hh:mm A");
+            },
+        },
+
+        {
+            name: "ChangeType",
+            header: "Change Type",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: changeTypesOptions,
             },
         },
         {
@@ -388,6 +400,107 @@ export default function RDDTable({
                     "Invalid date"
                     ? ""
                     : moment(value).format("DD-MM-YYYY hh:mm A");
+            },
+        },
+        {
+            name: "Reason",
+            header: "Reason",
+            headerAlign: "center",
+            textAlign: "start",
+            // defaultFlex: 1,
+            defaultWidth: 300,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: false,
+                wrapMultiple: false,
+                dataSource: reasonOptions,
+            },
+            render: ({ value }) => {
+                return (
+                    <div>
+                        {/* {value} */}
+                        {
+                            rddReasons?.find(
+                                (reason) => reason.ReasonId === value
+                            )?.ReasonName
+                        }
+                    </div>
+                );
+            },
+        },
+        {
+            name: "ReasonDesc",
+            header: "Reason Description",
+            headerAlign: "center",
+            textAlign: "start",
+            defaultWidth: 300,
+            filterEditor: StringFilter,
+        },
+        {
+            name: "ChangeAt",
+            header: "Changed At",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            dateFormat: "DD-MM-YYYY",
+            filterEditor: DateFilter,
+            filterEditorProps: {
+                minDate: minChangeAtDate,
+                maxDate: maxChangeAtDate,
+            },
+            render: ({ value }) => {
+                {
+                    return (
+                        <p>
+                            {moment(
+                                convertUtcToUserTimezone(value + "Z"),
+
+                                "MM/DD/YYYY, h:mm:ss A"
+                            ).format("YYYY-MM-DD hh:mm A") == "Invalid date"
+                                ? ""
+                                : moment(
+                                      convertUtcToUserTimezone(value + "Z"),
+
+                                      "MM/DD/YYYY, h:mm:ss A"
+                                  ).format("DD-MM-YYYY")}
+                        </p>
+                    );
+                }
+            },
+        },
+        {
+            name: "ChangedBy",
+            header: "Changed By",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
+        },
+        {
+            name: "edit",
+            header: "edit",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 100,
+            render: ({ data }) => {
+                return (
+                    <div>
+                        {canEditRDD(userPermissions) ? (
+                            <button
+                                className={
+                                    "rounded text-blue-500 justify-center items-center  "
+                                }
+                                onClick={() => {
+                                    handleEditClick(data);
+                                }}
+                            >
+                                <span className="flex gap-x-1">
+                                    <PencilIcon className="h-4" />
+                                    Edit
+                                </span>
+                            </button>
+                        ) : null}
+                    </div>
+                );
             },
         },
     ];
@@ -444,4 +557,4 @@ RDDTable.propTypes = {
     setFilterValue: PropTypes.func,
     rddReasons: PropTypes.array,
     accData: PropTypes.array,
-};  
+};

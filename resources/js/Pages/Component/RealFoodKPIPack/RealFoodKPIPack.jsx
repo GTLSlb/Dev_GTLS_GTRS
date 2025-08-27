@@ -1,10 +1,9 @@
 import React, { useContext } from "react";
-import PropTypes from "prop-types";
 import ConsignmentGraph from "../Presentation/ReportTabs/ConsignmentGraph";
 import { CustomContext } from "@/CommonContext";
 // import axios from "axios";
 function RealFoodKPIPack() {
-    const { user, url, userPermissions, Token } = useContext(CustomContext);
+    const { url, userPermissions, Token } = useContext(CustomContext);
     const activeComponentIndex = 0; // Assuming you want to show the first component by default
     const customers = [
         {

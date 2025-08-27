@@ -1,60 +1,90 @@
-import ReactModal from "react-modal";
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
-import swal from "sweetalert";
-import InputError from "../../../Components/InputError";
-import { useState } from "react";
-import { useEffect } from "react";
+import {
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    Button,
+    Input,
+    Textarea,
+    RadioGroup,
+    Radio,
+    Spinner,
+} from "@heroui/react";
 import "../../../../css/scroll.css";
+import swal from "sweetalert";
 import { handleSessionExpiration } from "@/CommonFunctions";
+import { CustomContext } from "@/CommonContext";
+import axios from "axios";
 
-export default function AddRDDReasonModal({
-    isOpen,
-    handleClose,
-    reason,
-    updateLocalData,
-    rddReasons,
-}) {
+export default function AddRDDReasonModal({ isOpen, handleClose, reason }) {
+    const { url, user, Token, rddReasons, getRDDReasons } =
+        useContext(CustomContext);
     const [isSaveEnabled, setIsSaveEnabled] = useState(true);
-    const [isLoading, SetIsLoading] = useState(false);
-    const [reasonStatus, setReasonStatus] = useState(true);
-
+    const [isLoading, setIsLoading] = useState(false);
+    const [reasonStatus, setReasonStatus] = useState("active");
+    const [nameValue, setNameValue] = useState("");
+    const [descValue, setDescValue] = useState("");
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (reason) {
-            setReasonStatus(reason?.ReasonStatus);
-        } else {
-            setReasonStatus(true);
+        if (isOpen) {
+            if (reason) {
+                setReasonStatus(reason?.ReasonStatus ? "active" : "inactive");
+                setNameValue(reason?.ReasonName || "");
+                setDescValue(reason?.ReasonDesc || "");
+            } else {
+                setReasonStatus("active");
+                setNameValue("");
+                setDescValue("");
+            }
+            setError(null);
+            setIsSaveEnabled(true);
         }
-    }, [reason]);
+    }, [reason, isOpen]);
 
     const handlePopUpClose = () => {
-        setError(null); // Clear the error message
-        // setInputValue("");
-        handleClose(); // Clear the input value
+        setError(null);
+        setNameValue("");
+        setDescValue("");
+        setReasonStatus("active");
+        handleClose();
     };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
-        // Prevent the default form submission behavior
+
+        const data = {
+            ReasonName: nameValue,
+            ReasonDesc: descValue,
+            ReasonStatus: reasonStatus === "active",
+        };
+
+        if (reason) {
+            data.ReasonId = reason.ReasonId;
+        }
 
         try {
-            SetIsLoading(true);
-            // Make the API request using Axios or any other library
-            // Handle the response as needed
-
-            // setInputValue("");
+            setIsLoading(true);
+            await axios.post(`${url}Add/RddChangeReason`, data, {
+                headers: {
+                    UserId: user.UserId,
+                    Authorization: `Bearer ${Token}`,
+                },
+            });
 
             setTimeout(() => {
-                handleClose();
-                SetIsLoading(false);
-                updateLocalData();
+                getRDDReasons();
+                handlePopUpClose();
+                setIsLoading(false);
             }, 1000);
         } catch (error) {
-            // Handle error
-            SetIsLoading(false);
+            setIsLoading(false);
+            setError("Error occurred while saving the data. Please try again.");
+
             if (error.response && error.response.status === 401) {
-                // Handle 401 error using SweetAlert
                 swal({
                     title: "Session Expired!",
                     text: "Please login again",
@@ -65,194 +95,130 @@ export default function AddRDDReasonModal({
                     await handleSessionExpiration();
                 });
             } else {
-                // Handle other errors
                 console.error(error);
             }
-            setError("Error occurred while saving the data. Please try again."); // Set the error message
         }
     };
 
-    const handleNameChange = (event) => {
-        const newName = event.target.value;
+    const handleNameChange = (value) => {
+        setNameValue(value);
+        const newName = value.toLowerCase();
+
+        // When editing, exclude current reason from duplicate check
         const isDuplicate = rddReasons.some(
-            (reason) => reason.ReasonName === newName
+            (existingReason) =>
+                existingReason.ReasonName.toLowerCase() === newName &&
+                (!reason || existingReason.ReasonId !== reason.ReasonId)
         );
+
         if (isDuplicate) {
             setIsSaveEnabled(false);
-            // Handle duplicate name error
             setError("Name already exists. Please enter a unique name.");
         } else {
             setIsSaveEnabled(true);
-            setError(null); // Clear the error message if the name is valid
+            setError(null);
         }
     };
 
     return (
-        <ReactModal
+        <Modal
             isOpen={isOpen}
-            onRequestClose={handlePopUpClose}
-            className="fixed inset-0 flex items-center justify-center"
-            overlayClassName="fixed inset-0 bg-black bg-opacity-60 "
+            onClose={handlePopUpClose}
+            size="md"
+            backdrop="opaque"
         >
-            <div className="bg-white w-96 rounded-lg shadow-lg p-6  h-[30rem]">
-                <div className="flex justify-end">
-                    <button
-                        className="text-gray-500 hover:text-gray-700"
-                        onClick={handlePopUpClose}
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-6 w-6"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M6 18L18 6M6 6l12 12"
-                            />
-                        </svg>
-                    </button>
-                </div>
-                <h2 className="text-2xl font-bold mb-4">
-                    {reason != null ? "Edit RDD Reason" : "Add RDD Reason"}
-                    {/* <span>{id}</span> */}
-                </h2>
+            <ModalContent>
+                <ModalHeader className="flex flex-col gap-1">
+                    <h2 className="text-2xl font-bold">
+                        {reason != null
+                            ? "Edit RDD Reason"
+                            : "Add RDD Reason"}
+                    </h2>
+                </ModalHeader>
 
-                <form
-                    onSubmit={handleSubmit}
-                    className="h-[22rem] overflow-y-scroll containerscroll"
-                >
-                    <div className="pr-2">
-                        <div className="space-y-12">
-                            <div className="border-b border-gray-900/10 pb-12">
-                                <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-                                    <div className="sm:col-span-4">
-                                        <label
-                                            htmlFor="name"
-                                            className="block text-sm font-medium leading-6 text-gray-900"
-                                        >
-                                            Name
-                                        </label>
-                                        <div className="mt-2">
-                                            <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-goldd sm:max-w-md">
-                                                <input
-                                                    type="text"
-                                                    name="name"
-                                                    id="name"
-                                                    required
-                                                    autoComplete="off"
-                                                    className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                                                    defaultValue={
-                                                        reason
-                                                            ? reason.ReasonName
-                                                            : ""
-                                                    }
-                                                    onChange={handleNameChange}
-                                                />
-                                            </div>
-                                        </div>
-                                        {error && (
-                                            <InputError message={error} />
-                                        )}{" "}
-                                        {/* Display error message if there is a duplicate name */}
-                                    </div>
+                <form onSubmit={handleSubmit}>
+                    <ModalBody className="containerscroll max-h-96 overflow-y-auto">
+                        <div className="space-y-6">
+                            <div className="space-y-4">
+                                <Input
+                                    type="text"
+                                    label="Reason Name"
+                                    value={nameValue}
+                                    onValueChange={handleNameChange}
+                                    isRequired
+                                    variant="bordered"
+                                    classNames={{
+                                        input: "bg-transparent !outline-none !border-none !ring-0 p-0",
+                                    }}
+                                    isInvalid={!!error}
+                                    errorMessage={error}
+                                />
 
-                                    <div className="col-span-full">
-                                        <label
-                                            htmlFor="about"
-                                            className="block text-sm font-medium leading-6 text-gray-900"
-                                        >
-                                            Description
-                                        </label>
-                                        <div className="mt-2">
-                                            <textarea
-                                                id="about"
-                                                name="about"
-                                                rows={3}
-                                                defaultValue={
-                                                    reason
-                                                        ? reason.ReasonDesc
-                                                        : ""
-                                                }
-                                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-goldd sm:text-sm sm:leading-6"
-                                            />
-                                        </div>
-                                    </div>
-                                    <fieldset className="col-span-full">
-                                        <legend className="text-sm font-semibold leading-6 text-gray-900">
-                                            Status
-                                        </legend>
-                                        <div className="mt-2 space-y-6">
-                                            <div className="flex items-center gap-x-3">
-                                                <input
-                                                    id="active"
-                                                    name="Status"
-                                                    type="radio"
-                                                    value="active"
-                                                    checked={
-                                                        reasonStatus === true
-                                                    }
-                                                    onChange={() => {
-                                                        setReasonStatus(true);
-                                                    }}
-                                                    className="h-4 w-4 border-gray-300 text-dark focus:ring-goldd"
-                                                />
-                                                <label
-                                                    htmlFor="active"
-                                                    className="block text-sm font-medium leading-6 text-gray-900"
-                                                >
-                                                    Active
-                                                </label>
-                                            </div>
-                                            <div className="flex items-center gap-x-3">
-                                                <input
-                                                    id="inactive"
-                                                    name="Status"
-                                                    type="radio"
-                                                    value="inactive"
-                                                    checked={
-                                                        reasonStatus === false
-                                                    }
-                                                    onChange={() => {
-                                                        setReasonStatus(false);
-                                                    }}
-                                                    className="h-4 w-4 border-gray-300 text-dark focus:ring-goldd"
-                                                />
-                                                <label
-                                                    htmlFor="inactive"
-                                                    className="block text-sm font-medium leading-6 text-gray-900"
-                                                >
-                                                    Inactive
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </fieldset>
-                                </div>
+                                <Textarea
+                                    label="Description"
+                                    value={descValue}
+                                    onValueChange={setDescValue}
+                                    variant="bordered"
+                                    minRows={3}
+                                    classNames={{
+                                        input: "bg-transparent !outline-none !border-none !ring-0 ",
+                                    }}
+                                />
+
+                                <RadioGroup
+                                    label="Status"
+                                    orientation="horizontal"
+                                    value={reasonStatus}
+                                    onValueChange={setReasonStatus}
+                                    classNames={{
+                                        label: "text-sm font-semibold text-gray-900",
+                                    }}
+                                >
+                                    <Radio
+                                        value="active"
+                                        classNames={{
+                                            base: "inline-flex items-center gap-3",
+                                            wrapper: "border-gray-300",
+                                        }}
+                                    >
+                                        Active
+                                    </Radio>
+                                    <Radio
+                                        value="inactive"
+                                        classNames={{
+                                            base: "inline-flex items-center gap-3",
+                                            wrapper: "border-gray-300",
+                                        }}
+                                    >
+                                        Inactive
+                                    </Radio>
+                                </RadioGroup>
                             </div>
                         </div>
+                    </ModalBody>
 
-                        <div className="mt-6 flex items-center justify-end gap-x-6">
-                            <button
-                                type="submit"
-                                disabled={!isSaveEnabled || isLoading}
-                                className="rounded-md bg-dark w-20 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-goldd focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                            >
-                                {isLoading ? (
-                                    <div className=" inset-0 flex justify-center items-center bg-opacity-50">
-                                        <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-smooth"></div>
-                                    </div>
-                                ) : (
-                                    "Save"
-                                )}
-                            </button>
-                        </div>
-                    </div>
+                    <ModalFooter>
+                        <Button
+                            color="danger"
+                            variant="light"
+                            onPress={handlePopUpClose}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            color="primary"
+                            isDisabled={!isSaveEnabled || isLoading}
+                            isLoading={isLoading}
+                            spinner={<Spinner size="sm" />}
+                            className="bg-gray-800 min-w-20"
+                        >
+                            {isLoading ? "" : "Save"}
+                        </Button>
+                    </ModalFooter>
                 </form>
-            </div>
-        </ReactModal>
+            </ModalContent>
+        </Modal>
     );
 }
 
@@ -260,6 +226,4 @@ AddRDDReasonModal.propTypes = {
     isOpen: PropTypes.bool,
     handleClose: PropTypes.func,
     reason: PropTypes.object,
-    updateLocalData: PropTypes.func,
-    rddReasons: PropTypes.array,
 };

@@ -1,38 +1,31 @@
 import React, { useState, useEffect, useContext } from "react";
 import swal from "sweetalert";
 import axios from "axios";
-import { handleSessionExpiration, useApiRequests } from '@/CommonFunctions';
+import { handleSessionExpiration, useApiRequests } from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import RDDTable from "./RDDTable";
 import PropTypes from "prop-types";
 import { CustomContext } from "@/CommonContext";
-
-
+import RDDReasons from "./RDDReasons";
+import { canViewRDDReasons } from "@/permissions";
 
 export default function RDDMain({
     setActiveIndexGTRS,
-    setactiveCon,
-    debtorsData,
     rddData,
     filterValue,
     setFilterValue,
     setrddData,
     setIncidentId,
-    setLastIndex,
     accData,
-    EDate,
-    setEDate,
-    SDate,
-    setSDate,
     rddReasons,
     setrddReasons,
-    oldestDate,
-    latestDate,
 }) {
-    const { Token, user, userPermissions, url } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     const [isFetching, setIsFetching] = useState();
     const [isFetchingReasons, setIsFetchingReasons] = useState();
+    const [activeComponentIndex, setActiveComponentIndex] = useState(0);
+    const { Token, user, userPermissions, url } = useContext(CustomContext);
+    
     const parseDateString = (dateString) => {
         // Check if dateString is undefined, null, or empty
         if (!dateString || !dateString.trim()) {
@@ -96,10 +89,7 @@ export default function RDDMain({
         });
 
         if (data) {
-            const updatedOldRddData = updateFieldWithData(
-                data,
-                "OldRdd"
-            );
+            const updatedOldRddData = updateFieldWithData(data, "OldRdd");
             const updatedNewRddData = updateFieldWithData(
                 updatedOldRddData,
                 "NewRdd"
@@ -150,6 +140,24 @@ export default function RDDMain({
         }
     };
 
+    const components = [
+        <RDDTable
+            accData={accData}
+            rddData={rddData}
+            filterValue={filterValue}
+            setFilterValue={setFilterValue}
+            setrddData={setrddData}
+            setActiveIndexGTRS={setActiveIndexGTRS}
+            setIncidentId={setIncidentId}
+            rddReasons={rddReasons}
+        />,
+        <RDDReasons />,
+    ];
+
+    const handleItemClick = (index) => {
+        setActiveComponentIndex(index);
+    };
+
     return (
         <div>
             {isFetching || isFetchingReasons ? (
@@ -157,28 +165,33 @@ export default function RDDMain({
             ) : (
                 <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
                     <div className="mt-0">
-                        <RDDTable
-                            url={url}
-                            accData={accData}
-                            rddData={rddData}
-                            filterValue={filterValue}
-                            setFilterValue={setFilterValue}
-                            setrddData={setrddData}
-                            debtorsData={debtorsData}
-                            userPermissions={userPermissions}
-                            setActiveIndexGTRS={setActiveIndexGTRS}
-                            setactiveCon={setactiveCon}
-                            setLastIndex={setLastIndex}
-                            EDate={EDate}
-                            setIncidentId={setIncidentId}
-                            setEDate={setEDate}
-                            SDate={SDate}
-                            Token={Token}
-                            setSDate={setSDate}
-                            rddReasons={rddReasons}
-                            oldestDate={oldestDate}
-                            latestDate={latestDate}
-                        />
+                        {canViewRDDReasons(userPermissions) ? (
+                            <ul className="flex space-x-0 mt-5">
+                                {components.map((index) => (
+                                    <li
+                                        key={index}
+                                        className={`cursor-pointer ${
+                                            activeComponentIndex === index
+                                                ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
+                                                : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
+                                        }`}
+                                        onClick={() => handleItemClick(index)}
+                                    >
+                                        <div className="px-2">
+                                            {" "}
+                                            {index === 0
+                                                ? "RDD Report"
+                                                : "RDD Reasons"}
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <div></div>
+                        )}
+                        <div className="mt-4">
+                            {components[activeComponentIndex]}
+                        </div>
                     </div>
                 </div>
             )}
@@ -205,4 +218,4 @@ RDDMain.propTypes = {
     setrddReasons: PropTypes.func,
     oldestDate: PropTypes.string,
     latestDate: PropTypes.string,
-};  
+};

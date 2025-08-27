@@ -1,24 +1,24 @@
-import React, { useContext, useRef, useState } from "react";
-import PropTypes from "prop-types";
-import { useEffect } from "react";
-import moment from "moment";
-import SetFailedReasonModal from "@/Components/SetFailedReasonModal";
-import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
-import TableStructure from "@/Components/TableStructure";
-import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
-import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
-import { canEditFailedConsignments } from "@/permissions";
-import { getMinMaxValue } from "@/Components/utils/dateUtils";
-import { createNewLabelObjects } from "@/Components/utils/dataUtils";
-import { handleFilterTable } from "@/Components/utils/filterUtils";
-import { exportToExcel } from "@/Components/utils/excelUtils";
+import { CustomContext } from "@/CommonContext";
 import {
     formatDateToExcel,
+    isDummyAccount,
     renderConsDetailsLink,
-    renderIncidentDetailsLink,
 } from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
-import { CustomContext } from "@/CommonContext";
+import SetFailedReasonModal from "@/Components/SetFailedReasonModal";
+import TableStructure from "@/Components/TableStructure";
+import { createNewLabelObjects } from "@/Components/utils/dataUtils";
+import { getMinMaxValue } from "@/Components/utils/dateUtils";
+import { exportToExcel } from "@/Components/utils/excelUtils";
+import { handleFilterTable } from "@/Components/utils/filterUtils";
+import { canEditFailedConsignments } from "@/permissions";
+import { PencilIcon } from "@heroicons/react/24/outline";
+import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
+import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
+import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
+import moment from "moment";
+import PropTypes from "prop-types";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
 export default function FailedCons({
     PerfData,
@@ -27,7 +27,7 @@ export default function FailedCons({
     setFilterValue,
     accData,
 }) {
-    const { url,Token, userPermissions } = useContext(CustomContext);
+    const { userPermissions } = useContext(CustomContext);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [reason, setReason] = useState();
     const handleEditClick = (reason) => {
@@ -74,16 +74,28 @@ export default function FailedCons({
             headerAlign: "center",
         },
     ];
-     const reasonOptions = failedReasons?.map((reason) => ({
+    const reasonOptions = failedReasons?.map((reason) => ({
         id: reason.ReasonId,
         label: reason.ReasonName,
     }));
-    const senderZoneOptions = createNewLabelObjects(data, "SenderState");
-    const receiverZoneOptions = createNewLabelObjects(data, "RECEIVERSTATE");
-    const senderZoneOptions1 = createNewLabelObjects(data, "SENDERZONE");
-    const receiverZoneOptions1 = createNewLabelObjects(data, "RECEIVERZONE");
+    const podOptions = [
+        {
+            id: true,
+            label: "True",
+        },
+        {
+            id: false,
+            label: "False",
+        },
+    ];
+    const senderStatesOptions = createNewLabelObjects(data, "SenderState");
+    const receiverStateOptions = createNewLabelObjects(data, "RECEIVERSTATE");
+    const senderZoneOptions = createNewLabelObjects(data, "SENDERZONE");
+    const receiverZoneOptions = createNewLabelObjects(data, "RECEIVERZONE");
+
     const states = createNewLabelObjects(data, "State");
     const departments = createNewLabelObjects(data, "Department");
+    const statusOptions = createNewLabelObjects(data, "STATUS");
     const referenceOptions = [
         {
             id: 1,
@@ -119,52 +131,24 @@ export default function FailedCons({
             group: "personalInfo",
             filterEditor: StringFilter,
             render: ({ value, data }) => {
-                return (
-                    <span
-                        className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => handleClick(data.CONSIGNMNENTID)}
-                    >
-                        {isDummyAccount(value)}
-                    </span>
-                );
-            },
-        },
-        {
-            name: "IncidentNo",
-            defaultWidth: 170,
-            header: "Incident No",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            render: ({ value, data }) => {
-                return renderIncidentDetailsLink(
+                return renderConsDetailsLink(
                     userPermissions,
                     value,
-                    data.IncidentId
+                    data.CONSIGNMENTID
                 );
             },
-            filterEditor: StringFilter,
         },
         {
-            name: "IncidentTypeName",
-            defaultWidth: 170,
-            header: "Incident Type",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            render: ({ value }) => {
-                return <span className=""> {value}</span>;
-            },
-            filterEditor: StringFilter,
-        },
-        {
-            name: "IncidentStatusName",
+            name: "Status",
             header: "Status",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
-            render: ({ data }) => {
-                return <span className=""> {data.IncidentStatusName}</span>;
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: statusOptions,
             },
         },
         {
@@ -205,7 +189,7 @@ export default function FailedCons({
             filterEditorProps: {
                 multiple: true,
                 wrapMultiple: false,
-                dataSource: senderZoneOptions,
+                dataSource: senderStatesOptions,
             },
         },
         {
@@ -219,7 +203,7 @@ export default function FailedCons({
             filterEditorProps: {
                 multiple: true,
                 wrapMultiple: false,
-                dataSource: senderZoneOptions1,
+                dataSource: senderZoneOptions,
             },
         },
         {
@@ -258,7 +242,7 @@ export default function FailedCons({
             filterEditorProps: {
                 multiple: true,
                 wrapMultiple: false,
-                dataSource: receiverZoneOptions,
+                dataSource: receiverStateOptions,
             },
         },
         {
@@ -272,7 +256,7 @@ export default function FailedCons({
             filterEditorProps: {
                 multiple: true,
                 wrapMultiple: false,
-                dataSource: receiverZoneOptions1,
+                dataSource: receiverZoneOptions,
             },
         },
         {
@@ -383,6 +367,12 @@ export default function FailedCons({
             header: "POD",
             headerAlign: "center",
             textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: podOptions,
+            },
             render: ({ value }) => {
                 return value ? (
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
@@ -395,136 +385,137 @@ export default function FailedCons({
                 );
             },
         },
-        // {
-        //     name: "FailedReason",
-        //     header: "Reason",
-        //     headerAlign: "center",
-        //     textAlign: "start",
-        //     defaultWidth: 300,
-        //     filterEditor: SelectFilter,
-        //     filterEditorProps: {
-        //         multiple: true,
-        //         wrapMultiple: false,
-        //         dataSource: reasonOptions,
-        //     },
-        //     render: ({ value }) => {
-        //         return (
-        //             <div>
-        //                 {/* {value} */}
-        //                 {
-        //                     failedReasons?.find(
-        //                         (reason) => reason.ReasonId === value
-        //                     )?.ReasonName
-        //                 }
-        //             </div>
-        //         );
-        //     },
-        // },
-        // {
-        //     name: "FailedReasonDesc",
-        //     header: "Main cause",
-        //     headerAlign: "center",
-        //     textAlign: "start",
-        //     defaultWidth: 300,
-        //     filterEditor: StringFilter,
-        // },
-        // {
-        //     name: "State",
-        //     header: "State",
-        //     headerAlign: "center",
-        //     textAlign: "center",
-        //     filterEditor: SelectFilter,
-        //     filterEditorProps: {
-        //         multiple: true,
-        //         wrapMultiple: false,
-        //         dataSource: states,
-        //     },
-        // },
-        // {
-        //     name: "Reference",
-        //     header: "Reference",
-        //     headerAlign: "center",
-        //     textAlign: "center",
-        //     filterEditor: SelectFilter,
-        //     filterEditorProps: {
-        //         multiple: true,
-        //         wrapMultiple: false,
-        //         dataSource: referenceOptions,
-        //     },
-        //     render: ({ value }) => {
-        //         return value == 1 ? (
-        //             <span>Internal</span>
-        //         ) : value == 2 ? (
-        //             <span>External</span>
-        //         ) : (
-        //             <span></span>
-        //         );
-        //     },
-        // },
-        // {
-        //     name: "Department",
-        //     header: "Department",
-        //     headerAlign: "center",
-        //     textAlign: "start",
-        //     filterEditor: SelectFilter,
-        //     filterEditorProps: {
-        //         multiple: true,
-        //         wrapMultiple: false,
-        //         dataSource: departments,
-        //     },
-        // },
-        // {
-        //     name: "OccuredAt",
-        //     header: "Occured at",
-        //     headerAlign: "center",
-        //     textAlign: "center",
-        //     defaultWidth: 170,
-        //     dateFormat: "DD-MM-YYYY",
-        //     filterEditor: DateFilter,
-        //     render: ({ value, cellProps }) => {
-        //         return moment(value).format("DD-MM-YYYY hh:mm A") ==
-        //             "Invalid date"
-        //             ? ""
-        //             : moment(value).format("DD-MM-YYYY hh:mm A");
-        //     },
-        // },
-        // {
-        //     name: "FailedNote",
-        //     header: "Explanation",
-        //     headerAlign: "center",
-        //     textAlign: "start",
-        // },
-        // {
-        //     header: "Edit",
-        //     headerAlign: "center",
-        //     textAlign: "center",
-        //     defaultWidth: 100,
-        //     render: ({ value, data }) => {
-        //         return (
-        //             <div>
-        //                 {canEditFailedConsignments(currentUser) ? (
-        //                     <button
-        //                         className={
-        //                             "rounded text-blue-500 justify-center items-center  "
-        //                         }
-        //                         onClick={() => {
-        //                             handleEditClick(data);
-        //                         }}
-        //                     >
-        //                         <span className="flex gap-x-1">
-        //                             <PencilIcon className="h-4" />
-        //                             Edit
-        //                         </span>
-        //                     </button>
-        //                 ) : (
-        //                     <div></div>
-        //                 )}
-        //             </div>
-        //         );
-        //     },
-        // },
+        {
+            name: "FailedReason",
+            header: "Reason",
+            headerAlign: "center",
+            textAlign: "start",
+            defaultWidth: 300,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: reasonOptions,
+            },
+            render: ({ value }) => {
+                return (
+                    <div>
+                        {/* {value} */}
+                        {
+                            failedReasons?.find(
+                                (reason) => reason.ReasonId === value
+                            )?.ReasonName
+                        }
+                    </div>
+                );
+            },
+        },
+        {
+            name: "FailedReasonDesc",
+            header: "Main cause",
+            headerAlign: "center",
+            textAlign: "start",
+            defaultWidth: 300,
+            filterEditor: StringFilter,
+        },
+        {
+            name: "State",
+            header: "State",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: states,
+            },
+        },
+        {
+            name: "Reference",
+            header: "Reference",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: referenceOptions,
+            },
+            render: ({ value }) => {
+                return value == 1 ? (
+                    <span>Internal</span>
+                ) : value == 2 ? (
+                    <span>External</span>
+                ) : (
+                    <span></span>
+                );
+            },
+        },
+        {
+            name: "Department",
+            header: "Department",
+            headerAlign: "center",
+            textAlign: "start",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: departments,
+            },
+        },
+        {
+            name: "OccuredAt",
+            header: "Occured at",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            dateFormat: "DD-MM-YYYY",
+            filterEditor: DateFilter,
+            render: ({ value }) => {
+                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                    "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A");
+            },
+        },
+        {
+            name: "FailedNote",
+            header: "Explanation",
+            headerAlign: "center",
+            textAlign: "start",
+            filterEditor: StringFilter,
+        },
+        {
+            header: "Edit",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 100,
+            render: ({data }) => {
+                return (
+                    <div>
+                        {canEditFailedConsignments(userPermissions) ? (
+                            <button
+                                className={
+                                    "rounded text-blue-500 justify-center items-center  "
+                                }
+                                onClick={() => {
+                                    handleEditClick(data);
+                                }}
+                            >
+                                <span className="flex gap-x-1">
+                                    <PencilIcon className="h-4" />
+                                    Edit
+                                </span>
+                            </button>
+                        ) : (
+                            <div></div>
+                        )}
+                    </div>
+                );
+            },
+        },
     ];
-    
+
     const newArray = columns.slice(0, -1);
     const [newColumns, setNewColumns] = useState();
 
@@ -547,7 +538,6 @@ export default function FailedCons({
             return acc;
         }, {});
 
-        // Define custom cell handlers (e.g., for formatting dates, failed reasons, etc.)
         const customCellHandlers = {
             DespatchDate: (value) => formatDateToExcel(value),
             ArrivedDatetime: (value) => formatDateToExcel(value),
@@ -579,7 +569,6 @@ export default function FailedCons({
             ]
         );
     };
-
     const updateLocalData = (
         id,
         reasonid,
@@ -593,7 +582,7 @@ export default function FailedCons({
     ) => {
         // Find the item in the local data with the matching id
         const updatedData = filteredData?.map((item) => {
-            if (item.CONSIGNMNENTID === id) {
+            if (item.ConsignmentID === id) {
                 // Update the reason of the matching item
                 return {
                     ...item,
@@ -609,10 +598,12 @@ export default function FailedCons({
             }
             return item;
         });
+        console.log(updatedData);
         setData(updatedData);
         setFilteredData(updatedData);
     };
     const [selected, setSelected] = useState([]);
+
     return (
         <div className="mt-4">
             {/* <Sidebar /> */}
@@ -637,14 +628,10 @@ export default function FailedCons({
             )}
 
             <SetFailedReasonModal
-                url={url}
-                Token={Token}
-                isOpen={isModalOpen}
                 reason={reason}
+                isOpen={isModalOpen}
                 setReason={setReason}
                 handleClose={handleEditClick}
-                failedReasons={failedReasons}
-                userPermissions={userPermissions}
                 updateLocalData={updateLocalData}
             />
         </div>

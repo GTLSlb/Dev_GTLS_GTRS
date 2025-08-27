@@ -1,11 +1,10 @@
 import React, { useContext } from "react";
-import PropTypes from "prop-types";
 import ConsignmentGraph from "./ReportTabs/ConsignmentGraph";
 import TotalFailPODGraph from "./ReportTabs/TotalFailPODGraph";
 import { CustomContext } from "@/CommonContext";
 
 const MultiChartLine = () => {
-    const { url, Token,userPermissions } = useContext(CustomContext);
+    const { url, Token, userPermissions } = useContext(CustomContext);
     const activeComponentIndex = 0; // Index of the active component to display
     const customers = [
         {
@@ -51,6 +50,5 @@ const MultiChartLine = () => {
         </div>
     );
 };
-
 
 export default MultiChartLine;

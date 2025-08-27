@@ -53,6 +53,10 @@ export default function Gtrs({
         setTransportData,
         kpireasonsData,
         setkpireasonsData,
+        setFailedReasonsApi,
+        setFailedReasonsData,
+        setRDDReasonsApi,
+        setRDDReasonsData,
     } = useContext(CustomContext);
 
     const [chartsData, setchartsData] = useState([]);
@@ -188,6 +192,16 @@ export default function Gtrs({
                     url: `${gtrsUrl}/Transport`,
                     setData: setTransportData,
                     setApiStatus: setTransportApi,
+                },
+                {
+                    url: `${gtrsUrl}/FailureReasons`,
+                    setData: setFailedReasonsData,
+                    setApiStatus: setFailedReasonsApi,
+                },
+                {
+                    url: `${gtrsUrl}/RddChangeReason`,
+                    setData: setRDDReasonsData,
+                    setApiStatus: setRDDReasonsApi,
                 },
             ];
             urls.forEach(({ url, setData, setApiStatus }) => {

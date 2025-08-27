@@ -18,7 +18,6 @@ import {
 import TaskIcon from "@mui/icons-material/Task";
 import ContactsIcon from '@mui/icons-material/Contacts';
 import DescriptionIcon from '@mui/icons-material/Description';
-import ReportIcon from "@mui/icons-material/Report";
 
 const menu = [
     {
@@ -29,15 +28,6 @@ const menu = [
         current: true,
         feature: "Dashboard_view",
         url: "/gtrs/dashboard",
-    },
-    {
-        id: 32,
-        name: "Spend Analysis",
-        href: "#",
-        icon: ChartPieIcon,
-        current: false,
-        feature: "Dashboard_view",
-        url: "/gtrs/spendanalysis",
     },
     {
         id: 1,

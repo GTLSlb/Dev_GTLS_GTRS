@@ -1,5 +1,4 @@
 import { CustomContext } from "@/CommonContext";
-import AnimatedLoading from "@/Components/AnimatedLoading";
 import TableStructure from "@/Components/TableStructure";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";

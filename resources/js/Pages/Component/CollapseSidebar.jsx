@@ -10,7 +10,7 @@ import {
     AccordionHeader,
     AccordionItem,
 } from "react-headless-accordion";
-import MenuIcon from "@mui/icons-material/Menu";
+import { ChevronRight } from "@mui/icons-material";
 import { CustomContext } from "@/CommonContext";
 
 function classNames(...classes) {
@@ -122,12 +122,15 @@ export default function CollapseSidebar({
     useEffect(() => {
         setCustomerOptions(customerAccounts);
     }, []);
+
     const handleDivClick = () => {
         setShowList(!showList);
     };
+
     useEffect(() => {
         onData(optionSelected);
     }, [optionSelected]);
+
     const handleSelectedCValue = (event) => {
         const optionValue = event.target.value;
         if (event.target.checked && !optionSelected.includes(optionValue)) {
@@ -138,6 +141,7 @@ export default function CollapseSidebar({
             );
         }
     };
+
     const handleCheckboxClick = (option1, event) => {
         const value = customerOptions.map((option) =>
             option.DebtorId === option1.DebtorId
@@ -259,6 +263,7 @@ export default function CollapseSidebar({
         localStorage.setItem("current", JSON.stringify(id));
         navigate(item.url);
     };
+
     function handleSelectOnClick() {
         if (collapsed) {
             setCollapsed(false);
@@ -269,6 +274,7 @@ export default function CollapseSidebar({
             setIsOpen(!isOpen);
         }
     }
+
     function isItemActive(menuItemLabel) {
         let active = false;
 
@@ -301,7 +307,7 @@ export default function CollapseSidebar({
 
     return (
         sidebarElements?.length > 0 && (
-            <div className="h-full relative z-30">
+            <div className="h-full relative z-30 bg-gray-100 ">
                 <Sidebar
                     collapsed={collapsed} // collapsed the menu
                     toggled={toggled}
@@ -310,23 +316,13 @@ export default function CollapseSidebar({
                     onBreakPoint={setBroken}
                     rtl={false}
                     breakPoint="md"
-                    backgroundColor={hexToRgba(
-                        collapsed
-                            ? themescollapse[theme].sidebar.backgroundColor
-                            : themes[theme].sidebar.backgroundColor,
-                        hasImage ? 0.9 : 1
-                    )}
                     rootStyles={{
-                        color: collapsed
-                            ? themescollapse[theme].sidebar.color
-                            : themes[theme].sidebar.color,
                         height: "100%",
                         position: "relative",
-                        backgroundColor: "#f6f6f6",
                     }}
                 >
                     {/* Sidebar content */}
-                    <div className=" h-full ">
+                    <div className="h-full containerscroll">
                         {/* Arrow to close and open it  */}
                         <div
                             className={
@@ -351,10 +347,9 @@ export default function CollapseSidebar({
                             </div>
                             <Button
                                 isIconOnly
-                                className="bg-zinc-300 hover:bg-zinc-200 rounded-xl text-black font-bold"
+                                className="bg-zinc-300 hover:bg-zinc-200"
                                 aria-label="Like"
                                 onClick={() => {
-                                    setIsOpen(false);
                                     setCollapsed(!collapsed);
                                 }}
                             >
@@ -365,9 +360,8 @@ export default function CollapseSidebar({
                                             : "rotate-180 transform  transition"
                                     }
                                 >
-                                    <MenuIcon
-                                        className={"w-[0.1rem] h-[0.1rem]"}
-                                    />
+                                    {/* <MenuIcon className="!w-[24px] !h-[24px]" /> */}
+                                    <ChevronRight className="!w-[24px] !h-[24px]" />
                                 </div>
                             </Button>
                         </div>

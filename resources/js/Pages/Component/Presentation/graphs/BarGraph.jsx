@@ -35,11 +35,21 @@ function BarGraph({
     getReportData,
     selectedReceiver,
 }) {
-const { user, url, Token, userPermissions } = useContext(CustomContext);
+    const { url, Token, userPermissions } = useContext(CustomContext);
     function generateMonthArrayFromJson(data) {
         const monthNames = [
-            "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-            "JUL", "AUG", "SEPT", "OCT", "NOV", "DEC"
+            "JAN",
+            "FEB",
+            "MAR",
+            "APR",
+            "MAY",
+            "JUN",
+            "JUL",
+            "AUG",
+            "SEPT",
+            "OCT",
+            "NOV",
+            "DEC",
         ];
         let result = [];
 
@@ -164,17 +174,19 @@ const { user, url, Token, userPermissions } = useContext(CustomContext);
                         let yAxisID = tooltipItem.dataset.yAxisID;
 
                         if (yAxisID === "y-axis-bar") {
-                            return `${datasetLabel}: ${parseFloat(value).toFixed(2)}`;
+                            return `${datasetLabel}: ${parseFloat(
+                                value
+                            ).toFixed(2)}`;
                         } else {
-                            return `${datasetLabel}: ${parseFloat(value).toFixed(2)}%`;
+                            return `${datasetLabel}: ${parseFloat(
+                                value
+                            ).toFixed(2)}%`;
                         }
                     },
                 },
             },
         },
     };
-
-
 
     return (
         <div>

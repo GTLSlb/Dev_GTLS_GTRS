@@ -101,6 +101,16 @@ export default function NoDelivery({
     const minDaterdd = getMinMaxValue(NoDelData, "DeliveryRequiredDateTime", 1);
     const maxDaterdd = getMinMaxValue(NoDelData, "DeliveryRequiredDateTime", 2);
 
+    const trueFalseOptions = [
+        {
+            id: true,
+            label: "True",
+        },
+        {
+            id: false,
+            label: "False",
+        },
+    ];
     const groups = [
         {
             name: "senderInfo",
@@ -266,6 +276,12 @@ export default function NoDelivery({
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: trueFalseOptions,
+            },
             render: ({ value }) => {
                 return value ? (
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
@@ -284,6 +300,12 @@ export default function NoDelivery({
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: trueFalseOptions,
+            },
             render: ({ value }) => {
                 return value ? (
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">

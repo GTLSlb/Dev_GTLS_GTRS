@@ -1,5 +1,5 @@
 import { canViewInternal } from "@/permissions";
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import logo from "@/assets/pictures/Logoblack.png";
 import { Chip } from "@heroui/react";

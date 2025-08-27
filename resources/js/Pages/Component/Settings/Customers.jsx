@@ -1,12 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
-import { UserIcon } from "@heroicons/react/24/solid";
-import { Card, CardHeader } from "@heroui/react";
-import { useNavigate } from "react-router-dom";
-import AnimatedLoading from "@/Components/AnimatedLoading";
 import axios from "axios";
 import swal from "sweetalert";
-import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 import { CustomContext } from "@/CommonContext";
+import { Card, CardHeader } from "@heroui/react";
+import { UserIcon } from "@heroicons/react/24/solid";
+import AnimatedLoading from "@/Components/AnimatedLoading";
+import React, { useContext, useEffect, useState } from "react";
 
 export default function Customers() {
     const { Token, user } = useContext(CustomContext);

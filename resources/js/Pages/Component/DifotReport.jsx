@@ -1,13 +1,12 @@
-import {
-    Fragment,
+import React, {
     useEffect,
     useState,
     useRef,
     useImperativeHandle,
     useContext,
 } from "react";
-import { Popover, Transition } from "@headlessui/react";
 import moment from "moment";
+import PropTypes from "prop-types";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
@@ -20,32 +19,15 @@ import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { formatDateToExcel, handleSessionExpiration } from "@/CommonFunctions";
 import { CustomContext } from "@/CommonContext";
 
-function parseDateString(dateString) {
-    // Check if it's a full datetime with time part
-    if (dateString.includes("AM") || dateString.includes("PM")) {
-        // Let JavaScript parse it directly
-        return new Date(dateString);
-    }
-
-    // Handle format like "25/07/2025"
-    const [day, month, year] = dateString.split("/");
-    return new Date(year, month - 1, day); // month is 0-indexed
-}
-
-export default function DifotReport({
-    // difotData,
-    filterValue,
-    setFilterValue,
-    // fetchData,
-    accData,
-}) {
-    const { url, Token } = useContext(CustomContext);
+export default function DifotReport({ filterValue, setFilterValue, accData }) {
+    const { url, Token, user } = useContext(CustomContext);
     const [filteredData, setFilteredData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [difotData, setDifotData] = useState([]);
     useEffect(() => {
         fetchDifotReportData();
     }, []);
+
     const fetchDifotReportData = async (setCellLoading) => {
         try {
             const res = await axios.get(`${url}Difot/Report`, {
@@ -54,6 +36,7 @@ export default function DifotReport({
                     Authorization: `Bearer ${Token}`,
                 },
             });
+            console.log(res.data);
             if (res.data == "" || res.data == []) {
                 setDifotData([]);
             } else {
@@ -769,7 +752,7 @@ export default function DifotReport({
                 minDate: minDateOldRdd,
                 maxDate: maxDateOldRdd,
             },
-            render: ({ value, cellProps }) => {
+            render: ({ value }) => {
                 const dateValue =
                     value == null
                         ? ""
@@ -1094,3 +1077,9 @@ export default function DifotReport({
         </div>
     );
 }
+
+DifotReport.propTypes = {
+    filterValue: PropTypes.object,
+    setFilterValue: PropTypes.func,
+    accData: PropTypes.array,
+};

@@ -30,6 +30,67 @@ class RegisteredUserController extends Controller
         return Inertia::render('Auth/Register');
     }
 
+    private function mapUserByTypeId($user)
+    {
+        $user_type_id = $user->TypeId;
+        switch ($user_type_id) {
+            case 1:
+                // User is a customer
+                return [
+                    'UserId' => $user->UserId,
+                    'TypeId' => $user->TypeId,
+                    'TypeName' => $user->TypeName,
+                    'OwnerId' => $user->OwnerId,
+                    'PhoneNumber' => $user->PhoneNumber,
+                    'CustomerName' => $user->CustomerName,
+                    'Picture' => $user->Picture,
+                    'Username' => $user->Username,
+                    'Email' => $user->Email,
+                ];
+            case 2:
+                // User is an employee
+                return [
+                    'UserId' => $user->UserId,
+                    'TypeId' => $user->TypeId,
+                    'TypeName' => $user->TypeName,
+                    'OwnerId' => $user->OwnerId,
+                    'Username' => $user->Username,
+                    'FirstName' => $user->FirstName,
+                    'LastName' => $user->LastName,
+                    'Email' => $user->Email,
+                    'PhoneNo' => $user->PhoneNo,
+                    'Dob' => $user->Dob,
+                    'Address' => $user->Address,
+                    'Picture' => $user->Picture,
+                    'NationalityId' => $user->NationalityId,
+                    'NationalityName' => $user->NationalityName,
+                    'BranchId' => $user->BranchId,
+                    'RoleId' => $user->RoleId,
+                    'RoleName' => $user->RoleName,
+                    'ReportToId' => $user->ReportToId,
+                    'ReportToName' => $user->ReportToName,
+                    'HiringDate' => $user->HiringDate,
+                    'StateId' => $user->StateId,
+                    'StateName' => $user->StateName,
+                ];
+            case 3:
+                // User is a driver
+                return [
+                    'UserId' => $user->UserId,
+                    'TypeId' => $user->TypeId,
+                    'TypeName' => $user->TypeName,
+                    'truckNbr' => $user->truckNbr,
+                    'location' => $user->location,
+                    'driverNbr' => $user->driverNbr,
+                    'Username' => $user->Username,
+                    'Email' => $user->Email,
+                    'phoneNbr' => $user->phoneNbr,
+                ];
+            default:
+                return null;
+        }
+    }
+
     /**
      * Handle an incoming registration request.
      *
@@ -56,88 +117,23 @@ class RegisteredUserController extends Controller
     }
     public function getCurrentUserName(Request $request)
     {
-        if ($request->session()->get('user') !== null) {
-            $sessionId = $request->session()->getId();
+        $sessionId = $request->session()->getId();
+        $user_from_db = DB::table('custom_sessions')
+            ->where('id', $sessionId)
+            ->value('user');
+        $user_from_session = $request->session()->get('user');
 
-            // Query the database to get the user based on the session ID
-            $user = DB::table('custom_sessions')
-                ->where('id', $sessionId)
-                ->value('user');
+        $valid_user = $user_from_db != null ? $user_from_db : $user_from_session;
+        $decoded_user = is_string($valid_user) ? json_decode($valid_user) : $valid_user;
 
-            // Check if user data was found
-            if ($user !== null) {
-                // Assuming the 'user' column contains JSON-encoded user data
-                $user = json_decode($user);
-
-                // Check if json_decode returned a valid object
-                if ($user !== null && is_object($user)) {
-                    // Handle based on TypeId
-                    if ($user->TypeId == 1) { // Customer
-                        return response()->json([
-                            'token' => $request->session()->get('token'),
-                            'user' => [
-                                'UserId' => $user->UserId,
-                                'TypeId' => $user->TypeId,
-                                'TypeName' => $user->TypeName,
-                                'OwnerId' => $user->OwnerId,
-                                'PhoneNumber' => $user->PhoneNumber,
-                                'CustomerName' => $user->CustomerName,
-                                'Picture' => $user->Picture,
-                                'Username' => $user->Username,
-                                'Email' => $user->Email,
-                            ]
-                        ]);
-                    } else if ($user->TypeId == 2) { // Employee
-                        return response()->json([
-                            'token' => $request->session()->get('token'),
-                            'user' => [
-                            'UserId' => $user->UserId,
-                            'TypeId' => $user->TypeId,
-                            'TypeName' => $user->TypeName,
-                            'OwnerId' => $user->OwnerId,
-                            'Username' => $user->Username,
-                            'FirstName' => $user->FirstName,
-                            'LastName' => $user->LastName,
-                            'Email' => $user->Email,
-                            'PhoneNo' => $user->PhoneNo,
-                            'Dob' => $user->Dob,
-                            'Address' => $user->Address,
-                            'Picture' => $user->Picture,
-                            'NationalityId' => $user->NationalityId,
-                            'NationalityName' => $user->NationalityName,
-                            'BranchId' => $user->BranchId,
-                            'RoleId' => $user->RoleId,
-                            'RoleName' => $user->RoleName,
-                            'ReportToId' => $user->ReportToId,
-                            'ReportToName' => $user->ReportToName,
-                            'HiringDate' => $user->HiringDate,
-                            'StateId' => $user->StateId,
-                            'StateName' => $user->StateName,
-                        ]]);
-                    } else { // Driver
-                        return response()->json([
-                            'token' => $request->session()->get('token'),
-                            'user' => [
-                            'UserId' => $user->UserId,
-                            'TypeId' => $user->TypeId,
-                            'TypeName' => $user->TypeName,
-                            'truckNbr' => $user->truckNbr,
-                            'location' => $user->location,
-                            'driverNbr' => $user->driverNbr,
-                            'Username' => $user->Username,
-                            'Email' => $user->Email,
-                            'phoneNbr' => $user->phoneNbr,
-                        ]]);
-                    }
-                } else {
-                    // json_decode failed or returned invalid data
-                    return response()->json(['error' => 'Invalid user data'], 400);
-                }
-            } else {
-                // No user found for the session
-                return response()->json(['error' => 'User not found'], 404);
-            }
+        if ($decoded_user !== null) {
+            $user = $this->mapUserByTypeId($decoded_user);
+            return response()->json([
+                'token' => $request->session()->get('token'),
+                'user' => $user
+            ]);
         } else {
+            // User object is null
             return response()->json(['error' => 'Session not found'], 401);
         }
     }
@@ -164,7 +160,7 @@ class RegisteredUserController extends Controller
 
     public function getChildrens($id)
     {
-        $UserId=$id;
+        $UserId = $id;
         $user = User::find($UserId);
         if ($user) {
             if ($user->parent_id == null) {
@@ -278,7 +274,7 @@ class RegisteredUserController extends Controller
     }
     public function getUsersWhoCanApprove()
     {
-        $roles = [1,6, 9, 10];
+        $roles = [1, 6, 9, 10];
 
         $users = User::whereIn('role_id', $roles)
             ->select('id', 'user_id', 'name')
@@ -316,7 +312,7 @@ class RegisteredUserController extends Controller
         $notFoundFiles = [];
 
         foreach ($fileNames as $fileName) {
-            $filePath = $publicPath . '/'. "Invoices" . "/" . $fileName;
+            $filePath = $publicPath . '/' . "Invoices" . "/" . $fileName;
 
             if (File::exists($filePath)) {
                 File::delete($filePath);

@@ -71,6 +71,17 @@ export default function Holidays({
     const holidayOptions = createNewLabelObjects(holidays, "HolidayName");
     const stateOptions = createNewLabelObjects(holidays, "HolidayState");
 
+    const statusOptions = [
+        {
+            id: 1,
+            label: "True",
+        },
+        {
+            id: 2,
+            label: "False",
+        },
+    ];
+
     const [columns, setColumns] = useState([
         {
             name: "HolidayName",
@@ -128,11 +139,18 @@ export default function Holidays({
         },
         {
             name: "HolidayStatus",
+            defaultFlex: 1,
             minWidth: 170,
             header: "Status",
-            defaultFlex: 1,
+            type: "string",
             headerAlign: "center",
             textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: statusOptions,
+            },
             render: ({ value }) => {
                 return value == 1 ? (
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
@@ -217,11 +235,18 @@ export default function Holidays({
                     },
                     {
                         name: "HolidayStatus",
+                        defaultFlex: 1,
                         minWidth: 170,
                         header: "Status",
-                        defaultFlex: 1,
+                        type: "string",
                         headerAlign: "center",
                         textAlign: "center",
+                        filterEditor: SelectFilter,
+                        filterEditorProps: {
+                            multiple: true,
+                            wrapMultiple: false,
+                            dataSource: statusOptions,
+                        },
                         render: ({ value }) => {
                             return value == 1 ? (
                                 <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
@@ -322,11 +347,18 @@ export default function Holidays({
                     },
                     {
                         name: "HolidayStatus",
+                        defaultFlex: 1,
                         minWidth: 170,
                         header: "Status",
-                        defaultFlex: 1,
+                        type: "string",
                         headerAlign: "center",
                         textAlign: "center",
+                        filterEditor: SelectFilter,
+                        filterEditorProps: {
+                            multiple: true,
+                            wrapMultiple: false,
+                            dataSource: statusOptions,
+                        },
                         render: ({ value }) => {
                             return value == 1 ? (
                                 <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">

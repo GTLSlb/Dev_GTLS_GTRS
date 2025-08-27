@@ -1,7 +1,7 @@
 import React, { createContext, useState } from "react";
-import Cookies from "js-cookie";
 import menu from "./SidebarMenuItems";
 import PropTypes from "prop-types";
+import { useApiRequests } from "./CommonFunctions";
 
 export const CustomContext = createContext({});
 
@@ -19,7 +19,9 @@ export default function ContextProvider({ children }) {
     const [debtorsData, setdebtorsData] = useState([]);
     const [transportData, setTransportData] = useState([]);
     const [kpireasonsData, setkpireasonsData] = useState([]);
+    const [RDDReasonsData, setRDDReasonsData] = useState([]);
     const [customerAccounts, setCustomerAccounts] = useState([]);
+    const [failedReasonsData, setFailedReasonsData] = useState([]);
 
     const [consApi, setConsApi] = useState(false);
     const [chartsApi, setchartsApi] = useState(false);
@@ -27,6 +29,34 @@ export default function ContextProvider({ children }) {
     const [DebtorsApi, setDebtorsApi] = useState(false);
     const [transportApi, setTransportApi] = useState(false);
     const [KPIReasonsApi, setKPIReasonsApi] = useState(false);
+    const [RDDReasonsApi, setRDDReasonsApi] = useState(false);
+    const [failedReasonsApi, setFailedReasonsApi] = useState(false);
+
+    const { getApiRequest } = useApiRequests();
+
+    function getFailedReasons() {
+        const headers = {
+            UserId: user.UserId,
+        };
+        getApiRequest(`${url}/FailureReasons`, headers, Token)
+            .then((res) => {
+                setFailedReasonsData(res);
+            })
+            .catch((err) =>
+                console.error("Error fetching close reasons:", err)
+            );
+    }
+
+    function getRDDReasons() {
+        const headers = {
+            UserId: user.UserId,
+        };
+        getApiRequest(`${url}/RddChangeReason`, headers, Token)
+            .then((res) => {
+                setRDDReasonsData(res);
+            })
+            .catch((err) => console.error("Error fetching RDD reasons:", err));
+    }
 
     return (
         <CustomContext.Provider
@@ -60,9 +90,22 @@ export default function ContextProvider({ children }) {
                 setTransportApi,
                 KPIReasonsApi,
                 setKPIReasonsApi,
-                customerAccounts, setCustomerAccounts,
-                transportData, setTransportData,
-                kpireasonsData, setkpireasonsData,
+                customerAccounts,
+                setCustomerAccounts,
+                transportData,
+                setTransportData,
+                kpireasonsData,
+                setkpireasonsData,
+                failedReasonsApi,
+                setFailedReasonsApi,
+                failedReasonsData,
+                setFailedReasonsData,
+                getFailedReasons,
+                RDDReasonsData,
+                setRDDReasonsData,
+                RDDReasonsApi,
+                setRDDReasonsApi,
+                getRDDReasons,
             }}
         >
             {children}

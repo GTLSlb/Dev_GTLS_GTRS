@@ -58,7 +58,6 @@ import SafetyRep from "./safetyRep";
 import TransportRep from "./TransportRep";
 import ProductStockTable from "./ProductStock/ProductStockTable";
 import KPIReasons from "./KPI/KPIReasons";
-import SpendDashboard from "./SpendAnalysis/SpendDashboard";
 import SettingMiddleware from "./Settings/SettingMiddleware";
 import Customers from "./Settings/Customers";
 import CustomerProfile from "./Settings/CustomerProfile";
@@ -724,7 +723,7 @@ export default function GtrsMain({
                         user={userPermissions}
                     />
 
-                    <main className="w-full overflow-y-auto">
+                    <main className="w-full overflow-y-auto bg-smooth">
                         <div className="fixed left-0 top-20 z-10">
                             {broken && (
                                 <Button
@@ -739,8 +738,8 @@ export default function GtrsMain({
                         </div>
 
                         {/* Main content area, displaying dynamically selected components */}
-                        <div className="h-full">
-                            <div className="rounded-lg h-full">
+                        <div className="">
+                            <div className="rounded-lg">
                                 <Routes>
                                     <Route
                                         path="/dashboard"
@@ -762,23 +761,6 @@ export default function GtrsMain({
                                                         }
                                                     />
                                                 }
-                                                userPermissions={
-                                                    userPermissions
-                                                }
-                                                setToken={setToken}
-                                                setUserPermissions={
-                                                    setUserPermissions
-                                                }
-                                            />
-                                        }
-                                    />
-                                    <Route
-                                        path="/spendanalysis"
-                                        element={
-                                            <ProtectedRoute
-                                                permission={userPermissions}
-                                                route="Dashboard_view"
-                                                element={<SpendDashboard />}
                                                 userPermissions={
                                                     userPermissions
                                                 }

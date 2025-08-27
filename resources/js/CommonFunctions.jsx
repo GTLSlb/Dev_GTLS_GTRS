@@ -7,7 +7,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { PublicClientApplication } from "@azure/msal-browser";
 import swal from "sweetalert";
 import {
-    AlertToast,
     canViewDetails,
     canViewIncidentDetails,
 } from "./permissions";
@@ -18,10 +17,9 @@ import { CustomContext } from "./CommonContext";
 const msalConfig = {
     auth: {
         clientId: window.Laravel.azureClientId,
-        authority:
-            `https://login.microsoftonline.com/${window.Laravel.azureTenantId}`,
+        authority: `https://login.microsoftonline.com/${window.Laravel.azureTenantId}`,
         redirectUri: window.Laravel.azureCallback,
-        failureRedirectUri: '/failed-login',
+        failureRedirectUri: "/failed-login",
     },
     cache: {
         cacheLocation: "sessionStorage",
@@ -148,13 +146,7 @@ export function getMinMaxValue(data, fieldName, identifier) {
     return `${day}-${month}-${year}`;
 }
 
-export const fetchApiData = async (
-    url,
-    setData,
-    user,
-    Token,
-    setApiStatus
-) => {
+export const fetchApiData = async (url, setData, user, Token, setApiStatus) => {
     try {
         const response = await axios.get(url, {
             headers: {
@@ -195,42 +187,22 @@ export const fetchApiData = async (
  * @param {object} headers - Optional headers to include in the request.
  * @return {Promise} A Promise that resolves with the data from the response or handles errors.
  */
-// export function getApiRequest(url, headers = {}) {
-//     const Token = Cookies.get("access_token");
-//     const tokenHeaders = { ...headers, Authorization: `Bearer ${Token}` };
-//     return axios
-//         .get(url, {
-//             headers: tokenHeaders,
-//         })
-//         .then((res) => {
-//             return res.data;
-//         })
-//         .catch((err) => {
-//             if (err.response && err.response.status === 401) {
-//                 // Handle 401 error using SweetAlert
-//                 swal({
-//                     title: "Session Expired!",
-//                     text: "Please login again",
-//                     icon: "info",
-//                     buttons: {
-//                         confirm: {
-//                             text: "OK",
-//                             value: true,
-//                             visible: true,
-//                             className: "",
-//                             closeModal: true,
-//                         },
-//                     },
-//                 }).then(function () {
-//                     handleSessionExpiration();
-//                 });
-//             } else {
-//                 // Handle other errors
-//                 AlertToast("Something went wrong", 2);
-//                 console.error(err);
-//             }
-//         });
-// }
+export const isDummyAccount = (value) => {
+    const email = Cookies.get("userEmail");
+    if (email == "demo@gtls.com.au") {
+        return "********";
+    } else {
+        return value;
+    }
+};
+export const isDummyAccountWithDummyData = (dummy, value) => {
+    const email = Cookies.get("userEmail");
+    if (email == "demo@gtls.com.au") {
+        return dummy;
+    } else {
+        return value;
+    }
+};
 
 export const formatDateToExcel = (dateValue) => {
     const date = new Date(dateValue);
@@ -309,7 +281,7 @@ function findCurrentItem(items, id) {
                     ? {
                           options: element.options.map((option) => {
                               if (option.id == id) {
-                                //   targetElement = option;
+                                  //   targetElement = option;
                                   return { ...option, current: true };
                               } else {
                                   return { ...option, current: false };
@@ -438,7 +410,6 @@ export const formatNumberWithCommas = (value) => {
 export function useApiRequests() {
     const { Token } = useContext(CustomContext);
 
-
     const getApiRequest = (url, headers = {}, passedToken = null) => {
         // Create a new headers object to avoid mutating the original
         const tokenHeaders = {
@@ -518,4 +489,24 @@ export function useApiRequests() {
     };
 
     return { getApiRequest, postApiRequest };
+}
+
+export function convertUtcToUserTimezone(utcDateString) {
+    // Create a Date object from the UTC date string
+    const utcDate = new Date(utcDateString);
+
+    // Get the current user's timezone
+    const targetTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    const formatter = new Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        timeZone: targetTimezone,
+    });
+    const convertedDate = formatter.format(utcDate);
+    return convertedDate;
 }

@@ -53,17 +53,25 @@ const ExportPopover = ({ columns, handleDownloadExcel, filteredData }) => {
                     <div className="max-w-md flex-auto overflow-hidden rounded-lg bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
                         <div className="p-4">
                             <div className="mt-2 flex flex-col">
-                                {columns.filter((column) => column.name.toLowerCase() !== "actions" && column.name.toLowerCase() !== "edit").map(({ name, header }) => (
-                                    <label key={name}>
-                                        <input
-                                            type="checkbox"
-                                            name="column"
-                                            value={name}
-                                            className="text-dark rounded focus:ring-goldd"
-                                        />{" "}
-                                        {header}
-                                    </label>
-                                ))}
+                                {columns
+                                    .filter(
+                                        (column) =>
+                                            column.name?.toLowerCase() !==
+                                                "actions" &&
+                                            column.name?.toLowerCase() !==
+                                                "edit"
+                                    )
+                                    .map(({ name, header }) => (
+                                        <label key={name}>
+                                            <input
+                                                type="checkbox"
+                                                name="column"
+                                                value={name}
+                                                className="text-dark rounded focus:ring-goldd"
+                                            />{" "}
+                                            {header}
+                                        </label>
+                                    ))}
                             </div>
                         </div>
                         <div className="grid grid-cols-1 divide-x divide-gray-900/5 bg-gray-50">

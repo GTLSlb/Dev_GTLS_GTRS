@@ -34,7 +34,7 @@ export default function MissingPOD({
         return entry.POD === false;
     });
 
-    const data = falsePodOnly
+    const data = falsePodOnly;
     const [filteredData, setFilteredData] = useState(data);
     const filterData = () => {
         const intArray = accData?.map((str) => {
@@ -105,7 +105,16 @@ export default function MissingPOD({
     const senderStates = createNewLabelObjects(falsePodOnly, "SenderState");
     const receiverStates = createNewLabelObjects(falsePodOnly, "ReceiverState");
     const services = createNewLabelObjects(falsePodOnly, "Service");
-
+    const podOptions = [
+        {
+            id: true,
+            label: "True",
+        },
+        {
+            id: false,
+            label: "False",
+        },
+    ];
     const columns = [
         {
             name: "ConsignmentNo",
@@ -288,6 +297,12 @@ export default function MissingPOD({
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: podOptions,
+            },
             render: ({ value }) => {
                 return value ? (
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">

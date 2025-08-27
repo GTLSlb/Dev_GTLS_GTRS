@@ -1,7 +1,6 @@
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import React, { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import PropTypes from "prop-types";
 import { CustomContext } from "@/CommonContext";
 
 export default function SettingMiddleware() {

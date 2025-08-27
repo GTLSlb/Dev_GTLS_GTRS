@@ -482,6 +482,12 @@ export const getFiltersHolidays = (minDateHol, maxDateHol) => {
             type: "string",
             value: "",
         },
+        {
+            name: "HolidayStatus",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
     ];
 };
 
@@ -505,24 +511,17 @@ export const getFiltersFailed = (minDispatchDate, maxDispatchDate) => {
             value: "",
         },
         {
-            name: "IncidentNo",
-            operator: "contains",
-            type: "string",
+            name: "Status",
+            operator: "inlist",
+            type: "select",
             value: "",
         },
         {
-            name: "IncidentTypeName",
+            name: "SenderName",
             operator: "contains",
             type: "string",
             value: "",
         },
-        {
-            name: "IncidentStatusName",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        { name: "SenderName", operator: "contains", type: "string", value: "" },
         {
             name: "SenderReference",
             operator: "contains",
@@ -536,19 +535,31 @@ export const getFiltersFailed = (minDispatchDate, maxDispatchDate) => {
             value: "",
         },
         {
+            name: "SenderZone",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
             name: "ReceiverName",
             operator: "contains",
             type: "string",
             value: "",
         },
         {
-            name: "receiverReference",
+            name: "ReceiverReference",
             operator: "contains",
             type: "string",
             value: "",
         },
         {
             name: "ReceiverState",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
+            name: "ReceiverZone",
             operator: "inlist",
             type: "select",
             value: "",
@@ -597,6 +608,12 @@ export const getFiltersFailed = (minDispatchDate, maxDispatchDate) => {
             value: "",
         },
         {
+            name: "POD",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
             name: "FailedReason",
             operator: "inlist",
             type: "select",
@@ -620,6 +637,25 @@ export const getFiltersFailed = (minDispatchDate, maxDispatchDate) => {
             type: "select",
             value: "",
         },
+        {
+            name: "Department",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
+            name: "OccuredAt",
+            operator: "inrange",
+            type: "date",
+            emptyValue: "",
+            value: "",
+        },
+        {
+            name: "FailedNote",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
     ];
 };
 
@@ -627,24 +663,6 @@ export const getFiltersRDD = (minDespatchDaterdd, maxDespatchDaterdd) => {
     return [
         {
             name: "ConsignmentNo",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "IncidentNo",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "IncidentTypeName",
-            operator: "contains",
-            type: "string",
-            value: "",
-        },
-        {
-            name: "IncidentStatusName",
             operator: "contains",
             type: "string",
             value: "",
@@ -687,6 +705,12 @@ export const getFiltersRDD = (minDespatchDaterdd, maxDespatchDaterdd) => {
             value: "",
         },
         {
+            name: "SenderZone",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
             name: "ReceiverName",
             operator: "contains",
             type: "string",
@@ -717,6 +741,12 @@ export const getFiltersRDD = (minDespatchDaterdd, maxDespatchDaterdd) => {
             value: "",
         },
         {
+            name: "ReceiverZone",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
             name: "DespatchDate",
             operator: "inrange",
             type: "date",
@@ -724,6 +754,13 @@ export const getFiltersRDD = (minDespatchDaterdd, maxDespatchDaterdd) => {
                 start: minDespatchDaterdd,
                 end: maxDespatchDaterdd,
             },
+        },
+        {
+            name: "ChangeType",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
         },
         {
             name: "OldRdd",
@@ -858,6 +895,12 @@ export const getFiltersPOD = (
             //     start: minDateDel,
             //     end: maxDateDel,
             // },
+        },
+        {
+            name: "POD",
+            operator: "inlist",
+            type: "select",
+            value: "",
         },
     ];
 };
@@ -1019,6 +1062,18 @@ export const getFiltersNoDelInfo = (minDateNoDel, maxDateNoDel) => {
             type: "select",
             value: "",
         },
+        {
+            name: "Timeslot",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
+            name: "POD",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
     ];
 };
 
@@ -1163,6 +1218,24 @@ export const getFiltersDrivers = () => {
         },
         {
             name: "MobilityDeviceMakes_Description",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
+            name: "UsedForSmartSCAN",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
+            name: "UsedForSmartSCANFreight",
+            operator: "inlist",
+            type: "select",
+            value: "",
+        },
+        {
+            name: "UsedForVLink",
             operator: "inlist",
             type: "select",
             value: "",
@@ -1733,116 +1806,6 @@ export const getFiltersChartsTable = (chartFilter) => {
             operator: "inlist",
             type: "select",
             value: chartFilter?.MatchDel ? chartFilter?.MatchDel : null,
-            emptyValue: "",
-        },
-    ];
-};
-
-
-export const getSpendAnalysisTable = () => {
-    return [
-        {
-            name: "ConsignmentNo",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "SenderReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "ReceiverReference",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "CodeRef",
-            operator: "inlist",
-            type: "select",
-            value: null,
-        },
-        {
-            name: "DescriptionRef",
-            operator: "contains",
-            type: "string",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "Cost",
-            operator: "eq",
-            type: "number",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "TotalAdditionalCharge",
-            operator: "eq",
-            type: "number",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "fuelLevy",
-            operator: "eq",
-            type: "number",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "GST",
-            operator: "eq",
-            type: "number",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "TotalCost",
-            operator: "eq",
-            type: "number",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "Weight",
-            operator: "eq",
-            type: "number",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "height",
-            operator: "eq",
-            type: "number",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "Cubic",
-            operator: "eq",
-            type: "number",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "length",
-            operator: "eq",
-            type: "number",
-            value: "",
-            emptyValue: "",
-        },
-        {
-            name: "NoPallet",
-            operator: "eq",
-            type: "number",
-            value: "",
             emptyValue: "",
         },
     ];

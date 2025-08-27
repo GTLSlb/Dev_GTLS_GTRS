@@ -1,21 +1,18 @@
-import { useContext, useState } from "react";
-import React from "react";
+import React, { useContext, useState } from "react";
 import { useEffect } from "react";
 import Gtrs from "@/Pages/GTRS";
-import axios from "axios";
-import Cookies from "js-cookie";
 import { Routes, Route } from "react-router-dom";
 import NotFound from "./NotFoundPage";
 import Login from "./Auth/Login";
 import AnimatedLoading from "@/Components/AnimatedLoading";
-import { handleSessionExpiration, useApiRequests } from "@/CommonFunctions";
+import { useApiRequests } from "@/CommonFunctions";
 import NoAccess from "@/Components/NoAccess";
 import Logout from "@/Pages/Auth/Logout";
 import { CustomContext } from "@/CommonContext";
+import swal from "sweetalert";
 
 export default function Sidebar() {
     const {
-        url,
         Token,
         user,
         setUser,
@@ -27,30 +24,17 @@ export default function Sidebar() {
         setUserPermissions,
         setAllowedApplications,
     } = useContext(CustomContext);
-    const [loading, setLoading] = useState(true);
     const { getApiRequest, postApiRequest } = useApiRequests();
     const gtamUrl = window.Laravel.gtamUrl;
     const appId = window.Laravel?.appId;
-    const appDomain = window.Laravel.appDomain;
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [loadingGtrs, setLoadingGtrs] = useState(false);
-
-    function addUserIdToFeatures(jsonData, userId, state, group, owner) {
-        return {
-            Features: jsonData,
-            UserId: userId,
-            OwnerId: owner,
-            StateId: state,
-            GroupId: group,
-        };
-    }
 
     const fetchUserData = async () => {
         if (!gtamUrl || !appId) {
             console.error(
                 "Error: window.Laravel.gtamUrl or window.Laravel.appId is undefined. Environment not properly configured."
             );
-            setLoading(false);
             setCanAccess(false);
             return;
         }
@@ -113,11 +97,8 @@ export default function Sidebar() {
                 setCanAccess(true);
             }
 
-
-            setLoading(false);
         } catch (err) {
             console.error("Error during initial data fetch:", err);
-            setLoading(false);
             setCanAccess(false);
             if (err.response && err.response.status === 401) {
                 swal({
@@ -135,23 +116,6 @@ export default function Sidebar() {
         fetchUserData();
     }, [gtamUrl, appId]);
 
-    // useEffect(() => {
-    //     if (
-    //         currentUser &&
-    //         allowedApplications?.length > 0 &&
-    //         !Object.prototype.hasOwnProperty.call(currentUser, "AppRoleId")
-    //     ) {
-    //         const userAppRole = allowedApplications.find(
-    //             (item) => item.AppId === appId
-    //         );
-    //         setCurrentUser({
-    //             ...currentUser,
-    //             AppRoleId: userAppRole?.AppRoleId,
-    //             AppRoleName: userAppRole?.AppRoleName,
-    //         });
-    //     }
-    // }, [currentUser, allowedApplications, appId]);
-
     if (!userPermissions) {
         return null; // Render nothing
     } else {
@@ -160,7 +124,7 @@ export default function Sidebar() {
         } else {
             return (
                 <div className="h-screen">
-                    { Token ? (
+                    {Token ? (
                         <div className="bg-smooth h-full ">
                             <Routes>
                                 <Route

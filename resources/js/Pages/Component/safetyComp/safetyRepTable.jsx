@@ -16,7 +16,7 @@ import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import moment from "moment";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer } from "react-toastify";
 import { AlertToast } from "@/permissions";
 import { CustomContext } from "@/CommonContext";
 
@@ -31,7 +31,7 @@ export default function SafetyRepTable({
     setsafetyData,
     safetyCauses,
 }) {
-    const { user, url, userPermissions, Token } = useContext(CustomContext);
+    const { url, userPermissions, Token } = useContext(CustomContext);
     window.moment = moment;
     const minDate = getMinMaxValue(safetyData, "OccuredAt", 1);
     const maxDate = getMinMaxValue(safetyData, "OccuredAt", 2);
@@ -40,9 +40,7 @@ export default function SafetyRepTable({
     const [isModalOpendesc, setIsModalOpendesc] = useState(false);
     const [safetyDesc, setSafetyDesc] = useState();
     const [isSuccessfull, setIsSuccessfull] = useState(false);
-    useLayoutEffect(() => {
-        
-    }, []);
+    useLayoutEffect(() => {}, []);
     const gridRef = useRef(null);
 
     const handleDownloadExcel = () => {
@@ -56,13 +54,13 @@ export default function SafetyRepTable({
 
         // Define custom cell handlers for specific columns
         const customCellHandlers = {
-            SafetyType: ( item) => {
+            SafetyType: (item) => {
                 const reason = safetyTypes?.find(
                     (reason) => reason.SafetyTypeId === item.SafetyType
                 );
                 return reason?.SafetyTypeName || "";
             },
-            DebtorId: ( item) => {
+            DebtorId: (item) => {
                 const account = customerAccounts?.find(
                     (acc) => acc.DebtorId == item.DebtorId
                 );
@@ -341,7 +339,7 @@ export default function SafetyRepTable({
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 100,
-            render: ({  data }) => {
+            render: ({ data }) => {
                 return (
                     <div>
                         {canEdit ? (
@@ -401,11 +399,11 @@ export default function SafetyRepTable({
     );
 
     useEffect(() => {
-        if(isSuccessfull){
+        if (isSuccessfull) {
             AlertToast("Saved Successfully", 1);
             setIsSuccessfull(false);
         }
-    },[isSuccessfull])
+    }, [isSuccessfull]);
     return (
         <div>
             {/* Added toast container since it wasn't showing */}

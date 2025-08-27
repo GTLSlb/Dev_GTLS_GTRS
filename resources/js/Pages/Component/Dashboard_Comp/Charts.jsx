@@ -50,7 +50,7 @@ function Charts({
 
     return (
         <ReactGridLayout
-            key={gridKey} // Change key to force re-render
+            key={gridKey}
             className="layout custom-grid"
             layout={layout}
             cols={cols}
@@ -58,10 +58,6 @@ function Charts({
             width={1200}
             isResizable={false}
             isDraggable={!isMobile}
-            // autoSize={true}
-            // onLayoutChange={(layout) => setLayout(layout)}
-            // dragEnterChild="drag-over"
-            // dragLeaveChild="drag-out"
         >
             <div key="card01" className="relative drag-over">
                 <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />

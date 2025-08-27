@@ -7,6 +7,8 @@ import {
     ModalFooter,
     ModalHeader,
 } from "@heroui/react";
+import moment from "moment";
+import React from "react";
 
 export default function CommentsModal({ commentsData, isOpen, onOpenChange }) {
     return (
@@ -25,8 +27,11 @@ export default function CommentsModal({ commentsData, isOpen, onOpenChange }) {
                             </ModalHeader>
                             <ModalBody>
                                 <div className="flex flex-col gap-3">
-                                    {commentsData[18]?.map((item) => (
-                                        <div className="flex flex-col gap-1">
+                                    {commentsData[18]?.map((item, index) => (
+                                        <div
+                                            className="flex flex-col gap-1"
+                                            key={index}
+                                        >
                                             <Divider />
                                             <p>{item.Comment}</p>
                                             <p className="text-xs text-gray-400">
