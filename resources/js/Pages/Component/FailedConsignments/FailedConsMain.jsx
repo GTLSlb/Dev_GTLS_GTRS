@@ -19,12 +19,14 @@ export default function FailedConsMain({
     const { url, Token, user, userPermissions } = useContext(CustomContext);
     const [isFetching, setIsfetching] = useState();
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
+    
     useEffect(() => {
         if (!failedReasons) {
             setIsfetching(true);
             fetchReasonData();
         }
     }, []);
+    
     const fetchReasonData = async () => {
         try {
             axios
@@ -67,18 +69,29 @@ export default function FailedConsMain({
         }
     };
 
-    const components = [
-        <FailedCons
-            url={url}
-            failedReasons={failedReasons}
-            userPermissions={userPermissions}
-            accData={accData}
-            PerfData={PerfData}
-            filterValue={filterValue}
-            setFilterValue={setFilterValue}
-            Token={Token}
-        />,
-        <FailedReasonsTable />,
+    // Define tab configuration with unique IDs
+    const tabs = [
+        {
+            id: 'failed-consignments',
+            label: 'Failed Consignments',
+            component: (
+                <FailedCons
+                    url={url}
+                    failedReasons={failedReasons}
+                    userPermissions={userPermissions}
+                    accData={accData}
+                    PerfData={PerfData}
+                    filterValue={filterValue}
+                    setFilterValue={setFilterValue}
+                    Token={Token}
+                />
+            )
+        },
+        {
+            id: 'failed-reasons',
+            label: 'Failed Reasons',
+            component: <FailedReasonsTable />
+        }
     ];
 
     const handleItemClick = (index) => {
@@ -108,9 +121,9 @@ export default function FailedConsMain({
                 <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
                     {canViewFailedReasons(userPermissions) ? (
                         <ul className="flex space-x-0 mt-5">
-                            {components.map(( index) => (
+                            {tabs.map((tab, index) => (
                                 <li
-                                    key={index}
+                                    key={tab.id} // Use stable unique ID instead of index
                                     className={`cursor-pointer ${
                                         activeComponentIndex === index
                                             ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
@@ -119,10 +132,7 @@ export default function FailedConsMain({
                                     onClick={() => handleItemClick(index)}
                                 >
                                     <div className="px-2">
-                                        {" "}
-                                        {index === 0
-                                            ? "Failed Consignments"
-                                            : "Failed Reasons"}
+                                        {tab.label}
                                     </div>
                                 </li>
                             ))}
@@ -131,7 +141,7 @@ export default function FailedConsMain({
                         <div></div>
                     )}
                     <div className="mt-4">
-                        {components[activeComponentIndex]}
+                        {tabs[activeComponentIndex]?.component}
                     </div>
                 </div>
             )}

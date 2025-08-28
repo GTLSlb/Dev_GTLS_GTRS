@@ -7,6 +7,7 @@ import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import moment from "moment";
 import PropTypes from "prop-types";
+import { formatDateToExcel } from "@/CommonFunctions";
 
 export default function ConsPerf({
     PerfData,
@@ -23,22 +24,26 @@ export default function ConsPerf({
     const [currentPage, setCurrentPage] = useState(0);
     const [filteredData, setFilteredData] = useState(PerfData);
     const [selectedConsignment, setSelectedConsignment] = useState("");
+
     const handleStartDateChange = (event) => {
         const value = event.target.value;
         setSDate(value);
         setSharedStartDate(value);
         filterData(value, EDate, selectedConsignment);
     };
+
     const handleEndDateChange = (event) => {
         const value = event.target.value;
         setEDate(value);
         setSharedEndDate(value);
         filterData(SDate, value, selectedConsignment);
     };
+
     const handleConsignmentChange = (value) => {
         setSelectedConsignment(value);
         filterData(SDate, EDate, value);
     };
+
     const filterData = (startDate, endDate, selectedConsignment) => {
         const intArray = accData?.map((str) => {
             const intValue = parseInt(str);
@@ -57,7 +62,8 @@ export default function ConsPerf({
                 filterEndDate.setSeconds(59);
                 filterEndDate.setMinutes(59);
                 filterEndDate.setHours(23);
-                dateMatch = itemDate >= filterStartDate && itemDate <= filterEndDate; // Compare the item date to the filter dates
+                dateMatch =
+                    itemDate >= filterStartDate && itemDate <= filterEndDate; // Compare the item date to the filter dates
             }
             const ConsNbMatch = selectedConsignment
                 ? item.ConsignmentNo.toLowerCase().includes(
@@ -75,11 +81,15 @@ export default function ConsPerf({
     }, [accData]);
 
     const PER_PAGE = 5;
+
     const OFFSET = currentPage * PER_PAGE;
+
     const handlePageClick = (selectedPage) => {
         setCurrentPage(selectedPage.selected);
     };
+
     const pageCount = Math.ceil(filteredData.length / PER_PAGE);
+
     const headers = [
         "Consignment No",
         "Consignment Status",
@@ -106,73 +116,43 @@ export default function ConsPerf({
         "Receiver Postcode",
     ];
 
+     
+
     function handleDownloadExcel() {
         // Get the selected columns or use all columns if none are selected
-
         let selectedColumns = headers; // Use all columns
 
-        // Extract the data for the selected columns  moment(consignment.DespatchDate, 'YYYY-MM-DD').format('DD-MM-YYYY')
+        // Extract the data for the selected columns
         const data = filteredData.map((person) =>
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
                 if (columnKey) {
                     if (column.replace(/\s+/g, "") === "ReceiverReference") {
-                        acc["ReceiverReference"] =
-                            person["ReceiverReference"];
+                        acc["ReceiverReference"] = person["ReceiverReference"];
                     } else if (column.replace(/\s+/g, "") === "AccountName") {
                         acc[columnKey] = person["AccountNumber"];
                     } else if (column.replace(/\s+/g, "") === "KPIDatetime") {
-                        acc[columnKey] =
-                            moment(
-                                person["KpiDatetime"].replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["KpiDatetime"].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY HH:mm A");
+                        acc[columnKey] = person["KpiDatetime"]
+                            ? new Date(person["KpiDatetime"])
+                            : "";
                     } else if (column.replace(/\s+/g, "") === "PODDatetime") {
-                        acc[columnKey] =
-                            moment(
-                                person["PodDateTime"]?.replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["PodDateTime"]?.replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY HH:mm A");
+                        acc[columnKey] = person["PodDateTime"]
+                            ? new Date(person["PodDateTime"])
+                            : "";
                     } else if (
-                        column.replace(/\s+/g, "") ===
-                        "DeliveryRequiredDate"
+                        column.replace(/\s+/g, "") === "DeliveryRequiredDate"
                     ) {
-                        acc[columnKey] =
-                            moment(
-                                person["DeliveryRequiredDateTime"]?.replace(
-                                    "T",
-                                    " "
-                                ),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person[
-                                          "DeliveryRequiredDateTime"
-                                      ]?.replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY HH:mm A");
+                        acc[columnKey] = person["DeliveryRequiredDateTime"]
+                            ? new Date(person["DeliveryRequiredDateTime"])
+                            : "";
                     } else if (column.replace(/\s+/g, "") === "DespatchDate") {
-                        acc[columnKey] =
-                            moment(
-                                person["DespatchDate"]?.replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["DespatchDate"]?.replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY HH:mm A");
+                        acc[columnKey] = person["DespatchDate"]
+                            ? new Date(person["DespatchDate"])
+                            : "";
+                    } else if (column.replace(/\s+/g, "") === "DeliveredDate") {
+                        acc[columnKey] = person["DeliveredDate"]
+                            ? new Date(person["DeliveredDate"])
+                            : "";
                     } else {
                         acc[column.replace(/\s+/g, "")] =
                             person[column.replace(/\s+/g, "")];
@@ -198,9 +178,27 @@ export default function ConsPerf({
         };
         headerRow.alignment = { horizontal: "center" };
 
-        // Add the data to the worksheet
-        data.forEach((rowData) => {
-            worksheet.addRow(Object.values(rowData));
+        // Add the data to the worksheet and format date columns
+        data.forEach((rowData, rowIndex) => {
+            const row = worksheet.addRow(Object.values(rowData));
+
+            // Format date columns
+            selectedColumns.forEach((column, colIndex) => {
+                const columnKey = column.replace(/\s+/g, "");
+                if (
+                    [
+                        "KPIDatetime",
+                        "PODDatetime",
+                        "DeliveryRequiredDate",
+                        "DespatchDate",
+                    ].includes(columnKey)
+                ) {
+                    const cell = row.getCell(colIndex + 1);
+                    if (cell.value instanceof Date) {
+                        cell.numFmt = "dd/mm/yyyy hh:mm:ss"; // or use 'mm/dd/yyyy hh:mm:ss' for US format
+                    }
+                }
+            });
         });
 
         // Set column widths
@@ -324,11 +322,7 @@ export default function ConsPerf({
                                 </span>
                             </h3>
                         </div>
-                        <Navbar
-                            key={item.id}
-                            id={item.id}
-                            item={item}
-                        />
+                        <Navbar key={item.id} id={item.id} item={item} />
                     </div>
                 ))
             ) : (

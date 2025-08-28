@@ -319,7 +319,9 @@ export default function Gtrs({
                 </Routes>
             );
         } else {
-            return <NoAccess />;
+            return (
+                <NoAccess setToken={setToken} setUser={setUser} user={user} />
+            );
         }
     } else {
         return <AnimatedLoading />;

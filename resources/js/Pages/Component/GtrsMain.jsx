@@ -92,6 +92,7 @@ export default function GtrsMain({
         useContext(CustomContext);
     window.moment = moment;
     const KPIData = [];
+    const [commentsCheck, setCommentsCheck] = useState(false);
     const [NewKPIData, setNewKPIData] = useState([]);
     const [newTransitDays, setNewTransitDays] = useState();
     const [holidays, setHolidays] = useState();
@@ -507,6 +508,11 @@ export default function GtrsMain({
                     Authorization: `Bearer ${Token}`,
                 },
             });
+            setCommentsCheck(
+                res.data.some(
+                    (item) => item.Comment && item.Comment.trim().length > 0
+                )
+            );
             setExcelDailyReportData(res.data || []);
 
             // Check if setCellLoading exists before calling it
@@ -1523,6 +1529,9 @@ export default function GtrsMain({
                                                         }
                                                         deliveryReportData={
                                                             excelDailyReportData
+                                                        }
+                                                        commentsCheck={
+                                                            commentsCheck
                                                         }
                                                         fetchDeliveryReport={
                                                             fetchExcelDeliveryReportData

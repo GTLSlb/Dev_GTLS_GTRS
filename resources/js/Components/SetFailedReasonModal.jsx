@@ -274,6 +274,7 @@ export default function SetFailedReasonModal({
                             aria-labelledby="Reference"
                             placeholder="Select reference type"
                             selectedKeys={[formData.selectedReference]}
+                            disallowEmptySelection
                             onSelectionChange={(keys) => {
                                 const selected = Array.from(keys)[0];
                                 setFormData((prev) => ({
@@ -304,6 +305,7 @@ export default function SetFailedReasonModal({
                             aria-labelledby="State"
                             placeholder="Select state"
                             selectedKeys={[formData.selectedState]}
+                            disallowEmptySelection
                             onSelectionChange={(keys) => {
                                 const selected = Array.from(keys)[0];
                                 setFormData((prev) => ({
@@ -333,6 +335,7 @@ export default function SetFailedReasonModal({
                             label=""
                             aria-labelledby="Department"
                             placeholder="Select department"
+                            disallowEmptySelection
                             selectedKeys={[formData.selectedDepartment]}
                             onSelectionChange={(keys) => {
                                 const selected = Array.from(keys)[0];

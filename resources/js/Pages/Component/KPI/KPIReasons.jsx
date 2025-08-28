@@ -6,7 +6,13 @@ import { PencilIcon } from "@heroicons/react/20/solid";
 import TableStructure from "@/Components/TableStructure";
 import { canAddKpiReasons, canEditKpiReasons } from "@/permissions";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
-import React, { useState, useEffect, useRef, useCallback, useContext } from "react";
+import React, {
+    useState,
+    useEffect,
+    useRef,
+    useCallback,
+    useContext,
+} from "react";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import AddKPIReason from "./Components/AddKPIReason";
 import { ToastContainer } from "react-toastify";
@@ -21,7 +27,6 @@ export default function KPIReasons({
     filterValue,
     setFilterValue,
 }) {
-
     const { Token, user, userPermissions, url } = useContext(CustomContext);
 
     const gridRef = useRef(null);
@@ -83,8 +88,12 @@ export default function KPIReasons({
     const additionalButtons = (
         <div className="flex justify-between w-full gap-x-4">
             <div className="relative">
-                <MagnifyingGlassIcon className="absolute h-[0.88rem] w-[0.88rem] text-gray-500 top-[0.77rem] left-2"/>
-                <input placeholder="Search" onChange={(e)=>handleFilterChange(e)} className="border px-7 py-1.5 rounded-lg placeholder:text-gray-500"/>
+                <MagnifyingGlassIcon className="absolute h-[0.88rem] w-[0.88rem] text-gray-500 top-[0.77rem] left-2" />
+                <input
+                    placeholder="Search"
+                    onChange={(e) => handleFilterChange(e)}
+                    className="border px-7 py-1.5 rounded-lg placeholder:text-gray-500"
+                />
             </div>
             {canAddKpiReasons(userPermissions) ? (
                 <div className="flex flex-col sm:flex-row gap-x-5 gap-y-3">
@@ -114,7 +123,10 @@ export default function KPIReasons({
         }, {});
 
         const customCellHandlers = {
-            HolidayStatus: (value) => (value === 1 ? true : false),
+            ReasonStatus: (value) => {
+                if (value == 1) return "Active";
+                return "Inactive";
+            },
         };
 
         exportToExcel(
@@ -136,8 +148,8 @@ export default function KPIReasons({
     };
 
     useEffect(() => {
-        if(kpireasonsData?.length > 0) setFilteredData(kpireasonsData);
-    },[kpireasonsData])
+        if (kpireasonsData?.length > 0) setFilteredData(kpireasonsData);
+    }, [kpireasonsData]);
     function getKPIReasons() {
         axios
             .get(`${url}KpiReasons`, {
@@ -188,7 +200,6 @@ export default function KPIReasons({
                 }
             });
     }
-
 
     useEffect(() => {
         if (kpireasonsData?.length > 0 && reasonNameOptions) {
@@ -309,7 +320,6 @@ export default function KPIReasons({
                 filterValueElements={filterValue}
                 setFilterValueElements={setFilterValue}
                 columnsElements={columns}
-
             />
         );
     }, [columns, kpireasonsData]);

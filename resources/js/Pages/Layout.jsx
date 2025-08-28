@@ -96,7 +96,6 @@ export default function Sidebar() {
             } else {
                 setCanAccess(true);
             }
-
         } catch (err) {
             console.error("Error during initial data fetch:", err);
             setCanAccess(false);
@@ -120,7 +119,9 @@ export default function Sidebar() {
         return null; // Render nothing
     } else {
         if (canAccess === false) {
-            return <NoAccess />;
+            return (
+                <NoAccess setToken={setToken} setUser={setUser} user={user} />
+            );
         } else {
             return (
                 <div className="h-screen">
@@ -157,7 +158,13 @@ export default function Sidebar() {
                                 />
                                 <Route
                                     path="/no-access"
-                                    element={<NoAccess />}
+                                    element={
+                                        <NoAccess
+                                            setToken={setToken}
+                                            setUser={setUser}
+                                            user={user}
+                                        />
+                                    }
                                 />
                                 <Route path="/*" element={<NotFound />} />
                             </Routes>

@@ -513,6 +513,7 @@ export default function RDDTable({
             setNewColumns(newArray);
         }
     }, []);
+
     return (
         <div className=" w-full bg-smooth ">
             {!newColumns ? (

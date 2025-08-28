@@ -59,7 +59,7 @@ export default function AddFailedModal({ isOpen, handleClose, reason }) {
         const data = {
             ReasonName: nameValue,
             ReasonDesc: descValue,
-            ReasonStatus: reasonStatus === "active",
+            Status: reasonStatus === "active",
         };
 
         if (reason) {

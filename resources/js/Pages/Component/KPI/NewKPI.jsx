@@ -145,7 +145,7 @@ function NewKPI({
                 return "";
             },
             MatchDel: (value) => {
-                if (value == 3) return "";
+                if (value == 0) return "";
                 if (value == 1) return "PASS";
                 if (value == 2) return "FAIL";
                 return "";
@@ -230,7 +230,7 @@ function NewKPI({
 
     const kpiStatusOptions = [
         {
-            id: 3,
+            id: 0,
             label: "N/A",
         },
         {
@@ -242,6 +242,7 @@ function NewKPI({
             label: "Fail",
         },
     ];
+
     const columns = [
         {
             name: "ConsignmentNo",

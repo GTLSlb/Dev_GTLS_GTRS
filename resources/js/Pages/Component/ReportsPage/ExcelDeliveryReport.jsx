@@ -52,11 +52,11 @@ function capitalize(str) {
 export default function ExcelDeliveryReport({
     deliveryReportData,
     commentsCheck,
-    fetchDifotReportData,
-    fetchDeliveryReportExcel,
+    fetchDeliveryReport,
     deliveryCommentsOptions,
 }) {
     const { Token, user, userPermissions, url } = useContext(CustomContext);
+
     const dateFields = [
         "DeliveryRequiredDateTime",
         "DespatchDateTime",
@@ -247,7 +247,6 @@ export default function ExcelDeliveryReport({
         onOpen();
     };
 
-
     // Tab (report type) state
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     // Used to show a spinner in the cell when saving changes
@@ -316,7 +315,7 @@ export default function ExcelDeliveryReport({
      Handsontable Columns Setup
   --------------------------- */
     const buttonRenderer = useCallback(
-        (instance, td, row) => {
+        (instance, td, row, col, prop, value, cellProperties) => {
             Handsontable.dom.empty(td);
 
             const visualRowData = instance.getDataAtRow(row);
@@ -537,8 +536,13 @@ export default function ExcelDeliveryReport({
                 title: "Approved Comment",
                 headerClassName: "htLeft",
                 renderer: (
+                    instance,
                     td,
+                    row,
+                    col,
+                    prop,
                     value,
+                    cellProperties
                 ) => {
                     const lastValue =
                         Array.isArray(value) && value.length > 0
@@ -577,8 +581,9 @@ export default function ExcelDeliveryReport({
                 console.error("❌ Handsontable instance is undefined!");
                 return updatedChanges;
             }
-
-            changes.forEach(([visualRow, oldValue, newValue]) => {
+            console.log(changes);
+            changes.forEach(([visualRow, prop, oldValue, newValue]) => {
+                console.log([visualRow, prop, oldValue, newValue]);
                 if (newValue !== oldValue) {
                     const physicalRow = hotInstance.toPhysicalRow(visualRow);
                     const rowData = hotInstance.getSourceDataAtRow(physicalRow);
@@ -634,10 +639,11 @@ export default function ExcelDeliveryReport({
             .then(() => {
                 setChangedRows([]);
                 setIsLoading(false);
-                fetchDeliveryReportExcel();
+                fetchDeliveryReport();
                 AlertToast("Saved successfully", 1);
             })
             .catch((err) => {
+                console.log(err);
                 AlertToast("Something went wrong", 2);
 
                 if (err.response && err.response.status === 401) {
@@ -671,8 +677,7 @@ export default function ExcelDeliveryReport({
             .then(() => {
                 setChangedRows([]);
                 setIsLoading(false);
-                fetchDeliveryReportExcel();
-                fetchDifotReportData();
+                fetchDeliveryReport();
                 AlertToast("Saved successfully", 1);
             })
             .catch((err) => {

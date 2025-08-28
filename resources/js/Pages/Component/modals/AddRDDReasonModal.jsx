@@ -20,7 +20,7 @@ import { CustomContext } from "@/CommonContext";
 import axios from "axios";
 
 export default function AddRDDReasonModal({ isOpen, handleClose, reason }) {
-    const { url, user, Token, rddReasons, getRDDReasons } =
+    const { url, user, Token, RDDReasonsData, getRDDReasons } =
         useContext(CustomContext);
     const [isSaveEnabled, setIsSaveEnabled] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
@@ -59,7 +59,7 @@ export default function AddRDDReasonModal({ isOpen, handleClose, reason }) {
         const data = {
             ReasonName: nameValue,
             ReasonDesc: descValue,
-            ReasonStatus: reasonStatus === "active",
+            Status: reasonStatus === "active",
         };
 
         if (reason) {
@@ -105,7 +105,7 @@ export default function AddRDDReasonModal({ isOpen, handleClose, reason }) {
         const newName = value.toLowerCase();
 
         // When editing, exclude current reason from duplicate check
-        const isDuplicate = rddReasons.some(
+        const isDuplicate = RDDReasonsData.some(
             (existingReason) =>
                 existingReason.ReasonName.toLowerCase() === newName &&
                 (!reason || existingReason.ReasonId !== reason.ReasonId)

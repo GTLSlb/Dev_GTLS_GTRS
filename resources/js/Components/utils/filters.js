@@ -47,8 +47,8 @@ export const getFiltersCons = (minDate, maxDate) => {
         },
         {
             name: "SenderSuburb",
-            operator: "contains",
-            type: "string",
+            operator: "inlist",
+            type: "select",
             value: null,
             emptyValue: "",
         },
@@ -96,8 +96,8 @@ export const getFiltersCons = (minDate, maxDate) => {
         },
         {
             name: "ReceiverSuburb",
-            operator: "contains",
-            type: "string",
+            operator: "inlist",
+            type: "select",
             value: null,
             emptyValue: "",
         },
@@ -220,8 +220,8 @@ export const getFiltersTransport = () => {
         },
         {
             name: "Carrier",
-            operator: "contains",
-            type: "string",
+            operator: "inlist",
+            type: "select",
             value: null,
             emptyValue: "",
         },

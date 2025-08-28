@@ -58,6 +58,7 @@ function NewTransitDays({
 
     const [senderStateOptions, setSenderStateOptions] = useState();
     const [receiverStateOptions, setReceiverStateOptions] = useState();
+
     useEffect(() => {
         if (newTransitDays) {
             const updatedSenderStateOptions = createNewLabelObjects(
@@ -121,6 +122,7 @@ function NewTransitDays({
         return uniqueCustomers;
     }
     const [columns, setColumns] = useState([]);
+
     useEffect(() => {
         if (senderStateOptions && receiverStateOptions) {
             if (canEditTransitDays(userPermissions)) {

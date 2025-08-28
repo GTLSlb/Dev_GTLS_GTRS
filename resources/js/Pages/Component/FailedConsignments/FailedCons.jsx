@@ -98,6 +98,10 @@ export default function FailedCons({
     const statusOptions = createNewLabelObjects(data, "STATUS");
     const referenceOptions = [
         {
+            id: 0,
+            label: "N/A",
+        },
+        {
             id: 1,
             label: "Internal",
         },
@@ -134,7 +138,7 @@ export default function FailedCons({
                 return renderConsDetailsLink(
                     userPermissions,
                     value,
-                    data.CONSIGNMENTID
+                    data.ConsignmentID
                 );
             },
         },
@@ -487,10 +491,11 @@ export default function FailedCons({
         },
         {
             header: "Edit",
+            name: "edit",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 100,
-            render: ({data }) => {
+            render: ({ data }) => {
                 return (
                     <div>
                         {canEditFailedConsignments(userPermissions) ? (
@@ -544,6 +549,7 @@ export default function FailedCons({
             DeliveredDate: (value) => formatDateToExcel(value),
             DeliveryRequiredDateTime: (value) => formatDateToExcel(value),
             KpiDatetime: (value) => formatDateToExcel(value),
+            OccuredAt: (value) => formatDateToExcel(value),
             FailedReason: (value, item) => {
                 const failedReason = failedReasons?.find(
                     (reason) => reason.ReasonId === item.FailedReason
@@ -566,6 +572,7 @@ export default function FailedCons({
                 "DeliveredDate",
                 "DeliveryRequiredDateTime",
                 "KpiDatetime",
+                "OccuredAt",
             ]
         );
     };
@@ -598,7 +605,6 @@ export default function FailedCons({
             }
             return item;
         });
-        console.log(updatedData);
         setData(updatedData);
         setFilteredData(updatedData);
     };

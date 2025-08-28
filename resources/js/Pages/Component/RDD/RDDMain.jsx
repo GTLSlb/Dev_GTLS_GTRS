@@ -25,7 +25,7 @@ export default function RDDMain({
     const [isFetchingReasons, setIsFetchingReasons] = useState();
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     const { Token, user, userPermissions, url } = useContext(CustomContext);
-    
+
     const parseDateString = (dateString) => {
         // Check if dateString is undefined, null, or empty
         if (!dateString || !dateString.trim()) {
@@ -59,6 +59,7 @@ export default function RDDMain({
 
         return date.toISOString().slice(0, 19); // UTC time
     };
+
     const updateFieldWithData = (data, fieldName) => {
         if (!data || data.length === 0) {
             return []; // or return any other default value as needed
@@ -74,6 +75,7 @@ export default function RDDMain({
         setrddData(updatedData);
         return updatedData;
     };
+
     useEffect(() => {
         if (!rddData) {
             setIsFetching(true);
@@ -98,6 +100,7 @@ export default function RDDMain({
             setIsFetching(false);
         }
     }
+
     const fetchReasonData = async () => {
         try {
             axios
@@ -140,18 +143,28 @@ export default function RDDMain({
         }
     };
 
-    const components = [
-        <RDDTable
-            accData={accData}
-            rddData={rddData}
-            filterValue={filterValue}
-            setFilterValue={setFilterValue}
-            setrddData={setrddData}
-            setActiveIndexGTRS={setActiveIndexGTRS}
-            setIncidentId={setIncidentId}
-            rddReasons={rddReasons}
-        />,
-        <RDDReasons />,
+    const tabs = [
+        {
+            id: "rdd-report",
+            label: "RDD Report",
+            component: (
+                <RDDTable
+                    accData={accData}
+                    rddData={rddData}
+                    filterValue={filterValue}
+                    setFilterValue={setFilterValue}
+                    setrddData={setrddData}
+                    setActiveIndexGTRS={setActiveIndexGTRS}
+                    setIncidentId={setIncidentId}
+                    rddReasons={rddReasons}
+                />
+            ),
+        },
+        {
+            id: "rdd-reasons",
+            label: "RDD Reasons",
+            component: <RDDReasons />,
+        },
     ];
 
     const handleItemClick = (index) => {
@@ -167,9 +180,9 @@ export default function RDDMain({
                     <div className="mt-0">
                         {canViewRDDReasons(userPermissions) ? (
                             <ul className="flex space-x-0 mt-5">
-                                {components.map((index) => (
+                                {tabs.map((tab, index) => (
                                     <li
-                                        key={index}
+                                        key={tab.id} // Use stable unique ID instead of index
                                         className={`cursor-pointer ${
                                             activeComponentIndex === index
                                                 ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
@@ -177,12 +190,7 @@ export default function RDDMain({
                                         }`}
                                         onClick={() => handleItemClick(index)}
                                     >
-                                        <div className="px-2">
-                                            {" "}
-                                            {index === 0
-                                                ? "RDD Report"
-                                                : "RDD Reasons"}
-                                        </div>
+                                        <div className="px-2">{tab.label}</div>
                                     </li>
                                 ))}
                             </ul>
@@ -190,7 +198,7 @@ export default function RDDMain({
                             <div></div>
                         )}
                         <div className="mt-4">
-                            {components[activeComponentIndex]}
+                            {tabs[activeComponentIndex]?.component}
                         </div>
                     </div>
                 </div>

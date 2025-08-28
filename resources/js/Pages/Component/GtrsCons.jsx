@@ -10,7 +10,10 @@ import { useEffect, useRef } from "react";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
-import { formatNumberWithCommas, renderConsDetailsLink } from "@/CommonFunctions";
+import {
+    formatNumberWithCommas,
+    renderConsDetailsLink,
+} from "@/CommonFunctions";
 import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
 import { CustomContext } from "@/CommonContext";
 export default function GtrsCons({
@@ -21,7 +24,7 @@ export default function GtrsCons({
     setFilterValue,
     accData,
 }) {
-const { userPermissions } = useContext(CustomContext);
+    const { userPermissions } = useContext(CustomContext);
     window.moment = moment;
     const [filteredData, setFilteredData] = useState(consData);
     const [selected, setSelected] = useState({});
@@ -72,14 +75,16 @@ const { userPermissions } = useContext(CustomContext);
             label: "False",
         },
     ];
-    
+
     const senderStateOptions = createNewLabelObjects(consData, "SenderState");
     const senderZoneOptions = createNewLabelObjects(consData, "SenderZone");
+    const senderSuburbOptions = createNewLabelObjects(consData, "SenderSuburb");
     const receiverStateOptions = createNewLabelObjects(
         consData,
         "ReceiverState"
     );
     const receiverZoneOptions = createNewLabelObjects(consData, "ReceiverZone");
+     const receiverSuburbOptions = createNewLabelObjects(consData, "ReceiverSuburb");
     const serviceOptions = createNewLabelObjects(consData, "Service");
     const statusOptions = createNewLabelObjects(consData, "Status");
     const ConsStatusOptions = createNewLabelObjects(consData, "ConsStatus");
@@ -198,7 +203,12 @@ const { userPermissions } = useContext(CustomContext);
             group: "senderDetails",
             headerAlign: "center",
             textAlign: "center",
-            filterEditor: StringFilter,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: senderSuburbOptions,
+            },
         },
         {
             name: "SenderZone",
@@ -249,16 +259,14 @@ const { userPermissions } = useContext(CustomContext);
             group: "receiverDetails",
             headerAlign: "center",
             textAlign: "center",
-            filterEditor: StringFilter,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: receiverSuburbOptions,
+            },
         },
-        {
-            name: "ReceiverReference",
-            header: "Receiver Reference",
-            group: "receiverDetails",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: StringFilter,
-        },
+
         {
             name: "ReceiverZone",
             header: "Receiver Zone",
@@ -271,6 +279,14 @@ const { userPermissions } = useContext(CustomContext);
                 wrapMultiple: false,
                 dataSource: receiverZoneOptions,
             },
+        },
+        {
+            name: "ReceiverReference",
+            header: "Receiver Reference",
+            group: "receiverDetails",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
         },
         {
             name: "NetAmount",

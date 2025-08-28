@@ -59,6 +59,8 @@ const ExportPopover = ({ columns, handleDownloadExcel, filteredData }) => {
                                             column.name?.toLowerCase() !==
                                                 "actions" &&
                                             column.name?.toLowerCase() !==
+                                                "edit" &&
+                                            column.header?.toLowerCase() !==
                                                 "edit"
                                     )
                                     .map(({ name, header }) => (

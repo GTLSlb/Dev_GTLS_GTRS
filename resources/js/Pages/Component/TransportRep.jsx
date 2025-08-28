@@ -329,6 +329,7 @@ function TransportRep({
         "SenderState"
     );
     const onTimeOptions = createNewLabelObjects(transportData, "OnTime");
+    const carrierOptions = createNewLabelObjects(transportData, "Carrier");
     const columns = [
         {
             name: "SenderName",
@@ -445,7 +446,12 @@ function TransportRep({
             header: "Carrier",
             headerAlign: "center",
             textAlign: "center",
-            filterEditor: StringFilter,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: carrierOptions,
+            },
         },
         {
             name: "PickupDate",
