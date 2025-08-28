@@ -34,7 +34,7 @@ export default function ForgotPassword({ status }) {
     const gtamUrl = window.Laravel.gtamUrl;
     const [isDisabled, setIsDisabled] = useState(false);
     const [timeLeft, setTimeLeft] = useState(60); // 60 seconds cooldown
-   
+
     useEffect(() => {
         let timer = null;
 
@@ -213,7 +213,7 @@ export default function ForgotPassword({ status }) {
                                 className="flex w-full justify-center rounded-md border border-transparent bg-yellow-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                 // disabled={emailLoading}
                             >
-                                Email Password Reset Link
+                                Reset Password
                             </PrimaryButton>
                         </div>
                     )}
