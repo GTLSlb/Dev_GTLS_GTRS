@@ -38,7 +38,7 @@ export default function FailedCons({
         setLastIndex(5);
         setactiveCon(coindex);
     };
-    const excludedDebtorIds = [1514, 364, 247, 246, 245, 244];
+    const excludedDebtorIds = [1514, 364, 247, 246, 245, 244, 1851];
     const [data, setData] = useState(
         PerfData?.filter(
             (obj) =>
