@@ -1,9 +1,11 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useEffect, useContext } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import ReactModal from "react-modal";
 import React from "react";
 import PropTypes from "prop-types";
+import { useApiRequests } from "@/CommonFunctions";
+import { CustomContext } from "@/CommonContext";
 
 export default function NewKPIModalAddReason({
     isOpen,
@@ -12,7 +14,9 @@ export default function NewKPIModalAddReason({
     updateLocalData,
     kpiReasons,
 }) {
+    const { Token, user, url } = useContext(CustomContext);
     const [error, setError] = useState(null);
+    const { postApiRequest } = useApiRequests();
     const [isLoading, SetIsLoading] = useState(false);
     const [selected, setSelected] = useState();
     function handleReasonChange(event) {
@@ -46,11 +50,29 @@ export default function NewKPIModalAddReason({
     };
     const handleSubmit = async (event) => {
         event.preventDefault(); // Prevent the default form submission behavior
+        const data = [
+            {
+                KpiId: kpi?.KpiId,
+                ReasonId: selected?.ReasonId,
+            },
+        ];
         try {
             // Make the API request using Axios or any other library
             SetIsLoading(true);
 
-            updateLocalData(kpi.ConsignmentId, selected?.ReasonId);
+            const headers = {
+                UserId: user.UserId,
+                Authorization: `Bearer ${Token}`,
+            };
+            await postApiRequest(
+                `${url}Add/KPI/FailedReasonNew`,
+                headers,
+                data
+            );
+            const response = await updateLocalData(
+                kpi.ConsignmentId,
+                selected?.ReasonId
+            );
             setTimeout(() => {
                 handleClose();
                 SetIsLoading(false);

@@ -1653,23 +1653,18 @@ export default function GtrsMain({
                                     <Route
                                         path="/difot-report"
                                         element={
-                                            <DifotReport
+                                            <ProtectedRoute
                                                 permission={userPermissions}
                                                 route="DifotReport_View"
                                                 element={
-                                                    <ProductStockTable
-                                                        url={url}
-                                                        Token={Token}
-                                                        userPermissions={
-                                                            userPermissions
-                                                        }
+                                                    <DifotReport
                                                         filterValue={
                                                             filtersDifot
                                                         }
-                                                        accData={dataFromChild}
                                                         setFilterValue={
                                                             setFiltersDifot
                                                         }
+                                                        accData={dataFromChild}
                                                     />
                                                 }
                                             />
@@ -1681,11 +1676,11 @@ export default function GtrsMain({
                                     <Route
                                         path="/utilization-report"
                                         element={
-                                            <Utilization
+                                            <ProtectedRoute
                                                 permission={userPermissions}
                                                 route="UtilizationReport_View"
                                                 element={
-                                                    <ProductStockTable
+                                                    <Utilization
                                                         url={url}
                                                         Token={Token}
                                                         userPermissions={

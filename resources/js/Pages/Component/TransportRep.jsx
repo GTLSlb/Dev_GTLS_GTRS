@@ -22,6 +22,7 @@ function TransportRep({
     setFilterValue,
     accData,
 }) {
+    console.log(accData)
     const RDDTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
         const [value, setValue] = useState(
             filterValue ? filterValue.value : ""
@@ -328,6 +329,7 @@ function TransportRep({
         transportData,
         "SenderState"
     );
+    const reasonsOptions = createNewLabelObjects(transportData, "DelayReason");
     const onTimeOptions = createNewLabelObjects(transportData, "OnTime");
     const carrierOptions = createNewLabelObjects(transportData, "Carrier");
     const columns = [
@@ -552,7 +554,12 @@ function TransportRep({
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 200,
-            filterEditor: StringFilter,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: reasonsOptions,
+            },
         },
         {
             name: "TransportComments",

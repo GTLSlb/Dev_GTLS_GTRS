@@ -26,15 +26,14 @@ export default function SafetyRep({
     latestDate,
     DefaultSDate,
     DefaultEDate,
-}) {const { user, url, Token, userPermissions } = useContext(CustomContext);
+}) {
+    const { user, url, Token, userPermissions } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     const [SDate, setSDate] = useState(DefaultSDate);
     const [EDate, setEDate] = useState(DefaultEDate);
-    useEffect(() => {
-        getEarliestDate(safetyDataState);
-        getLatestDate(safetyDataState);
-    }, []);
-    function getEarliestDate(reports) {
+
+    // Memoize the date calculation functions to prevent unnecessary re-renders
+    const getEarliestDate = React.useCallback((reports) => {
         if (!reports || reports.length === 0) {
             return null;
         }
@@ -48,10 +47,12 @@ export default function SafetyRep({
                 }
             }
         }
-        setSDate(earliestDate.split("T")[0]);
-        // setSDate(formattedDate);
-    }
-    function getLatestDate(reports) {
+        if (earliestDate) {
+            setSDate(earliestDate.split("T")[0]);
+        }
+    }, []);
+
+    const getLatestDate = React.useCallback((reports) => {
         if (!reports || reports.length === 0) {
             return null;
         }
@@ -65,8 +66,19 @@ export default function SafetyRep({
                 }
             }
         }
-        setEDate(latestDate.split("T")[0]);
-    }
+        if (latestDate) {
+            setEDate(latestDate.split("T")[0]);
+        }
+    }, []);
+
+    // Only run this once when component mounts and safetyDataState changes
+    useEffect(() => {
+        if (safetyDataState && safetyDataState.length > 0) {
+            getEarliestDate(safetyDataState);
+            getLatestDate(safetyDataState);
+        }
+    }, [safetyDataState, getEarliestDate, getLatestDate]);
+
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
     const [filteredData, setFilteredData] = useState(null);
     const selectedTypes = [];
@@ -85,9 +97,9 @@ export default function SafetyRep({
             fetchDataTypes();
             fetchDataCauses();
         }
-    }, []);
+    }, []); // Empty dependency array is fine here since we only want this to run once
 
-    async function fetchData() {
+    const fetchData = React.useCallback(async () => {
         setIsFetching(true);
         const data = await getApiRequest(`${url}SafetyReport`, {
             UserId: user?.UserId,
@@ -100,9 +112,16 @@ export default function SafetyRep({
             setFilteredData(data || []);
             setIsFetching(false);
         }
-    }
+    }, [
+        url,
+        user?.UserId,
+        getApiRequest,
+        getEarliestDate,
+        getLatestDate,
+        setsafetyDataState,
+    ]);
 
-    async function fetchDataTypes() {
+    const fetchDataTypes = React.useCallback(async () => {
         const data = await getApiRequest(`${url}SafetyTypes`, {
             UserId: user?.UserId,
         });
@@ -111,9 +130,9 @@ export default function SafetyRep({
             setSafetyTypes(data);
             setIsFetchingTypes(false);
         }
-    }
+    }, [url, user?.UserId, getApiRequest, setSafetyTypes]);
 
-    async function fetchDataCauses() {
+    const fetchDataCauses = React.useCallback(async () => {
         const data = await getApiRequest(`${url}SafetyCauses`, {
             UserId: user?.UserId,
         });
@@ -122,97 +141,131 @@ export default function SafetyRep({
             setSafetyCauses(data);
             setIsFetchingCauses(false);
         }
-    }
+    }, [url, user?.UserId, getApiRequest, setSafetyCauses]);
+
+    // Memoize filterData function
+    const filterData = React.useCallback(
+        (startDate, endDate) => {
+            // Filter the data based on the start and end date filters
+            const intArray = accData?.map((str) => {
+                const intValue = parseInt(str);
+                return isNaN(intValue) ? 0 : intValue;
+            });
+
+            const filtered = safetyDataState?.filter((item) => {
+                const itemDate = new Date(item.OccuredAt); // Convert item's date string to Date object
+                const filterStartDate = new Date(startDate); // Convert start date string to Date object
+                const filterEndDate = new Date(endDate); // Convert end date string to Date object
+                filterStartDate.setHours(0);
+                filterEndDate.setSeconds(59);
+                filterEndDate.setMinutes(59);
+                filterEndDate.setHours(23);
+                const chargeToMatch =
+                    intArray?.length === 0 || intArray?.includes(item.DebtorId);
+                const typeMatch =
+                    selectedTypes.length === 0 ||
+                    selectedTypes.some(
+                        (selectedType) => selectedType.value === item.SafetyType
+                    );
+                return (
+                    itemDate >= filterStartDate &&
+                    itemDate <= filterEndDate &&
+                    typeMatch &&
+                    chargeToMatch
+                ); // Compare the item date to the filter dates
+            });
+            setFilteredData(filtered);
+            setCurrentPage(0);
+        },
+        [safetyDataState, accData]
+    ); // Add proper dependencies
+
     useEffect(() => {
-        filterData(SDate, EDate);
-    }, [SDate, EDate]);
+        if (SDate && EDate) {
+            filterData(SDate, EDate);
+        }
+    }, [SDate, EDate, filterData]);
+
     useEffect(() => {
-        filterData(SDate, EDate);
-    }, [accData, selectedTypes]);
+        if (SDate && EDate) {
+            filterData(SDate, EDate);
+        }
+    }, []);
+
     useEffect(() => {
         if (isDataEdited) {
             fetchData();
             setDataEdited(false); // Reset the edit status after fetching data
         }
-    }, [isDataEdited]);
+    }, [isDataEdited, fetchData]);
 
-    const filterData = (startDate, endDate) => {
-        // Filter the data based on the start and end date filters
-        const intArray = accData?.map((str) => {
-            const intValue = parseInt(str);
-            return isNaN(intValue) ? 0 : intValue;
-        });
-
-        const filtered = safetyDataState?.filter((item) => {
-            const itemDate = new Date(item.OccuredAt); // Convert item's date string to Date object
-            const filterStartDate = new Date(startDate); // Convert start date string to Date object
-            const filterEndDate = new Date(endDate); // Convert end date string to Date object
-            filterStartDate.setHours(0);
-            filterEndDate.setSeconds(59);
-            filterEndDate.setMinutes(59);
-            filterEndDate.setHours(23);
-            const chargeToMatch =
-                intArray?.length === 0 || intArray?.includes(item.DebtorId);
-            const typeMatch =
-                selectedTypes.length === 0 ||
-                selectedTypes.some(
-                    (selectedType) => selectedType.value === item.SafetyType
-                );
-            return (
-                itemDate >= filterStartDate &&
-                itemDate <= filterEndDate &&
-                typeMatch &&
-                chargeToMatch
-            ); // Compare the item date to the filter dates
-        });
-        setFilteredData(filtered);
-        setCurrentPage(0);
-    };
-
-    let components = [
-        <SafetyRepTable
-            key={currentPage}
-            url={url}
-            fetchData={fetchData}
-            Token={Token}
-            customerAccounts={customerAccounts}
-            safetyCauses={safetyCauses}
-            filterValue={filterValue}
-            setFilterValue={setFilterValue}
-            setsafetyData={setsafetyDataState}
-            safetyTypes={safetyTypes}
-            safetyData={filteredData}
-            currentPageRep={currentPage}
-            userPermissions={userPermissions}
-            setFilteredData={setFilteredData}
-            setDataEdited={setDataEdited}
-        />,
-        <SafetyRepChart
-            key={currentPage}
-            Token={Token}
-            filteredData={filteredData}
-            safetyCauses={safetyCauses}
-            safetyTypes={safetyTypes}
-        />,
-        <AddSafetyType
-            url={url}
-            key={currentPage}
-            Token={Token}
-            userPermissions={userPermissions}
-            safetyTypes={safetyTypes}
-            setSafetyTypes={setSafetyTypes}
-        />,
-    ];
+    // Memoize components array to prevent recreation on every render
+    const components = React.useMemo(
+        () => [
+            <SafetyRepTable
+                key={`table-${currentPage}`}
+                url={url}
+                fetchData={fetchData}
+                Token={Token}
+                customerAccounts={customerAccounts}
+                safetyCauses={safetyCauses}
+                filterValue={filterValue}
+                setFilterValue={setFilterValue}
+                setsafetyData={setsafetyDataState}
+                safetyTypes={safetyTypes}
+                safetyData={filteredData}
+                currentPageRep={currentPage}
+                userPermissions={userPermissions}
+                setFilteredData={setFilteredData}
+                setDataEdited={setDataEdited}
+            />,
+            <SafetyRepChart
+                key={`chart-${currentPage}`}
+                Token={Token}
+                filteredData={filteredData}
+                safetyCauses={safetyCauses}
+                safetyTypes={safetyTypes}
+            />,
+            <AddSafetyType
+                key={`add-${currentPage}`}
+                url={url}
+                Token={Token}
+                userPermissions={userPermissions}
+                safetyTypes={safetyTypes}
+                setSafetyTypes={setSafetyTypes}
+            />,
+        ],
+        [
+            currentPage,
+            url,
+            fetchData,
+            Token,
+            customerAccounts,
+            safetyCauses,
+            filterValue,
+            setFilterValue,
+            setsafetyDataState,
+            safetyTypes,
+            filteredData,
+            userPermissions,
+            setFilteredData,
+            setDataEdited,
+            setSafetyTypes,
+        ]
+    );
 
     const handleItemClick = (index) => {
         setActiveComponentIndex(index);
     };
+
     const [canView, setCanView] = useState(true);
+
     useEffect(() => {
         if (userPermissions) {
             setCanView(!canViewSafetyType(userPermissions));
         }
     }, [userPermissions]);
+
     return (
         <div>
             {/* Added toast container since it wasn't showing */}

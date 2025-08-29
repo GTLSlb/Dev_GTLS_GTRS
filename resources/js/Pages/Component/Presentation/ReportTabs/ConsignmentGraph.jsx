@@ -14,6 +14,27 @@ function ConsignmentGraph({ customers, CustomerId }) {
     const [loading, setLoading] = useState(true);
     const [selectedReceiver, setselectedReceiver] = useState(customers[0]);
 
+    function addCalculatedFields(data) {
+        data.forEach((item) => {
+            if (item.Record && item.Record.length > 0) {
+                item.Record.forEach((record) => {
+                    // Calculate onTime %
+                    record.onTimePercentage =
+                        ((record.TotalCons - record.TotalFails) /
+                            record.TotalCons) *
+                        100;
+
+                    // Calculate POD %
+                    record.PODPercentage =
+                        ((record.TotalCons - record.TotalNoPod) /
+                            record.TotalCons) *
+                        100;
+                });
+            }
+        });
+        return data;
+    }
+
     function getReportData() {
         setLoading(true);
         axios
@@ -27,7 +48,7 @@ function ConsignmentGraph({ customers, CustomerId }) {
             })
             .then((res) => {
                 setLoading(false);
-
+                addCalculatedFields(res.data);
                 setGraphOriginalData(res.data);
                 setGraphData(res.data);
             })
@@ -94,7 +115,6 @@ function ConsignmentGraph({ customers, CustomerId }) {
     const handleReceiverSelectChange = (selectedOptions) => {
         setselectedReceiver(selectedOptions);
     };
-
 
     return loading ? (
         <div className="md:pl-20 pt-16 h-full flex flex-col items-center justify-center">

@@ -146,14 +146,23 @@ export default function Utilization() {
 
     const [cellLoading, setCellLoading] = useState(null);
 
-    const dateRenderer = (td, value) => {
+    const dateRenderer = (
+        instance,
+        td,
+        row,
+        col,
+        prop,
+        value,
+        cellProperties
+    ) => {
+        // If the cell has a value, format it
         if (value) {
-            td.innerText = moment(value).format("DD/MM/YYYY");
+            td.innerText = moment(value).format("DD/MM/YYYY"); // Change format here
         } else {
-            td.innerText = "";
+            td.innerText = ""; // If no value, keep it empty
         }
 
-        td.classList.add("htLeft");
+        td.classList.add("htLeft"); // Align text to the right
         return td;
     };
 
@@ -280,7 +289,7 @@ export default function Utilization() {
             title: "Vehicle Pallet Utilisation (%)",
             type: "numeric",
             readOnly: true,
-            renderer: (td, value) => {
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 td.innerText = value + "%";
                 td.classList.add("htLeft");
                 return td;
@@ -303,7 +312,7 @@ export default function Utilization() {
             title: "Load Weight Utilisation (%)",
             type: "numeric",
             readOnly: true,
-            renderer: (td, value) => {
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 td.innerText = value + "%";
                 td.classList.add("htLeft");
                 return td;
@@ -316,7 +325,7 @@ export default function Utilization() {
             readOnly: false,
             allowInvalid: true,
             fillHandle: "vertical",
-            renderer: (td, value) => {
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 td.classList.remove("htInvalid");
                 td.classList.add("htLeft");
 
@@ -351,7 +360,7 @@ export default function Utilization() {
             allowInvalid: true,
             allowEmpty: true,
             numericFormat: null,
-            renderer: (td, value) => {
+           renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 td.classList.remove("htInvalid");
                 if (value != "" && value != null && value != undefined) {
                     if (timeValidatorRegexp.test(value)) {
@@ -381,7 +390,7 @@ export default function Utilization() {
             title: "Collection Turnaround Time",
             type: "date",
             readOnly: true,
-            renderer: (instance, td, row) => {
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 const timeIn = instance.getDataAtCell(
                     row,
                     instance.propToCol("PickupTimeIn")
@@ -412,7 +421,7 @@ export default function Utilization() {
             title: "North Rock Allow Time (45Min)",
             type: "text",
             readOnly: true,
-            renderer: (instance, td, row) => {
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 const timeIn = instance.getDataAtCell(
                     row,
                     instance.propToCol("PickupTimeIn")
@@ -434,7 +443,7 @@ export default function Utilization() {
             title: "Demurrage Charges ($97.85 Per Hr or $1.63 Per Minute)",
             type: "numeric",
             readOnly: true,
-            renderer: (instance, td, row) => {
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 const timeIn = instance.getDataAtCell(
                     row,
                     instance.propToCol("PickupTimeIn")
@@ -471,7 +480,7 @@ export default function Utilization() {
             title: "Time In",
             type: "date",
             readOnly: true,
-            renderer: (td, value) => {
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 if (value != null) {
                     let parts = value?.split(":");
                     let shortTimeStr = parts?.slice(0, 2).join(":");
@@ -491,7 +500,7 @@ export default function Utilization() {
             title: "Time Out",
             type: "date",
             readOnly: true,
-            renderer: (td, value) => {
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 if (value != null) {
                     let parts = value?.split(":");
                     let shortTimeStr = parts?.slice(0, 2).join(":");
@@ -511,7 +520,7 @@ export default function Utilization() {
             title: "Unload Turnaround Time",
             type: "text",
             readOnly: true,
-            renderer: (td, value) => {
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 if (value != null) {
                     let parts = value?.split(":");
                     let shortTimeStr = parts?.slice(0, 2).join(":");
@@ -531,7 +540,7 @@ export default function Utilization() {
             title: "Ingleburn Allow Time (30Min)",
             type: "text",
             readOnly: true,
-            renderer: (instance, td, row) => {
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 const timeIn = instance.getDataAtCell(
                     row,
                     instance.propToCol("DelTimeIn")
@@ -563,7 +572,7 @@ export default function Utilization() {
             title: "Unload Demurrage Charges ($97.85 Per Hr or $1.63 Per Minute)",
             type: "numeric",
             readOnly: true,
-            renderer: (instance, td, row) => {
+           renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 const timeIn = instance.getDataAtCell(
                     row,
                     instance.propToCol("DelTimeIn")
@@ -593,7 +602,7 @@ export default function Utilization() {
             title: "Travel time between sites",
             type: "text",
             readOnly: true,
-            renderer: (instance, td, row) => {
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 const deliveryTimeIn = instance.getDataAtCell(
                     row,
                     instance.propToCol("DelTimeIn")
@@ -618,7 +627,7 @@ export default function Utilization() {
             title: "Total Charge Amount",
             type: "numeric",
             readOnly: true,
-            renderer: (instance, td, row) => {
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 const delTimeIn = instance.getDataAtCell(
                     row,
                     instance.propToCol("DelTimeIn")
@@ -672,7 +681,7 @@ export default function Utilization() {
             title: "Revised Utilisation%",
             type: "numeric",
             readOnly: true,
-            renderer: (instance, td, row) => {
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 const vehicleUtil = calculateUtilization(
                     instance,
                     row,
@@ -1014,7 +1023,7 @@ export default function Utilization() {
                     />
                 </div>
             )}
-            {isLoading && (
+            {!tableData || isLoading && (
                 <div className="min-h-screen md:pl-20 -mt-24 h-full flex flex-col items-center justify-center">
                     <div className="flex items-center justify-center">
                         <div

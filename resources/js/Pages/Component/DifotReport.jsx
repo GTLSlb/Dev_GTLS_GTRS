@@ -21,6 +21,8 @@ import { CustomContext } from "@/CommonContext";
 import axios from "axios";
 
 export default function DifotReport({ filterValue, setFilterValue, accData }) {
+
+    console.log("accData", accData);
     const { url, Token, user } = useContext(CustomContext);
     const [filteredData, setFilteredData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -37,10 +39,21 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                     Authorization: `Bearer ${Token}`,
                 },
             });
-            
+
+            console.log(res.data);
             if (res.data == "" || res.data == []) {
                 setDifotData([]);
             } else {
+                console.log(
+                    res?.data?.map((item) => {
+                        return {
+                            ...item,
+                            Spaces: item?.Spaces?.toString(),
+                            Pallets: item?.Pallets?.toString(),
+                            Weight: item?.Weight?.toString(),
+                        };
+                    })
+                );
                 setDifotData(
                     res?.data?.map((item) => {
                         return {
@@ -83,18 +96,18 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
         // Filter the data based on the start and end date filters, selected receiver names, and chargeTo values
         const filtered = difotData.filter((item) => {
             const chargeToMatch =
-                intArray?.length === 0 || intArray?.includes(item.ChargeToID);
+                (intArray?.length === 0 ||
+                    intArray?.includes(item.ChargeToID))
 
             return chargeToMatch;
         });
+
         return filtered;
     };
+
     useEffect(() => {
-        if (difotData) {
-            const filtered = filterData();
-            setFilteredData(filtered);
-        }
-    }, [difotData, accData]);
+        setFilteredData(filterData());
+    }, [accData, difotData]);
 
     useEffect(() => {
         if (filteredData != null && filteredData.length > 0) {
@@ -274,6 +287,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
             </div>
         );
     });
+
     const handleDownloadExcel = () => {
         const jsonData = handleFilterTable(gridRef, difotData);
         const columnMapping = {

@@ -272,9 +272,9 @@ export const getFiltersTransport = () => {
         },
         {
             name: "DelayReason",
-            operator: "contains",
-            type: "string",
-            value: "",
+            operator: "inlist",
+            type: "select",
+            value: null,
             emptyValue: "",
         },
         {

@@ -41,31 +41,15 @@ export default function Sidebar() {
 
         try {
             const userResponse = await getApiRequest(`/users`, {});
-            const { user } = userResponse;
+            const { user, token } = userResponse;
 
             setUser(user);
-
-            const token_headers = {
-                "Content-Type": "application/x-www-form-urlencoded",
-            };
-            const token_data = {
-                UserId: user.UserId,
-                OwnerId: user.OwnerId,
-            };
-
-            const tokenResponse = await postApiRequest(
-                `${gtamUrl}/Token`,
-                token_headers,
-                token_data
-            );
-
-            const { access_token } = tokenResponse;
-            setToken(access_token);
+            setToken(token);
 
             const appPermissionsHeaders = {
                 UserId: user.UserId,
                 AppId: appId,
-                Authorization: `Bearer ${access_token}`,
+                Authorization: `Bearer ${token}`,
             };
             const appPermissionsResponse = await getApiRequest(
                 `${gtamUrl}User/AppPermissions`,
@@ -76,7 +60,7 @@ export default function Sidebar() {
 
             const userPermissionsHeaders = {
                 UserId: user.UserId,
-                Authorization: `Bearer ${access_token}`,
+                Authorization: `Bearer ${token}`,
             };
             const userPermissionsResponse = await getApiRequest(
                 `${gtamUrl}User/Permissions`,

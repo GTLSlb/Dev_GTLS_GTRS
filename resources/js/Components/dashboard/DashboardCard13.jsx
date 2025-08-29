@@ -38,7 +38,7 @@ const BasicPieCharts = (props) => {
 
     useEffect(() => {
         setData(chartData);
-    }, [chartData]);
+    }, []);
 
     const config = {
         appendPadding: 10,

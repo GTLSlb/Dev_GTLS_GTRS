@@ -8,7 +8,6 @@ import { AlertToast } from "@/permissions";
 import { ToastContainer } from "react-toastify";
 import { CustomContext } from "@/CommonContext";
 
-// Component
 function InlineTable({
     graphData,
     CustomerId,
@@ -20,10 +19,9 @@ function InlineTable({
     const [localGraphData, setLocalGraphData] = useState(graphData);
 
     useEffect(() => {
-        setLocalGraphData(graphData); // Sync with the initial data or props
+        setLocalGraphData(graphData);
     }, [graphData]);
 
-    // Function to format date to column name
     const formatDateToColumnName = (dateString) => {
         const date = new Date(dateString);
         const monthNames = [
@@ -45,21 +43,17 @@ function InlineTable({
         return `${month} ${year}`;
     };
 
-    // Generate columns and originalData
     const columns = [
         { name: "metric", header: "", defaultFlex: 1, minWidth: 100 },
     ];
     const originalDataTemplate = {};
 
-    // Store original records to track RecordIds and other details
     const recordMap = {};
 
-    // Create original data template and columns dynamically
     function CustomNumericEditor(props) {
-        const { value, onChange, onComplete, cellProps } = props; // Destructure relevant props
+        const { value, onChange, onComplete, cellProps } = props;
         const [inputValue, setInputValue] = useState(value);
 
-        // Determine the maximum value dynamically based on your logic
         let max;
         if (cellProps.rowIndex === 0 || cellProps.rowIndex === 3) {
             max = null;
@@ -70,37 +64,36 @@ function InlineTable({
         const onValueChange = (e) => {
             let newValue = e.target.value;
 
-            // Check if the new value exceeds the max limit
             if (cellProps.rowIndex === 1 || cellProps.rowIndex === 2) {
                 if (max !== null && parseFloat(newValue) > max) {
-                    newValue = max; // Set to max if it exceeds
+                    newValue = max;
                 }
             }
 
-            setInputValue(newValue); // Update the local state
-            onChange(newValue); // Call onChange to update the grid's internal state
+            setInputValue(newValue);
+            onChange(newValue);
         };
 
         const handleComplete = () => {
-            onComplete(inputValue); // Commit the final value and close the editor
+            onComplete(inputValue);
         };
 
         const handleKeyDown = (event) => {
             if (event.key === "Enter") {
-                handleComplete(); // Save and close editor when Enter is pressed
+                handleComplete();
             }
         };
 
         return (
             <input
                 type="number"
-                min={0} // Minimum value
-                max={null} // Maximum value
-                step={1} // Step size
+                min={0}
+                max={null}
+                step={1}
                 value={inputValue}
                 onChange={onValueChange}
-                onBlur={handleComplete} // Save and close editor when input loses focus
-                onKeyDown={handleKeyDown} // Save and close editor when Enter is pressed
+                onBlur={handleComplete}
+                onKeyDown={handleKeyDown}
                 style={{ width: "100%", height: "100%" }}
             />
         );
@@ -120,21 +113,17 @@ function InlineTable({
             defaultFlex: 1,
             minWidth: 100,
             sortable: false,
-            editor: CustomNumericEditor, // Use the NumericEditor
+            editor: CustomNumericEditor,
 
-            // Adjusted the editable function to properly log the row data
-            // Use closure to capture row data
-            editable: (cellProps) => {
-                return Promise.resolve(
-                    // eslint-disable-next-line react/prop-types
+            editable: (editValue, cellProps) => {
+                return (
                     cellProps.data.metric !== "Ontime %" &&
-                    // eslint-disable-next-line react/prop-types
-                        cellProps.data.metric !== "POD %"
+                    cellProps.data.metric !== "POD %"
                 );
             },
 
             render: ({ value }) => {
-                return <div className="font-normal">{value}</div>; // Render value as text
+                return <div className="font-normal">{value}</div>;
             },
         });
         originalDataTemplate[columnName] = "";
@@ -149,13 +138,14 @@ function InlineTable({
         { ...originalDataTemplate, metric: "POD %" },
     ];
 
-    // Populate originalData with values from the JSON
+    
     jsonData.forEach((item) => {
+        
         const columnName = formatDateToColumnName(item.MonthDate);
         if (item.Record && item.Record.length > 0) {
             const record = item.Record[0];
             recordMap[columnName] = {
-                ...record, // Ensure all fields are included
+                ...record,
             };
             originalData[0][columnName] = record.TotalCons || 0;
             originalData[1][columnName] = record.TotalFails || 0;
@@ -163,19 +153,19 @@ function InlineTable({
             originalData[3][columnName] =
                 record.KpiBenchMark != null
                     ? `${parseFloat(record.KpiBenchMark).toFixed(2)}%`
-                    : ""; // Ensure percentages are formatted
+                    : "";
             originalData[4][columnName] =
                 record.onTimePercentage != null
                     ? `${parseFloat(record.onTimePercentage).toFixed(2)}%`
-                    : ""; // Ensure percentages are formatted
+                    : "";
             originalData[5][columnName] =
                 record.PODPercentage != null
                     ? `${parseFloat(record.PODPercentage).toFixed(2)}%`
-                    : ""; // Ensure percentages are formatted
+                    : "";
         } else {
             recordMap[columnName] = {
                 RecordId: null,
-                CustomerId: CustomerId, // Replace with actual CustomerId if available
+                CustomerId: CustomerId,
                 CustomerTypeId: selectedReceiver.value,
                 ReportMonth: item.MonthDate,
                 TotalCons: null,
@@ -190,14 +180,12 @@ function InlineTable({
 
     const [dataSource, setDataSource] = useState(originalData);
     const [validationErrors, setValidationErrors] = useState({});
-    // Lookup function to determine editability based on rowIndex and columnName
 
     const onEditComplete = useCallback(
         ({ value, columnId, rowIndex }) => {
             const data = [...dataSource];
             let formattedValue = value;
 
-            // Format the KPI Benchmark row value as a percentage
             if (rowIndex === 3) {
                 formattedValue =
                     value == null ? "" : `${parseFloat(value).toFixed(2)}%`;
@@ -208,7 +196,6 @@ function InlineTable({
             const baseRecord = { ...recordMap[columnId] };
             let updatedField = "";
 
-            // Determine which field has been updated based on the row index
             switch (rowIndex) {
                 case 0:
                     updatedField = "TotalCons";
@@ -226,10 +213,8 @@ function InlineTable({
                     break;
             }
 
-            // Update baseRecord with the parsed numerical value
             baseRecord[updatedField] = parseFloat(value);
 
-            // Ensure other fields are preserved by getting their current values from dataSource
             const fieldRowIndexMap = {
                 TotalCons: 0,
                 TotalFails: 1,
@@ -258,7 +243,6 @@ function InlineTable({
                 }
             });
 
-            // Recalculate percentages
             if (baseRecord.TotalCons && baseRecord.TotalCons !== 0) {
                 if (
                     baseRecord.TotalFails == null ||
@@ -297,7 +281,6 @@ function InlineTable({
                 ? `${baseRecord.PODPercentage}%`
                 : "";
 
-            // Validate fields before making an API request
             if (
                 baseRecord.TotalCons == null ||
                 baseRecord.TotalCons === "" ||
@@ -324,7 +307,6 @@ function InlineTable({
                 }));
             }
 
-            // Update recordMap with the updated baseRecord
             recordMap[columnId] = baseRecord;
 
             axios
@@ -335,14 +317,13 @@ function InlineTable({
                     },
                 })
                 .then(() => {
-                    // Use functional updates to ensure you're working with the latest data
                     const updatedData = updateLocalData(
                         localGraphData,
                         baseRecord
                     );
-                    // Persist updates
+
                     setLocalGraphData(updatedData);
-                    setGraphData(updatedData); // Optional: If parent component needs the updates
+                    setGraphData(updatedData);
                 })
                 .catch((err) => {
                     console.error(err);
@@ -367,7 +348,7 @@ function InlineTable({
                     Record: [
                         {
                             ...existingRecord,
-                            ...newRecord, // Merge newRecord with existingRecord
+                            ...newRecord,
                         },
                     ],
                 };
@@ -380,25 +361,23 @@ function InlineTable({
     const modifiedColumns = columns.map((col) => ({
         ...col,
         onRender: (cellProps, { value }) => {
-    // eslint-disable-next-line react/prop-types
-    const hasError = validationErrors[cellProps.name];
-    const isMetricColumn = col.name === "metric";
+            const hasError = validationErrors[cellProps.name];
+            const isMetricColumn = col.name === "metric";
 
-    // eslint-disable-next-line react/prop-types
-    cellProps.style.background = hasError ? "#f6d3d0" : "transparent";
+            cellProps.style.background = hasError ? "#f6d3d0" : "transparent";
 
-    return (
-        <div
-            style={{
-                fontWeight: isMetricColumn ? "bold" : "normal",
-                color: hasError ? "black" : "black",
-                backgroundColor: hasError ? "#f6d3d0" : "transparent",
-            }}
-        >
-            <div className="test">{value}</div>
-        </div>
-    );
-}
+            return (
+                <div
+                    style={{
+                        fontWeight: isMetricColumn ? "bold" : "normal",
+                        color: hasError ? "black" : "black",
+                        backgroundColor: hasError ? "#f6d3d0" : "transparent",
+                    }}
+                >
+                    <div className="test">{value}</div>
+                </div>
+            );
+        },
     }));
 
     const editableColumns = modifiedColumns.map((col) => ({
@@ -409,6 +388,7 @@ function InlineTable({
         <div className="mt-10">
             {/* Added toast container since it wasn't showing */}
             <ToastContainer />
+
             <ReactDataGrid
                 idProperty="metric"
                 style={{ minHeight: 284, fontWeight: "bold" }}
@@ -417,6 +397,7 @@ function InlineTable({
                 showZebraRows={false}
                 dataSource={dataSource}
                 showColumnMenuTool={false}
+                editable={true}
             />
         </div>
     );

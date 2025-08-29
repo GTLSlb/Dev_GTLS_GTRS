@@ -1,12 +1,11 @@
 import ReactModal from "react-modal";
 import InputError from "@/Components/InputError";
-import React from "react";
-import PropTypes from "prop-types";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import axios from "axios";
 import { useEffect } from "react";
-import swal from 'sweetalert';
-import { handleSessionExpiration } from '@/CommonFunctions';
-
+import swal from "sweetalert";
+import { handleSessionExpiration } from "@/CommonFunctions";
+import { CustomContext } from "@/CommonContext";
 
 export default function AddSafetyTypeModal({
     isOpen,
@@ -15,57 +14,79 @@ export default function AddSafetyTypeModal({
     updateLocalData,
     safetyTypes,
 }) {
+    const { user, Token, url } = useContext(CustomContext);
+    const [Name, setName] = useState(null);
     const [isSaveEnabled, setIsSaveEnabled] = useState(true);
+    const [Status, setStatus] = useState(true);
     const [typeStatus, setTypeStatus] = useState(true);
-    const [isLoading,SetIsLoading] = useState(false)
+    const [isLoading, SetIsLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(false);
 
     useEffect(() => {
         if (type) {
+            setStatus(type?.SafetyStatus);
             setTypeStatus(type?.SafetyStatus);
+            setName(type?.SafetyTypeName);
         } else {
             setTypeStatus(true);
+            setStatus(true);
+            setName("");
         }
     }, [type]);
 
+    const data = [
+        {
+            TypeId: type ? type.SafetyTypeId : null,
+            TypeName: Name,
+            TypeStatus: Status,
+        },
+    ];
+
     const handlePopUpClose = () => {
-        setError(null); // Clear the error message
-        handleClose(); // Clear the input value
+        setError(null);
+        setName("");
+        handleClose();
     };
     const handleSubmit = async (event) => {
         event.preventDefault();
-        // Prevent the default form submission behavior
 
         try {
-            SetIsLoading(true)
-            // Make the API request using Axios or any other library
-          
-            // Handle the response as needed
-            // setInputValue("");
+            SetIsLoading(true);
+
+            await axios.post(`${url}Add/SafetyType`, data, {
+                headers: {
+                    UserId: user.UserId,
+                    Authorization: `Bearer ${Token}`,
+                },
+            });
+
+            setSuccess(true);
             setTimeout(() => {
                 handleClose();
-                // setdescription("");
-                SetIsLoading(false)
+                setName("");
+
+                setSuccess(false);
+                SetIsLoading(false);
                 updateLocalData();
             }, 1000);
         } catch (error) {
-            SetIsLoading(false)
-            // Handle error
-            setError("Error occurred while saving the data. Please try again."); // Set the error message
-                if (error.response && error.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
+            SetIsLoading(false);
+
+            setError("Error occurred while saving the data. Please try again.");
+            if (error.response && error.response.status === 401) {
+                swal({
+                    title: "Session Expired!",
                     text: "Please login again",
-                    type: 'success',
+                    type: "success",
                     icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(async function () {
+                    confirmButtonText: "OK",
+                }).then(async function () {
                     await handleSessionExpiration();
                 });
-                  // Handle other errors
-                  console.error(error);
-                }
+
+                console.log(err);
+            }
         }
     };
 
@@ -77,11 +98,12 @@ export default function AddSafetyTypeModal({
 
         if (isDuplicate) {
             setIsSaveEnabled(false);
-            // Handle duplicate name error
+
             setError("Name already exists. Please enter a unique name.");
         } else {
             setIsSaveEnabled(true);
-            setError(null); // Clear the error message if the name is valid
+            setName(newName);
+            setError(null);
         }
     };
 
@@ -90,7 +112,7 @@ export default function AddSafetyTypeModal({
             isOpen={isOpen}
             onRequestClose={handlePopUpClose}
             className="fixed inset-0 flex items-center justify-center"
-            overlayClassName="fixed inset-0 bg-black bg-opacity-60"
+            overlayClassName="fixed inset-0 bg-black bg-opacity-60 z-50"
         >
             <div className="bg-white w-96 rounded-lg shadow-lg p-6 ">
                 <div className="flex justify-end">
@@ -163,8 +185,9 @@ export default function AddSafetyTypeModal({
                                                 type="radio"
                                                 value="active"
                                                 checked={typeStatus === true}
-                                                onChange={() => {
+                                                onChange={(event) => {
                                                     setTypeStatus(true);
+                                                    setStatus(true);
                                                 }}
                                                 className="h-4 w-4 border-gray-300 text-dark focus:ring-goldd"
                                             />
@@ -182,8 +205,9 @@ export default function AddSafetyTypeModal({
                                                 type="radio"
                                                 value="inactive"
                                                 checked={typeStatus === false}
-                                                onChange={() => {
+                                                onChange={(event) => {
                                                     setTypeStatus(false);
+                                                    setStatus(false);
                                                 }}
                                                 className="h-4 w-4 border-gray-300 text-dark focus:ring-goldd"
                                             />
@@ -207,12 +231,12 @@ export default function AddSafetyTypeModal({
                             className="rounded-md bg-dark w-20 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-goldd focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         >
                             {isLoading ? (
-                                    <div className=" inset-0 flex justify-center items-center bg-opacity-50">
-                                        <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-smooth"></div>
-                                    </div>
-                                ) : (
-                                    "Save"
-                                )}
+                                <div className=" inset-0 flex justify-center items-center bg-opacity-50">
+                                    <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-smooth"></div>
+                                </div>
+                            ) : (
+                                "Save"
+                            )}
                         </button>
                     </div>
                 </form>
@@ -220,10 +244,3 @@ export default function AddSafetyTypeModal({
         </ReactModal>
     );
 }
-AddSafetyTypeModal.propTypes = {
-    isOpen: PropTypes.bool,
-    handleClose: PropTypes.func,
-    type: PropTypes.object,
-    updateLocalData: PropTypes.func,
-    safetyTypes: PropTypes.array,
-};
