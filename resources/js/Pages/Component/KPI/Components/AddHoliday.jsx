@@ -3,14 +3,11 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";
-import {
-    CheckIcon,
-    ChevronDownIcon,
-} from "@heroicons/react/20/solid";
+import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 import { useEffect } from "react";
 import swal from "sweetalert";
 import axios from "axios";
-import { handleSessionExpiration } from '@/CommonFunctions';
+import { handleSessionExpiration } from "@/CommonFunctions";
 import GtrsButton from "../../GtrsButton";
 import { AlertToast } from "@/permissions";
 import { CustomContext } from "@/CommonContext";
@@ -25,9 +22,9 @@ export default function AddHoliday({
     setHoliday,
     setShowAdd,
     fetchData,
-    closeModal
+    closeModal,
 }) {
-    const { Token, url } = useContext(CustomContext);
+    const { Token, url, user } = useContext(CustomContext);
     const [selected, setSelected] = useState(states[0]);
     const [isChecked, setIsChecked] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -69,7 +66,7 @@ export default function AddHoliday({
         axios
             .post(`${url}Add/Holiday`, inputValues, {
                 headers: {
-                    UserId: url.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             })
@@ -84,27 +81,29 @@ export default function AddHoliday({
                 if (err.response && err.response.status === 401) {
                     // Handle 401 error using SweetAlert
                     swal({
-                      title: 'Session Expired!',
-                      text: "Please login again",
-                      type: 'success',
-                      icon: "info",
-                      confirmButtonText: 'OK'
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
                     }).then(async function () {
                         await handleSessionExpiration();
                     });
-                  } else {
+                } else {
                     // Handle other errors
                     console.error(err);
                     setIsLoading(false);
                     AlertToast("Something went wrong", 2);
-                  }
+                }
             });
     }
 
     return (
         <div className="shadow bg-white p-6 rounded-lg">
             <form onSubmit={AddHoliday}>
-                <p className="font-bold text-lg">{object ? "Edit " : "Add "} Holiday</p>
+                <p className="font-bold text-lg">
+                    {object ? "Edit " : "Add "} Holiday
+                </p>
                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-5 gap-y-5 items-center py-4">
                     <div className="col-span-2 flex items-center gap-x-2">
                         <label htmlFor="name" className="block w-32 ">
@@ -281,7 +280,7 @@ AddHoliday.propTypes = {
     url: PropTypes.string,
     Token: PropTypes.string,
     setHoliday: PropTypes.func,
-    setShowAdd: PropTypes.func,    
+    setShowAdd: PropTypes.func,
     fetchData: PropTypes.func,
     closeModal: PropTypes.func,
 };

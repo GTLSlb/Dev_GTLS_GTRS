@@ -19,6 +19,7 @@ import { handleSessionExpiration } from "@/CommonFunctions";
 import { AlertToast } from "@/permissions";
 import { Button, Spinner } from "@heroui/react";
 import swal from "sweetalert";
+import AnimatedLoading from "@/Components/AnimatedLoading";
 
 export default function Utilization() {
     const { url, Token, user } = useContext(CustomContext);
@@ -360,7 +361,7 @@ export default function Utilization() {
             allowInvalid: true,
             allowEmpty: true,
             numericFormat: null,
-           renderer: (instance, td, row, col, prop, value, cellProperties) => {
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 td.classList.remove("htInvalid");
                 if (value != "" && value != null && value != undefined) {
                     if (timeValidatorRegexp.test(value)) {
@@ -572,7 +573,7 @@ export default function Utilization() {
             title: "Unload Demurrage Charges ($97.85 Per Hr or $1.63 Per Minute)",
             type: "numeric",
             readOnly: true,
-           renderer: (instance, td, row, col, prop, value, cellProperties) => {
+            renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 const timeIn = instance.getDataAtCell(
                     row,
                     instance.propToCol("DelTimeIn")
@@ -1023,24 +1024,7 @@ export default function Utilization() {
                     />
                 </div>
             )}
-            {!tableData || isLoading && (
-                <div className="min-h-screen md:pl-20 -mt-24 h-full flex flex-col items-center justify-center">
-                    <div className="flex items-center justify-center">
-                        <div
-                            className={`h-4 w-4 bg-goldd rounded-full mr-5 animate-bounce`}
-                        ></div>
-                        <div
-                            className={`h-4 w-4 bg-goldd rounded-full mr-5 animate-bounce200`}
-                        ></div>
-                        <div
-                            className={`h-4 w-4 bg-goldd rounded-full animate-bounce400`}
-                        ></div>
-                    </div>
-                    <div className="text-dark mt-4 font-bold">
-                        Please wait while we get the data for you.
-                    </div>
-                </div>
-            )}
+            {(!tableData || isLoading) && <AnimatedLoading />}
             {cellLoading && (
                 <div className="absolute inset-0 flex justify-center items-center">
                     <Spinner color="default" size="sm" />

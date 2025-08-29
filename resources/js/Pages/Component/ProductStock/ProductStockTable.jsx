@@ -21,6 +21,7 @@ import axios from "axios";
 import PropTypes from "prop-types";
 import swal from "sweetalert";
 import { CustomContext } from "@/CommonContext";
+import AnimatedLoading from "@/Components/AnimatedLoading";
 export const SearchIcon = (props) => {
     return (
         <svg
@@ -246,8 +247,8 @@ export default function ProductStockTable() {
             }
             return acc;
         }, {});
-        setDisplayCount(30)
-        setHasMore(true)
+        setDisplayCount(30);
+        setHasMore(true);
         // Step 5: Flatten groups into rows with recalculated totals
         return Object.values(recalculatedGroups).flatMap(
             (group, groupIndex) => {
@@ -388,19 +389,18 @@ export default function ProductStockTable() {
         }
     }, []);
 
-
     const onClear = React.useCallback(() => {
         setFilterValue("");
-        setDisplayCount(30)
-        setHasMore(true)
+        setDisplayCount(30);
+        setHasMore(true);
     }, []);
 
     function onClearAll() {
         setFilterValue("");
         setSelectedBranch(new Set());
         setSelectedDebtor(new Set());
-        setDisplayCount(30)
-        setHasMore(true)
+        setDisplayCount(30);
+        setHasMore(true);
     }
 
     const displayedData = useMemo(
@@ -567,22 +567,7 @@ export default function ProductStockTable() {
     return (
         <div>
             {productsData.length === 0 ? (
-                <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
-                    <div className="flex items-center justify-center">
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
-                        ></div>
-                    </div>
-                    <div className="text-dark mt-4 font-bold">
-                        Please wait while we get the data for you.
-                    </div>
-                </div>
+                <AnimatedLoading />
             ) : (
                 <div className="p-5 flex flex-col gap-5">
                     <div className="flex smitems-center flex-col sm:flex-row justify-between gap-5">
@@ -681,7 +666,7 @@ export default function ProductStockTable() {
                     >
                         <TableHeader columns={columns}>
                             {(column) => (
-                                <TableColumn key={column.uid}>
+                                <TableColumn key={column.uid} align="center">
                                     {column.name}
                                 </TableColumn>
                             )}

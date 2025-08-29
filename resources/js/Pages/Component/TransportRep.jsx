@@ -570,7 +570,6 @@ function TransportRep({
             filterEditor: StringFilter,
         },
     ];
-    const excludedDebtorIds = [1514, 364, 247, 246, 245, 244];
 
     const filterData = () => {
         const intArray = accData?.map((str) => {
@@ -581,8 +580,7 @@ function TransportRep({
         const filtered = transportData.filter((item) => {
             const chargeToMatch =
                 (intArray?.length === 0 ||
-                    intArray?.includes(item.ChargeToID)) &&
-                !excludedDebtorIds.includes(item.ChargeToID); // Exclude specified ChargeToIDs
+                    intArray?.includes(item.ChargeToID)); // Exclude specified ChargeToIDs
 
             return chargeToMatch;
         });

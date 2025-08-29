@@ -19,10 +19,10 @@ import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { formatDateToExcel, handleSessionExpiration } from "@/CommonFunctions";
 import { CustomContext } from "@/CommonContext";
 import axios from "axios";
+import AnimatedLoading from "@/Components/AnimatedLoading";
 
 export default function DifotReport({ filterValue, setFilterValue, accData }) {
 
-    console.log("accData", accData);
     const { url, Token, user } = useContext(CustomContext);
     const [filteredData, setFilteredData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -40,20 +40,9 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                 },
             });
 
-            console.log(res.data);
             if (res.data == "" || res.data == []) {
                 setDifotData([]);
             } else {
-                console.log(
-                    res?.data?.map((item) => {
-                        return {
-                            ...item,
-                            Spaces: item?.Spaces?.toString(),
-                            Pallets: item?.Pallets?.toString(),
-                            Weight: item?.Weight?.toString(),
-                        };
-                    })
-                );
                 setDifotData(
                     res?.data?.map((item) => {
                         return {
@@ -96,8 +85,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
         // Filter the data based on the start and end date filters, selected receiver names, and chargeTo values
         const filtered = difotData.filter((item) => {
             const chargeToMatch =
-                (intArray?.length === 0 ||
-                    intArray?.includes(item.ChargeToID))
+                intArray?.length === 0 || intArray?.includes(item.ChargeToID);
 
             return chargeToMatch;
         });
@@ -646,7 +634,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
             header: "Post Code",
             type: "string",
             headerAlign: "center",
-            textAlign: "start",
+            textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
         },
@@ -655,7 +643,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
             header: "Spaces",
             type: "string",
             headerAlign: "center",
-            textAlign: "start",
+            textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
         },
@@ -664,7 +652,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
             header: "Pallets",
             type: "string",
             headerAlign: "center",
-            textAlign: "start",
+            textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
         },
@@ -673,7 +661,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
             header: "Weight",
             type: "string",
             headerAlign: "center",
-            textAlign: "start",
+            textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
         },
@@ -1053,22 +1041,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
             <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20 h-full">
                 <div className="mt-4 h-full">
                     {isLoading ? (
-                        <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
-                            <div className="flex items-center justify-center">
-                                <div
-                                    className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
-                                ></div>
-                                <div
-                                    className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
-                                ></div>
-                                <div
-                                    className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
-                                ></div>
-                            </div>
-                            <div className="text-dark mt-4 font-bold">
-                                Please wait while we get the data for you.
-                            </div>
-                        </div>
+                        <AnimatedLoading />
                     ) : (
                         <div className=" w-full bg-smooth h-full">
                             <TableStructure

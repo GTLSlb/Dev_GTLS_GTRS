@@ -2,7 +2,7 @@ import { Button } from "@heroui/react";
 import React, { useContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Sidebar, Menu, MenuItem, menuClasses } from "react-pro-sidebar";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { CircleStackIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
 import {
     Accordion,
@@ -110,6 +110,8 @@ export default function CollapseSidebar({
 }) {
     const { user, sidebarElements, setSidebarElements } =
         useContext(CustomContext);
+
+    const location = useLocation();
     const [isOpen, setIsOpen] = useState(false);
     const hasImage = false;
     const theme = "light";
@@ -305,6 +307,89 @@ export default function CollapseSidebar({
         return active;
     }
 
+    useEffect(() => {
+        const syncSidebarWithUrl = () => {
+            const currentPath = location.pathname;
+
+            // Find the menu item that matches the current URL
+            const updatedElements = sidebarElements?.map((element) => {
+                if (element.options) {
+                    // Check if any sub-option matches the current path
+                    const matchingOption = element.options.find(
+                        (option) => option.url === currentPath
+                    );
+
+                    if (matchingOption) {
+                        return {
+                            ...element,
+                            current: true,
+                            options: element.options.map((option) => ({
+                                ...option,
+                                current: option.url === currentPath,
+                            })),
+                        };
+                    } else {
+                        return {
+                            ...element,
+                            current: false,
+                            options: element.options.map((option) => ({
+                                ...option,
+                                current: false,
+                            })),
+                        };
+                    }
+                } else {
+                    // For items without sub-options
+                    return {
+                        ...element,
+                        current: element.url === currentPath,
+                    };
+                }
+            });
+
+            if (
+                updatedElements &&
+                JSON.stringify(updatedElements) !==
+                    JSON.stringify(sidebarElements)
+            ) {
+                setSidebarElements(updatedElements);
+
+                // Update localStorage to match the current selection
+                const currentItem = updatedElements.find((element) => {
+                    if (element.current && !element.options) {
+                        return true;
+                    }
+                    if (element.options) {
+                        return element.options.find((option) => option.current);
+                    }
+                    return false;
+                });
+
+                if (currentItem) {
+                    if (currentItem.options) {
+                        const currentOption = currentItem.options.find(
+                            (option) => option.current
+                        );
+                        if (currentOption) {
+                            localStorage.setItem(
+                                "current",
+                                JSON.stringify(currentOption.id)
+                            );
+                        }
+                    } else {
+                        localStorage.setItem(
+                            "current",
+                            JSON.stringify(currentItem.id)
+                        );
+                    }
+                }
+            }
+        };
+
+        if (sidebarElements?.length > 0) {
+            syncSidebarWithUrl();
+        }
+    }, [location.pathname, sidebarElements]);
     return (
         sidebarElements?.length > 0 && (
             <div className="h-full relative z-30 bg-gray-100 ">
@@ -322,7 +407,7 @@ export default function CollapseSidebar({
                     }}
                 >
                     {/* Sidebar content */}
-                    <div className="h-full containerscroll">
+                    <div className="h-full containerscroll max-lg:bg-gray-100">
                         {/* Arrow to close and open it  */}
                         <div
                             className={

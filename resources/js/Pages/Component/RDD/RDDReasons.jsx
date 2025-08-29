@@ -107,7 +107,6 @@ export default function RDDReasons() {
                                                                 userPermissions
                                                             ) ? (
                                                                 <a
-                                                                    href="#"
                                                                     onClick={() =>
                                                                         handleEditClick(
                                                                             reason

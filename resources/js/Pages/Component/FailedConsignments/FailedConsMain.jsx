@@ -7,6 +7,7 @@ import { handleSessionExpiration } from "@/CommonFunctions";
 import { CustomContext } from "@/CommonContext";
 import { canViewFailedReasons } from "@/permissions";
 import FailedReasonsTable from "./FailedReasonsTable";
+import AnimatedLoading from "@/Components/AnimatedLoading";
 
 export default function FailedConsMain({
     PerfData,
@@ -19,14 +20,14 @@ export default function FailedConsMain({
     const { url, Token, user, userPermissions } = useContext(CustomContext);
     const [isFetching, setIsfetching] = useState();
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
-    
+
     useEffect(() => {
         if (!failedReasons) {
             setIsfetching(true);
             fetchReasonData();
         }
     }, []);
-    
+
     const fetchReasonData = async () => {
         try {
             axios
@@ -72,8 +73,8 @@ export default function FailedConsMain({
     // Define tab configuration with unique IDs
     const tabs = [
         {
-            id: 'failed-consignments',
-            label: 'Failed Consignments',
+            id: "failed-consignments",
+            label: "Failed Consignments",
             component: (
                 <FailedCons
                     url={url}
@@ -85,13 +86,13 @@ export default function FailedConsMain({
                     setFilterValue={setFilterValue}
                     Token={Token}
                 />
-            )
+            ),
         },
         {
-            id: 'failed-reasons',
-            label: 'Failed Reasons',
-            component: <FailedReasonsTable />
-        }
+            id: "failed-reasons",
+            label: "Failed Reasons",
+            component: <FailedReasonsTable />,
+        },
     ];
 
     const handleItemClick = (index) => {
@@ -101,22 +102,7 @@ export default function FailedConsMain({
     return (
         <div>
             {isFetching ? (
-                <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
-                    <div className="flex items-center justify-center">
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
-                        ></div>
-                    </div>
-                    <div className="text-dark mt-4 font-bold">
-                        Please wait while we get the data for you.
-                    </div>
-                </div>
+                <AnimatedLoading />
             ) : (
                 <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
                     {canViewFailedReasons(userPermissions) ? (
@@ -131,9 +117,7 @@ export default function FailedConsMain({
                                     }`}
                                     onClick={() => handleItemClick(index)}
                                 >
-                                    <div className="px-2">
-                                        {tab.label}
-                                    </div>
+                                    <div className="px-2">{tab.label}</div>
                                 </li>
                             ))}
                         </ul>

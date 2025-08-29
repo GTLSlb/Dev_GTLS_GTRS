@@ -106,13 +106,12 @@ export default function FailedReasonsTable() {
                                                             userPermissions
                                                         ) ? (
                                                             <a
-                                                                href="#"
                                                                 onClick={() =>
                                                                     handleEditClick(
                                                                         reason
                                                                     )
                                                                 }
-                                                                className=" text-blue-500 hover:text-blue-900 flex"
+                                                                className="cursor-pointer text-blue-500 hover:text-blue-900 flex"
                                                             >
                                                                 <PencilIcon className="w-5 h-5" />
                                                                 <span className="ml-2">

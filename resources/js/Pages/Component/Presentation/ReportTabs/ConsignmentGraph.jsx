@@ -6,6 +6,7 @@ import BarGraph from "../graphs/BarGraph";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { CustomContext } from "@/CommonContext";
+import AnimatedLoading from "@/Components/AnimatedLoading";
 
 function ConsignmentGraph({ customers, CustomerId }) {
     const { Token, user, userPermissions, url } = useContext(CustomContext);
@@ -117,22 +118,7 @@ function ConsignmentGraph({ customers, CustomerId }) {
     };
 
     return loading ? (
-        <div className="md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
-            <div className="flex items-center justify-center">
-                <div
-                    className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
-                ></div>
-                <div
-                    className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
-                ></div>
-                <div
-                    className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
-                ></div>
-            </div>
-            <div className="text-dark mt-4 font-bold">
-                Please wait while we get the data for you.
-            </div>
-        </div>
+        <AnimatedLoading />
     ) : (
         <div>
             <div className="inline-block">
