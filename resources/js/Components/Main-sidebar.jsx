@@ -9,7 +9,7 @@ import {
     AccordionHeader,
     AccordionItem,
 } from "react-headless-accordion";
-import React, { useEffect, useContext, Fragment, useState} from "react";
+import React, { useEffect, useContext, Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import tiger from "../assets/pictures/tiger.png";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
@@ -18,14 +18,8 @@ import { CustomContext } from "@/CommonContext";
 import PropTypes from "prop-types";
 import axios from "axios";
 
-export default function MainSidebar({
-    setMobileMenuOpen,
-    mobileMenuOpen,
-}) {
-        const {
-            user,
-            allowedApplications,
-        } = useContext(CustomContext);
+export default function MainSidebar({ setMobileMenuOpen, mobileMenuOpen }) {
+    const { user, allowedApplications } = useContext(CustomContext);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [sidebarNavigation, setSidebarNavigation] = useState([]);
@@ -63,42 +57,6 @@ export default function MainSidebar({
 
     moveToHead(allowedApplications, 3);
 
-    const [appsImgs, setAppsImgs] = useState([]);
-    const fetchAppsLogo = async (picName, app) => {
-        try {
-            const response = await axios({
-                method: "post",
-                url: "/getAppLogo",
-                responseType: "blob", // Set the expected response type as 'blob'
-                data: {
-                    filename: picName,
-                },
-            });
-
-            const blobUrl = URL.createObjectURL(response.data); // Create a URL for the Blob
-            setAppsImgs((prev) => ({
-                ...prev,
-                [app.AppId]: blobUrl,
-            }));
-        } catch (error) {
-            console.error(error);
-            setAppsImgs((prev) => ({
-                ...prev,
-                [app.AppId]: "/icons/NoPhoto.jpg",
-            }));
-        }
-    };
-    useEffect(() => {
-        if (allowedApplications?.length > 0) {
-            allowedApplications?.forEach((app) => {
-                if (!appsImgs[app.AppId]) {
-                    // Check if the image URL is not already loaded
-                    fetchAppsLogo(app?.AppIcon, app);
-                }
-            });
-        }
-    }, [allowedApplications]);
-
     return (
         <div>
             {/* Desktop SideBar */}
@@ -121,9 +79,9 @@ export default function MainSidebar({
                                         key={item.AppId}
                                         target={
                                             item.id === 0 ? undefined : "_blank"
-                                        } rel="noreferrer"
+                                        }
+                                        rel="noreferrer"
                                     >
-                                        {" "}
                                         <button
                                             key={item.AppAbv}
                                             className={classNames(
@@ -145,7 +103,7 @@ export default function MainSidebar({
                                                 />
                                             ) : (
                                                 <img
-                                                    src={appsImgs[item?.AppId]}
+                                                    src={`${window.Laravel.gtamAppUrl}/AppLogo/${item?.AppIcon}`}
                                                     className={classNames(
                                                         item.AppId ==
                                                             currentAppId
@@ -166,7 +124,8 @@ export default function MainSidebar({
                             <a
                                 href="https://support.gtls.com.au/help/2703577665"
                                 target="_blank"
-                                className="flex justify-center" rel="noreferrer"
+                                className="flex justify-center"
+                                rel="noreferrer"
                             >
                                 {" "}
                                 <button
@@ -186,16 +145,18 @@ export default function MainSidebar({
                                     <span className="mt-2">Support</span>
                                 </button>
                             </a>
-                                <ResponsiveNavLink
-                                    as="button"
-                                    onClick={() => window.location.href= '/logout'}
-                                    className="flex flex-col hover:bg-gray-900 hover:text-white"
-                                >
-                                    <ArrowRightOnRectangleIcon className="w-7 ml-2 text-gray-400" />
-                                    <span className="text-xs text-gray-400">
-                                        LOGOUT
-                                    </span>
-                                </ResponsiveNavLink>
+                            <ResponsiveNavLink
+                                as="button"
+                                onClick={() =>
+                                    (window.location.href = "/logout")
+                                }
+                                className="flex flex-col hover:bg-gray-900 hover:text-white"
+                            >
+                                <ArrowRightOnRectangleIcon className="w-7 ml-2 text-gray-400" />
+                                <span className="text-xs text-gray-400">
+                                    LOGOUT
+                                </span>
+                            </ResponsiveNavLink>
                         </div>
                     </div>
                 </div>
@@ -302,12 +263,7 @@ export default function MainSidebar({
                                                                     >
                                                                         <img
                                                                             target="_blank"
-                                                                            src={
-                                                                                appsImgs[
-                                                                                    item
-                                                                                        ?.AppId
-                                                                                ]
-                                                                            }
+                                                                            src={`${window.Laravel.gtamAppUrl}/AppLogo/${item?.AppIcon}`}
                                                                             className={classNames(
                                                                                 item.AppId ==
                                                                                     currentAppId
@@ -331,7 +287,9 @@ export default function MainSidebar({
                                                                                     option
                                                                                 ) => (
                                                                                     <button
-                                                                                        key={item}
+                                                                                        key={
+                                                                                            item
+                                                                                        }
                                                                                         // onClick={() =>
                                                                                         //     handleClickSide(
                                                                                         //         item.id,
@@ -363,7 +321,8 @@ export default function MainSidebar({
                                     <a
                                         href="https://support.gtls.com.au/help/2703577665"
                                         target="_blank"
-                                        className="flex" rel="noreferrer"
+                                        className="flex"
+                                        rel="noreferrer"
                                     >
                                         {" "}
                                         <button
@@ -385,16 +344,18 @@ export default function MainSidebar({
                                             </span>
                                         </button>
                                     </a>
-                                        <ResponsiveNavLink
-                                            as="button"
-                                            onClick={() => window.location.href= '/logout'}
-                                            className="flex flex-col hover:bg-gray-900 hover:text-white w-8 h-14"
-                                        >
-                                            <ArrowRightOnRectangleIcon className="w-7 ml-2 text-gray-400" />
-                                            <span className="text-xs text-gray-400">
-                                                LOGOUT
-                                            </span>
-                                        </ResponsiveNavLink>
+                                    <ResponsiveNavLink
+                                        as="button"
+                                        onClick={() =>
+                                            (window.location.href = "/logout")
+                                        }
+                                        className="flex flex-col hover:bg-gray-900 hover:text-white w-8 h-14"
+                                    >
+                                        <ArrowRightOnRectangleIcon className="w-7 ml-2 text-gray-400" />
+                                        <span className="text-xs text-gray-400">
+                                            LOGOUT
+                                        </span>
+                                    </ResponsiveNavLink>
                                 </div>
                             </Dialog.Panel>
                         </Transition.Child>
