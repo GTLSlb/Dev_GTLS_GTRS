@@ -68,6 +68,8 @@ export default function NoDelivery({
             SenderState: (value, item) => item["Send_State"] || value,
             ReceiverSuburb: (value, item) => item["Del_Suburb"] || value,
             ReceiverState: (value, item) => item["Del_State"] || value,
+            POD: (value) => (value ? "True" : "False"),
+            Timeslot: (value) => (value ? "True" : "False"),
             Status: (value, item) =>
                 item["AdminStatusCodes_Description"] || value,
         };
@@ -289,7 +291,7 @@ export default function NoDelivery({
                     </span>
                 ) : (
                     <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        false
+                        False
                     </span>
                 );
             },
@@ -313,7 +315,7 @@ export default function NoDelivery({
                     </span>
                 ) : (
                     <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        false
+                        False
                     </span>
                 );
             },

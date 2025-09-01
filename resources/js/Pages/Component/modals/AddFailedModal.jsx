@@ -161,7 +161,7 @@ export default function AddFailedModal({ isOpen, handleClose, reason }) {
                                     variant="bordered"
                                     minRows={3}
                                     classNames={{
-                                        input: "bg-transparent !outline-none !border-none !ring-0 ",
+                                        input: "bg-transparent px-0 !outline-none px-0 !border-none !ring-0 ",
                                     }}
                                 />
 

@@ -375,7 +375,7 @@ export default function SetFailedReasonModal({
                             }
                             variant="bordered"
                             classNames={{
-                                input: "bg-transparent !outline-none !border-none !ring-0 p-0",
+                                input: "bg-transparent px-0 !outline-none !border-none !ring-0 p-0",
                             }}
                             minRows={3}
                         />

@@ -13,6 +13,8 @@ import { CustomContext } from "@/CommonContext";
 function AddNewTransitDay({ setNewTransitDays }) {
     const { Token, user, url } = useContext(CustomContext);
 
+    const [loading, setLoading] = useState(false);
+
     const { getApiRequest } = useApiRequests();
     const states = [
         {
@@ -93,6 +95,7 @@ function AddNewTransitDay({ setNewTransitDays }) {
 
     function AddTransit(e) {
         e.preventDefault();
+        setLoading(true);
         const inputValues = {
             TransitId: object ? object.TransitId : null,
             CustomerId: selectedCustomer,
@@ -123,10 +126,12 @@ function AddNewTransitDay({ setNewTransitDays }) {
             .then(() => {
                 AlertToast("Saved successfully", 1);
                 fetchData();
+                setLoading(false);
                 setNewTransitDays(null);
                 navigate(-1);
             })
             .catch((err) => {
+                setLoading(false);
                 if (err.response && err.response.status === 401) {
                     // Handle 401 error using SweetAlert
                     swal({
@@ -272,10 +277,10 @@ function AddNewTransitDay({ setNewTransitDays }) {
 
                                 <div className="flex flex-col gap-2 lg:gap-5">
                                     {/* Sender State  */}
-                                    <div className="flex flex-col lg:flex-row items-center gap-x-2">
+                                    <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 items-center gap-x-2">
                                         <label
                                             htmlFor="SenderState"
-                                            className="block w-full lg:w-48"
+                                            className="block w-full "
                                         >
                                             Sender State:
                                             <span className="text-red-500 text-sm">
@@ -285,7 +290,7 @@ function AddNewTransitDay({ setNewTransitDays }) {
                                         <select
                                             id="SenderState"
                                             name="SenderState"
-                                            className="w-full border border-gray-300 rounded px-3 py-2"
+                                            className="w-full border lg:col-span-2 xl:col-span-3 border-gray-300 rounded px-3 py-2"
                                             value={selectedSstate}
                                             onChange={(e) => {
                                                 setSelectedSstate(
@@ -312,10 +317,10 @@ function AddNewTransitDay({ setNewTransitDays }) {
                                     </div>
 
                                     {/* Sender PostCode  */}
-                                    <div className="flex flex-col lg:flex-row items-center">
+                                    <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-x-2 items-center">
                                         <label
                                             htmlFor="name"
-                                            className="block w-full lg:w-48"
+                                            className="block w-full"
                                         >
                                             Sender PostCode:{" "}
                                         </label>
@@ -329,7 +334,7 @@ function AddNewTransitDay({ setNewTransitDays }) {
                                                     : ""
                                             }
                                             min="0"
-                                            className="rounded w-full bg-gray-50 border border-gray-300 h-7"
+                                            className="rounded w-full lg:col-span-2 xl:col-span-3 bg-gray-50 border border-gray-300 h-7"
                                             onInput={(e) => {
                                                 const value = e.target.value;
                                                 if (value < 0) {
@@ -357,10 +362,10 @@ function AddNewTransitDay({ setNewTransitDays }) {
 
                                 <div className="flex flex-col gap-2 lg:gap-5">
                                     {/* Receiver State  */}
-                                    <div className="flex flex-col lg:flex-row items-center gap-x-2">
+                                    <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 items-center gap-x-2">
                                         <label
                                             htmlFor="ReceiverState"
-                                            className="block w-full lg:w-48"
+                                            className="block w-full"
                                         >
                                             Receiver State:
                                             <span className="text-red-500 text-sm">
@@ -370,7 +375,7 @@ function AddNewTransitDay({ setNewTransitDays }) {
                                         <select
                                             id="ReceiverState"
                                             name="ReceiverState"
-                                            className="w-full border border-gray-300 rounded px-3 py-2"
+                                            className="w-full lg:col-span-2 xl:col-span-3 border border-gray-300 rounded px-3 py-2"
                                             value={selectedRstate}
                                             onChange={(e) => {
                                                 setSelectedRstate(
@@ -397,10 +402,10 @@ function AddNewTransitDay({ setNewTransitDays }) {
                                     </div>
 
                                     {/* Receiver PostCode  */}
-                                    <div className="flex flex-col lg:flex-row items-center gap-x-2">
+                                    <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 items-center gap-x-2">
                                         <label
                                             htmlFor="name"
-                                            className="block w-full lg:w-48"
+                                            className="block w-full"
                                         >
                                             Receiver PostCode:{" "}
                                         </label>
@@ -413,7 +418,7 @@ function AddNewTransitDay({ setNewTransitDays }) {
                                                     : ""
                                             }
                                             id="ReceiverPostCode"
-                                            className="rounded w-full bg-gray-50 border border-gray-300 h-7"
+                                            className="rounded w-full lg:col-span-2 xl:col-span-3 bg-gray-50 border border-gray-300 h-7"
                                             min={0}
                                             onInput={(e) => {
                                                 const value = e.target.value;
@@ -435,10 +440,10 @@ function AddNewTransitDay({ setNewTransitDays }) {
                                     </div>
 
                                     {/* Receiver Name  */}
-                                    <div className="flex flex-col lg:flex-row items-center gap-x-2">
+                                    <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 items-center gap-x-2">
                                         <label
                                             htmlFor="name"
-                                            className="block w-full lg:w-48 "
+                                            className="block w-full"
                                         >
                                             Receiver Name:{" "}
                                         </label>
@@ -451,7 +456,7 @@ function AddNewTransitDay({ setNewTransitDays }) {
                                                     : ""
                                             }
                                             id="ReceiverName"
-                                            className="rounded w-full max-w-lg bg-gray-50 border border-gray-300 h-7"
+                                            className="rounded lg:col-span-2 xl:col-span-3 w-full bg-gray-50 border border-gray-300 h-7"
                                         />
                                     </div>
                                 </div>
@@ -511,7 +516,9 @@ function AddNewTransitDay({ setNewTransitDays }) {
                             type={"button"}
                         />{" "}
                         <GtrsButton
-                            name={object ? "Edit" : "Add"}
+                            name={ object ? "Edit" : "Add"}
+                            loading={loading}
+                            disabled={loading}
                             className={"py-4"}
                             type={"submit"}
                         />
@@ -521,7 +528,6 @@ function AddNewTransitDay({ setNewTransitDays }) {
         </div>
     );
 }
-
 AddNewTransitDay.propTypes = {
     url: PropTypes.string,
     setNewTransitDay: PropTypes.func,
