@@ -1,3 +1,4 @@
+import { Spinner } from "@heroui/react";
 import PropTypes from "prop-types";
 import React from "react";
 export default function GtrsButton({
@@ -5,6 +6,7 @@ export default function GtrsButton({
     icon,
     className,
     onClick,
+    loading,
     disabled,
     type,
 }) {
@@ -22,7 +24,13 @@ export default function GtrsButton({
         >
             {icon && <span className="mr-0">{icon}</span>}{" "}
             {/* Render the icon if available */}
-            {name}
+            {loading ? (
+                <div className=" inset-0 flex justify-center items-center bg-opacity-50">
+                    <Spinner color="default" size="sm" />
+                </div>
+            ) : (
+                name
+            )}
         </button>
     );
 }

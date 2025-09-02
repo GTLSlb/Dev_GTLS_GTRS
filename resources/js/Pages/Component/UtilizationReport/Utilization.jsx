@@ -59,7 +59,7 @@ export default function Utilization() {
     const hotTableRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
     const [tableData, setTableData] = useState(utilizationData);
-
+    console.log(tableData);
     useEffect(() => {
         setTableData(utilizationData);
     }, [utilizationData]);
@@ -334,14 +334,22 @@ export default function Utilization() {
                     if (timeValidatorRegexp.test(value)) {
                         const formattedTime = value.replace(
                             timeValidatorRegexp,
-                            (hour, minute) => {
+                            (_, hour, minute, second) => {
                                 const hours = hour.padStart(2, "0");
                                 const minutes = minute
                                     ? minute.padStart(2, "0")
                                     : "00";
-                                return `${hours}:${minutes}`;
+                                const seconds = second
+                                    ? second.padStart(2, "0")
+                                    : null;
+
+                                // return hh:mm if no seconds, otherwise hh:mm:ss
+                                return seconds
+                                    ? `${hours}:${minutes}:${seconds}`
+                                    : `${hours}:${minutes}`;
                             }
                         );
+                        console.log(value, formattedTime);
                         td.innerText = formattedTime;
                     } else {
                         td.classList.add("htInvalid");
@@ -363,16 +371,24 @@ export default function Utilization() {
             numericFormat: null,
             renderer: (instance, td, row, col, prop, value, cellProperties) => {
                 td.classList.remove("htInvalid");
+
                 if (value != "" && value != null && value != undefined) {
                     if (timeValidatorRegexp.test(value)) {
                         const formattedTime = value.replace(
                             timeValidatorRegexp,
-                            (hour, minute) => {
+                            (_, hour, minute, second) => {
                                 const hours = hour.padStart(2, "0");
                                 const minutes = minute
                                     ? minute.padStart(2, "0")
                                     : "00";
-                                return `${hours}:${minutes}`;
+                                const seconds = second
+                                    ? second.padStart(2, "0")
+                                    : null;
+
+                                // Decide whether to include seconds
+                                return seconds
+                                    ? `${hours}:${minutes}:${seconds}`
+                                    : `${hours}:${minutes}`;
                             }
                         );
                         td.innerText = formattedTime;
@@ -380,8 +396,9 @@ export default function Utilization() {
                         td.classList.add("htInvalid");
                     }
                 } else {
-                    td.innerText = value;
+                    td.innerText = value ?? "";
                 }
+
                 td.classList.add("htLeft");
                 return td;
             },

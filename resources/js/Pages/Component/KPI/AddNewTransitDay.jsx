@@ -13,6 +13,8 @@ import { CustomContext } from "@/CommonContext";
 function AddNewTransitDay({ setNewTransitDays }) {
     const { Token, user, url } = useContext(CustomContext);
 
+    const [loading, setLoading] = useState(false);
+
     const { getApiRequest } = useApiRequests();
     const states = [
         {
@@ -93,6 +95,7 @@ function AddNewTransitDay({ setNewTransitDays }) {
 
     function AddTransit(e) {
         e.preventDefault();
+        setLoading(true);
         const inputValues = {
             TransitId: object ? object.TransitId : null,
             CustomerId: selectedCustomer,
@@ -123,10 +126,12 @@ function AddNewTransitDay({ setNewTransitDays }) {
             .then(() => {
                 AlertToast("Saved successfully", 1);
                 fetchData();
+                setLoading(false);
                 setNewTransitDays(null);
                 navigate(-1);
             })
             .catch((err) => {
+                setLoading(false);
                 if (err.response && err.response.status === 401) {
                     // Handle 401 error using SweetAlert
                     swal({
@@ -503,7 +508,6 @@ function AddNewTransitDay({ setNewTransitDays }) {
         </div>
     );
 }
-
 AddNewTransitDay.propTypes = {
     url: PropTypes.string,
     setNewTransitDay: PropTypes.func,

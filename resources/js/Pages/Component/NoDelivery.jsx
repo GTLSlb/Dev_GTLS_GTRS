@@ -68,6 +68,8 @@ export default function NoDelivery({
             SenderState: (value, item) => item["Send_State"] || value,
             ReceiverSuburb: (value, item) => item["Del_Suburb"] || value,
             ReceiverState: (value, item) => item["Del_State"] || value,
+            POD: (value) => (value ? "True" : "False"),
+            Timeslot: (value) => (value ? "True" : "False"),
             Status: (value, item) =>
                 item["AdminStatusCodes_Description"] || value,
         };

@@ -82,88 +82,7 @@ export default function Holidays({
         },
     ];
 
-    const [columns, setColumns] = useState([
-        {
-            name: "HolidayName",
-            minWidth: 170,
-            defaultFlex: 1,
-            header: "Holiday Name",
-            type: "string",
-            headerAlign: "center",
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: holidayOptions,
-            },
-        },
-        {
-            name: "HolidayDate",
-            defaultFlex: 1,
-            minWidth: 230,
-            header: "Holiday Date",
-            headerAlign: "center",
-            textAlign: "center",
-            dateFormat: "DD-MM-YYYY",
-            filterEditor: DateFilter,
-            render: ({ value }) => {
-                return moment(value).format("DD-MM-YYYY") === "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY");
-            },
-        },
-
-        {
-            name: "HolidayState",
-            defaultFlex: 1,
-            minWidth: 170,
-            header: "Holiday State",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: stateOptions,
-            },
-        },
-        {
-            name: "HolidayDesc",
-            header: "Description",
-            minWidth: 170,
-            defaultFlex: 1,
-            headerAlign: "center",
-            textAlign: "start",
-            filterEditor: StringFilter,
-        },
-        {
-            name: "HolidayStatus",
-            defaultFlex: 1,
-            minWidth: 170,
-            header: "Status",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: statusOptions,
-            },
-            render: ({ value }) => {
-                return value == 1 ? (
-                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                        True
-                    </span>
-                ) : (
-                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        false
-                    </span>
-                );
-            },
-        },
-    ]);
+    const [columns, setColumns] = useState();
     const scrollIntoView = () => {
         const button = document.getElementById("addSection");
         if (button) {
@@ -176,202 +95,204 @@ export default function Holidays({
     };
 
     useEffect(() => {
-        if (holidayOptions && stateOptions) {
-            if (userPermissions && canEditHolidays(userPermissions)) {
-                setColumns([
-                    {
-                        name: "HolidayName",
-                        minWidth: 170,
-                        defaultFlex: 1,
-                        header: "Holiday Name",
-                        type: "string",
-                        headerAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: holidayOptions,
+        if (!columns) {
+            if (holidayOptions && stateOptions) {
+                if (userPermissions && canEditHolidays(userPermissions)) {
+                    setColumns([
+                        {
+                            name: "HolidayName",
+                            minWidth: 170,
+                            defaultFlex: 1,
+                            header: "Holiday Name",
+                            type: "string",
+                            headerAlign: "center",
+                            filterEditor: SelectFilter,
+                            filterEditorProps: {
+                                multiple: true,
+                                wrapMultiple: false,
+                                dataSource: holidayOptions,
+                            },
                         },
-                    },
-                    {
-                        name: "HolidayDate",
-                        defaultFlex: 1,
-                        minWidth: 230,
-                        header: "Holiday Date",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        dateFormat: "DD-MM-YYYY",
-                        filterEditor: DateFilter,
-                        render: ({ value }) => {
-                            return moment(value).format("DD-MM-YYYY") ==
-                                "Invalid date"
-                                ? ""
-                                : moment(value).format("DD-MM-YYYY");
+                        {
+                            name: "HolidayDate",
+                            defaultFlex: 1,
+                            minWidth: 230,
+                            header: "Holiday Date",
+                            headerAlign: "center",
+                            textAlign: "center",
+                            dateFormat: "DD-MM-YYYY",
+                            filterEditor: DateFilter,
+                            render: ({ value }) => {
+                                return moment(value).format("DD-MM-YYYY") ==
+                                    "Invalid date"
+                                    ? ""
+                                    : moment(value).format("DD-MM-YYYY");
+                            },
                         },
-                    },
-                    {
-                        name: "HolidayState",
-                        defaultFlex: 1,
-                        minWidth: 170,
-                        header: "Holiday State",
-                        type: "string",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: stateOptions,
+                        {
+                            name: "HolidayState",
+                            defaultFlex: 1,
+                            minWidth: 170,
+                            header: "Holiday State",
+                            type: "string",
+                            headerAlign: "center",
+                            textAlign: "center",
+                            filterEditor: SelectFilter,
+                            filterEditorProps: {
+                                multiple: true,
+                                wrapMultiple: false,
+                                dataSource: stateOptions,
+                            },
                         },
-                    },
-                    {
-                        name: "HolidayDesc",
-                        header: "Description",
-                        minWidth: 170,
-                        defaultFlex: 1,
-                        headerAlign: "center",
-                        textAlign: "start",
-                        filterEditor: StringFilter,
-                    },
-                    {
-                        name: "HolidayStatus",
-                        defaultFlex: 1,
-                        minWidth: 170,
-                        header: "Status",
-                        type: "string",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: statusOptions,
+                        {
+                            name: "HolidayDesc",
+                            header: "Description",
+                            minWidth: 170,
+                            defaultFlex: 1,
+                            headerAlign: "center",
+                            textAlign: "start",
+                            filterEditor: StringFilter,
                         },
-                        render: ({ value }) => {
-                            return value == 1 ? (
-                                <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                                    True
-                                </span>
-                            ) : (
-                                <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                                    false
-                                </span>
-                            );
+                        {
+                            name: "HolidayStatus",
+                            defaultFlex: 1,
+                            minWidth: 170,
+                            header: "Status",
+                            type: "string",
+                            headerAlign: "center",
+                            textAlign: "center",
+                            filterEditor: SelectFilter,
+                            filterEditorProps: {
+                                multiple: true,
+                                wrapMultiple: false,
+                                dataSource: statusOptions,
+                            },
+                            render: ({ value }) => {
+                                return value == 1 ? (
+                                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                                        True
+                                    </span>
+                                ) : (
+                                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                                        False
+                                    </span>
+                                );
+                            },
                         },
-                    },
-                    {
-                        name: "edit",
-                        header: "Edit",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        defaultWidth: 100,
-                        render: ({ data }) => {
-                            return (
-                                <div>
-                                    {canEditHolidays(userPermissions) ? (
-                                        <button
-                                            className={
-                                                "rounded text-blue-500 justify-center items-center  "
-                                            }
-                                            onClick={() => {
-                                                handleEditClick(data);
-                                                scrollIntoView();
-                                            }}
-                                        >
-                                            <span className="flex gap-x-1">
-                                                <PencilIcon className="h-4" />
-                                                Edit
-                                            </span>
-                                        </button>
-                                    ) : null}
-                                </div>
-                            );
+                        {
+                            name: "edit",
+                            header: "Edit",
+                            headerAlign: "center",
+                            textAlign: "center",
+                            defaultWidth: 100,
+                            render: ({ data }) => {
+                                return (
+                                    <div>
+                                        {canEditHolidays(userPermissions) ? (
+                                            <button
+                                                className={
+                                                    "rounded text-blue-500 justify-center items-center  "
+                                                }
+                                                onClick={() => {
+                                                    handleEditClick(data);
+                                                    scrollIntoView();
+                                                }}
+                                            >
+                                                <span className="flex gap-x-1">
+                                                    <PencilIcon className="h-4" />
+                                                    Edit
+                                                </span>
+                                            </button>
+                                        ) : null}
+                                    </div>
+                                );
+                            },
                         },
-                    },
-                ]);
-            } else {
-                setColumns([
-                    {
-                        name: "HolidayName",
-                        minWidth: 170,
-                        defaultFlex: 1,
-                        header: "Holiday Name",
-                        type: "string",
-                        headerAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: holidayOptions,
+                    ]);
+                } else {
+                    setColumns([
+                        {
+                            name: "HolidayName",
+                            minWidth: 170,
+                            defaultFlex: 1,
+                            header: "Holiday Name",
+                            type: "string",
+                            headerAlign: "center",
+                            filterEditor: SelectFilter,
+                            filterEditorProps: {
+                                multiple: true,
+                                wrapMultiple: false,
+                                dataSource: holidayOptions,
+                            },
                         },
-                    },
-                    {
-                        name: "HolidayDate",
-                        defaultFlex: 1,
-                        minWidth: 230,
-                        header: "Holiday Date",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        dateFormat: "DD-MM-YYYY",
-                        filterEditor: DateFilter,
-                        render: ({ value }) => {
-                            return moment(value).format("DD-MM-YYYY") ==
-                                "Invalid date"
-                                ? ""
-                                : moment(value).format("DD-MM-YYYY");
+                        {
+                            name: "HolidayDate",
+                            defaultFlex: 1,
+                            minWidth: 230,
+                            header: "Holiday Date",
+                            headerAlign: "center",
+                            textAlign: "center",
+                            dateFormat: "DD-MM-YYYY",
+                            filterEditor: DateFilter,
+                            render: ({ value }) => {
+                                return moment(value).format("DD-MM-YYYY") ==
+                                    "Invalid date"
+                                    ? ""
+                                    : moment(value).format("DD-MM-YYYY");
+                            },
                         },
-                    },
-                    {
-                        name: "HolidayState",
-                        defaultFlex: 1,
-                        minWidth: 170,
-                        header: "Holiday State",
-                        type: "string",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: stateOptions,
+                        {
+                            name: "HolidayState",
+                            defaultFlex: 1,
+                            minWidth: 170,
+                            header: "Holiday State",
+                            type: "string",
+                            headerAlign: "center",
+                            textAlign: "center",
+                            filterEditor: SelectFilter,
+                            filterEditorProps: {
+                                multiple: true,
+                                wrapMultiple: false,
+                                dataSource: stateOptions,
+                            },
                         },
-                    },
-                    {
-                        name: "HolidayDesc",
-                        header: "Description",
-                        minWidth: 170,
-                        defaultFlex: 1,
-                        headerAlign: "center",
-                        textAlign: "start",
-                        filterEditor: StringFilter,
-                    },
-                    {
-                        name: "HolidayStatus",
-                        defaultFlex: 1,
-                        minWidth: 170,
-                        header: "Status",
-                        type: "string",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: statusOptions,
+                        {
+                            name: "HolidayDesc",
+                            header: "Description",
+                            minWidth: 170,
+                            defaultFlex: 1,
+                            headerAlign: "center",
+                            textAlign: "start",
+                            filterEditor: StringFilter,
                         },
-                        render: ({ value }) => {
-                            return value == 1 ? (
-                                <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                                    True
-                                </span>
-                            ) : (
-                                <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                                    false
-                                </span>
-                            );
+                        {
+                            name: "HolidayStatus",
+                            defaultFlex: 1,
+                            minWidth: 170,
+                            header: "Status",
+                            type: "string",
+                            headerAlign: "center",
+                            textAlign: "center",
+                            filterEditor: SelectFilter,
+                            filterEditorProps: {
+                                multiple: true,
+                                wrapMultiple: false,
+                                dataSource: statusOptions,
+                            },
+                            render: ({ value }) => {
+                                return value == 1 ? (
+                                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                                        True
+                                    </span>
+                                ) : (
+                                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                                        False
+                                    </span>
+                                );
+                            },
                         },
-                    },
-                ]);
+                    ]);
+                }
             }
         }
     }, [userPermissions, holidayOptions, stateOptions]);

@@ -264,6 +264,7 @@ export default function AddHoliday({
                     />
                     <GtrsButton
                         disabled={isLoading}
+                        loading={isLoading}
                         name={object ? "Edit" : "Add"}
                         className="w-[5.5rem] h-[36px]"
                         type={"submit"}
