@@ -41,39 +41,41 @@ export default function AdditionalCharges({
         });
 
         if (data) {
-            setAdditionalData(data);
+            const updatedData = data.map((item) => ({
+                ...item,
+                TotalCharge: (
+                    (item.ChargeRate || 0) * (item.Quantity || 0)
+                ).toFixed(2),
+            }));
+            setAdditionalData(updatedData);
             setIsFetching(false);
         }
     }
     const gridRef = useRef(null);
     const handleDownloadExcel = () => {
-        const jsonData = handleFilterTable(gridRef, AdditionalData); // Fetch the filtered data
+        const jsonData = handleFilterTable(gridRef, AdditionalData);
 
-        // Dynamically create column mapping from the `columns` array
         const columnMapping = columns.reduce((acc, column) => {
             acc[column.name] = column.header;
             return acc;
         }, {});
 
-        // Define custom cell handlers for specific columns
         const customCellHandlers = {
             DespatchDateTime: (value) =>
                 value ? formatDateToExcel(value) : "",
         };
 
-        // Call the `exportToExcel` function
         exportToExcel(
-            jsonData, // Filtered data
-            columnMapping, // Dynamic column mapping from columns
-            "Additional-Charges.xlsx", // Export file name
-            customCellHandlers, // Custom handlers for formatting cells
+            jsonData,
+            columnMapping,
+            "Additional-Charges.xlsx",
+            customCellHandlers,
             ["DespatchDateTime"]
         );
     };
 
     const [selected, setSelected] = useState([]);
 
-    // Usage example remains the same
     const minDate = getMinMaxValue(AdditionalData, "DespatchDateTime", 1);
     const maxDate = getMinMaxValue(AdditionalData, "DespatchDateTime", 2);
 
@@ -124,6 +126,15 @@ export default function AdditionalCharges({
             filterEditor: NumberFilter,
         },
         {
+            name: "ChargeRate",
+            header: "Charge Rate",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            type: "number",
+            filterEditor: NumberFilter,
+        },
+        {
             name: "TotalCharge",
             header: "Total Charge",
             headerAlign: "center",
@@ -131,6 +142,12 @@ export default function AdditionalCharges({
             defaultWidth: 170,
             type: "number",
             filterEditor: NumberFilter,
+            render: ({ value }) => {
+                return Number(value).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                });
+            },
         },
         {
             name: "CodeRef",
@@ -221,26 +238,24 @@ export default function AdditionalCharges({
             filterEditor: NumberFilter,
         },
     ];
+
+    if (isFetching) {
+        return <AnimatedLoading />;
+    }
     return (
-        <div>
-            {/* <Sidebar /> */}
-            {isFetching && <AnimatedLoading />}
-            {!isFetching && (
-                <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                    <TableStructure
-                        id={"ConsignmentID"}
-                        gridRef={gridRef}
-                        handleDownloadExcel={handleDownloadExcel}
-                        title={"Additional Charges"}
-                        setSelected={setSelected}
-                        selected={selected}
-                        tableDataElements={AdditionalData}
-                        filterValueElements={filterValue}
-                        setFilterValueElements={setFilterValue}
-                        columnsElements={columns}
-                    />
-                </div>
-            )}
+        <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
+            <TableStructure
+                id={"ConsignmentID"}
+                gridRef={gridRef}
+                handleDownloadExcel={handleDownloadExcel}
+                title={"Additional Charges"}
+                setSelected={setSelected}
+                selected={selected}
+                tableDataElements={AdditionalData}
+                filterValueElements={filterValue}
+                setFilterValueElements={setFilterValue}
+                columnsElements={columns}
+            />
         </div>
     );
 }

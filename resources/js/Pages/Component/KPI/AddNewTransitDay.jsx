@@ -151,346 +151,326 @@ function AddNewTransitDay({ setNewTransitDays }) {
     }
     return (
         <div className="p-8">
-            {/* Added this for toast container to show */}
             <ToastContainer />
             <div className="shadow bg-white p-4 lg:p-6 rounded-lg">
                 <form onSubmit={AddTransit}>
-                    <p className="font-bold text-lg">
+                    <p className="font-bold text-lg mb-4">
                         {object ? "Edit " : "Add "} Transit
                     </p>
-                    <div className="border-b my-2" />
-                    <div className="flex flex-col gap-5">
-                        <div className="col-span-2 flex flex-col lg:flex-row items-center gap-x-2 w-full">
-                            <label
-                                htmlFor="CustomerId"
-                                className="block w-full lg:w-48"
-                            >
-                                Customer Name:
-                                <span className="text-red-500 text-sm">*</span>
-                            </label>
-                            <select
-                                id="CustomerId"
-                                name="CustomerId"
-                                className="w-full border border-gray-300 rounded px-3 py-2"
-                                value={selectedCustomer}
-                                onChange={(e) => {
-                                    setSelectedCustomer(e.target.value);
-                                }}
-                                required
-                            >
-                                <option value="">--Select a Customer--</option>
-                                {customers?.map((customer) => {
-                                    return (
+                    <div className="border-b mb-6" />
+
+                    <div className="space-y-6">
+                        {/* Customer Information Section */}
+                        <div className="space-y-4">
+                            <div className="flex flex-col lg:flex-row lg:items-center gap-2">
+                                <label
+                                    htmlFor="CustomerId"
+                                    className="block w-full lg:w-48 text-sm font-medium text-gray-700"
+                                >
+                                    Customer Name:
+                                    <span className="text-red-500 ml-1">*</span>
+                                </label>
+                                <select
+                                    id="CustomerId"
+                                    name="CustomerId"
+                                    className="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    value={selectedCustomer}
+                                    onChange={(e) =>
+                                        setSelectedCustomer(e.target.value)
+                                    }
+                                    required
+                                >
+                                    <option value="">
+                                        --Select a Customer--
+                                    </option>
+                                    {customers?.map((customer) => (
                                         <option
                                             key={customer.id}
                                             value={customer.id}
                                         >
                                             {customer.label}
                                         </option>
-                                    );
-                                })}
-                            </select>
-                        </div>
-                        {object?.CustomerId == 1 || selectedCustomer == 1 ? (
-                            <div className="col-span-2 flex items-center gap-x-2">
-                                <label
-                                    htmlFor="SafetyType"
-                                    className="block w-full lg:w-48"
-                                >
-                                    Customer Type:
-                                    <span className="text-red-500 text-sm">
-                                        *
-                                    </span>
-                                </label>
-                                <select
-                                    id="SafetyType"
-                                    name="SafetyType"
-                                    className="w-full border border-gray-300 rounded px-3 py-2"
-                                    value={selectedType}
-                                    onChange={(e) => {
-                                        setSelectedType(e.target.value);
-                                    }}
-                                    required
-                                >
-                                    <option value="">
-                                        --Select a Customer Type--
-                                    </option>
+                                    ))}
+                                </select>
+                            </div>
 
-                                    {types?.map((type) => {
-                                        return (
+                            {/* Customer Type - Conditional Rendering */}
+                            {(object?.CustomerId == 1 ||
+                                selectedCustomer == 1) && (
+                                <div className="flex flex-col lg:flex-row lg:items-center gap-2">
+                                    <label
+                                        htmlFor="SafetyType"
+                                        className="block w-full lg:w-48 text-sm font-medium text-gray-700"
+                                    >
+                                        Customer Type:
+                                        <span className="text-red-500 ml-1">
+                                            *
+                                        </span>
+                                    </label>
+                                    <select
+                                        id="SafetyType"
+                                        name="SafetyType"
+                                        className="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        value={selectedType}
+                                        onChange={(e) =>
+                                            setSelectedType(e.target.value)
+                                        }
+                                        required
+                                    >
+                                        <option value="">
+                                            --Select a Customer Type--
+                                        </option>
+                                        {types?.map((type) => (
                                             <option
                                                 key={type.id}
                                                 value={type.id}
                                             >
                                                 {type.label}
                                             </option>
-                                        );
-                                    })}
-                                </select>
-                            </div>
-                        ) : object?.CustomerId == 3 || selectedCustomer == 3 ? (
-                            <div className="col-span-2 flex items-center gap-x-2">
-                                <label
-                                    htmlFor="SafetyType"
-                                    className="block w-full lg:w-48"
-                                >
-                                    Customer Type:
-                                </label>
-                                <select
-                                    id="SafetyType"
-                                    name="SafetyType"
-                                    className="w-full border border-gray-300 rounded px-3 py-2"
-                                    value={selectedType}
-                                    onChange={(e) => {
-                                        setSelectedType(e.target.value);
-                                    }}
-                                    required
-                                >
-                                    <option value="">
-                                        --Select a Customer Type--
-                                    </option>
-                                    {freighPeople?.map((type) => {
-                                        return (
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
+                            {(object?.CustomerId == 3 ||
+                                selectedCustomer == 3) && (
+                                <div className="flex flex-col lg:flex-row lg:items-center gap-2">
+                                    <label
+                                        htmlFor="SafetyType"
+                                        className="block w-full lg:w-48 text-sm font-medium text-gray-700"
+                                    >
+                                        Customer Type:
+                                    </label>
+                                    <select
+                                        id="SafetyType"
+                                        name="SafetyType"
+                                        className="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        value={selectedType}
+                                        onChange={(e) =>
+                                            setSelectedType(e.target.value)
+                                        }
+                                        required
+                                    >
+                                        <option value="">
+                                            --Select a Customer Type--
+                                        </option>
+                                        {freighPeople?.map((type) => (
                                             <option
                                                 key={type.id}
                                                 value={type.id}
                                             >
                                                 {type.label}
                                             </option>
-                                        );
-                                    })}
-                                </select>
-                            </div>
-                        ) : null}
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+                        </div>
 
-                        <div className="grid grid-cols-2 gap-5 w-full">
-                            {/* Sender Title Border  */}
-                            <div className="flex flex-col col-span-2 lg:col-span-1">
-                                <div className="flex flex-col">
-                                    <p className="font-bold text-lg">Sender</p>
+                        {/* Sender and Receiver Section */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Sender Section */}
+                            <div className="space-y-4">
+                                <h3 className="font-bold text-lg text-gray-800 border-b pb-2">
+                                    Sender
+                                </h3>
+
+                                <div className="flex flex-col lg:flex-row lg:items-center gap-2">
+                                    <label
+                                        htmlFor="SenderState"
+                                        className="block w-full lg:w-32 text-sm font-medium text-gray-700"
+                                    >
+                                        State:
+                                        <span className="text-red-500 ml-1">
+                                            *
+                                        </span>
+                                    </label>
+                                    <select
+                                        id="SenderState"
+                                        name="SenderState"
+                                        className="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        value={selectedSstate}
+                                        onChange={(e) =>
+                                            setSelectedSstate(e.target.value)
+                                        }
+                                        required
+                                    >
+                                        <option value="">
+                                            --Select a State--
+                                        </option>
+                                        {states?.map((state) => (
+                                            <option
+                                                key={state.id}
+                                                value={state.id}
+                                            >
+                                                {state.label}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
 
-                                <div className="flex flex-col gap-2 lg:gap-5">
-                                    {/* Sender State  */}
-                                    <div className="flex flex-col lg:flex-row items-center gap-x-2">
-                                        <label
-                                            htmlFor="SenderState"
-                                            className="block w-full lg:w-48"
-                                        >
-                                            Sender State:
-                                            <span className="text-red-500 text-sm">
-                                                *
-                                            </span>
-                                        </label>
-                                        <select
-                                            id="SenderState"
-                                            name="SenderState"
-                                            className="w-full border border-gray-300 rounded px-3 py-2"
-                                            value={selectedSstate}
-                                            onChange={(e) => {
-                                                setSelectedSstate(
-                                                    e.target.value
-                                                );
-                                            }}
-                                            required
-                                        >
-                                            <option value="">
-                                                --Select a State--
-                                            </option>
-
-                                            {states?.map((state) => {
-                                                return (
-                                                    <option
-                                                        key={state.id}
-                                                        value={state.id}
-                                                    >
-                                                        {state.label}
-                                                    </option>
-                                                );
-                                            })}
-                                        </select>
-                                    </div>
-
-                                    {/* Sender PostCode  */}
-                                    <div className="flex flex-col lg:flex-row items-center">
-                                        <label
-                                            htmlFor="name"
-                                            className="block w-full lg:w-48"
-                                        >
-                                            Sender PostCode:{" "}
-                                        </label>
-                                        <input
-                                            type="number"
-                                            name="name"
-                                            id="SenderPostCode"
-                                            defaultValue={
-                                                object
-                                                    ? object.SenderPostCode
-                                                    : ""
+                                <div className="flex flex-col lg:flex-row lg:items-center gap-2">
+                                    <label
+                                        htmlFor="SenderPostCode"
+                                        className="block w-full lg:w-32 text-sm font-medium text-gray-700"
+                                    >
+                                        PostCode:
+                                    </label>
+                                    <input
+                                        type="number"
+                                        name="SenderPostCode"
+                                        id="SenderPostCode"
+                                        defaultValue={
+                                            object ? object.SenderPostCode : ""
+                                        }
+                                        min="0"
+                                        className="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        onInput={(e) => {
+                                            const value = e.target.value;
+                                            if (value < 0) {
+                                                e.target.value = 0;
                                             }
-                                            min="0"
-                                            className="rounded w-full bg-gray-50 border border-gray-300 h-7"
-                                            onInput={(e) => {
-                                                const value = e.target.value;
-                                                if (value < 0) {
-                                                    e.target.value = 0; // Reset to 0 if a negative value is entered
-                                                }
-                                            }}
-                                            onKeyDown={(e) => {
-                                                // Prevent negative symbol and exponential input
-                                                if (
-                                                    e.key === "-" ||
-                                                    e.key === "e" ||
-                                                    e.key === "E"
-                                                ) {
-                                                    e.preventDefault();
-                                                }
-                                            }}
-                                        />
-                                    </div>
+                                        }}
+                                        onKeyDown={(e) => {
+                                            if (
+                                                e.key === "-" ||
+                                                e.key === "e" ||
+                                                e.key === "E"
+                                            ) {
+                                                e.preventDefault();
+                                            }
+                                        }}
+                                    />
                                 </div>
                             </div>
 
-                            {/* Receiver Title Border  */}
-                            <div className="flex flex-col col-span-2 lg:col-span-1">
-                                <p className="font-bold text-lg">Receiver</p>
+                            {/* Receiver Section */}
+                            <div className="space-y-4">
+                                <h3 className="font-bold text-lg text-gray-800 border-b pb-2">
+                                    Receiver
+                                </h3>
 
-                                <div className="flex flex-col gap-2 lg:gap-5">
-                                    {/* Receiver State  */}
-                                    <div className="flex flex-col lg:flex-row items-center gap-x-2">
-                                        <label
-                                            htmlFor="ReceiverState"
-                                            className="block w-full lg:w-48"
-                                        >
-                                            Receiver State:
-                                            <span className="text-red-500 text-sm">
-                                                *
-                                            </span>
-                                        </label>
-                                        <select
-                                            id="ReceiverState"
-                                            name="ReceiverState"
-                                            className="w-full border border-gray-300 rounded px-3 py-2"
-                                            value={selectedRstate}
-                                            onChange={(e) => {
-                                                setSelectedRstate(
-                                                    e.target.value
-                                                );
-                                            }}
-                                            required
-                                        >
-                                            <option value="">
-                                                --Select a State--
+                                <div className="flex flex-col lg:flex-row lg:items-center gap-2">
+                                    <label
+                                        htmlFor="ReceiverState"
+                                        className="block w-full lg:w-32 text-sm font-medium text-gray-700"
+                                    >
+                                        State:
+                                        <span className="text-red-500 ml-1">
+                                            *
+                                        </span>
+                                    </label>
+                                    <select
+                                        id="ReceiverState"
+                                        name="ReceiverState"
+                                        className="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        value={selectedRstate}
+                                        onChange={(e) =>
+                                            setSelectedRstate(e.target.value)
+                                        }
+                                        required
+                                    >
+                                        <option value="">
+                                            --Select a State--
+                                        </option>
+                                        {states?.map((state) => (
+                                            <option
+                                                key={state.id}
+                                                value={state.id}
+                                            >
+                                                {state.label}
                                             </option>
+                                        ))}
+                                    </select>
+                                </div>
 
-                                            {states?.map((state) => {
-                                                return (
-                                                    <option
-                                                        key={state.id}
-                                                        value={state.id}
-                                                    >
-                                                        {state.label}
-                                                    </option>
-                                                );
-                                            })}
-                                        </select>
-                                    </div>
-
-                                    {/* Receiver PostCode  */}
-                                    <div className="flex flex-col lg:flex-row items-center gap-x-2">
-                                        <label
-                                            htmlFor="name"
-                                            className="block w-full lg:w-48"
-                                        >
-                                            Receiver PostCode:{" "}
-                                        </label>
-                                        <input
-                                            type="number"
-                                            name="name"
-                                            defaultValue={
-                                                object
-                                                    ? object.ReceiverPostCode
-                                                    : ""
+                                <div className="flex flex-col lg:flex-row lg:items-center gap-2">
+                                    <label
+                                        htmlFor="ReceiverPostCode"
+                                        className="block w-full lg:w-32 text-sm font-medium text-gray-700"
+                                    >
+                                        PostCode:
+                                    </label>
+                                    <input
+                                        type="number"
+                                        name="ReceiverPostCode"
+                                        id="ReceiverPostCode"
+                                        defaultValue={
+                                            object
+                                                ? object.ReceiverPostCode
+                                                : ""
+                                        }
+                                        min="0"
+                                        className="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        onInput={(e) => {
+                                            const value = e.target.value;
+                                            if (value < 0) {
+                                                e.target.value = 0;
                                             }
-                                            id="ReceiverPostCode"
-                                            className="rounded w-full bg-gray-50 border border-gray-300 h-7"
-                                            min={0}
-                                            onInput={(e) => {
-                                                const value = e.target.value;
-                                                if (value < 0) {
-                                                    e.target.value = 0; // Reset to 0 if a negative value is entered
-                                                }
-                                            }}
-                                            onKeyDown={(e) => {
-                                                // Prevent negative symbol and exponential input
-                                                if (
-                                                    e.key === "-" ||
-                                                    e.key === "e" ||
-                                                    e.key === "E"
-                                                ) {
-                                                    e.preventDefault();
-                                                }
-                                            }}
-                                        />
-                                    </div>
-
-                                    {/* Receiver Name  */}
-                                    <div className="flex flex-col lg:flex-row items-center gap-x-2">
-                                        <label
-                                            htmlFor="name"
-                                            className="block w-full lg:w-48 "
-                                        >
-                                            Receiver Name:{" "}
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="name"
-                                            defaultValue={
-                                                object
-                                                    ? object.ReceiverName
-                                                    : ""
+                                        }}
+                                        onKeyDown={(e) => {
+                                            if (
+                                                e.key === "-" ||
+                                                e.key === "e" ||
+                                                e.key === "E"
+                                            ) {
+                                                e.preventDefault();
                                             }
-                                            id="ReceiverName"
-                                            className="rounded w-full max-w-lg bg-gray-50 border border-gray-300 h-7"
-                                        />
-                                    </div>
+                                        }}
+                                    />
+                                </div>
+
+                                <div className="flex flex-col lg:flex-row lg:items-center gap-2">
+                                    <label
+                                        htmlFor="ReceiverName"
+                                        className="block w-full lg:w-32 text-sm font-medium text-gray-700"
+                                    >
+                                        Name:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="ReceiverName"
+                                        id="ReceiverName"
+                                        defaultValue={
+                                            object ? object.ReceiverName : ""
+                                        }
+                                        className="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    />
                                 </div>
                             </div>
                         </div>
-                        {/* Transit Time  */}
-                        <div className="flex flex-col gap-2 lg:gap-5">
-                            <div className="flex flex-col">
-                                <p className="font-bold text-lg">Transit</p>
-                            </div>
 
-                            <div className="flex flex-col lg:flex-row items-center gap-x-2">
+                        {/* Transit Section */}
+                        <div className="space-y-4">
+                            <h3 className="font-bold text-lg text-gray-800 pb-2">
+                                Transit
+                            </h3>
+
+                            <div className="flex flex-col lg:flex-row lg:items-center gap-2 lg:max-w-2xl">
                                 <label
-                                    htmlFor="name"
-                                    className="block w-full lg:w-48"
+                                    htmlFor="TransitTime"
+                                    className="block w-full lg:w-32 text-sm font-medium text-gray-700"
                                 >
-                                    Transit Time:{" "}
-                                    <span className="text-red-500 text-sm">
-                                        *
-                                    </span>
+                                    Transit Time:
+                                    <span className="text-red-500 ml-1">*</span>
                                 </label>
                                 <input
                                     type="number"
+                                    name="TransitTime"
+                                    id="TransitTime"
                                     defaultValue={
                                         object ? object.TransitTime : ""
                                     }
-                                    name="TransitTime"
-                                    id="TransitTime"
+                                    min="0"
                                     required
-                                    className="rounded w-full max-w-lg bg-gray-50 border border-gray-300 h-7"
-                                    min={0}
+                                    className="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     onInput={(e) => {
                                         const value = e.target.value;
                                         if (value < 0) {
-                                            e.target.value = 0; // Reset to 0 if a negative value is entered
+                                            e.target.value = 0;
                                         }
                                     }}
                                     onKeyDown={(e) => {
-                                        // Prevent negative symbol and exponential input
                                         if (
                                             e.key === "-" ||
                                             e.key === "e" ||
@@ -503,17 +483,19 @@ function AddNewTransitDay({ setNewTransitDays }) {
                             </div>
                         </div>
                     </div>
-                    <div className="flex w-full gap-x-2 mt-4 justify-end">
+
+                    {/* Action Buttons */}
+                    <div className="flex justify-end gap-3 mt-8 pt-6 border-t">
                         <GtrsButton
-                            name={"Cancel"}
+                            name="Cancel"
                             onClick={CancelHandle}
-                            className={"py-4"}
-                            type={"button"}
-                        />{" "}
+                            className="px-6 py-2"
+                            type="button"
+                        />
                         <GtrsButton
                             name={object ? "Edit" : "Add"}
-                            className={"py-4"}
-                            type={"submit"}
+                            className="px-6 py-2"
+                            type="submit"
                         />
                     </div>
                 </form>

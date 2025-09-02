@@ -171,38 +171,35 @@ export default function RDDMain({
         setActiveComponentIndex(index);
     };
 
+    if (isFetching || isFetchingReasons) {
+        return <AnimatedLoading />;
+    }
     return (
-        <div>
-            {isFetching || isFetchingReasons ? (
-                <AnimatedLoading />
-            ) : (
-                <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                    <div className="mt-0">
-                        {canViewRDDReasons(userPermissions) ? (
-                            <ul className="flex space-x-0 mt-5">
-                                {tabs.map((tab, index) => (
-                                    <li
-                                        key={tab.id} // Use stable unique ID instead of index
-                                        className={`cursor-pointer ${
-                                            activeComponentIndex === index
-                                                ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
-                                                : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
-                                        }`}
-                                        onClick={() => handleItemClick(index)}
-                                    >
-                                        <div className="px-2">{tab.label}</div>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <div></div>
-                        )}
-                        <div className="mt-4">
-                            {tabs[activeComponentIndex]?.component}
-                        </div>
-                    </div>
+        <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20 h-full">
+            <div className="mt-0 h-full">
+                {canViewRDDReasons(userPermissions) ? (
+                    <ul className="flex space-x-0 mt-5">
+                        {tabs.map((tab, index) => (
+                            <li
+                                key={tab.id} // Use stable unique ID instead of index
+                                className={`cursor-pointer ${
+                                    activeComponentIndex === index
+                                        ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
+                                        : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
+                                }`}
+                                onClick={() => handleItemClick(index)}
+                            >
+                                <div className="px-2">{tab.label}</div>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <div></div>
+                )}
+                <div className="mt-4 h-full">
+                    {tabs[activeComponentIndex]?.component}
                 </div>
-            )}
+            </div>
         </div>
     );
 }

@@ -950,6 +950,9 @@ export default function Utilization() {
         autoInsertRow: false,
     });
 
+    if (!tableData || isLoading) {
+        return <AnimatedLoading />;
+    }
     return (
         <div className="min-h-full px-8">
             <ToastContainer />
@@ -1024,7 +1027,7 @@ export default function Utilization() {
                     />
                 </div>
             )}
-            {(!tableData || isLoading) && <AnimatedLoading />}
+
             {cellLoading && (
                 <div className="absolute inset-0 flex justify-center items-center">
                     <Spinner color="default" size="sm" />

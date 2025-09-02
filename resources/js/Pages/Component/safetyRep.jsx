@@ -266,129 +266,128 @@ export default function SafetyRep({
         }
     }, [userPermissions]);
 
+    if (isFetching || isFetchingCauses || isFetchingTypes) {
+        return <AnimatedLoading />;
+    }
     return (
         <div>
             {/* Added toast container since it wasn't showing */}
             <ToastContainer />
-            {isFetching || isFetchingCauses || isFetchingTypes ? (
-                <AnimatedLoading />
-            ) : (
-                <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                    <div className="sm:flex sm:items-center">
-                        <div className="sm:flex-auto mt-6">
-                            <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                                Safety Report
-                            </h1>
+            <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
+                <div className="sm:flex sm:items-center">
+                    <div className="sm:flex-auto mt-6">
+                        <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
+                            Safety Report
+                        </h1>
+                    </div>
+                </div>
+                {canView ? (
+                    <ul className="flex space-x-0 mt-5">
+                        <li
+                            className={`cursor-pointer ${
+                                activeComponentIndex === 0
+                                    ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
+                                    : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
+                            }`}
+                            onClick={() => handleItemClick(0)}
+                        >
+                            <div className="px-2">Report</div>
+                        </li>
+                        <li
+                            className={`cursor-pointer ${
+                                activeComponentIndex === 1
+                                    ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
+                                    : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
+                            }`}
+                            onClick={() => handleItemClick(1)}
+                        >
+                            <div className="px-2"> Charts</div>
+                        </li>
+                    </ul>
+                ) : (
+                    <ul className="flex space-x-0 mt-5 ">
+                        {components.map((component, index) => (
+                            <li
+                                key={index}
+                                className={`cursor-pointer ${
+                                    activeComponentIndex === index
+                                        ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
+                                        : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
+                                }`}
+                                onClick={() => handleItemClick(index)}
+                            >
+                                <div className="px-2">
+                                    {index === 0
+                                        ? "Report"
+                                        : index === 1
+                                        ? "Charts"
+                                        : index === 2
+                                        ? "Safety Types"
+                                        : "Safety Causes"}
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+                <div className="mt-8">
+                    <div className="w-full relative">
+                        <div className=" sm:border-gray-200 text-gray-400 flex flex-col md:flex-row gap-y-4 gap-x-2 md:items-center">
+                            {activeComponentIndex === 1 && (
+                                <div className="flex flex-col sm:flex-row sm:gap-3 lg:gap-0 pb-4">
+                                    {" "}
+                                    <label
+                                        htmlFor="last-name"
+                                        className="inline-block text-sm font-medium leading-6  flex-item items-center"
+                                    >
+                                        Date From
+                                    </label>
+                                    <div className="sm:mt-0 md:px-4 ">
+                                        <input
+                                            type="date"
+                                            name="from-date"
+                                            onKeyDown={(e) =>
+                                                e.preventDefault()
+                                            }
+                                            value={SDate}
+                                            min={oldestDate}
+                                            max={EDate}
+                                            onChange={(e) =>
+                                                setSDate(e.target.value)
+                                            }
+                                            id="from-date"
+                                            className="flex-item block w-full max-w-lg h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                                        />
+                                    </div>
+                                    <label
+                                        htmlFor="last-name"
+                                        className="inline-block text-sm font-medium leading-6 mt-2 sm:mt-0 flex-item"
+                                    >
+                                        To
+                                    </label>
+                                    <div className="mt-2 flex-item  sm:mt-0 md:px-4">
+                                        <input
+                                            type="date"
+                                            name="to-date"
+                                            onKeyDown={(e) =>
+                                                e.preventDefault()
+                                            }
+                                            value={EDate}
+                                            min={SDate}
+                                            max={latestDate}
+                                            onChange={(e) =>
+                                                setEDate(e.target.value)
+                                            }
+                                            id="to-date"
+                                            className="block w-full max-w-lg h-[36px]  rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
-                    {canView ? (
-                        <ul className="flex space-x-0 mt-5">
-                            <li
-                                className={`cursor-pointer ${
-                                    activeComponentIndex === 0
-                                        ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
-                                        : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
-                                }`}
-                                onClick={() => handleItemClick(0)}
-                            >
-                                <div className="px-2">Report</div>
-                            </li>
-                            <li
-                                className={`cursor-pointer ${
-                                    activeComponentIndex === 1
-                                        ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
-                                        : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
-                                }`}
-                                onClick={() => handleItemClick(1)}
-                            >
-                                <div className="px-2"> Charts</div>
-                            </li>
-                        </ul>
-                    ) : (
-                        <ul className="flex space-x-0 mt-5 ">
-                            {components.map((component, index) => (
-                                <li
-                                    key={index}
-                                    className={`cursor-pointer ${
-                                        activeComponentIndex === index
-                                            ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
-                                            : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
-                                    }`}
-                                    onClick={() => handleItemClick(index)}
-                                >
-                                    <div className="px-2">
-                                        {index === 0
-                                            ? "Report"
-                                            : index === 1
-                                            ? "Charts"
-                                            : index === 2
-                                            ? "Safety Types"
-                                            : "Safety Causes"}
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                    <div className="mt-8">
-                        <div className="w-full relative">
-                            <div className=" sm:border-gray-200 text-gray-400 flex flex-col md:flex-row gap-y-4 gap-x-2 md:items-center">
-                                {activeComponentIndex === 1 && (
-                                    <div className="flex flex-col sm:flex-row sm:gap-3 lg:gap-0 pb-4">
-                                        {" "}
-                                        <label
-                                            htmlFor="last-name"
-                                            className="inline-block text-sm font-medium leading-6  flex-item items-center"
-                                        >
-                                            Date From
-                                        </label>
-                                        <div className="sm:mt-0 md:px-4 ">
-                                            <input
-                                                type="date"
-                                                name="from-date"
-                                                onKeyDown={(e) =>
-                                                    e.preventDefault()
-                                                }
-                                                value={SDate}
-                                                min={oldestDate}
-                                                max={EDate}
-                                                onChange={(e) =>
-                                                    setSDate(e.target.value)
-                                                }
-                                                id="from-date"
-                                                className="flex-item block w-full max-w-lg h-[36px] rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                                            />
-                                        </div>
-                                        <label
-                                            htmlFor="last-name"
-                                            className="inline-block text-sm font-medium leading-6 mt-2 sm:mt-0 flex-item"
-                                        >
-                                            To
-                                        </label>
-                                        <div className="mt-2 flex-item  sm:mt-0 md:px-4">
-                                            <input
-                                                type="date"
-                                                name="to-date"
-                                                onKeyDown={(e) =>
-                                                    e.preventDefault()
-                                                }
-                                                value={EDate}
-                                                min={SDate}
-                                                max={latestDate}
-                                                onChange={(e) =>
-                                                    setEDate(e.target.value)
-                                                }
-                                                id="to-date"
-                                                className="block w-full max-w-lg h-[36px]  rounded-md border-0 py-1.5 text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                                            />
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>{" "}
-                    {components[activeComponentIndex]}
-                </div>
-            )}
+                </div>{" "}
+                {components[activeComponentIndex]}
+            </div>
         </div>
     );
 }

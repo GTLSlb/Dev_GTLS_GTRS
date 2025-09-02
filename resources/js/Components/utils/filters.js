@@ -1104,6 +1104,12 @@ export const getFiltersAddCharges = (minDateAdd, maxDateAdd) => {
             value: null,
         },
         {
+            name: "ChargeRate",
+            operator: "eq",
+            type: "number",
+            value: null,
+        },
+        {
             name: "TotalCharge",
             operator: "eq",
             type: "number",

@@ -138,9 +138,7 @@ function InlineTable({
         { ...originalDataTemplate, metric: "POD %" },
     ];
 
-    
     jsonData.forEach((item) => {
-        
         const columnName = formatDateToColumnName(item.MonthDate);
         if (item.Record && item.Record.length > 0) {
             const record = item.Record[0];
@@ -243,54 +241,79 @@ function InlineTable({
                 }
             });
 
-            if (baseRecord.TotalCons && baseRecord.TotalCons !== 0) {
+            // If TotalCons is set to 0, reset TotalFails and TotalNoPod to 0 as well
+            if (baseRecord.TotalCons === 0) {
+                baseRecord.TotalFails = 0;
+                baseRecord.TotalNoPod = 0;
+                baseRecord.onTimePercentage = "";
+                baseRecord.PODPercentage = "";
+
+                // Update the data source to reflect these changes visually
+                data[1][columnId] = 0; // TotalFails row
+                data[2][columnId] = 0; // TotalNoPod row
+                data[4][columnId] = ""; // Ontime % row
+                data[5][columnId] = ""; // POD % row
+            } else if (baseRecord.TotalCons && baseRecord.TotalCons > 0) {
+                // Only calculate percentages if TotalCons is greater than 0
                 if (
-                    baseRecord.TotalFails == null ||
-                    baseRecord.TotalFails === ""
+                    baseRecord.TotalFails != null &&
+                    baseRecord.TotalFails !== "" &&
+                    !Number.isNaN(baseRecord.TotalFails)
                 ) {
-                    baseRecord.onTimePercentage = "";
-                } else {
                     baseRecord.onTimePercentage = (
                         ((baseRecord.TotalCons - baseRecord.TotalFails) /
                             baseRecord.TotalCons) *
                         100
                     ).toFixed(2);
+                } else {
+                    baseRecord.onTimePercentage = "";
                 }
 
                 if (
-                    baseRecord.TotalNoPod == null ||
-                    baseRecord.TotalNoPod === ""
+                    baseRecord.TotalNoPod != null &&
+                    baseRecord.TotalNoPod !== "" &&
+                    !Number.isNaN(baseRecord.TotalNoPod)
                 ) {
-                    baseRecord.PODPercentage = "";
-                } else {
                     baseRecord.PODPercentage = (
                         ((baseRecord.TotalCons - baseRecord.TotalNoPod) /
                             baseRecord.TotalCons) *
                         100
                     ).toFixed(2);
+                } else {
+                    baseRecord.PODPercentage = "";
                 }
+
+                // Update the percentage display in the data source
+                data[4][columnId] = baseRecord.onTimePercentage
+                    ? `${baseRecord.onTimePercentage}%`
+                    : "";
+                data[5][columnId] = baseRecord.PODPercentage
+                    ? `${baseRecord.PODPercentage}%`
+                    : "";
             } else {
+                // When TotalCons is null, empty, or NaN, clear everything
                 baseRecord.onTimePercentage = "";
                 baseRecord.PODPercentage = "";
+                data[4][columnId] = "";
+                data[5][columnId] = "";
             }
 
-            data[4][columnId] = baseRecord.onTimePercentage
-                ? `${baseRecord.onTimePercentage}%`
-                : "";
-            data[5][columnId] = baseRecord.PODPercentage
-                ? `${baseRecord.PODPercentage}%`
-                : "";
-
+            // Update validation - allow TotalCons = 0 as valid, and when TotalCons = 0,
+            // TotalFails and TotalNoPod will also be 0 (which is valid)
             if (
                 baseRecord.TotalCons == null ||
                 baseRecord.TotalCons === "" ||
                 Number.isNaN(baseRecord.TotalCons) ||
-                baseRecord.TotalFails == null ||
-                baseRecord.TotalFails === "" ||
-                Number.isNaN(baseRecord.TotalFails) ||
-                baseRecord.TotalNoPod == null ||
-                baseRecord.TotalNoPod === "" ||
-                Number.isNaN(baseRecord.TotalNoPod) ||
+                baseRecord.TotalCons < 0 ||
+                (baseRecord.TotalCons > 0 &&
+                    (baseRecord.TotalFails == null ||
+                        baseRecord.TotalFails === "" ||
+                        Number.isNaN(baseRecord.TotalFails) ||
+                        baseRecord.TotalFails < 0 ||
+                        baseRecord.TotalNoPod == null ||
+                        baseRecord.TotalNoPod === "" ||
+                        Number.isNaN(baseRecord.TotalNoPod) ||
+                        baseRecord.TotalNoPod < 0)) ||
                 baseRecord.KpiBenchMark == null ||
                 baseRecord.KpiBenchMark === "" ||
                 Number.isNaN(baseRecord.KpiBenchMark)
@@ -334,7 +357,6 @@ function InlineTable({
         },
         [dataSource, localGraphData]
     );
-
     const updateLocalData = (records, newRecord) => {
         const newMonthDate = newRecord.ReportMonth;
         const updatedRecords = records.map((monthData) => {

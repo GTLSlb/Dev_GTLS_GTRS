@@ -289,7 +289,7 @@ export default function NoDelivery({
                     </span>
                 ) : (
                     <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        false
+                        False
                     </span>
                 );
             },
@@ -313,7 +313,7 @@ export default function NoDelivery({
                     </span>
                 ) : (
                     <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        false
+                        False
                     </span>
                 );
             },
@@ -353,12 +353,11 @@ export default function NoDelivery({
         },
     ];
 
+    if(isFetching){
+        return <AnimatedLoading />
+    }
     return (
-        <div>
-            {/* <Sidebar /> */}
-            {isFetching && <AnimatedLoading />}
-            {!isFetching && (
-                <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
+       <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
                     <TableStructure
                         id={"ConsignmentID"}
                         gridRef={gridRef}
@@ -373,8 +372,6 @@ export default function NoDelivery({
                         columnsElements={columns}
                     />
                 </div>
-            )}
-        </div>
     );
 }
 

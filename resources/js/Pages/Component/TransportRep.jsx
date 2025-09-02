@@ -22,7 +22,6 @@ function TransportRep({
     setFilterValue,
     accData,
 }) {
-    console.log(accData)
     const RDDTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
         const [value, setValue] = useState(
             filterValue ? filterValue.value : ""
@@ -62,10 +61,10 @@ function TransportRep({
         }));
 
         return (
-            <div className="flex gap-2 mx-1">
+            <div className="flex gap-2 p-[4px]">
                 <input
                     type="time"
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm"
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm h-[32px]"
                     value={value.slice(0, 5)}
                     onChange={handleChange}
                 />
@@ -132,10 +131,10 @@ function TransportRep({
         }));
 
         return (
-            <div className="flex gap-2 mx-1">
+            <div className="flex gap-2 p-[4px]">
                 <input
                     type="time"
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm"
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm h-[32px]"
                     value={value.slice(0, 5)}
                     onChange={handleChange}
                 />
@@ -201,10 +200,10 @@ function TransportRep({
         }));
 
         return (
-            <div className="flex gap-2 mx-1">
+            <div className="flex gap-2 p-[4px]">
                 <input
                     type="time"
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm"
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm h-[32px]"
                     value={value.slice(0, 5)}
                     onChange={handleChange}
                 />
@@ -579,8 +578,7 @@ function TransportRep({
         // Filter the data based on the start and end date filters, selected receiver names, and chargeTo values
         const filtered = transportData.filter((item) => {
             const chargeToMatch =
-                (intArray?.length === 0 ||
-                    intArray?.includes(item.ChargeToID)); // Exclude specified ChargeToIDs
+                intArray?.length === 0 || intArray?.includes(item.ChargeToID); // Exclude specified ChargeToIDs
 
             return chargeToMatch;
         });

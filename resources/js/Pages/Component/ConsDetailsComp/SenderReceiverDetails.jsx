@@ -47,19 +47,19 @@ function SenderReceiverDetails({ Consignment }) {
                 value: Consignment[0].SenderReciever[0].ReceiverZone,
             },
             {
-                label: "Contact",
+                label: "Contact Name",
                 value: Consignment[0].SenderReciever[0].SenderContactName,
             },
             {
-                label: "Contact",
+                label: "Contact Name",
                 value: Consignment[0].SenderReciever[0].ReceiverContactName,
             },
             {
-                label: "Job Instructions",
+                label: "Contact Number",
                 value: Consignment[0].SenderReciever[0].SenderContactNumber,
             },
             {
-                label: "Job Instructions",
+                label: "Contact Number",
                 value: Consignment[0].SenderReciever[0].ReceiverContactNumber,
             },
             {

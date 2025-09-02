@@ -2,7 +2,7 @@ import React from "react";
 
 function AnimatedLoading() {
     return (
-        <div className=" md:pl-20 pt-16 h-[70vh] flex flex-col items-center justify-center">
+        <div className=" md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
             <div className="flex items-center justify-center">
                 <div
                     className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}

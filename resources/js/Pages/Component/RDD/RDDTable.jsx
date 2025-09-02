@@ -514,27 +514,26 @@ export default function RDDTable({
         }
     }, []);
 
+    if (!newColumns) {
+        return <AnimatedLoading />;
+    }
     return (
         <div className=" w-full bg-smooth ">
-            {!newColumns ? (
-                <AnimatedLoading />
-            ) : (
-                <div className=" w-full bg-smooth ">
-                    <TableStructure
-                        id={"AuditId"}
-                        gridRef={gridRef}
-                        setSelected={setSelected}
-                        handleDownloadExcel={handleDownloadExcel}
-                        title={"RDD Report"}
-                        groupsElements={groups}
-                        selected={selected}
-                        tableDataElements={filteredData}
-                        filterValueElements={filterValue}
-                        setFilterValueElements={setFilterValue}
-                        columnsElements={newColumns}
-                    />
-                </div>
-            )}
+            <div className=" w-full bg-smooth ">
+                <TableStructure
+                    id={"AuditId"}
+                    gridRef={gridRef}
+                    setSelected={setSelected}
+                    handleDownloadExcel={handleDownloadExcel}
+                    title={"RDD Report"}
+                    groupsElements={groups}
+                    selected={selected}
+                    tableDataElements={filteredData}
+                    filterValueElements={filterValue}
+                    setFilterValueElements={setFilterValue}
+                    columnsElements={newColumns}
+                />
+            </div>
             <ModalRDD
                 url={url}
                 Token={Token}

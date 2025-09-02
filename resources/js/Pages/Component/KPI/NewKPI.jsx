@@ -25,7 +25,10 @@ import {
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
-import { createNewLabelObjects, createNewLabelObjectsUsingIds } from "@/Components/utils/dataUtils";
+import {
+    createNewLabelObjects,
+    createNewLabelObjectsUsingIds,
+} from "@/Components/utils/dataUtils";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import { CustomContext } from "@/CommonContext";
@@ -179,7 +182,11 @@ function NewKPI({
     };
 
     // Usage example remains the same
-    const kpiOptions = createNewLabelObjectsUsingIds(kpireasonsData, "ReasonId" , "ReasonName");
+    const kpiOptions = createNewLabelObjectsUsingIds(
+        kpireasonsData,
+        "ReasonId",
+        "ReasonName"
+    );
 
     const minDispatchDate = getMinMaxValue(KPIData, "DispatchDate", 1);
     const maxDispatchDate = getMinMaxValue(KPIData, "DispatchDate", 2);
@@ -724,7 +731,7 @@ function NewKPI({
     }, [newColumns, accData, filteredData, loading]);
 
     return (
-        <div>
+        <div className="h-full">
             {isFetching && newColumns && columns ? (
                 <AnimatedLoading />
             ) : (

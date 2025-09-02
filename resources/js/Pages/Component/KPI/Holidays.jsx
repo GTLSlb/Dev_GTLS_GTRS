@@ -410,45 +410,44 @@ export default function Holidays({
             ) : null}
         </div>
     );
+    if (isFetching) {
+        return <AnimatedLoading />;
+    }
     return (
         <div>
             {/* Added this for toast container to show */}
             <ToastContainer />
-            {isFetching ? (
-                <AnimatedLoading />
-            ) : (
-                <div className="pt-4 px-4 sm:pt-6 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                    {showAdd ? (
-                        <div id="addSection">
-                            <AddHoliday
-                                states={stateOptions}
-                                holiday={holiday}
-                                url={url}
-                                Token={Token}
-                                userPermissions={userPermissions}
-                                setHoliday={setHoliday}
-                                setShowAdd={setShowAdd}
-                                fetchData={fetchData}
-                                closeModal={ToggleShow}
-                            />
-                        </div>
-                    ) : null}
+            <div className="pt-4 px-4 sm:pt-6 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
+                {showAdd ? (
+                    <div id="addSection">
+                        <AddHoliday
+                            states={stateOptions}
+                            holiday={holiday}
+                            url={url}
+                            Token={Token}
+                            userPermissions={userPermissions}
+                            setHoliday={setHoliday}
+                            setShowAdd={setShowAdd}
+                            fetchData={fetchData}
+                            closeModal={ToggleShow}
+                        />
+                    </div>
+                ) : null}
 
-                    <TableStructure
-                        id={"HolidayId"}
-                        title={"Holidays"}
-                        setSelected={setSelected}
-                        gridRef={gridRef}
-                        additionalButtons={additionalButtons}
-                        handleDownloadExcel={handleDownloadExcel}
-                        selected={selected}
-                        tableDataElements={holidays}
-                        filterValueElements={filterValue}
-                        setFilterValueElements={setFilterValue}
-                        columnsElements={columns}
-                    />
-                </div>
-            )}
+                <TableStructure
+                    id={"HolidayId"}
+                    title={"Holidays"}
+                    setSelected={setSelected}
+                    gridRef={gridRef}
+                    additionalButtons={additionalButtons}
+                    handleDownloadExcel={handleDownloadExcel}
+                    selected={selected}
+                    tableDataElements={holidays}
+                    filterValueElements={filterValue}
+                    setFilterValueElements={setFilterValue}
+                    columnsElements={columns}
+                />
+            </div>
         </div>
     );
 }

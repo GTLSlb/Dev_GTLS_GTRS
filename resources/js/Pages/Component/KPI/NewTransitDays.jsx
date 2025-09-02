@@ -425,30 +425,27 @@ function NewTransitDays({
         />
     ) : null;
 
+    if (isFetching || !senderStateOptions) {
+        return <AnimatedLoading />;
+    }
     return (
         <div>
-            {isFetching || !senderStateOptions ? (
-                <AnimatedLoading />
-            ) : (
-                <div>
-                    <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                        <TableStructure
-                            id={"TransitId"}
-                            setSelected={setSelected}
-                            gridRef={gridRef}
-                            handleDownloadExcel={handleDownloadExcel}
-                            title={"Transit Days"}
-                            selected={selected}
-                            additionalButtons={additionalButtons}
-                            groupsElements={groups}
-                            tableDataElements={newTransitDays}
-                            filterValueElements={filterValue}
-                            setFilterValueElements={setFilterValue}
-                            columnsElements={columns}
-                        />
-                    </div>
-                </div>
-            )}
+            <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
+                <TableStructure
+                    id={"TransitId"}
+                    setSelected={setSelected}
+                    gridRef={gridRef}
+                    handleDownloadExcel={handleDownloadExcel}
+                    title={"Transit Days"}
+                    selected={selected}
+                    additionalButtons={additionalButtons}
+                    groupsElements={groups}
+                    tableDataElements={newTransitDays}
+                    filterValueElements={filterValue}
+                    setFilterValueElements={setFilterValue}
+                    columnsElements={columns}
+                />
+            </div>
         </div>
     );
 }

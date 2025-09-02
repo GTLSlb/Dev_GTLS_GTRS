@@ -1,9 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
+import moment from "moment";
 
-function PickupDelInfo({
-    deliveryInfo,
-}) {
+function PickupDelInfo({ deliveryInfo }) {
     return (
         <div className="px-4 sm:px-6 lg:px-8 mt-8 bg-white shadow sm:rounded-xl shadow-lg">
             <div className="mt-8 flow-root">
@@ -33,13 +32,22 @@ function PickupDelInfo({
                                 {deliveryInfo?.map((item) => (
                                     <tr key={item} className=" ">
                                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-600 sm:pl-3">
-                                            {item.PODdateTime.replace("T", " ")}
+                                            {item.PODdateTime
+                                                ? moment(
+                                                      item.PODdateTime.replace(
+                                                          "T",
+                                                          " "
+                                                      ),
+                                                      "YYYY-MM-DD HH:mm:ss"
+                                                  ).format("DD-MM-YYYY h:mm A")
+                                                : null}
                                         </td>
                                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-600 sm:pl-3">
                                             <a
                                                 href={item.PODimage}
                                                 target="_blank"
-                                                className="text-indigo-600 hover:text-goldds" rel="noreferrer"
+                                                className="text-indigo-600 hover:text-goldds"
+                                                rel="noreferrer"
                                             >
                                                 {item.PODimage}
                                             </a>

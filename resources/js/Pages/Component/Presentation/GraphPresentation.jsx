@@ -34,7 +34,7 @@ const MultiChartLine = () => {
     ];
 
     return (
-        <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
+        <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20 h-full">
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto mt-6">
                     <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">

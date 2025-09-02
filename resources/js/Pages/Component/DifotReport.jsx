@@ -22,7 +22,6 @@ import axios from "axios";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 
 export default function DifotReport({ filterValue, setFilterValue, accData }) {
-
     const { url, Token, user } = useContext(CustomContext);
     const [filteredData, setFilteredData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -917,16 +916,16 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
             },
             render: ({ value }) => {
                 return value?.toLowerCase() == "yes" ? (
-                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                        {value}
+                    <span className="inline-flex items-center capitalize rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                        {value.toLowerCase()}
                     </span>
                 ) : value?.toLowerCase() == "no" ? (
-                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        {value}
+                    <span className="inline-flex items-center capitalize rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                        {value.toLowerCase()}
                     </span>
                 ) : value?.toLowerCase() == "pending" ? (
-                    <span className="inline-flex items-center rounded-full bg-yellow-100 px-3 py-0.5 text-sm font-medium text-yellow-800">
-                        {value}
+                    <span className="inline-flex items-center capitalize rounded-full bg-yellow-100 px-3 py-0.5 text-sm font-medium text-yellow-800">
+                        {value.toLowerCase()}
                     </span>
                 ) : (
                     <span className="inline-flex items-center px-3 py-0.5 text-sm">
@@ -1020,15 +1019,15 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
             },
             render: ({ value }) => {
                 return value == true ? (
-                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                    <span className="inline-flex items-center capitalize rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
                         {value?.toString()}
                     </span>
                 ) : value == false ? (
-                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                    <span className="inline-flex capitalize items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
                         {value?.toString()}
                     </span>
                 ) : (
-                    <span className="inline-flex items-center px-3 py-0.5 text-sm">
+                    <span className="inline-flex capitalize items-center px-3 py-0.5 text-sm">
                         {value ? value.toString() : ""}
                     </span>
                 );
@@ -1036,31 +1035,26 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
         },
     ];
 
+    if (isLoading) {
+        return <AnimatedLoading />;
+    }
     return (
-        <div>
-            <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20 h-full">
-                <div className="mt-4 h-full">
-                    {isLoading ? (
-                        <AnimatedLoading />
-                    ) : (
-                        <div className=" w-full bg-smooth h-full">
-                            <TableStructure
-                                id={"ConsignmentID"}
-                                handleDownloadExcel={handleDownloadExcel}
-                                title={"DIFOT Report"}
-                                setSelected={setSelected}
-                                gridRef={gridRef}
-                                selected={selected}
-                                groupsElements={groups}
-                                tableDataElements={filteredData}
-                                filterValueElements={filterValue}
-                                setFilteredData={setFilteredData}
-                                setFilterValueElements={setFilterValue}
-                                columnsElements={columns}
-                            />
-                        </div>
-                    )}
-                </div>
+        <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20 h-full">
+            <div className=" w-full bg-smooth h-full">
+                <TableStructure
+                    id={"ConsignmentID"}
+                    handleDownloadExcel={handleDownloadExcel}
+                    title={"DIFOT Report"}
+                    setSelected={setSelected}
+                    gridRef={gridRef}
+                    selected={selected}
+                    groupsElements={groups}
+                    tableDataElements={filteredData}
+                    filterValueElements={filterValue}
+                    setFilteredData={setFilteredData}
+                    setFilterValueElements={setFilterValue}
+                    columnsElements={columns}
+                />
             </div>
         </div>
     );

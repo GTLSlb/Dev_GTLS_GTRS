@@ -19,17 +19,43 @@ function ConsignmentGraph({ customers, CustomerId }) {
         data.forEach((item) => {
             if (item.Record && item.Record.length > 0) {
                 item.Record.forEach((record) => {
-                    // Calculate onTime %
-                    record.onTimePercentage =
-                        ((record.TotalCons - record.TotalFails) /
-                            record.TotalCons) *
-                        100;
+                    if (
+                        record.TotalCons != null &&
+                        record.TotalCons !== "" &&
+                        !Number.isNaN(record.TotalCons) &&
+                        record.TotalCons > 0
+                    ) {
+                        if (
+                            record.TotalFails != null &&
+                            record.TotalFails !== "" &&
+                            !Number.isNaN(record.TotalFails)
+                        ) {
+                            record.onTimePercentage = (
+                                ((record.TotalCons - record.TotalFails) /
+                                    record.TotalCons) *
+                                100
+                            ).toFixed(2);
+                        } else {
+                            record.onTimePercentage = null;
+                        }
 
-                    // Calculate POD %
-                    record.PODPercentage =
-                        ((record.TotalCons - record.TotalNoPod) /
-                            record.TotalCons) *
-                        100;
+                        if (
+                            record.TotalNoPod != null &&
+                            record.TotalNoPod !== "" &&
+                            !Number.isNaN(record.TotalNoPod)
+                        ) {
+                            record.PODPercentage = (
+                                ((record.TotalCons - record.TotalNoPod) /
+                                    record.TotalCons) *
+                                100
+                            ).toFixed(2);
+                        } else {
+                            record.PODPercentage = null;
+                        }
+                    } else {
+                        record.onTimePercentage = null;
+                        record.PODPercentage = null;
+                    }
                 });
             }
         });
@@ -65,52 +91,44 @@ function ConsignmentGraph({ customers, CustomerId }) {
     const customStyles = {
         control: (provided) => ({
             ...provided,
-            minHeight: "unset", // Remove default minimum height
-            height: "auto", // Set control height to auto
-            // Add other control-related styles as needed
+            minHeight: "unset",
+            height: "auto",
         }),
         option: (provided, state) => ({
             ...provided,
-            color: state.isSelected ? "black" : "black", // Change color based on selection
+            color: state.isSelected ? "black" : "black",
             backgroundColor: state.isSelected
                 ? "#F3F3F3"
-                : provided.backgroundColor, // Customize selected option background
-            // Add more styles for options as needed
+                : provided.backgroundColor,
         }),
         multiValue: (provided) => ({
             ...provided,
-            width: "30%", // Set multi-value width
-            overflow: "hidden", // Ensure content does not overflow
-            height: "20px", // Set height of multi-value tags
-            display: "flex", // Align items horizontally
-            // Add more multi-value styles as needed
+            width: "30%",
+            overflow: "hidden",
+            height: "20px",
+            display: "flex",
         }),
         valueContainer: (provided) => ({
             ...provided,
-            width: "400px", // Set fixed width for the value container
-            maxHeight: "37px", // Restrict max height of value container
-            overflowY: "auto", // Enable vertical scrolling for overflow
-            // Add more styles for the value container as needed
+            width: "400px",
+            maxHeight: "37px",
+            overflowY: "auto",
         }),
         input: (provided) => ({
             ...provided,
-            margin: 0, // Remove default margin for input
-            // Add more styles for input if necessary
+            margin: 0,
         }),
         multiValueLabel: (provided) => ({
             ...provided,
-            whiteSpace: "nowrap", // Prevent text from wrapping
-            overflow: "hidden", // Hide overflow content
-            textOverflow: "ellipsis", // Show ellipsis for overflow text
-            fontSize: "10px", // Set font size for multi-value labels
-            // Add more styles for multi-value labels as needed
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            fontSize: "10px",
         }),
         indicatorsContainer: (provided) => ({
             ...provided,
-            height: "auto", // Set height to auto
-            // Add more styles for indicators container if necessary
+            height: "auto",
         }),
-        // Add or adjust other style functions as needed
     };
 
     const handleReceiverSelectChange = (selectedOptions) => {

@@ -89,13 +89,13 @@ export default function FailedCons({
         },
     ];
     const senderStatesOptions = createNewLabelObjects(data, "SenderState");
-    const receiverStateOptions = createNewLabelObjects(data, "RECEIVERSTATE");
-    const senderZoneOptions = createNewLabelObjects(data, "SENDERZONE");
-    const receiverZoneOptions = createNewLabelObjects(data, "RECEIVERZONE");
+    const receiverStateOptions = createNewLabelObjects(data, "ReceiverState");
+    const senderZoneOptions = createNewLabelObjects(data, "SenderZone");
+    const receiverZoneOptions = createNewLabelObjects(data, "ReceiverZone");
 
     const states = createNewLabelObjects(data, "State");
     const departments = createNewLabelObjects(data, "Department");
-    const statusOptions = createNewLabelObjects(data, "STATUS");
+    const statusOptions = createNewLabelObjects(data, "Status");
     const referenceOptions = [
         {
             id: 0,
@@ -384,7 +384,7 @@ export default function FailedCons({
                     </span>
                 ) : (
                     <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        false
+                        False
                     </span>
                 );
             },
@@ -610,28 +610,27 @@ export default function FailedCons({
     };
     const [selected, setSelected] = useState([]);
 
+    if (!newColumns) {
+        return <AnimatedLoading />;
+    }
     return (
         <div className="mt-4">
             {/* <Sidebar /> */}
-            {!newColumns ? (
-                <AnimatedLoading />
-            ) : (
-                <div className=" w-full bg-smooth ">
-                    <TableStructure
-                        id={"ConsignmentID"}
-                        handleDownloadExcel={handleDownloadExcel}
-                        title={"Failed Consignments"}
-                        gridRef={gridRef}
-                        setSelected={setSelected}
-                        selected={selected}
-                        groupsElements={groups}
-                        setFilterValueElements={setFilterValue}
-                        tableDataElements={filteredData}
-                        filterValueElements={filterValue}
-                        columnsElements={newColumns}
-                    />
-                </div>
-            )}
+            <div className=" w-full bg-smooth ">
+                <TableStructure
+                    id={"ConsignmentID"}
+                    handleDownloadExcel={handleDownloadExcel}
+                    title={"Failed Consignments"}
+                    gridRef={gridRef}
+                    setSelected={setSelected}
+                    selected={selected}
+                    groupsElements={groups}
+                    setFilterValueElements={setFilterValue}
+                    tableDataElements={filteredData}
+                    filterValueElements={filterValue}
+                    columnsElements={newColumns}
+                />
+            </div>
 
             <SetFailedReasonModal
                 reason={reason}
