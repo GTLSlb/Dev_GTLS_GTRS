@@ -118,107 +118,121 @@ export default function ConsPerf({
 
      
 
-    function handleDownloadExcel() {
-        // Get the selected columns or use all columns if none are selected
-        let selectedColumns = headers; // Use all columns
+   function handleDownloadExcel() {
+    // Get the selected columns or use all columns if none are selected
+    let selectedColumns = headers; // Use all columns
 
-        // Extract the data for the selected columns
-        const data = filteredData.map((person) =>
-            selectedColumns.reduce((acc, column) => {
-                const columnKey = column.replace(/\s+/g, "");
-                if (columnKey) {
-                    if (column.replace(/\s+/g, "") === "ReceiverReference") {
-                        acc["ReceiverReference"] = person["ReceiverReference"];
-                    } else if (column.replace(/\s+/g, "") === "AccountName") {
-                        acc[columnKey] = person["AccountNumber"];
-                    } else if (column.replace(/\s+/g, "") === "KPIDatetime") {
-                        acc[columnKey] = person["KpiDatetime"]
-                            ? new Date(person["KpiDatetime"])
-                            : "";
-                    } else if (column.replace(/\s+/g, "") === "PODDatetime") {
-                        acc[columnKey] = person["PodDateTime"]
-                            ? new Date(person["PodDateTime"])
-                            : "";
-                    } else if (
-                        column.replace(/\s+/g, "") === "DeliveryRequiredDate"
-                    ) {
-                        acc[columnKey] = person["DeliveryRequiredDateTime"]
-                            ? new Date(person["DeliveryRequiredDateTime"])
-                            : "";
-                    } else if (column.replace(/\s+/g, "") === "DespatchDate") {
-                        acc[columnKey] = person["DespatchDate"]
-                            ? new Date(person["DespatchDate"])
-                            : "";
-                    } else if (column.replace(/\s+/g, "") === "DeliveredDate") {
-                        acc[columnKey] = person["DeliveredDate"]
-                            ? new Date(person["DeliveredDate"])
-                            : "";
-                    } else {
-                        acc[column.replace(/\s+/g, "")] =
-                            person[column.replace(/\s+/g, "")];
-                    }
+    // Helper: convert JS Date to timezone-neutral Excel serial
+    const dateToExcelSerial = (date) => {
+        if (!(date instanceof Date) || isNaN(date)) return "";
+        return (date.getTime() - date.getTimezoneOffset() * 60000) / 86400000 + 25569;
+    };
+
+    // Extract the data for the selected columns
+    const data = filteredData.map((person) =>
+        selectedColumns.reduce((acc, column) => {
+            const columnKey = column.replace(/\s+/g, "");
+            if (!columnKey) return acc;
+
+            switch (columnKey) {
+                case "ReceiverReference":
+                    acc[columnKey] = person["ReceiverReference"];
+                    break;
+                case "AccountName":
+                    acc[columnKey] = person["AccountNumber"];
+                    break;
+                case "KPIDatetime":
+                    acc[columnKey] = person["KpiDatetime"]
+                        ? new Date(person["KpiDatetime"])
+                        : "";
+                    break;
+                case "PODDatetime":
+                    acc[columnKey] = person["PodDateTime"]
+                        ? new Date(person["PodDateTime"])
+                        : "";
+                    break;
+                case "DeliveryRequiredDate":
+                    acc[columnKey] = person["DeliveryRequiredDateTime"]
+                        ? new Date(person["DeliveryRequiredDateTime"])
+                        : "";
+                    break;
+                case "DespatchDate":
+                    acc[columnKey] = person["DespatchDate"]
+                        ? new Date(person["DespatchDate"])
+                        : "";
+                    break;
+                case "DeliveredDate":
+                    acc[columnKey] = person["DeliveredDate"]
+                        ? new Date(person["DeliveredDate"])
+                        : "";
+                    break;
+                default:
+                    acc[columnKey] = person[columnKey];
+            }
+
+            return acc;
+        }, {})
+    );
+
+    // Create workbook and worksheet
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Sheet1");
+
+    // Header row
+    const headerRow = worksheet.addRow(selectedColumns);
+    headerRow.font = { bold: true };
+    headerRow.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFE2B540" }, // Yellow
+    };
+    headerRow.alignment = { horizontal: "center" };
+
+    // Add data rows
+    data.forEach((rowData) => {
+        const row = worksheet.addRow(Object.values(rowData));
+
+        // Format date columns and convert to timezone-neutral Excel serial
+        selectedColumns.forEach((column, colIndex) => {
+            const columnKey = column.replace(/\s+/g, "");
+            const dateColumns = [
+                "KPIDatetime",
+                "PODDatetime",
+                "DeliveryRequiredDate",
+                "DespatchDate",
+                "DeliveredDate",
+            ];
+
+            if (dateColumns.includes(columnKey)) {
+                const cell = row.getCell(colIndex + 1);
+                if (cell.value instanceof Date) {
+                    // ✅ Convert to timezone-neutral Excel serial
+                    cell.value =
+                        (cell.value.getTime() - cell.value.getTimezoneOffset() * 60000) /
+                            86400000 +
+                        25569;
+                    cell.numFmt = "dd/mm/yyyy hh:mm:ss"; // format in Excel
                 }
-                return acc;
-            }, {})
-        );
-
-        // Create a new workbook
-        const workbook = new ExcelJS.Workbook();
-
-        // Add a worksheet to the workbook
-        const worksheet = workbook.addWorksheet("Sheet1");
-
-        // Apply custom styles to the header row
-        const headerRow = worksheet.addRow(selectedColumns);
-        headerRow.font = { bold: true };
-        headerRow.fill = {
-            type: "pattern",
-            pattern: "solid",
-            fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
-        };
-        headerRow.alignment = { horizontal: "center" };
-
-        // Add the data to the worksheet and format date columns
-        data.forEach((rowData, rowIndex) => {
-            const row = worksheet.addRow(Object.values(rowData));
-
-            // Format date columns
-            selectedColumns.forEach((column, colIndex) => {
-                const columnKey = column.replace(/\s+/g, "");
-                if (
-                    [
-                        "KPIDatetime",
-                        "PODDatetime",
-                        "DeliveryRequiredDate",
-                        "DespatchDate",
-                    ].includes(columnKey)
-                ) {
-                    const cell = row.getCell(colIndex + 1);
-                    if (cell.value instanceof Date) {
-                        cell.numFmt = "dd/mm/yyyy hh:mm:ss"; // or use 'mm/dd/yyyy hh:mm:ss' for US format
-                    }
-                }
-            });
+            }
         });
+    });
 
-        // Set column widths
-        const columnWidths = selectedColumns.map(() => 20); // Set width of each column
-        worksheet.columns = columnWidths.map((width, index) => ({
-            width,
-            key: selectedColumns[index],
-        }));
+    // Set column widths
+    const columnWidths = selectedColumns.map(() => 20);
+    worksheet.columns = columnWidths.map((width, index) => ({
+        width,
+        key: selectedColumns[index],
+    }));
 
-        // Generate the Excel file
-        workbook.xlsx.writeBuffer().then((buffer) => {
-            // Convert the buffer to a Blob
-            const blob = new Blob([buffer], {
-                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            });
-
-            // Save the file using FileSaver.js or alternative method
-            saveAs(blob, "Performance-Report.xlsx");
+    // Generate and save Excel file
+    workbook.xlsx.writeBuffer().then((buffer) => {
+        const blob = new Blob([buffer], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
-    }
+        saveAs(blob, "Performance-Report.xlsx");
+    });
+}
+
 
     return (
         <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth">
