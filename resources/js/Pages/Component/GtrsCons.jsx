@@ -74,7 +74,7 @@ export default function GtrsCons({
             id: false,
             label: "False",
         },
-    ];
+    ].sort();
 
     const senderStateOptions = createNewLabelObjects(consData, "SenderState");
     const senderZoneOptions = createNewLabelObjects(consData, "SenderZone");

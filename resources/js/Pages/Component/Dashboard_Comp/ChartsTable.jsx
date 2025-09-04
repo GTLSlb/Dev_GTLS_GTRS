@@ -45,7 +45,7 @@ function ChartsTable({
             id: false,
             label: "False",
         },
-    ];
+    ].sort();;
 
     const DebtorNamesOptions = createNewLabelObjects(chartsData, "DebtorName");
     const ConsStatusOptions = createNewLabelObjects(chartsData, "ConsStatus");
@@ -237,7 +237,7 @@ function ChartsTable({
                             </span>
                         ) : (
                             <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                                false
+                                False
                             </span>
                         )}
                     </div>

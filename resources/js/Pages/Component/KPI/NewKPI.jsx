@@ -250,7 +250,7 @@ function NewKPI({
             id: 2,
             label: "Fail",
         },
-    ];
+    ].sort();;
 
     const columns = [
         {
