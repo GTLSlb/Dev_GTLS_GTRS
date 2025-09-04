@@ -136,7 +136,11 @@ export default function NoDelivery({
             filterEditor: StringFilter,
 
             render: ({ value, data }) => {
-                return renderConsDetailsLink(userPermissions, value, data);
+                return renderConsDetailsLink(
+                    userPermissions,
+                    value,
+                    data.ConsignmentID
+                );
             },
         },
         {

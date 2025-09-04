@@ -6,7 +6,7 @@ import "../../css/scroll.css";
 import swal from "sweetalert";
 import { handleSessionExpiration } from "@/CommonFunctions";
 import Select from "react-select";
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer } from "react-toastify";
 import { AlertToast } from "@/permissions";
 import { CustomContext } from "@/CommonContext";
 
@@ -27,10 +27,10 @@ export default function SafetyModal({
     updateLocalData,
     safetyTypes,
     setIsSuccessfull,
-    fetchData
+    fetchData,
 }) {
     const { user, Token, url } = useContext(CustomContext);
-    
+
     // Enhanced date formatting with error handling
     const formatDate = useCallback((dateString) => {
         if (!dateString) return null;
@@ -39,7 +39,7 @@ export default function SafetyModal({
     }, []);
 
     const formattedDate = formatDate(modalOccuredAt);
-    
+
     // Enhanced ID handling
     const getReportId = useCallback(() => {
         if (modalRepId === null || typeof modalRepId === "object") {
@@ -54,31 +54,34 @@ export default function SafetyModal({
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
-    
+
     // Initial form values
-    const getInitialFormValues = useCallback(() => ({
-        ReportId: reportId,
-        SafetyType: modalSafetyType || "",
-        ConsNo: modalConsNo || "",
-        MainCause: modalMainCause || "",
-        State: modalState || "",
-        Explanation: modalExpl || "",
-        Resolution: modalResol || "",
-        Reference: modalRefer || "1",
-        DebtorId: modalDebtorId || "",
-        OccuredAt: formattedDate,
-    }), [
-        reportId,
-        modalSafetyType,
-        modalConsNo,
-        modalMainCause,
-        modalState,
-        modalExpl,
-        modalResol,
-        modalRefer,
-        modalDebtorId,
-        formattedDate
-    ]);
+    const getInitialFormValues = useCallback(
+        () => ({
+            ReportId: reportId,
+            SafetyType: modalSafetyType || "",
+            ConsNo: modalConsNo || "",
+            MainCause: modalMainCause || "",
+            State: modalState || "",
+            Explanation: modalExpl || "",
+            Resolution: modalResol || "",
+            Reference: modalRefer || "1",
+            DebtorId: modalDebtorId || "",
+            OccuredAt: formattedDate,
+        }),
+        [
+            reportId,
+            modalSafetyType,
+            modalConsNo,
+            modalMainCause,
+            modalState,
+            modalExpl,
+            modalResol,
+            modalRefer,
+            modalDebtorId,
+            formattedDate,
+        ]
+    );
 
     const [formValues, setFormValues] = useState(getInitialFormValues);
 
@@ -89,14 +92,20 @@ export default function SafetyModal({
 
     // Enhanced form validation
     const validateForm = useCallback(() => {
-        const requiredFields = ['SafetyType', 'State', 'Reference'];
-        const missingFields = requiredFields.filter(field => !formValues[field]);
-        
+        const requiredFields = ["SafetyType", "State", "Reference"];
+        const missingFields = requiredFields.filter(
+            (field) => !formValues[field]
+        );
+
         if (missingFields.length > 0) {
-            setError(`Please fill in the following required fields: ${missingFields.join(', ')}`);
+            setError(
+                `Please fill in the following required fields: ${missingFields.join(
+                    ", "
+                )}`
+            );
             return false;
         }
-        
+
         setError(null);
         return true;
     }, [formValues]);
@@ -111,123 +120,153 @@ export default function SafetyModal({
 
     // Enhanced change handler with better type detection
     const handleChange = useCallback((e) => {
-        if (e && typeof e === 'object' && 'target' in e) {
+        if (e && typeof e === "object" && "target" in e) {
             // Regular form input
             const { name, value } = e.target;
-            setFormValues(prev => ({ ...prev, [name]: value }));
-        } else if (e && 'id' in e) {
+            setFormValues((prev) => ({ ...prev, [name]: value }));
+        } else if (e && "id" in e) {
             // React-select dropdown
-            setFormValues(prev => ({ ...prev, DebtorId: e.id }));
+            setFormValues((prev) => ({ ...prev, DebtorId: e.id }));
+        } else if (e === null) {
+            // React-select cleared
+            setFormValues((prev) => ({ ...prev, DebtorId: "" }));
         }
     }, []);
 
-    // Enhanced submit handler with proper API call
-    const handleSubmit = useCallback(async (event) => {
-        event.preventDefault();
-        
-        if (!validateForm()) {
-            return;
-        }
+    // Enhanced submit handler with proper data refresh
+    const handleSubmit = useCallback(
+        async (event) => {
+            event.preventDefault();
 
-        try {
-            setIsLoading(true);
-            setError(null);
-
-            // Prepare form data with proper types
-            const submitData = {
-                ...formValues,
-                ReportId: reportId,
-                SafetyType: parseInt(formValues.SafetyType) || null,
-                Reference: parseInt(formValues.Reference) || 1,
-                DebtorId: formValues.DebtorId ? parseInt(formValues.DebtorId) : null,
-            };
-
-            // API call with enhanced error handling
-            const response = await axios.post(
-                `${url}Add/SafetyReport`,
-                submitData,
-                {
-                    headers: {
-                        UserId: user.UserId,
-                        Authorization: `Bearer ${Token}`,
-                        'Content-Type': 'application/json'
-                    },
-                }
-            );
-
-            // Handle successful response
-            if (response.status === 200 || response.status === 201) {
-                // Update local data with response data if available
-                const updatedData = response.data || submitData;
-                updateLocalData(reportId, updatedData);
-                
-                // Refresh data
-                if (fetchData) {
-                    await fetchData();
-                }
-
-                setSuccess(true);
-                setIsSuccessfull(true);
-                AlertToast("Safety report saved successfully", 1);
-
-                // Auto-close modal after success
-                setTimeout(() => {
-                    handlePopUpClose();
-                }, 1500);
+            if (!validateForm()) {
+                return;
             }
-        } catch (error) {
-            console.error('Error saving safety report:', error);
-            
-            // Enhanced error handling
-            if (error.response?.status === 401) {
-                await swal({
-                    title: "Session Expired!",
-                    text: "Please login again",
-                    icon: "info",
-                    confirmButtonText: "OK",
-                });
-                await handleSessionExpiration();
-            } else if (error.response?.data?.message) {
-                setError(error.response.data.message);
-                AlertToast(error.response.data.message, 2);
-            } else {
-                const errorMessage = "Error occurred while saving the data. Please try again.";
-                setError(errorMessage);
-                AlertToast(errorMessage, 2);
+
+            try {
+                setIsLoading(true);
+                setError(null);
+
+                // Prepare form data with proper types
+                const submitData = {
+                    ...formValues,
+                    ReportId: reportId,
+                    SafetyType: parseInt(formValues.SafetyType) || null,
+                    Reference: parseInt(formValues.Reference) || 1,
+                    DebtorId: formValues.DebtorId
+                        ? parseInt(formValues.DebtorId)
+                        : null,
+                };
+
+                console.log("Submitting data:", submitData);
+
+                // API call with enhanced error handling
+                const response = await axios.post(
+                    `${url}Add/SafetyReport`,
+                    submitData,
+                    {
+                        headers: {
+                            UserId: user.UserId,
+                            Authorization: `Bearer ${Token}`,
+                            'Content-Type': 'application/json'
+                        },
+                    }
+                );
+
+                // Handle successful response
+                if (response.status === 200 || response.status === 201) {
+                    console.log("API Response:", response.data);
+                    
+                    // Update local data if function is provided
+                    if (updateLocalData && typeof updateLocalData === 'function') {
+                        const updatedData = response.data || submitData;
+                        updateLocalData(reportId, updatedData);
+                    }
+
+                    setSuccess(true);
+                    setIsSuccessfull(true);
+                    AlertToast("Safety report saved successfully", 1);
+
+                    // Force refresh the data - this is the key fix
+                    if (fetchData && typeof fetchData === 'function') {
+                        console.log("Forcing data refresh...");
+                        try {
+                            // Wait for the fetchData to complete
+                            await fetchData();
+                            console.log("Data refresh completed");
+                        } catch (fetchError) {
+                            console.error("Error during data refresh:", fetchError);
+                        }
+                    } else {
+                        console.warn("fetchData function not provided or not a function");
+                    }
+
+                    // Close modal after a short delay to allow data refresh
+                    setTimeout(() => {
+                        handlePopUpClose();
+                    }, 1000);
+                } else {
+                    throw new Error(`Unexpected response status: ${response.status}`);
+                }
+            } catch (error) {
+                console.error("Error saving safety report:", error);
+
+                // Enhanced error handling
+                if (error.response?.status === 401) {
+                    await swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    });
+                    await handleSessionExpiration();
+                } else if (error.response?.data?.message) {
+                    const errorMessage = error.response.data.message;
+                    setError(errorMessage);
+                    AlertToast(errorMessage, 2);
+                } else {
+                    const errorMessage = error.message || "Error occurred while saving the data. Please try again.";
+                    setError(errorMessage);
+                    AlertToast(errorMessage, 2);
+                }
+
+                setIsSuccessfull(false);
+            } finally {
+                setIsLoading(false);
             }
-            
-            setIsSuccessfull(false);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [
-        formValues,
-        reportId,
-        validateForm,
-        url,
-        user.UserId,
-        Token,
-        updateLocalData,
-        fetchData,
-        setIsSuccessfull,
-        handlePopUpClose
-    ]);
+        },
+        [
+            formValues,
+            reportId,
+            validateForm,
+            url,
+            user.UserId,
+            Token,
+            updateLocalData,
+            fetchData,
+            setIsSuccessfull,
+            handlePopUpClose,
+        ]
+    );
 
     // Enhanced custom styles for react-select
     const customSelectStyles = {
         control: (provided, state) => ({
             ...provided,
             minHeight: "42px",
-            borderColor: state.isFocused ? '#3B82F6' : '#D1D5DB',
-            boxShadow: state.isFocused ? '0 0 0 1px #3B82F6' : 'none',
-            '&:hover': {
-                borderColor: '#3B82F6'
-            }
+            borderColor: state.isFocused ? "#3B82F6" : "#D1D5DB",
+            boxShadow: state.isFocused ? "0 0 0 1px #3B82F6" : "none",
+            "&:hover": {
+                borderColor: "#3B82F6",
+            },
         }),
         option: (provided, state) => ({
             ...provided,
             color: "black",
-            backgroundColor: state.isSelected ? '#3B82F6' : state.isFocused ? '#EBF4FF' : 'white',
+            backgroundColor: state.isSelected
+                ? "#3B82F6"
+                : state.isFocused
+                ? "#EBF4FF"
+                : "white",
         }),
         valueContainer: (provided) => ({
             ...provided,
@@ -236,17 +275,29 @@ export default function SafetyModal({
         }),
         placeholder: (provided) => ({
             ...provided,
-            color: '#9CA3AF'
-        })
+            color: "#9CA3AF",
+        }),
     };
 
     // Get current account for react-select value
     const getCurrentAccount = useCallback(() => {
         if (!formValues.DebtorId || !customerAccounts) return null;
-        return customerAccounts.find(account => 
-            account.id.toString() === formValues.DebtorId.toString()
-        ) || null;
+        return (
+            customerAccounts.find(
+                (account) =>
+                    account.id.toString() === formValues.DebtorId.toString()
+            ) || null
+        );
     }, [formValues.DebtorId, customerAccounts]);
+
+    // Reset form when modal opens/closes
+    useEffect(() => {
+        if (isOpen) {
+            setError(null);
+            setSuccess(false);
+            setFormValues(getInitialFormValues());
+        }
+    }, [isOpen, getInitialFormValues]);
 
     return (
         <ReactModal
@@ -286,7 +337,10 @@ export default function SafetyModal({
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="flex-1 overflow-hidden flex flex-col">
+                <form
+                    onSubmit={handleSubmit}
+                    className="flex-1 overflow-hidden flex flex-col"
+                >
                     <div className="overflow-y-auto containerscroll pr-2 flex-1">
                         {/* Success/Error Messages */}
                         {success && (
@@ -302,7 +356,10 @@ export default function SafetyModal({
 
                         {/* Safety Type */}
                         <div className="mb-4">
-                            <label htmlFor="SafetyType" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label
+                                htmlFor="SafetyType"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
                                 Type: <span className="text-red-500">*</span>
                             </label>
                             <select
@@ -313,18 +370,28 @@ export default function SafetyModal({
                                 onChange={handleChange}
                                 required
                             >
-                                <option value="">--Please choose an option--</option>
-                                {safetyTypes?.filter(type => type.SafetyStatus).map((type) => (
-                                    <option key={type.SafetyTypeId} value={type.SafetyTypeId}>
-                                        {type.SafetyTypeName}
-                                    </option>
-                                ))}
+                                <option value="">
+                                    --Please choose an option--
+                                </option>
+                                {safetyTypes
+                                    ?.filter((type) => type.SafetyStatus)
+                                    .map((type) => (
+                                        <option
+                                            key={type.SafetyTypeId}
+                                            value={type.SafetyTypeId}
+                                        >
+                                            {type.SafetyTypeName}
+                                        </option>
+                                    ))}
                             </select>
                         </div>
 
                         {/* Consignment No */}
                         <div className="mb-4">
-                            <label htmlFor="ConsNo" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label
+                                htmlFor="ConsNo"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
                                 Consignment No:
                             </label>
                             <input
@@ -348,8 +415,12 @@ export default function SafetyModal({
                                 value={getCurrentAccount()}
                                 options={customerAccounts}
                                 onChange={handleChange}
-                                getOptionValue={(option) => option.id.toString()}
-                                getOptionLabel={(option) => option.label || option.name}
+                                getOptionValue={(option) =>
+                                    option.id.toString()
+                                }
+                                getOptionLabel={(option) =>
+                                    option.label || option.name
+                                }
                                 placeholder="--Please choose an option--"
                                 maxMenuHeight={180}
                                 isClearable
@@ -360,7 +431,10 @@ export default function SafetyModal({
 
                         {/* Main Cause */}
                         <div className="mb-4">
-                            <label htmlFor="MainCause" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label
+                                htmlFor="MainCause"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
                                 Main Cause:
                             </label>
                             <textarea
@@ -376,7 +450,10 @@ export default function SafetyModal({
 
                         {/* State */}
                         <div className="mb-4">
-                            <label htmlFor="State" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label
+                                htmlFor="State"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
                                 State: <span className="text-red-500">*</span>
                             </label>
                             <select
@@ -387,19 +464,26 @@ export default function SafetyModal({
                                 onChange={handleChange}
                                 required
                             >
-                                <option value="">--Please choose an option--</option>
+                                <option value="">
+                                    --Please choose an option--
+                                </option>
                                 <option value="NSW">NSW</option>
                                 <option value="MLB">MLB</option>
                                 <option value="QLD">QLD</option>
                                 <option value="SA">SA</option>
                                 <option value="WA">WA</option>
-                                <option value="NA / Customer Issue">NA / Customer Issue</option>
+                                <option value="NA / Customer Issue">
+                                    NA / Customer Issue
+                                </option>
                             </select>
                         </div>
 
                         {/* Explanation */}
                         <div className="mb-4">
-                            <label htmlFor="Explanation" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label
+                                htmlFor="Explanation"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
                                 Explanation:
                             </label>
                             <textarea
@@ -415,7 +499,10 @@ export default function SafetyModal({
 
                         {/* Resolution */}
                         <div className="mb-4">
-                            <label htmlFor="Resolution" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label
+                                htmlFor="Resolution"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
                                 Resolution:
                             </label>
                             <textarea
@@ -431,8 +518,12 @@ export default function SafetyModal({
 
                         {/* Reference */}
                         <div className="mb-4">
-                            <label htmlFor="Reference" className="block text-sm font-medium text-gray-700 mb-2">
-                                Reference: <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="Reference"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
+                                Reference:{" "}
+                                <span className="text-red-500">*</span>
                             </label>
                             <select
                                 id="Reference"
@@ -449,7 +540,10 @@ export default function SafetyModal({
 
                         {/* Occurred At */}
                         <div className="mb-6">
-                            <label htmlFor="OccuredAt" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label
+                                htmlFor="OccuredAt"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
                                 Occurred At:
                             </label>
                             <input
@@ -503,5 +597,5 @@ SafetyModal.propTypes = {
     updateLocalData: PropTypes.func.isRequired,
     safetyTypes: PropTypes.array,
     setIsSuccessfull: PropTypes.func.isRequired,
-    fetchData: PropTypes.func
+    fetchData: PropTypes.func,
 };

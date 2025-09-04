@@ -110,6 +110,7 @@ export default function GtrsMain({
     const latestDate = getLatestDespatchDate(consData);
     const [dataFromChild, setDataFromChild] = useState(null);
 
+
     const [sharedStartDate, setSharedStartDate] = useState(
         getOldestDespatchDate(consData)
     );

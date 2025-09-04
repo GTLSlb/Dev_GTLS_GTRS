@@ -6,10 +6,7 @@ import Cookies from "js-cookie";
 import "react-toastify/dist/ReactToastify.css";
 import { PublicClientApplication } from "@azure/msal-browser";
 import swal from "sweetalert";
-import {
-    canViewDetails,
-    canViewIncidentDetails,
-} from "./permissions";
+import { canViewDetails, canViewIncidentDetails } from "./permissions";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { CustomContext } from "./CommonContext";

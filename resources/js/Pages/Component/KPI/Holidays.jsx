@@ -1,7 +1,7 @@
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
-import { useContext, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import React from "react";
 import PropTypes from "prop-types";
 import TableStructure from "@/Components/TableStructure";
@@ -52,7 +52,6 @@ export default function Holidays({
         }
     }, []);
 
-    const gridRef = useRef(null);
     async function fetchData() {
         const data = await getApiRequest(`${url}Holidays`, {
             UserId: user?.UserId,
@@ -67,11 +66,18 @@ export default function Holidays({
         }
     }
 
+    const gridRef = useRef(null);
     const [selected, setSelected] = useState([]);
-    const holidayOptions = createNewLabelObjects(holidays, "HolidayName");
-    const stateOptions = createNewLabelObjects(holidays, "HolidayState");
 
-    const statusOptions = [
+    const holidayOptions = useMemo(() => {
+        return holidays ? createNewLabelObjects(holidays, "HolidayName") : [];
+    }, [holidays]);
+
+    const stateOptions = useMemo(() => {
+        return holidays ? createNewLabelObjects(holidays, "HolidayState") : [];
+    }, [holidays]);
+
+    const statusOptions = useMemo(() => [
         {
             id: 1,
             label: "True",
@@ -80,9 +86,8 @@ export default function Holidays({
             id: 2,
             label: "False",
         },
-    ];
+    ], []);
 
-    const [columns, setColumns] = useState();
     const scrollIntoView = () => {
         const button = document.getElementById("addSection");
         if (button) {
@@ -94,210 +99,131 @@ export default function Holidays({
         }
     };
 
-    useEffect(() => {
-        if (!columns) {
-            if (holidayOptions && stateOptions) {
-                if (userPermissions && canEditHolidays(userPermissions)) {
-                    setColumns([
-                        {
-                            name: "HolidayName",
-                            minWidth: 170,
-                            defaultFlex: 1,
-                            header: "Holiday Name",
-                            type: "string",
-                            headerAlign: "center",
-                            filterEditor: SelectFilter,
-                            filterEditorProps: {
-                                multiple: true,
-                                wrapMultiple: false,
-                                dataSource: holidayOptions,
-                            },
-                        },
-                        {
-                            name: "HolidayDate",
-                            defaultFlex: 1,
-                            minWidth: 230,
-                            header: "Holiday Date",
-                            headerAlign: "center",
-                            textAlign: "center",
-                            dateFormat: "DD-MM-YYYY",
-                            filterEditor: DateFilter,
-                            render: ({ value }) => {
-                                return moment(value).format("DD-MM-YYYY") ==
-                                    "Invalid date"
-                                    ? ""
-                                    : moment(value).format("DD-MM-YYYY");
-                            },
-                        },
-                        {
-                            name: "HolidayState",
-                            defaultFlex: 1,
-                            minWidth: 170,
-                            header: "Holiday State",
-                            type: "string",
-                            headerAlign: "center",
-                            textAlign: "center",
-                            filterEditor: SelectFilter,
-                            filterEditorProps: {
-                                multiple: true,
-                                wrapMultiple: false,
-                                dataSource: stateOptions,
-                            },
-                        },
-                        {
-                            name: "HolidayDesc",
-                            header: "Description",
-                            minWidth: 170,
-                            defaultFlex: 1,
-                            headerAlign: "center",
-                            textAlign: "start",
-                            filterEditor: StringFilter,
-                        },
-                        {
-                            name: "HolidayStatus",
-                            defaultFlex: 1,
-                            minWidth: 170,
-                            header: "Status",
-                            type: "string",
-                            headerAlign: "center",
-                            textAlign: "center",
-                            filterEditor: SelectFilter,
-                            filterEditorProps: {
-                                multiple: true,
-                                wrapMultiple: false,
-                                dataSource: statusOptions,
-                            },
-                            render: ({ value }) => {
-                                return value == 1 ? (
-                                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                                        True
-                                    </span>
-                                ) : (
-                                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                                        False
-                                    </span>
-                                );
-                            },
-                        },
-                        {
-                            name: "edit",
-                            header: "Edit",
-                            headerAlign: "center",
-                            textAlign: "center",
-                            defaultWidth: 100,
-                            render: ({ data }) => {
-                                return (
-                                    <div>
-                                        {canEditHolidays(userPermissions) ? (
-                                            <button
-                                                className={
-                                                    "rounded text-blue-500 justify-center items-center  "
-                                                }
-                                                onClick={() => {
-                                                    handleEditClick(data);
-                                                    scrollIntoView();
-                                                }}
-                                            >
-                                                <span className="flex gap-x-1">
-                                                    <PencilIcon className="h-4" />
-                                                    Edit
-                                                </span>
-                                            </button>
-                                        ) : null}
-                                    </div>
-                                );
-                            },
-                        },
-                    ]);
-                } else {
-                    setColumns([
-                        {
-                            name: "HolidayName",
-                            minWidth: 170,
-                            defaultFlex: 1,
-                            header: "Holiday Name",
-                            type: "string",
-                            headerAlign: "center",
-                            filterEditor: SelectFilter,
-                            filterEditorProps: {
-                                multiple: true,
-                                wrapMultiple: false,
-                                dataSource: holidayOptions,
-                            },
-                        },
-                        {
-                            name: "HolidayDate",
-                            defaultFlex: 1,
-                            minWidth: 230,
-                            header: "Holiday Date",
-                            headerAlign: "center",
-                            textAlign: "center",
-                            dateFormat: "DD-MM-YYYY",
-                            filterEditor: DateFilter,
-                            render: ({ value }) => {
-                                return moment(value).format("DD-MM-YYYY") ==
-                                    "Invalid date"
-                                    ? ""
-                                    : moment(value).format("DD-MM-YYYY");
-                            },
-                        },
-                        {
-                            name: "HolidayState",
-                            defaultFlex: 1,
-                            minWidth: 170,
-                            header: "Holiday State",
-                            type: "string",
-                            headerAlign: "center",
-                            textAlign: "center",
-                            filterEditor: SelectFilter,
-                            filterEditorProps: {
-                                multiple: true,
-                                wrapMultiple: false,
-                                dataSource: stateOptions,
-                            },
-                        },
-                        {
-                            name: "HolidayDesc",
-                            header: "Description",
-                            minWidth: 170,
-                            defaultFlex: 1,
-                            headerAlign: "center",
-                            textAlign: "start",
-                            filterEditor: StringFilter,
-                        },
-                        {
-                            name: "HolidayStatus",
-                            defaultFlex: 1,
-                            minWidth: 170,
-                            header: "Status",
-                            type: "string",
-                            headerAlign: "center",
-                            textAlign: "center",
-                            filterEditor: SelectFilter,
-                            filterEditorProps: {
-                                multiple: true,
-                                wrapMultiple: false,
-                                dataSource: statusOptions,
-                            },
-                            render: ({ value }) => {
-                                return value == 1 ? (
-                                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                                        True
-                                    </span>
-                                ) : (
-                                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                                        False
-                                    </span>
-                                );
-                            },
-                        },
-                    ]);
-                }
-            }
+    // Memoize columns to prevent unnecessary re-renders and ensure they're only created when data is available
+    const columns = useMemo(() => {
+        // Return null if we don't have the required data yet
+        if (!holidays || !holidayOptions.length || !stateOptions.length) {
+            return null;
         }
-    }, [userPermissions, holidayOptions, stateOptions]);
+
+        const baseColumns = [
+            {
+                name: "HolidayName",
+                minWidth: 170,
+                defaultFlex: 1,
+                header: "Holiday Name",
+                type: "string",
+                headerAlign: "center",
+                filterEditor: SelectFilter,
+                filterEditorProps: {
+                    multiple: true,
+                    wrapMultiple: false,
+                    dataSource: holidayOptions,
+                },
+            },
+            {
+                name: "HolidayDate",
+                defaultFlex: 1,
+                minWidth: 230,
+                header: "Holiday Date",
+                headerAlign: "center",
+                textAlign: "center",
+                dateFormat: "DD-MM-YYYY",
+                filterEditor: DateFilter,
+                render: ({ value }) => {
+                    return moment(value).format("DD-MM-YYYY") ===
+                        "Invalid date"
+                        ? ""
+                        : moment(value).format("DD-MM-YYYY");
+                },
+            },
+            {
+                name: "HolidayState",
+                defaultFlex: 1,
+                minWidth: 170,
+                header: "Holiday State",
+                type: "string",
+                headerAlign: "center",
+                textAlign: "center",
+                filterEditor: SelectFilter,
+                filterEditorProps: {
+                    multiple: true,
+                    wrapMultiple: false,
+                    dataSource: stateOptions,
+                },
+            },
+            {
+                name: "HolidayDesc",
+                header: "Description",
+                minWidth: 170,
+                defaultFlex: 1,
+                headerAlign: "center",
+                textAlign: "start",
+                filterEditor: StringFilter,
+            },
+            {
+                name: "HolidayStatus",
+                defaultFlex: 1,
+                minWidth: 170,
+                header: "Status",
+                type: "string",
+                headerAlign: "center",
+                textAlign: "center",
+                filterEditor: SelectFilter,
+                filterEditorProps: {
+                    multiple: true,
+                    wrapMultiple: false,
+                    dataSource: statusOptions,
+                },
+                render: ({ value }) => {
+                    return value == 1 ? (
+                        <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                            True
+                        </span>
+                    ) : (
+                        <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                            False
+                        </span>
+                    );
+                },
+            },
+        ];
+
+        // Add edit column only if user has edit permissions
+        if (userPermissions && canEditHolidays(userPermissions)) {
+            baseColumns.push({
+                name: "edit",
+                header: "Edit",
+                headerAlign: "center",
+                textAlign: "center",
+                defaultWidth: 100,
+                render: ({ data }) => {
+                    return (
+                        <div>
+                            <button
+                                className="rounded text-blue-500 justify-center items-center"
+                                onClick={() => {
+                                    handleEditClick(data);
+                                    scrollIntoView();
+                                }}
+                            >
+                                <span className="flex gap-x-1">
+                                    <PencilIcon className="h-4" />
+                                    Edit
+                                </span>
+                            </button>
+                        </div>
+                    );
+                },
+            });
+        }
+
+        return baseColumns;
+    }, [holidays, holidayOptions, stateOptions, statusOptions, userPermissions]);
 
     const handleDownloadExcel = () => {
+        if (!columns) return; // Prevent error if columns aren't ready
+        
         const jsonData = handleFilterTable(gridRef, holidays);
 
         const columnMapping = columns.reduce((acc, column) => {
@@ -316,6 +242,7 @@ export default function Holidays({
             customCellHandlers
         );
     };
+
     const additionalButtons = (
         <div>
             {canAddHolidays(userPermissions) ? (
@@ -331,12 +258,14 @@ export default function Holidays({
             ) : null}
         </div>
     );
-    if (isFetching) {
+
+    // Show loading if fetching or if columns aren't ready yet
+    if (isFetching || !columns) {
         return <AnimatedLoading />;
     }
+
     return (
         <div>
-            {/* Added this for toast container to show */}
             <ToastContainer />
             <div className="pt-4 px-4 sm:pt-6 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
                 {showAdd ? (
