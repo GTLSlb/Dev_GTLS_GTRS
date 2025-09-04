@@ -352,8 +352,12 @@ export function navigateToFirstAllowedPage({
         navigate(window.location.pathname);
     } else {
         // Navigate to the first allowed page
+        if (items.length === 0) {
+            navigate("/no-access");
+            return;
+        }
         items[0].current = true;
-        navigate(items[0].url);
+        navigate(items[0]?.url);
         setSidebarElements(items);
     }
 }

@@ -202,19 +202,27 @@ export default function ExcelDeliveryReport({
 
             let maxHeight = 15;
             row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-                const cellValue = cell.value?.toString() || "";
+                const cellValue = cell.value;
 
                 cell.alignment = { wrapText: true, vertical: "top" };
 
-                if (dateColumnIndexes.includes(colNumber - 1)) {
-                    const parsedDate = new Date(cellValue);
-                    if (!isNaN(parsedDate)) {
-                        cell.value = parsedDate;
-                        cell.numFmt = "dd-mm-yyy hh:mm";
+                if (dateColumnIndexes.includes(colNumber - 1) && cellValue) {
+                    const date = new Date(cellValue);
+                    if (!isNaN(date)) {
+                        const excelSerial =
+                            (date.getTime() -
+                                date.getTimezoneOffset() * 60000) /
+                                86400000 +
+                            25569;
+                        cell.value = excelSerial; // Excel serial
+                        cell.numFmt = "dd-mm-yyyy hh:mm"; // proper Excel format
                     }
                 }
 
-                maxHeight = Math.max(maxHeight, calculateRowHeight(cellValue));
+                maxHeight = Math.max(
+                    maxHeight,
+                    calculateRowHeight(cellValue?.toString() || "")
+                );
             });
 
             row.height = maxHeight;
@@ -581,9 +589,7 @@ export default function ExcelDeliveryReport({
                 console.error("❌ Handsontable instance is undefined!");
                 return updatedChanges;
             }
-            console.log(changes);
             changes.forEach(([visualRow, prop, oldValue, newValue]) => {
-                console.log([visualRow, prop, oldValue, newValue]);
                 if (newValue !== oldValue) {
                     const physicalRow = hotInstance.toPhysicalRow(visualRow);
                     const rowData = hotInstance.getSourceDataAtRow(physicalRow);

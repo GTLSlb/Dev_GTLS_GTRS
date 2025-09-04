@@ -59,7 +59,6 @@ export default function Utilization() {
     const hotTableRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
     const [tableData, setTableData] = useState(utilizationData);
-    console.log(tableData);
     useEffect(() => {
         setTableData(utilizationData);
     }, [utilizationData]);
@@ -349,7 +348,6 @@ export default function Utilization() {
                                     : `${hours}:${minutes}`;
                             }
                         );
-                        console.log(value, formattedTime);
                         td.innerText = formattedTime;
                     } else {
                         td.classList.add("htInvalid");

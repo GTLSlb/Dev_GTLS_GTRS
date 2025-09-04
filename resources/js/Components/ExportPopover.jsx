@@ -53,8 +53,7 @@ const ExportPopover = ({ columns, handleDownloadExcel, filteredData }) => {
                     <div className="max-w-md flex-auto overflow-hidden rounded-lg bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
                         <div className="p-2">
                             <div className=" flex flex-col max-h-[500px] containerscroll overflow-y-scroll p-4 ">
-                                {columns
-                                    .filter(
+                                {columns?.filter(
                                         (column) =>
                                             column.name?.toLowerCase() !==
                                                 "actions" &&
