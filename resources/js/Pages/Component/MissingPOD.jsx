@@ -114,7 +114,7 @@ export default function MissingPOD({
             id: false,
             label: "False",
         },
-    ];
+    ].sort((a, b) => a.label.localeCompare(b.label));
     const columns = [
         {
             name: "ConsignmentNo",

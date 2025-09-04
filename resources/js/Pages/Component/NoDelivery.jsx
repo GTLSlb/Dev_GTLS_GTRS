@@ -112,7 +112,7 @@ export default function NoDelivery({
             id: false,
             label: "False",
         },
-    ];
+    ].sort((a, b) => a.label.localeCompare(b.label));
     const groups = [
         {
             name: "senderInfo",
@@ -355,25 +355,25 @@ export default function NoDelivery({
         },
     ];
 
-    if(isFetching){
-        return <AnimatedLoading />
+    if (isFetching) {
+        return <AnimatedLoading />;
     }
     return (
-       <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                    <TableStructure
-                        id={"ConsignmentID"}
-                        gridRef={gridRef}
-                        groupsElements={groups}
-                        handleDownloadExcel={handleDownloadExcel}
-                        title={"No Delivery Information"}
-                        setFilterValueElements={setFilterValue}
-                        setSelected={setSelected}
-                        selected={selected}
-                        tableDataElements={NoDelData}
-                        filterValueElements={filterValue}
-                        columnsElements={columns}
-                    />
-                </div>
+        <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
+            <TableStructure
+                id={"ConsignmentID"}
+                gridRef={gridRef}
+                groupsElements={groups}
+                handleDownloadExcel={handleDownloadExcel}
+                title={"No Delivery Information"}
+                setFilterValueElements={setFilterValue}
+                setSelected={setSelected}
+                selected={selected}
+                tableDataElements={NoDelData}
+                filterValueElements={filterValue}
+                columnsElements={columns}
+            />
+        </div>
     );
 }
 

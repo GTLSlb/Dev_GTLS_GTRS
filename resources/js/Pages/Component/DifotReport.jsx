@@ -521,7 +521,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                 fieldValue == undefined ? null : newData.push(newObject);
             }
         });
-        return newData;
+        return newData.sort((a, b) => a.label.localeCompare(b.label));
     };
 
     const senderStates = createNewLabelObjects(difotData, "SenderState");

@@ -20,7 +20,6 @@ export default function DriverLogin({
     filterValue,
     setFilterValue,
 }) {
-    console.log(DriverData)
     const { user, url } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     window.moment = moment;
@@ -68,7 +67,8 @@ export default function DriverLogin({
             UsedForVLink: (value, item) => item["UsedForVLink"] || value,
             UsedForSmartSCANFreight: (value, item) =>
                 item["UsedForSmartSCANFreight"] || value,
-            UsedForSmartSCAN: (value, item) => item["UsedForSmartSCAN"]=== true ? "True": "False",
+            UsedForSmartSCAN: (value, item) =>
+                item["UsedForSmartSCAN"] === true ? "True" : "False",
         };
 
         // Call the `exportToExcel` function
@@ -115,7 +115,7 @@ export default function DriverLogin({
             id: false,
             label: "False",
         },
-    ];
+    ].sort((a, b) => a.label.localeCompare(b.label));
 
     const columns = [
         {

@@ -53,6 +53,9 @@ export default function ConsDetails() {
         }
     }
     useEffect(() => {
+        if (!location?.state?.activeCons){
+            navigate("/gtrs/consignments");
+        }
         fetchData();
     }, []);
     let width = 0;

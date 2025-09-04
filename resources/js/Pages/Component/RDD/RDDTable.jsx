@@ -138,10 +138,12 @@ export default function RDDTable({
     const maxNewRddDate = getMinMaxValue(rddData, "NewRdd", 2);
     const minChangeAtDate = getMinMaxValue(rddData, "ChangeAt", 1);
     const maxChangeAtDate = getMinMaxValue(rddData, "ChangeAt", 2);
-    const reasonOptions = RDDReasonsData.map((reason) => ({
-        id: reason.ReasonId,
-        label: reason.ReasonName,
-    }));
+    const reasonOptions = RDDReasonsData.map((reason) =>
+        ({
+            id: reason.ReasonId,
+            label: reason.ReasonName,
+        })
+    ).sort((a, b) => a.label.localeCompare(b.label));
     const columns = [
         {
             name: "ConsignmentNo",

@@ -616,11 +616,15 @@ export default function ProductStockTable() {
                         variant="bordered"
                         onSelectionChange={setSelectedDebtor}
                     >
-                        {debtors.map((item) => (
-                            <SelectItem key={item.DebtorId}>
-                                {item.DebtorName}
-                            </SelectItem>
-                        ))}
+                        {debtors
+                            .sort((a, b) =>
+                                a.DebtorName.localeCompare(b.DebtorName)
+                            )
+                            .map((item) => (
+                                <SelectItem key={item.DebtorId}>
+                                    {item.DebtorName}
+                                </SelectItem>
+                            ))}
                     </Select>
                 )}
 
@@ -633,11 +637,13 @@ export default function ProductStockTable() {
                     variant="bordered"
                     onSelectionChange={setSelectedBranch}
                 >
-                    {branches.map((item) => (
-                        <SelectItem key={item.BranchId}>
-                            {item.BranchName}
-                        </SelectItem>
-                    ))}
+                    {branches
+                        .sort((a, b) => a.BranchName.localeCompare(b.BranchName))
+                        .map((item) => (
+                            <SelectItem key={item.BranchId}>
+                                {item.BranchName}
+                            </SelectItem>
+                        ))}
                 </Select>
             </div>
 

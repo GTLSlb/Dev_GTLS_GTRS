@@ -163,14 +163,18 @@ export default function SafetyRepTable({
     };
     const stateOptions = createNewLabelObjects(safetyData, "State");
 
-    const safetyTypeOptions = safetyTypes.map((reason) => ({
-        id: reason.SafetyTypeId,
-        label: reason.SafetyTypeName,
-    }));
-    const debtorsOptions = customerAccounts.map((reason) => ({
-        id: parseInt(reason.DebtorId.trim(), 10), // Convert id to integer and remove any whitespace
-        label: reason.AccountNo,
-    }));
+    const safetyTypeOptions = safetyTypes
+        .map((reason) => ({
+            id: reason.SafetyTypeId,
+            label: reason.SafetyTypeName,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+    const debtorsOptions = customerAccounts
+        .map((reason) => ({
+            id: parseInt(reason.DebtorId.trim(), 10),
+            label: reason.AccountNo,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label));
     const [canEdit, setCanEdit] = useState(true);
 
     useEffect(() => {
@@ -187,7 +191,7 @@ export default function SafetyRepTable({
             id: 2,
             label: "External",
         },
-    ];
+    ].sort((a, b) => a.label.localeCompare(b.label));
     const columns = [
         {
             name: "SafetyType",

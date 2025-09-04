@@ -87,7 +87,7 @@ export default function FailedCons({
             id: false,
             label: "False",
         },
-    ];
+    ].sort((a, b) => a.label.localeCompare(b.label));
     const senderStatesOptions = createNewLabelObjects(data, "SenderState");
     const receiverStateOptions = createNewLabelObjects(data, "ReceiverState");
     const senderZoneOptions = createNewLabelObjects(data, "SenderZone");
@@ -109,7 +109,7 @@ export default function FailedCons({
             id: 2,
             label: "External",
         },
-    ];
+    ].sort((a, b) => a.label.localeCompare(b.label));
     // Usage example remains the same
     const minKPIDate = getMinMaxValue(data, "KpiDatetime", 1);
     const maxKPIDate = getMinMaxValue(data, "KpiDatetime", 2);
