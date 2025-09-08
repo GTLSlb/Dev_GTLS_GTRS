@@ -65,6 +65,7 @@ import ContactRep from "./ContactsRep/ContactRep";
 import DifotReport from "./DifotReport";
 import Utilization from "./UtilizationReport/Utilization";
 import { CustomContext } from "@/CommonContext";
+import SpendDashboard from "./SpendAnalysis/SpendDashboard";
 
 export default function GtrsMain({
     setCustomerAccounts,
@@ -109,7 +110,6 @@ export default function GtrsMain({
     const oldestDate = getOldestDespatchDate(consData);
     const latestDate = getLatestDespatchDate(consData);
     const [dataFromChild, setDataFromChild] = useState(null);
-
 
     const [sharedStartDate, setSharedStartDate] = useState(
         getOldestDespatchDate(consData)
@@ -768,6 +768,24 @@ export default function GtrsMain({
                                                         }
                                                     />
                                                 }
+                                                userPermissions={
+                                                    userPermissions
+                                                }
+                                                setToken={setToken}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
+                                            />
+                                        }
+                                    />
+
+                                    <Route
+                                        path="/spendanalysis"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermissions}
+                                                route="Dashboard_view"
+                                                element={<SpendDashboard />}
                                                 userPermissions={
                                                     userPermissions
                                                 }

@@ -1817,6 +1817,115 @@ export const getFiltersChartsTable = (chartFilter) => {
     ];
 };
 
+export const getSpendAnalysisTable = () => {
+    return [
+        {
+            name: "ConsignmentNo",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "SenderReference",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "ReceiverReference",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "CodeRef",
+            operator: "inlist",
+            type: "select",
+            value: null,
+        },
+        {
+            name: "DescriptionRef",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "Cost",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "TotalAdditionalCharge",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "fuelLevy",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "GST",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "TotalCost",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "Weight",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "height",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "Cubic",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "length",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "NoPallet",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+    ];
+};
+
 export const getFiltersContactsTable = () => {
     return [
         {
