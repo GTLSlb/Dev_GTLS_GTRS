@@ -5,8 +5,7 @@ import RGL, { WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 const ReactGridLayout = WidthProvider(RGL);
 import "react-resizable/css/styles.css";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import SafetyRepByState from "./safetyCharts/SafetyRepByState";
 import MultiBarChart from "./safetyCharts/SafetyDoubleBarChart";
 import BasicPieCharts from "@/Components/dashboard/DashboardCard13";
@@ -14,6 +13,7 @@ import {
     ArrowsPointingOutIcon,
 } from "@heroicons/react/20/solid";
 import StackedBarChart from "./safetyCharts/StackedBarChart";
+
 export default function SafetyRepChart({
     filteredData,
     safetyTypes,
@@ -24,9 +24,6 @@ export default function SafetyRepChart({
         { i: "card03", x: 1, y: 0, w: 1, h: 4 }, // Report Type By Month
         { i: "card04", x: 0, y: 2, w: 1, h: 4 }, // Consignment By Month
         { i: "card05", x: 1, y: 2, w: 1, h: 4 }, // Pod True Vs False
-        // { i: "card06", x: 8, y: 4, w: 6, h: 4.5 }, // Pod Status
-        // { i: "card07", x: 0, y: 4, w: 6, h: 3 },
-        // { i: "card08", x: 6, y: 4, w: 6, h: 3 },
     ]);
     const [cols, setCols] = useState(2);
 
@@ -46,27 +43,32 @@ export default function SafetyRepChart({
             window.removeEventListener("resize", handleResize);
         };
     }, []);
+
     useEffect(() => {
         // Update the layout when cols change
         setLayout((prevLayout) =>
             prevLayout.map((item, index) => ({
                 ...item,
-                x: index % cols, // Distribute the divs evenly between x=0 and x=1
-                w: index === 0 ? cols : 1, // Set the width to cols for the first div, and 1 for others
+                x: index % cols,
+                w: index === 0 ? cols : 1,
             }))
         );
     }, [cols]);
-    const countRecordsByMonth = (data) => {
-        const counts = {}; // Object to store counts for each month
+
+    // Memoize all data processing functions to prevent infinite loops
+    const countRecordsByMonth = useCallback((data) => {
+        if (!data || data.length === 0) return {};
+        
+        const counts = {};
         data.forEach((item) => {
             const date = new Date(item.OccuredAt);
-            const year = date.getFullYear(); // Get the year
-            const month = date.getMonth(); // Get the month (0-11)
+            const year = date.getFullYear();
+            const month = date.getMonth();
             const formattedDate = `${String(month + 1).padStart(
                 2,
                 "0"
             )}-${String(1).padStart(2, "0")}-${year}`;
-            // Increment the count for the month
+            
             if (counts[formattedDate]) {
                 counts[formattedDate]++;
             } else {
@@ -75,9 +77,11 @@ export default function SafetyRepChart({
         });
 
         return counts;
-    };
+    }, []);
 
-    const countReportsBySafetyType = (jsonData) => {
+    const countReportsBySafetyType = useCallback((jsonData) => {
+        if (!jsonData || jsonData.length === 0) return [];
+        
         const counts = {};
 
         jsonData.forEach((item) => {
@@ -91,9 +95,11 @@ export default function SafetyRepChart({
         }));
 
         return result;
-    };
-    const counter = countReportsBySafetyType(filteredData);
-    function compareLabels(objectArray, safetyObjects) {
+    }, []);
+
+    const compareLabels = useCallback((objectArray, safetyObjects) => {
+        if (!objectArray || !safetyObjects) return [];
+        
         const newArray = objectArray.map((obj) => {
             const safetyObject = safetyObjects.find(
                 (safetyObj) => obj.label === safetyObj.SafetyTypeId
@@ -108,31 +114,28 @@ export default function SafetyRepChart({
         });
 
         return newArray;
-    }
-    function countSafetyTypesByMonth(data) {
+    }, []);
+
+    const countSafetyTypesByMonth = useCallback((data) => {
+        if (!data || data.length === 0) return {};
+        
         const counts = {};
 
-        // Loop through the safety reports
         data.forEach((report) => {
-            // Get the month and year from the Date property
             const date = new Date(report.OccuredAt);
             const year = date.getFullYear();
             const month = date.getMonth();
 
-            // Create a new date with the year and month
             const firstDayOfMonth = new Date(year, month, 1);
 
-            // Format the date as desired (e.g., "MM-DD-YYYY")
             const formattedDate = `${(firstDayOfMonth.getMonth() + 1)
                 .toString()
                 .padStart(2, "0")}-${"01"}-${firstDayOfMonth.getFullYear()}`;
 
-            // Check if the date exists in the counts object
             if (!counts[formattedDate]) {
                 counts[formattedDate] = {};
             }
 
-            // Increment the count for the safety type
             const safetyType = report.SafetyType;
             if (!counts[formattedDate][safetyType]) {
                 counts[formattedDate][safetyType] = 1;
@@ -142,8 +145,11 @@ export default function SafetyRepChart({
         });
 
         return counts;
-    }
-    function getCountByState(data) {
+    }, []);
+
+    const getCountByState = useCallback((data) => {
+        if (!data || data.length === 0) return {};
+        
         const problemsByState = {};
 
         data.forEach((item) => {
@@ -157,27 +163,43 @@ export default function SafetyRepChart({
         });
 
         return problemsByState;
-    }
-    function countRecordsByStateAndType(data) {
+    }, []);
+
+    const getStateLabel = useCallback((stateId) => {
+        switch (stateId) {
+            case "1":
+                return "VIC";
+            case "2":
+                return "NSW";
+            case "3":
+                return "QLD";
+            case "4":
+                return "SA";
+            case "5":
+                return "ACT";
+            default:
+                return stateId;
+        }
+    }, []);
+
+    const countRecordsByStateAndType = useCallback((data) => {
+        if (!data || data.length === 0 || !safetyTypes) return [];
+        
         const stateCounts = {};
         const typeCounts = {};
 
-        // Count occurrences of each state and type
         data.forEach((record) => {
             const state = getStateLabel(record.State);
             const type = record.SafetyType.toString();
 
-            // Count state occurrences
             stateCounts[state] = (stateCounts[state] || 0) + 1;
 
-            // Count type occurrences
             if (!(state in typeCounts)) {
                 typeCounts[state] = {};
             }
             typeCounts[state][type] = (typeCounts[state][type] || 0) + 1;
         });
 
-        // Prepare the result
         const result = [];
         for (const state in typeCounts) {
             for (const type in typeCounts[state]) {
@@ -191,127 +213,116 @@ export default function SafetyRepChart({
         }
 
         return result;
-    }
+    }, [safetyTypes, getStateLabel]);
 
-    function getStateLabel(stateId) {
-        // Map stateId to state label
-        switch (stateId) {
-            case "1":
-                return "VIC";
-            case "2":
-                return "NSW";
-            case "3":
-                return "QLD";
-            case "4":
-                return "SA";
-            case "5":
-                return "ACT";
-            // Handle other states as needed
-            default:
-                return stateId;
-        }
-    }
-    const problemsByState = getCountByState(filteredData);
-    const typesbymonth = countSafetyTypesByMonth(filteredData);
-    const recordCounts = countRecordsByMonth(filteredData);
-    const byStateAndType = countRecordsByStateAndType(filteredData);
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    // Memoize all computed data to prevent recalculation on every render
+    const recordCounts = useMemo(() => countRecordsByMonth(filteredData), [filteredData, countRecordsByMonth]);
+    
+    const counter = useMemo(() => countReportsBySafetyType(filteredData), [filteredData, countReportsBySafetyType]);
+    
+    const labeledCounter = useMemo(() => compareLabels(counter, safetyTypes), [counter, safetyTypes, compareLabels]);
+    
+    const problemsByState = useMemo(() => getCountByState(filteredData), [filteredData, getCountByState]);
+    
+    const typesbymonth = useMemo(() => countSafetyTypesByMonth(filteredData), [filteredData, countSafetyTypesByMonth]);
+    
+    const byStateAndType = useMemo(() => countRecordsByStateAndType(filteredData), [filteredData, countRecordsByStateAndType]);
 
-    const ResetLayout = () => {
-        // Filter the options based on the selected receivers
+    const isMobile = useMemo(() => /iPhone|iPad|iPod|Android/i.test(navigator.userAgent), []);
+
+    const ResetLayout = useCallback(() => {
         setLayout([
-            { i: "card01", x: 0, y: 0, w: 2, h: 4 }, // Reports By Month
-            { i: "card02", x: 0, y: 0, w: 1, h: 4 }, // Type of Problems
-            { i: "card03", x: 1, y: 0, w: 1, h: 4 }, // Report Type By Month
-            { i: "card04", x: 0, y: 2, w: 1, h: 4 }, // Consignment By Month
-            { i: "card05", x: 1, y: 2, w: 1, h: 4 }, // Pod True Vs False
-            // { i: "card06", x: 8, y: 4, w: 6, h: 4.5 }, // Pod Status
-            // { i: "card07", x: 0, y: 4, w: 6, h: 3 },
-            // { i: "card08", x: 6, y: 4, w: 6, h: 3 },
+            { i: "card01", x: 0, y: 0, w: 2, h: 4 },
+            { i: "card02", x: 0, y: 0, w: 1, h: 4 },
+            { i: "card03", x: 1, y: 0, w: 1, h: 4 },
+            { i: "card04", x: 0, y: 2, w: 1, h: 4 },
+            { i: "card05", x: 1, y: 2, w: 1, h: 4 },
         ]);
-    };
+    }, []);
+
+    // Early return if no data
+    if (!filteredData || filteredData.length === 0) {
+        return (
+            <div className="h-64 flex items-center justify-center mt-10">
+                <div className="text-center flex justify-center flex-col">
+                    <h1 className="text-3xl font-bold text-gray-900">
+                        Congrats! <br/> Nothing To Show
+                    </h1>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div>
             <div className="hidden md:flex w-full justify-end px-2">
                 <button
-                    className={`  items-center w-auto h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+                    className="items-center w-auto h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     onClick={ResetLayout}
                 >
                     Reset layout
                 </button>
             </div>
-            {filteredData.length > 0 ? (
-                <ReactGridLayout
-                    className="layout custom-grid"
-                    layout={layout}
-                    cols={cols}
-                    rowHeight={100}
-                    width={1200}
-                    isResizable={false}
-                    isDraggable={!isMobile}
-                    autoSize={true}
-                    onLayoutChange={(layout) => setLayout(layout)}
-                    dragEnterChild="drag-over"
-                    dragLeaveChild="drag-out"
-                >
-                    {/* Place your components with drag-and-drop functionality */}
-                    <div key="card01" className="relative">
-                        {" "}
-                        <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                        <BarCharData
-                            chartTitle={"Reports By Month"}
-                            barValues={recordCounts}
-                        />
-                    </div>
-                    <div key="card02" className="relative">
-                        {" "}
-                        <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                        <BasicPieCharts
-                            chartData={compareLabels(counter, safetyTypes)}
-                            chartTitle={"POD Status By State"}
-                        />
-                    </div>
-                    <div key="card03" className="relative">
-                        {" "}
-                        <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                        <SafetyRepByState
-                            chartTitle={"Reports By State"}
-                            singleBarValue={problemsByState}
-                        />
-                    </div>
-                    <div key="card04" className="relative">
-                        {" "}
-                        <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                        <MultiBarChart
-                            chartTitle={"Report Type By Month"}
-                            typesbymonth={typesbymonth}
-                            safetyTypes={safetyTypes}
-                        />
-                    </div>
-                    <div key="card05" className="relative">
-                        {" "}
-                        <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
-                        <StackedBarChart
-                            chartTitle={"Report By State and By Type"}
-                            byStateAndType={byStateAndType}
-                            safetyTypes={safetyTypes}
-                        />
-                    </div>
-                </ReactGridLayout>
-            ) : (
-                <div className="h-64 flex items-center justify-center mt-10">
-                    <div className="text-center flex justify-center flex-col">
-                        {/* <img src={notFound} alt="" className="w-52 h-auto " /> */}
-                        <h1 className="text-3xl font-bold text-gray-900">
-                            Congrats! <br/> Nothing To Show
-                        </h1>
-                    </div>
+            
+            <ReactGridLayout
+                className="layout custom-grid"
+                layout={layout}
+                cols={cols}
+                rowHeight={100}
+                width={1200}
+                isResizable={false}
+                isDraggable={!isMobile}
+                autoSize={true}
+                onLayoutChange={(layout) => setLayout(layout)}
+                dragEnterChild="drag-over"
+                dragLeaveChild="drag-out"
+            >
+                <div key="card01" className="relative">
+                    <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
+                    <BarCharData
+                        chartTitle="Reports By Month"
+                        barValues={recordCounts}
+                    />
                 </div>
-            )}
+                
+                <div key="card02" className="relative">
+                    <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
+                    <BasicPieCharts
+                        chartData={labeledCounter}
+                        chartTitle="POD Status By State"
+                    />
+                </div>
+                
+                <div key="card03" className="relative">
+                    <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
+                    <SafetyRepByState
+                        chartTitle="Reports By State"
+                        singleBarValue={problemsByState}
+                    />
+                </div>
+                
+                <div key="card04" className="relative">
+                    <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
+                    <MultiBarChart
+                        chartTitle="Report Type By Month"
+                        typesbymonth={typesbymonth}
+                        safetyTypes={safetyTypes}
+                    />
+                </div>
+                
+                <div key="card05" className="relative">
+                    <ArrowsPointingOutIcon className="absolute text-gray-500 right-3 w-3 top-3 hover:cursor-move" />
+                    <StackedBarChart
+                        chartTitle="Report By State and By Type"
+                        byStateAndType={byStateAndType}
+                        safetyTypes={safetyTypes}
+                    />
+                </div>
+            </ReactGridLayout>
         </div>
     );
 }
+
 SafetyRepChart.propTypes = {
     filteredData: propTypes.array,
     safetyTypes: propTypes.array,

@@ -1,9 +1,10 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React, { useContext } from "react";
 import ConsignmentGraph from "./ReportTabs/ConsignmentGraph";
 import TotalFailPODGraph from "./ReportTabs/TotalFailPODGraph";
+import { CustomContext } from "@/CommonContext";
 
-const MultiChartLine = ({ url, currentUser, Token }) => {
+const MultiChartLine = () => {
+    const { url, Token, userPermissions } = useContext(CustomContext);
     const activeComponentIndex = 0; // Index of the active component to display
     const customers = [
         {
@@ -24,7 +25,7 @@ const MultiChartLine = ({ url, currentUser, Token }) => {
         <ConsignmentGraph
             key={activeComponentIndex}
             url={url}
-            currentUser={currentUser}
+            userPermissions={userPermissions}
             Token={Token}
             customers={customers}
             CustomerId={1}
@@ -33,7 +34,7 @@ const MultiChartLine = ({ url, currentUser, Token }) => {
     ];
 
     return (
-        <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
+        <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20 h-full">
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto mt-6">
                     <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
@@ -48,12 +49,6 @@ const MultiChartLine = ({ url, currentUser, Token }) => {
             {components[activeComponentIndex]}
         </div>
     );
-};
-
-MultiChartLine.propTypes = {
-    url: PropTypes.string,
-    currentUser: PropTypes.object,
-    Token: PropTypes.string,
 };
 
 export default MultiChartLine;

@@ -3,7 +3,8 @@ import success from "../../Components/lottie/Data/Success.json";
 import LottieComponent from "@/Components/lottie/LottieComponent";
 import { ForgotPasswordPage } from "gtls-npm-libraries";
 import Logo from "@/assets/pictures/Logo.png";
-export default function ForgotPassword({}) {
+import React from "react";
+export default function ForgotPassword() {
     const gtamUrl = window.Laravel.gtamUrl;
     return (
         <ForgotPasswordPage

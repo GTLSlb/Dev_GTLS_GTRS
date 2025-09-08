@@ -58,6 +58,5 @@ export const createNewLabelObjectsUsingIds = (data, IdName, fieldName) => {
             newData.push(newObject);
         }
     });
-    return newData;
+    return newData.sort((a, b) => a.label.localeCompare(b.label));
 };
-

@@ -1,12 +1,13 @@
 import AnimatedLoading from "@/Components/AnimatedLoading";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import PropTypes from "prop-types";
+import { CustomContext } from "@/CommonContext";
 
-export default function SettingMiddleware({ currentUser }) {
+export default function SettingMiddleware() {
+    const { user } = useContext(CustomContext);
 let navigate = useNavigate();
     useEffect(() => {
-        if (currentUser && currentUser.TypeId === 1) {
+        if (user && user.TypeId === 1) {
           navigate("/gtrs/customer-profile");
         } else {
            navigate("/gtrs/customer-settings");
@@ -19,7 +20,3 @@ let navigate = useNavigate();
         </div>
     );
 }
-
-SettingMiddleware.propTypes = {
-    currentUser: PropTypes.object,
-};

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import React from "react";
 import PropTypes from "prop-types";
 import { useEffect } from "react";
@@ -7,18 +7,17 @@ import axios from "axios";
 import { handleSessionExpiration } from '@/CommonFunctions';
 import GtrsButton from "../../GtrsButton";
 import { AlertToast } from "@/permissions";
+import { CustomContext } from "@/CommonContext";
 
 
 export default function AddKPIReason({
     selectedReason,
-    url,
-    currentUser,
-    Token,
     setSelectedReason,
     setShowAdd,
     fetchData,
     closeModal
 }) {
+    const { Token, user, url } = useContext(CustomContext);
     const [isChecked, setIsChecked] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [object, setObject] = useState();
@@ -50,7 +49,7 @@ export default function AddKPIReason({
         axios
             .post(`${url}Add/KpiReason`, inputValues, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             })
@@ -136,7 +135,6 @@ export default function AddKPIReason({
 AddKPIReason.propTypes = {
     selectedReason: PropTypes.object,
     url: PropTypes.string,
-    currentUser: PropTypes.object,
     Token: PropTypes.string,
     setSelectedReason: PropTypes.func,
     setShowAdd: PropTypes.func,

@@ -1,5 +1,5 @@
 import { formatDateToExcel } from "@/CommonFunctions";
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import SafetyModal from "@/Components/AddsafetyModal";
 import AnimatedLoading from "@/Components/AnimatedLoading";
@@ -16,24 +16,22 @@ import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import moment from "moment";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer } from "react-toastify";
 import { AlertToast } from "@/permissions";
+import { CustomContext } from "@/CommonContext";
 
 export default function SafetyRepTable({
     safetyData,
-    Token,
-    url,
     filterValue,
     customerAccounts,
     setFilterValue,
-    currentUser,
-    userPermission,
     setDataEdited,
     safetyTypes,
     fetchData,
     setsafetyData,
     safetyCauses,
 }) {
+    const { url, userPermissions, Token } = useContext(CustomContext);
     window.moment = moment;
     const minDate = getMinMaxValue(safetyData, "OccuredAt", 1);
     const maxDate = getMinMaxValue(safetyData, "OccuredAt", 2);
@@ -42,9 +40,7 @@ export default function SafetyRepTable({
     const [isModalOpendesc, setIsModalOpendesc] = useState(false);
     const [safetyDesc, setSafetyDesc] = useState();
     const [isSuccessfull, setIsSuccessfull] = useState(false);
-    useLayoutEffect(() => {
-        
-    }, []);
+    useLayoutEffect(() => {}, []);
     const gridRef = useRef(null);
 
     const handleDownloadExcel = () => {
@@ -58,13 +54,13 @@ export default function SafetyRepTable({
 
         // Define custom cell handlers for specific columns
         const customCellHandlers = {
-            SafetyType: ( item) => {
+            SafetyType: (item) => {
                 const reason = safetyTypes?.find(
                     (reason) => reason.SafetyTypeId === item.SafetyType
                 );
                 return reason?.SafetyTypeName || "";
             },
-            DebtorId: ( item) => {
+            DebtorId: (item) => {
                 const account = customerAccounts?.find(
                     (acc) => acc.DebtorId == item.DebtorId
                 );
@@ -167,21 +163,25 @@ export default function SafetyRepTable({
     };
     const stateOptions = createNewLabelObjects(safetyData, "State");
 
-    const safetyTypeOptions = safetyTypes.map((reason) => ({
-        id: reason.SafetyTypeId,
-        label: reason.SafetyTypeName,
-    }));
-    const debtorsOptions = customerAccounts.map((reason) => ({
-        id: parseInt(reason.DebtorId.trim(), 10), // Convert id to integer and remove any whitespace
-        label: reason.AccountNo,
-    }));
+    const safetyTypeOptions = safetyTypes
+        .map((reason) => ({
+            id: reason.SafetyTypeId,
+            label: reason.SafetyTypeName,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+    const debtorsOptions = customerAccounts
+        .map((reason) => ({
+            id: parseInt(reason.DebtorId.trim(), 10),
+            label: reason.AccountNo,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label));
     const [canEdit, setCanEdit] = useState(true);
 
     useEffect(() => {
-        if (userPermission) {
-            setCanEdit(canEditSafetyReport(userPermission));
+        if (userPermissions) {
+            setCanEdit(canEditSafetyReport(userPermissions));
         }
-    }, [userPermission]);
+    }, [userPermissions]);
     const referenceOptions = [
         {
             id: 1,
@@ -191,7 +191,7 @@ export default function SafetyRepTable({
             id: 2,
             label: "External",
         },
-    ];
+    ].sort((a, b) => a.label.localeCompare(b.label));
     const columns = [
         {
             name: "SafetyType",
@@ -343,7 +343,7 @@ export default function SafetyRepTable({
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 100,
-            render: ({  data }) => {
+            render: ({ data }) => {
                 return (
                     <div>
                         {canEdit ? (
@@ -381,16 +381,16 @@ export default function SafetyRepTable({
     const newArray = columns?.slice(0, -1);
     const [newColumns, setNewColumns] = useState();
     useEffect(() => {
-        if (userPermission) {
-            if (canEditSafetyReport(userPermission)) {
+        if (userPermissions) {
+            if (canEditSafetyReport(userPermissions)) {
                 setNewColumns(columns);
             } else {
                 setNewColumns(newArray);
             }
         }
-    }, [userPermission]);
+    }, [userPermissions]);
 
-    const additionalButtons = canAddSafetyReport(userPermission) ? (
+    const additionalButtons = canAddSafetyReport(userPermissions) ? (
         <button
             type="button"
             onClick={handleAddClick}
@@ -403,11 +403,11 @@ export default function SafetyRepTable({
     );
 
     useEffect(() => {
-        if(isSuccessfull){
+        if (isSuccessfull) {
             AlertToast("Saved Successfully", 1);
             setIsSuccessfull(false);
         }
-    },[isSuccessfull])
+    }, [isSuccessfull]);
     return (
         <div>
             {/* Added toast container since it wasn't showing */}
@@ -460,8 +460,7 @@ export default function SafetyRepTable({
                 modalResol={modalResol}
                 modalRefer={modalRefer}
                 modalOccuredAt={modalOccuredAt}
-                currentUser={currentUser}
-                userPermission={userPermission}
+                userPermissions={userPermissions}
                 buttonAction={buttonAction}
                 updateLocalData={updateLocalData}
                 fetchData={fetchData}
@@ -472,13 +471,9 @@ export default function SafetyRepTable({
 SafetyRepTable.propTypes = {
     currentPageRep: PropTypes.string,
     safetyData: PropTypes.array,
-    Token: PropTypes.string,
-    url: PropTypes.string,
     filterValue: PropTypes.array,
     customerAccounts: PropTypes.array,
     setFilterValue: PropTypes.func,
-    currentUser: PropTypes.object,
-    userPermission: PropTypes.object,
     setDataEdited: PropTypes.func,
     safetyTypes: PropTypes.array,
     fetchData: PropTypes.func,

@@ -11,10 +11,12 @@ import {
     Switch,
     useDisclosure,
 } from "@heroui/react";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import PropTypes from "prop-types";
+import { CustomContext } from "@/CommonContext";
 
-export default function Users({ customer, userPermission }) {
+export default function Users({ customer }) {
+    const { userPermissions } = useContext(CustomContext);
     const [editMode, setEditMode] = useState(false);
     const [accountStates, setAccountStates] = useState({});
     const [selectedUser, setSelectedUser] = useState(null);
@@ -120,7 +122,7 @@ export default function Users({ customer, userPermission }) {
                                     size="sm"
                                 />
                             </div>
-                            {canEditUsers(userPermission) && (
+                            {canEditUsers(userPermissions) && (
                                 <div className="flex gap-2 mr-5">
                                     {editMode ? (
                                         <Button
@@ -244,5 +246,4 @@ export default function Users({ customer, userPermission }) {
 
 Users.propTypes = {
     customer: PropTypes.object,
-    userPermission: PropTypes.object,
 };

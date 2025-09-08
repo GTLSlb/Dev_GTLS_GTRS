@@ -7,6 +7,7 @@ import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import moment from "moment";
 import PropTypes from "prop-types";
+import { formatDateToExcel } from "@/CommonFunctions";
 
 export default function ConsPerf({
     PerfData,
@@ -17,30 +18,32 @@ export default function ConsPerf({
     setSDate,
     oldestDate,
     latestDate,
-    currentUser,
-    userPermission,
     setSharedStartDate,
     setSharedEndDate,
 }) {
     const [currentPage, setCurrentPage] = useState(0);
     const [filteredData, setFilteredData] = useState(PerfData);
     const [selectedConsignment, setSelectedConsignment] = useState("");
+
     const handleStartDateChange = (event) => {
         const value = event.target.value;
         setSDate(value);
         setSharedStartDate(value);
         filterData(value, EDate, selectedConsignment);
     };
+
     const handleEndDateChange = (event) => {
         const value = event.target.value;
         setEDate(value);
         setSharedEndDate(value);
         filterData(SDate, value, selectedConsignment);
     };
+
     const handleConsignmentChange = (value) => {
         setSelectedConsignment(value);
         filterData(SDate, EDate, value);
     };
+
     const filterData = (startDate, endDate, selectedConsignment) => {
         const intArray = accData?.map((str) => {
             const intValue = parseInt(str);
@@ -59,7 +62,8 @@ export default function ConsPerf({
                 filterEndDate.setSeconds(59);
                 filterEndDate.setMinutes(59);
                 filterEndDate.setHours(23);
-                dateMatch = itemDate >= filterStartDate && itemDate <= filterEndDate; // Compare the item date to the filter dates
+                dateMatch =
+                    itemDate >= filterStartDate && itemDate <= filterEndDate; // Compare the item date to the filter dates
             }
             const ConsNbMatch = selectedConsignment
                 ? item.ConsignmentNo.toLowerCase().includes(
@@ -77,11 +81,15 @@ export default function ConsPerf({
     }, [accData]);
 
     const PER_PAGE = 5;
+
     const OFFSET = currentPage * PER_PAGE;
+
     const handlePageClick = (selectedPage) => {
         setCurrentPage(selectedPage.selected);
     };
+
     const pageCount = Math.ceil(filteredData.length / PER_PAGE);
+
     const headers = [
         "Consignment No",
         "Consignment Status",
@@ -110,116 +118,119 @@ export default function ConsPerf({
 
     function handleDownloadExcel() {
         // Get the selected columns or use all columns if none are selected
-
         let selectedColumns = headers; // Use all columns
 
-        // Extract the data for the selected columns  moment(consignment.DespatchDate, 'YYYY-MM-DD').format('DD-MM-YYYY')
+        // Helper: convert JS Date to timezone-neutral Excel serial
+        const dateToExcelSerial = (date) => {
+            if (!(date instanceof Date) || isNaN(date)) return "";
+            return (
+                (date.getTime() - date.getTimezoneOffset() * 60000) / 86400000 +
+                25569
+            );
+        };
+
+        // Extract the data for the selected columns
         const data = filteredData.map((person) =>
             selectedColumns.reduce((acc, column) => {
                 const columnKey = column.replace(/\s+/g, "");
-                if (columnKey) {
-                    if (column.replace(/\s+/g, "") === "ReceiverReference") {
-                        acc["ReceiverReference"] =
-                            person["ReceiverReference"];
-                    } else if (column.replace(/\s+/g, "") === "AccountName") {
+                if (!columnKey) return acc;
+
+                switch (columnKey) {
+                    case "ReceiverReference":
+                        acc[columnKey] = person["ReceiverReference"];
+                        break;
+                    case "AccountName":
                         acc[columnKey] = person["AccountNumber"];
-                    } else if (column.replace(/\s+/g, "") === "KPIDatetime") {
-                        acc[columnKey] =
-                            moment(
-                                person["KpiDatetime"].replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["KpiDatetime"].replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY HH:mm A");
-                    } else if (column.replace(/\s+/g, "") === "PODDatetime") {
-                        acc[columnKey] =
-                            moment(
-                                person["PodDateTime"]?.replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["PodDateTime"]?.replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY HH:mm A");
-                    } else if (
-                        column.replace(/\s+/g, "") ===
-                        "DeliveryRequiredDate"
-                    ) {
-                        acc[columnKey] =
-                            moment(
-                                person["DeliveryRequiredDateTime"]?.replace(
-                                    "T",
-                                    " "
-                                ),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person[
-                                          "DeliveryRequiredDateTime"
-                                      ]?.replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY HH:mm A");
-                    } else if (column.replace(/\s+/g, "") === "DespatchDate") {
-                        acc[columnKey] =
-                            moment(
-                                person["DespatchDate"]?.replace("T", " "),
-                                "YYYY-MM-DD HH:mm:ss"
-                            ).format("DD-MM-YYYY HH:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      person["DespatchDate"]?.replace("T", " "),
-                                      "YYYY-MM-DD HH:mm:ss"
-                                  ).format("DD-MM-YYYY HH:mm A");
-                    } else {
-                        acc[column.replace(/\s+/g, "")] =
-                            person[column.replace(/\s+/g, "")];
-                    }
+                        break;
+                    case "KPIDatetime":
+                        acc[columnKey] = person["KpiDatetime"]
+                            ? new Date(person["KpiDatetime"])
+                            : "";
+                        break;
+                    case "PODDatetime":
+                        acc[columnKey] = person["PodDateTime"]
+                            ? new Date(person["PodDateTime"])
+                            : "";
+                        break;
+                    case "DeliveryRequiredDate":
+                        acc[columnKey] = person["DeliveryRequiredDateTime"]
+                            ? new Date(person["DeliveryRequiredDateTime"])
+                            : "";
+                        break;
+                    case "DespatchDate":
+                        acc[columnKey] = person["DespatchDate"]
+                            ? new Date(person["DespatchDate"])
+                            : "";
+                        break;
+                    case "DeliveredDate":
+                        acc[columnKey] = person["DeliveredDate"]
+                            ? new Date(person["DeliveredDate"])
+                            : "";
+                        break;
+                    default:
+                        acc[columnKey] = person[columnKey];
                 }
+
                 return acc;
             }, {})
         );
 
-        // Create a new workbook
+        // Create workbook and worksheet
         const workbook = new ExcelJS.Workbook();
-
-        // Add a worksheet to the workbook
         const worksheet = workbook.addWorksheet("Sheet1");
 
-        // Apply custom styles to the header row
+        // Header row
         const headerRow = worksheet.addRow(selectedColumns);
         headerRow.font = { bold: true };
         headerRow.fill = {
             type: "pattern",
             pattern: "solid",
-            fgColor: { argb: "FFE2B540" }, // Yellow background color (#e2b540)
+            fgColor: { argb: "FFE2B540" }, // Yellow
         };
         headerRow.alignment = { horizontal: "center" };
 
-        // Add the data to the worksheet
+        // Add data rows
         data.forEach((rowData) => {
-            worksheet.addRow(Object.values(rowData));
+            const row = worksheet.addRow(Object.values(rowData));
+
+            // Format date columns and convert to timezone-neutral Excel serial
+            selectedColumns.forEach((column, colIndex) => {
+                const columnKey = column.replace(/\s+/g, "");
+                const dateColumns = [
+                    "KPIDatetime",
+                    "PODDatetime",
+                    "DeliveryRequiredDate",
+                    "DespatchDate",
+                    "DeliveredDate",
+                ];
+
+                if (dateColumns.includes(columnKey)) {
+                    const cell = row.getCell(colIndex + 1);
+                    if (cell.value instanceof Date) {
+                        // ✅ Convert to timezone-neutral Excel serial
+                        cell.value =
+                            (cell.value.getTime() -
+                                cell.value.getTimezoneOffset() * 60000) /
+                                86400000 +
+                            25569;
+                        cell.numFmt = "dd/mm/yyyy hh:mm:ss"; // format in Excel
+                    }
+                }
+            });
         });
 
         // Set column widths
-        const columnWidths = selectedColumns.map(() => 20); // Set width of each column
+        const columnWidths = selectedColumns.map(() => 20);
         worksheet.columns = columnWidths.map((width, index) => ({
             width,
             key: selectedColumns[index],
         }));
 
-        // Generate the Excel file
+        // Generate and save Excel file
         workbook.xlsx.writeBuffer().then((buffer) => {
-            // Convert the buffer to a Blob
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-
-            // Save the file using FileSaver.js or alternative method
             saveAs(blob, "Performance-Report.xlsx");
         });
     }
@@ -253,7 +264,7 @@ export default function ConsPerf({
                                 type="date"
                                 name="from-date"
                                 onKeyDown={(e) => e.preventDefault()}
-                                value={SDate}
+                                value={SDate ? SDate : oldestDate}
                                 min={oldestDate}
                                 max={EDate}
                                 onChange={handleStartDateChange}
@@ -274,7 +285,7 @@ export default function ConsPerf({
                                 type="date"
                                 name="to-date"
                                 onKeyDown={(e) => e.preventDefault()}
-                                value={EDate}
+                                value={EDate ? EDate : latestDate}
                                 min={SDate}
                                 max={latestDate}
                                 onChange={handleEndDateChange}
@@ -326,13 +337,7 @@ export default function ConsPerf({
                                 </span>
                             </h3>
                         </div>
-                        <Navbar
-                            key={item.id}
-                            id={item.id}
-                            item={item}
-                            currentUser={currentUser}
-                            userPermission={userPermission}
-                        />
+                        <Navbar key={item.id} id={item.id} item={item} />
                     </div>
                 ))
             ) : (
@@ -376,8 +381,6 @@ ConsPerf.propTypes = {
     setSDate: PropTypes.func,
     oldestDate: PropTypes.string,
     latestDate: PropTypes.string,
-    currentUser: PropTypes.object,
-    userPermission: PropTypes.object,
     setSharedStartDate: PropTypes.func,
     setSharedEndDate: PropTypes.func,
 };

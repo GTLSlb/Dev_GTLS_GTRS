@@ -1,6 +1,6 @@
 import ReactModal from "react-modal";
 import PropTypes from "prop-types";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import "../../../../../css/scroll.css";
 import moment from "moment";
 import { PencilIcon } from "@heroicons/react/20/solid";
@@ -9,17 +9,16 @@ import axios from "axios";
 import { handleSessionExpiration } from "@/CommonFunctions";
 import { Spinner } from "@heroui/react";
 import ComboBox from "@/Components/ComboBox";
+import { CustomContext } from "@/CommonContext";
 
 export default function ViewComments({
     isOpen,
-    url,
     handleClose,
-    Token,
-    currentUser,
     commentsData,
     deliveryCommentsOptions,
     fetchDeliveryReportCommentsData,
 }) {
+    const { Token, user, url } = useContext(CustomContext);
     const [data, setData] = useState([]);
     const [comment, setComment] = useState(null);
     const [commentId, setCommentId] = useState(null);
@@ -49,7 +48,7 @@ export default function ViewComments({
         axios
             .post(`${url}Add/Comment`, inputValues, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             })
@@ -283,10 +282,7 @@ export default function ViewComments({
 
 ViewComments.propTypes = {
     isOpen: PropTypes.bool,
-    url: PropTypes.string,
     handleClose: PropTypes.func,
-    Token: PropTypes.string,
-    currentUser: PropTypes.object,
     commentsData: PropTypes.array,
     deliveryCommentsOptions: PropTypes.array,
     fetchDeliveryReportCommentsData: PropTypes.func,

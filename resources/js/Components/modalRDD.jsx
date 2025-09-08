@@ -1,22 +1,26 @@
 import ReactModal from "react-modal";
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import { Fragment, useState, useEffect } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import { useApiRequests } from "@/CommonFunctions";
+import { CustomContext } from "@/CommonContext";
 
 export default function ModalRDD({
     isOpen,
     handleClose,
     consignment,
     updateLocalData,
-    rddReasons,
 }) {
-    const [error, setError] = useState(null);
+    const { Token, url, user, RDDReasonsData } = useContext(CustomContext);
+    const { postApiRequest } = useApiRequests();
+
     const [note, setNote] = useState("");
-    const [isLoading, SetIsLoading] = useState(false);
-    const [selected, setSelected] = useState();
+    const [error, setError] = useState(null);
     const [showDesc, setShowDesc] = useState();
+    const [selected, setSelected] = useState();
+    const [isLoading, SetIsLoading] = useState(false);
 
     useEffect(() => {
         setSelected(null);
@@ -35,15 +39,15 @@ export default function ModalRDD({
     useEffect(() => {
         // setAudit(consignment?.AuditId)
         if (consignment) {
-            const x = rddReasons?.find(
+            const x = RDDReasonsData?.find(
                 (i) => i.ReasonId === consignment?.Reason
             )?.ReasonName;
-            const index = rddReasons?.findIndex((i) => x === i.ReasonName);
-            if (rddReasons) {
-                if (rddReasons[index]) {
-                    setSelected(rddReasons[index]);
+            const index = RDDReasonsData?.findIndex((i) => x === i.ReasonName);
+            if (RDDReasonsData) {
+                if (RDDReasonsData[index]) {
+                    setSelected(RDDReasonsData[index]);
                 } else {
-                    setSelected(rddReasons[0]);
+                    setSelected(RDDReasonsData[0]);
                 }
                 setNote(consignment?.ReasonDesc);
             }
@@ -54,11 +58,25 @@ export default function ModalRDD({
         handleClose(); // Clear the input value
     };
     const handleSubmit = async (event) => {
-        event.preventDefault(); // Prevent the default form submission behavior
+        event.preventDefault();
         try {
-            // Make the API request using Axios or any other library
             SetIsLoading(true);
-            // Handle the response as needed
+
+            const data = [
+                {
+                    AuditId: consignment.AuditId,
+                    ReasonId: selected?.ReasonId,
+                    Description: note,
+                },
+            ];
+
+            const headers = {
+                UserId: user.UserId,
+                Authorization: `Bearer ${Token}`,
+            };
+
+            await postApiRequest(`${url}Add/RDD`, headers, data);
+
             updateLocalData(consignment.AuditId, selected?.ReasonId, note);
 
             setTimeout(() => {
@@ -69,7 +87,7 @@ export default function ModalRDD({
             SetIsLoading(false);
             // Handle error
             console.error("Error occurred while saving the data:", err);
-            setError("Error occurred while saving the data. Please try again."); // Set the error message
+            setError("Error occurred while saving the data. Please try again.");
         }
     };
 
@@ -78,7 +96,7 @@ export default function ModalRDD({
             isOpen={isOpen}
             onRequestClose={handlePopUpClose}
             className="fixed inset-0 flex items-center justify-center"
-            overlayClassName="fixed inset-0 bg-black bg-opacity-60"
+            overlayClassName="fixed inset-0 bg-black bg-opacity-60 z-50"
         >
             <div className="bg-white w-96 rounded-lg shadow-lg p-6 ">
                 <div className="flex justify-end">
@@ -102,10 +120,7 @@ export default function ModalRDD({
                         </svg>
                     </button>
                 </div>
-                <h2 className="text-2xl font-bold mb-4">
-                    Set RDD Reason
-                    {/* <span>{id}</span> */}
-                </h2>
+                <h2 className="text-2xl font-bold mb-4">Set RDD Reason</h2>
 
                 <form onSubmit={handleSubmit}>
                     {error && <div className="text-red-500 mb-4">{error}</div>}
@@ -136,7 +151,7 @@ export default function ModalRDD({
                                         leaveTo="opacity-0"
                                     >
                                         <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                            {rddReasons
+                                            {RDDReasonsData
                                                 ?.filter(
                                                     (reason) =>
                                                         reason.ReasonStatus ===
@@ -251,9 +266,6 @@ export default function ModalRDD({
 ModalRDD.propTypes = {
     isOpen: PropTypes.bool,
     handleClose: PropTypes.func,
-    url: PropTypes.string,
     consignment: PropTypes.object,
-    currentUser: PropTypes.object,
     updateLocalData: PropTypes.func,
-    rddReasons: PropTypes.arrayOf(PropTypes.object),
 };

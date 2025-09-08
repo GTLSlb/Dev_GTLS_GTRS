@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import React from "react";
 import PropTypes from "prop-types";
 import { useEffect } from "react";
@@ -7,20 +7,21 @@ import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import TableStructure from "@/Components/TableStructure";
-import { formatDateToExcel, getApiRequest } from "@/CommonFunctions";
+import { formatDateToExcel, useApiRequests } from "@/CommonFunctions";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import { CustomContext } from "@/CommonContext";
 
 export default function DriverLogin({
     DriverData,
     setDriverData,
     filterValue,
     setFilterValue,
-    url,
-    currentUser,
 }) {
+    const { user, url } = useContext(CustomContext);
+    const { getApiRequest } = useApiRequests();
     window.moment = moment;
 
     const [isFetching, setIsFetching] = useState();
@@ -32,7 +33,7 @@ export default function DriverLogin({
     }, []);
     async function fetchData() {
         const data = await getApiRequest(`${url}DriverLogin`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {
@@ -63,10 +64,11 @@ export default function DriverLogin({
                 item["MobilityDeviceModels_Description"] || value,
             DeviceMakes: (value, item) =>
                 item["MobilityDeviceMakes_Description"] || value,
-            VLink: (value, item) => item["UsedForVLink"] || value,
-            SmartSCANFreight: (value, item) =>
+            UsedForVLink: (value, item) => item["UsedForVLink"] || value,
+            UsedForSmartSCANFreight: (value, item) =>
                 item["UsedForSmartSCANFreight"] || value,
-            SmartSCAN: (value, item) => item["UsedForSmartSCAN"] || value,
+            UsedForSmartSCAN: (value, item) =>
+                item["UsedForSmartSCAN"] === true ? "True" : "False",
         };
 
         // Call the `exportToExcel` function
@@ -104,6 +106,17 @@ export default function DriverLogin({
         "MobilityDeviceMakes_Description"
     );
 
+    const trueFalseOptions = [
+        {
+            id: true,
+            label: "True",
+        },
+        {
+            id: false,
+            label: "False",
+        },
+    ].sort((a, b) => a.label.localeCompare(b.label));
+
     const columns = [
         {
             name: "Name",
@@ -135,6 +148,12 @@ export default function DriverLogin({
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: trueFalseOptions,
+            },
             render: ({ value }) => {
                 return value ? (
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
@@ -142,7 +161,7 @@ export default function DriverLogin({
                     </span>
                 ) : (
                     <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        false
+                        False
                     </span>
                 );
             },
@@ -154,6 +173,12 @@ export default function DriverLogin({
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: trueFalseOptions,
+            },
             render: ({ value }) => {
                 return value ? (
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
@@ -161,7 +186,7 @@ export default function DriverLogin({
                     </span>
                 ) : (
                     <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        false
+                        False
                     </span>
                 );
             },
@@ -215,6 +240,12 @@ export default function DriverLogin({
             type: "string",
             headerAlign: "center",
             textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: trueFalseOptions,
+            },
             render: ({ value }) => {
                 return value ? (
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
@@ -222,7 +253,7 @@ export default function DriverLogin({
                     </span>
                 ) : (
                     <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        false
+                        False
                     </span>
                 );
             },
@@ -285,26 +316,24 @@ export default function DriverLogin({
         },
     ];
 
+    if (isFetching) {
+        return <AnimatedLoading />;
+    }
+
     return (
-        <div>
-            {/* <Sidebar /> */}
-            {isFetching && <AnimatedLoading />}
-            {!isFetching && (
-                <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                    <TableStructure
-                        id={"MobilityDeviceID"}
-                        gridRef={gridRef}
-                        setSelected={setSelected}
-                        handleDownloadExcel={handleDownloadExcel}
-                        title={"Driver Login"}
-                        selected={selected}
-                        tableDataElements={DriverData}
-                        filterValueElements={filterValue}
-                        setFilterValueElements={setFilterValue}
-                        columnsElements={columns}
-                    />
-                </div>
-            )}
+        <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
+            <TableStructure
+                id={"MobilityDeviceID"}
+                gridRef={gridRef}
+                setSelected={setSelected}
+                handleDownloadExcel={handleDownloadExcel}
+                title={"Driver Login"}
+                selected={selected}
+                tableDataElements={DriverData}
+                filterValueElements={filterValue}
+                setFilterValueElements={setFilterValue}
+                columnsElements={columns}
+            />
         </div>
     );
 }
@@ -314,6 +343,4 @@ DriverLogin.propTypes = {
     setDriverData: PropTypes.func,
     filterValue: PropTypes.array,
     setFilterValue: PropTypes.func,
-    url: PropTypes.string,
-    currentUser: PropTypes.object,
 };

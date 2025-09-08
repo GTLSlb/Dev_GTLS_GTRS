@@ -1,24 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import FailedCons from "./FailedCons";
 import swal from "sweetalert";
 import axios from "axios";
 import { handleSessionExpiration } from "@/CommonFunctions";
+import { CustomContext } from "@/CommonContext";
+import { canViewFailedReasons } from "@/permissions";
+import FailedReasonsTable from "./FailedReasonsTable";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 
 export default function FailedConsMain({
-    url,
     PerfData,
     filterValue,
     setFilterValue,
-    currentUser,
-    userPermission,
     accData,
-    Token,
     failedReasons,
     setFailedReasons,
 }) {
+    const { url, Token, user, userPermissions } = useContext(CustomContext);
     const [isFetching, setIsfetching] = useState();
+    const [activeComponentIndex, setActiveComponentIndex] = useState(0);
 
     useEffect(() => {
         if (!failedReasons) {
@@ -26,12 +27,13 @@ export default function FailedConsMain({
             fetchReasonData();
         }
     }, []);
+
     const fetchReasonData = async () => {
         try {
             axios
                 .get(`${url}FailureReasons`, {
                     headers: {
-                        UserId: currentUser.UserId,
+                        UserId: user.UserId,
                         Authorization: `Bearer ${Token}`,
                     },
                 })
@@ -68,39 +70,70 @@ export default function FailedConsMain({
         }
     };
 
+    // Define tab configuration with unique IDs
+    const tabs = [
+        {
+            id: "failed-consignments",
+            label: "Failed Consignments",
+            component: (
+                <FailedCons
+                    url={url}
+                    failedReasons={failedReasons}
+                    userPermissions={userPermissions}
+                    accData={accData}
+                    PerfData={PerfData}
+                    filterValue={filterValue}
+                    setFilterValue={setFilterValue}
+                    Token={Token}
+                />
+            ),
+        },
+        {
+            id: "failed-reasons",
+            label: "Failed Reasons",
+            component: <FailedReasonsTable />,
+        },
+    ];
+
+    const handleItemClick = (index) => {
+        setActiveComponentIndex(index);
+    };
+
+    if (isFetching) return <AnimatedLoading />;
+
     return (
-        <div>
-            {isFetching ? (
-                <AnimatedLoading />
+        <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20 h-full">
+            {canViewFailedReasons(userPermissions) ? (
+                <ul className="flex space-x-0 mt-5">
+                    {tabs.map((tab, index) => (
+                        <li
+                            key={tab.id} // Use stable unique ID instead of index
+                            className={`cursor-pointer ${
+                                activeComponentIndex === index
+                                    ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
+                                    : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
+                            }`}
+                            onClick={() => handleItemClick(index)}
+                        >
+                            <div className="px-2">{tab.label}</div>
+                        </li>
+                    ))}
+                </ul>
             ) : (
-                <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                    <FailedCons
-                        url={url}
-                        failedReasons={failedReasons}
-                        currentUser={currentUser}
-                        userPermission={userPermission}
-                        accData={accData}
-                        PerfData={PerfData}
-                        filterValue={filterValue}
-                        setFilterValue={setFilterValue}
-                        Token={Token}
-                    />
-                </div>
+                <div></div>
             )}
+            <div className="mt-4 h-full">
+                {tabs[activeComponentIndex]?.component}
+            </div>
         </div>
     );
-
 }
 
 FailedConsMain.propTypes = {
-    url: PropTypes.string,
     PerfData: PropTypes.array,
     filterValue: PropTypes.array,
     setFilterValue: PropTypes.func,
-    currentUser: PropTypes.object,
-    userPermission: PropTypes.object,
     accData: PropTypes.array,
-    Token: PropTypes.string,
     failedReasons: PropTypes.array,
     setFailedReasons: PropTypes.func,
 };

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import NoAccessRedirect from "@/Pages/NoAccessRedirect";
 import menu from "@/SidebarMenuItems";
@@ -6,21 +6,17 @@ import Cookies from "js-cookie";
 import "react-toastify/dist/ReactToastify.css";
 import { PublicClientApplication } from "@azure/msal-browser";
 import swal from "sweetalert";
-import {
-    AlertToast,
-    canViewDetails,
-    canViewIncidentDetails,
-} from "./permissions";
+import { canViewDetails, canViewIncidentDetails } from "./permissions";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { CustomContext } from "./CommonContext";
 
 const msalConfig = {
     auth: {
         clientId: window.Laravel.azureClientId,
-        authority:
-            `https://login.microsoftonline.com/${window.Laravel.azureTenantId}`,
+        authority: `https://login.microsoftonline.com/${window.Laravel.azureTenantId}`,
         redirectUri: window.Laravel.azureCallback,
-        failureRedirectUri: '/failed-login',
+        failureRedirectUri: "/failed-login",
     },
     cache: {
         cacheLocation: "sessionStorage",
@@ -38,7 +34,7 @@ export async function handleSessionExpiration() {
         .getAttribute("content");
     axios;
     const credentials = {
-        CurrentUser: {},
+        user: {},
         URL: window.Laravel.gtamUrl,
         SessionDomain: window.Laravel.appDomain,
     };
@@ -51,6 +47,9 @@ export async function handleSessionExpiration() {
                 // Clear MSAL-related data from localStorage
                 clearMSALLocalStorage();
                 Cookies.remove("access_token");
+
+                // Remove all items
+                sessionStorage.clear();
 
                 if (isMicrosoftLogin === "true") {
                     // Redirect to Microsoft logout URL
@@ -92,7 +91,13 @@ export function clearMSALLocalStorage() {
     msalKeys.forEach((key) => {
         localStorage.removeItem(key);
     });
-
+    // Find all keys in sessionStorage starting with 'msal' and remove them
+    const msalSessionKeys = Object.keys(sessionStorage).filter((key) =>
+        key.startsWith("msal")
+    );
+    msalSessionKeys.forEach((key) => {
+        sessionStorage.removeItem(key);
+    });
     // Remove the msal.isMicrosoftLogin cookie
     Cookies.set("msal.isMicrosoftLogin", "", {
         expires: -1,
@@ -138,17 +143,11 @@ export function getMinMaxValue(data, fieldName, identifier) {
     return `${day}-${month}-${year}`;
 }
 
-export const fetchApiData = async (
-    url,
-    setData,
-    currentUser,
-    Token,
-    setApiStatus
-) => {
+export const fetchApiData = async (url, setData, user, Token, setApiStatus) => {
     try {
         const response = await axios.get(url, {
             headers: {
-                UserId: currentUser.UserId,
+                UserId: user.UserId,
                 Authorization: `Bearer ${Token}`,
             },
         });
@@ -185,42 +184,22 @@ export const fetchApiData = async (
  * @param {object} headers - Optional headers to include in the request.
  * @return {Promise} A Promise that resolves with the data from the response or handles errors.
  */
-export function getApiRequest(url, headers = {}) {
-    const Token = Cookies.get("access_token");
-    const tokenHeaders = { ...headers, Authorization: `Bearer ${Token}` };
-    return axios
-        .get(url, {
-            headers: tokenHeaders,
-        })
-        .then((res) => {
-            return res.data;
-        })
-        .catch((err) => {
-            if (err.response && err.response.status === 401) {
-                // Handle 401 error using SweetAlert
-                swal({
-                    title: "Session Expired!",
-                    text: "Please login again",
-                    icon: "info",
-                    buttons: {
-                        confirm: {
-                            text: "OK",
-                            value: true,
-                            visible: true,
-                            className: "",
-                            closeModal: true,
-                        },
-                    },
-                }).then(function () {
-                    handleSessionExpiration();
-                });
-            } else {
-                // Handle other errors
-                AlertToast("Something went wrong", 2);
-                console.error(err);
-            }
-        });
-}
+export const isDummyAccount = (value) => {
+    const email = Cookies.get("userEmail");
+    if (email == "demo@gtls.com.au") {
+        return "********";
+    } else {
+        return value;
+    }
+};
+export const isDummyAccountWithDummyData = (dummy, value) => {
+    const email = Cookies.get("userEmail");
+    if (email == "demo@gtls.com.au") {
+        return dummy;
+    } else {
+        return value;
+    }
+};
 
 export const formatDateToExcel = (dateValue) => {
     const date = new Date(dateValue);
@@ -263,7 +242,7 @@ export function formatDateFromExcelWithNoTime(dateValue) {
 }
 
 export function ProtectedRoute({ permission, route, element }) {
-    const userHasPermission = checkUserPermission(permission, route);
+    const userHasPermission = checkuserPermissions(permission, route);
     return userHasPermission ? element : <NoAccessRedirect />;
 }
 
@@ -273,15 +252,15 @@ ProtectedRoute.propTypes = {
     element: PropTypes.element,
 };
 
-function checkUserPermission(permission, route) {
+function checkuserPermissions(permission, route) {
     if (typeof route == "string") {
         // Go over the flat permissions and check if the user has the required permission
-        return permission?.Features?.some((feature) => {
+        return permission?.some((feature) => {
             return feature.FunctionName == route;
         });
     } else if (typeof route == "object") {
         // Map over permissions and check if the user has the required permission
-        return permission?.Features?.some((feature) => {
+        return permission?.some((feature) => {
             return route?.includes(feature.FunctionName);
         });
     }
@@ -299,7 +278,7 @@ function findCurrentItem(items, id) {
                     ? {
                           options: element.options.map((option) => {
                               if (option.id == id) {
-                                //   targetElement = option;
+                                  //   targetElement = option;
                                   return { ...option, current: true };
                               } else {
                                   return { ...option, current: false };
@@ -321,7 +300,7 @@ function findCurrentItem(items, id) {
 
 export function navigateToFirstAllowedPage({
     setSidebarElements,
-    user,
+    userPermissions,
     navigate,
 }) {
     let items = [];
@@ -330,7 +309,7 @@ export function navigateToFirstAllowedPage({
         if (Object.prototype.hasOwnProperty.call(menuItem, "options")) {
             menuItem.options.forEach((option) => {
                 if (
-                    user?.Features?.some(
+                    userPermissions?.some(
                         (item) => item?.FunctionName === option?.feature
                     )
                 ) {
@@ -353,7 +332,7 @@ export function navigateToFirstAllowedPage({
             });
         } else {
             if (
-                user?.Features?.some(
+                userPermissions?.some(
                     (item) => item?.FunctionName === menuItem?.feature
                 )
             ) {
@@ -361,7 +340,6 @@ export function navigateToFirstAllowedPage({
             }
         }
     });
-
     // Navigate to the page specified in the browser URL
     if (
         window.location.pathname != "/gtrs/" &&
@@ -371,14 +349,18 @@ export function navigateToFirstAllowedPage({
         navigate(window.location.pathname);
     } else {
         // Navigate to the first allowed page
+        if (items.length === 0) {
+            navigate("/no-access");
+            return;
+        }
         items[0].current = true;
-        navigate(items[0].url);
+        navigate(items[0]?.url);
         setSidebarElements(items);
     }
 }
 
-export function renderConsDetailsLink(userPermission, text, value) {
-    if (canViewDetails(userPermission)) {
+export function renderConsDetailsLink(userPermissions, text, value) {
+    if (canViewDetails(userPermissions)) {
         return (
             <Link
                 to={`/gtrs/consignment-details`}
@@ -393,8 +375,8 @@ export function renderConsDetailsLink(userPermission, text, value) {
     }
 }
 
-export function renderIncidentDetailsLink(userPermission, text, value) {
-    if (canViewIncidentDetails(userPermission)) {
+export function renderIncidentDetailsLink(userPermissions, text, value) {
+    if (canViewIncidentDetails(userPermissions)) {
         return (
             <Link
                 to={`/gtrs/incident`}
@@ -425,3 +407,107 @@ export const formatNumberWithCommas = (value) => {
         return parts.join(".");
     }
 };
+
+export function useApiRequests() {
+    const { Token } = useContext(CustomContext);
+
+    const getApiRequest = (url, headers = {}, passedToken = null) => {
+        // Create a new headers object to avoid mutating the original
+        const tokenHeaders = {
+            ...headers,
+        };
+        // Check if the Authorization header is missing and a token is provided
+        if (!tokenHeaders.Authorization && passedToken) {
+            tokenHeaders.Authorization = `Bearer ${passedToken}`;
+        } else if (!tokenHeaders.Authorization && Token && !passedToken) {
+            tokenHeaders.Authorization = `Bearer ${Token}`;
+        }
+        return axios
+            .get(url, { headers: tokenHeaders })
+            .then((res) => res.data)
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        icon: "info",
+                        buttons: {
+                            confirm: {
+                                text: "OK",
+                                value: true,
+                                visible: true,
+                                className: "",
+                                closeModal: true,
+                            },
+                        },
+                    }).then(() => handleSessionExpiration());
+                    throw err;
+                } else {
+                    console.error("API GET request error:", err);
+                    throw err;
+                }
+            });
+    };
+
+    const postApiRequest = (
+        url,
+        headers = {},
+        body = {},
+        passedToken = null
+    ) => {
+        const tokenHeaders = {
+            ...headers,
+        };
+
+        if (!tokenHeaders.Authorization && passedToken) {
+            tokenHeaders.Authorization = `Bearer ${passedToken}`;
+        }
+        return axios
+            .post(url, body, { headers: tokenHeaders })
+            .then((res) => res.data)
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        icon: "info",
+                        buttons: {
+                            confirm: {
+                                text: "OK",
+                                value: true,
+                                visible: true,
+                                className: "",
+                                closeModal: true,
+                            },
+                        },
+                    }).then(() => handleSessionExpiration());
+                    throw err;
+                } else {
+                    console.error("API POST request error:", err);
+                    throw err;
+                }
+            });
+    };
+
+    return { getApiRequest, postApiRequest };
+}
+
+export function convertUtcToUserTimezone(utcDateString) {
+    // Create a Date object from the UTC date string
+    const utcDate = new Date(utcDateString);
+
+    // Get the current user's timezone
+    const targetTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    const formatter = new Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        timeZone: targetTimezone,
+    });
+    const convertedDate = formatter.format(utcDate);
+    return convertedDate;
+}

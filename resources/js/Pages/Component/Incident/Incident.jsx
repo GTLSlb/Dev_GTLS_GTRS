@@ -1,25 +1,18 @@
-import {
-    Progress,
-    Tab,
-    Tabs,
-} from "@heroui/react";
+import { Progress, Tab, Tabs } from "@heroui/react";
 import axios from "axios";
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import IncidentDetails from "./IncidentDetails";
 import swal from "sweetalert";
 import Notes from "../Notes";
-import { handleSessionExpiration } from '@/CommonFunctions';
+import { handleSessionExpiration } from "@/CommonFunctions";
 import { useLocation } from "react-router-dom";
 import { canViewIncidentDetails } from "@/permissions";
+import { CustomContext } from "@/CommonContext";
 
-export default function Incident({
-    gtccrUrl,
-    currentUser,
-    Token,
-    userPermission,
-}) {
+export default function Incident({ gtccrUrl }) {
+    const { Token, user, userPermissions } = useContext(CustomContext);
     const location = useLocation();
     const [selected, setSelected] = useState("details");
     const [filters, setFilters] = useState();
@@ -35,7 +28,7 @@ export default function Incident({
         axios
             .get(`${gtccrUrl}IncidentAssets`, {
                 headers: {
-                    UserId: currentUser?.UserId,
+                    UserId: user?.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             })
@@ -77,7 +70,7 @@ export default function Incident({
         axios
             .get(`${gtccrUrl}IncidentCauses`, {
                 headers: {
-                    UserId: currentUser?.UserId,
+                    UserId: user?.UserId,
                     // UserId: 1,
                     Authorization: `Bearer ${Token}`,
                 },
@@ -120,7 +113,7 @@ export default function Incident({
             .get(`${gtccrUrl}IncidentById`, {
                 headers: {
                     // UserId: 1,
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                     Incident_Id: location?.state?.incidentId,
                 },
@@ -139,11 +132,9 @@ export default function Incident({
 
     return (
         <div className="relative p-5">
-
-
             {incident && filters && mainCauses ? (
                 <div>
-                    {canViewIncidentDetails(userPermission) ? (
+                    {canViewIncidentDetails(userPermissions) ? (
                         <Tabs
                             aria-label="Options"
                             selectedKey={selected}
@@ -162,7 +153,7 @@ export default function Incident({
                                     mainCauses={mainCauses}
                                     filters={filters}
                                     incident={incident}
-                                    userPermission={userPermission}
+                                    userPermissions={userPermissions}
                                 />
                             </Tab>
                             <Tab key="notes" title="Notes">
@@ -171,15 +162,14 @@ export default function Incident({
                                     Token={Token}
                                     getIncident={getIncident}
                                     filters={filters}
-                                    currentUser={currentUser}
-                                    userPermission={userPermission}
+                                    userPermissions={userPermissions}
                                 />
                             </Tab>
                         </Tabs>
                     ) : (
                         <div className="">
                             <IncidentDetails
-                                currentUser={currentUser}
+                                userPermissions={userPermissions}
                                 mainCauses={mainCauses}
                                 filters={filters}
                                 incident={incident}
@@ -194,7 +184,7 @@ export default function Incident({
                         isIndeterminate
                         classNames={{
                             indicator: "bg-goldt",
-                          }}
+                        }}
                         aria-label="Loading..."
                         className="mt-10 w-10/12 "
                     />
@@ -206,7 +196,4 @@ export default function Incident({
 
 Incident.propTypes = {
     gtccrUrl: PropTypes.string,
-    currentUser: PropTypes.object,
-    Token: PropTypes.string,
-    userPermission: PropTypes.object,
 };

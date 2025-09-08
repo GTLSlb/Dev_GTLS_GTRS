@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import React from "react";
 import PropTypes from "prop-types";
 import { useEffect } from "react";
@@ -9,24 +9,24 @@ import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import TableStructure from "@/Components/TableStructure";
 import {
     formatDateToExcel,
-    getApiRequest,
     renderConsDetailsLink,
+    useApiRequests,
 } from "@/CommonFunctions";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import { CustomContext } from "@/CommonContext";
 
 export default function NoDelivery({
     NoDelData,
     setNoDelData,
     filterValue,
     setFilterValue,
-    currentUser,
-    userPermission,
-    url,
 }) {
+    const { user, url, userPermissions } = useContext(CustomContext);
+    const { getApiRequest } = useApiRequests();
     window.moment = moment;
 
     const [isFetching, setIsFetching] = useState();
@@ -39,7 +39,7 @@ export default function NoDelivery({
 
     async function fetchData() {
         const data = await getApiRequest(`${url}NoDelInfo`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {
@@ -68,6 +68,8 @@ export default function NoDelivery({
             SenderState: (value, item) => item["Send_State"] || value,
             ReceiverSuburb: (value, item) => item["Del_Suburb"] || value,
             ReceiverState: (value, item) => item["Del_State"] || value,
+            POD: (value) => (value ? "True" : "False"),
+            Timeslot: (value) => (value ? "True" : "False"),
             Status: (value, item) =>
                 item["AdminStatusCodes_Description"] || value,
         };
@@ -101,6 +103,16 @@ export default function NoDelivery({
     const minDaterdd = getMinMaxValue(NoDelData, "DeliveryRequiredDateTime", 1);
     const maxDaterdd = getMinMaxValue(NoDelData, "DeliveryRequiredDateTime", 2);
 
+    const trueFalseOptions = [
+        {
+            id: true,
+            label: "True",
+        },
+        {
+            id: false,
+            label: "False",
+        },
+    ].sort((a, b) => a.label.localeCompare(b.label));
     const groups = [
         {
             name: "senderInfo",
@@ -125,9 +137,9 @@ export default function NoDelivery({
 
             render: ({ value, data }) => {
                 return renderConsDetailsLink(
-                    userPermission,
+                    userPermissions,
                     value,
-                    data
+                    data.ConsignmentID
                 );
             },
         },
@@ -161,13 +173,18 @@ export default function NoDelivery({
             group: "senderInfo",
         },
         {
-            name: "SenderReference",
-            header: "Sender Reference",
+            name: "Send_State",
+            header: "Sender State",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
-            filterEditor: StringFilter,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: senderStates,
+            },
             group: "senderInfo",
         },
         {
@@ -186,18 +203,13 @@ export default function NoDelivery({
             group: "senderInfo",
         },
         {
-            name: "Send_State",
-            header: "Sender State",
+            name: "SenderReference",
+            header: "Sender Reference",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: senderStates,
-            },
+            filterEditor: StringFilter,
             group: "senderInfo",
         },
         {
@@ -220,16 +232,6 @@ export default function NoDelivery({
             type: "string",
             headerAlign: "center",
             textAlign: "start",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-            group: "receiverInfo",
-        },
-        {
-            name: "ReceiverReference",
-            header: "Receiver Reference",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
             group: "receiverInfo",
@@ -265,11 +267,27 @@ export default function NoDelivery({
             group: "receiverInfo",
         },
         {
+            name: "ReceiverReference",
+            header: "Receiver Reference",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+            group: "receiverInfo",
+        },
+        {
             name: "Timeslot",
             header: "Timeslot",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: trueFalseOptions,
+            },
             render: ({ value }) => {
                 return value ? (
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
@@ -277,7 +295,7 @@ export default function NoDelivery({
                     </span>
                 ) : (
                     <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        false
+                        False
                     </span>
                 );
             },
@@ -288,6 +306,12 @@ export default function NoDelivery({
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: trueFalseOptions,
+            },
             render: ({ value }) => {
                 return value ? (
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
@@ -295,7 +319,7 @@ export default function NoDelivery({
                     </span>
                 ) : (
                     <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        false
+                        False
                     </span>
                 );
             },
@@ -335,27 +359,24 @@ export default function NoDelivery({
         },
     ];
 
+    if (isFetching) {
+        return <AnimatedLoading />;
+    }
     return (
-        <div>
-            {/* <Sidebar /> */}
-            {isFetching && <AnimatedLoading />}
-            {!isFetching && (
-                <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                    <TableStructure
-                        id={"ConsignmentID"}
-                        gridRef={gridRef}
-                        groupsElements={groups}
-                        handleDownloadExcel={handleDownloadExcel}
-                        title={"No Delivery Information"}
-                        setFilterValueElements={setFilterValue}
-                        setSelected={setSelected}
-                        selected={selected}
-                        tableDataElements={NoDelData}
-                        filterValueElements={filterValue}
-                        columnsElements={columns}
-                    />
-                </div>
-            )}
+        <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
+            <TableStructure
+                id={"ConsignmentID"}
+                gridRef={gridRef}
+                groupsElements={groups}
+                handleDownloadExcel={handleDownloadExcel}
+                title={"No Delivery Information"}
+                setFilterValueElements={setFilterValue}
+                setSelected={setSelected}
+                selected={selected}
+                tableDataElements={NoDelData}
+                filterValueElements={filterValue}
+                columnsElements={columns}
+            />
         </div>
     );
 }
@@ -365,7 +386,4 @@ NoDelivery.propTypes = {
     setNoDelData: PropTypes.func,
     filterValue: PropTypes.array,
     setFilterValue: PropTypes.func,
-    currentUser: PropTypes.object,
-    userPermission: PropTypes.object,
-    url: PropTypes.string,
 };

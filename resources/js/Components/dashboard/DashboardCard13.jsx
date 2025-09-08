@@ -59,10 +59,11 @@ const BasicPieCharts = (props) => {
         label: {
             type: "spider",
             labelHeight: 30,
-            // content: labelContent
-            //     ? labelContent
-            //     : "{name} - {value} - {percentage}",
-            content: (data) => `${data.value.toLocaleString()} (${(data.value / totalValue * 100).toFixed(2)}%)`,
+            // content: "{name} - {value} - {percentage}",
+            content: (data) =>
+                `${data.value.toLocaleString()} (${(data.percent * 100).toFixed(
+                    2
+                )} %)`,
             style: {
                 fontSize: 12,
                 textAlign: "center",
@@ -98,8 +99,7 @@ const BasicPieCharts = (props) => {
                 if (chartTitle === "On Time Performance") {
                     const value =
                         data.label === "Delivered on Time" ? "PASS" : "FAIL";
-                    
-                    
+
                     setChartFilter((prev) => ({
                         ...prev,
                         consStatus: value,

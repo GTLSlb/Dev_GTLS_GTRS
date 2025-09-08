@@ -1,31 +1,33 @@
-import React, { useRef, useState } from "react";
-import PropTypes from "prop-types";
-import { useEffect } from "react";
-import moment from "moment";
+import { CustomContext } from "@/CommonContext";
+import {
+    formatDateToExcel,
+    isDummyAccount,
+    renderConsDetailsLink,
+} from "@/CommonFunctions";
+import AnimatedLoading from "@/Components/AnimatedLoading";
 import SetFailedReasonModal from "@/Components/SetFailedReasonModal";
-import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import TableStructure from "@/Components/TableStructure";
+import { createNewLabelObjects } from "@/Components/utils/dataUtils";
+import { getMinMaxValue } from "@/Components/utils/dateUtils";
+import { exportToExcel } from "@/Components/utils/excelUtils";
+import { handleFilterTable } from "@/Components/utils/filterUtils";
+import { canEditFailedConsignments } from "@/permissions";
+import { PencilIcon } from "@heroicons/react/24/outline";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
-import { canEditFailedConsignments } from "@/permissions";
-import { getMinMaxValue } from "@/Components/utils/dateUtils";
-import { createNewLabelObjects } from "@/Components/utils/dataUtils";
-import { handleFilterTable } from "@/Components/utils/filterUtils";
-import { exportToExcel } from "@/Components/utils/excelUtils";
-import { formatDateToExcel, renderConsDetailsLink, renderIncidentDetailsLink } from "@/CommonFunctions";
-import AnimatedLoading from "@/Components/AnimatedLoading";
+import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
+import moment from "moment";
+import PropTypes from "prop-types";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
 export default function FailedCons({
     PerfData,
     failedReasons,
-    url,
-    Token,
     filterValue,
     setFilterValue,
-    currentUser,
-    userPermission,
     accData,
 }) {
+    const { userPermissions } = useContext(CustomContext);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [reason, setReason] = useState();
     const handleEditClick = (reason) => {
@@ -33,7 +35,7 @@ export default function FailedCons({
         setIsModalOpen(!isModalOpen);
     };
 
-    const excludedDebtorIds = [1514, 364, 247, 246, 245, 244];
+    const excludedDebtorIds = [1514, 364, 247, 246, 245, 244, 1851];
     const [data, setData] = useState(
         PerfData?.filter(
             (obj) =>
@@ -72,8 +74,42 @@ export default function FailedCons({
             headerAlign: "center",
         },
     ];
-    const senderZoneOptions = createNewLabelObjects(data, "SenderState");
-    const receiverZoneOptions = createNewLabelObjects(data, "ReceiverState");
+    const reasonOptions = failedReasons?.map((reason) => ({
+        id: reason.ReasonId,
+        label: reason.ReasonName,
+    }));
+    const podOptions = [
+        {
+            id: true,
+            label: "True",
+        },
+        {
+            id: false,
+            label: "False",
+        },
+    ].sort((a, b) => a.label.localeCompare(b.label));
+    const senderStatesOptions = createNewLabelObjects(data, "SenderState");
+    const receiverStateOptions = createNewLabelObjects(data, "ReceiverState");
+    const senderZoneOptions = createNewLabelObjects(data, "SenderZone");
+    const receiverZoneOptions = createNewLabelObjects(data, "ReceiverZone");
+
+    const states = createNewLabelObjects(data, "State");
+    const departments = createNewLabelObjects(data, "Department");
+    const statusOptions = createNewLabelObjects(data, "Status");
+    const referenceOptions = [
+        {
+            id: 0,
+            label: "N/A",
+        },
+        {
+            id: 1,
+            label: "Internal",
+        },
+        {
+            id: 2,
+            label: "External",
+        },
+    ].sort((a, b) => a.label.localeCompare(b.label));
     // Usage example remains the same
     const minKPIDate = getMinMaxValue(data, "KpiDatetime", 1);
     const maxKPIDate = getMinMaxValue(data, "KpiDatetime", 2);
@@ -100,48 +136,23 @@ export default function FailedCons({
             filterEditor: StringFilter,
             render: ({ value, data }) => {
                 return renderConsDetailsLink(
-                    userPermission,
+                    userPermissions,
                     value,
                     data.ConsignmentID
                 );
             },
         },
         {
-            name: "IncidentNo",
-            defaultWidth: 170,
-            header: "Incident No",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            render: ({ value, data }) => {
-                return renderIncidentDetailsLink(
-                    userPermission,
-                    value,
-                    data.IncidentId
-                );
-            },
-            filterEditor: StringFilter,
-        },
-        {
-            name: "IncidentTypeName",
-            defaultWidth: 170,
-            header: "Incident Type",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            render: ({ value }) => {
-                return <span className=""> {value}</span>;
-            },
-            filterEditor: StringFilter,
-        },
-        {
-            name: "IncidentStatusName",
+            name: "Status",
             header: "Status",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
-            render: ({ data }) => {
-                return <span className=""> {data.IncidentStatusName}</span>;
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: statusOptions,
             },
         },
         {
@@ -154,6 +165,9 @@ export default function FailedCons({
 
             group: "senderInfo",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SenderReference",
@@ -164,6 +178,9 @@ export default function FailedCons({
             textAlign: "center",
             group: "senderInfo",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "SenderState",
@@ -172,6 +189,20 @@ export default function FailedCons({
             headerAlign: "center",
             textAlign: "center",
             group: "senderInfo",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: senderStatesOptions,
+            },
+        },
+        {
+            name: "SenderZone",
+            header: "Sender Zone",
+            headerAlign: "center",
+            group: "senderInfo",
+            textAlign: "center",
+            defaultWidth: 170,
             filterEditor: SelectFilter,
             filterEditorProps: {
                 multiple: true,
@@ -188,6 +219,9 @@ export default function FailedCons({
             textAlign: "center",
             group: "receiverInfo",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "ReceiverReference",
@@ -198,6 +232,9 @@ export default function FailedCons({
             textAlign: "center",
             group: "receiverInfo",
             filterEditor: StringFilter,
+            render: ({ value }) => {
+                return isDummyAccount(value);
+            },
         },
         {
             name: "ReceiverState",
@@ -205,6 +242,20 @@ export default function FailedCons({
             headerAlign: "center",
             textAlign: "center",
             group: "receiverInfo",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: receiverStateOptions,
+            },
+        },
+        {
+            name: "ReceiverZone",
+            header: "Receiver Zone",
+            headerAlign: "center",
+            group: "receiverInfo",
+            textAlign: "center",
+            defaultWidth: 170,
             filterEditor: SelectFilter,
             filterEditorProps: {
                 multiple: true,
@@ -320,6 +371,12 @@ export default function FailedCons({
             header: "POD",
             headerAlign: "center",
             textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: podOptions,
+            },
             render: ({ value }) => {
                 return value ? (
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
@@ -327,17 +384,148 @@ export default function FailedCons({
                     </span>
                 ) : (
                     <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        false
+                        False
                     </span>
                 );
             },
         },
+        {
+            name: "FailedReason",
+            header: "Reason",
+            headerAlign: "center",
+            textAlign: "start",
+            defaultWidth: 300,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: reasonOptions,
+            },
+            render: ({ value }) => {
+                return (
+                    <div>
+                        {/* {value} */}
+                        {
+                            failedReasons?.find(
+                                (reason) => reason.ReasonId === value
+                            )?.ReasonName
+                        }
+                    </div>
+                );
+            },
+        },
+        {
+            name: "FailedReasonDesc",
+            header: "Main cause",
+            headerAlign: "center",
+            textAlign: "start",
+            defaultWidth: 300,
+            filterEditor: StringFilter,
+        },
+        {
+            name: "State",
+            header: "State",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: states,
+            },
+        },
+        {
+            name: "Reference",
+            header: "Reference",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: referenceOptions,
+            },
+            render: ({ value }) => {
+                return value == 1 ? (
+                    <span>Internal</span>
+                ) : value == 2 ? (
+                    <span>External</span>
+                ) : (
+                    <span></span>
+                );
+            },
+        },
+        {
+            name: "Department",
+            header: "Department",
+            headerAlign: "center",
+            textAlign: "start",
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: departments,
+            },
+        },
+        {
+            name: "OccuredAt",
+            header: "Occured at",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            dateFormat: "DD-MM-YYYY",
+            filterEditor: DateFilter,
+            render: ({ value }) => {
+                return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                    "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A");
+            },
+        },
+        {
+            name: "FailedNote",
+            header: "Explanation",
+            headerAlign: "center",
+            textAlign: "start",
+            filterEditor: StringFilter,
+        },
+        {
+            header: "Edit",
+            name: "edit",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 100,
+            render: ({ data }) => {
+                return (
+                    <div>
+                        {canEditFailedConsignments(userPermissions) ? (
+                            <button
+                                className={
+                                    "rounded text-blue-500 justify-center items-center  "
+                                }
+                                onClick={() => {
+                                    handleEditClick(data);
+                                }}
+                            >
+                                <span className="flex gap-x-1">
+                                    <PencilIcon className="h-4" />
+                                    Edit
+                                </span>
+                            </button>
+                        ) : (
+                            <div></div>
+                        )}
+                    </div>
+                );
+            },
+        },
     ];
+
     const newArray = columns.slice(0, -1);
     const [newColumns, setNewColumns] = useState();
 
     useEffect(() => {
-        if (canEditFailedConsignments(userPermission)) {
+        if (canEditFailedConsignments(userPermissions)) {
             setNewColumns(columns);
         } else {
             setNewColumns(newArray);
@@ -355,13 +543,13 @@ export default function FailedCons({
             return acc;
         }, {});
 
-        // Define custom cell handlers (e.g., for formatting dates, failed reasons, etc.)
         const customCellHandlers = {
             DespatchDate: (value) => formatDateToExcel(value),
             ArrivedDatetime: (value) => formatDateToExcel(value),
             DeliveredDate: (value) => formatDateToExcel(value),
             DeliveryRequiredDateTime: (value) => formatDateToExcel(value),
             KpiDatetime: (value) => formatDateToExcel(value),
+            OccuredAt: (value) => formatDateToExcel(value),
             FailedReason: (value, item) => {
                 const failedReason = failedReasons?.find(
                     (reason) => reason.ReasonId === item.FailedReason
@@ -384,10 +572,10 @@ export default function FailedCons({
                 "DeliveredDate",
                 "DeliveryRequiredDateTime",
                 "KpiDatetime",
+                "OccuredAt",
             ]
         );
     };
-
     const updateLocalData = (
         id,
         reasonid,
@@ -401,7 +589,7 @@ export default function FailedCons({
     ) => {
         // Find the item in the local data with the matching id
         const updatedData = filteredData?.map((item) => {
-            if (item.CONSIGNMNENTID === id) {
+            if (item.ConsignmentID === id) {
                 // Update the reason of the matching item
                 return {
                     ...item,
@@ -421,39 +609,34 @@ export default function FailedCons({
         setFilteredData(updatedData);
     };
     const [selected, setSelected] = useState([]);
+
+    if (!newColumns) {
+        return <AnimatedLoading />;
+    }
     return (
         <div className="mt-4">
             {/* <Sidebar /> */}
-            {!newColumns ? (
-                <AnimatedLoading />
-            ) : (
-                <div className=" w-full bg-smooth ">
-                    <TableStructure
-                        id={"ConsignmentID"}
-                        handleDownloadExcel={handleDownloadExcel}
-                        title={"Failed Consignments"}
-                        gridRef={gridRef}
-                        setSelected={setSelected}
-                        selected={selected}
-                        groupsElements={groups}
-                        setFilterValueElements={setFilterValue}
-                        tableDataElements={filteredData}
-                        filterValueElements={filterValue}
-                        columnsElements={newColumns}
-                    />
-                </div>
-            )}
+            <div className=" w-full bg-smooth ">
+                <TableStructure
+                    id={"ConsignmentID"}
+                    handleDownloadExcel={handleDownloadExcel}
+                    title={"Failed Consignments"}
+                    gridRef={gridRef}
+                    setSelected={setSelected}
+                    selected={selected}
+                    groupsElements={groups}
+                    setFilterValueElements={setFilterValue}
+                    tableDataElements={filteredData}
+                    filterValueElements={filterValue}
+                    columnsElements={newColumns}
+                />
+            </div>
 
             <SetFailedReasonModal
-                url={url}
-                Token={Token}
-                isOpen={isModalOpen}
                 reason={reason}
+                isOpen={isModalOpen}
                 setReason={setReason}
                 handleClose={handleEditClick}
-                failedReasons={failedReasons}
-                currentUser={currentUser}
-                userPermission={userPermission}
                 updateLocalData={updateLocalData}
             />
         </div>
@@ -461,13 +644,9 @@ export default function FailedCons({
 }
 
 FailedCons.propTypes = {
-    url: PropTypes.string,
     PerfData: PropTypes.array,
     filterValue: PropTypes.array,
     setFilterValue: PropTypes.func,
-    currentUser: PropTypes.object,
-    userPermission: PropTypes.object,
     accData: PropTypes.array,
-    Token: PropTypes.string,
     failedReasons: PropTypes.array,
 };

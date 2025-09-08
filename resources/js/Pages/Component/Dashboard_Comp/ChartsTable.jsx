@@ -6,7 +6,7 @@ import { getFiltersChartsTable } from "@/Components/utils/filters";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 import moment from "moment";
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
@@ -17,6 +17,7 @@ import { useRef } from "react";
 import { useCallback } from "react";
 import { useState } from "react";
 import TableStats from "./TableStats";
+import { CustomContext } from "@/CommonContext";
 
 function ChartsTable({
     chartsData,
@@ -25,8 +26,8 @@ function ChartsTable({
     setChartFilter,
     chartName,
     setChartName,
-    userPermission
 }) {
+    const { userPermissions } = useContext(CustomContext);
     const gridRef = useRef(null);
     const [selected] = useState({});
 
@@ -44,7 +45,7 @@ function ChartsTable({
             id: false,
             label: "False",
         },
-    ];
+    ].sort();;
 
     const DebtorNamesOptions = createNewLabelObjects(chartsData, "DebtorName");
     const ConsStatusOptions = createNewLabelObjects(chartsData, "ConsStatus");
@@ -75,7 +76,7 @@ function ChartsTable({
             filterEditor: StringFilter,
             render: ({ value, data }) => {
                 return renderConsDetailsLink(
-                    userPermission,
+                    userPermissions,
                     value,
                     data.consid
                 );
@@ -207,7 +208,7 @@ function ChartsTable({
                                 Fail
                             </span>
                         ) : (
-                            <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-0.5 text-sm font-medium text-gray-800">
+                            <span className="inline-flex items-center rounded-full bg-yellow-100 px-3 py-0.5 text-sm font-medium text-yellow-800">
                                 Pending
                             </span>
                         )}
@@ -236,7 +237,7 @@ function ChartsTable({
                             </span>
                         ) : (
                             <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                                false
+                                False
                             </span>
                         )}
                     </div>
@@ -377,7 +378,7 @@ function ChartsTable({
 
 ChartsTable.propTypes = {
     chartsData: PropTypes.array,
-    setShowTable: PropTypes.func,    
+    setShowTable: PropTypes.func,
     setChartFilter: PropTypes.func,
     setChartName: PropTypes.func,
 };

@@ -4,6 +4,7 @@ import React, {
     useCallback,
     useMemo,
     useRef,
+    useContext,
 } from "react";
 import PropTypes from "prop-types";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
@@ -31,17 +32,15 @@ import {
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import TableStructure from "@/Components/TableStructure";
+import { CustomContext } from "@/CommonContext";
 
 export default function DeliveryReportPage({
-    url,
-    Token,
     deliveryReportData,
-    currentUser,
-    userPermission,
     fetchDeliveryReport,
     deliveryReportComments,
     fetchDeliveryReportCommentsDataGTRS,
 }) {
+    const { Token, user, userPermissions, url } = useContext(CustomContext);
     const navigate = useNavigate();
     const handleClick = (coindex) => {
         navigate("/gtrs/consignment-details", {
@@ -365,7 +364,7 @@ export default function DeliveryReportPage({
         try {
             const res = await axios.get(`${url}Delivery/Comments`, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             });
@@ -410,7 +409,7 @@ export default function DeliveryReportPage({
             axios
                 .post(`${url}Add/Comment`, inputValues, {
                     headers: {
-                        UserId: currentUser.UserId,
+                        UserId: user.UserId,
                         Authorization: `Bearer ${Token}`,
                     },
                 })
@@ -418,7 +417,7 @@ export default function DeliveryReportPage({
                     await axios
                         .get(`${url}Delivery/Comments`, {
                             headers: {
-                                UserId: currentUser.UserId,
+                                UserId: user.UserId,
                                 Authorization: `Bearer ${Token}`,
                             },
                         })
@@ -447,7 +446,7 @@ export default function DeliveryReportPage({
                                             },
                                             {
                                                 headers: {
-                                                    UserId: currentUser.UserId,
+                                                    UserId: user.UserId,
                                                     Authorization: `Bearer ${Token}`,
                                                 },
                                             }
@@ -561,7 +560,7 @@ export default function DeliveryReportPage({
                         },
                         {
                             headers: {
-                                UserId: currentUser.UserId,
+                                UserId: user.UserId,
                                 Authorization: `Bearer ${Token}`,
                             },
                         }
@@ -665,7 +664,7 @@ export default function DeliveryReportPage({
         };
 
         return (
-            canAddDeliveryReportComment(userPermission) && (
+            canAddDeliveryReportComment(userPermissions) && (
                 <>
                     <ComboBox
                         onCancel={() => {}}
@@ -1057,16 +1056,16 @@ export default function DeliveryReportPage({
     }, [deliveryReportData]);
 
     useEffect(() => {
-        if (userPermission) {
-            canViewMetcashDeliveryReport(userPermission)
+        if (userPermissions) {
+            canViewMetcashDeliveryReport(userPermissions)
                 ? setActiveComponentIndex(0)
-                : canViewWoolworthsDeliveryReport(userPermission)
+                : canViewWoolworthsDeliveryReport(userPermissions)
                 ? setActiveComponentIndex(1)
-                : canViewOtherDeliveryReport(userPermission)
+                : canViewOtherDeliveryReport(userPermissions)
                 ? setActiveComponentIndex(2)
                 : null;
         }
-    }, [userPermission]);
+    }, [userPermissions]);
 
     const gridRef = useRef(null);
     const [selected, setSelected] = useState([]);
@@ -1176,7 +1175,7 @@ export default function DeliveryReportPage({
             </div>
             <div className="w-full flex gap-4 items-center mt-4">
                 <ul className="flex space-x-0">
-                    {canViewMetcashDeliveryReport(userPermission) && (
+                    {canViewMetcashDeliveryReport(userPermissions) && (
                         <li
                             className={`cursor-pointer ${
                                 activeComponentIndex === 0
@@ -1188,7 +1187,7 @@ export default function DeliveryReportPage({
                             <div className="px-2"> Metcash</div>
                         </li>
                     )}
-                    {canViewWoolworthsDeliveryReport(userPermission) && (
+                    {canViewWoolworthsDeliveryReport(userPermissions) && (
                         <li
                             className={`cursor-pointer ${
                                 activeComponentIndex === 1
@@ -1200,7 +1199,7 @@ export default function DeliveryReportPage({
                             <div className="px-2">Woolworths</div>
                         </li>
                     )}
-                    {canViewOtherDeliveryReport(userPermission) && (
+                    {canViewOtherDeliveryReport(userPermissions) && (
                         <li
                             className={`cursor-pointer ${
                                 activeComponentIndex === 2
@@ -1215,13 +1214,13 @@ export default function DeliveryReportPage({
                 </ul>
             </div>
             {activeComponentIndex == 0 &&
-            canViewMetcashDeliveryReport(userPermission) ? (
+            canViewMetcashDeliveryReport(userPermissions) ? (
                 <div>{renderTable()}</div>
             ) : activeComponentIndex == 1 &&
-              canViewWoolworthsDeliveryReport(userPermission) ? (
+              canViewWoolworthsDeliveryReport(userPermissions) ? (
                 <div>{renderTable()}</div>
             ) : activeComponentIndex == 2 &&
-              canViewOtherDeliveryReport(userPermission) ? (
+              canViewOtherDeliveryReport(userPermissions) ? (
                 <div>{renderTable()}</div>
             ) : (
                 <div></div>
@@ -1233,7 +1232,7 @@ export default function DeliveryReportPage({
                 handleClose={handleViewClose}
                 consId={consId}
                 fetchData={fetchDeliveryReport}
-                currentUser={currentUser}
+                userPermissions={userPermissions}
                 commentsData={commentsData}
                 deliveryCommentsOptions={deliveryCommentsOptions}
                 fetchDeliveryReportCommentsData={
@@ -1245,11 +1244,7 @@ export default function DeliveryReportPage({
 }
 
 DeliveryReportPage.propTypes = {
-    url: PropTypes.string,
-    Token: PropTypes.string,
     deliveryReportData: PropTypes.array,
-    currentUser: PropTypes.object,
-    userPermission: PropTypes.object,
     deliveryCommentsOptions: PropTypes.array,
     fetchDeliveryReport: PropTypes.func,
     fetchDeliveryReportCommentsData: PropTypes.func,

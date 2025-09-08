@@ -1,29 +1,29 @@
 import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import { useState, useEffect, useRef } from "react";
 import TableStructure from "@/Components/TableStructure";
 import { PencilIcon } from "@heroicons/react/20/solid";
-import { canAddNewTransitDays, canEditTransitDays } from "@/permissions";
-import { getApiRequest } from "@/CommonFunctions";
+import { canAddTransitDays, canEditTransitDays } from "@/permissions";
+import { useApiRequests } from "@/CommonFunctions";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import GtrsButton from "../GtrsButton";
+import { CustomContext } from "@/CommonContext";
 
 function NewTransitDays({
     setNewTransitDays,
     newTransitDays,
-    currentUser,
-    userPermission,
     filterValue,
     setFilterValue,
-    url,
 }) {
+    const { user, url, userPermissions } = useContext(CustomContext);
+    const { getApiRequest } = useApiRequests();
     const [isFetching, setIsFetching] = useState(true);
     const [selected, setSelected] = useState([]);
     const [filteredData, setFilteredData] = useState(newTransitDays);
@@ -32,11 +32,13 @@ function NewTransitDays({
 
     async function fetchData() {
         const data = await getApiRequest(`${url}TransitNew`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {
-            const sortedTransit = data.sort((a, b) => b.AddedAt.localeCompare(a.AddedAt));
+            const sortedTransit = data.sort((a, b) =>
+                b.AddedAt.localeCompare(a.AddedAt)
+            );
             setNewTransitDays(sortedTransit);
             setIsFetching(false);
         }
@@ -56,6 +58,7 @@ function NewTransitDays({
 
     const [senderStateOptions, setSenderStateOptions] = useState();
     const [receiverStateOptions, setReceiverStateOptions] = useState();
+
     useEffect(() => {
         if (newTransitDays) {
             const updatedSenderStateOptions = createNewLabelObjects(
@@ -119,9 +122,10 @@ function NewTransitDays({
         return uniqueCustomers;
     }
     const [columns, setColumns] = useState([]);
+
     useEffect(() => {
         if (senderStateOptions && receiverStateOptions) {
-            if (canEditTransitDays(userPermission)) {
+            if (canEditTransitDays(userPermissions)) {
                 setColumns([
                     {
                         name: "CustomerName",
@@ -413,7 +417,7 @@ function NewTransitDays({
         );
     };
 
-    const additionalButtons = canAddNewTransitDays(userPermission) ? (
+    const additionalButtons = canAddTransitDays(userPermissions) ? (
         <GtrsButton
             name={"Add +"}
             onClick={AddTransit}
@@ -421,30 +425,27 @@ function NewTransitDays({
         />
     ) : null;
 
+    if (isFetching || !senderStateOptions) {
+        return <AnimatedLoading />;
+    }
     return (
         <div>
-            {isFetching || !senderStateOptions ? (
-                <AnimatedLoading />
-            ) : (
-                <div>
-                    <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                        <TableStructure
-                            id={"TransitId"}
-                            setSelected={setSelected}
-                            gridRef={gridRef}
-                            handleDownloadExcel={handleDownloadExcel}
-                            title={"Transit Days"}
-                            selected={selected}
-                            additionalButtons={additionalButtons}
-                            groupsElements={groups}
-                            tableDataElements={newTransitDays}
-                            filterValueElements={filterValue}
-                            setFilterValueElements={setFilterValue}
-                            columnsElements={columns}
-                        />
-                    </div>
-                </div>
-            )}
+            <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
+                <TableStructure
+                    id={"TransitId"}
+                    setSelected={setSelected}
+                    gridRef={gridRef}
+                    handleDownloadExcel={handleDownloadExcel}
+                    title={"Transit Days"}
+                    selected={selected}
+                    additionalButtons={additionalButtons}
+                    groupsElements={groups}
+                    tableDataElements={newTransitDays}
+                    filterValueElements={filterValue}
+                    setFilterValueElements={setFilterValue}
+                    columnsElements={columns}
+                />
+            </div>
         </div>
     );
 }
@@ -452,8 +453,6 @@ function NewTransitDays({
 NewTransitDays.propTypes = {
     setNewTransitDays: PropTypes.func,
     newTransitDays: PropTypes.array,
-    currentUser: PropTypes.object,
-    userPermission: PropTypes.object,
     filterValue: PropTypes.array,
     setFilterValue: PropTypes.func,
     url: PropTypes.string,

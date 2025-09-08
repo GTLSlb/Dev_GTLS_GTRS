@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useContext } from "react";
 import "../../../css/reactdatagrid.css";
 import TableStructure from "@/Components/TableStructure";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
@@ -10,8 +10,12 @@ import { useEffect, useRef } from "react";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
-import { formatNumberWithCommas, renderConsDetailsLink } from "@/CommonFunctions";
+import {
+    formatNumberWithCommas,
+    renderConsDetailsLink,
+} from "@/CommonFunctions";
 import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
+import { CustomContext } from "@/CommonContext";
 export default function GtrsCons({
     consData,
     minDate,
@@ -19,9 +23,8 @@ export default function GtrsCons({
     filterValue,
     setFilterValue,
     accData,
-    userPermission,
 }) {
-
+    const { userPermissions } = useContext(CustomContext);
     window.moment = moment;
     const [filteredData, setFilteredData] = useState(consData);
     const [selected, setSelected] = useState({});
@@ -71,15 +74,17 @@ export default function GtrsCons({
             id: false,
             label: "False",
         },
-    ];
-    
+    ].sort();
+
     const senderStateOptions = createNewLabelObjects(consData, "SenderState");
     const senderZoneOptions = createNewLabelObjects(consData, "SenderZone");
+    const senderSuburbOptions = createNewLabelObjects(consData, "SenderSuburb");
     const receiverStateOptions = createNewLabelObjects(
         consData,
         "ReceiverState"
     );
     const receiverZoneOptions = createNewLabelObjects(consData, "ReceiverZone");
+     const receiverSuburbOptions = createNewLabelObjects(consData, "ReceiverSuburb");
     const serviceOptions = createNewLabelObjects(consData, "Service");
     const statusOptions = createNewLabelObjects(consData, "Status");
     const ConsStatusOptions = createNewLabelObjects(consData, "ConsStatus");
@@ -106,7 +111,7 @@ export default function GtrsCons({
             textAlign: "center",
             render: ({ value, data }) => {
                 return renderConsDetailsLink(
-                    userPermission,
+                    userPermissions,
                     value,
                     data.ConsignmentId
                 );
@@ -198,7 +203,12 @@ export default function GtrsCons({
             group: "senderDetails",
             headerAlign: "center",
             textAlign: "center",
-            filterEditor: StringFilter,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: senderSuburbOptions,
+            },
         },
         {
             name: "SenderZone",
@@ -249,16 +259,14 @@ export default function GtrsCons({
             group: "receiverDetails",
             headerAlign: "center",
             textAlign: "center",
-            filterEditor: StringFilter,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: receiverSuburbOptions,
+            },
         },
-        {
-            name: "ReceiverReference",
-            header: "Receiver Reference",
-            group: "receiverDetails",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: StringFilter,
-        },
+
         {
             name: "ReceiverZone",
             header: "Receiver Zone",
@@ -271,6 +279,14 @@ export default function GtrsCons({
                 wrapMultiple: false,
                 dataSource: receiverZoneOptions,
             },
+        },
+        {
+            name: "ReceiverReference",
+            header: "Receiver Reference",
+            group: "receiverDetails",
+            headerAlign: "center",
+            textAlign: "center",
+            filterEditor: StringFilter,
         },
         {
             name: "NetAmount",
@@ -316,7 +332,7 @@ export default function GtrsCons({
                                 Fail
                             </span>
                         ) : (
-                            <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-0.5 text-sm font-medium text-gray-800">
+                            <span className="inline-flex items-center rounded-full bg-yellow-100 px-3 py-0.5 text-sm font-medium text-yellow-800">
                                 Pending
                             </span>
                         )}
@@ -342,7 +358,7 @@ export default function GtrsCons({
                     </span>
                 ) : (
                     <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        false
+                        False
                     </span>
                 );
             },

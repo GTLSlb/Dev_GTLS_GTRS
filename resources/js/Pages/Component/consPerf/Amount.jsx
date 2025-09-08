@@ -23,7 +23,7 @@ export default function Amount(item) {
                         RATED AMOUNT
                     </dt>
                     <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">
-                        {item.item["RateAmount"]}
+                        {item.item["RatedAmount"]}
                     </dd>
                 </div>
             </dl>

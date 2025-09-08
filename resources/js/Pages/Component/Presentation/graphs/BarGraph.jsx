@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -15,6 +15,7 @@ import { Bar } from "react-chartjs-2";
 import { useRef } from "react";
 import PropTypes from "prop-types";
 import InlineTable from "./InlineTable";
+import { CustomContext } from "@/CommonContext";
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -28,20 +29,27 @@ ChartJS.register(
 );
 function BarGraph({
     graphData,
-    url,
-    Token,
     CustomerId,
     originalgraphData,
-    currentUser,
     setGraphData,
     getReportData,
     selectedReceiver,
 }) {
-
+    const { url, Token, userPermissions } = useContext(CustomContext);
     function generateMonthArrayFromJson(data) {
         const monthNames = [
-            "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-            "JUL", "AUG", "SEPT", "OCT", "NOV", "DEC"
+            "JAN",
+            "FEB",
+            "MAR",
+            "APR",
+            "MAY",
+            "JUN",
+            "JUL",
+            "AUG",
+            "SEPT",
+            "OCT",
+            "NOV",
+            "DEC",
         ];
         let result = [];
 
@@ -166,17 +174,19 @@ function BarGraph({
                         let yAxisID = tooltipItem.dataset.yAxisID;
 
                         if (yAxisID === "y-axis-bar") {
-                            return `${datasetLabel}: ${parseFloat(value).toFixed(2)}`;
+                            return `${datasetLabel}: ${parseFloat(
+                                value
+                            ).toFixed(2)}`;
                         } else {
-                            return `${datasetLabel}: ${parseFloat(value).toFixed(2)}%`;
+                            return `${datasetLabel}: ${parseFloat(
+                                value
+                            ).toFixed(2)}%`;
                         }
                     },
                 },
             },
         },
     };
-
-
 
     return (
         <div>
@@ -190,7 +200,7 @@ function BarGraph({
                 graphData={graphData}
                 originalgraphData={originalgraphData}
                 url={url}
-                currentUser={currentUser}
+                userPermissions={userPermissions}
                 setGraphData={setGraphData}
                 selectedReceiver={selectedReceiver}
             />
@@ -200,11 +210,8 @@ function BarGraph({
 
 BarGraph.propTypes = {
     graphData: PropTypes.array,
-    url: PropTypes.string,
-    Token: PropTypes.string,
     CustomerId: PropTypes.number,
     originalgraphData: PropTypes.array,
-    currentUser: PropTypes.object,
     setGraphData: PropTypes.func,
     getReportData: PropTypes.func,
     selectedReceiver: PropTypes.string,

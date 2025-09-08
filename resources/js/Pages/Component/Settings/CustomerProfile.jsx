@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from "react";
-import {
-    Tab,
-    Tabs,
-} from "@heroui/react";
+import React, { useContext, useEffect, useState } from "react";
+import { Tab, Tabs } from "@heroui/react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getApiRequest } from "@/CommonFunctions";
+import { useApiRequests } from "@/CommonFunctions";
 import GtrsButton from "../GtrsButton";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import { ToastContainer } from "react-toastify";
 import Accounts from "./Accounts";
 import Users from "./Users";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
-import PropTypes from "prop-types";
+import { CustomContext } from "@/CommonContext";
 
-export default function CustomerProfile({ currentUser, userPermission }) {
+export default function CustomerProfile() {
+    const { user, userPermissions } = useContext(CustomContext);
+    const { getApiRequest } = useApiRequests();
     const [customer, setCustomer] = useState([]);
     const [loading, setLoading] = useState(true);
     const gtamUrl = window.Laravel.gtamUrl;
@@ -23,8 +22,8 @@ export default function CustomerProfile({ currentUser, userPermission }) {
     const customerId = location?.state?.CustomerId;
     async function fetchData() {
         const data = await getApiRequest(`${gtamUrl}CustomerById`, {
-            UserId: currentUser?.UserId,
-            Customer_Id: customerId ? customerId : currentUser?.OwnerId,
+            UserId: user?.UserId,
+            Customer_Id: customerId ? customerId : user?.OwnerId,
         });
 
         if (data) {
@@ -38,11 +37,10 @@ export default function CustomerProfile({ currentUser, userPermission }) {
 
     const [selectedTab, setSelectedTab] = useState("accounts");
 
-
     return (
         <>
             <div className="container mx-auto flex flex-col gap-4 p-5">
-                {currentUser?.TypeId !== 1 && (
+                {user?.TypeId !== 1 && (
                     <GtrsButton
                         name="Back"
                         className={"py-4"}
@@ -74,12 +72,12 @@ export default function CustomerProfile({ currentUser, userPermission }) {
                     ) : selectedTab === "accounts" ? (
                         <Accounts
                             customer={customer}
-                            userPermission={userPermission}
+                            userPermissions={userPermissions}
                         />
                     ) : (
                         <Users
                             customer={customer}
-                            userPermission={userPermission}
+                            userPermissions={userPermissions}
                         />
                     )}
                 </div>
@@ -88,8 +86,3 @@ export default function CustomerProfile({ currentUser, userPermission }) {
         </>
     );
 }
-
-CustomerProfile.propTypes = {
-    currentUser: PropTypes.object,
-    userPermission: PropTypes.object,
-};

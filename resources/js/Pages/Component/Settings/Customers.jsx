@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { UserIcon } from "@heroicons/react/24/solid";
-import { Card, CardHeader } from "@heroui/react";
-import { useNavigate } from "react-router-dom";
-import AnimatedLoading from "@/Components/AnimatedLoading";
 import axios from "axios";
 import swal from "sweetalert";
-import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
+import { CustomContext } from "@/CommonContext";
+import { Card, CardHeader } from "@heroui/react";
+import { UserIcon } from "@heroicons/react/24/solid";
+import AnimatedLoading from "@/Components/AnimatedLoading";
+import React, { useContext, useEffect, useState } from "react";
 
-export default function Customers({ Token, currentUser }) {
+export default function Customers() {
+    const { Token, user } = useContext(CustomContext);
     const [accounts, setAccounts] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function Customers({ Token, currentUser }) {
         axios
             .get(`${gtamUrl}Customers`, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             })
@@ -112,8 +113,3 @@ export default function Customers({ Token, currentUser }) {
         </div>
     );
 }
-
-Customers.propTypes = {
-    Token: PropTypes.string,
-    currentUser: PropTypes.object,
-};

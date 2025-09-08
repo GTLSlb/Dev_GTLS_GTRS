@@ -1,659 +1,462 @@
-import ReactModal from "react-modal";
-import React, { Fragment, useState, useEffect } from "react";
-import { Listbox, Transition } from "@headlessui/react";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import swal from 'sweetalert';
+import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
-import { handleSessionExpiration } from '@/CommonFunctions';
-const placeholder = "test";
+import { useApiRequests } from "@/CommonFunctions";
+import { CustomContext } from "@/CommonContext";
+import {
+    Button,
+    Select,
+    SelectItem,
+    Textarea,
+    Input,
+    Spinner,
+} from "@heroui/react";
+import ReactModal from "react-modal";
 
 export default function SetFailedReasonModal({
     isOpen,
     handleClose,
     reason,
     setReason,
-    failedReasons,
     updateLocalData,
 }) {
-    const [consignment, setConsignment] = useState();
-    const [note, setNote] = useState();
-    const [resolution, setResolution] = useState();
-    const [isLoading, SetIsLoading] = useState(false);
-    const [selected, setSelected] = useState();
-    const [showDesc, setShowDesc] = useState();
-    const [occurredAt, setOccuredAt] = useState(null);
+    const { Token, url, user, failedReasonsData } = useContext(CustomContext);
+    const { postApiRequest } = useApiRequests();
+
+    // Form state
+    const [formData, setFormData] = useState({
+        consignment: null,
+        note: "",
+        resolution: "",
+        selectedReason: "",
+        selectedReference: "2", // External as default
+        selectedState: "1", // NSW as default
+        selectedDepartment: "1", // Customer as default
+        occurredAt: "",
+    });
+
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Static data
     const reference = [
-        { id: 1, name: "Internal", unavailable: false },
-        { id: 2, name: "External", unavailable: false },
+        { key: "1", label: "Internal" },
+        { key: "2", label: "External" },
     ];
+
     const departments = [
-        { id: 1, name: "Customer", unavailable: false },
-        { id: 2, name: "Driver - Linehaul", unavailable: false },
-        { id: 3, name: "Driver - Local", unavailable: false },
-        { id: 4, name: "GTLS Customer Service", unavailable: true },
-        { id: 5, name: "Linehaul Allocations ", unavailable: false },
-        { id: 6, name: "Local Allocations", unavailable: false },
-        { id: 7, name: "Operations Administration ", unavailable: false },
-        { id: 8, name: "Transit Dock ", unavailable: false },
+        { key: "1", label: "Customer" },
+        { key: "2", label: "Driver - Linehaul" },
+        { key: "3", label: "Driver - Local" },
+        { key: "5", label: "Linehaul Allocations" },
+        { key: "6", label: "Local Allocations" },
+        { key: "7", label: "Operations Administration" },
+        { key: "8", label: "Transit Dock" },
     ];
+
     const states = [
-        { id: 1, name: "NSW", unavailable: false },
-        { id: 2, name: "MLB", unavailable: false },
-        { id: 3, name: "QLD", unavailable: false },
-        { id: 4, name: "SA", unavailable: false },
-        { id: 5, name: "WA", unavailable: false },
-        { id: 6, name: "NA", unavailable: false },
+        { key: "1", label: "NSW" },
+        { key: "2", label: "MLB" },
+        { key: "3", label: "QLD" },
+        { key: "4", label: "SA" },
+        { key: "5", label: "WA" },
+        { key: "6", label: "NA" },
     ];
-    function getStateIdByName(stateName) {
-        const foundState = states.find((state) => state.name === stateName);
-        return foundState ? foundState.id - 1 : 0;
-    }
-    function getDepartmentIdByName(departmentName) {
-        const foundDepartment = departments.find(
-            (department) => department.name === departmentName
-        );
-        return foundDepartment ? foundDepartment.id : 0;
-    }
-    const [selectedState, setSelectedState] = useState(states[0]);
-    const [selectedReference, setSelectedReference] = useState(reference[1]);
-    const [selectedDepartment, setSelectedDepartment] = useState(
-        departments[0]
-    );
+
+    // Helper functions
+    const getStateKeyByName = (stateName) => {
+        const state = states.find((s) => s.label === stateName);
+        return state?.key || "1";
+    };
+
+    const getDepartmentKeyByName = (departmentName) => {
+        const dept = departments.find((d) => d.label === departmentName);
+        return dept?.key || "1";
+    };
+
+    const getReferenceKeyById = (refId) => {
+        return refId === 0 ? "1" : refId.toString();
+    };
+
+    // Initialize form when reason changes
     useEffect(() => {
-        setShowDesc();
-        setConsignment(reason);
         if (reason) {
-            const state = reason.State;
-            const department = reason.Department;
-            let ref = 1;
-            if (reason.Reference == 0) {
-                ref = 1;
-            } else {
-                ref = reason.Reference - 1;
-            }
-            setSelectedState(states[getStateIdByName(state)]);
-            setSelectedDepartment(
-                departments[getDepartmentIdByName(department) - 1]
+            const matchedReason = failedReasonsData?.find(
+                (r) => r.ReasonId === reason.FailedReason
             );
-            setSelectedReference(reference[ref]);
 
-            const x = failedReasons?.find(
-                (i) => i.ReasonId === reason?.FailedReason
-            )?.ReasonName;
-            const index = failedReasons?.findIndex((i) => x === i.ReasonName);
-
-            if (failedReasons) {
-                if (failedReasons[index]) {
-                    setSelected(failedReasons[index]);
-                } else {
-                    setSelected(failedReasons[0]);
-                }
-            }
+            setFormData({
+                consignment: reason,
+                note: reason.FailedNote || "",
+                resolution: reason.Resolution || "",
+                selectedReason: matchedReason?.ReasonId?.toString() || "",
+                selectedReference: getReferenceKeyById(reason.Reference || 2),
+                selectedState: getStateKeyByName(reason.State || "NSW"),
+                selectedDepartment: getDepartmentKeyByName(
+                    reason.Department || "Customer"
+                ),
+                occurredAt: reason.OccuredAt || "",
+            });
         }
-        setNote(reason?.FailedNote);
-        setResolution(reason?.Resolution);
-    }, [reason]);
-    function classNames(...classes) {
-        return classes.filter(Boolean).join(" ");
-    }
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        // Prevent the default form submission behavior
+    }, [reason, failedReasonsData]);
+
+    // Get selected reason details
+    const selectedReasonDetails = failedReasonsData?.find(
+        (r) => r.ReasonId.toString() === formData.selectedReason
+    );
+
+    // Handle form submission
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!formData.selectedReason) {
+            return;
+        }
 
         try {
-            SetIsLoading(true);
+            setIsLoading(true);
 
+            const requestData = [
+                {
+                    ConsId: formData.consignment?.ConsignmentID,
+                    ReasonId: parseInt(formData.selectedReason),
+                    Description: selectedReasonDetails?.ReasonDesc || "",
+                    note: formData.note,
+                    State:
+                        states.find((s) => s.key === formData.selectedState)
+                            ?.label || "",
+                    Department:
+                        departments.find(
+                            (d) => d.key === formData.selectedDepartment
+                        )?.label || "",
+                    Resolution: formData.resolution,
+                    Reference: parseInt(formData.selectedReference),
+                    OccuredAt: formData.occurredAt,
+                },
+            ];
+
+            const headers = {
+                UserId: user.UserId,
+                Authorization: `Bearer ${Token}`,
+            };
+
+            await postApiRequest(
+                `${url}add/ConsFailedReason`,
+                headers,
+                requestData
+            );
+
+            // Update local data and close modal
             setTimeout(() => {
-                handleClose();
-                SetIsLoading(false);
                 updateLocalData(
-                    reason.CONSIGNMNENTID,
-                    selected.ReasonId,
-                    note,
-                    selected.ReasonDesc,
-                    selectedDepartment.name,
-                    resolution,
-                    selectedReference.id,
-                    selectedState.name,
-                    occurredAt
+                    reason.ConsignmentID,
+                    parseInt(formData.selectedReason),
+                    formData.note,
+                    selectedReasonDetails?.ReasonDesc || "",
+                    departments.find(
+                        (d) => d.key === formData.selectedDepartment
+                    )?.label || "",
+                    formData.resolution,
+                    parseInt(formData.selectedReference),
+                    states.find((s) => s.key === formData.selectedState)
+                        ?.label || "",
+                    formData.occurredAt
                 );
+                handlePopUpClose();
             }, 1000);
         } catch (error) {
-            SetIsLoading(false);
-            if (error.response && error.response.status === 401) {
-                // Handle 401 error using SweetAlert
-                swal({
-                  title: 'Session Expired!',
-                  text: "Please login again",
-                  type: 'success',
-                  icon: "info",
-                  confirmButtonText: 'OK'
-                }).then(async function () {
-                    await handleSessionExpiration();
-                });
-              } else {
-                // Handle other errors
-                console.error(error);
-              }
-
+            console.error("Error submitting form:", error);
+        } finally {
+            setIsLoading(false);
         }
     };
+
     const handlePopUpClose = () => {
         setReason(null);
-        handleClose(); // Clear the input value
+        setFormData({
+            consignment: null,
+            note: "",
+            resolution: "",
+            selectedReason: "",
+            selectedReference: "2",
+            selectedState: "1",
+            selectedDepartment: "1",
+            occurredAt: "",
+        });
+        handleClose();
     };
-    function handleReasonChange(event) {
-        setSelected(event);
-        setShowDesc(event);
-    }
-    function handleDateChange(event) {
-        const occurredAttDate = new Date(event.target.value);
-        setOccuredAt(occurredAttDate.toLocaleString("sv-SE"));
-    }
+
+    // Convert datetime-local format
+    const handleDateTimeChange = (value) => {
+        if (value) {
+            const date = new Date(value);
+            setFormData((prev) => ({
+                ...prev,
+                occurredAt: date.toLocaleString("sv-SE"),
+            }));
+        }
+    };
+
     return (
         <ReactModal
             isOpen={isOpen}
-            className="fixed inset-0 flex items-center justify-center "
-            overlayClassName="fixed inset-0 bg-black bg-opacity-60"
+            className="fixed inset-0 flex items-center justify-center z-50 p-4"
+            overlayClassName="fixed inset-0 bg-black/60 z-40"
+            closeTimeoutMS={300}
+            shouldCloseOnOverlayClick={!isLoading}
+            shouldCloseOnEsc={!isLoading}
         >
-            <div className="bg-white w-96 rounded-lg shadow-lg p-6  ">
-                <div className="flex justify-end ">
-                    <button
-                        className="text-gray-500 hover:text-gray-700"
-                        onClick={handlePopUpClose}
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-6 w-6"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
+            <form
+                onSubmit={handleSubmit}
+                className="bg-white p-5 rounded-xl w-96"
+            >
+                <h2 className="text-2xl font-bold">Set Failed Reason</h2>
+                <div className=" flex flex-col space-y-5 overflow-y-auto h-[25rem] pr-2 containerscroll pt-5">
+                    {/* Reason Selection */}
+                    <div>
+                        <label
+                            htmlFor="comment"
+                            className="block text-sm font-medium leading-6 text-gray-900"
                         >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M6 18L18 6M6 6l12 12"
-                            />
-                        </svg>
-                    </button>
-                </div>
-                <h2 className="text-2xl font-bold mb-4">
-                    Set Failed Reason
-                    {/* <span>{id}</span> */}
-                </h2>
-
-                <form
-                    onSubmit={handleSubmit}
-                    className="overflow-y-auto h-[25rem] pr-2 containerscroll"
-                >
-                    <Listbox value={selected} onChange={handleReasonChange}>
-                        {({ open }) => (
-                            <>
-                                <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">
-                                    Reason
-                                </Listbox.Label>
-                                <div className="relative mt-2">
-                                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                        <span className="block truncate">
-                                            {selected?.ReasonName ? (
-                                                <p>{selected?.ReasonName}</p>
-                                            ) : (
-                                                <p>Select Reason</p>
-                                            )}
-                                        </span>
-                                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                            <ChevronUpDownIcon
-                                                className="h-5 w-5 text-gray-400"
-                                                aria-hidden="true"
-                                            />
-                                        </span>
-                                    </Listbox.Button>
-
-                                    <Transition
-                                        show={open}
-                                        as={Fragment}
-                                        leave="transition ease-in duration-100"
-                                        leaveFrom="opacity-100"
-                                        leaveTo="opacity-0"
+                            Reason
+                        </label>
+                        <Select
+                            label=""
+                            placeholder="Select a reason"
+                            aria-labelledby="ٌReason"
+                            selectedKeys={
+                                formData.selectedReason
+                                    ? [formData.selectedReason]
+                                    : []
+                            }
+                            onSelectionChange={(keys) => {
+                                const selected = Array.from(keys)[0];
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    selectedReason: selected || "",
+                                }));
+                            }}
+                            variant="bordered"
+                            isRequired
+                        >
+                            {failedReasonsData
+                                ?.filter(
+                                    (reason) => reason.ReasonStatus === true
+                                )
+                                .map((reason) => (
+                                    <SelectItem
+                                        key={reason.ReasonId.toString()}
+                                        value={reason.ReasonId.toString()}
                                     >
-                                        <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                            {failedReasons
-                                                ?.filter(
-                                                    (reason) =>
-                                                        reason.ReasonStatus ===
-                                                        true
-                                                )
-                                                .map((reason) => (
-                                                    <Listbox.Option
-                                                        key={reason.ReasonId}
-                                                        className={({
-                                                            active,
-                                                        }) =>
-                                                            classNames(
-                                                                active
-                                                                    ? "bg-indigo-600 text-white"
-                                                                    : "text-gray-900",
-                                                                "relative cursor-default select-none py-2 pl-3 pr-9"
-                                                            )
-                                                        }
-                                                        value={reason}
-                                                    >
-                                                        {({
-                                                            selected,
-                                                            active,
-                                                        }) => (
-                                                            <>
-                                                                <span
-                                                                    className={classNames(
-                                                                        selected
-                                                                            ? "font-semibold"
-                                                                            : "font-normal",
-                                                                        "block truncate"
-                                                                    )}
-                                                                >
-                                                                    {
-                                                                        reason.ReasonName
-                                                                    }
-                                                                </span>
+                                        {reason.ReasonName}
+                                    </SelectItem>
+                                ))}
+                        </Select>
+                    </div>
 
-                                                                {selected ? (
-                                                                    <span
-                                                                        className={classNames(
-                                                                            active
-                                                                                ? "text-white"
-                                                                                : "text-indigo-600",
-                                                                            "absolute inset-y-0 right-0 flex items-center pr-4"
-                                                                        )}
-                                                                    >
-                                                                        <CheckIcon
-                                                                            className="h-5 w-5"
-                                                                            aria-hidden="true"
-                                                                        />
-                                                                    </span>
-                                                                ) : null}
-                                                            </>
-                                                        )}
-                                                    </Listbox.Option>
-                                                ))}
-                                        </Listbox.Options>
-                                    </Transition>
-                                </div>
-                            </>
-                        )}
-                    </Listbox>
-                    {showDesc && selected && (
-                        <div>
-                            <div className="text-sm p-2">
-                                {showDesc.ReasonDesc}
-                            </div>
-                            {/* Render other content related to the selected value */}
+                    {/* Reason Description */}
+                    {selectedReasonDetails && (
+                        <div className="bg-default-100 p-3 rounded-lg">
+                            <p className="text-sm text-default-600">
+                                {selectedReasonDetails.ReasonDesc}
+                            </p>
                         </div>
                     )}
-                    <Listbox
-                        value={selectedReference}
-                        onChange={setSelectedReference}
-                    >
-                        {({ open }) => (
-                            <>
-                                <Listbox.Label className="block text-sm font-medium leading-6 pt-2 text-gray-900">
-                                    Reference
-                                </Listbox.Label>
-                                <div className="relative mt-2">
-                                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                        <span className="block truncate">
-                                            {selectedReference?.name ? (
-                                                <p>{selectedReference?.name}</p>
-                                            ) : (
-                                                <p>Select Reference</p>
-                                            )}
-                                        </span>
-                                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                            <ChevronUpDownIcon
-                                                className="h-5 w-5 text-gray-400"
-                                                aria-hidden="true"
-                                            />
-                                        </span>
-                                    </Listbox.Button>
 
-                                    <Transition
-                                        show={open}
-                                        as={Fragment}
-                                        leave="transition ease-in duration-100"
-                                        leaveFrom="opacity-100"
-                                        leaveTo="opacity-0"
-                                    >
-                                        <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                            {reference
-                                                ?.filter(
-                                                    (reference) =>
-                                                        reference.unavailable ===
-                                                        false
-                                                )
-                                                .map((reference) => (
-                                                    <Listbox.Option
-                                                        key={reference.id}
-                                                        className={({
-                                                            active,
-                                                        }) =>
-                                                            classNames(
-                                                                active
-                                                                    ? "bg-indigo-600 text-white"
-                                                                    : "text-gray-900",
-                                                                "relative cursor-default select-none py-2 pl-3 pr-9"
-                                                            )
-                                                        }
-                                                        value={reference}
-                                                    >
-                                                        {({
-                                                            selected,
-                                                            active,
-                                                        }) => (
-                                                            <>
-                                                                <span
-                                                                    className={classNames(
-                                                                        selected
-                                                                            ? "font-semibold"
-                                                                            : "font-normal",
-                                                                        "block truncate"
-                                                                    )}
-                                                                >
-                                                                    {
-                                                                        reference.name
-                                                                    }
-                                                                </span>
+                    {/* Reference Selection */}
+                    <div>
+                        <label
+                            htmlFor="comment"
+                            className="block text-sm font-medium leading-6 text-gray-900"
+                        >
+                            Reference
+                        </label>
+                        <Select
+                            label=""
+                            aria-labelledby="Reference"
+                            placeholder="Select reference type"
+                            selectedKeys={[formData.selectedReference]}
+                            disallowEmptySelection
+                            onSelectionChange={(keys) => {
+                                const selected = Array.from(keys)[0];
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    selectedReference: selected,
+                                }));
+                            }}
+                            variant="bordered"
+                        >
+                            {reference.map((ref) => (
+                                <SelectItem key={ref.key} value={ref.key}>
+                                    {ref.label}
+                                </SelectItem>
+                            ))}
+                        </Select>
+                    </div>
 
-                                                                {selected ? (
-                                                                    <span
-                                                                        className={classNames(
-                                                                            active
-                                                                                ? "text-white"
-                                                                                : "text-indigo-600",
-                                                                            "absolute inset-y-0 right-0 flex items-center pr-4"
-                                                                        )}
-                                                                    >
-                                                                        <CheckIcon
-                                                                            className="h-5 w-5"
-                                                                            aria-hidden="true"
-                                                                        />
-                                                                    </span>
-                                                                ) : null}
-                                                            </>
-                                                        )}
-                                                    </Listbox.Option>
-                                                ))}
-                                        </Listbox.Options>
-                                    </Transition>
-                                </div>
-                            </>
-                        )}
-                    </Listbox>
-                    <Listbox value={selectedState} onChange={setSelectedState}>
-                        {({ open }) => (
-                            <>
-                                <Listbox.Label className="block text-sm font-medium leading-6 pt-2 text-gray-900">
-                                    State
-                                </Listbox.Label>
-                                <div className="relative mt-2">
-                                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                        <span className="block truncate">
-                                            {selectedState?.name ? (
-                                                <p>{selectedState?.name}</p>
-                                            ) : (
-                                                <p>Select State</p>
-                                            )}
-                                        </span>
+                    {/* State Selection */}
+                    <div>
+                        <label
+                            htmlFor="comment"
+                            className="block text-sm font-medium leading-6 text-gray-900"
+                        >
+                            State
+                        </label>
+                        <Select
+                            label=""
+                            aria-labelledby="State"
+                            placeholder="Select state"
+                            selectedKeys={[formData.selectedState]}
+                            disallowEmptySelection
+                            onSelectionChange={(keys) => {
+                                const selected = Array.from(keys)[0];
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    selectedState: selected,
+                                }));
+                            }}
+                            variant="bordered"
+                        >
+                            {states.map((state) => (
+                                <SelectItem key={state.key} value={state.key}>
+                                    {state.label}
+                                </SelectItem>
+                            ))}
+                        </Select>
+                    </div>
 
-                                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                            <ChevronUpDownIcon
-                                                className="h-5 w-5 text-gray-400"
-                                                aria-hidden="true"
-                                            />
-                                        </span>
-                                    </Listbox.Button>
+                    {/* Department Selection */}
+                    <div>
+                        <label
+                            htmlFor="comment"
+                            className="block text-sm font-medium leading-6 text-gray-900"
+                        >
+                            Department
+                        </label>
+                        <Select
+                            label=""
+                            aria-labelledby="Department"
+                            placeholder="Select department"
+                            disallowEmptySelection
+                            selectedKeys={[formData.selectedDepartment]}
+                            onSelectionChange={(keys) => {
+                                const selected = Array.from(keys)[0];
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    selectedDepartment: selected,
+                                }));
+                            }}
+                            variant="bordered"
+                        >
+                            {departments.map((dept) => (
+                                <SelectItem key={dept.key} value={dept.key}>
+                                    {dept.label}
+                                </SelectItem>
+                            ))}
+                        </Select>
+                    </div>
 
-                                    <Transition
-                                        show={open}
-                                        as={Fragment}
-                                        leave="transition ease-in duration-100"
-                                        leaveFrom="opacity-100"
-                                        leaveTo="opacity-0"
-                                    >
-                                        <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                            {states
-                                                ?.filter(
-                                                    (state) =>
-                                                        state.unavailable ===
-                                                        false
-                                                )
-                                                .map((state) => (
-                                                    <Listbox.Option
-                                                        key={state.id}
-                                                        className={({
-                                                            active,
-                                                        }) =>
-                                                            classNames(
-                                                                active
-                                                                    ? "bg-indigo-600 text-white"
-                                                                    : "text-gray-900",
-                                                                "relative cursor-default select-none py-2 pl-3 pr-9"
-                                                            )
-                                                        }
-                                                        value={state}
-                                                    >
-                                                        {({
-                                                            selected,
-                                                            active,
-                                                        }) => (
-                                                            <>
-                                                                <span
-                                                                    className={classNames(
-                                                                        selected
-                                                                            ? "font-semibold"
-                                                                            : "font-normal",
-                                                                        "block truncate"
-                                                                    )}
-                                                                >
-                                                                    {state.name}
-                                                                </span>
-
-                                                                {selected ? (
-                                                                    <span
-                                                                        className={classNames(
-                                                                            active
-                                                                                ? "text-white"
-                                                                                : "text-indigo-600",
-                                                                            "absolute inset-y-0 right-0 flex items-center pr-4"
-                                                                        )}
-                                                                    >
-                                                                        <CheckIcon
-                                                                            className="h-5 w-5"
-                                                                            aria-hidden="true"
-                                                                        />
-                                                                    </span>
-                                                                ) : null}
-                                                            </>
-                                                        )}
-                                                    </Listbox.Option>
-                                                ))}
-                                        </Listbox.Options>
-                                    </Transition>
-                                </div>
-                            </>
-                        )}
-                    </Listbox>
-                    <Listbox
-                        value={selectedDepartment}
-                        onChange={setSelectedDepartment}
-                    >
-                        {({ open }) => (
-                            <>
-                                <Listbox.Label className="block text-sm font-medium leading-6 pt-2 text-gray-900">
-                                    Departments
-                                </Listbox.Label>
-                                <div className="relative mt-2">
-                                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                                        <span className="block truncate">
-                                            {selectedDepartment?.name ? (
-                                                <p>
-                                                    {selectedDepartment?.name}
-                                                </p>
-                                            ) : (
-                                                <p>Select Department</p>
-                                            )}
-                                        </span>
-                                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                            <ChevronUpDownIcon
-                                                className="h-5 w-5 text-gray-400"
-                                                aria-hidden="true"
-                                            />
-                                        </span>
-                                    </Listbox.Button>
-
-                                    <Transition
-                                        show={open}
-                                        as={Fragment}
-                                        leave="transition ease-in duration-100"
-                                        leaveFrom="opacity-100"
-                                        leaveTo="opacity-0"
-                                    >
-                                        <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                            {departments
-                                                ?.filter(
-                                                    (department) =>
-                                                        department.unavailable ===
-                                                        false
-                                                )
-                                                .map((department) => (
-                                                    <Listbox.Option
-                                                        key={department.id}
-                                                        className={({
-                                                            active,
-                                                        }) =>
-                                                            classNames(
-                                                                active
-                                                                    ? "bg-indigo-600 text-white"
-                                                                    : "text-gray-900",
-                                                                "relative cursor-default select-none py-2 pl-3 pr-9"
-                                                            )
-                                                        }
-                                                        value={department}
-                                                    >
-                                                        {({
-                                                            selected,
-                                                            active,
-                                                        }) => (
-                                                            <>
-                                                                <span
-                                                                    className={classNames(
-                                                                        selected
-                                                                            ? "font-semibold"
-                                                                            : "font-normal",
-                                                                        "block truncate"
-                                                                    )}
-                                                                >
-                                                                    {
-                                                                        department.name
-                                                                    }
-                                                                </span>
-
-                                                                {selected ? (
-                                                                    <span
-                                                                        className={classNames(
-                                                                            active
-                                                                                ? "text-white"
-                                                                                : "text-indigo-600",
-                                                                            "absolute inset-y-0 right-0 flex items-center pr-4"
-                                                                        )}
-                                                                    >
-                                                                        <CheckIcon
-                                                                            className="h-5 w-5"
-                                                                            aria-hidden="true"
-                                                                        />
-                                                                    </span>
-                                                                ) : null}
-                                                            </>
-                                                        )}
-                                                    </Listbox.Option>
-                                                ))}
-                                        </Listbox.Options>
-                                    </Transition>
-                                </div>
-                            </>
-                        )}
-                    </Listbox>
-                    <div className="mt-2">
+                    {/* Explanation */}
+                    <div>
                         <label
                             htmlFor="comment"
                             className="block text-sm font-medium leading-6 text-gray-900"
                         >
                             Explanation
                         </label>
-                        <div className="mt-2">
-                            <textarea
-                                rows={4}
-                                name="comment"
-                                id="comment"
-                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                defaultValue={consignment?.FailedNote}
-                                onChange={(event) => {
-                                    setNote(event.target.value);
-                                }}
-                            />
-                        </div>
+                        <Textarea
+                            label=""
+                            aria-labelledby="explanation"
+                            placeholder="Enter explanation"
+                            value={formData.note}
+                            onValueChange={(value) =>
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    note: value,
+                                }))
+                            }
+                            variant="bordered"
+                            classNames={{
+                                input: "bg-transparent px-0 !outline-none !border-none !ring-0 p-0",
+                            }}
+                            minRows={3}
+                        />
                     </div>
-                    <div className="mt-2">
+
+                    {/* Resolution */}
+                    <div>
                         <label
                             htmlFor="comment"
                             className="block text-sm font-medium leading-6 text-gray-900"
                         >
                             Resolution
                         </label>
-                        <div className="mt-2">
-                            <input
-                                type="text"
-                                rows={4}
-                                name="comment"
-                                id="comment"
-                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                defaultValue={consignment?.Resolution}
-                                onChange={(event) => {
-                                    setResolution(event.target.value);
-                                }}
-                            />
-                        </div>
+                        <Input
+                            aria-labelledby="Resolution"
+                            placeholder="Enter resolution"
+                            value={formData.resolution}
+                            onValueChange={(value) =>
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    resolution: value,
+                                }))
+                            }
+                            classNames={{
+                                input: "bg-transparent !outline-none !border-none !ring-0 p-0",
+                            }}
+                            variant="bordered"
+                        />
                     </div>
 
-                    <div className="mt-2">
-                        <label htmlFor="OccuredAt" className="block mb-2">
-                            Occured At:
-                        </label>
-                        <input
-                            type="datetime-local"
-                            id="OccuredAt"
-                            name="OccuredAt"
-                            defaultValue={consignment?.OccuredAt}
-                            onChange={handleDateChange}
-                            className="w-full border border-gray-300 rounded px-3 py-2"
-                        ></input>
-                    </div>
-                    <div className="mt-6 flex items-center justify-end gap-x-6">
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="rounded-md bg-dark w-20 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-goldd focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    {/* Occurred At */}
+                    <div>
+                        <label
+                            htmlFor="comment"
+                            className="block text-sm font-medium leading-6 text-gray-900"
                         >
-                            {isLoading ? (
-                                <div className=" inset-0 flex justify-center items-center bg-opacity-50">
-                                    <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-smooth"></div>
-                                </div>
-                            ) : (
-                                "Save"
-                            )}
-                        </button>
+                            Occured At
+                        </label>
+                        <Input
+                            aria-labelledby="Occurred At"
+                            type="datetime-local"
+                            classNames={{
+                                input: "bg-transparent !outline-none !border-none !ring-0 p-0",
+                            }}
+                            value={
+                                formData.occurredAt
+                                    ? new Date(formData.occurredAt)
+                                          .toISOString()
+                                          .slice(0, 16)
+                                    : ""
+                            }
+                            onChange={(e) =>
+                                handleDateTimeChange(e.target.value)
+                            }
+                            variant="bordered"
+                        />
                     </div>
-                </form>
-            </div>
+
+                    <div className="flex w-full justify-end gap-2">
+                        <Button
+                            color="danger"
+                            variant="light"
+                            onPress={handlePopUpClose}
+                            isDisabled={isLoading}
+                        >
+                            Cancel
+                        </Button>
+
+                        <Button
+                            type="submit"
+                            color="primary"
+                            isDisabled={!formData.selectedReason}
+                            isLoading={isLoading}
+                            spinner={<Spinner size="sm" />}
+                            className="bg-gray-800 min-w-20"
+                        >
+                            {isLoading ? "Saving..." : "Save"}
+                        </Button>
+                    </div>
+                </div>
+            </form>
         </ReactModal>
     );
 }
@@ -661,9 +464,7 @@ export default function SetFailedReasonModal({
 SetFailedReasonModal.propTypes = {
     isOpen: PropTypes.bool,
     handleClose: PropTypes.func,
-    reason: PropTypes.object,
+    reason: PropTypes.array,
     setReason: PropTypes.func,
-    failedReasons: PropTypes.array,
-    currentUser: PropTypes.object,
     updateLocalData: PropTypes.func,
 };

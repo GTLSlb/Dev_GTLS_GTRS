@@ -229,5 +229,4 @@ AddSafetyCausesModal.propTypes = {
     cause: PropTypes.object,
     updateLocalData: PropTypes.func,
     safetyCauses: PropTypes.array,
-    currentUser: PropTypes.object,
 };

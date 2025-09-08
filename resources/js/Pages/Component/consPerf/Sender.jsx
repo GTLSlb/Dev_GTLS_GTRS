@@ -24,7 +24,7 @@ export default function Sender(item) {
                     <dt className="text-sm font-medium text-gray-900">
                     SENDER POSTCODE
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['SenderPostcode']}</dd>
+                    <dd className="mt-1 text-sm text-gray-500  sm:mt-0 ">{item.item['SenderPostCode']}</dd>
 
                 </div>
             </dl>

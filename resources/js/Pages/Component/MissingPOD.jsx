@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import moment from "moment";
 import React from "react";
 import PropTypes from "prop-types";
@@ -11,14 +11,15 @@ import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { formatDateToExcel, renderConsDetailsLink } from "@/CommonFunctions";
+import { CustomContext } from "@/CommonContext";
 
 export default function MissingPOD({
     PerfData,
     filterValue,
     setFilterValue,
-    userPermission,
     accData,
 }) {
+    const { userPermissions } = useContext(CustomContext);
     window.moment = moment;
     const minDateDespatch = getMinMaxValue(PerfData, "DespatchDate", 1);
     const maxDateDespatch = getMinMaxValue(PerfData, "DespatchDate", 2);
@@ -33,7 +34,7 @@ export default function MissingPOD({
         return entry.POD === false;
     });
 
-    const data = falsePodOnly
+    const data = falsePodOnly;
     const [filteredData, setFilteredData] = useState(data);
     const filterData = () => {
         const intArray = accData?.map((str) => {
@@ -104,7 +105,16 @@ export default function MissingPOD({
     const senderStates = createNewLabelObjects(falsePodOnly, "SenderState");
     const receiverStates = createNewLabelObjects(falsePodOnly, "ReceiverState");
     const services = createNewLabelObjects(falsePodOnly, "Service");
-
+    const podOptions = [
+        {
+            id: true,
+            label: "True",
+        },
+        {
+            id: false,
+            label: "False",
+        },
+    ].sort((a, b) => a.label.localeCompare(b.label));
     const columns = [
         {
             name: "ConsignmentNo",
@@ -115,7 +125,7 @@ export default function MissingPOD({
             filterEditor: StringFilter,
             render: ({ value, data }) => {
                 return renderConsDetailsLink(
-                    userPermission,
+                    userPermissions,
                     value,
                     data.ConsignmentID
                 );
@@ -287,6 +297,12 @@ export default function MissingPOD({
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: podOptions,
+            },
             render: ({ value }) => {
                 return value ? (
                     <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
@@ -294,7 +310,7 @@ export default function MissingPOD({
                     </span>
                 ) : (
                     <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        false
+                        False
                     </span>
                 );
             },
@@ -329,6 +345,5 @@ MissingPOD.propTypes = {
     PerfData: PropTypes.array,
     filterValue: PropTypes.array,
     setFilterValue: PropTypes.func,
-    userPermission: PropTypes.object,
     accData: PropTypes.array,
 };

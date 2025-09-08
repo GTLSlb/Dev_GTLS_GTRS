@@ -16,7 +16,8 @@ import {
     CogIcon,
 } from "@heroicons/react/24/solid";
 import TaskIcon from "@mui/icons-material/Task";
-import ReportIcon from "@mui/icons-material/Report";
+import ContactsIcon from '@mui/icons-material/Contacts';
+import DescriptionIcon from '@mui/icons-material/Description';
 
 const menu = [
     {
@@ -27,15 +28,6 @@ const menu = [
         current: true,
         feature: "Dashboard_view",
         url: "/gtrs/dashboard",
-    },
-    {
-        id: 32,
-        name: "Spend Analysis",
-        href: "#",
-        icon: ChartPieIcon,
-        current: false,
-        feature: "Dashboard_view",
-        url: "/gtrs/spendanalysis",
     },
     {
         id: 1,
@@ -145,18 +137,18 @@ const menu = [
         feature: "DeliveryReport_View",
         url: "/gtrs/delivery-report",
         options: [
-            {
-                id: 28,
-                name: "Delivery Report",
-                href: "#",
-                current: false,
-                icon: ClipboardDocumentCheckIcon,
-                feature: "DeliveryReport_View",
-                url: "/gtrs/delivery-report",
-            },
+            // {
+            //     id: 28,
+            //     name: "Delivery Report",
+            //     href: "#",
+            //     current: false,
+            //     icon: ClipboardDocumentCheckIcon,
+            //     feature: "DeliveryReport_View",
+            //     url: "/gtrs/delivery-report",
+            // },
             {
                 id: 30,
-                name: "Excel Delivery Report",
+                name: "Delivery Report",
                 href: "#",
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
@@ -228,15 +220,15 @@ const menu = [
         feature: "DriverLogin_view",
         url: "/gtrs/driver-login",
     },
-    {
-        id: 21,
-        name: "Traffic Report",
-        href: "#",
-        icon: ReportIcon,
-        current: false,
-        feature: "TrafficReport_View",
-        url: "/gtrs/traffic-report",
-    },
+    // {
+    //     id: 21,
+    //     name: "Traffic Report",
+    //     href: "#",
+    //     icon: ReportIcon,
+    //     current: false,
+    //     feature: "TrafficReport_View",
+    //     url: "/gtrs/traffic-report",
+    // },
     // {
     //     id: 23,
     //     name: "Consignment Tracking",
@@ -246,15 +238,15 @@ const menu = [
     //     feature: "ConsignmentTracking_View",
     //     url: "/gtrs/consignment-tracking",
     // },
-    {
-        id: 25,
-        name: "Consignment Tracking",
-        href: "#",
-        icon: ClipboardDocumentIcon,
-        current: false,
-        feature: "View_Tracking2",
-        url: "/gtrs/consignment-tracking",
-    },
+    // {
+    //     id: 25,
+    //     name: "Consignment Tracking",
+    //     href: "#",
+    //     icon: ClipboardDocumentIcon,
+    //     current: false,
+    //     feature: "View_Tracking2",
+    //     url: "/gtrs/consignment-tracking",
+    // },
     {
         id: 27,
         name: "SOH Report",
@@ -263,6 +255,33 @@ const menu = [
         current: false,
         feature: "StockReport_View",
         url: "/gtrs/SOH",
+    },
+    {
+        id: 32,
+        name: "Contacts Report",
+        href: "#",
+        icon: ContactsIcon,
+        current: false,
+        feature: "ContactsRep_View",
+        url: "/gtrs/contacts-report",
+    },
+    {
+        id: 33,
+        name: "DIFOT Report",
+        href: "#",
+        icon: DescriptionIcon,
+        current: false,
+        feature: "DifotReport_View",
+        url: "/gtrs/difot-report",
+    },
+    {
+        id: 34,
+        name: "Utilization Report",
+        href: "#",
+        icon: DocumentTextIcon,
+        current: false,
+        feature: "UtilizationReport_View",
+        url: "/gtrs/utilization-report",
     },
     {
         id: 31,

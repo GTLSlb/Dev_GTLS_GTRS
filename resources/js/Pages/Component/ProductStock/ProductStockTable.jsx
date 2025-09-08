@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
     Table,
     TableHeader,
@@ -20,6 +20,8 @@ import { saveAs } from "file-saver";
 import axios from "axios";
 import PropTypes from "prop-types";
 import swal from "sweetalert";
+import { CustomContext } from "@/CommonContext";
+import AnimatedLoading from "@/Components/AnimatedLoading";
 export const SearchIcon = (props) => {
     return (
         <svg
@@ -50,7 +52,8 @@ export const SearchIcon = (props) => {
     );
 };
 
-export default function ProductStockTable({ url, Token, currentUser }) {
+export default function ProductStockTable() {
+    const { Token, user, url } = useContext(CustomContext);
     const [productsData, setProductsData] = useState([]);
     const [debtors, setDebtors] = useState([]);
     const [branches, setBranches] = useState([]);
@@ -70,7 +73,7 @@ export default function ProductStockTable({ url, Token, currentUser }) {
         try {
             const response = await axios.get(`${url}/SOH`, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             });
@@ -244,8 +247,8 @@ export default function ProductStockTable({ url, Token, currentUser }) {
             }
             return acc;
         }, {});
-        setDisplayCount(30)
-        setHasMore(true)
+        setDisplayCount(30);
+        setHasMore(true);
         // Step 5: Flatten groups into rows with recalculated totals
         return Object.values(recalculatedGroups).flatMap(
             (group, groupIndex) => {
@@ -386,19 +389,18 @@ export default function ProductStockTable({ url, Token, currentUser }) {
         }
     }, []);
 
-
     const onClear = React.useCallback(() => {
         setFilterValue("");
-        setDisplayCount(30)
-        setHasMore(true)
+        setDisplayCount(30);
+        setHasMore(true);
     }, []);
 
     function onClearAll() {
         setFilterValue("");
         setSelectedBranch(new Set());
         setSelectedDebtor(new Set());
-        setDisplayCount(30)
-        setHasMore(true)
+        setDisplayCount(30);
+        setHasMore(true);
     }
 
     const displayedData = useMemo(
@@ -562,207 +564,186 @@ export default function ProductStockTable({ url, Token, currentUser }) {
         });
     }
 
+    if (productsData.length === 0) {
+        return <AnimatedLoading />;
+    }
     return (
-        <div>
-            {productsData.length === 0 ? (
-                <div className="min-h-screen md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
-                    <div className="flex items-center justify-center">
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
-                        ></div>
-                        <div
-                            className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
-                        ></div>
-                    </div>
-                    <div className="text-dark mt-4 font-bold">
-                        Please wait while we get the data for you.
-                    </div>
+        <div className="p-5 flex flex-col gap-5">
+            <div className="flex smitems-center flex-col sm:flex-row justify-between gap-5">
+                <h1 className="text-2xl font-bold text-dark">SOH Report</h1>
+                <div className="flex gap-4">
+                    <Button
+                        className="bg-gray-800 text-white"
+                        onClick={() => onClearAll()}
+                        radius="sm"
+                        size="md"
+                    >
+                        Clear Filter
+                    </Button>
+                    <Button
+                        className="bg-gray-800 text-white"
+                        onClick={() => handleDownloadExcel()}
+                        radius="sm"
+                        size="md"
+                    >
+                        Export
+                    </Button>
                 </div>
-            ) : (
-                <div className="p-5 flex flex-col gap-5">
-                    <div className="flex smitems-center flex-col sm:flex-row justify-between gap-5">
-                        <h1 className="text-2xl font-bold text-dark">
-                            SOH Report
-                        </h1>
-                        <div className="flex gap-4">
-                            <Button
-                                className="bg-gray-800 text-white"
-                                onClick={() => onClearAll()}
-                                radius="sm"
-                                size="md"
-                            >
-                                Clear Filter
-                            </Button>
-                            <Button
-                                className="bg-gray-800 text-white"
-                                onClick={() => handleDownloadExcel()}
-                                radius="sm"
-                                size="md"
-                            >
-                                Export
-                            </Button>
-                        </div>
-                    </div>
+            </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-                        <Input
-                            isClearable
-                            classNames={{
-                                input: "!border-none focus:ring-0",
-                                inputWrapper: "bg-white shadow",
-                            }}
-                            startContent={<SearchIcon />}
-                            onClear={() => onClear()}
-                            size="lg"
-                            className="w-full"
-                            placeholder="Product Code"
-                            value={filterValue}
-                            onChange={(e) => setFilterValue(e.target.value)}
-                        />
-                        {debtors.length > 0 && (
-                            <Select
-                                classNames={{ trigger: "bg-white" }}
-                                label="Account"
-                                size="sm"
-                                placeholder=" "
-                                selectedKeys={selectedDebtor}
-                                variant="bordered"
-                                onSelectionChange={setSelectedDebtor}
-                            >
-                                {debtors.map((item) => (
-                                    <SelectItem key={item.DebtorId}>
-                                        {item.DebtorName}
-                                    </SelectItem>
-                                ))}
-                            </Select>
-                        )}
-
-                        <Select
-                            classNames={{ trigger: "bg-white" }}
-                            label="Branch"
-                            size="sm"
-                            placeholder=" "
-                            selectedKeys={selectedBranch}
-                            variant="bordered"
-                            onSelectionChange={setSelectedBranch}
-                        >
-                            {branches.map((item) => (
-                                <SelectItem key={item.BranchId}>
-                                    {item.BranchName}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                <Input
+                    isClearable
+                    classNames={{
+                        input: "!border-none focus:ring-0",
+                        inputWrapper: "bg-white shadow",
+                    }}
+                    startContent={<SearchIcon />}
+                    onClear={() => onClear()}
+                    size="lg"
+                    className="w-full"
+                    placeholder="Product Code"
+                    value={filterValue}
+                    onChange={(e) => setFilterValue(e.target.value)}
+                />
+                {debtors.length > 0 && (
+                    <Select
+                        classNames={{ trigger: "bg-white" }}
+                        label="Account"
+                        size="sm"
+                        placeholder=" "
+                        selectedKeys={selectedDebtor}
+                        variant="bordered"
+                        onSelectionChange={setSelectedDebtor}
+                    >
+                        {debtors
+                            .sort((a, b) =>
+                                a.DebtorName.localeCompare(b.DebtorName)
+                            )
+                            .map((item) => (
+                                <SelectItem key={item.DebtorId}>
+                                    {item.DebtorName}
                                 </SelectItem>
                             ))}
-                        </Select>
-                    </div>
+                    </Select>
+                )}
 
-                    <Table
-                        isStriped
-                        id="product-stock-table"
-                        isHeaderSticky
-                        baseRef={scrollRef}
-                        bottomContent={
-                            hasMore ? (
-                                <div className="flex w-full justify-center">
-                                    <Spinner ref={loaderRef} color="white" />
-                                </div>
-                            ) : null
-                        }
-                        aria-label="Product Stock Table"
-                        classNames={{
-                            wrapper:
-                                "containerscroll !p-0 border-[10px] border-white max-h-[650px]",
-                            thead: "[&>tr]:first:shadow-none",
-                            th: "bg-gray-200",
-                        }}
-                    >
-                        <TableHeader columns={columns}>
-                            {(column) => (
-                                <TableColumn key={column.uid}>
-                                    {column.name}
-                                </TableColumn>
-                            )}
-                        </TableHeader>
-                        <TableBody
-                            items={displayedData}
-                            emptyContent={"No data found"}
+                <Select
+                    classNames={{ trigger: "bg-white" }}
+                    label="Branch"
+                    size="sm"
+                    placeholder=" "
+                    selectedKeys={selectedBranch}
+                    variant="bordered"
+                    onSelectionChange={setSelectedBranch}
+                >
+                    {branches
+                        .sort((a, b) => a.BranchName.localeCompare(b.BranchName))
+                        .map((item) => (
+                            <SelectItem key={item.BranchId}>
+                                {item.BranchName}
+                            </SelectItem>
+                        ))}
+                </Select>
+            </div>
+
+            <Table
+                isStriped
+                id="product-stock-table"
+                isHeaderSticky
+                baseRef={scrollRef}
+                bottomContent={
+                    hasMore ? (
+                        <div className="flex w-full justify-center">
+                            <Spinner ref={loaderRef} color="white" />
+                        </div>
+                    ) : null
+                }
+                aria-label="Product Stock Table"
+                classNames={{
+                    wrapper:
+                        "containerscroll !p-0 border-[10px] border-white max-h-[650px]",
+                    thead: "[&>tr]:first:shadow-none",
+                    th: "bg-gray-200",
+                }}
+            >
+                <TableHeader columns={columns}>
+                    {(column) => (
+                        <TableColumn key={column.uid} align="center">
+                            {column.name}
+                        </TableColumn>
+                    )}
+                </TableHeader>
+                <TableBody items={displayedData} emptyContent={"No data found"}>
+                    {(item) => (
+                        <TableRow
+                            key={item.index}
+                            style={{
+                                backgroundColor: item.isSeparatorRow
+                                    ? "white"
+                                    : "inherit",
+                                borderTop: item.isSeparatorRow
+                                    ? "2px solid black"
+                                    : "none",
+                            }}
                         >
-                            {(item) => (
-                                <TableRow
-                                    key={item.index}
-                                    style={{
-                                        backgroundColor: item.isSeparatorRow
-                                            ? "white"
-                                            : "inherit",
-                                        borderTop: item.isSeparatorRow
-                                            ? "2px solid black"
-                                            : "none",
-                                    }}
+                            {(columnKey) => (
+                                <TableCell
+                                    className={
+                                        item.isSeparatorRow ? "py-3 px-0" : ""
+                                    }
                                 >
-                                    {(columnKey) => (
-                                        <TableCell
-                                            className={
-                                                item.isSeparatorRow
-                                                    ? "py-3 px-0"
-                                                    : ""
-                                            }
-                                        >
-                                            {item.isSeparatorRow
-                                                ? null
-                                                : renderCell(item, columnKey)}
-                                        </TableCell>
-                                    )}
-                                </TableRow>
+                                    {item.isSeparatorRow
+                                        ? null
+                                        : renderCell(item, columnKey)}
+                                </TableCell>
                             )}
-                        </TableBody>
-                    </Table>
+                        </TableRow>
+                    )}
+                </TableBody>
+            </Table>
 
-                    <div>
-                        <h1 className="text-2xl font-bold text-dark">
-                            Pallets Summary
-                        </h1>
-                    </div>
+            <div>
+                <h1 className="text-2xl font-bold text-dark">
+                    Pallets Summary
+                </h1>
+            </div>
 
-                    <Table
-                        isStriped
-                        aria-label="Grouped Debtor and Branch Table"
-                        classNames={{
-                            wrapper:
-                                "containerscroll !p-0 border-[10px] border-white max-h-[700px]",
-                            thead: "[&>tr]:first:shadow-none",
-                            th: "bg-gray-200",
-                        }}
-                    >
-                        <TableHeader columns={groupedColumns}>
-                            {(column) => (
-                                <TableColumn key={column.uid}>
-                                    {column.name}
-                                </TableColumn>
-                            )}
-                        </TableHeader>
-                        <TableBody emptyContent={"No data found"}>
-                            {groupedByDebtorAndBranch.map((debtor) =>
-                                debtor.data.map((branch, index) => (
-                                    <TableRow
-                                        key={`${debtor.Debtor}-${branch.branch}-${index}`}
-                                    >
-                                        <TableCell>
-                                            {index === 0
-                                                ? debtor.DebtorName
-                                                : debtor.DebtorName}
-                                        </TableCell>
-                                        <TableCell>
-                                            {branch.branchName}
-                                        </TableCell>
-                                        <TableCell>{branch.total}</TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </div>
-            )}
+            <Table
+                isStriped
+                aria-label="Grouped Debtor and Branch Table"
+                classNames={{
+                    wrapper:
+                        "containerscroll !p-0 border-[10px] border-white max-h-[700px]",
+                    thead: "[&>tr]:first:shadow-none",
+                    th: "bg-gray-200",
+                }}
+            >
+                <TableHeader columns={groupedColumns}>
+                    {(column) => (
+                        <TableColumn key={column.uid}>
+                            {column.name}
+                        </TableColumn>
+                    )}
+                </TableHeader>
+                <TableBody emptyContent={"No data found"}>
+                    {groupedByDebtorAndBranch.map((debtor) =>
+                        debtor.data.map((branch, index) => (
+                            <TableRow
+                                key={`${debtor.Debtor}-${branch.branch}-${index}`}
+                            >
+                                <TableCell>
+                                    {index === 0
+                                        ? debtor.DebtorName
+                                        : debtor.DebtorName}
+                                </TableCell>
+                                <TableCell>{branch.branchName}</TableCell>
+                                <TableCell>{branch.total}</TableCell>
+                            </TableRow>
+                        ))
+                    )}
+                </TableBody>
+            </Table>
         </div>
     );
 }
@@ -770,5 +751,4 @@ export default function ProductStockTable({ url, Token, currentUser }) {
 ProductStockTable.propTypes = {
     url: PropTypes.string,
     Token: PropTypes.string,
-    currentUser: PropTypes.object,
 };

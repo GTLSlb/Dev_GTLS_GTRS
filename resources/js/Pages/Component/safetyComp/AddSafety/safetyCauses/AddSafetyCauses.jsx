@@ -1,17 +1,20 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { PencilIcon } from "@heroicons/react/24/outline";
 import notFound from "../../../../../assets/pictures/NotFound.png";
 import AddSafetyCausesModal from "./AddSafetyCausesModel";
-import { getApiRequest } from "@/CommonFunctions";
+import { useApiRequests } from "@/CommonFunctions";
 import PropTypes from "prop-types";
 import React from "react";
+import { CustomContext } from "@/CommonContext";
+
+
+
 export default function AddSafetyCauses({
-    Token,
     safetyCauses,
     setSafetyCauses,
-    currentUser,
-    url,
 }) {
+    const { user, url, Token, userPermissions } = useContext(CustomContext);
+    const { getApiRequest } = useApiRequests();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [Data, setData] = useState(safetyCauses);
     const [cause, setCause] = useState();
@@ -24,7 +27,7 @@ export default function AddSafetyCauses({
 
     async function fetchData() {
         const data = await getApiRequest(`${url}SafetyCauses`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {
@@ -181,7 +184,7 @@ export default function AddSafetyCauses({
             <AddSafetyCausesModal
                 url={url}
                 Token={Token}
-                currentUser={currentUser}
+                userPermissions={userPermissions}
                 ariaHideApp={false}
                 isOpen={isModalOpen}
                 cause={cause}
@@ -195,9 +198,6 @@ export default function AddSafetyCauses({
 }
 
 AddSafetyCauses.propTypes = {
-    Token: PropTypes.string,
     safetyCauses: PropTypes.array,
     setSafetyCauses: PropTypes.func,
-    currentUser: PropTypes.object,
-    url: PropTypes.string,
 };

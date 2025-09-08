@@ -1,23 +1,73 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import Select from "react-select";
 import BarGraph from "../graphs/BarGraph";
 import axios from "axios";
 import PropTypes from "prop-types";
+import { CustomContext } from "@/CommonContext";
+import AnimatedLoading from "@/Components/AnimatedLoading";
 
-function ConsignmentGraph({ url, currentUser, Token, customers, CustomerId }) {
+function ConsignmentGraph({ customers, CustomerId }) {
+    const { Token, user, userPermissions, url } = useContext(CustomContext);
     const [graphData, setGraphData] = useState();
     const [originalgraphData, setGraphOriginalData] = useState();
     const [loading, setLoading] = useState(true);
     const [selectedReceiver, setselectedReceiver] = useState(customers[0]);
+
+    function addCalculatedFields(data) {
+        data.forEach((item) => {
+            if (item.Record && item.Record.length > 0) {
+                item.Record.forEach((record) => {
+                    if (
+                        record.TotalCons != null &&
+                        record.TotalCons !== "" &&
+                        !Number.isNaN(record.TotalCons) &&
+                        record.TotalCons > 0
+                    ) {
+                        if (
+                            record.TotalFails != null &&
+                            record.TotalFails !== "" &&
+                            !Number.isNaN(record.TotalFails)
+                        ) {
+                            record.onTimePercentage = (
+                                ((record.TotalCons - record.TotalFails) /
+                                    record.TotalCons) *
+                                100
+                            ).toFixed(2);
+                        } else {
+                            record.onTimePercentage = null;
+                        }
+
+                        if (
+                            record.TotalNoPod != null &&
+                            record.TotalNoPod !== "" &&
+                            !Number.isNaN(record.TotalNoPod)
+                        ) {
+                            record.PODPercentage = (
+                                ((record.TotalCons - record.TotalNoPod) /
+                                    record.TotalCons) *
+                                100
+                            ).toFixed(2);
+                        } else {
+                            record.PODPercentage = null;
+                        }
+                    } else {
+                        record.onTimePercentage = null;
+                        record.PODPercentage = null;
+                    }
+                });
+            }
+        });
+        return data;
+    }
 
     function getReportData() {
         setLoading(true);
         axios
             .get(`${url}KpiPackRecord`, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     CustomerId: CustomerId,
                     CustomerTypeId: selectedReceiver.value,
                     Authorization: `Bearer ${Token}`,
@@ -25,7 +75,7 @@ function ConsignmentGraph({ url, currentUser, Token, customers, CustomerId }) {
             })
             .then((res) => {
                 setLoading(false);
-
+                addCalculatedFields(res.data);
                 setGraphOriginalData(res.data);
                 setGraphData(res.data);
             })
@@ -41,76 +91,52 @@ function ConsignmentGraph({ url, currentUser, Token, customers, CustomerId }) {
     const customStyles = {
         control: (provided) => ({
             ...provided,
-            minHeight: "unset", // Remove default minimum height
-            height: "auto", // Set control height to auto
-            // Add other control-related styles as needed
+            minHeight: "unset",
+            height: "auto",
         }),
         option: (provided, state) => ({
             ...provided,
-            color: state.isSelected ? "black" : "black", // Change color based on selection
+            color: state.isSelected ? "black" : "black",
             backgroundColor: state.isSelected
                 ? "#F3F3F3"
-                : provided.backgroundColor, // Customize selected option background
-            // Add more styles for options as needed
+                : provided.backgroundColor,
         }),
         multiValue: (provided) => ({
             ...provided,
-            width: "30%", // Set multi-value width
-            overflow: "hidden", // Ensure content does not overflow
-            height: "20px", // Set height of multi-value tags
-            display: "flex", // Align items horizontally
-            // Add more multi-value styles as needed
+            width: "30%",
+            overflow: "hidden",
+            height: "20px",
+            display: "flex",
         }),
         valueContainer: (provided) => ({
             ...provided,
-            width: "400px", // Set fixed width for the value container
-            maxHeight: "37px", // Restrict max height of value container
-            overflowY: "auto", // Enable vertical scrolling for overflow
-            // Add more styles for the value container as needed
+            width: "400px",
+            maxHeight: "37px",
+            overflowY: "auto",
         }),
         input: (provided) => ({
             ...provided,
-            margin: 0, // Remove default margin for input
-            // Add more styles for input if necessary
+            margin: 0,
         }),
         multiValueLabel: (provided) => ({
             ...provided,
-            whiteSpace: "nowrap", // Prevent text from wrapping
-            overflow: "hidden", // Hide overflow content
-            textOverflow: "ellipsis", // Show ellipsis for overflow text
-            fontSize: "10px", // Set font size for multi-value labels
-            // Add more styles for multi-value labels as needed
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            fontSize: "10px",
         }),
         indicatorsContainer: (provided) => ({
             ...provided,
-            height: "auto", // Set height to auto
-            // Add more styles for indicators container if necessary
+            height: "auto",
         }),
-        // Add or adjust other style functions as needed
     };
 
     const handleReceiverSelectChange = (selectedOptions) => {
         setselectedReceiver(selectedOptions);
     };
 
-
     return loading ? (
-        <div className="md:pl-20 pt-16 h-full flex flex-col items-center justify-center">
-            <div className="flex items-center justify-center">
-                <div
-                    className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce`}
-                ></div>
-                <div
-                    className={`h-5 w-5 bg-goldd rounded-full mr-5 animate-bounce200`}
-                ></div>
-                <div
-                    className={`h-5 w-5 bg-goldd rounded-full animate-bounce400`}
-                ></div>
-            </div>
-            <div className="text-dark mt-4 font-bold">
-                Please wait while we get the data for you.
-            </div>
-        </div>
+        <AnimatedLoading />
     ) : (
         <div>
             <div className="inline-block">
@@ -136,7 +162,7 @@ function ConsignmentGraph({ url, currentUser, Token, customers, CustomerId }) {
                     url={url}
                     CustomerId={CustomerId}
                     Token={Token}
-                    currentUser={currentUser}
+                    userPermissions={userPermissions}
                     selectedReceiver={selectedReceiver}
                     originalgraphData={originalgraphData}
                     getReportData={getReportData}
@@ -148,9 +174,6 @@ function ConsignmentGraph({ url, currentUser, Token, customers, CustomerId }) {
 }
 
 ConsignmentGraph.propTypes = {
-    url: PropTypes.string,
-    currentUser: PropTypes.object,
-    Token: PropTypes.string,
     customers: PropTypes.array,
     CustomerId: PropTypes.number,
 };

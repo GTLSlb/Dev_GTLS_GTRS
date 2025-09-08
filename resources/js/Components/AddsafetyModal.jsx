@@ -1,13 +1,14 @@
 import ReactModal from "react-modal";
-import React, { useState } from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
-import { useEffect } from "react";
+import axios from "axios";
 import "../../css/scroll.css";
 import swal from "sweetalert";
 import { handleSessionExpiration } from "@/CommonFunctions";
 import Select from "react-select";
-import {ToastContainer} from 'react-toastify';
+import { ToastContainer } from "react-toastify";
 import { AlertToast } from "@/permissions";
+import { CustomContext } from "@/CommonContext";
 
 export default function SafetyModal({
     isOpen,
@@ -16,7 +17,6 @@ export default function SafetyModal({
     modalSafetyType,
     modalMainCause,
     modalState,
-    Token,
     customerAccounts,
     modalConsNo,
     modalDebtorId,
@@ -25,175 +25,299 @@ export default function SafetyModal({
     modalRefer,
     modalOccuredAt,
     updateLocalData,
-    currentUser,
     safetyTypes,
     setIsSuccessfull,
-    fetchData
+    fetchData,
 }) {
-    const date = new Date(modalOccuredAt);
-    const formattedDate = date?.toLocaleDateString("en-CA");
-    let id = 0;
-    if (modalRepId !== null && typeof modalRepId === "object") {
-        id = 0;
-    } else if (typeof modalRepId === "number") {
-        id = modalRepId;
-    }
-    const [isLoading, SetIsLoading] = useState(false);
-    const [formValues, setFormValues] = useState({
-        ReportId: id,
-        SafetyType: modalSafetyType,
-        ConsNo: modalConsNo,
-        MainCause: modalMainCause,
-        State: modalState,
-        Explanation: modalExpl,
-        Resolution: modalResol,
-        Reference: modalRefer,
-        DebtorId: modalDebtorId,
-        OccuredAt: formattedDate === "Invalid Date" ? null : formattedDate,
-    });
-    useEffect(() => {
-        setFormValues({
-            ReportId: id,
-            SafetyType: modalSafetyType,
-            DebtorId: modalDebtorId,
-            ConsNo: modalConsNo,
-            MainCause: modalMainCause,
-            State: modalState,
-            Explanation: modalExpl,
-            Resolution: modalResol,
-            Reference: modalRefer,
-            OccuredAt: formattedDate === "Invalid Date" ? null : formattedDate,
-        });
-    }, [
-        id,
-        modalSafetyType,
-        modalConsNo,
-        modalMainCause,
-        modalState,
-        modalExpl,
-        modalResol,
-        modalRefer,
-        formattedDate,
-        Token,
-        currentUser.name,
-    ]);
-    const handlePopUpClose = () => {
-        setError(null);
-        setSuccess(false);
-        // Clear the error message
-        setFormValues({
-            ReportId: id,
-            SafetyType: modalSafetyType,
-            ConsNo: modalConsNo,
-            MainCause: modalMainCause,
-            State: modalState,
-            Explanation: modalExpl,
-            Resolution: modalResol,
-            Reference: modalRefer,
-            OccuredAt: formattedDate === "Invalid Date" ? null : formattedDate,
-        });
-        handleClose(); // Clear the input value
-    };
+    const { user, Token, url } = useContext(CustomContext);
+
+    // Enhanced date formatting with error handling
+    const formatDate = useCallback((dateString) => {
+        if (!dateString) return null;
+        const date = new Date(dateString);
+        return isNaN(date.getTime()) ? null : date.toLocaleDateString("en-CA");
+    }, []);
+
+    const formattedDate = formatDate(modalOccuredAt);
+
+    // Enhanced ID handling
+    const getReportId = useCallback(() => {
+        if (modalRepId === null || typeof modalRepId === "object") {
+            return 0;
+        }
+        return typeof modalRepId === "number" ? modalRepId : 0;
+    }, [modalRepId]);
+
+    const reportId = getReportId();
+
+    // State management
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
-    const handleChange = (e) => {
-       if (Object.prototype.hasOwnProperty.call(e, "target")) {
-            setFormValues({ ...formValues, [e.target.name]: e.target.value });
-        } else {
-            setFormValues({ ...formValues, DebtorId: e.id });
-        }
-    };
-    formValues.ReportId = id;
-    const handleSubmit = async (event) => {
-        event.preventDefault(); // Prevent the default form submission behavior
-        try {
-            SetIsLoading(true);
-            fetchData();
-            updateLocalData(id, formValues);
-            setSuccess(true);
-            setIsSuccessfull(true);
-            AlertToast("Saved Successfully", 1);
-            setTimeout(() => {
-                handleClose();
-                SetIsLoading(false);
-                setSuccess(false);
-            }, 1000);
-        } catch (error) {
-            SetIsLoading(false);
-            setIsSuccessfull(false);
-            // Handle error
-            if (error.response && error.response.status === 401) {
-                // Handle 401 error using SweetAlert
-                swal({
-                    title: "Session Expired!",
-                    text: "Please login again",
-                    type: "success",
-                    icon: "info",
-                    confirmButtonText: "OK",
-                }).then(async function () {
-                    await handleSessionExpiration();
-                });
-            } else {
-                console.error(error);
-            }
-            console.error(error);
-            setError("Error occurred while saving the data. Please try again."); // Set the error message
-        }
-    };
-    const customStyles = {
-        control: (provided) => ({
-            ...provided,
-            minHeight: "unset",
-            height: "auto",
-            // Add more styles here as needed
+
+    // Initial form values
+    const getInitialFormValues = useCallback(
+        () => ({
+            ReportId: reportId,
+            SafetyType: modalSafetyType || "",
+            ConsNo: modalConsNo || "",
+            MainCause: modalMainCause || "",
+            State: modalState || "",
+            Explanation: modalExpl || "",
+            Resolution: modalResol || "",
+            Reference: modalRefer || "1",
+            DebtorId: modalDebtorId || "",
+            OccuredAt: formattedDate,
         }),
-        option: (provided) => ({
+        [
+            reportId,
+            modalSafetyType,
+            modalConsNo,
+            modalMainCause,
+            modalState,
+            modalExpl,
+            modalResol,
+            modalRefer,
+            modalDebtorId,
+            formattedDate,
+        ]
+    );
+
+    const [formValues, setFormValues] = useState(getInitialFormValues);
+
+    // Update form values when props change
+    useEffect(() => {
+        setFormValues(getInitialFormValues());
+    }, [getInitialFormValues]);
+
+    // Enhanced form validation
+    const validateForm = useCallback(() => {
+        const requiredFields = ["SafetyType", "State", "Reference"];
+        const missingFields = requiredFields.filter(
+            (field) => !formValues[field]
+        );
+
+        if (missingFields.length > 0) {
+            setError(
+                `Please fill in the following required fields: ${missingFields.join(
+                    ", "
+                )}`
+            );
+            return false;
+        }
+
+        setError(null);
+        return true;
+    }, [formValues]);
+
+    // Enhanced close handler
+    const handlePopUpClose = useCallback(() => {
+        setError(null);
+        setSuccess(false);
+        setFormValues(getInitialFormValues());
+        handleClose();
+    }, [handleClose, getInitialFormValues]);
+
+    // Enhanced change handler with better type detection
+    const handleChange = useCallback((e) => {
+        if (e && typeof e === "object" && "target" in e) {
+            // Regular form input
+            const { name, value } = e.target;
+            setFormValues((prev) => ({ ...prev, [name]: value }));
+        } else if (e && "id" in e) {
+            // React-select dropdown
+            setFormValues((prev) => ({ ...prev, DebtorId: e.id }));
+        } else if (e === null) {
+            // React-select cleared
+            setFormValues((prev) => ({ ...prev, DebtorId: "" }));
+        }
+    }, []);
+
+    // Enhanced submit handler with proper data refresh
+    const handleSubmit = useCallback(
+        async (event) => {
+            event.preventDefault();
+
+            if (!validateForm()) {
+                return;
+            }
+
+            try {
+                setIsLoading(true);
+                setError(null);
+
+                // Prepare form data with proper types
+                const submitData = {
+                    ...formValues,
+                    ReportId: reportId,
+                    SafetyType: parseInt(formValues.SafetyType) || null,
+                    Reference: parseInt(formValues.Reference) || 1,
+                    DebtorId: formValues.DebtorId
+                        ? parseInt(formValues.DebtorId)
+                        : null,
+                };
+
+                console.log("Submitting data:", submitData);
+
+                // API call with enhanced error handling
+                const response = await axios.post(
+                    `${url}Add/SafetyReport`,
+                    submitData,
+                    {
+                        headers: {
+                            UserId: user.UserId,
+                            Authorization: `Bearer ${Token}`,
+                            'Content-Type': 'application/json'
+                        },
+                    }
+                );
+
+                // Handle successful response
+                if (response.status === 200 || response.status === 201) {
+                    console.log("API Response:", response.data);
+                    
+                    // Update local data if function is provided
+                    if (updateLocalData && typeof updateLocalData === 'function') {
+                        const updatedData = response.data || submitData;
+                        updateLocalData(reportId, updatedData);
+                    }
+
+                    setSuccess(true);
+                    setIsSuccessfull(true);
+                    AlertToast("Safety report saved successfully", 1);
+
+                    // Force refresh the data - this is the key fix
+                    if (fetchData && typeof fetchData === 'function') {
+                        console.log("Forcing data refresh...");
+                        try {
+                            // Wait for the fetchData to complete
+                            await fetchData();
+                            console.log("Data refresh completed");
+                        } catch (fetchError) {
+                            console.error("Error during data refresh:", fetchError);
+                        }
+                    } else {
+                        console.warn("fetchData function not provided or not a function");
+                    }
+
+                    // Close modal after a short delay to allow data refresh
+                    setTimeout(() => {
+                        handlePopUpClose();
+                    }, 1000);
+                } else {
+                    throw new Error(`Unexpected response status: ${response.status}`);
+                }
+            } catch (error) {
+                console.error("Error saving safety report:", error);
+
+                // Enhanced error handling
+                if (error.response?.status === 401) {
+                    await swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    });
+                    await handleSessionExpiration();
+                } else if (error.response?.data?.message) {
+                    const errorMessage = error.response.data.message;
+                    setError(errorMessage);
+                    AlertToast(errorMessage, 2);
+                } else {
+                    const errorMessage = error.message || "Error occurred while saving the data. Please try again.";
+                    setError(errorMessage);
+                    AlertToast(errorMessage, 2);
+                }
+
+                setIsSuccessfull(false);
+            } finally {
+                setIsLoading(false);
+            }
+        },
+        [
+            formValues,
+            reportId,
+            validateForm,
+            url,
+            user.UserId,
+            Token,
+            updateLocalData,
+            fetchData,
+            setIsSuccessfull,
+            handlePopUpClose,
+        ]
+    );
+
+    // Enhanced custom styles for react-select
+    const customSelectStyles = {
+        control: (provided, state) => ({
+            ...provided,
+            minHeight: "42px",
+            borderColor: state.isFocused ? "#3B82F6" : "#D1D5DB",
+            boxShadow: state.isFocused ? "0 0 0 1px #3B82F6" : "none",
+            "&:hover": {
+                borderColor: "#3B82F6",
+            },
+        }),
+        option: (provided, state) => ({
             ...provided,
             color: "black",
-            // Add more styles here as needed
-        }),
-        multiValue: (provided) => ({
-            ...provided,
-            width: "30%",
-            overflow: "hidden",
-            height: "20px",
-            display: "flex",
-            justifyContent: "space-between",
+            backgroundColor: state.isSelected
+                ? "#3B82F6"
+                : state.isFocused
+                ? "#EBF4FF"
+                : "white",
         }),
         valueContainer: (provided) => ({
             ...provided,
-            maxHeight: "37px", // Set the maximum height for the value container
-            overflow: "auto", // Enable scrolling if the content exceeds the maximum height
-            // fontSize: '10px',
+            maxHeight: "40px",
+            overflow: "auto",
         }),
-        inputContainer: (provided) => ({
+        placeholder: (provided) => ({
             ...provided,
-            height: "100px",
+            color: "#9CA3AF",
         }),
-        multiValueLabel: (provided) => ({
-            ...provided,
-            whiteSpace: "nowrap", // Prevent text wrapping
-            overflow: "hidden",
-            textOverflow: "ellipsis", // Display ellipsis when text overflows
-            fontSize: "10px",
-            // Add more styles here as needed
-        }),
-        // Add more style functions here as needed
     };
+
+    // Get current account for react-select value
+    const getCurrentAccount = useCallback(() => {
+        if (!formValues.DebtorId || !customerAccounts) return null;
+        return (
+            customerAccounts.find(
+                (account) =>
+                    account.id.toString() === formValues.DebtorId.toString()
+            ) || null
+        );
+    }, [formValues.DebtorId, customerAccounts]);
+
+    // Reset form when modal opens/closes
+    useEffect(() => {
+        if (isOpen) {
+            setError(null);
+            setSuccess(false);
+            setFormValues(getInitialFormValues());
+        }
+    }, [isOpen, getInitialFormValues]);
+
     return (
         <ReactModal
             ariaHideApp={false}
             isOpen={isOpen}
-            className="fixed inset-0 flex items-center justify-center "
+            onRequestClose={handlePopUpClose}
+            className="fixed inset-0 flex items-center justify-center p-4"
             overlayClassName="fixed inset-0 bg-black bg-opacity-60 z-50"
         >
-            {/* Added toast container since it wasn't showing */}
             <ToastContainer />
-            <div className="bg-white w-96 2xl:w-[28%] rounded-lg shadow-lg p-6 ">
-                <div className="flex justify-end">
+            <div className="bg-white w-full max-w-md 2xl:max-w-lg rounded-lg shadow-lg p-6 max-h-[90vh] flex flex-col">
+                {/* Header */}
+                <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-2xl font-bold">
+                        {reportId ? "Edit Safety Report" : "Add Safety Report"}
+                    </h2>
                     <button
-                        className="text-gray-500 hover:text-gray-700"
+                        className="text-gray-500 hover:text-gray-700 p-1"
                         onClick={handlePopUpClose}
+                        type="button"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -211,118 +335,131 @@ export default function SafetyModal({
                         </svg>
                     </button>
                 </div>
-                <h2 className="text-2xl font-bold mb-4">
-                    {modalRepId ? <>Edit Safety Report</> : "Add Safety Report"}
-                </h2>
 
+                {/* Form */}
                 <form
                     onSubmit={handleSubmit}
-                    className="overflow-y-scroll h-[28rem] containerscroll"
+                    className="flex-1 overflow-hidden flex flex-col"
                 >
-                    <div className="pr-2">
-                        {/* Sucess message */}
+                    <div className="overflow-y-auto containerscroll pr-2 flex-1">
+                        {/* Success/Error Messages */}
                         {success && (
-                            <div className="text-green-500 mb-4">
+                            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
                                 Data saved successfully.
                             </div>
                         )}
-                        {/* Error message */}
                         {error && (
-                            <div className="text-red-500 mb-4">{error}</div>
+                            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                                {error}
+                            </div>
                         )}
+
+                        {/* Safety Type */}
                         <div className="mb-4">
-                            <label htmlFor="SafetyType" className="block mb-2">
-                                Type:
+                            <label
+                                htmlFor="SafetyType"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
+                                Type: <span className="text-red-500">*</span>
                             </label>
                             <select
                                 id="SafetyType"
                                 name="SafetyType"
-                                className="w-full border border-gray-300 rounded px-3 py-2"
-                                defaultValue={modalSafetyType}
-                                value={formValues.SafetyType || ""}
+                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value={formValues.SafetyType}
                                 onChange={handleChange}
                                 required
                             >
                                 <option value="">
                                     --Please choose an option--
                                 </option>
-
-                                {safetyTypes?.map((type) => {
-                                    if (type.SafetyStatus) {
-                                        return (
-                                            <option
-                                                key={type.SafetyTypeId}
-                                                value={type.SafetyTypeId}
-                                            >
-                                                {type.SafetyTypeName}
-                                            </option>
-                                        );
-                                    }
-                                    return null; // Skip rendering if SafetyStatus is false
-                                })}
+                                {safetyTypes
+                                    ?.filter((type) => type.SafetyStatus)
+                                    .map((type) => (
+                                        <option
+                                            key={type.SafetyTypeId}
+                                            value={type.SafetyTypeId}
+                                        >
+                                            {type.SafetyTypeName}
+                                        </option>
+                                    ))}
                             </select>
                         </div>
+
+                        {/* Consignment No */}
                         <div className="mb-4">
-                            <label htmlFor="ConsNo" className="block mb-2">
+                            <label
+                                htmlFor="ConsNo"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
                                 Consignment No:
                             </label>
                             <input
                                 type="text"
                                 id="ConsNo"
                                 name="ConsNo"
-                                className="w-full border border-gray-300 rounded px-3 py-2"
+                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 placeholder="Enter the Consignment No of the report"
-                                defaultValue={modalConsNo}
                                 value={formValues.ConsNo}
                                 onChange={handleChange}
-                            ></input>
+                            />
                         </div>
+
+                        {/* Account Name */}
                         <div className="mb-4">
-                            <label htmlFor="SafetyType" className="block mb-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Account Name:
                             </label>
                             <Select
-                                styles={customStyles}
-                                name="colors"
-                                value={customerAccounts.find(
-                                    (account) =>
-                                        account.id === formValues.DebtorId
-                                )}
+                                styles={customSelectStyles}
+                                value={getCurrentAccount()}
                                 options={customerAccounts}
                                 onChange={handleChange}
                                 getOptionValue={(option) =>
-                                    option.id.toString() || ""
+                                    option.id.toString()
+                                }
+                                getOptionLabel={(option) =>
+                                    option.label || option.name
                                 }
                                 placeholder="--Please choose an option--"
                                 maxMenuHeight={180}
-                                defaultValue={modalDebtorId}
-                                className="basic-multi-select w-full"
+                                isClearable
+                                className="basic-select"
                                 classNamePrefix="select"
                             />
                         </div>
+
+                        {/* Main Cause */}
                         <div className="mb-4">
-                            <label htmlFor="MainCause" className="block mb-2">
+                            <label
+                                htmlFor="MainCause"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
                                 Main Cause:
                             </label>
                             <textarea
                                 id="MainCause"
                                 name="MainCause"
-                                className="w-full border border-gray-300 rounded px-3 py-2"
+                                rows="3"
+                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 placeholder="Enter the Main cause of the safety issue"
-                                defaultValue={modalMainCause}
                                 value={formValues.MainCause}
                                 onChange={handleChange}
-                            ></textarea>
+                            />
                         </div>
+
+                        {/* State */}
                         <div className="mb-4">
-                            <label htmlFor="State" className="block mb-2">
-                                State:
+                            <label
+                                htmlFor="State"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
+                                State: <span className="text-red-500">*</span>
                             </label>
                             <select
                                 id="State"
                                 name="State"
-                                className="w-full border border-gray-300 rounded px-3 py-2"
-                                defaultValue={modalState}
+                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={formValues.State}
                                 onChange={handleChange}
                                 required
@@ -335,63 +472,63 @@ export default function SafetyModal({
                                 <option value="QLD">QLD</option>
                                 <option value="SA">SA</option>
                                 <option value="WA">WA</option>
-                                <option value="NA / Cusomer Issue">
+                                <option value="NA / Customer Issue">
                                     NA / Customer Issue
                                 </option>
                             </select>
                         </div>
-                        <div className="mb-4 hidden">
-                            <label htmlFor="DebtorId" className="block mb-2 ">
-                                Debtor Id:
-                            </label>
-                            <input
-                                type="text"
-                                id="DebtorId"
-                                name="DebtorId"
-                                className="w-full border border-gray-300 rounded px-3 py-2"
-                                placeholder="Enter the debtor id"
-                                defaultValue={modalDebtorId}
-                                value={formValues.DebtorId}
-                                onChange={handleChange}
-                            />
-                        </div>
+
+                        {/* Explanation */}
                         <div className="mb-4">
-                            <label htmlFor="Explanation" className="block mb-2">
+                            <label
+                                htmlFor="Explanation"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
                                 Explanation:
                             </label>
                             <textarea
                                 id="Explanation"
                                 name="Explanation"
-                                className="w-full border border-gray-300 rounded px-3 py-2"
+                                rows="3"
+                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 placeholder="Enter the Explanation of the report"
-                                defaultValue={modalExpl}
                                 value={formValues.Explanation}
                                 onChange={handleChange}
-                            ></textarea>
+                            />
                         </div>
+
+                        {/* Resolution */}
                         <div className="mb-4">
-                            <label htmlFor="Resolution" className="block mb-2">
+                            <label
+                                htmlFor="Resolution"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
                                 Resolution:
                             </label>
                             <textarea
                                 id="Resolution"
                                 name="Resolution"
-                                className="w-full border border-gray-300 rounded px-3 py-2"
+                                rows="3"
+                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 placeholder="Enter the Resolution of the report"
-                                defaultValue={modalResol}
                                 value={formValues.Resolution}
                                 onChange={handleChange}
-                            ></textarea>
+                            />
                         </div>
+
+                        {/* Reference */}
                         <div className="mb-4">
-                            <label htmlFor="Reference" className="block mb-2">
-                                Reference:
+                            <label
+                                htmlFor="Reference"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
+                                Reference:{" "}
+                                <span className="text-red-500">*</span>
                             </label>
                             <select
                                 id="Reference"
                                 name="Reference"
-                                className="w-full border border-gray-300 rounded px-3 py-2"
-                                defaultValue={modalRefer}
+                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={formValues.Reference}
                                 onChange={handleChange}
                                 required
@@ -400,28 +537,37 @@ export default function SafetyModal({
                                 <option value="2">External</option>
                             </select>
                         </div>
-                        <div className="mb-4">
-                            <label htmlFor="OccuredAt" className="block mb-2">
-                                Occured At:
+
+                        {/* Occurred At */}
+                        <div className="mb-6">
+                            <label
+                                htmlFor="OccuredAt"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
+                                Occurred At:
                             </label>
                             <input
                                 type="date"
                                 id="OccuredAt"
                                 name="OccuredAt"
-                                defaultValue={formattedDate}
-                                value={formValues.OccuredAt}
+                                value={formValues.OccuredAt || ""}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded px-3 py-2"
-                            ></input>
+                                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
                         </div>
+                    </div>
+
+                    {/* Submit Button */}
+                    <div className="pt-4 border-t">
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="bg-gray-800 w-20 text-white font-bold py-2 px-4 rounded"
+                            className="w-full bg-gray-800 hover:bg-gray-900 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded-md transition-colors duration-200"
                         >
                             {isLoading ? (
-                                <div className=" inset-0 flex justify-center items-center bg-opacity-50">
-                                    <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-smooth"></div>
+                                <div className="flex justify-center items-center">
+                                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"></div>
+                                    Saving...
                                 </div>
                             ) : (
                                 "Save"
@@ -433,24 +579,23 @@ export default function SafetyModal({
         </ReactModal>
     );
 }
+
 SafetyModal.propTypes = {
-    isOpen: PropTypes.bool,
-    handleClose: PropTypes.func,
+    isOpen: PropTypes.bool.isRequired,
+    handleClose: PropTypes.func.isRequired,
     modalRepId: PropTypes.oneOfType([PropTypes.number, PropTypes.object]),
-    modalSafetyType: PropTypes.string,
+    modalSafetyType: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     modalMainCause: PropTypes.string,
     modalState: PropTypes.string,
-    Token: PropTypes.string,
     customerAccounts: PropTypes.array,
     modalConsNo: PropTypes.string,
-    modalDebtorId: PropTypes.string,
+    modalDebtorId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     modalExpl: PropTypes.string,
     modalResol: PropTypes.string,
-    modalRefer: PropTypes.string,
+    modalRefer: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     modalOccuredAt: PropTypes.string,
-    updateLocalData: PropTypes.func,
-    currentUser: PropTypes.object,
+    updateLocalData: PropTypes.func.isRequired,
     safetyTypes: PropTypes.array,
-    setIsSuccessfull: PropTypes.func,
-    fetchData: PropTypes.func
+    setIsSuccessfull: PropTypes.func.isRequired,
+    fetchData: PropTypes.func,
 };

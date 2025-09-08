@@ -1,37 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import swal from "sweetalert";
 import axios from "axios";
-import { getApiRequest, handleSessionExpiration } from '@/CommonFunctions';
+import { handleSessionExpiration, useApiRequests } from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import RDDTable from "./RDDTable";
 import PropTypes from "prop-types";
+import { CustomContext } from "@/CommonContext";
+import RDDReasons from "./RDDReasons";
+import { canViewRDDReasons } from "@/permissions";
 
 export default function RDDMain({
     setActiveIndexGTRS,
-    setactiveCon,
-    debtorsData,
     rddData,
     filterValue,
     setFilterValue,
     setrddData,
     setIncidentId,
-    setLastIndex,
     accData,
-    EDate,
-    setEDate,
-    SDate,
-    url,
-    Token,
-    userPermission,
-    setSDate,
-    currentUser,
     rddReasons,
     setrddReasons,
-    oldestDate,
-    latestDate,
 }) {
+    const { getApiRequest } = useApiRequests();
     const [isFetching, setIsFetching] = useState();
     const [isFetchingReasons, setIsFetchingReasons] = useState();
+    const [activeComponentIndex, setActiveComponentIndex] = useState(0);
+    const { Token, user, userPermissions, url } = useContext(CustomContext);
+
     const parseDateString = (dateString) => {
         // Check if dateString is undefined, null, or empty
         if (!dateString || !dateString.trim()) {
@@ -65,6 +59,7 @@ export default function RDDMain({
 
         return date.toISOString().slice(0, 19); // UTC time
     };
+
     const updateFieldWithData = (data, fieldName) => {
         if (!data || data.length === 0) {
             return []; // or return any other default value as needed
@@ -80,6 +75,7 @@ export default function RDDMain({
         setrddData(updatedData);
         return updatedData;
     };
+
     useEffect(() => {
         if (!rddData) {
             setIsFetching(true);
@@ -91,14 +87,11 @@ export default function RDDMain({
 
     async function fetchData() {
         const data = await getApiRequest(`${url}RDD`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {
-            const updatedOldRddData = updateFieldWithData(
-                data,
-                "OldRdd"
-            );
+            const updatedOldRddData = updateFieldWithData(data, "OldRdd");
             const updatedNewRddData = updateFieldWithData(
                 updatedOldRddData,
                 "NewRdd"
@@ -107,12 +100,13 @@ export default function RDDMain({
             setIsFetching(false);
         }
     }
+
     const fetchReasonData = async () => {
         try {
             axios
                 .get(`${url}RddChangeReason`, {
                     headers: {
-                        UserId: currentUser.UserId,
+                        UserId: user.UserId,
                         Authorization: `Bearer ${Token}`,
                     },
                 })
@@ -149,39 +143,63 @@ export default function RDDMain({
         }
     };
 
+    const tabs = [
+        {
+            id: "rdd-report",
+            label: "RDD Report",
+            component: (
+                <RDDTable
+                    accData={accData}
+                    rddData={rddData}
+                    filterValue={filterValue}
+                    setFilterValue={setFilterValue}
+                    setrddData={setrddData}
+                    setActiveIndexGTRS={setActiveIndexGTRS}
+                    setIncidentId={setIncidentId}
+                    rddReasons={rddReasons}
+                />
+            ),
+        },
+        {
+            id: "rdd-reasons",
+            label: "RDD Reasons",
+            component: <RDDReasons />,
+        },
+    ];
+
+    const handleItemClick = (index) => {
+        setActiveComponentIndex(index);
+    };
+
+    if (isFetching || isFetchingReasons) {
+        return <AnimatedLoading />;
+    }
     return (
-        <div>
-            {isFetching || isFetchingReasons ? (
-                <AnimatedLoading />
-            ) : (
-                <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                    <div className="mt-0">
-                        <RDDTable
-                            url={url}
-                            accData={accData}
-                            rddData={rddData}
-                            filterValue={filterValue}
-                            setFilterValue={setFilterValue}
-                            setrddData={setrddData}
-                            debtorsData={debtorsData}
-                            currentUser={currentUser}
-                            userPermission={userPermission}
-                            setActiveIndexGTRS={setActiveIndexGTRS}
-                            setactiveCon={setactiveCon}
-                            setLastIndex={setLastIndex}
-                            EDate={EDate}
-                            setIncidentId={setIncidentId}
-                            setEDate={setEDate}
-                            SDate={SDate}
-                            Token={Token}
-                            setSDate={setSDate}
-                            rddReasons={rddReasons}
-                            oldestDate={oldestDate}
-                            latestDate={latestDate}
-                        />
-                    </div>
+        <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20 h-full">
+            <div className="mt-0 h-full">
+                {canViewRDDReasons(userPermissions) ? (
+                    <ul className="flex space-x-0 mt-5">
+                        {tabs.map((tab, index) => (
+                            <li
+                                key={tab.id} // Use stable unique ID instead of index
+                                className={`cursor-pointer ${
+                                    activeComponentIndex === index
+                                        ? "text-dark border-b-4 py-2 border-goldt font-bold text-xs sm:text-base"
+                                        : "text-dark py-2 text-xs sm:text-base border-b-2 border-gray-300"
+                                }`}
+                                onClick={() => handleItemClick(index)}
+                            >
+                                <div className="px-2">{tab.label}</div>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <div></div>
+                )}
+                <div className="mt-4 h-full">
+                    {tabs[activeComponentIndex]?.component}
                 </div>
-            )}
+            </div>
         </div>
     );
 }
@@ -200,13 +218,9 @@ RDDMain.propTypes = {
     EDate: PropTypes.string,
     setEDate: PropTypes.func,
     SDate: PropTypes.string,
-    url: PropTypes.string,
-    Token: PropTypes.string,
-    userPermission: PropTypes.object,
     setSDate: PropTypes.func,
-    currentUser: PropTypes.object,
     rddReasons: PropTypes.array,
     setrddReasons: PropTypes.func,
     oldestDate: PropTypes.string,
     latestDate: PropTypes.string,
-};  
+};

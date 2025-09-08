@@ -61,10 +61,10 @@ function TransportRep({
         }));
 
         return (
-            <div className="flex gap-2 mx-1">
+            <div className="flex gap-2 p-[4px]">
                 <input
                     type="time"
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm"
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm h-[32px]"
                     value={value.slice(0, 5)}
                     onChange={handleChange}
                 />
@@ -131,10 +131,10 @@ function TransportRep({
         }));
 
         return (
-            <div className="flex gap-2 mx-1">
+            <div className="flex gap-2 p-[4px]">
                 <input
                     type="time"
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm"
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm h-[32px]"
                     value={value.slice(0, 5)}
                     onChange={handleChange}
                 />
@@ -200,10 +200,10 @@ function TransportRep({
         }));
 
         return (
-            <div className="flex gap-2 mx-1">
+            <div className="flex gap-2 p-[4px]">
                 <input
                     type="time"
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm"
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm h-[32px]"
                     value={value.slice(0, 5)}
                     onChange={handleChange}
                 />
@@ -328,7 +328,9 @@ function TransportRep({
         transportData,
         "SenderState"
     );
+    const reasonsOptions = createNewLabelObjects(transportData, "DelayReason");
     const onTimeOptions = createNewLabelObjects(transportData, "OnTime");
+    const carrierOptions = createNewLabelObjects(transportData, "Carrier");
     const columns = [
         {
             name: "SenderName",
@@ -445,7 +447,12 @@ function TransportRep({
             header: "Carrier",
             headerAlign: "center",
             textAlign: "center",
-            filterEditor: StringFilter,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: carrierOptions,
+            },
         },
         {
             name: "PickupDate",
@@ -534,7 +541,7 @@ function TransportRep({
                         NO
                     </span>
                 ) : value == "PENDING" ? (
-                    <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-0.5 text-sm font-medium text-gray-800">
+                    <span className="inline-flex items-center rounded-full bg-yellow-100 px-3 py-0.5 text-sm font-medium text-yellow-800">
                         PENDING
                     </span>
                 ) : null;
@@ -546,7 +553,12 @@ function TransportRep({
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 200,
-            filterEditor: StringFilter,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: reasonsOptions,
+            },
         },
         {
             name: "TransportComments",
@@ -557,7 +569,6 @@ function TransportRep({
             filterEditor: StringFilter,
         },
     ];
-    const excludedDebtorIds = [1514, 364, 247, 246, 245, 244];
 
     const filterData = () => {
         const intArray = accData?.map((str) => {
@@ -567,9 +578,7 @@ function TransportRep({
         // Filter the data based on the start and end date filters, selected receiver names, and chargeTo values
         const filtered = transportData.filter((item) => {
             const chargeToMatch =
-                (intArray?.length === 0 ||
-                    intArray?.includes(item.ChargeToID)) &&
-                !excludedDebtorIds.includes(item.ChargeToID); // Exclude specified ChargeToIDs
+                intArray?.length === 0 || intArray?.includes(item.ChargeToID); // Exclude specified ChargeToIDs
 
             return chargeToMatch;
         });

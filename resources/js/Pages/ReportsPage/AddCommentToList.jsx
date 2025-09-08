@@ -1,22 +1,20 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import React from "react";
 import PropTypes from "prop-types";
 import { useEffect } from "react";
 import swal from "sweetalert";
 import axios from "axios";
-import { handleSessionExpiration } from '@/CommonFunctions';
+import { handleSessionExpiration } from "@/CommonFunctions";
 import GtrsButton from "@/Pages/Component/GtrsButton";
-
+import { CustomContext } from "@/CommonContext";
 
 export default function AddCommentToList({
     selectedComment,
-    url,
-    currentUser,
-    Token,
     setSelectedComment,
     setShowAdd,
     fetchData,
 }) {
+    const { Token, user, url } = useContext(CustomContext);
     const [isChecked, setIsChecked] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [object, setObject] = useState();
@@ -48,7 +46,7 @@ export default function AddCommentToList({
         axios
             .post(`${url}Add/Comment`, inputValues, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             })
@@ -65,26 +63,28 @@ export default function AddCommentToList({
                 if (err.response && err.response.status === 401) {
                     // Handle 401 error using SweetAlert
                     swal({
-                      title: 'Session Expired!',
-                      text: "Please login again",
-                      type: 'success',
-                      icon: "info",
-                      confirmButtonText: 'OK'
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        type: "success",
+                        icon: "info",
+                        confirmButtonText: "OK",
                     }).then(async function () {
                         await handleSessionExpiration();
                     });
-                  } else {
+                } else {
                     // Handle other errors
                     console.error(err);
                     setIsLoading(false);
-                  }
+                }
             });
     }
 
     return (
         <div className="shadow bg-white p-6 rounded-lg ">
             <form onSubmit={AddComment}>
-                <p className="font-bold text-lg">{object ? "Edit " : "Add "} Comment</p>
+                <p className="font-bold text-lg">
+                    {object ? "Edit " : "Add "} Comment
+                </p>
                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-5 gap-y-5 items-center py-4">
                     <div className="col-span-2 flex items-center gap-x-2">
                         <label htmlFor="name" className="block w-32 ">
@@ -126,9 +126,6 @@ export default function AddCommentToList({
 
 AddCommentToList.propTypes = {
     selectedComment: PropTypes.object,
-    url: PropTypes.string,
-    currentUser: PropTypes.object,
-    Token: PropTypes.string,
     setSelectedComment: PropTypes.func,
     setShowAdd: PropTypes.func,
     fetchData: PropTypes.func,

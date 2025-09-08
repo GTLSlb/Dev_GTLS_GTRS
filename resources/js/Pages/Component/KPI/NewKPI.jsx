@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useContext } from "react";
 import React from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
@@ -18,29 +18,31 @@ import NewKPIModalAddReason from "./NEWKPIModal";
 import {
     formatDateFromExcelWithNoTime,
     formatDateToExcel,
-    getApiRequest,
     handleSessionExpiration,
     renderConsDetailsLink,
+    useApiRequests,
 } from "@/CommonFunctions";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
-import { createNewLabelObjects } from "@/Components/utils/dataUtils";
+import {
+    createNewLabelObjects,
+    createNewLabelObjectsUsingIds,
+} from "@/Components/utils/dataUtils";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import { PencilIcon } from "@heroicons/react/20/solid";
+import { CustomContext } from "@/CommonContext";
 
 function NewKPI({
-    url,
-    currentUser,
     filterValue,
-    Token,
     setFilterValue,
     KPIData,
     setKPIData,
-    userPermission,
     accData,
     kpireasonsData,
 }) {
+    const { Token, user, userPermissions, url } = useContext(CustomContext);
+    const { getApiRequest } = useApiRequests();
     window.moment = moment;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -59,7 +61,7 @@ function NewKPI({
 
     async function fetchData() {
         const data = await getApiRequest(`${url}/KPINew`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {
@@ -146,7 +148,7 @@ function NewKPI({
                 return "";
             },
             MatchDel: (value) => {
-                if (value == 3) return "";
+                if (value == 0) return "";
                 if (value == 1) return "PASS";
                 if (value == 2) return "FAIL";
                 return "";
@@ -180,6 +182,12 @@ function NewKPI({
     };
 
     // Usage example remains the same
+    const kpiOptions = createNewLabelObjectsUsingIds(
+        kpireasonsData,
+        "ReasonId",
+        "ReasonName"
+    );
+
     const minDispatchDate = getMinMaxValue(KPIData, "DispatchDate", 1);
     const maxDispatchDate = getMinMaxValue(KPIData, "DispatchDate", 2);
     const minRDDDate = getMinMaxValue(KPIData, "RDD", 1);
@@ -231,7 +239,7 @@ function NewKPI({
 
     const kpiStatusOptions = [
         {
-            id: 3,
+            id: 0,
             label: "N/A",
         },
         {
@@ -242,7 +250,8 @@ function NewKPI({
             id: 2,
             label: "Fail",
         },
-    ];
+    ].sort();;
+
     const columns = [
         {
             name: "ConsignmentNo",
@@ -253,7 +262,7 @@ function NewKPI({
             filterEditor: StringFilter,
             render: ({ value, data }) => {
                 return renderConsDetailsLink(
-                    userPermission,
+                    userPermissions,
                     value,
                     data.ConsignmentId
                 );
@@ -473,14 +482,16 @@ function NewKPI({
             filterEditorProps: {
                 multiple: false,
                 wrapMultiple: false,
-                dataSource: reasonOptions,
+                dataSource: kpiOptions,
             },
 
             render: ({ value }) => {
-                return  (
+                return (
                     <div>
-                        <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-0.5 text-sm font-medium text-gray-800">
-                            {kpireasonsData?.find((reason) => reason.ReasonId === value)?.ReasonName || ""}
+                        <span className="inline-flex items-center rounded-full px-3 py-0.5 text-sm font-medium ">
+                            {kpireasonsData?.find(
+                                (reason) => reason.ReasonId === value
+                            )?.ReasonName || ""}
                         </span>
                     </div>
                 );
@@ -495,7 +506,7 @@ function NewKPI({
             render: ({ data }) => {
                 return (
                     <div>
-                        {canEditKPI(userPermission) ? (
+                        {canEditKPI(userPermissions) ? (
                             <button
                                 className={
                                     "rounded text-blue-500 justify-center items-center  "
@@ -513,13 +524,13 @@ function NewKPI({
                     </div>
                 );
             },
-        }
+        },
     ];
     const newArray = columns.slice(0, -1);
     const [newColumns, setNewColumns] = useState([]);
 
     useEffect(() => {
-        if (canEditKPI(userPermission)) {
+        if (canEditKPI(userPermissions)) {
             setNewColumns(columns);
         } else {
             setNewColumns(newArray);
@@ -567,7 +578,7 @@ function NewKPI({
         axios
             .get(`${url}KPIReportNew`, {
                 headers: {
-                    UserId: currentUser.UserId,
+                    UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             })
@@ -685,7 +696,7 @@ function NewKPI({
                     width={35}
                 />
             )}
-            {canCalculateKPI(userPermission) ? (
+            {canCalculateKPI(userPermissions) ? (
                 <button
                     className={`inline-flex items-center justify-center w-[10rem] h-[36px] rounded-md border bg-gray-800 px-4 py-2 text-xs font-medium leading-4 text-white shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
                     disabled={filteredData?.length === 0 || loading}
@@ -720,7 +731,7 @@ function NewKPI({
     }, [newColumns, accData, filteredData, loading]);
 
     return (
-        <div>
+        <div className="h-full">
             {isFetching && newColumns && columns ? (
                 <AnimatedLoading />
             ) : (
@@ -735,18 +746,13 @@ function NewKPI({
                 handleClose={handleEditClick}
                 updateLocalData={updateLocalData}
                 kpiReasons={kpireasonsData}
-                currentUser={currentUser}
-                userPermission={userPermission}
+                userPermissions={userPermissions}
             />
         </div>
     );
 }
 
 NewKPI.propTypes = {
-    url: PropTypes.string,
-    Token: PropTypes.string,
-    currentUser: PropTypes.object,
-    userPermission: PropTypes.object,
     kpireasonsData: PropTypes.array,
     accData: PropTypes.array,
     filterValue: PropTypes.array,

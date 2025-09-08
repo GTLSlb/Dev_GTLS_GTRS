@@ -1,7 +1,7 @@
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
-import { useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import React from "react";
 import PropTypes from "prop-types";
 import TableStructure from "@/Components/TableStructure";
@@ -10,25 +10,24 @@ import moment from "moment";
 import AddHoliday from "./Components/AddHoliday";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import { canAddHolidays, canEditHolidays } from "@/permissions";
-import { getApiRequest } from "@/CommonFunctions";
+import { useApiRequests } from "@/CommonFunctions";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import GtrsButton from "../GtrsButton";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
-import {ToastContainer} from 'react-toastify';
+import { ToastContainer } from "react-toastify";
+import { CustomContext } from "@/CommonContext";
 
 window.moment = moment;
 export default function Holidays({
     holidays,
     setHolidays,
-    url,
-    Token,
     filterValue,
     setFilterValue,
-    userPermission,
-    currentUser,
 }) {
+    const { user, url, Token, userPermissions } = useContext(CustomContext);
+    const { getApiRequest } = useApiRequests();
     const [isFetching, setIsFetching] = useState();
     const [showAdd, setShowAdd] = useState(false);
     const [holiday, setHoliday] = useState();
@@ -53,293 +52,178 @@ export default function Holidays({
         }
     }, []);
 
-    const gridRef = useRef(null);
     async function fetchData() {
         const data = await getApiRequest(`${url}Holidays`, {
-            UserId: currentUser?.UserId,
+            UserId: user?.UserId,
         });
 
         if (data) {
-            const sortedHolidays = data.sort((a, b) => b.HolidayDate.localeCompare(a.HolidayDate));
+            const sortedHolidays = data.sort((a, b) =>
+                b.HolidayDate.localeCompare(a.HolidayDate)
+            );
             setHolidays(sortedHolidays);
             setIsFetching(false);
         }
     }
 
+    const gridRef = useRef(null);
     const [selected, setSelected] = useState([]);
-    const holidayOptions = createNewLabelObjects(holidays, "HolidayName");
-    const stateOptions = createNewLabelObjects(holidays, "HolidayState");
 
-    const [columns, setColumns] = useState([
-        {
-            name: "HolidayName",
-            minWidth: 170,
-            defaultFlex: 1,
-            header: "Holiday Name",
-            type: "string",
-            headerAlign: "center",
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: holidayOptions,
-            },
-        },
-        {
-            name: "HolidayDate",
-            defaultFlex: 1,
-            minWidth: 230,
-            header: "Holiday Date",
-            headerAlign: "center",
-            textAlign: "center",
-            dateFormat: "DD-MM-YYYY",
-            filterEditor: DateFilter,
-            render: ({ value }) => {
-                return moment(value).format("DD-MM-YYYY") === "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY");
-            },
-        },
+    const holidayOptions = useMemo(() => {
+        return holidays ? createNewLabelObjects(holidays, "HolidayName") : [];
+    }, [holidays]);
 
+    const stateOptions = useMemo(() => {
+        return holidays ? createNewLabelObjects(holidays, "HolidayState") : [];
+    }, [holidays]);
+
+    const statusOptions = useMemo(() => [
         {
-            name: "HolidayState",
-            defaultFlex: 1,
-            minWidth: 170,
-            header: "Holiday State",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: stateOptions,
-            },
+            id: 1,
+            label: "True",
         },
         {
-            name: "HolidayDesc",
-            header: "Description",
-            minWidth: 170,
-            defaultFlex: 1,
-            headerAlign: "center",
-            textAlign: "start",
-            filterEditor: StringFilter,
+            id: 2,
+            label: "False",
         },
-        {
-            name: "HolidayStatus",
-            minWidth: 170,
-            header: "Status",
-            defaultFlex: 1,
-            headerAlign: "center",
-            textAlign: "center",
-            render: ({ value }) => {
-                return value == 1 ? (
-                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                        True
-                    </span>
-                ) : (
-                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        false
-                    </span>
-                );
-            },
-        },
-    ]);
-    const scrollIntoView = ()=>{
-        const button = document.getElementById('addSection');
-        if(button){
-            button.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+    ], []);
+
+    const scrollIntoView = () => {
+        const button = document.getElementById("addSection");
+        if (button) {
+            button.scrollIntoView({
+                behavior: "smooth",
+                block: "end",
+                inline: "nearest",
+            });
         }
-    }
+    };
 
-    useEffect(() => {
-        if (holidayOptions && stateOptions) {
-            if (userPermission && canEditHolidays(userPermission)) {
-                setColumns([
-                    {
-                        name: "HolidayName",
-                        minWidth: 170,
-                        defaultFlex: 1,
-                        header: "Holiday Name",
-                        type: "string",
-                        headerAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: holidayOptions,
-                        },
-                    },
-                    {
-                        name: "HolidayDate",
-                        defaultFlex: 1,
-                        minWidth: 230,
-                        header: "Holiday Date",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        dateFormat: "DD-MM-YYYY",
-                        filterEditor: DateFilter,
-                        render: ({ value }) => {
-                            return moment(value).format("DD-MM-YYYY") ==
-                                "Invalid date"
-                                ? ""
-                                : moment(value).format("DD-MM-YYYY");
-                        },
-                    },
-                    {
-                        name: "HolidayState",
-                        defaultFlex: 1,
-                        minWidth: 170,
-                        header: "Holiday State",
-                        type: "string",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: stateOptions,
-                        },
-                    },
-                    {
-                        name: "HolidayDesc",
-                        header: "Description",
-                        minWidth: 170,
-                        defaultFlex: 1,
-                        headerAlign: "center",
-                        textAlign: "start",
-                        filterEditor: StringFilter,
-                    },
-                    {
-                        name: "HolidayStatus",
-                        minWidth: 170,
-                        header: "Status",
-                        defaultFlex: 1,
-                        headerAlign: "center",
-                        textAlign: "center",
-                        render: ({ value }) => {
-                            return value == 1 ? (
-                                <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                                    True
-                                </span>
-                            ) : (
-                                <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                                    false
-                                </span>
-                            );
-                        },
-                    },
-                    {
-                        name: "edit",
-                        header: "Edit",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        defaultWidth: 100,
-                        render: ({ data }) => {
-                            return (
-                                <div>
-                                    {canEditHolidays(userPermission) ? (
-                                        <button
-                                            className={
-                                                "rounded text-blue-500 justify-center items-center  "
-                                            }
-                                            onClick={() => {
-                                                handleEditClick(data);
-                                                scrollIntoView();
-                                            }}
-                                        >
-                                            <span className="flex gap-x-1">
-                                                <PencilIcon className="h-4" />
-                                                Edit
-                                            </span>
-                                        </button>
-                                    ) : null}
-                                </div>
-                            );
-                        },
-                    },
-                ]);
-            } else {
-                setColumns([
-                    {
-                        name: "HolidayName",
-                        minWidth: 170,
-                        defaultFlex: 1,
-                        header: "Holiday Name",
-                        type: "string",
-                        headerAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: holidayOptions,
-                        },
-                    },
-                    {
-                        name: "HolidayDate",
-                        defaultFlex: 1,
-                        minWidth: 230,
-                        header: "Holiday Date",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        dateFormat: "DD-MM-YYYY",
-                        filterEditor: DateFilter,
-                        render: ({ value }) => {
-                            return moment(value).format("DD-MM-YYYY") ==
-                                "Invalid date"
-                                ? ""
-                                : moment(value).format("DD-MM-YYYY");
-                        },
-                    },
-                    {
-                        name: "HolidayState",
-                        defaultFlex: 1,
-                        minWidth: 170,
-                        header: "Holiday State",
-                        type: "string",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: stateOptions,
-                        },
-                    },
-                    {
-                        name: "HolidayDesc",
-                        header: "Description",
-                        minWidth: 170,
-                        defaultFlex: 1,
-                        headerAlign: "center",
-                        textAlign: "start",
-                        filterEditor: StringFilter,
-                    },
-                    {
-                        name: "HolidayStatus",
-                        minWidth: 170,
-                        header: "Status",
-                        defaultFlex: 1,
-                        headerAlign: "center",
-                        textAlign: "center",
-                        render: ({ value }) => {
-                            return value == 1 ? (
-                                <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                                    True
-                                </span>
-                            ) : (
-                                <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                                    false
-                                </span>
-                            );
-                        },
-                    },
-                ]);
-            }
+    // Memoize columns to prevent unnecessary re-renders and ensure they're only created when data is available
+    const columns = useMemo(() => {
+        // Return null if we don't have the required data yet
+        if (!holidays || !holidayOptions.length || !stateOptions.length) {
+            return null;
         }
-    }, [userPermission, holidayOptions, stateOptions]);
+
+        const baseColumns = [
+            {
+                name: "HolidayName",
+                minWidth: 170,
+                defaultFlex: 1,
+                header: "Holiday Name",
+                type: "string",
+                headerAlign: "center",
+                filterEditor: SelectFilter,
+                filterEditorProps: {
+                    multiple: true,
+                    wrapMultiple: false,
+                    dataSource: holidayOptions,
+                },
+            },
+            {
+                name: "HolidayDate",
+                defaultFlex: 1,
+                minWidth: 230,
+                header: "Holiday Date",
+                headerAlign: "center",
+                textAlign: "center",
+                dateFormat: "DD-MM-YYYY",
+                filterEditor: DateFilter,
+                render: ({ value }) => {
+                    return moment(value).format("DD-MM-YYYY") ===
+                        "Invalid date"
+                        ? ""
+                        : moment(value).format("DD-MM-YYYY");
+                },
+            },
+            {
+                name: "HolidayState",
+                defaultFlex: 1,
+                minWidth: 170,
+                header: "Holiday State",
+                type: "string",
+                headerAlign: "center",
+                textAlign: "center",
+                filterEditor: SelectFilter,
+                filterEditorProps: {
+                    multiple: true,
+                    wrapMultiple: false,
+                    dataSource: stateOptions,
+                },
+            },
+            {
+                name: "HolidayDesc",
+                header: "Description",
+                minWidth: 170,
+                defaultFlex: 1,
+                headerAlign: "center",
+                textAlign: "start",
+                filterEditor: StringFilter,
+            },
+            {
+                name: "HolidayStatus",
+                defaultFlex: 1,
+                minWidth: 170,
+                header: "Status",
+                type: "string",
+                headerAlign: "center",
+                textAlign: "center",
+                filterEditor: SelectFilter,
+                filterEditorProps: {
+                    multiple: true,
+                    wrapMultiple: false,
+                    dataSource: statusOptions,
+                },
+                render: ({ value }) => {
+                    return value == 1 ? (
+                        <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                            True
+                        </span>
+                    ) : (
+                        <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                            False
+                        </span>
+                    );
+                },
+            },
+        ];
+
+        // Add edit column only if user has edit permissions
+        if (userPermissions && canEditHolidays(userPermissions)) {
+            baseColumns.push({
+                name: "edit",
+                header: "Edit",
+                headerAlign: "center",
+                textAlign: "center",
+                defaultWidth: 100,
+                render: ({ data }) => {
+                    return (
+                        <div>
+                            <button
+                                className="rounded text-blue-500 justify-center items-center"
+                                onClick={() => {
+                                    handleEditClick(data);
+                                    scrollIntoView();
+                                }}
+                            >
+                                <span className="flex gap-x-1">
+                                    <PencilIcon className="h-4" />
+                                    Edit
+                                </span>
+                            </button>
+                        </div>
+                    );
+                },
+            });
+        }
+
+        return baseColumns;
+    }, [holidays, holidayOptions, stateOptions, statusOptions, userPermissions]);
 
     const handleDownloadExcel = () => {
+        if (!columns) return; // Prevent error if columns aren't ready
+        
         const jsonData = handleFilterTable(gridRef, holidays);
 
         const columnMapping = columns.reduce((acc, column) => {
@@ -358,9 +242,10 @@ export default function Holidays({
             customCellHandlers
         );
     };
+
     const additionalButtons = (
         <div>
-            {canAddHolidays(userPermission) ? (
+            {canAddHolidays(userPermissions) ? (
                 <div>
                     {!showAdd && (
                         <GtrsButton
@@ -373,46 +258,46 @@ export default function Holidays({
             ) : null}
         </div>
     );
+
+    // Show loading if fetching or if columns aren't ready yet
+    if (isFetching || !columns) {
+        return <AnimatedLoading />;
+    }
+
     return (
         <div>
-            {/* Added this for toast container to show */}
             <ToastContainer />
-            {isFetching ? (
-                <AnimatedLoading />
-            ) : (
-                <div className="pt-4 px-4 sm:pt-6 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
-                    {showAdd ? (
-                        <div id="addSection">
+            <div className="pt-4 px-4 sm:pt-6 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
+                {showAdd ? (
+                    <div id="addSection">
                         <AddHoliday
                             states={stateOptions}
                             holiday={holiday}
                             url={url}
                             Token={Token}
-                            currentUser={currentUser}
-                            userPermission={userPermission}
+                            userPermissions={userPermissions}
                             setHoliday={setHoliday}
                             setShowAdd={setShowAdd}
                             fetchData={fetchData}
                             closeModal={ToggleShow}
                         />
-                        </div>
-                    ) : null}
+                    </div>
+                ) : null}
 
-                    <TableStructure
-                        id={"HolidayId"}
-                        title={"Holidays"}
-                        setSelected={setSelected}
-                        gridRef={gridRef}
-                        additionalButtons={additionalButtons}
-                        handleDownloadExcel={handleDownloadExcel}
-                        selected={selected}
-                        tableDataElements={holidays}
-                        filterValueElements={filterValue}
-                        setFilterValueElements={setFilterValue}
-                        columnsElements={columns}
-                    />
-                </div>
-            )}
+                <TableStructure
+                    id={"HolidayId"}
+                    title={"Holidays"}
+                    setSelected={setSelected}
+                    gridRef={gridRef}
+                    additionalButtons={additionalButtons}
+                    handleDownloadExcel={handleDownloadExcel}
+                    selected={selected}
+                    tableDataElements={holidays}
+                    filterValueElements={filterValue}
+                    setFilterValueElements={setFilterValue}
+                    columnsElements={columns}
+                />
+            </div>
         </div>
     );
 }
@@ -420,10 +305,6 @@ export default function Holidays({
 Holidays.propTypes = {
     holidays: PropTypes.array,
     setHolidays: PropTypes.func,
-    url: PropTypes.string,
-    Token: PropTypes.string,
     filterValue: PropTypes.array,
     setFilterValue: PropTypes.func,
-    userPermission: PropTypes.object,
-    currentUser: PropTypes.object,
 };
