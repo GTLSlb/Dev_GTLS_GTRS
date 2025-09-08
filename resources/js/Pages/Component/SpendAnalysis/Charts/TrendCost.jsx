@@ -14,6 +14,7 @@ import { useDurationData } from "../assets/js/useDurationData";
 import { formatNumberWithCommas } from "@/CommonFunctions";
 import { Divider, Select, SelectItem } from "@heroui/react";
 import { useState } from "react";
+import { NoData } from "../Comp/NoDataChart";
 
 export function TrendCost() {
     const costTypeOptions = [
@@ -80,41 +81,52 @@ export function TrendCost() {
                 </>
             }
             children={
-                <LineChart
-                    width={700}
-                    height={600}
-                    data={getChartData}
-                    margin={{
-                        right: 30,
-                    }}
-                >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                    <YAxis
-                        angle={-45}
-                        tick={{ fontSize: 12 }}
-                        tickFormatter={(v) => `$${formatNumberWithCommas(v)}`}
-                    />
-                    <Tooltip
-                        contentStyle={{
-                            fontSize: 12,
-                            backgroundColor: "white",
-                            borderRadius: 8,
+                getChartData.length === 0 ? (
+                    <NoData />
+                ) : (
+                    <LineChart
+                        width={700}
+                        height={600}
+                        data={getChartData}
+                        margin={{
+                            right: 30,
                         }}
-                    />
-                    <Legend />
-                    {selectedCostType.has("cost") && (
-                        <Line type="monotone" dataKey="cost" stroke="#8884d8" name="Cost"/>
-                    )}
-                    {selectedCostType.has("additional") && (
-                        <Line
-                            type="monotone"
-                            dataKey="additional"
-                            stroke="#82ca9d"
-                            name="Add Charges"
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                        <YAxis
+                            angle={-45}
+                            tick={{ fontSize: 12 }}
+                            tickFormatter={(v) =>
+                                `$${formatNumberWithCommas(v)}`
+                            }
                         />
-                    )}
-                </LineChart>
+                        <Tooltip
+                            contentStyle={{
+                                fontSize: 12,
+                                backgroundColor: "white",
+                                borderRadius: 8,
+                            }}
+                        />
+                        <Legend />
+                        {selectedCostType.has("cost") && (
+                            <Line
+                                type="monotone"
+                                dataKey="cost"
+                                stroke="#8884d8"
+                                name="Cost"
+                            />
+                        )}
+                        {selectedCostType.has("additional") && (
+                            <Line
+                                type="monotone"
+                                dataKey="additional"
+                                stroke="#82ca9d"
+                                name="Add Charges"
+                            />
+                        )}
+                    </LineChart>
+                )
             }
         />
     );

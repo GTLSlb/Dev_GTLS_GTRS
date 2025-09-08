@@ -14,6 +14,7 @@ import { dummySpendData } from "../assets/js/dataHandler";
 import { useDurationData } from "../assets/js/useDurationData";
 import { Divider, Select, SelectItem } from "@heroui/react";
 import { useState } from "react";
+import { NoData } from "../Comp/NoDataChart";
 export function AmtVsType() {
     const cosTypeOptions = [
         { label: "Weight", value: "weight" },
@@ -78,70 +79,74 @@ export function AmtVsType() {
                 </>
             }
             children={
-                <ComposedChart
-                    width={700}
-                    height={600}
-                    data={getChartData}
-                    syncId="chart-sync-id" // Synchronize all axes
-                >
-                    <CartesianGrid stroke="#f5f5f5" />
-                    <XAxis
-                        dataKey="name"
-                        scale="band"
-                        tick={{ fontSize: 12 }}
-                        tickSize={10}
-                    />
-                    <YAxis
-                        yAxisId="left"
-                        tick={{ fontSize: 12 }}
-                        tickFormatter={(v) => `$${v}`}
-                        domain={["auto", "auto"]}
-                        syncId="chart-sync-id"
-                    />
-                    <YAxis
-                        yAxisId="right"
-                        orientation="right"
-                        tick={{ fontSize: 12 }}
-                        tickFormatter={(v) => v}
-                        domain={["auto", "auto"]}
-                        syncId="chart-sync-id"
-                    />
-                    <Tooltip
-                        contentStyle={{
-                            fontSize: 12,
-                            backgroundColor: "white",
-                            borderRadius: 8,
-                        }}
-                    />
-                    <Legend verticalAlign="top" height={50} />
-                    <Bar
-                        dataKey="cost"
-                        name="Spend"
-                        fill="#413ea0"
-                        yAxisId="left"
-                        intercept={0}
-                    />
-                    {selectedCosType.has("weight") && (
-                        <Line
-                            type="monotone"
-                            name="Weight"
-                            dataKey="weight"
-                            stroke="#8DC77B"
+                getChartData.length === 0 ? (
+                    <NoData />
+                ) : (
+                    <ComposedChart
+                        width={700}
+                        height={600}
+                        data={getChartData}
+                        syncId="chart-sync-id" // Synchronize all axes
+                    >
+                        <CartesianGrid stroke="#f5f5f5" />
+                        <XAxis
+                            dataKey="name"
+                            scale="band"
+                            tick={{ fontSize: 12 }}
+                            tickSize={10}
+                        />
+                        <YAxis
+                            yAxisId="left"
+                            tick={{ fontSize: 12 }}
+                            tickFormatter={(v) => `$${v}`}
+                            domain={["auto", "auto"]}
+                            syncId="chart-sync-id"
+                        />
+                        <YAxis
                             yAxisId="right"
+                            orientation="right"
+                            tick={{ fontSize: 12 }}
+                            tickFormatter={(v) => v}
+                            domain={["auto", "auto"]}
+                            syncId="chart-sync-id"
+                        />
+                        <Tooltip
+                            contentStyle={{
+                                fontSize: 12,
+                                backgroundColor: "white",
+                                borderRadius: 8,
+                            }}
+                        />
+                        <Legend verticalAlign="top" height={50} />
+                        <Bar
+                            dataKey="cost"
+                            name="Spend"
+                            fill="#413ea0"
+                            yAxisId="left"
                             intercept={0}
                         />
-                    )}
-                    {selectedCosType.has("pallet-space") && (
-                        <Line
-                            type="monotone"
-                            name="Pallet Space"
-                            dataKey="palletSpace"
-                            stroke="#ff7300"
-                            yAxisId="right"
-                            intercept={0}
-                        />
-                    )}
-                </ComposedChart>
+                        {selectedCosType.has("weight") && (
+                            <Line
+                                type="monotone"
+                                name="Weight"
+                                dataKey="weight"
+                                stroke="#8DC77B"
+                                yAxisId="right"
+                                intercept={0}
+                            />
+                        )}
+                        {selectedCosType.has("pallet-space") && (
+                            <Line
+                                type="monotone"
+                                name="Pallet Space"
+                                dataKey="palletSpace"
+                                stroke="#ff7300"
+                                yAxisId="right"
+                                intercept={0}
+                            />
+                        )}
+                    </ComposedChart>
+                )
             }
         />
     );
