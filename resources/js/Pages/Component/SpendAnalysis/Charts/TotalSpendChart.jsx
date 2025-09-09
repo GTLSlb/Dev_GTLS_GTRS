@@ -23,7 +23,7 @@ const barTypeOptions = [
     { label: "GST", value: "GST" },
 ];
 
-function TotalSpendChart({filters, setFilters, setSelected}) {
+function TotalSpendChart({ filters, setFilters, setSelected }) {
     const [selectedBarTypes, setSelectedBarTypes] = useState(
         new Set(barTypeOptions.map((option) => option.value))
     );
@@ -115,7 +115,10 @@ function TotalSpendChart({filters, setFilters, setSelected}) {
                         data={getChartData}
                         width={700}
                         height={600}
-                        onClick={(e)=>{setFilters({...filters, "date": e.activeLabel}); setSelected("table")}}
+                        onClick={(e) => {
+                            console.log({ ...filters, date: e.activeLabel });
+                            setSelected("table");
+                        }}
                         margin={{
                             top: 0,
                             right: 30,

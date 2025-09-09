@@ -1,501 +1,390 @@
-import TableStructure from "@/Components/TableStructure";
-import { createNewLabelObjects } from "@/Components/utils/dataUtils";
-import { getSpendAnalysisTable } from "@/Components/utils/filters";
+import AddModel from "./AddModel";
 import { useDisclosure } from "@heroui/react";
+import { formatDate, formatDateToExcel } from "@/CommonFunctions";
+import TableStructure from "@/Components/TableStructure";
+import React, {
+    useCallback,
+    useRef,
+    useState,
+    useMemo,
+    useEffect,
+} from "react";
+import { dummySpendData } from "../assets/js/dataHandler";
+import { exportToExcel } from "@/Components/utils/excelUtils";
+import { getSpendAnalysisTable } from "@/Components/utils/filters";
+import { handleFilterTable } from "@/Components/utils/filterUtils";
+import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
-import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
-import { useCallback, useRef, useState } from "react";
-import AddModel from "./AddModel";
-import { exportToExcel } from "@/Components/utils/excelUtils";
-import { formatDateToExcel } from "@/CommonFunctions";
-import { handleFilterTable } from "@/Components/utils/filterUtils";
-import React from "react";
+import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 
 function CostTable({ filters }) {
     const gridRef = useRef(null);
-    const [selected] = useState({});
-    const chartsData = [
-        {
-            ConsignmentID: 550010,
-            ConsignmentNo: "RFOO1519",
-            DespatchDate: "2025-01-15T00:00:00",
-            SenderReference: "SO-128892",
-            ReceiverReference: "0109501381",
-            CodeRef: "TIMESLOT",
-            DescriptionRef: "TIMESLOT CHARGE (PER C/N)",
-            Cost: 1000,
-            TotalAdditionalCharge: 520,
-            fuelLevy: 80,
-            GST: 60,
-            TotalCost: 1660,
-            Weight: 50,
-            height: 1.2,
-            Cubic: 60,
-            NoPallet: 20,
-            length: 1.8,
-        },
-        {
-            ConsignmentID: 550010,
-            ConsignmentNo: "RFOO1519",
-            DespatchDate: "2025-02-20T00:00:00",
-            SenderReference: "SO-128892",
-            ReceiverReference: "0109501381",
-            CodeRef: "TIMESLOT",
-            DescriptionRef: "TIMESLOT CHARGE (PER C/N)",
-            Cost: 1000,
-            TotalAdditionalCharge: 520,
-            fuelLevy: 80,
-            GST: 60,
-            TotalCost: 1660,
-            Weight: 50,
-            height: 1.2,
-            Cubic: 60,
-            NoPallet: 20,
-            length: 1.8,
-        },
-        {
-            ConsignmentID: 550010,
-            ConsignmentNo: "RFOO1519",
-            DespatchDate: "2025-06-22T00:00:00",
-            SenderReference: "SO-128892",
-            ReceiverReference: "0109501381",
-            CodeRef: "TIMESLOT",
-            DescriptionRef: "TIMESLOT CHARGE (PER C/N)",
-            Cost: 1000,
-            TotalAdditionalCharge: 520,
-            fuelLevy: 80,
-            GST: 60,
-            TotalCost: 1660,
-            Weight: 50,
-            height: 1.2,
-            Cubic: 60,
-            NoPallet: 20,
-            length: 1.8,
-        },
-        {
-            ConsignmentID: 550010,
-            ConsignmentNo: "RFOO1519",
-            DespatchDate: "2025-03-02T00:00:00",
-            SenderReference: "SO-128892",
-            ReceiverReference: "0109501381",
-            CodeRef: "TIMESLOT",
-            DescriptionRef: "TIMESLOT CHARGE (PER C/N)",
-            Cost: 1000,
-            TotalAdditionalCharge: 520,
-            fuelLevy: 80,
-            GST: 60,
-            TotalCost: 1660,
-            Weight: 50,
-            height: 1.2,
-            Cubic: 60,
-            NoPallet: 20,
-            length: 1.8,
-        },
-        {
-            ConsignmentID: 550010,
-            ConsignmentNo: "RFOO1519",
-            DespatchDate: "2025-04-21T00:00:00",
-            SenderReference: "SO-128892",
-            ReceiverReference: "0109501381",
-            CodeRef: "TIMESLOT",
-            DescriptionRef: "TIMESLOT CHARGE (PER C/N)",
-            Cost: 1000,
-            TotalAdditionalCharge: 520,
-            fuelLevy: 80,
-            GST: 60,
-            TotalCost: 1660,
-            Weight: 50,
-            height: 1.2,
-            Cubic: 60,
-            NoPallet: 20,
-            length: 1.8,
-        },
-        {
-            ConsignmentID: 550010,
-            ConsignmentNo: "RFOO1519",
-            DespatchDate: "2025-07-07T00:00:00",
-            SenderReference: "SO-128892",
-            ReceiverReference: "0109501381",
-            CodeRef: "TIMESLOT",
-            DescriptionRef: "TIMESLOT CHARGE (PER C/N)",
-            Cost: 1000,
-            TotalAdditionalCharge: 520,
-            fuelLevy: 80,
-            GST: 60,
-            TotalCost: 1660,
-            Weight: 50,
-            height: 1.2,
-            Cubic: 60,
-            NoPallet: 20,
-            length: 1.8,
-        },
-        {
-            ConsignmentID: 550010,
-            ConsignmentNo: "RFOO1519",
-            DespatchDate: "2025-08-18T00:00:00",
-            SenderReference: "SO-128892",
-            ReceiverReference: "0109501381",
-            CodeRef: "TIMESLOT",
-            DescriptionRef: "TIMESLOT CHARGE (PER C/N)",
-            Cost: 1000,
-            TotalAdditionalCharge: 520,
-            fuelLevy: 80,
-            GST: 60,
-            TotalCost: 1660,
-            Weight: 50,
-            height: 1.2,
-            Cubic: 60,
-            NoPallet: 20,
-            length: 1.8,
-        },
-        {
-            ConsignmentID: 550010,
-            ConsignmentNo: "RFOO1519",
-            DespatchDate: "2025-09-15T00:00:00",
-            SenderReference: "SO-128892",
-            ReceiverReference: "0109501381",
-            CodeRef: "TIMESLOT",
-            DescriptionRef: "TIMESLOT CHARGE (PER C/N)",
-            Cost: 1000,
-            TotalAdditionalCharge: 520,
-            fuelLevy: 80,
-            GST: 60,
-            TotalCost: 1660,
-            Weight: 50,
-            height: 1.2,
-            Cubic: 60,
-            NoPallet: 20,
-            length: 1.8,
-        },
-        {
-            ConsignmentID: 550010,
-            ConsignmentNo: "RFOO1519",
-            DespatchDate: "2025-10-03T00:00:00",
-            SenderReference: "SO-128892",
-            ReceiverReference: "0109501381",
-            CodeRef: "TIMESLOT",
-            DescriptionRef: "TIMESLOT CHARGE (PER C/N)",
-            Cost: 1000,
-            TotalAdditionalCharge: 520,
-            fuelLevy: 80,
-            GST: 60,
-            TotalCost: 1660,
-            Weight: 50,
-            height: 1.2,
-            Cubic: 60,
-            NoPallet: 20,
-            length: 1.8,
-        },
-        {
-            ConsignmentID: 550010,
-            ConsignmentNo: "RFOO1519",
-            DespatchDate: "2025-12-25T00:00:00",
-            SenderReference: "SO-128892",
-            ReceiverReference: "0109501381",
-            CodeRef: "TIMESLOT",
-            DescriptionRef: "TIMESLOT CHARGE (PER C/N)",
-            Cost: 1000,
-            TotalAdditionalCharge: 520,
-            fuelLevy: 80,
-            GST: 60,
-            TotalCost: 1660,
-            Weight: 50,
-            height: 1.2,
-            Cubic: 60,
-            NoPallet: 20,
-            length: 1.8,
-        },
-        {
-            ConsignmentID: 550010,
-            ConsignmentNo: "RFOO1519",
-            DespatchDate: "2025-11-14T00:00:00",
-            SenderReference: "SO-128892",
-            ReceiverReference: "0109501381",
-            CodeRef: "TIMESLOT",
-            DescriptionRef: "TIMESLOT CHARGE (PER C/N)",
-            Cost: 1000,
-            TotalAdditionalCharge: 520,
-            fuelLevy: 80,
-            GST: 60,
-            TotalCost: 1660,
-            Weight: 50,
-            height: 1.2,
-            Cubic: 60,
-            NoPallet: 20,
-            length: 1.8,
-        },
-        {
-            ConsignmentID: 550010,
-            ConsignmentNo: "RFOO1519",
-            DespatchDate: "2025-09-11T00:00:00",
-            SenderReference: "SO-128892",
-            ReceiverReference: "0109501381",
-            CodeRef: "TIMESLOT",
-            DescriptionRef: "TIMESLOT CHARGE (PER C/N)",
-            Cost: 1000,
-            TotalAdditionalCharge: 520,
-            fuelLevy: 80,
-            GST: 60,
-            TotalCost: 1660,
-            Weight: 50,
-            height: 1.2,
-            Cubic: 60,
-            NoPallet: 20,
-            length: 1.8,
-        },
-    ];
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+    // Use imported data and add computed fields
+    const chartsData = useMemo(
+        () =>
+            dummySpendData.map((item, index) => ({
+                ...item,
+                id: index + 1, // Add unique ID for table
+                totalCost:
+                    item.cost +
+                    item.additional +
+                    item.fuelLevy +
+                    item.GST +
+                    item.demurrageCost,
+                totalAdditionalCharges:
+                    item.additionalCost?.reduce(
+                        (sum, charge) => sum + charge.cost,
+                        0
+                    ) || 0,
+                formattedDate: new Date(item.date).toLocaleDateString(),
+                monthYear: new Date(item.date).toLocaleString("default", {
+                    month: "short",
+                    year: "numeric",
+                }),
+            })),
+        []
+    );
 
     const [filteredData, setFilteredData] = useState(chartsData);
-    const [filtersValue, setFiltersValue] = useState(getSpendAnalysisTable());
-
-    const SenderRefOptions = createNewLabelObjects(
-        chartsData,
-        "SenderReference"
+    const [filtersValue, setFiltersValue] = useState(() =>
+        getSpendAnalysisTable()
     );
-    const ReceiverRefOptions = createNewLabelObjects(
-        chartsData,
-        "ReceiverReference"
-    );
-    const CodeRefOptions = createNewLabelObjects(chartsData, "CodeRef");
-    const DescRefOptions = createNewLabelObjects(chartsData, "DescriptionRef");
+    const [selectedRow, setSelectedRow] = useState(null);
 
-    const SenderStatesOptions = createNewLabelObjects(
-        chartsData,
-        "SenderState"
+    // Memoize filter options
+    const filterOptions = useMemo(
+        () => ({
+            state: createNewLabelObjects(chartsData, "state"),
+            receiver: createNewLabelObjects(chartsData, "receiver"),
+            demurrageType: createNewLabelObjects(chartsData, "demurrageType"),
+            serviceType: createNewLabelObjects(chartsData, "serviceType"),
+            monthYear: createNewLabelObjects(chartsData, "monthYear"),
+        }),
+        [chartsData]
     );
 
-    const [columns] = useState([
-        {
-            name: "ConsignmentNo",
-            header: "Consignment Number",
-            group: "personalInfo",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultFlex: 1,
-            minWidth: 200,
-            filterEditor: StringFilter,
-        },
-        {
-            name: "SenderReference",
-            header: "Sender Reference",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: SenderRefOptions,
+    console.log(dummySpendData);
+    // Updated columns for new data structure
+    const columns = useMemo(
+        () => [
+            {
+                name: "formattedDate",
+                header: "Date",
+                headerAlign: "center",
+                textAlign: "center",
+                defaultFlex: 1,
+                minWidth: 200,
+                dateFormat: "DD-MM-YYYY",
+                filterable: true,
+                filterEditor: DateFilter,
+                render: ({ value }) => {
+                    return value;
+                },
             },
-        },
-        {
-            name: "ReceiverReference",
-            header: "Receiver Reference",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: ReceiverRefOptions,
+            {
+                name: "receiver",
+                header: "Receiver",
+                headerAlign: "center",
+                textAlign: "center",
+                defaultWidth: 170,
+                filterEditor: SelectFilter,
+                filterEditorProps: {
+                    multiple: true,
+                    wrapMultiple: false,
+                    dataSource: filterOptions.receiver,
+                },
             },
-        },
-        {
-            name: "CodeRef",
-            header: "Code Reference",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: CodeRefOptions,
+            {
+                name: "state",
+                header: "State",
+                headerAlign: "center",
+                textAlign: "center",
+                defaultWidth: 170,
+                filterEditor: SelectFilter,
+                filterEditorProps: {
+                    multiple: true,
+                    wrapMultiple: false,
+                    dataSource: filterOptions.state,
+                },
+                render: ({ value }) => value?.toUpperCase() || "",
             },
-        },
-        {
-            name: "DescriptionRef",
-            header: "Description",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: DescRefOptions,
+            {
+                name: "serviceType",
+                header: "Service Type",
+                headerAlign: "center",
+                textAlign: "center",
+                defaultWidth: 170,
+                filterEditor: SelectFilter,
+                filterEditorProps: {
+                    multiple: true,
+                    wrapMultiple: false,
+                    dataSource: filterOptions.serviceType,
+                },
             },
-        },
-        {
-            name: "fuelLevy",
-            header: "fuel Levy Charge",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: SenderStatesOptions,
+            {
+                name: "cost",
+                header: "Base Cost",
+                type: "number",
+                headerAlign: "center",
+                textAlign: "center",
+                defaultWidth: 170,
+                filterEditor: NumberFilter,
+                render: ({ value }) => `$${value?.toLocaleString() || "0"}`,
             },
-        },
-        {
-            name: "TotalAdditionalCharge",
-            header: "Total Additional Charge",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: true,
-                wrapMultiple: false,
-                dataSource: SenderStatesOptions,
-            },
-            render: ({ value }) => {
-                return (
+            {
+                name: "additional",
+                header: "Additional Charges",
+                type: "number",
+                headerAlign: "center",
+                textAlign: "center",
+                defaultWidth: 170,
+                filterEditor: NumberFilter,
+                render: ({ value, data }) => (
                     <div
-                        onClick={onOpen}
-                        className="text-blue-400 underline hover:cursor-pointer"
+                        onClick={() => {
+                            setSelectedRow(data);
+                            onOpen();
+                        }}
+                        className="text-blue-400 underline hover:cursor-pointer hover:text-blue-600"
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                setSelectedRow(data);
+                                onOpen();
+                            }
+                        }}
                     >
-                        {value}
+                        ${value?.toLocaleString() || "0"}
                     </div>
-                );
+                ),
             },
-        },
-        {
-            name: "GST",
-            header: "GST",
-            type: "number",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: NumberFilter,
-        },
-        {
-            name: "TotalCost",
-            header: "Total Cost",
-            type: "number",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: NumberFilter,
-        },
-        {
-            name: "Weight",
-            header: "Total Weight",
-            type: "number",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: NumberFilter,
-        },
-        {
-            name: "height",
-            header: "Total Height",
-            type: "number",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: NumberFilter,
-        },
-        {
-            name: "Cubic",
-            header: "Cubic weight",
-            type: "number",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: NumberFilter,
-        },
-        {
-            name: "length",
-            header: "Length",
-            type: "number",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: NumberFilter,
-        },
-        {
-            name: "NoPallet",
-            header: "No Pallet",
-            type: "number",
-            headerAlign: "center",
-            textAlign: "center",
-            filterEditor: NumberFilter,
-        },
-    ]);
+            {
+                name: "fuelLevy",
+                header: "Fuel Levy",
+                type: "number",
+                headerAlign: "center",
+                textAlign: "center",
+                defaultWidth: 170,
+                filterEditor: NumberFilter,
+                render: ({ value }) => `$${value?.toLocaleString() || "0"}`,
+            },
+            {
+                name: "GST",
+                header: "GST",
+                type: "number",
+                headerAlign: "center",
+                textAlign: "center",
+                defaultWidth: 170,
+                filterEditor: NumberFilter,
+                render: ({ value }) => `$${value?.toLocaleString() || "0"}`,
+            },
+            {
+                name: "demurrageType",
+                header: "Demurrage Type",
+                headerAlign: "center",
+                textAlign: "center",
+                defaultWidth: 170,
+                filterEditor: SelectFilter,
+                filterEditorProps: {
+                    multiple: true,
+                    wrapMultiple: false,
+                    dataSource: filterOptions.demurrageType,
+                },
+            },
+            {
+                name: "demurrageCost",
+                header: "Demurrage Cost",
+                type: "number",
+                headerAlign: "center",
+                textAlign: "center",
+                defaultWidth: 170,
+                filterEditor: NumberFilter,
+                render: ({ value }) => `$${value?.toLocaleString() || "0"}`,
+            },
+            {
+                name: "weight",
+                header: "Weight (kg)",
+                type: "number",
+                headerAlign: "center",
+                textAlign: "center",
+                defaultWidth: 170,
+                filterEditor: NumberFilter,
+                render: ({ value }) => `${value || 0} kg`,
+            },
+            {
+                name: "palletSpace",
+                header: "Pallet Spaces",
+                type: "number",
+                headerAlign: "center",
+                textAlign: "center",
+                defaultWidth: 170,
+                filterEditor: NumberFilter,
+            },
+            {
+                name: "totalAdditionalCharges",
+                header: "Total Additional",
+                type: "number",
+                headerAlign: "center",
+                textAlign: "center",
+                defaultWidth: 170,
+                filterEditor: NumberFilter,
+                render: ({ value }) => `$${value?.toLocaleString() || "0"}`,
+            },
+            {
+                name: "totalCost",
+                header: "Total Cost",
+                type: "number",
+                headerAlign: "center",
+                textAlign: "center",
+                defaultWidth: 170,
+                filterEditor: NumberFilter,
+                render: ({ value }) => (
+                    <div className="font-semibold text-green-600">
+                        ${value?.toLocaleString() || "0"}
+                    </div>
+                ),
+            },
+        ],
+        [filterOptions, onOpen]
+    );
 
-    React.useEffect(() => {
-        if (filters) {
-            const filtered = chartsData.filter((item) => {
-                const despatchDate = new Date(item.DespatchDate);
-                const monthAbbreviation = despatchDate.toLocaleString(
-                    "default",
-                    { month: "short" }
-                );
-
-                return (
-                    (filters.service === "" ||
-                        item.service === filters.service) &&
-                    (filters.date === "" ||
-                        monthAbbreviation === filters.date) &&
-                    (filters.additionalCosts === "" ||
-                        item.additionalCosts === filters.additionalCosts)
-                );
-            });
-            setFilteredData(filtered);
+    // Enhanced filtering effect for new data structure
+    useEffect(() => {
+        if (!filters) {
+            setFilteredData(chartsData);
+            return;
         }
-    }, [filters]);
-    function handleDownloadExcel() {
-        const jsonData = handleFilterTable(gridRef, chartsData);
 
-        // Dynamically create column mapping from the `columns` array
-        const columnMapping = columns.reduce((acc, column) => {
-            acc[column.name] = column.header;
-            return acc;
-        }, {});
+        const filtered = chartsData.filter((item) => {
+            const itemDate = new Date(item.date);
+            const monthAbbreviation = itemDate.toLocaleString("default", {
+                month: "short",
+            });
+            const year = itemDate.getFullYear();
 
-        // Define custom cell handlers
-        const customCellHandlers = {
-            DespatchDate: (value) => formatDateToExcel(value),
+            return (
+                (!filters.service || item.serviceType === filters.service) &&
+                (!filters.date ||
+                    monthAbbreviation === filters.date ||
+                    item.monthYear === filters.date ||
+                    year.toString() === filters.date) &&
+                (!filters.state || item.state === filters.state) &&
+                (!filters.receiver || item.receiver === filters.receiver) &&
+                (!filters.demurrageType ||
+                    item.demurrageType === filters.demurrageType)
+            );
+        });
+
+        setFilteredData(filtered);
+    }, [filters, chartsData]);
+
+    // Enhanced download handler
+    const handleDownloadExcel = useCallback(() => {
+        const jsonData = handleFilterTable(gridRef, filteredData);
+
+        // Process data to flatten additionalCost array for Excel
+        const processedData = jsonData.map((item) => ({
+            ...item,
+            additionalCostDetails:
+                item.additionalCost
+                    ?.map((cost) => `${cost.name}: $${cost.cost}`)
+                    .join("; ") || "",
+            coordinates: `${item.receiverLat}, ${item.receiverLng}`,
+        }));
+
+        // Dynamic column mapping
+        const columnMapping = {
+            date: "Date",
+            receiver: "Receiver",
+            state: "State",
+            serviceType: "Service Type",
+            cost: "Base Cost",
+            additional: "Additional Charges",
+            fuelLevy: "Fuel Levy",
+            GST: "GST",
+            demurrageType: "Demurrage Type",
+            demurrageCost: "Demurrage Cost",
+            weight: "Weight (kg)",
+            palletSpace: "Pallet Spaces",
+            totalAdditionalCharges: "Total Additional Charges",
+            totalCost: "Total Cost",
+            additionalCostDetails: "Additional Cost Breakdown",
+            coordinates: "Receiver Coordinates",
         };
 
-        // Call the `exportToExcel` function
-        exportToExcel(
-            jsonData, // Filtered data
-            columnMapping, // Dynamic column mapping from columns
-            "Dashboard-Data.xlsx", // Export file name
-            customCellHandlers, // Custom handlers for formatting cells
-            ["DespatchDate"]
-        );
-    }
+        // Custom cell handlers
+        const customCellHandlers = {
+            date: (value) => formatDateToExcel(value),
+            cost: (value) => Number(value),
+            additional: (value) => Number(value),
+            fuelLevy: (value) => Number(value),
+            GST: (value) => Number(value),
+            demurrageCost: (value) => Number(value),
+            totalCost: (value) => Number(value),
+            totalAdditionalCharges: (value) => Number(value),
+            weight: (value) => Number(value),
+            palletSpace: (value) => Number(value),
+        };
 
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    const renderTable = useCallback(() => {
-        return (
+        exportToExcel(
+            processedData,
+            columnMapping,
+            "Spend-Analysis-Data.xlsx",
+            customCellHandlers,
+            [
+                "date",
+                "cost",
+                "additional",
+                "fuelLevy",
+                "GST",
+                "demurrageCost",
+                "totalCost",
+            ]
+        );
+    }, [gridRef, filteredData]);
+
+    // Render table with enhanced layout
+    const renderTable = useCallback(
+        () => (
             <div className="px-4 sm:px-6 lg:px-0 w-full bg-smooth">
                 <TableStructure
                     handleDownloadExcel={handleDownloadExcel}
-                    id={"ConsignmentId"}
+                    id="id"
                     minHeight="70vh"
                     gridRef={gridRef}
                     filterValueElements={filtersValue}
                     setFilterValueElements={setFiltersValue}
-                    selected={selected}
+                    selected={{}}
                     tableDataElements={filteredData}
                     columnsElements={columns}
                 />
+
                 <AddModel
                     isOpen={isOpen}
                     onOpen={onOpen}
                     onOpenChange={onOpenChange}
+                    selectedData={selectedRow} // Pass selected row data to modal
                 />
             </div>
-        );
-    }, [columns, chartsData]);
+        ),
+        [
+            filteredData,
+            handleDownloadExcel,
+            filtersValue,
+            setFiltersValue,
+            columns,
+            isOpen,
+            onOpen,
+            onOpenChange,
+            selectedRow,
+        ]
+    );
 
     return renderTable();
 }
+
 export default CostTable;

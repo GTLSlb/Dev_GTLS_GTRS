@@ -1,22 +1,11 @@
 import RateCard from "./Comp/RateCard";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import CostTable from "./Comp/CostTable";
-import {
-    Tabs,
-    Tab,
-    Modal,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-    useDisclosure,
-    Select,
-    SelectItem,
-    ModalContent,
-} from "@heroui/react";
 import SpendAnalysis from "./Comp/SpendAnalysis";
 import AdditionalCharts from "./Comp/AdditionalCharts";
-import HeatMapContainer from "./Comp/HeatMap/HeatMapContainer";
 import { CustomModal } from "@/Components/common/CustomModal";
+import HeatMapContainer from "./Comp/HeatMap/HeatMapContainer";
+import { Tabs, Tab, useDisclosure, Select, SelectItem } from "@heroui/react";
 export default function SpendDashboard() {
     const services = [
         { key: "general", label: "General" },
@@ -34,42 +23,66 @@ export default function SpendDashboard() {
         { key: "aaa", label: "AAA", debtors: [123, 456] },
     ];
 
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const { isOpen, onOpen, onClose } = useDisclosure();
     const [selected, setSelected] = React.useState("spend");
     const [value, setValue] = React.useState(new Set([]));
 
     const [filters, setFilters] = React.useState({
-        "service": "",
-        "date": "",
-        "additionalCosts": "",
+        service: "",
+        date: "",
+        additionalCosts: "",
     });
 
     const tabs = [
         {
             key: "spend",
             title: "Cost Overview",
-            content: <SpendAnalysis filters={filters} setFilters={setFilters} setSelected={setSelected} />,
+            content: (
+                <SpendAnalysis
+                    filters={filters}
+                    setFilters={setFilters}
+                    setSelected={setSelected}
+                />
+            ),
             serviceFilter: true,
             receiverFilter: true,
         },
         {
             key: "additional",
             title: "Operation Analysis",
-            content: <AdditionalCharts filters={filters} setFilters={setFilters} setSelected={setSelected} />,
+            content: (
+                <AdditionalCharts
+                    filters={filters}
+                    setFilters={setFilters}
+                    setSelected={setSelected}
+                />
+            ),
             serviceFilter: true,
             receiverFilter: true,
         },
         {
             key: "map",
             title: "Heat Map",
-            content: <HeatMapContainer filters={filters} setFilters={setFilters} setSelected={setSelected} />,
+            content: (
+                <HeatMapContainer
+                    filters={filters}
+                    setFilters={setFilters}
+                    setSelected={setSelected}
+                />
+            ),
             serviceFilter: true,
             receiverFilter: true,
         },
         {
             key: "table",
             title: "Table",
-            content: <CostTable filters={filters} setFilters={setFilters} setSelected={setSelected} />,
+            content: (
+                <CostTable
+                    filters={filters}
+                    setFilters={setFilters}
+                    setSelected={setSelected}
+                />
+            ),
             serviceFilter: false,
             receiverFilter: false,
         },
@@ -86,8 +99,8 @@ export default function SpendDashboard() {
     useEffect(() => {
         if (value.size === 0) {
             onOpen();
-        }else {
-            onOpenChange(false);
+        } else {
+            onClose();
         }
     }, [value]);
     return (
@@ -98,7 +111,17 @@ export default function SpendDashboard() {
                         aria-label="Dynamic Tabs"
                         className=""
                         selectedKey={selected}
-                        onSelectionChange={(e)=>{ setSelected(e); if(e !== 'table'){ setFilters((prev) => ({ ...prev, service: "", date: "", additionalCosts: "" })); } }}
+                        onSelectionChange={(e) => {
+                            setSelected(e);
+                            if (e !== "table") {
+                                setFilters((prev) => ({
+                                    ...prev,
+                                    service: "",
+                                    date: "",
+                                    additionalCosts: "",
+                                }));
+                            }
+                        }}
                         variant="underlined"
                         classNames={{
                             tab: "px-1",
@@ -160,6 +183,7 @@ export default function SpendDashboard() {
                             selectionMode="single"
                             variant="bordered"
                             classNames={{ trigger: "bg-white" }}
+                            disallowEmptySelection
                         >
                             {(customer) => (
                                 <SelectItem>{customer.label}</SelectItem>
@@ -171,10 +195,9 @@ export default function SpendDashboard() {
                 {value.size > 0 &&
                     tabs.find((tab) => tab.key === selected)?.content}
             </div>
-
             <CustomModal
                 isOpen={isOpen}
-                onClose={onOpenChange}
+                onClose={onClose}
                 size="md"
                 title={"Select Customer"}
                 noFilters
@@ -190,6 +213,7 @@ export default function SpendDashboard() {
                     selectionMode="single"
                     variant="bordered"
                     classNames={{ trigger: "bg-white" }}
+                    disallowEmptySelection
                 >
                     {(customer) => <SelectItem>{customer.label}</SelectItem>}
                 </Select>

@@ -147,7 +147,7 @@ export const CustomModal = ({
                 {/* Modal Body - simplified structure */}
                 <div className="p-6">
                     <div className="flex gap-4 justify-start items-start">
-                        <div className="w-3/4">
+                        <div className={`${noFilters ? "w-full" : "w-3/4"}`}>
                             {children}
                             <div className="w-px bg-gray-300 dark:bg-gray-600 mx-4 self-stretch" />
                         </div>
