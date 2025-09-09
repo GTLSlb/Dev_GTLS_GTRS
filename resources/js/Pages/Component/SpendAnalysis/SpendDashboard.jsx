@@ -33,32 +33,43 @@ export default function SpendDashboard() {
         { key: "gmi", label: "GMI", debtors: [123, 456] },
         { key: "aaa", label: "AAA", debtors: [123, 456] },
     ];
-    const [tabs] = useState([
+
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [selected, setSelected] = React.useState("spend");
+    const [value, setValue] = React.useState(new Set([]));
+
+    const [filters, setFilters] = React.useState({
+        "service": "",
+        "date": "",
+        "additionalCosts": "",
+    });
+
+    const tabs = [
         {
             key: "spend",
             title: "Cost Overview",
-            content: <SpendAnalysis />,
+            content: <SpendAnalysis filters={filters} setFilters={setFilters} setSelected={setSelected} />,
             serviceFilter: true,
             receiverFilter: true,
         },
         {
             key: "additional",
             title: "Operation Analysis",
-            content: <AdditionalCharts />,
+            content: <AdditionalCharts filters={filters} setFilters={setFilters} setSelected={setSelected} />,
             serviceFilter: true,
             receiverFilter: true,
         },
         {
             key: "map",
             title: "Heat Map",
-            content: <HeatMapContainer />,
+            content: <HeatMapContainer filters={filters} setFilters={setFilters} setSelected={setSelected} />,
             serviceFilter: true,
             receiverFilter: true,
         },
         {
             key: "table",
             title: "Table",
-            content: <CostTable />,
+            content: <CostTable filters={filters} setFilters={setFilters} setSelected={setSelected} />,
             serviceFilter: false,
             receiverFilter: false,
         },
@@ -66,18 +77,13 @@ export default function SpendDashboard() {
         {
             key: "card",
             title: "Rate Card",
-            content: <RateCard />,
+            content: <RateCard filters={filters} setFilters={setFilters} />,
             serviceFilter: false,
             receiverFilter: false,
         },
-    ]);
-
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    const [selected, setSelected] = React.useState("spend");
-    const [value, setValue] = React.useState(new Set([]));
+    ];
 
     useEffect(() => {
-        console.log(value)
         if (value.size === 0) {
             onOpen();
         }else {
@@ -92,7 +98,7 @@ export default function SpendDashboard() {
                         aria-label="Dynamic Tabs"
                         className=""
                         selectedKey={selected}
-                        onSelectionChange={setSelected}
+                        onSelectionChange={(e)=>{ setSelected(e); if(e !== 'table'){ setFilters((prev) => ({ ...prev, service: "", date: "", additionalCosts: "" })); } }}
                         variant="underlined"
                         classNames={{
                             tab: "px-1",

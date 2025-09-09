@@ -14,7 +14,7 @@ import { dummySpendData } from "../assets/js/dataHandler";
 import { useDurationData } from "../assets/js/useDurationData";
 import { Divider, Select, SelectItem } from "@heroui/react";
 import { useState } from "react";
-export function AmtVsType() {
+export function AmtVsType({ filters, setFilters, setSelected }) {
     const cosTypeOptions = [
         { label: "Weight", value: "weight" },
         { label: "Pallet Space", value: "pallet-space" },
@@ -82,6 +82,7 @@ export function AmtVsType() {
                     width={700}
                     height={600}
                     data={getChartData}
+                    onClick={(e)=>{setFilters({...filters, "date": e.activeLabel}); setSelected("table")}}
                     syncId="chart-sync-id" // Synchronize all axes
                 >
                     <CartesianGrid stroke="#f5f5f5" />

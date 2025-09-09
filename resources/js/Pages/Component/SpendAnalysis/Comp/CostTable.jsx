@@ -12,13 +12,14 @@ import { formatDateToExcel } from "@/CommonFunctions";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import React from "react";
 
-function CostTable() {
+function CostTable({ filters }) {
     const gridRef = useRef(null);
     const [selected] = useState({});
     const chartsData = [
         {
             ConsignmentID: 550010,
             ConsignmentNo: "RFOO1519",
+            DespatchDate: "2025-01-15T00:00:00",
             SenderReference: "SO-128892",
             ReceiverReference: "0109501381",
             CodeRef: "TIMESLOT",
@@ -37,6 +38,7 @@ function CostTable() {
         {
             ConsignmentID: 550010,
             ConsignmentNo: "RFOO1519",
+            DespatchDate: "2025-02-20T00:00:00",
             SenderReference: "SO-128892",
             ReceiverReference: "0109501381",
             CodeRef: "TIMESLOT",
@@ -55,6 +57,7 @@ function CostTable() {
         {
             ConsignmentID: 550010,
             ConsignmentNo: "RFOO1519",
+            DespatchDate: "2025-06-22T00:00:00",
             SenderReference: "SO-128892",
             ReceiverReference: "0109501381",
             CodeRef: "TIMESLOT",
@@ -73,6 +76,7 @@ function CostTable() {
         {
             ConsignmentID: 550010,
             ConsignmentNo: "RFOO1519",
+            DespatchDate: "2025-03-02T00:00:00",
             SenderReference: "SO-128892",
             ReceiverReference: "0109501381",
             CodeRef: "TIMESLOT",
@@ -91,6 +95,7 @@ function CostTable() {
         {
             ConsignmentID: 550010,
             ConsignmentNo: "RFOO1519",
+            DespatchDate: "2025-04-21T00:00:00",
             SenderReference: "SO-128892",
             ReceiverReference: "0109501381",
             CodeRef: "TIMESLOT",
@@ -109,6 +114,7 @@ function CostTable() {
         {
             ConsignmentID: 550010,
             ConsignmentNo: "RFOO1519",
+            DespatchDate: "2025-07-07T00:00:00",
             SenderReference: "SO-128892",
             ReceiverReference: "0109501381",
             CodeRef: "TIMESLOT",
@@ -127,6 +133,7 @@ function CostTable() {
         {
             ConsignmentID: 550010,
             ConsignmentNo: "RFOO1519",
+            DespatchDate: "2025-08-18T00:00:00",
             SenderReference: "SO-128892",
             ReceiverReference: "0109501381",
             CodeRef: "TIMESLOT",
@@ -145,6 +152,7 @@ function CostTable() {
         {
             ConsignmentID: 550010,
             ConsignmentNo: "RFOO1519",
+            DespatchDate: "2025-09-15T00:00:00",
             SenderReference: "SO-128892",
             ReceiverReference: "0109501381",
             CodeRef: "TIMESLOT",
@@ -163,6 +171,7 @@ function CostTable() {
         {
             ConsignmentID: 550010,
             ConsignmentNo: "RFOO1519",
+            DespatchDate: "2025-10-03T00:00:00",
             SenderReference: "SO-128892",
             ReceiverReference: "0109501381",
             CodeRef: "TIMESLOT",
@@ -181,6 +190,7 @@ function CostTable() {
         {
             ConsignmentID: 550010,
             ConsignmentNo: "RFOO1519",
+            DespatchDate: "2025-12-25T00:00:00",
             SenderReference: "SO-128892",
             ReceiverReference: "0109501381",
             CodeRef: "TIMESLOT",
@@ -199,6 +209,7 @@ function CostTable() {
         {
             ConsignmentID: 550010,
             ConsignmentNo: "RFOO1519",
+            DespatchDate: "2025-11-14T00:00:00",
             SenderReference: "SO-128892",
             ReceiverReference: "0109501381",
             CodeRef: "TIMESLOT",
@@ -217,6 +228,7 @@ function CostTable() {
         {
             ConsignmentID: 550010,
             ConsignmentNo: "RFOO1519",
+            DespatchDate: "2025-09-11T00:00:00",
             SenderReference: "SO-128892",
             ReceiverReference: "0109501381",
             CodeRef: "TIMESLOT",
@@ -234,6 +246,7 @@ function CostTable() {
         },
     ];
 
+    const [filteredData, setFilteredData] = useState(chartsData);
     const [filtersValue, setFiltersValue] = useState(getSpendAnalysisTable());
 
     const SenderRefOptions = createNewLabelObjects(
@@ -347,7 +360,10 @@ function CostTable() {
             },
             render: ({ value }) => {
                 return (
-                    <div onClick={onOpen} className="text-blue-400 underline hover:cursor-pointer">
+                    <div
+                        onClick={onOpen}
+                        className="text-blue-400 underline hover:cursor-pointer"
+                    >
                         {value}
                     </div>
                 );
@@ -411,6 +427,27 @@ function CostTable() {
         },
     ]);
 
+    React.useEffect(() => {
+        if (filters) {
+            const filtered = chartsData.filter((item) => {
+                const despatchDate = new Date(item.DespatchDate);
+                const monthAbbreviation = despatchDate.toLocaleString(
+                    "default",
+                    { month: "short" }
+                );
+
+                return (
+                    (filters.service === "" ||
+                        item.service === filters.service) &&
+                    (filters.date === "" ||
+                        monthAbbreviation === filters.date) &&
+                    (filters.additionalCosts === "" ||
+                        item.additionalCosts === filters.additionalCosts)
+                );
+            });
+            setFilteredData(filtered);
+        }
+    }, [filters]);
     function handleDownloadExcel() {
         const jsonData = handleFilterTable(gridRef, chartsData);
 
@@ -436,7 +473,6 @@ function CostTable() {
     }
 
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
     const renderTable = useCallback(() => {
         return (
             <div className="px-4 sm:px-6 lg:px-0 w-full bg-smooth">
@@ -448,7 +484,7 @@ function CostTable() {
                     filterValueElements={filtersValue}
                     setFilterValueElements={setFiltersValue}
                     selected={selected}
-                    tableDataElements={chartsData}
+                    tableDataElements={filteredData}
                     columnsElements={columns}
                 />
                 <AddModel

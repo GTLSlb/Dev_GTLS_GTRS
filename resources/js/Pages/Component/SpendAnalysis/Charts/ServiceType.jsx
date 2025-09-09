@@ -6,7 +6,7 @@ import { useDurationData } from "../assets/js/useDurationData";
 import { useMemo, useState } from "react";
 import { Divider, Select, SelectItem } from "@heroui/react";
 
-export function ServiceTypeChart() {
+export function ServiceTypeChart({filters, setFilters, setSelected}) {
     const COLORS = [
         "#0088FE",
         "#00C49F",
@@ -181,6 +181,7 @@ export function ServiceTypeChart() {
                             outerRadius={100}
                             fill="#8884d8"
                             dataKey="value"
+                            onClick={(e)=>{setFilters({...filters, "service": e.name}); setSelected("table")}}
                         >
                             {pieChartData.map((entry, index) => (
                                 <Cell

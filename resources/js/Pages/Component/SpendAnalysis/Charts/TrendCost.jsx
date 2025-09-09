@@ -15,7 +15,7 @@ import { formatNumberWithCommas } from "@/CommonFunctions";
 import { Divider, Select, SelectItem } from "@heroui/react";
 import { useState } from "react";
 
-export function TrendCost() {
+export function TrendCost({ filters, setFilters, setSelected }) {
     const costTypeOptions = [
         { label: "Cost", value: "cost" },
         { label: "Additional Charges", value: "additional" },
@@ -83,6 +83,7 @@ export function TrendCost() {
                 <LineChart
                     width={700}
                     height={600}
+                    onClick={(e)=>{setFilters({...filters, "date": e.activeLabel}); setSelected("table")}}
                     data={getChartData}
                     margin={{
                         right: 30,

@@ -7,7 +7,7 @@ function HeatMap() {
     const [leafletLoaded, setLeafletLoaded] = useState(false);
     const australiaPosition = [-25.2744, 133.7751];
 
-    console.log(dummySpendData)
+
     useEffect(() => {
         const loadLeaflet = async () => {
             if (!document.querySelector('link[href*="leaflet"]')) {
