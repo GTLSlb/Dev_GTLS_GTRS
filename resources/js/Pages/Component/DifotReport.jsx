@@ -516,7 +516,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                 uniqueLabels.add(fieldValue);
                 const newObject = {
                     id: fieldValue?.toString(),
-                    label: fieldValue?.toString(),
+                    label: fieldValue?.toString().toUpperCase(),
                 };
                 fieldValue == undefined ? null : newData.push(newObject);
             }

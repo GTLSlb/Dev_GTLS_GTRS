@@ -90,6 +90,8 @@ function NewKPI({
         }
     }
 
+
+
     const [filteredData, setFilteredData] = useState(
         KPIData.map((item) => {
             if (item?.TransitDays) {
@@ -422,7 +424,7 @@ function NewKPI({
         {
             name: "TransitDays",
             header: "Transit Days",
-            type: "string",
+            type: "number",
             headerAlign: "center",
             textAlign: "center",
             filterEditor: NumberFilter,

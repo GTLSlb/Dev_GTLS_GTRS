@@ -14,19 +14,30 @@ export const handleFilterTable = (gridRef, filteredData) => {
             type: column.computedFilterValue?.type,
             operator: column.computedFilterValue?.operator,
         }));
+
     let selectedColVal = allHeaderColumns?.filter((col) => col.name !== "edit");
+
     const filterValue = [];
     filteredData?.map((val) => {
         let isMatch = true;
+
         for (const col of selectedColVal) {
             const { value, type, operator } = col;
             const cellValue = value;
             let conditionMet = false;
             // Skip the filter condition if no filter is set (cellValue is null or empty)
-            if (!cellValue || cellValue.length === 0) {
+
+            if (
+                (!cellValue || cellValue.length === 0) &&
+                !(
+                    type === "number" &&
+                    (operator === "empty" || cellValue === 0)
+                )
+            ) {
                 conditionMet = true;
                 continue;
             }
+
             if (type === "string") {
                 const valLowerCase = val[col.name]?.toString().toLowerCase();
                 const cellValueLowerCase = cellValue?.toString().toLowerCase();
@@ -79,15 +90,21 @@ export const handleFilterTable = (gridRef, filteredData) => {
                 switch (operator) {
                     case "eq":
                         conditionMet =
-                            numericCellValue != "" &&
-                            numericValue != "" &&
-                            numericValue === numericCellValue;
+                            (numericCellValue !== "" ||
+                                numericCellValue === 0) &&
+                            (numericValue !== "" || numericValue === 0) &&
+                            numericValue == numericCellValue;
                         break;
                     case "neq":
                         conditionMet =
                             numericCellValue != "" &&
                             numericValue != "" &&
                             numericValue !== numericCellValue;
+                        break;
+                    case "empty":
+                        conditionMet =
+                            Number.isNaN(numericCellValue) &&
+                            Number.isNaN(numericValue);
                         break;
                     case "gt":
                         conditionMet =
@@ -114,35 +131,26 @@ export const handleFilterTable = (gridRef, filteredData) => {
                             numericValue <= numericCellValue;
                         break;
                     case "inrange": {
-                        const rangeValues = value.split(",");
-                        const minRangeValue = parseFloat(rangeValues[0]);
-                        const maxRangeValue = parseFloat(rangeValues[1]);
+                        const minRangeValue = parseFloat(value.start);
+                        const maxRangeValue = parseFloat(value.end);
                         conditionMet =
-                            cellValue?.length > 0 &&
-                            numericCellValue >= minRangeValue &&
-                            numericCellValue <= maxRangeValue;
+                            numericValue >= minRangeValue &&
+                            numericValue <= maxRangeValue;
                         break;
                     }
                     case "notinrange": {
-                        const rangeValuesNotBetween = value.split(",");
-                        const minRangeValueNotBetween = parseFloat(
-                            rangeValuesNotBetween[0]
-                        );
-                        const maxRangeValueNotBetween = parseFloat(
-                            rangeValuesNotBetween[1]
-                        );
+                        const minRangeValue = parseFloat(value.start);
+                        const maxRangeValue = parseFloat(value.end);
+
                         conditionMet =
-                            cellValue?.length > 0 &&
-                            (numericCellValue < minRangeValueNotBetween ||
-                                numericCellValue > maxRangeValueNotBetween);
+                            numericValue < minRangeValue ||
+                            numericValue > maxRangeValue;
                         break;
                     }
-                    // ... (add other number type conditions here if necessary)
                 }
             } else if (type === "boolean") {
-                // Assuming booleanCellValue is a string 'true' or 'false' and needs conversion to a boolean
                 const booleanCellValue = cellValue === "true";
-                const booleanValue = val[col.name] === true; // Convert to boolean if it's not already
+                const booleanValue = val[col.name] === true;
 
                 switch (operator) {
                     case "eq":

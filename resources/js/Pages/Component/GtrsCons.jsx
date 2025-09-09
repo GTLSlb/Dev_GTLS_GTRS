@@ -54,6 +54,7 @@ export default function GtrsCons({
                 }
                 return "";
             },
+            POD: (value) => (value ? "True" : "False"),
         };
         // Call the exportToExcel function
         exportToExcel(
@@ -305,7 +306,8 @@ export default function GtrsCons({
             textAlign: "center",
             filterEditor: NumberFilter,
             render: ({ value }) => {
-                return formatNumberWithCommas(value) + " T";
+                // return formatNumberWithCommas(value) + " T";
+                return value;
             },
         },
         {

@@ -558,6 +558,7 @@ export default function FailedCons({
             },
             Reference: (value) =>
                 value === 1 ? "Internal" : value === 2 ? "External" : "",
+            POD: (value) => (value ? "True" : "False"),
         };
 
         // Call the exportToExcel function

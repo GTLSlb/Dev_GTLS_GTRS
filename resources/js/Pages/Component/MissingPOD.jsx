@@ -41,7 +41,7 @@ export default function MissingPOD({
             const intValue = parseInt(str);
             return isNaN(intValue) ? 0 : intValue;
         });
-        // Filter the data based on the start and end date filters, selected receiver names, and chargeTo values
+
         const filtered = data?.filter((item) => {
             const chargeToMatch =
                 intArray?.length === 0 || intArray?.includes(item.ChargeToID);
@@ -55,29 +55,26 @@ export default function MissingPOD({
     }, [accData]);
     const gridRef = useRef(null);
     const handleDownloadExcel = () => {
-        const jsonData = handleFilterTable(gridRef, filteredData); // Fetch the filtered data
+        const jsonData = handleFilterTable(gridRef, filteredData);
 
-        // Dynamically create column mapping from selected columns
         const columnMapping = columns.reduce((acc, column) => {
             acc[column.name] = column.header;
             return acc;
         }, {});
 
-        // Define custom cell handlers (e.g., formatting dates)
         const customCellHandlers = {
             DespatchDate: (value) => (value ? formatDateToExcel(value) : ""),
             ArrivedDatetime: (value) => (value ? formatDateToExcel(value) : ""),
             DeliveredDate: (value) => (value ? formatDateToExcel(value) : ""),
             DeliveryRequiredDateTime: (value) =>
                 value ? formatDateToExcel(value) : "",
-            POD: (value) => (value ? value : "No POD"), // Example of custom handling for a non-date field
+            POD: (value) => (value ? "True" : "False"),
         };
 
-        // Call the exportToExcel function with the data, column mapping, and custom handlers
         exportToExcel(
             jsonData,
             columnMapping,
-            "Missing-POD.xlsx", // Filename for the exported Excel file
+            "Missing-POD.xlsx",
             customCellHandlers,
             [
                 "DespatchDate",

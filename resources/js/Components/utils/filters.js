@@ -368,8 +368,8 @@ export const getFiltersKPI = (minDispatchDate, maxDispatchDate) => {
             name: "TransitDays",
             operator: "eq",
             type: "number",
-            value: undefined,
-            emptyValue: null,
+            value: null,
+            // emptyValue: null,
         },
         {
             name: "CalculatedDelDate",
