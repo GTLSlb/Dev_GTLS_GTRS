@@ -14,6 +14,7 @@ import { useDurationData } from "../assets/js/useDurationData.js";
 import { dummySpendData } from "../assets/js/dataHandler";
 import { DurationFilter } from "./Card/DurationFilter";
 import { formatNumberWithCommas } from "@/CommonFunctions";
+import { NoData } from "../Comp/NoDataChart";
 
 const barTypeOptions = [
     { label: "Cost", value: "cost" },
@@ -65,6 +66,8 @@ function TotalSpendChart({filters, setFilters, setSelected}) {
         }
     };
 
+    const hasData = getChartData.length > 0;
+
     return (
         <ChartWrapper
             title={"Total Spend"}
@@ -106,60 +109,70 @@ function TotalSpendChart({filters, setFilters, setSelected}) {
                     </div>
                 </>
             }
-        >
-            <BarChart
-                data={getChartData}
-                width={700}
-                height={600}
-                onClick={(e)=>{setFilters({...filters, "date": e.activeLabel}); setSelected("table")}}
-                margin={{
-                    top: 0,
-                    right: 30,
-                    left: 0,
-                    bottom: 5,
-                }}
-            >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis
-                    tick={{ fontSize: 12 }}
-                    tickFormatter={(v) => `$${formatNumberWithCommas(v)}`}
-                    angle={-45}
-                />
-                <Tooltip
-                    contentStyle={{
-                        fontSize: 12,
-                        backgroundColor: "white",
-                        borderRadius: 8,
-                    }}
-                    formatter={(value) => `$${value.toLocaleString()}`}
-                />
-                <Legend
-                    verticalAlign="top"
-                    height={50}
-                    fontSize={10}
-                    className="!text-sm"
-                    wrapperStyle={{ fontSize: 12 }}
-                    onClick={(e) => handleLegendClick(e.dataKey)}
-                />
-                {selectedBarTypes.has("cost") && (
-                    <Bar dataKey="cost" name="Cost" fill="#ff7300" />
-                )}
-                {selectedBarTypes.has("additional") && (
-                    <Bar
-                        dataKey="additional"
-                        name="Add Charges"
-                        fill="#8884d8"
-                    />
-                )}
-                {selectedBarTypes.has("fuelLevy") && (
-                    <Bar dataKey="fuelLevy" name="Fuel Levy" fill="#82ca9d" />
-                )}
-                {selectedBarTypes.has("GST") && (
-                    <Bar dataKey="GST" name="GST" fill="#FFC658" />
-                )}
-            </BarChart>
-        </ChartWrapper>
+            children={
+                hasData ? (
+                    <BarChart
+                        data={getChartData}
+                        width={700}
+                        height={600}
+                        margin={{
+                            top: 0,
+                            right: 30,
+                            left: 0,
+                            bottom: 5,
+                        }}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                        <YAxis
+                            tick={{ fontSize: 12 }}
+                            tickFormatter={(v) =>
+                                `$${formatNumberWithCommas(v)}`
+                            }
+                            angle={-45}
+                        />
+                        <Tooltip
+                            contentStyle={{
+                                fontSize: 12,
+                                backgroundColor: "white",
+                                borderRadius: 8,
+                            }}
+                            formatter={(value) => `$${value.toLocaleString()}`}
+                        />
+                        <Legend
+                            verticalAlign="top"
+                            height={50}
+                            fontSize={10}
+                            className="!text-sm"
+                            wrapperStyle={{ fontSize: 12 }}
+                            onClick={(e) => handleLegendClick(e.dataKey)}
+                        />
+                        {selectedBarTypes.has("cost") && (
+                            <Bar dataKey="cost" name="Cost" fill="#ff7300" />
+                        )}
+                        {selectedBarTypes.has("additional") && (
+                            <Bar
+                                dataKey="additional"
+                                name="Add Charges"
+                                fill="#8884d8"
+                            />
+                        )}
+                        {selectedBarTypes.has("fuelLevy") && (
+                            <Bar
+                                dataKey="fuelLevy"
+                                name="Fuel Levy"
+                                fill="#82ca9d"
+                            />
+                        )}
+                        {selectedBarTypes.has("GST") && (
+                            <Bar dataKey="GST" name="GST" fill="#FFC658" />
+                        )}
+                    </BarChart>
+                ) : (
+                    <NoData />
+                )
+            }
+        ></ChartWrapper>
     );
 }
 

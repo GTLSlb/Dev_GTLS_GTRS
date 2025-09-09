@@ -5,6 +5,7 @@ import { dummySpendData } from "../assets/js/dataHandler";
 import { useDurationData } from "../assets/js/useDurationData";
 import { useMemo, useState } from "react";
 import { Divider, Select, SelectItem } from "@heroui/react";
+import { NoData } from "../Comp/NoDataChart";
 
 function DemurrageCost() {
     const demmurageTypeOptions = [
@@ -115,9 +116,7 @@ function DemurrageCost() {
         return pieChartData.filter((entry) => selectedTypes.has(entry.name));
     }, [pieChartData, selectedTypes]);
 
-    const hasDemurrageData =
-        filteredPieChartData.length > 0 &&
-        filteredPieChartData.some((item) => item.value > 0);
+    const hasData = getChartData.length > 0;
 
     return (
         <ChartWrapper
@@ -161,7 +160,7 @@ function DemurrageCost() {
                 </>
             }
             children={
-                hasDemurrageData ? (
+                hasData ? (
                     <PieChart className="" width={400} height={400}>
                         <Pie
                             data={filteredPieChartData}
@@ -205,9 +204,7 @@ function DemurrageCost() {
                         />
                     </PieChart>
                 ) : (
-                    <div className="flex justify-center items-center h-[300px] text-gray-500">
-                        No Demurrage Data Available for the Selected Period.
-                    </div>
+                    <NoData />
                 )
             }
         />

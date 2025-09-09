@@ -5,6 +5,7 @@ import { dummySpendData } from "../assets/js/dataHandler";
 import { useDurationData } from "../assets/js/useDurationData";
 import { useMemo, useState } from "react";
 import { Divider, Select, SelectItem } from "@heroui/react";
+import { NoData } from "../Comp/NoDataChart";
 
 export function ServiceTypeChart({filters, setFilters, setSelected}) {
     const COLORS = [
@@ -209,9 +210,7 @@ export function ServiceTypeChart({filters, setFilters, setSelected}) {
                         />
                     </PieChart>
                 ) : (
-                    <div className="flex justify-center items-center h-[300px] text-gray-500">
-                        No Service Type Data Available for the Selected Period.
-                    </div>
+                    <NoData />
                 )
             }
         />

@@ -15,6 +15,7 @@ import { DurationFilter } from "./Card/DurationFilter";
 import { formatNumberWithCommas } from "@/CommonFunctions";
 import { Divider, Select, SelectItem } from "@heroui/react";
 import { useState } from "react";
+import { NoData } from "../Comp/NoDataChart";
 
 function CostByStateChart() {
     const stateOptions = [
@@ -41,6 +42,7 @@ function CostByStateChart() {
         new Set(stateOptions.map((option) => option.value))
     );
 
+    const hasData = getChartData.length > 0;
     return (
         <ChartWrapper
             title={"Spend By State"}
@@ -82,57 +84,63 @@ function CostByStateChart() {
                 </>
             }
             children={
-                <BarChart
-                    width={700}
-                    height={600}
-                    data={getChartData}
-                    margin={{
-                        top: 0,
-                        right: 20,
-                        bottom: 0,
-                        left: 0,
-                    }}
-                >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                    <YAxis
-                        tick={{ fontSize: 12 }}
-                        tickFormatter={(v) => `$${formatNumberWithCommas(v)}`}
-                        angle={-45}
-                    />
-                    <Tooltip
-                        contentStyle={{
-                            fontSize: 12,
-                            backgroundColor: "white",
-                            borderRadius: 8,
+                hasData ? (
+                    <BarChart
+                        width={700}
+                        height={600}
+                        data={getChartData}
+                        margin={{
+                            top: 0,
+                            right: 20,
+                            bottom: 0,
+                            left: 0,
                         }}
-                    />
-                    <Legend verticalAlign="top" height={50} />
-                    {selectedState.has("qld") && (
-                        <Bar
-                            dataKey="qld"
-                            stackId="a"
-                            name="QLD"
-                            fill="#8884d8"
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                        <YAxis
+                            tick={{ fontSize: 12 }}
+                            tickFormatter={(v) =>
+                                `$${formatNumberWithCommas(v)}`
+                            }
+                            angle={-45}
                         />
-                    )}
-                    {selectedState.has("nsw") && (
-                        <Bar
-                            dataKey="nsw"
-                            stackId="a"
-                            name="NSW"
-                            fill="#82ca9d"
+                        <Tooltip
+                            contentStyle={{
+                                fontSize: 12,
+                                backgroundColor: "white",
+                                borderRadius: 8,
+                            }}
                         />
-                    )}
-                    {selectedState.has("sa") && (
-                        <Bar
-                            dataKey="sa"
-                            stackId="a"
-                            name="SA"
-                            fill="#952988"
-                        />
-                    )}
-                </BarChart>
+                        <Legend verticalAlign="top" height={50} />
+                        {selectedState.has("qld") && (
+                            <Bar
+                                dataKey="qld"
+                                stackId="a"
+                                name="QLD"
+                                fill="#8884d8"
+                            />
+                        )}
+                        {selectedState.has("nsw") && (
+                            <Bar
+                                dataKey="nsw"
+                                stackId="a"
+                                name="NSW"
+                                fill="#82ca9d"
+                            />
+                        )}
+                        {selectedState.has("sa") && (
+                            <Bar
+                                dataKey="sa"
+                                stackId="a"
+                                name="SA"
+                                fill="#952988"
+                            />
+                        )}
+                    </BarChart>
+                ) : (
+                    <NoData />
+                )
             }
         />
     );

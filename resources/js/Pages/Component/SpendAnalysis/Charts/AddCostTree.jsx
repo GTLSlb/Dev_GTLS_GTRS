@@ -4,6 +4,7 @@ import { ChartWrapper } from "./Card/ChartWrapper";
 import { DurationFilter } from "./Card/DurationFilter";
 import { dummySpendData } from "../assets/js/dataHandler";
 import { useDurationData } from "../assets/js/useDurationData";
+import { NoData } from "../Comp/NoDataChart";
 
 const COLORS = [
     "#8889DD",
@@ -153,19 +154,22 @@ export default function AddCostTree({filters, setFilters, setSelected}) {
             }
             title={"Additional Charges Type"}
             children={
-                <Treemap
-                    width={700}
-                    height={600}
-                    data={treemapData}
-                    dataKey="totalCost"
-                    stroke="#fff"
-                    fill="#8884d8"
-                    animationDuration={500}
-                    onClick={(e)=> {setFilters({...filters, "additionalCosts": e.name}); setSelected("table")}}
-                    content={<CustomizedContent colors={COLORS} />}
-                >
-                    <Tooltip content={CustomTooltip} />
-                </Treemap>
+                treemapData.length === 0 ? (
+                    <NoData />
+                ) : (
+                    <Treemap
+                        width={700}
+                        height={600}
+                        data={treemapData}
+                        dataKey="totalCost"
+                        stroke="#fff"
+                        fill="#8884d8"
+                        animationDuration={500}
+                        content={<CustomizedContent colors={COLORS} />}
+                    >
+                        <Tooltip content={CustomTooltip} />
+                    </Treemap>
+                )
             }
         />
     );
