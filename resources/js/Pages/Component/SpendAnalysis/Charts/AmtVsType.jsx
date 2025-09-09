@@ -86,6 +86,7 @@ export function AmtVsType({ filters, setFilters, setSelected }) {
                         width={700}
                         height={600}
                         data={getChartData}
+                        onClick={(e)=>{setFilters({...filters, "date": e.activeLabel}); setSelected("table")}}
                         syncId="chart-sync-id" // Synchronize all axes
                     >
                         <CartesianGrid stroke="#f5f5f5" />

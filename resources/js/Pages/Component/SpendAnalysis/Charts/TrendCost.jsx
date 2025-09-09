@@ -87,6 +87,7 @@ export function TrendCost({ filters, setFilters, setSelected }) {
                     <LineChart
                         width={700}
                         height={600}
+                        onClick={(e)=>{setFilters({...filters, "date": e.activeLabel}); setSelected("table")}}
                         data={getChartData}
                         margin={{
                             right: 30,

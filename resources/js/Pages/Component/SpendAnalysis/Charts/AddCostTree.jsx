@@ -165,6 +165,7 @@ export default function AddCostTree({filters, setFilters, setSelected}) {
                         stroke="#fff"
                         fill="#8884d8"
                         animationDuration={500}
+                        onClick={(e)=> {setFilters({...filters, "additionalCosts": e.name}); setSelected("table")}}
                         content={<CustomizedContent colors={COLORS} />}
                     >
                         <Tooltip content={CustomTooltip} />

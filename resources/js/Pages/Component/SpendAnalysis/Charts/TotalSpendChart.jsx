@@ -115,6 +115,7 @@ function TotalSpendChart({filters, setFilters, setSelected}) {
                         data={getChartData}
                         width={700}
                         height={600}
+                        onClick={(e)=>{setFilters({...filters, "date": e.activeLabel}); setSelected("table")}}
                         margin={{
                             top: 0,
                             right: 30,
