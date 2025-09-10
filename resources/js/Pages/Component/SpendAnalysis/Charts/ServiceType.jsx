@@ -7,7 +7,7 @@ import { useMemo, useState } from "react";
 import { Divider, Select, SelectItem } from "@heroui/react";
 import { NoData } from "../Comp/NoDataChart";
 
-export function ServiceTypeChart({filters, setFilters, setSelected}) {
+export function ServiceTypeChart({ filters, setFilters, setSelected }) {
     const COLORS = [
         "#0088FE",
         "#00C49F",
@@ -182,7 +182,10 @@ export function ServiceTypeChart({filters, setFilters, setSelected}) {
                             outerRadius={100}
                             fill="#8884d8"
                             dataKey="value"
-                            onClick={(e)=>{setFilters({...filters, "service": e.name}); setSelected("table")}}
+                            onClick={(e) => {
+                                setFilters({ ...filters, service: e.name });
+                                setSelected("table");
+                            }}
                         >
                             {pieChartData.map((entry, index) => (
                                 <Cell

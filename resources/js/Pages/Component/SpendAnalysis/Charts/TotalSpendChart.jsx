@@ -11,7 +11,7 @@ import {
 import { ChartWrapper } from "./Card/ChartWrapper";
 import { Divider, Select, SelectItem } from "@heroui/react";
 import { useDurationData } from "../assets/js/useDurationData.js";
-import { dummySpendData } from "../assets/js/dataHandler";
+import { dummySpendData, getDateRange } from "../assets/js/dataHandler";
 import { DurationFilter } from "./Card/DurationFilter";
 import { formatNumberWithCommas } from "@/CommonFunctions";
 import { NoData } from "../Comp/NoDataChart";
@@ -40,6 +40,7 @@ function TotalSpendChart({ filters, setFilters, setSelected }) {
         selectedPeriodValue,
         selectedQuarterKey,
         setSelectedQuarterKey,
+        selectedYearValue,
     } = useDurationData(dummySpendData);
 
     const handleLegendClick = (dataKey) => {
@@ -68,6 +69,15 @@ function TotalSpendChart({ filters, setFilters, setSelected }) {
 
     const hasData = getChartData.length > 0;
 
+    const handleClick = (data) => {
+        // console.log(getDateRange(data.activeLabel, selectedYearValue));
+        setFilters({
+            ...filters,
+            dateStart: getDateRange(data.activeLabel, selectedYearValue).start,
+            dateEnd: getDateRange(data.activeLabel, selectedYearValue).end,
+        });
+        setSelected("table");
+    };
     return (
         <ChartWrapper
             title={"Total Spend"}
@@ -115,10 +125,7 @@ function TotalSpendChart({ filters, setFilters, setSelected }) {
                         data={getChartData}
                         width={700}
                         height={600}
-                        onClick={(e) => {
-                            console.log({ ...filters, date: e.activeLabel });
-                            setSelected("table");
-                        }}
+                        onClick={handleClick}
                         margin={{
                             top: 0,
                             right: 30,

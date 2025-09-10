@@ -16,42 +16,8 @@ import {
 import React from "react";
 import PropTypes from "prop-types";
 
-export default function AddModel({ isOpen, onOpenChange }) {
-    const information = [
-        {
-            codeRef: "Timeslot",
-            chargeRate: "10",
-            TotalCharge: "10.00",
-            quantity: 1,
-        },
-        {
-            codeRef: "DG",
-            chargeRate: "41.2",
-            TotalCharge: "41.20",
-            quantity: 1,
-        },
-        {
-            codeRef: "PLT DCKET",
-            chargeRate: "3.9",
-            TotalCharge: "3.90",
-            quantity: 1,
-        },
-        {
-            codeRef: "PUP DEMSEM",
-            chargeRate: "97.85",
-            TotalCharge: "32.29",
-            quantity: 0.33,
-        },
-        {
-            codeRef: "Labour",
-            chargeRate: "55",
-            TotalCharge: "27.50",
-            quantity: 0.5,
-        },
-    ];
-
-    const totalAmount = information.reduce((acc, item) => acc + parseFloat(item.TotalCharge), 0).toFixed(2);
-
+export default function AddModel({ isOpen, onOpenChange, selectedData }) {
+    const information = selectedData ? selectedData.additionalCost : [];
 
     return (
         <>
@@ -76,21 +42,24 @@ export default function AddModel({ isOpen, onOpenChange }) {
                                             <TableRow key={index}>
                                                 <TableCell>
                                                     <div className="flex gap-2 justify-left items-center">
-                                                        {item.codeRef}
+                                                        {item.name}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className="flex gap-2 justify-left items-center">
-                                                       $ {item.chargeRate}
+                                                        $ {item.chargeRate}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className="flex gap-2 justify-left items-center">
-                                                        {item.quantity}
+                                                        {item.quantity.toFixed(
+                                                            2
+                                                        )}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell className="font-semibold">
-                                                    $ {item.TotalCharge}
+                                                    $ {item.cost.toFixed(2)}
+                                                    
                                                 </TableCell>
                                             </TableRow>
                                         ))}
@@ -99,7 +68,7 @@ export default function AddModel({ isOpen, onOpenChange }) {
                                 <Divider />
                                 <div className="flex justify-between pl-5 pr-10">
                                     <span>Total</span>
-                                    <span>$ {totalAmount}</span>
+                                    <span>$ {selectedData ? selectedData.additional : "0.00"}</span>
                                 </div>
                             </ModalBody>
                             <ModalFooter>

@@ -1,6 +1,10 @@
 import AddModel from "./AddModel";
 import { useDisclosure } from "@heroui/react";
-import { formatDate, formatDateToExcel } from "@/CommonFunctions";
+import {
+    formatDate,
+    formatDateToExcel,
+    formatNumberWithCommas,
+} from "@/CommonFunctions";
 import TableStructure from "@/Components/TableStructure";
 import React, {
     useCallback,
@@ -50,7 +54,7 @@ function CostTable({ filters }) {
 
     const [filteredData, setFilteredData] = useState(chartsData);
     const [filtersValue, setFiltersValue] = useState(() =>
-        getSpendAnalysisTable()
+        getSpendAnalysisTable(filters)
     );
     const [selectedRow, setSelectedRow] = useState(null);
 
@@ -66,12 +70,11 @@ function CostTable({ filters }) {
         [chartsData]
     );
 
-    console.log(dummySpendData);
     // Updated columns for new data structure
     const columns = useMemo(
         () => [
             {
-                name: "formattedDate",
+                name: "date",
                 header: "Date",
                 headerAlign: "center",
                 textAlign: "center",
@@ -81,7 +84,10 @@ function CostTable({ filters }) {
                 filterable: true,
                 filterEditor: DateFilter,
                 render: ({ value }) => {
-                    return value;
+                    return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                        "Invalid date"
+                        ? ""
+                        : moment(value).format("DD-MM-YYYY hh:mm A");
                 },
             },
             {
@@ -243,8 +249,8 @@ function CostTable({ filters }) {
                 defaultWidth: 170,
                 filterEditor: NumberFilter,
                 render: ({ value }) => (
-                    <div className="font-semibold text-green-600">
-                        ${value?.toLocaleString() || "0"}
+                    <div className="font-black text-green-600">
+                        ${formatNumberWithCommas(value) || "0"}
                     </div>
                 ),
             },

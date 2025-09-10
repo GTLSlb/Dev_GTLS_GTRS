@@ -9,7 +9,7 @@ import {
     Legend,
 } from "recharts";
 import { DurationFilter } from "./Card/DurationFilter";
-import { dummySpendData } from "../assets/js/dataHandler";
+import { dummySpendData, getDateRange } from "../assets/js/dataHandler";
 import { useDurationData } from "../assets/js/useDurationData";
 import { formatNumberWithCommas } from "@/CommonFunctions";
 import { Divider, Select, SelectItem } from "@heroui/react";
@@ -34,12 +34,22 @@ export function TrendCost({ filters, setFilters, setSelected }) {
         selectedPeriodValue,
         selectedQuarterKey,
         setSelectedQuarterKey,
+        selectedYearValue,
     } = useDurationData(dummySpendData);
 
     const [selectedCostType, setSelectedCostType] = useState(
         new Set(costTypeOptions.map((option) => option.value))
     );
 
+    const handleClick = (data) => {
+        // console.log(getDateRange(data.activeLabel, selectedYearValue));
+        setFilters({
+            ...filters,
+            dateStart: getDateRange(data.activeLabel, selectedYearValue).start,
+            dateEnd: getDateRange(data.activeLabel, selectedYearValue).end,
+        });
+        setSelected("table");
+    };
     return (
         <ChartWrapper
             title={"Spend Trend"}
@@ -87,7 +97,7 @@ export function TrendCost({ filters, setFilters, setSelected }) {
                     <LineChart
                         width={700}
                         height={600}
-                        onClick={(e)=>{setFilters({...filters, "date": e.activeLabel}); setSelected("table")}}
+                        onClick={handleClick}
                         data={getChartData}
                         margin={{
                             right: 30,

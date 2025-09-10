@@ -1817,12 +1817,16 @@ export const getFiltersChartsTable = (chartFilter) => {
     ];
 };
 
-export const getSpendAnalysisTable = () => {
+export const getSpendAnalysisTable = (chartFilter) => {
     return [
         {
             name: "date",
             operator: "inrange",
             type: "date",
+            value: {
+                start: chartFilter?.dateStart,
+                end: chartFilter?.dateEnd,
+            },
         },
         {
             name: "formattedDate",
@@ -1895,7 +1899,7 @@ export const getSpendAnalysisTable = () => {
             name: "serviceType",
             operator: "inlist",
             type: "select",
-            value: null,
+            value: chartFilter.service ? chartFilter?.service : null,
         },
         {
             name: "weight",

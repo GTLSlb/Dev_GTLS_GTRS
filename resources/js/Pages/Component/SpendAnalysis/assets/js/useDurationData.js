@@ -257,6 +257,7 @@ export function useDurationData(dummySpendData) {
         setSelectedQuarterKey,
         availableYears,
         selectedPeriodValue,
+        selectedYearValue,
         months,
         quarters
     };

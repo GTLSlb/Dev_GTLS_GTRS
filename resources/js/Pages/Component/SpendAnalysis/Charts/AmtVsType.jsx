@@ -10,7 +10,7 @@ import {
     YAxis,
 } from "recharts";
 import { DurationFilter } from "./Card/DurationFilter";
-import { dummySpendData } from "../assets/js/dataHandler";
+import { dummySpendData, getDateRange } from "../assets/js/dataHandler";
 import { useDurationData } from "../assets/js/useDurationData";
 import { Divider, Select, SelectItem } from "@heroui/react";
 import { useState } from "react";
@@ -33,11 +33,22 @@ export function AmtVsType({ filters, setFilters, setSelected }) {
         selectedPeriodValue,
         selectedQuarterKey,
         setSelectedQuarterKey,
+        selectedYearValue
     } = useDurationData(dummySpendData);
 
     const [selectedCosType, setSelectedCosType] = useState(
         new Set(cosTypeOptions.map((option) => option.value))
     );
+
+    const handleClick = (data) => {
+        // console.log(getDateRange(data.activeLabel, selectedYearValue));
+        setFilters({
+            ...filters,
+            dateStart: getDateRange(data.activeLabel, selectedYearValue).start,
+            dateEnd: getDateRange(data.activeLabel, selectedYearValue).end,
+        });
+        setSelected("table");
+    };
     return (
         <ChartWrapper
             title={"Spend vs Type"}
@@ -86,7 +97,7 @@ export function AmtVsType({ filters, setFilters, setSelected }) {
                         width={700}
                         height={600}
                         data={getChartData}
-                        onClick={(e)=>{setFilters({...filters, "date": e.activeLabel}); setSelected("table")}}
+                        onClick={handleClick}
                         syncId="chart-sync-id" // Synchronize all axes
                     >
                         <CartesianGrid stroke="#f5f5f5" />
