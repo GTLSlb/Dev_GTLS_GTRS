@@ -31,8 +31,8 @@ export default function FailedCons({
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [reason, setReason] = useState();
     const handleEditClick = (reason) => {
-        setReason(reason);
         setIsModalOpen(!isModalOpen);
+        setReason(reason);
     };
 
     const excludedDebtorIds = [1514, 364, 247, 246, 245, 244, 1851];

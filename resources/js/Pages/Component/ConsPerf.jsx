@@ -24,8 +24,6 @@ export default function ConsPerf({
     const [selectedConsignment, setSelectedConsignment] = useState("");
 
     useEffect(() => {
-        console.log("oldestDate", oldestDate);
-        console.log("latestDate", latestDate);
         setSDate(oldestDate);
         setEDate(latestDate);
     }, []);
@@ -104,33 +102,26 @@ export default function ConsPerf({
         "Delivered Date",
         "Total Weight",
         "Despatch Date",
-        "Fuel levy",
+        "Fuel Levy",
         "Nett Amount",
-        "Rate Amount",
+        "Rated Amount",
         "Sender Name",
         "Sender Suburb",
         "Sender Reference",
         "Sender Zone",
-        "Sender Postcode",
+        "Sender PostCode",
         "Receiver Name",
         "Receiver Suburb",
         "Receiver Reference",
         "Receiver Zone",
-        "Receiver Postcode",
+        "Receiver PostCode",
     ];
+
+    console.log("filteredData", filteredData);
 
     function handleDownloadExcel() {
         // Get the selected columns or use all columns if none are selected
         let selectedColumns = headers; // Use all columns
-
-        // Helper: convert JS Date to timezone-neutral Excel serial
-        const dateToExcelSerial = (date) => {
-            if (!(date instanceof Date) || isNaN(date)) return "";
-            return (
-                (date.getTime() - date.getTimezoneOffset() * 60000) / 86400000 +
-                25569
-            );
-        };
 
         // Extract the data for the selected columns
         const data = filteredData.map((person) =>
@@ -174,6 +165,9 @@ export default function ConsPerf({
                         acc[columnKey] = person[columnKey];
                 }
 
+                console.log("acc", acc);
+                console.log("columnKey", columnKey);
+                
                 return acc;
             }, {})
         );

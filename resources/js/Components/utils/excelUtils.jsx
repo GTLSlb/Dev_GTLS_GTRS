@@ -100,7 +100,7 @@ export const exportToExcel = (
 
     // Set column widths
     worksheet.columns = newSelectedColumns.map(() => ({
-        width: 20,
+        width: 25,
     }));
 
     // Generate and save the Excel file

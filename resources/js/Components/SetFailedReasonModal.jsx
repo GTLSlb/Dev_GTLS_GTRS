@@ -170,18 +170,18 @@ export default function SetFailedReasonModal({
     };
 
     const handlePopUpClose = () => {
-        setReason(null);
-        setFormData({
-            consignment: null,
-            note: "",
-            resolution: "",
-            selectedReason: "",
-            selectedReference: "2",
-            selectedState: "1",
-            selectedDepartment: "1",
-            occurredAt: "",
-        });
         handleClose();
+        // setReason(null);
+        // setFormData({
+        //     consignment: null,
+        //     note: "",
+        //     resolution: "",
+        //     selectedReason: "",
+        //     selectedReference: "2",
+        //     selectedState: "1",
+        //     selectedDepartment: "1",
+        //     occurredAt: "",
+        // });
     };
 
     // Convert datetime-local format
