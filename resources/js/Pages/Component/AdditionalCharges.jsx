@@ -63,6 +63,7 @@ export default function AdditionalCharges({
         const customCellHandlers = {
             DespatchDateTime: (value) =>
                 value ? formatDateToExcel(value) : "",
+            FuelLevyAmountRef: (value) => (value ? value : 0),
         };
 
         exportToExcel(

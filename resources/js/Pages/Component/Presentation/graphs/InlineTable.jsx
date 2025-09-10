@@ -1,11 +1,9 @@
-import React, { useState, useCallback, useEffect, useContext } from "react";
-import PropTypes from "prop-types";
+import { useRef, useState, useCallback, useEffect, useMemo, useContext } from "react";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
 import axios from "axios";
 import "../../../../../css/graphTable.css";
-import { AlertToast } from "@/permissions";
-import { ToastContainer } from "react-toastify";
+import PropTypes from "prop-types";
 import { CustomContext } from "@/CommonContext";
 
 function InlineTable({
@@ -15,11 +13,13 @@ function InlineTable({
     selectedReceiver,
 }) {
     const { Token, user, url } = useContext(CustomContext);
-    const jsonData = graphData;
+    const [jsonData] = useState(graphData);
     const [localGraphData, setLocalGraphData] = useState(graphData);
+    const [validationErrors, setValidationErrors] = useState({});
+    const recordMapRef = useRef({});
 
     useEffect(() => {
-        setLocalGraphData(graphData);
+        setLocalGraphData(graphData); // Sync with the initial data or props
     }, [graphData]);
 
     const formatDateToColumnName = (dateString) => {
@@ -43,16 +43,102 @@ function InlineTable({
         return `${month} ${year}`;
     };
 
-    const columns = [
-        { name: "metric", header: "", defaultFlex: 1, minWidth: 100 },
-    ];
-    const originalDataTemplate = {};
+    const { columns, originalData } = useMemo(() => {
+        const columns = [
+            { name: "metric", header: "", defaultFlex: 1, minWidth: 100 },
+        ];
+        const originalDataTemplate = {};
+        const newRecordMap = {};
 
-    const recordMap = {};
+        jsonData.forEach((item) => {
+            const columnName = formatDateToColumnName(item.MonthDate);
+            columns.push({
+                name: columnName,
+                header: columnName,
+                defaultFlex: 1,
+                minWidth: 100,
+                sortable: false,
+                editor: CustomNumericEditor,
+
+                editable: (editValue, cellProps) => {
+                    return Promise.resolve(
+                        cellProps.data.metric !== "Ontime %" &&
+                            cellProps.data.metric !== "POD %"
+                    );
+                },
+
+                render: ({ value }) => {
+                    return <div className="font-normal">{value}</div>;
+                },
+            });
+            originalDataTemplate[columnName] = "";
+        });
+
+        const originalData = [
+            { ...originalDataTemplate, metric: "Total" },
+            { ...originalDataTemplate, metric: "Total Fails" },
+            { ...originalDataTemplate, metric: "Total NO POD" },
+            { ...originalDataTemplate, metric: "KPI BenchMark" },
+            { ...originalDataTemplate, metric: "Ontime %" },
+            { ...originalDataTemplate, metric: "POD %" },
+        ];
+
+        jsonData.forEach((item) => {
+            const columnName = formatDateToColumnName(item.MonthDate);
+            if (item.Record && item.Record.length > 0) {
+                const record = item.Record[0];
+                newRecordMap[columnName] = { ...record };
+                originalData[0][columnName] = record.TotalCons || 0;
+                originalData[1][columnName] = record.TotalFails || 0;
+                originalData[2][columnName] = record.TotalNoPod || 0;
+                originalData[3][columnName] =
+                    record.KpiBenchMark != null
+                        ? `${parseFloat(record.KpiBenchMark).toFixed(2)}%`
+                        : "";
+                originalData[4][columnName] =
+                    record.onTimePercentage != null
+                        ? `${parseFloat(record.onTimePercentage).toFixed(2)}%`
+                        : "";
+                originalData[5][columnName] =
+                    record.PODPercentage != null
+                        ? `${parseFloat(record.PODPercentage).toFixed(2)}%`
+                        : "";
+            } else {
+                newRecordMap[columnName] = {
+                    RecordId: null,
+                    CustomerId: CustomerId,
+                    CustomerTypeId: selectedReceiver.value,
+                    ReportMonth: item.MonthDate,
+                    TotalCons: null,
+                    TotalFails: null,
+                    TotalNoPod: null,
+                    KpiBenchMark: null,
+                    onTimePercentage: null,
+                    PODPercentage: null,
+                };
+            }
+        });
+
+        // Update recordMapRef.current
+        recordMapRef.current = newRecordMap;
+
+        return { columns, originalData };
+    }, [jsonData, CustomerId, selectedReceiver.value]);
+
+    const [dataSource, setDataSource] = useState(originalData);
+
+    useEffect(() => {
+        setDataSource(originalData);
+    }, [originalData]);
 
     function CustomNumericEditor(props) {
-        const { value, onChange, onComplete, cellProps } = props;
+        const { value, onChange, onComplete, cellProps } = props; // Destructure relevant props
         const [inputValue, setInputValue] = useState(value);
+
+        // Update inputValue when the `value` prop changes
+        useEffect(() => {
+            setInputValue(value);
+        }, [value]);
 
         let max;
         if (cellProps.rowIndex === 0 || cellProps.rowIndex === 3) {
@@ -61,123 +147,66 @@ function InlineTable({
             max = dataSource[0][cellProps.id];
         }
 
-        const onValueChange = (e) => {
-            let newValue = e.target.value;
+        const validateAndAdjustValue = (valueToSave) => {
+            if (cellProps.rowIndex === 0) {
+                const comparisonValue1 =
+                    parseFloat(dataSource[1][cellProps.id]) || 0;
+                const comparisonValue2 =
+                    parseFloat(dataSource[2][cellProps.id]) || 0;
+                const minimumValue = Math.max(
+                    comparisonValue1,
+                    comparisonValue2
+                );
 
-            if (cellProps.rowIndex === 1 || cellProps.rowIndex === 2) {
-                if (max !== null && parseFloat(newValue) > max) {
-                    newValue = max;
+                // Ensure the value is at least the maximum of row 1 and row 2 values
+                if (valueToSave < minimumValue) {
+                    valueToSave = minimumValue;
                 }
             }
+            return valueToSave;
+        };
 
-            setInputValue(newValue);
-            onChange(newValue);
+        const onValueChange = (e) => {
+            let newValue = e.target.value;
+            if (cellProps.rowIndex === 1 || cellProps.rowIndex === 2) {
+                if (max !== null && parseFloat(newValue) > max) {
+                    newValue = max; // Set to max if it exceeds
+                }
+            }
+            setInputValue(newValue); // Update the local state
+            onChange(newValue); // Call onChange to update the grid's internal state
         };
 
         const handleComplete = () => {
-            onComplete(inputValue);
+            let valueToSave = parseFloat(inputValue);
+
+            // Adjust the value dynamically based on the validation logic
+            valueToSave = validateAndAdjustValue(valueToSave);
+
+            // Save the adjusted value and close the editor
+            onComplete(valueToSave);
         };
 
         const handleKeyDown = (event) => {
             if (event.key === "Enter") {
-                handleComplete();
+                handleComplete(); // Save and close editor on Enter key
             }
         };
 
         return (
             <input
                 type="number"
-                min={0}
-                max={null}
-                step={1}
+                min={0} // Minimum value
+                step={1} // Step size
+                max={max}
                 value={inputValue}
                 onChange={onValueChange}
-                onBlur={handleComplete}
-                onKeyDown={handleKeyDown}
+                onBlur={handleComplete} // Save and close editor when input loses focus
+                onKeyDown={handleKeyDown} // Save and close editor when Enter is pressed
                 style={{ width: "100%", height: "100%" }}
             />
         );
     }
-    CustomNumericEditor.propTypes = {
-        value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-        onChange: PropTypes.func,
-        onComplete: PropTypes.func,
-        cellProps: PropTypes.object,
-    };
-
-    jsonData.forEach((item) => {
-        const columnName = formatDateToColumnName(item.MonthDate);
-        columns.push({
-            name: columnName,
-            header: columnName,
-            defaultFlex: 1,
-            minWidth: 100,
-            sortable: false,
-            editor: CustomNumericEditor,
-
-            editable: (editValue, cellProps) => {
-                return (
-                    cellProps.data.metric !== "Ontime %" &&
-                    cellProps.data.metric !== "POD %"
-                );
-            },
-
-            render: ({ value }) => {
-                return <div className="font-normal">{value}</div>;
-            },
-        });
-        originalDataTemplate[columnName] = "";
-    });
-
-    const originalData = [
-        { ...originalDataTemplate, metric: "Total" },
-        { ...originalDataTemplate, metric: "Total Fails" },
-        { ...originalDataTemplate, metric: "Total NO POD" },
-        { ...originalDataTemplate, metric: "KPI BenchMark" },
-        { ...originalDataTemplate, metric: "Ontime %" },
-        { ...originalDataTemplate, metric: "POD %" },
-    ];
-
-    jsonData.forEach((item) => {
-        const columnName = formatDateToColumnName(item.MonthDate);
-        if (item.Record && item.Record.length > 0) {
-            const record = item.Record[0];
-            recordMap[columnName] = {
-                ...record,
-            };
-            originalData[0][columnName] = record.TotalCons || 0;
-            originalData[1][columnName] = record.TotalFails || 0;
-            originalData[2][columnName] = record.TotalNoPod || 0;
-            originalData[3][columnName] =
-                record.KpiBenchMark != null
-                    ? `${parseFloat(record.KpiBenchMark).toFixed(2)}%`
-                    : "";
-            originalData[4][columnName] =
-                record.onTimePercentage != null
-                    ? `${parseFloat(record.onTimePercentage).toFixed(2)}%`
-                    : "";
-            originalData[5][columnName] =
-                record.PODPercentage != null
-                    ? `${parseFloat(record.PODPercentage).toFixed(2)}%`
-                    : "";
-        } else {
-            recordMap[columnName] = {
-                RecordId: null,
-                CustomerId: CustomerId,
-                CustomerTypeId: selectedReceiver.value,
-                ReportMonth: item.MonthDate,
-                TotalCons: null,
-                TotalFails: null,
-                TotalNoPod: null,
-                KpiBenchMark: null,
-                onTimePercentage: null,
-                PODPercentage: null,
-            };
-        }
-    });
-
-    const [dataSource, setDataSource] = useState(originalData);
-    const [validationErrors, setValidationErrors] = useState({});
 
     const onEditComplete = useCallback(
         ({ value, columnId, rowIndex }) => {
@@ -191,28 +220,7 @@ function InlineTable({
 
             data[rowIndex][columnId] = formattedValue;
 
-            const baseRecord = { ...recordMap[columnId] };
-            let updatedField = "";
-
-            switch (rowIndex) {
-                case 0:
-                    updatedField = "TotalCons";
-                    break;
-                case 1:
-                    updatedField = "TotalFails";
-                    break;
-                case 2:
-                    updatedField = "TotalNoPod";
-                    break;
-                case 3:
-                    updatedField = "KpiBenchMark";
-                    break;
-                default:
-                    break;
-            }
-
-            baseRecord[updatedField] = parseFloat(value);
-
+            // Build baseRecord using RecordId from recordMapRef.current and field values from dataSource
             const fieldRowIndexMap = {
                 TotalCons: 0,
                 TotalFails: 1,
@@ -220,108 +228,83 @@ function InlineTable({
                 KpiBenchMark: 3,
             };
 
-            const fieldNames = [
-                "TotalCons",
-                "TotalFails",
-                "TotalNoPod",
-                "KpiBenchMark",
-            ];
-            fieldNames.forEach((field) => {
-                if (field !== updatedField) {
-                    if (baseRecord[field] == null || baseRecord[field] === "") {
-                        const rowIdx = fieldRowIndexMap[field];
-                        const fieldValue = dataSource[rowIdx][columnId];
-                        if (fieldValue != null && fieldValue !== "") {
-                            const parsedValue = parseFloat(
-                                fieldValue.toString().replace("%", "")
-                            );
-                            baseRecord[field] = parsedValue;
-                        }
-                    }
+            const baseRecord = {
+                // Retrieve RecordId from recordMapRef.current
+                RecordId: recordMapRef.current[columnId]?.RecordId || null,
+                CustomerId: CustomerId,
+                CustomerTypeId: selectedReceiver.value,
+                // Map columnId back to the original MonthDate
+                ReportMonth: jsonData.find(
+                    (item) =>
+                        formatDateToColumnName(item.MonthDate) === columnId
+                )?.MonthDate,
+            };
+
+            // Extract field values from dataSource
+            Object.entries(fieldRowIndexMap).forEach(([field, idx]) => {
+                let fieldValue = data[idx][columnId];
+                if (fieldValue != null && fieldValue !== "") {
+                    fieldValue = parseFloat(
+                        fieldValue.toString().replace("%", "")
+                    );
+                    baseRecord[field] = fieldValue;
+                } else {
+                    baseRecord[field] = null;
                 }
             });
 
-            // If TotalCons is set to 0, reset TotalFails and TotalNoPod to 0 as well
-            if (baseRecord.TotalCons === 0) {
-                baseRecord.TotalFails = 0;
-                baseRecord.TotalNoPod = 0;
-                baseRecord.onTimePercentage = "";
-                baseRecord.PODPercentage = "";
-
-                // Update the data source to reflect these changes visually
-                data[1][columnId] = 0; // TotalFails row
-                data[2][columnId] = 0; // TotalNoPod row
-                data[4][columnId] = ""; // Ontime % row
-                data[5][columnId] = ""; // POD % row
-            } else if (baseRecord.TotalCons && baseRecord.TotalCons > 0) {
-                // Only calculate percentages if TotalCons is greater than 0
-                if (
-                    baseRecord.TotalFails != null &&
-                    baseRecord.TotalFails !== "" &&
-                    !Number.isNaN(baseRecord.TotalFails)
-                ) {
-                    baseRecord.onTimePercentage = (
-                        ((baseRecord.TotalCons - baseRecord.TotalFails) /
-                            baseRecord.TotalCons) *
-                        100
-                    ).toFixed(2);
-                } else {
-                    baseRecord.onTimePercentage = "";
-                }
-
-                if (
-                    baseRecord.TotalNoPod != null &&
-                    baseRecord.TotalNoPod !== "" &&
-                    !Number.isNaN(baseRecord.TotalNoPod)
-                ) {
-                    baseRecord.PODPercentage = (
-                        ((baseRecord.TotalCons - baseRecord.TotalNoPod) /
-                            baseRecord.TotalCons) *
-                        100
-                    ).toFixed(2);
-                } else {
-                    baseRecord.PODPercentage = "";
-                }
-
-                // Update the percentage display in the data source
-                data[4][columnId] = baseRecord.onTimePercentage
-                    ? `${baseRecord.onTimePercentage}%`
-                    : "";
-                data[5][columnId] = baseRecord.PODPercentage
-                    ? `${baseRecord.PODPercentage}%`
-                    : "";
+            // Compute percentages
+            if (baseRecord.TotalCons && baseRecord.TotalCons !== 0) {
+                baseRecord.onTimePercentage =
+                    baseRecord.TotalFails != null
+                        ? (
+                              ((baseRecord.TotalCons - baseRecord.TotalFails) /
+                                  baseRecord.TotalCons) *
+                              100
+                          ).toFixed(2)
+                        : "";
+                baseRecord.PODPercentage =
+                    baseRecord.TotalNoPod != null
+                        ? (
+                              ((baseRecord.TotalCons - baseRecord.TotalNoPod) /
+                                  baseRecord.TotalCons) *
+                              100
+                          ).toFixed(2)
+                        : "";
             } else {
-                // When TotalCons is null, empty, or NaN, clear everything
                 baseRecord.onTimePercentage = "";
                 baseRecord.PODPercentage = "";
-                data[4][columnId] = "";
-                data[5][columnId] = "";
             }
 
-            // Update validation - allow TotalCons = 0 as valid, and when TotalCons = 0,
-            // TotalFails and TotalNoPod will also be 0 (which is valid)
+            data[4][columnId] = baseRecord.onTimePercentage
+                ? `${baseRecord.onTimePercentage}%`
+                : "";
+            data[5][columnId] = baseRecord.PODPercentage
+                ? `${baseRecord.PODPercentage}%`
+                : "";
+
+            // Perform validation
             if (
                 baseRecord.TotalCons == null ||
                 baseRecord.TotalCons === "" ||
                 Number.isNaN(baseRecord.TotalCons) ||
-                baseRecord.TotalCons < 0 ||
-                (baseRecord.TotalCons > 0 &&
-                    (baseRecord.TotalFails == null ||
-                        baseRecord.TotalFails === "" ||
-                        Number.isNaN(baseRecord.TotalFails) ||
-                        baseRecord.TotalFails < 0 ||
-                        baseRecord.TotalNoPod == null ||
-                        baseRecord.TotalNoPod === "" ||
-                        Number.isNaN(baseRecord.TotalNoPod) ||
-                        baseRecord.TotalNoPod < 0)) ||
+                baseRecord.TotalFails == null ||
+                baseRecord.TotalFails === "" ||
+                Number.isNaN(baseRecord.TotalFails) ||
+                baseRecord.TotalNoPod == null ||
+                baseRecord.TotalNoPod === "" ||
+                Number.isNaN(baseRecord.TotalNoPod) ||
                 baseRecord.KpiBenchMark == null ||
                 baseRecord.KpiBenchMark === "" ||
-                Number.isNaN(baseRecord.KpiBenchMark)
+                Number.isNaN(baseRecord.KpiBenchMark) ||
+                baseRecord.TotalCons < baseRecord.TotalFails ||
+                baseRecord.TotalCons < baseRecord.TotalNoPod
             ) {
                 setValidationErrors((prev) => ({
                     ...prev,
                     [`${columnId}`]: true,
                 }));
+                setDataSource(data); // Update the data source with the new edits
                 return;
             } else {
                 setValidationErrors((prev) => ({
@@ -330,7 +313,8 @@ function InlineTable({
                 }));
             }
 
-            recordMap[columnId] = baseRecord;
+            // Update dataSource before sending the request
+            setDataSource(data);
 
             axios
                 .post(`${url}Add/KpiPackRecord`, baseRecord, {
@@ -339,24 +323,31 @@ function InlineTable({
                         Authorization: `Bearer ${Token}`,
                     },
                 })
-                .then(() => {
+                .then((res) => {
+                    const { RecordId } = res.data;
+                    if (!RecordId || RecordId === 0) {
+                        throw new Error("Invalid RecordId returned.");
+                    }
+
+                    const updatedRecord = { ...baseRecord, RecordId: RecordId };
+
+                    // Update recordMapRef.current with the latest RecordId and field values
+                    recordMapRef.current[columnId] = updatedRecord;
+
                     const updatedData = updateLocalData(
                         localGraphData,
-                        baseRecord
+                        updatedRecord
                     );
-
                     setLocalGraphData(updatedData);
                     setGraphData(updatedData);
                 })
                 .catch((err) => {
-                    console.error(err);
-                    AlertToast(err.response.data.Message, 2);
+                    console.error("Error updating recordMap:", err);
                 });
-
-            setDataSource(data);
         },
-        [dataSource, localGraphData]
+        [dataSource, url]
     );
+
     const updateLocalData = (records, newRecord) => {
         const newMonthDate = newRecord.ReportMonth;
         const updatedRecords = records.map((monthData) => {
@@ -370,7 +361,7 @@ function InlineTable({
                     Record: [
                         {
                             ...existingRecord,
-                            ...newRecord,
+                            ...newRecord, // Merge newRecord with existingRecord
                         },
                     ],
                 };
@@ -385,9 +376,7 @@ function InlineTable({
         onRender: (cellProps, { value }) => {
             const hasError = validationErrors[cellProps.name];
             const isMetricColumn = col.name === "metric";
-
             cellProps.style.background = hasError ? "#f6d3d0" : "transparent";
-
             return (
                 <div
                     style={{
@@ -396,34 +385,27 @@ function InlineTable({
                         backgroundColor: hasError ? "#f6d3d0" : "transparent",
                     }}
                 >
-                    <div className="test">{value}</div>
+                    <div className="test"> {value}</div>
                 </div>
             );
         },
     }));
 
-    const editableColumns = modifiedColumns.map((col) => ({
-        ...col,
-    }));
-
     return (
         <div className="mt-10">
-            {/* Added toast container since it wasn't showing */}
-            <ToastContainer />
-
             <ReactDataGrid
                 idProperty="metric"
                 style={{ minHeight: 284, fontWeight: "bold" }}
                 onEditComplete={onEditComplete}
-                columns={editableColumns}
+                columns={modifiedColumns}
                 showZebraRows={false}
                 dataSource={dataSource}
                 showColumnMenuTool={false}
-                editable={true}
             />
         </div>
     );
 }
+
 InlineTable.propTypes = {
     graphData: PropTypes.array,
     url: PropTypes.string,

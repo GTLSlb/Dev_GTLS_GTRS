@@ -488,6 +488,10 @@ export default function ProductStockTable() {
                     return item["quantity"]
                         ? item["quantity"].toLocaleString()
                         : "";
+                } if (key === "Weight") {
+                    return item["Weight"]
+                        ? item["Weight"]
+                        : 0;
                 }
                 // Return the item's value for other fields
                 return item[key] || "";
