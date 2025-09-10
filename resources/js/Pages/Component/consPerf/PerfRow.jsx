@@ -7,7 +7,7 @@ import Amount from "./Amount";
 import Sender from "./Sender";
 import Reciever from "./Reciever";
 
-export default function Navbar({item}) {
+export default function PerfRow({item}) {
 
     const tabs = [
         {
@@ -123,6 +123,6 @@ export default function Navbar({item}) {
     );
 }
 
-Navbar.propTypes = {
+PerfRow.propTypes = {
     item: PropTypes.object,
 };

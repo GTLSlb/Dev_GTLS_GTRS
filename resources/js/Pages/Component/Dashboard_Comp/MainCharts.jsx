@@ -64,6 +64,7 @@ export default function MainCharts({
     sideBarToggle,
     chartName,
     setChartName,
+    collapsed,
 }) {
     const { userPermissions } = useContext(CustomContext);
     const [SDate, setSDate] = useState(getOldestDespatchDate(chartsData));
@@ -188,12 +189,10 @@ export default function MainCharts({
         selectedReceiverNames.forEach((name) => receiversSet.add(name));
 
         // Convert Set to an array for dropdown options
-        const updatedReceiverOptions = Array.from(receiversSet).map(
-            (name) => ({
-                value: name,
-                label: name,
-            })
-        );
+        const updatedReceiverOptions = Array.from(receiversSet).map((name) => ({
+            value: name,
+            label: name,
+        }));
 
         setFilteredReceivers(updatedReceiverOptions);
     };
@@ -203,14 +202,12 @@ export default function MainCharts({
     }, [accData, selectedReceiver, selectedStates]);
 
     useEffect(() => {
-        // Introduce a delay before changing the key
         const timeout = setTimeout(() => {
-            setGridKey(sideBarToggle ? "sidebar-open" : "sidebar-closed");
-        }, 300); // Delay in milliseconds (e.g., 300ms)
+            setGridKey(collapsed ? "sidebar-open" : "sidebar-closed");
+        }, 200);
 
-        // Cleanup timeout on unmount or when sideBarToggle changes
         return () => clearTimeout(timeout);
-    }, [sideBarToggle]);
+    }, [collapsed]);
 
     const [chartFilter, setChartFilter] = useState({
         consStatus: "",
@@ -222,6 +219,14 @@ export default function MainCharts({
     });
 
     const [showTable, setShowTable] = useState(false);
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            setTimeout(() => {
+                window.dispatchEvent(new Event("resize"));
+            }, 350);
+        }
+    }, [gridKey]);
 
     if (chartsData.length > 0) {
         return (
@@ -384,7 +389,7 @@ export default function MainCharts({
                                     </div>
                                 </div>
                             </div>
-                            <div className="layout-container">
+                            <div className="layout-container" key={gridKey}>
                                 <Charts
                                     layout={layout}
                                     filteredData={filteredData}
@@ -396,7 +401,7 @@ export default function MainCharts({
                                 />
                             </div>
                         </>
-                    ) 
+                    )
                 ) : (
                     <div className=" h-72 flex items-center justify-center mt-5">
                         <div className="text-center flex justify-center flex-col">

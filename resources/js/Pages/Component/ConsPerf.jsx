@@ -1,29 +1,34 @@
-import React, { useState } from "react";
-import Navbar from "./consPerf/navbar";
-import notFound from "../../assets/pictures/NotFound.png";
-import { useEffect } from "react";
-import ReactPaginate from "react-paginate";
 import ExcelJS from "exceljs";
-import { saveAs } from "file-saver";
-import moment from "moment";
+import { useState } from "react";
+import { useEffect } from "react";
 import PropTypes from "prop-types";
-import { formatDateToExcel } from "@/CommonFunctions";
+import { saveAs } from "file-saver";
+import ReactPaginate from "react-paginate";
+import notFound from "../../assets/pictures/NotFound.png";
+import PerfRow from "./consPerf/PerfRow";
 
 export default function ConsPerf({
-    PerfData,
     EDate,
+    SDate,
     accData,
     setEDate,
-    SDate,
     setSDate,
+    PerfData,
     oldestDate,
     latestDate,
-    setSharedStartDate,
     setSharedEndDate,
+    setSharedStartDate,
 }) {
     const [currentPage, setCurrentPage] = useState(0);
     const [filteredData, setFilteredData] = useState(PerfData);
     const [selectedConsignment, setSelectedConsignment] = useState("");
+
+    useEffect(() => {
+        console.log("oldestDate", oldestDate);
+        console.log("latestDate", latestDate);
+        setSDate(oldestDate);
+        setEDate(latestDate);
+    }, []);
 
     const handleStartDateChange = (event) => {
         const value = event.target.value;
@@ -31,24 +36,22 @@ export default function ConsPerf({
         setSharedStartDate(value);
         filterData(value, EDate, selectedConsignment);
     };
-
     const handleEndDateChange = (event) => {
         const value = event.target.value;
         setEDate(value);
         setSharedEndDate(value);
         filterData(SDate, value, selectedConsignment);
     };
-
     const handleConsignmentChange = (value) => {
         setSelectedConsignment(value);
         filterData(SDate, EDate, value);
     };
-
     const filterData = (startDate, endDate, selectedConsignment) => {
         const intArray = accData?.map((str) => {
             const intValue = parseInt(str);
             return isNaN(intValue) ? 0 : intValue;
         });
+
         // Filter the data based on the start and end date filters
         const filtered = PerfData.filter((item) => {
             const chargeToMatch =
@@ -78,7 +81,7 @@ export default function ConsPerf({
 
     useEffect(() => {
         filterData(SDate, EDate, selectedConsignment);
-    }, [accData]);
+    }, [accData, SDate, EDate, selectedConsignment]);
 
     const PER_PAGE = 5;
 
@@ -264,7 +267,7 @@ export default function ConsPerf({
                                 type="date"
                                 name="from-date"
                                 onKeyDown={(e) => e.preventDefault()}
-                                value={SDate ? SDate : oldestDate}
+                                value={SDate}
                                 min={oldestDate}
                                 max={EDate}
                                 onChange={handleStartDateChange}
@@ -285,7 +288,7 @@ export default function ConsPerf({
                                 type="date"
                                 name="to-date"
                                 onKeyDown={(e) => e.preventDefault()}
-                                value={EDate ? EDate : latestDate}
+                                value={EDate}
                                 min={SDate}
                                 max={latestDate}
                                 onChange={handleEndDateChange}
@@ -337,7 +340,7 @@ export default function ConsPerf({
                                 </span>
                             </h3>
                         </div>
-                        <Navbar key={item.id} id={item.id} item={item} />
+                        <PerfRow key={item.id} id={item.id} item={item} />
                     </div>
                 ))
             ) : (

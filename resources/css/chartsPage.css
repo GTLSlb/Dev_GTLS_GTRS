@@ -1,3 +1,4 @@
 .layout-container {
-    max-height: max-content; /* Maximum height set to the viewport height */
+    width: 100%;
+    transition: width 0.3s ease;
 }

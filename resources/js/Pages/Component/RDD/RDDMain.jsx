@@ -10,12 +10,10 @@ import RDDReasons from "./RDDReasons";
 import { canViewRDDReasons } from "@/permissions";
 
 export default function RDDMain({
-    setActiveIndexGTRS,
     rddData,
     filterValue,
     setFilterValue,
     setrddData,
-    setIncidentId,
     accData,
     rddReasons,
     setrddReasons,
@@ -149,14 +147,12 @@ export default function RDDMain({
             label: "RDD Report",
             component: (
                 <RDDTable
-                    accData={accData}
                     rddData={rddData}
+                    accData={accData}
+                    rddReasons={rddReasons}
+                    setrddData={setrddData}
                     filterValue={filterValue}
                     setFilterValue={setFilterValue}
-                    setrddData={setrddData}
-                    setActiveIndexGTRS={setActiveIndexGTRS}
-                    setIncidentId={setIncidentId}
-                    rddReasons={rddReasons}
                 />
             ),
         },

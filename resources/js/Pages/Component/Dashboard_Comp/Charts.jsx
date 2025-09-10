@@ -48,6 +48,7 @@ function Charts({
         };
     }, []);
 
+    console.log("rerendering charts with gridKey:", gridKey)
     return (
         <ReactGridLayout
             key={gridKey}
@@ -55,7 +56,8 @@ function Charts({
             layout={layout}
             cols={cols}
             rowHeight={110}
-            width={1200}
+            // width={1200}
+            autoSize={true}
             isResizable={false}
             isDraggable={!isMobile}
         >

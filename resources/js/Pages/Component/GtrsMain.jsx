@@ -110,7 +110,6 @@ export default function GtrsMain({
     const latestDate = getLatestDespatchDate(consData);
     const [dataFromChild, setDataFromChild] = useState(null);
 
-
     const [sharedStartDate, setSharedStartDate] = useState(
         getOldestDespatchDate(consData)
     );
@@ -713,7 +712,7 @@ export default function GtrsMain({
         <div className="h-full">
             <div className="h-full">
                 {/* Left sidebar & main wrapper */}
-                <div className=" h-full flex">
+                <div className=" h-full flex transition-all duration-300">
                     {/* Start left column area with collapsing sidebar */}
                     <CollapseSidebar
                         setBroken={setBroken}
@@ -766,6 +765,7 @@ export default function GtrsMain({
                                                         userPermissions={
                                                             userPermissions
                                                         }
+                                                        collapsed={collapsed}
                                                     />
                                                 }
                                                 userPermissions={
@@ -880,9 +880,6 @@ export default function GtrsMain({
                                                 route="View_failedConsignment"
                                                 element={
                                                     <FailedConsMain
-                                                        oldestDate={oldestDate}
-                                                        latestDate={latestDate}
-                                                        url={url}
                                                         filterValue={
                                                             filtersFailed
                                                         }
@@ -892,23 +889,8 @@ export default function GtrsMain({
                                                         failedReasons={
                                                             failedReasons
                                                         }
-                                                        userPermissions={
-                                                            userPermissions
-                                                        }
                                                         accData={dataFromChild}
                                                         PerfData={PerfData}
-                                                        setactiveCon={
-                                                            setactiveCon
-                                                        }
-                                                        EDate={EDate}
-                                                        gtccrUrl={gtccrUrl}
-                                                        Token={Token}
-                                                        setEDate={setEDate}
-                                                        SDate={SDate}
-                                                        setSDate={setSDate}
-                                                        setPerfData={
-                                                            setPerfData
-                                                        }
                                                         setFailedReasons={
                                                             setFailedReasons
                                                         }
@@ -1036,12 +1018,6 @@ export default function GtrsMain({
                                                 route="View_RDD"
                                                 element={
                                                     <RDDMain
-                                                        oldestDate={oldestDate}
-                                                        latestDate={latestDate}
-                                                        userPermissions={
-                                                            userPermissions
-                                                        }
-                                                        url={url}
                                                         filterValue={filtersRDD}
                                                         setFilterValue={
                                                             setFiltersRDD
@@ -1049,17 +1025,6 @@ export default function GtrsMain({
                                                         accData={dataFromChild}
                                                         rddData={rddData}
                                                         setrddData={setrddData}
-                                                        debtorsData={
-                                                            debtorsData
-                                                        }
-                                                        setactiveCon={
-                                                            setactiveCon
-                                                        }
-                                                        EDate={EDate}
-                                                        setEDate={setEDate}
-                                                        SDate={SDate}
-                                                        Token={Token}
-                                                        setSDate={setSDate}
                                                         rddReasons={rddReasons}
                                                         setrddReasons={
                                                             setrddReasons
