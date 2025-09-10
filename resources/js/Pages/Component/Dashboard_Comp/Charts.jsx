@@ -48,7 +48,6 @@ function Charts({
         };
     }, []);
 
-    console.log("rerendering charts with gridKey:", gridKey)
     return (
         <ReactGridLayout
             key={gridKey}
