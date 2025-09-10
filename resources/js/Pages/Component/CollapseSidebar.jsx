@@ -366,7 +366,7 @@ export default function CollapseSidebar({
                                     }
                                 >
                                     <MenuIcon
-                                        className={"w-[0.1rem] h-[0.1rem]"}
+                                        className={"!w-[24px] !h-[24px]"}
                                     />
                                 </div>
                             </Button>
