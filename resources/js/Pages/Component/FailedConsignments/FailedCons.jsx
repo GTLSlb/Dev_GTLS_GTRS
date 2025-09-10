@@ -27,7 +27,7 @@ export default function FailedCons({
     setFilterValue,
     accData,
 }) {
-    const { url,Token, userPermissions } = useContext(CustomContext);
+    const { url, Token, userPermissions } = useContext(CustomContext);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [reason, setReason] = useState();
     const handleEditClick = (reason) => {
@@ -74,7 +74,7 @@ export default function FailedCons({
             headerAlign: "center",
         },
     ];
-     const reasonOptions = failedReasons?.map((reason) => ({
+    const reasonOptions = failedReasons?.map((reason) => ({
         id: reason.ReasonId,
         label: reason.ReasonName,
     }));
@@ -119,13 +119,10 @@ export default function FailedCons({
             group: "personalInfo",
             filterEditor: StringFilter,
             render: ({ value, data }) => {
-                return (
-                    <span
-                        className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => handleClick(data.CONSIGNMNENTID)}
-                    >
-                        {isDummyAccount(value)}
-                    </span>
+                return renderConsDetailsLink(
+                    userPermissions,
+                    value,
+                    data.ConsignmentID
                 );
             },
         },
@@ -178,7 +175,7 @@ export default function FailedCons({
             group: "senderInfo",
             filterEditor: StringFilter,
             render: ({ value }) => {
-                return isDummyAccount(value);
+                return value;
             },
         },
         {
@@ -191,7 +188,7 @@ export default function FailedCons({
             group: "senderInfo",
             filterEditor: StringFilter,
             render: ({ value }) => {
-                return isDummyAccount(value);
+                return value;
             },
         },
         {
@@ -232,7 +229,7 @@ export default function FailedCons({
             group: "receiverInfo",
             filterEditor: StringFilter,
             render: ({ value }) => {
-                return isDummyAccount(value);
+                return value;
             },
         },
         {
@@ -245,7 +242,7 @@ export default function FailedCons({
             group: "receiverInfo",
             filterEditor: StringFilter,
             render: ({ value }) => {
-                return isDummyAccount(value);
+                return value;
             },
         },
         {
@@ -524,7 +521,7 @@ export default function FailedCons({
         //     },
         // },
     ];
-    
+
     const newArray = columns.slice(0, -1);
     const [newColumns, setNewColumns] = useState();
 

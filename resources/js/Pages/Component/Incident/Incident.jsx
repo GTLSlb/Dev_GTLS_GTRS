@@ -129,7 +129,7 @@ export default function Incident({ gtccrUrl }) {
     useEffect(() => {
         getIncident();
     }, []);
-
+    
     return (
         <div className="relative p-5">
             {incident && filters && mainCauses ? (

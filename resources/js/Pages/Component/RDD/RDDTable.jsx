@@ -13,7 +13,11 @@ import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
-import { formatDateToExcel, renderConsDetailsLink } from "@/CommonFunctions";
+import {
+    formatDateToExcel,
+    renderConsDetailsLink,
+    renderIncidentDetailsLink,
+} from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import { CustomContext } from "@/CommonContext";
 
@@ -27,7 +31,7 @@ export default function RDDTable({
     rddReasons,
     accData,
 }) {
-    const {  url, userPermissions, Token } = useContext(CustomContext);
+    const { url, userPermissions, Token } = useContext(CustomContext);
     window.moment = moment;
     const updateLocalData = (id, reason, note) => {
         // Find the item in the local data with the matching id
@@ -176,17 +180,10 @@ export default function RDDTable({
             headerAlign: "center",
             textAlign: "center",
             render: ({ value, data }) => {
-                return (
-                    <span
-                        className="underline text-blue-500 hover:cursor-pointer"
-                        onClick={() => {
-                            setIncidentId(data.IncidentId);
-                            setActiveIndexGTRS(22);
-                        }}
-                    >
-                        {" "}
-                        {value}
-                    </span>
+                return renderIncidentDetailsLink(
+                    userPermissions,
+                    value,
+                    data.IncidentId
                 );
             },
             filterEditor: StringFilter,
@@ -444,4 +441,4 @@ RDDTable.propTypes = {
     setFilterValue: PropTypes.func,
     rddReasons: PropTypes.array,
     accData: PropTypes.array,
-};  
+};

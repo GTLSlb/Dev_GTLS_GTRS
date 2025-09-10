@@ -1,14 +1,23 @@
 import React from "react";
-import PropTypes from "prop-types";
-import LottieComponent from "./LottieComponent/LottieComponent";
+import LottieComponent from "@/Components/LottieComponent/LottieComponent";
 import Lock from "@/Components/LottieComponent/lock.json";
-import {NoAccessPage} from 'gtls-npm-libraries';
+import { NoAccessPage } from "gtls-npm-libraries";
+import { pca } from "@/CommonFunctions";
 
-function NoAccess() {
+function NoAccess({ user, setToken, setUserPermissions }) {
     return (
-       <NoAccessPage LottieComponent={LottieComponent} Lock={Lock}/>
+        <NoAccessPage
+            Lock={Lock}
+            LottieComponent={LottieComponent}
+            pca={pca}
+            appUrl={window.Laravel.appUrl}
+            appDomain={window.Laravel.appDomain}
+            user={user}
+            gtamUrl={window.Laravel.gtamUrl}
+            setUser={setUserPermissions}
+            setToken={setToken}
+        />
     );
 }
-
 
 export default NoAccess;

@@ -1,17 +1,17 @@
+import { pca } from "@/CommonFunctions";
+import { LogoutPage } from "gtls-npm-libraries";
 import React from "react";
 import PropTypes from "prop-types";
-import { clearMSALLocalStorage, pca } from "@/CommonFunctions";
-import { LogoutPage } from "gtls-npm-libraries";
-export default function Logout({ user, setToken, setUser }) {
+
+export default function Logout({ user, setToken, setUserPermissions }) {
     return (
         <LogoutPage
-            clearMSALLocalStorage={clearMSALLocalStorage}
             pca={pca}
             appUrl={window.Laravel.appUrl}
             appDomain={window.Laravel.appDomain}
-            currentUser={user}
+            user={user}
             gtamUrl={window.Laravel.gtamUrl}
-            setCurrentUser={setUser}
+            setUser={setUserPermissions}
             setToken={setToken}
         />
     );
@@ -20,5 +20,5 @@ export default function Logout({ user, setToken, setUser }) {
 Logout.propTypes = {
     user: PropTypes.object,
     setToken: PropTypes.func,
-    setUser: PropTypes.func,
+    setUserPermissions: PropTypes.func,
 };
