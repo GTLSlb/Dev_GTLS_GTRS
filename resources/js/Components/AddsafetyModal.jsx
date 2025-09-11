@@ -157,8 +157,6 @@ export default function SafetyModal({
                         : null,
                 };
 
-                console.log("Submitting data:", submitData);
-
                 // API call with enhanced error handling
                 const response = await axios.post(
                     `${url}Add/SafetyReport`,
@@ -167,17 +165,18 @@ export default function SafetyModal({
                         headers: {
                             UserId: user.UserId,
                             Authorization: `Bearer ${Token}`,
-                            'Content-Type': 'application/json'
+                            "Content-Type": "application/json",
                         },
                     }
                 );
 
                 // Handle successful response
                 if (response.status === 200 || response.status === 201) {
-                    console.log("API Response:", response.data);
-                    
                     // Update local data if function is provided
-                    if (updateLocalData && typeof updateLocalData === 'function') {
+                    if (
+                        updateLocalData &&
+                        typeof updateLocalData === "function"
+                    ) {
                         const updatedData = response.data || submitData;
                         updateLocalData(reportId, updatedData);
                     }
@@ -187,17 +186,20 @@ export default function SafetyModal({
                     AlertToast("Safety report saved successfully", 1);
 
                     // Force refresh the data - this is the key fix
-                    if (fetchData && typeof fetchData === 'function') {
-                        console.log("Forcing data refresh...");
+                    if (fetchData && typeof fetchData === "function") {
                         try {
                             // Wait for the fetchData to complete
                             await fetchData();
-                            console.log("Data refresh completed");
                         } catch (fetchError) {
-                            console.error("Error during data refresh:", fetchError);
+                            console.error(
+                                "Error during data refresh:",
+                                fetchError
+                            );
                         }
                     } else {
-                        console.warn("fetchData function not provided or not a function");
+                        console.warn(
+                            "fetchData function not provided or not a function"
+                        );
                     }
 
                     // Close modal after a short delay to allow data refresh
@@ -205,7 +207,9 @@ export default function SafetyModal({
                         handlePopUpClose();
                     }, 1000);
                 } else {
-                    throw new Error(`Unexpected response status: ${response.status}`);
+                    throw new Error(
+                        `Unexpected response status: ${response.status}`
+                    );
                 }
             } catch (error) {
                 console.error("Error saving safety report:", error);
@@ -224,7 +228,9 @@ export default function SafetyModal({
                     setError(errorMessage);
                     AlertToast(errorMessage, 2);
                 } else {
-                    const errorMessage = error.message || "Error occurred while saving the data. Please try again.";
+                    const errorMessage =
+                        error.message ||
+                        "Error occurred while saving the data. Please try again.";
                     setError(errorMessage);
                     AlertToast(errorMessage, 2);
                 }

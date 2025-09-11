@@ -26,6 +26,7 @@ const BasicColumnCharts = (props) => {
             style: {
                 fill: "#000000",
                 opacity: 1,
+                cursor: "pointer",
             },
         },
         xAxis: {
@@ -42,8 +43,26 @@ const BasicColumnCharts = (props) => {
                 alias: "Counter",
             },
         },
+        interactions: [
+            {
+                type: "element-selected",
+            },
+            {
+                type: "element-active",
+            },
+            {
+                type: "element-highlight",
+            },
+        ],
+        state: {
+            active: {
+                style: {
+                    cursor: "pointer",
+                },
+            },
+        },
         onReady: (plot) => {
-            plot.on("element:click", (event) => {
+            plot.on("element:dblclick", (event) => {
                 const { data } = event.data;
 
                 setChartName(chartTitle);

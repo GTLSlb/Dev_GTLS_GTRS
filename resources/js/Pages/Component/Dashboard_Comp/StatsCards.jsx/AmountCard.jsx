@@ -15,7 +15,7 @@ function AmountCard({ totalCost }) {
             <Divider />
             <CardBody>
                 <p className="w-full text-left text-sm">
-                    ${formatNumberWithCommas(totalCost)}
+                    $ {formatNumberWithCommas(totalCost)}
                 </p>
             </CardBody>
         </Card>

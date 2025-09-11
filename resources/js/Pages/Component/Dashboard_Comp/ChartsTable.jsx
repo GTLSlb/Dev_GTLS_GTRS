@@ -1,4 +1,4 @@
-import { formatDateToExcel, renderConsDetailsLink } from "@/CommonFunctions";
+import { formatDateToExcel, formatNumberWithCommas, renderConsDetailsLink } from "@/CommonFunctions";
 import TableStructure from "@/Components/TableStructure";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
@@ -45,7 +45,7 @@ function ChartsTable({
             id: false,
             label: "False",
         },
-    ].sort();;
+    ].sort();
 
     const DebtorNamesOptions = createNewLabelObjects(chartsData, "DebtorName");
     const ConsStatusOptions = createNewLabelObjects(chartsData, "ConsStatus");
@@ -175,6 +175,7 @@ function ChartsTable({
             headerAlign: "center",
             textAlign: "center",
             filterEditor: NumberFilter,
+            render: ({ value }) => `${formatNumberWithCommas(value)} T`,
         },
         {
             name: "NetAmount",
@@ -183,6 +184,7 @@ function ChartsTable({
             headerAlign: "center",
             textAlign: "center",
             filterEditor: NumberFilter,
+            render: ({ value }) => `$ ${formatNumberWithCommas(value)}`,
         },
         {
             name: "ConsStatus",
@@ -284,6 +286,8 @@ function ChartsTable({
         // Define custom cell handlers
         const customCellHandlers = {
             DespatchDate: (value) => formatDateToExcel(value),
+            TottalWeight: (value) => (typeof value === "number" ? value : 0),
+            NetAmount: (value) => (typeof value === "number" ? value : 0),
         };
 
         // Call the `exportToExcel` function

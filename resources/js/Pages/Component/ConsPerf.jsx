@@ -117,8 +117,6 @@ export default function ConsPerf({
         "Receiver PostCode",
     ];
 
-    console.log("filteredData", filteredData);
-
     function handleDownloadExcel() {
         // Get the selected columns or use all columns if none are selected
         let selectedColumns = headers; // Use all columns
@@ -164,10 +162,6 @@ export default function ConsPerf({
                     default:
                         acc[columnKey] = person[columnKey];
                 }
-
-                console.log("acc", acc);
-                console.log("columnKey", columnKey);
-                
                 return acc;
             }, {})
         );

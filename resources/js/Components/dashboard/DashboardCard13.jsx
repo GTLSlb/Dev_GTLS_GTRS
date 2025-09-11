@@ -91,8 +91,15 @@ const BasicPieCharts = (props) => {
                 type: "element-active",
             },
         ],
+        state: {
+            active: {
+                style: {
+                    cursor: "pointer",
+                },
+            },
+        },
         onReady: (plot) => {
-            plot.on("element:click", (event) => {
+            plot.on("element:dblclick", (event) => {
                 const { data } = event.data;
 
                 setChartName(chartTitle);

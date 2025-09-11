@@ -32,6 +32,10 @@ export const handleFilterTable = (gridRef, filteredData) => {
                 !(
                     type === "number" &&
                     (operator === "empty" || cellValue === 0)
+                ) &&
+                !(
+                    type === "select" &&
+                    (operator === "empty" || cellValue === 0)
                 )
             ) {
                 conditionMet = true;

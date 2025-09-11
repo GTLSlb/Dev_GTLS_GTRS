@@ -55,6 +55,8 @@ export default function GtrsCons({
                 return "";
             },
             POD: (value) => (value ? "True" : "False"),
+            TottalWeight: (value) => (typeof value === "number" ? value : 0),
+            NetAmount: (value) => (typeof value === "number" ? value : 0),
         };
         // Call the exportToExcel function
         exportToExcel(

@@ -19,7 +19,7 @@ import "../../../../css/swiper.css";
 function TableStats({ consSummary }) {
     return (
         <>
-            <div className="mt-2 max-md:hidden grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-5">
+            <div className="mt-2 w-full max-md:hidden grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-5">
                 <StateCard states={consSummary?.receiverState} />
                 <WeightCard totalWeight={consSummary?.totalWeight} />
                 <AmountCard totalCost={consSummary?.totalCost} />

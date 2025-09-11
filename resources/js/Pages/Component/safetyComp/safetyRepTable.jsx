@@ -33,7 +33,6 @@ export default function SafetyRepTable({
 }) {
     const { url, userPermissions, Token } = useContext(CustomContext);
 
-    console.log("safetyTypes", safetyTypes);
     window.moment = moment;
     const minDate = getMinMaxValue(safetyData, "OccuredAt", 1);
     const maxDate = getMinMaxValue(safetyData, "OccuredAt", 2);
@@ -57,7 +56,6 @@ export default function SafetyRepTable({
         // Define custom cell handlers for specific columns
         const customCellHandlers = {
             SafetyType: (item) => {
-                console.log("item", item);
                 const reason = safetyTypes?.find(
                     (reason) => reason.SafetyTypeId === item
                 );
