@@ -65,7 +65,7 @@ export default function NewKPIModalAddReason({
                 Authorization: `Bearer ${Token}`,
             };
             await postApiRequest(
-                `${url}Add/KPI/FailedReasonNew`,
+                `${url}Add/KPI/FailedReason`,
                 headers,
                 data
             );

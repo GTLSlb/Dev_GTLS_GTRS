@@ -84,7 +84,7 @@ function AddNewTransitDay({ setNewTransitDays }) {
     );
 
     async function fetchData() {
-        const data = await getApiRequest(`${url}TransitNew`, {
+        const data = await getApiRequest(`${url}Transits`, {
             UserId: user?.UserId,
         });
 
@@ -117,7 +117,7 @@ function AddNewTransitDay({ setNewTransitDays }) {
             TransitTime: document.getElementById("TransitTime").value,
         };
         axios
-            .post(`${url}Add/TransitNew`, inputValues, {
+            .post(`${url}Add/Transit`, inputValues, {
                 headers: {
                     UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,

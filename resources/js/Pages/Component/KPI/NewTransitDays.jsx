@@ -31,7 +31,7 @@ function NewTransitDays({
     const navigate = useNavigate();
 
     async function fetchData() {
-        const data = await getApiRequest(`${url}TransitNew`, {
+        const data = await getApiRequest(`${url}Transits`, {
             UserId: user?.UserId,
         });
 

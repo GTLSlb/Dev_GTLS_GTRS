@@ -60,7 +60,7 @@ function NewKPI({
     const [senderStateOptions, setSenderStateOptions] = useState([]);
 
     async function fetchData() {
-        const data = await getApiRequest(`${url}/KPINew`, {
+        const data = await getApiRequest(`${url}/KPIReport`, {
             UserId: user?.UserId,
         });
 
@@ -578,7 +578,7 @@ function NewKPI({
     function CalculateKPI() {
         setLoading(true);
         axios
-            .get(`${url}KPIReportNew`, {
+            .get(`${url}KpiCalculation`, {
                 headers: {
                     UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
