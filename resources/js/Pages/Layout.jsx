@@ -5,7 +5,7 @@ import { Routes, Route } from "react-router-dom";
 import NotFound from "./NotFoundPage";
 import Login from "./Auth/Login";
 import AnimatedLoading from "@/Components/AnimatedLoading";
-import { useApiRequests } from "@/CommonFunctions";
+import { useApiRequests, handleSessionExpiration } from "@/CommonFunctions";
 import NoAccess from "@/Components/NoAccess";
 import Logout from "@/Pages/Auth/Logout";
 import { CustomContext } from "@/CommonContext";
@@ -90,7 +90,9 @@ export default function Sidebar() {
                     type: "info",
                     icon: "info",
                     confirmButtonText: "OK",
-                }).then(() => {});
+                }).then(async function () {
+                    await handleSessionExpiration();
+                });
             }
         }
     };
