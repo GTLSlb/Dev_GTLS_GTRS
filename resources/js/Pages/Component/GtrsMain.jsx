@@ -65,6 +65,7 @@ import ContactRep from "./ContactsRep/ContactRep";
 import DifotReport from "./DifotReport";
 import Utilization from "./UtilizationReport/Utilization";
 import { CustomContext } from "@/CommonContext";
+import SpendDashboard from "./SpendAnalysis/SpendDashboard";
 
 export default function GtrsMain({
     setCustomerAccounts,
@@ -768,6 +769,23 @@ export default function GtrsMain({
                                                         collapsed={collapsed}
                                                     />
                                                 }
+                                                userPermissions={
+                                                    userPermissions
+                                                }
+                                                setToken={setToken}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path="/spendanalysis"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermissions}
+                                                route="Dashboard_view"
+                                                element={<SpendDashboard />}
                                                 userPermissions={
                                                     userPermissions
                                                 }
