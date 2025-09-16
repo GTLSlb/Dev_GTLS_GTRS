@@ -1893,6 +1893,13 @@ export const getFiltersDifot = () => {
             emptyValue: "",
         },
         {
+            name: "ChangeType",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
             name: "SenderName",
             operator: "contains",
             type: "string",
