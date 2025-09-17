@@ -222,6 +222,10 @@ export default function SetFailedReasonModal({
                             label=""
                             placeholder="Select a reason"
                             aria-labelledby="ٌReason"
+                            showScrollIndicators={true}
+                            classNames={{
+                                listboxWrapper: "select-scroll ",
+                            }}
                             selectedKeys={
                                 formData.selectedReason
                                     ? [formData.selectedReason]
@@ -272,6 +276,10 @@ export default function SetFailedReasonModal({
                         <Select
                             label=""
                             aria-labelledby="Reference"
+                            showScrollIndicators={true}
+                            classNames={{
+                                listboxWrapper: "select-scroll ",
+                            }}
                             placeholder="Select reference type"
                             selectedKeys={[formData.selectedReference]}
                             disallowEmptySelection
@@ -303,6 +311,7 @@ export default function SetFailedReasonModal({
                         <Select
                             label=""
                             aria-labelledby="State"
+                            showScrollIndicators
                             placeholder="Select state"
                             selectedKeys={[formData.selectedState]}
                             disallowEmptySelection
@@ -334,6 +343,7 @@ export default function SetFailedReasonModal({
                         <Select
                             label=""
                             aria-labelledby="Department"
+                            showScrollIndicators
                             placeholder="Select department"
                             disallowEmptySelection
                             selectedKeys={[formData.selectedDepartment]}
