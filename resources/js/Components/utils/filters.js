@@ -656,6 +656,12 @@ export const getFiltersFailed = (minDispatchDate, maxDispatchDate) => {
             type: "string",
             value: "",
         },
+        {
+            name: "Resolution",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
     ];
 };
 
