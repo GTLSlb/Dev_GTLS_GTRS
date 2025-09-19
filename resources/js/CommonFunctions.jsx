@@ -10,6 +10,7 @@ import { canViewDetails, canViewIncidentDetails } from "./permissions";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { CustomContext } from "./CommonContext";
+import { toast } from "react-toastify";
 
 const msalConfig = {
     auth: {
@@ -510,4 +511,41 @@ export function convertUtcToUserTimezone(utcDateString) {
     });
     const convertedDate = formatter.format(utcDate);
     return convertedDate;
+}
+
+export function AlertToast(msg, status) {
+    if (status == 1) {
+        toast.success(msg, {
+            position: "bottom-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    } else if (status == 2) {
+        toast.error(msg, {
+            position: "bottom-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    } else if (status == 3) {
+        toast.warning(msg, {
+            position: "bottom-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    }
 }

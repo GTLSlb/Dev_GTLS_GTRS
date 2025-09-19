@@ -472,21 +472,8 @@ export default function DeliveryReportPage({
                                                     icon: "info",
                                                     confirmButtonText: "OK",
                                                 }).then(async function () {
-                                                    axios
-                                                        .post("/logoutAPI")
-                                                        .then((response) => {
-                                                            if (
-                                                                response.status ==
-                                                                200
-                                                            ) {
-                                                                window.location.href =
-                                                                    "/";
-                                                            }
-                                                        })
-                                                        .catch((error) => {
-                                                            console.error(error);
-                                                        });
-                                                });
+                    await handleSessionExpiration();
+                });
                                             } else {
                                                 // Handle other errors
                                                 console.error(error);
@@ -581,17 +568,8 @@ export default function DeliveryReportPage({
                                 icon: "info",
                                 confirmButtonText: "OK",
                             }).then(async function () {
-                                axios
-                                    .post("/logoutAPI")
-                                    .then((response) => {
-                                        if (response.status == 200) {
-                                            window.location.href = "/";
-                                        }
-                                    })
-                                    .catch((error) => {
-                                        console.error(error);
-                                    });
-                            });
+                    await handleSessionExpiration();
+                });
                         } else {
                             // Handle other errors
                             console.error(error);
@@ -1093,7 +1071,7 @@ export default function DeliveryReportPage({
             DeliveredDateTime: (value) => formatDateToExcel(value),
             Comments: (value) =>
                 Array.isArray(value)
-                    ? 
+                    ?
                 // eslint-disable-next-line react/prop-types
                     value.map(
                               (item) =>

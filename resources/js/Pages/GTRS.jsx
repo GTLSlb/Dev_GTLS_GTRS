@@ -100,17 +100,8 @@ export default function Gtrs({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.error(error);
-                            });
+                    }).then(async function () {
+                    await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors
