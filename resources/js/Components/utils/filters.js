@@ -656,6 +656,12 @@ export const getFiltersFailed = (minDispatchDate, maxDispatchDate) => {
             type: "string",
             value: "",
         },
+        {
+            name: "Resolution",
+            operator: "contains",
+            type: "string",
+            value: "",
+        },
     ];
 };
 
@@ -1889,6 +1895,13 @@ export const getFiltersDifot = () => {
             name: "Spaces",
             operator: "eq",
             type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ChangeType",
+            operator: "inlist",
+            type: "select",
             value: null,
             emptyValue: "",
         },

@@ -490,6 +490,13 @@ export default function FailedCons({
             filterEditor: StringFilter,
         },
         {
+            name: "Resolution",
+            header: "Resolution",
+            headerAlign: "center",
+            textAlign: "start",
+            filterEditor: StringFilter,
+        },
+        {
             header: "Edit",
             name: "edit",
             headerAlign: "center",

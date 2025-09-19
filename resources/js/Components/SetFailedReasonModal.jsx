@@ -58,7 +58,8 @@ export default function SetFailedReasonModal({
         { key: "3", label: "QLD" },
         { key: "4", label: "SA" },
         { key: "5", label: "WA" },
-        { key: "6", label: "NA" },
+        { key: "6", label: "ACT" },
+        { key: "7", label: "NA" },
     ];
 
     // Helper functions
@@ -206,10 +207,10 @@ export default function SetFailedReasonModal({
         >
             <form
                 onSubmit={handleSubmit}
-                className="bg-white p-5 rounded-xl w-96"
+                className="bg-white p-5 flex flex-col gap-4 rounded-xl w-96"
             >
                 <h2 className="text-2xl font-bold">Set Failed Reason</h2>
-                <div className=" flex flex-col space-y-5 overflow-y-auto h-[25rem] pr-2 containerscroll pt-5">
+                <div className=" flex flex-col space-y-5 overflow-y-auto h-[25rem] pr-2 containerscroll">
                     {/* Reason Selection */}
                     <div>
                         <label
@@ -222,6 +223,10 @@ export default function SetFailedReasonModal({
                             label=""
                             placeholder="Select a reason"
                             aria-labelledby="ٌReason"
+                            showScrollIndicators={true}
+                            classNames={{
+                                listboxWrapper: "select-scroll ",
+                            }}
                             selectedKeys={
                                 formData.selectedReason
                                     ? [formData.selectedReason]
@@ -272,6 +277,10 @@ export default function SetFailedReasonModal({
                         <Select
                             label=""
                             aria-labelledby="Reference"
+                            showScrollIndicators={true}
+                            classNames={{
+                                listboxWrapper: "select-scroll ",
+                            }}
                             placeholder="Select reference type"
                             selectedKeys={[formData.selectedReference]}
                             disallowEmptySelection
@@ -303,6 +312,7 @@ export default function SetFailedReasonModal({
                         <Select
                             label=""
                             aria-labelledby="State"
+                            showScrollIndicators
                             placeholder="Select state"
                             selectedKeys={[formData.selectedState]}
                             disallowEmptySelection
@@ -334,6 +344,7 @@ export default function SetFailedReasonModal({
                         <Select
                             label=""
                             aria-labelledby="Department"
+                            showScrollIndicators
                             placeholder="Select department"
                             disallowEmptySelection
                             selectedKeys={[formData.selectedDepartment]}
@@ -433,28 +444,27 @@ export default function SetFailedReasonModal({
                             variant="bordered"
                         />
                     </div>
+                </div>
+                <div className="flex w-full px-2 justify-end gap-3">
+                    <Button
+                        color="danger"
+                        variant="light"
+                        onPress={handlePopUpClose}
+                        isDisabled={isLoading}
+                    >
+                        Cancel
+                    </Button>
 
-                    <div className="flex w-full justify-end gap-2">
-                        <Button
-                            color="danger"
-                            variant="light"
-                            onPress={handlePopUpClose}
-                            isDisabled={isLoading}
-                        >
-                            Cancel
-                        </Button>
-
-                        <Button
-                            type="submit"
-                            color="primary"
-                            isDisabled={!formData.selectedReason}
-                            isLoading={isLoading}
-                            spinner={<Spinner size="sm" />}
-                            className="bg-gray-800 min-w-20"
-                        >
-                            {isLoading ? "Saving..." : "Save"}
-                        </Button>
-                    </div>
+                    <Button
+                        type="submit"
+                        color="primary"
+                        isDisabled={!formData.selectedReason}
+                        isLoading={isLoading}
+                        spinner={<Spinner size="sm" />}
+                        className="bg-gray-800 min-w-20"
+                    >
+                        {isLoading ? "Saving..." : "Save"}
+                    </Button>
                 </div>
             </form>
         </ReactModal>

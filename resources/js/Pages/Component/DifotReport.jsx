@@ -531,7 +531,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
     const StatusOptions = createNewLabelObjects(difotData, "OnTime");
     const GtlsErrorOptions = createNewLabelObjects(difotData, "GtlsError");
     const PODOptions = createNewLabelObjects(difotData, "POD");
-
+    const ChangeTypeOptions = createNewLabelObjects(difotData, "ChangeType");
     const columns = [
         {
             name: "DeliveryNo",
@@ -741,6 +741,19 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
             headerAlign: "center",
             textAlign: "center",
             filterEditor: RDDTimeFilter,
+        },
+        {
+            name: "ChangeType",
+            header: "Change Type",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: true,
+                wrapMultiple: false,
+                dataSource: ChangeTypeOptions,
+            },
         },
         {
             name: "OldRdd",
