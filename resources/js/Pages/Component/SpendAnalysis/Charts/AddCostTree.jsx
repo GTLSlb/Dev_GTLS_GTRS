@@ -74,7 +74,7 @@ const CustomizedContent = (props) => {
     );
 };
 
-export default function AddCostTree({ filters, setFilters, setSelected }) {
+export default function AddCostTree({ filters, setFilters, setSelected, clearChartsFilters }) {
     const {
         getChartData,
         selectedPeriodKey,
@@ -164,6 +164,7 @@ export default function AddCostTree({ filters, setFilters, setSelected }) {
                         fill="#8884d8"
                         animationDuration={500}
                         onClick={(e) => {
+                            clearChartsFilters();
                             setFilters({ ...filters, additionalCosts: e.name });
                             setSelected("table");
                         }}

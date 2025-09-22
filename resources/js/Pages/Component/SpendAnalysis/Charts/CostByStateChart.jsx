@@ -17,7 +17,12 @@ import { Divider, Select, SelectItem } from "@heroui/react";
 import { useState } from "react";
 import { NoData } from "../Comp/NoDataChart";
 
-function CostByStateChart() {
+function CostByStateChart({
+    filters,
+    setFilters,
+    setSelected,
+    clearChartsFilters,
+}) {
     const stateOptions = [
         { label: "NSW", value: "nsw" },
         { label: "QLD", value: "qld" },

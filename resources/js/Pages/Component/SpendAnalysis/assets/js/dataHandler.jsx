@@ -1,3 +1,17 @@
+import {
+    FaBox,
+    FaChartLine,
+    FaClipboardCheck,
+    FaCube,
+    FaTruckLoading,
+    FaDollarSign,
+    FaGasPump,
+    FaTruck,
+    FaUsers,
+    FaUserShield,
+    FaWeightHanging,
+} from "react-icons/fa";
+
 const australianStates = ["nsw", "qld", "vic", "sa", "wa", "tas", "nt"];
 const demurrageTypes = [
     "Rigid Demurrage",
@@ -89,6 +103,12 @@ function getRandomDate(startDate, endDate) {
     return new Date(randomTime);
 }
 
+function getRandomConsStatus(){
+    const statuses = ["PASS", "PENDING", "FAIL"]
+    const randomIndex = Math.floor(Math.random() * statuses.length);
+    return statuses[randomIndex];
+}
+
 export function generateDummySpendData(options = {}) {
     const {
         count = 200,
@@ -128,6 +148,12 @@ export function generateDummySpendData(options = {}) {
             additionalCost: additionalCost,
             receiverLat: location.receiverLat,
             receiverLng: location.receiverLng,
+            ConsStatus: getRandomConsStatus(),
+            CustomerOwn: Math.floor(Math.random() * 5000),
+            Chep: Math.floor(Math.random() * 5000),
+            Loscam: Math.floor(Math.random() * 5000),
+            POD: Math.random() < 0.5 ? true : false,
+
         });
     }
 
@@ -269,4 +295,188 @@ export function getDateRange(input, year = new Date().getFullYear()) {
             `Error parsing date range "${input}": ${error.message}`
         );
     }
+}
+
+export function parseHeatMapData(data) {
+    let informationData = [];
+        // Get total number of unique receivers
+        // Receiver can be unique by name, state, and lat/lng
+        const uniqueReceivers = new Map();
+        data.forEach(d => {
+            const receiver = {
+                name: d.receiver,
+                state: d.state,
+                latLng: `${d.receiverLat}, ${d.receiverLng}`,
+            };
+
+            if (!uniqueReceivers.has(receiver.name)) {
+                uniqueReceivers.set(receiver.name, new Map());
+            }
+
+            if (!uniqueReceivers.get(receiver.name).has(receiver.state)) {
+                uniqueReceivers.get(receiver.name).set(receiver.state, new Set());
+            }
+
+            uniqueReceivers.get(receiver.name).get(receiver.state).add(receiver.latLng);
+        });
+
+        const totalReceivers = uniqueReceivers.size;
+
+        // Get total cost
+        const totalCost = data.reduce((sum, d) => sum + d.cost, 0);
+
+        // Get consignment counts by state
+        const consByState = {};
+        data.forEach(d => {
+            if (d.state) {
+                if (!consByState[d.state]) {
+                    consByState[d.state] = 0;
+                }
+                consByState[d.state]++;
+            }
+        });
+
+        // Consignment Status
+        const consStatus = {};
+        data.forEach(d => {
+            if (d.ConsStatus) {
+                if (!consStatus[d.ConsStatus]) {
+                    consStatus[d.ConsStatus] = 0;
+                }
+                consStatus[d.ConsStatus]++;
+            }
+        });
+
+        informationData = [
+            {
+                groupName: "General Information",
+                items: [
+                    { label: "# of Receivers", value: totalReceivers.toString(), icon: <FaUsers /> },
+                    { label: "Total Cost", value: `$${totalCost.toFixed(2).toString()}`, icon: <FaDollarSign /> },
+                ],
+            },
+            {
+                groupName: "Consignments by State",
+                items: Object.entries(consByState).map(([state, count]) => ({
+                    label: `Total cons in ${state.toUpperCase()}`,
+                    value: count.toString(),
+                    icon: <FaTruckLoading />,
+                })),
+            },
+            {
+                groupName: "Consignment Status",
+                items: Object.entries(consStatus).map(([status, count]) => ({
+                    label: `${status}`,
+                    value: count.toString(),
+                })),
+            }
+        ];
+
+    return informationData
+}
+
+export const parseOperationAnalysisInfo = (data) => {
+    let information = [];
+
+            // Get total number of unique receivers
+        // Receiver can be unique by name, state, and lat/lng
+        const uniqueReceivers = new Map();
+        data.forEach(d => {
+            const receiver = {
+                name: d.receiver,
+                state: d.state,
+                latLng: `${d.receiverLat}, ${d.receiverLng}`,
+            };
+
+            if (!uniqueReceivers.has(receiver.name)) {
+                uniqueReceivers.set(receiver.name, new Map());
+            }
+
+            if (!uniqueReceivers.get(receiver.name).has(receiver.state)) {
+                uniqueReceivers.get(receiver.name).set(receiver.state, new Set());
+            }
+
+            uniqueReceivers.get(receiver.name).get(receiver.state).add(receiver.latLng);
+        });
+
+        const totalReceivers = uniqueReceivers.size;
+        // Get total cost
+        const totalCost = data.reduce((sum, d) => sum + d.cost, 0);
+
+        // Get total fuel surcharge
+        const totalFuel = data.reduce((sum, d) => sum + d.fuelLevy, 0);
+
+        // Get total weight
+        const totalWeight = data.reduce((sum, d) => sum + d.weight, 0);
+
+        // Get total pallet space
+        const totalPalletSpace = data.reduce((sum, d) => sum + d.palletSpace, 0);
+
+        // Get total Chep
+        const totalChep = data.reduce((sum, d) => sum + d.Chep, 0);
+
+        // Get total Loscam
+        const totalLoscam = data.reduce((sum, d) => sum + d.Loscam, 0);
+
+        // Get total Customer OWN
+        const totalCustomerOwn = data.reduce((sum, d) => sum + d.CustomerOwn, 0);
+
+        // Get total True PODs
+        const totalTruePODs = data.filter(d => d.POD == true).length;
+
+        // Get % of True PODs
+        const percentTruePODs = `${((totalTruePODs / data.length) * 100).toFixed(2).toString()}$`;
+
+        // Consignment Status
+        const consStatus = {};
+        data.forEach(d => {
+            if (d.ConsStatus) {
+                if (!consStatus[d.ConsStatus]) {
+                    consStatus[d.ConsStatus] = 0;
+                }
+                consStatus[d.ConsStatus]++;
+            }
+        });
+
+        information = [
+        { label: "# of Receivers", value: totalReceivers.toString() , icon: <FaUsers /> },
+        {
+            label: "Total Cost",
+            value: totalCost.toFixed(2).toString(),
+            icon: <FaDollarSign />,
+        },
+        {
+            label: "Fuel Surcharge cost",
+            value: totalFuel.toFixed(2).toString(),
+            icon: <FaGasPump />,
+        },
+        {
+            label: "Total Weight",
+            value: totalWeight.toFixed(2).toString(),
+            icon: <FaWeightHanging />,
+        },
+        { label: "Total pallet space", value: totalPalletSpace.toFixed(2).toString(), icon: <FaBox /> },
+        { label: "Total Chep", value: totalChep.toFixed(2).toString(), icon: <FaCube /> },
+        { label: "Total Loscam", value: totalLoscam.toFixed(2).toString(), icon: <FaTruck /> },
+        {
+            label: "Total Customer OWN",
+            value: totalCustomerOwn.toFixed(2).toString(),
+            icon: <FaUserShield />,
+        },
+        {
+            label: "# of True PODs",
+            value: totalTruePODs.toString(),
+            icon: <FaClipboardCheck />,
+        },
+        { label: "% of True PODs", value: percentTruePODs, icon: <FaChartLine /> },
+        {
+            groupName: "Consignment Status",
+            items: Object.entries(consStatus).map(([status, count]) => ({
+                label: `${status}`,
+                value: count.toString(),
+            })),
+        },
+    ]
+
+    return information;
 }

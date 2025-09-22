@@ -7,7 +7,12 @@ import { useMemo, useState } from "react";
 import { Divider, Select, SelectItem } from "@heroui/react";
 import { NoData } from "../Comp/NoDataChart";
 
-function DemurrageCost() {
+function DemurrageCost({
+    filters,
+    setFilters,
+    setSelected,
+    clearChartsFilters,
+}) {
     const demmurageTypeOptions = [
         { label: "Semi Demurrage", value: "Semi Demurrage" },
         { label: "BD Demurrage", value: "BD Demurrage" },

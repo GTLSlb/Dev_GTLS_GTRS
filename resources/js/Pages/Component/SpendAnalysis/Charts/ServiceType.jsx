@@ -7,7 +7,7 @@ import { useMemo, useState } from "react";
 import { Divider, Select, SelectItem } from "@heroui/react";
 import { NoData } from "../Comp/NoDataChart";
 
-export function ServiceTypeChart({ filters, setFilters, setSelected }) {
+export function ServiceTypeChart({ filters, setFilters, setSelected, clearChartsFilters }) {
     const COLORS = [
         "#0088FE",
         "#00C49F",
@@ -183,6 +183,7 @@ export function ServiceTypeChart({ filters, setFilters, setSelected }) {
                             fill="#8884d8"
                             dataKey="value"
                             onClick={(e) => {
+                                clearChartsFilters();
                                 setFilters({ ...filters, service: e.name });
                                 setSelected("table");
                             }}

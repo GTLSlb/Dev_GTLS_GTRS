@@ -15,7 +15,7 @@ import { useDurationData } from "../assets/js/useDurationData";
 import { Divider, Select, SelectItem } from "@heroui/react";
 import { useState } from "react";
 import { NoData } from "../Comp/NoDataChart";
-export function AmtVsType({ filters, setFilters, setSelected }) {
+export function AmtVsType({ filters, setFilters, setSelected, clearChartsFilters }) {
     const cosTypeOptions = [
         { label: "Weight", value: "weight" },
         { label: "Pallet Space", value: "pallet-space" },
@@ -42,6 +42,7 @@ export function AmtVsType({ filters, setFilters, setSelected }) {
 
     const handleClick = (data) => {
         // console.log(getDateRange(data.activeLabel, selectedYearValue));
+        clearChartsFilters();
         setFilters({
             ...filters,
             dateStart: getDateRange(data.activeLabel, selectedYearValue).start,

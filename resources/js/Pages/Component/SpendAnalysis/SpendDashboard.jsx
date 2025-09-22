@@ -31,8 +31,18 @@ export default function SpendDashboard() {
         service: "",
         date: "",
         additionalCosts: "",
+        dateStart: "",
+        dateEnd: ""
     });
 
+    const clearChartsFilters = (key) => {
+            // clear all filters
+            setFilters({
+            service: "",
+            date: "",
+            additionalCosts: "",
+        });
+    }
     const tabs = [
         {
             key: "spend",
@@ -42,6 +52,7 @@ export default function SpendDashboard() {
                     filters={filters}
                     setFilters={setFilters}
                     setSelected={setSelected}
+                    clearChartsFilters={clearChartsFilters}
                 />
             ),
             serviceFilter: true,
@@ -55,6 +66,7 @@ export default function SpendDashboard() {
                     filters={filters}
                     setFilters={setFilters}
                     setSelected={setSelected}
+                    clearChartsFilters={clearChartsFilters}
                 />
             ),
             serviceFilter: true,

@@ -16,7 +16,7 @@ import { Divider, Select, SelectItem } from "@heroui/react";
 import { useState } from "react";
 import { NoData } from "../Comp/NoDataChart";
 
-export function TrendCost({ filters, setFilters, setSelected }) {
+export function TrendCost({ filters, setFilters, setSelected, clearChartsFilters }) {
     const costTypeOptions = [
         { label: "Cost", value: "cost" },
         { label: "Additional Charges", value: "additional" },
@@ -42,7 +42,7 @@ export function TrendCost({ filters, setFilters, setSelected }) {
     );
 
     const handleClick = (data) => {
-        // console.log(getDateRange(data.activeLabel, selectedYearValue));
+        clearChartsFilters();
         setFilters({
             ...filters,
             dateStart: getDateRange(data.activeLabel, selectedYearValue).start,

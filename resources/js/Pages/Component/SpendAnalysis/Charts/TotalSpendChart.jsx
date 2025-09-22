@@ -23,7 +23,7 @@ const barTypeOptions = [
     { label: "GST", value: "GST" },
 ];
 
-function TotalSpendChart({ filters, setFilters, setSelected }) {
+function TotalSpendChart({ filters, setFilters, setSelected, clearChartsFilters }) {
     const [selectedBarTypes, setSelectedBarTypes] = useState(
         new Set(barTypeOptions.map((option) => option.value))
     );
@@ -70,7 +70,7 @@ function TotalSpendChart({ filters, setFilters, setSelected }) {
     const hasData = getChartData.length > 0;
 
     const handleClick = (data) => {
-        // console.log(getDateRange(data.activeLabel, selectedYearValue));
+        clearChartsFilters();
         setFilters({
             ...filters,
             dateStart: getDateRange(data.activeLabel, selectedYearValue).start,
@@ -79,7 +79,6 @@ function TotalSpendChart({ filters, setFilters, setSelected }) {
         setSelected("table");
     };
 
-    console.log("Total Spend Chart Data:", getChartData);
     return (
         <ChartWrapper
             title={"Total Spend"}

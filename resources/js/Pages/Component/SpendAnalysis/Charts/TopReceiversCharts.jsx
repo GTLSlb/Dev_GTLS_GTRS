@@ -16,7 +16,12 @@ import { DurationFilter } from "./Card/DurationFilter";
 import { formatNumberWithCommas } from "@/CommonFunctions";
 import { NoData } from "../Comp/NoDataChart";
 
-function TopReceiversCharts() {
+function TopReceiversCharts({
+    filters,
+    setFilters,
+    setSelected,
+    clearChartsFilters,
+}) {
     const {
         getChartData,
         selectedPeriodKey,
