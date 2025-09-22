@@ -20,6 +20,7 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { CustomContext } from "@/CommonContext";
+import { handleSessionExpiration } from "@/CommonFunctions";
 
 export default function KPIReasons({
     kpireasonsData,
@@ -182,18 +183,9 @@ export default function KPIReasons({
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.error(error);
-                            });
-                    });
+                    }).then(async function () {
+                    await handleSessionExpiration();
+                });
                 } else {
                     // Handle other errors
                     console.error(err);

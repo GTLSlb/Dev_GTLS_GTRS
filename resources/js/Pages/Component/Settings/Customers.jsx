@@ -6,6 +6,7 @@ import { Card, CardHeader } from "@heroui/react";
 import { UserIcon } from "@heroicons/react/24/solid";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import React, { useContext, useEffect, useState } from "react";
+import { handleSessionExpiration } from "@/CommonFunctions";
 
 export default function Customers() {
     const { Token, user } = useContext(CustomContext);
@@ -42,17 +43,8 @@ export default function Customers() {
                         type: "success",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(function () {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status == 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.error(error);
-                            });
+                    }).then(async function () {
+                    await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors
@@ -94,7 +86,7 @@ export default function Customers() {
             </CardHeader>
         </Card>
     );
-    
+
     const renderAccountsTab = () => (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {accounts

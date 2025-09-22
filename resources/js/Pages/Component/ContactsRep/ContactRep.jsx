@@ -16,7 +16,7 @@ import React, {
     useState,
 } from "react";
 import swal from "sweetalert";
-
+import { handleSessionExpiration } from "@/CommonFunctions";
 function ContactRep() {
     const { url, Token, user, userPermissions } = useContext(CustomContext);
     const gridRef = useRef(null);
@@ -113,17 +113,8 @@ function ContactRep() {
                         text: "Please login again",
                         icon: "info",
                         confirmButtonText: "OK",
-                    }).then(() => {
-                        axios
-                            .post("/logoutAPI")
-                            .then((response) => {
-                                if (response.status === 200) {
-                                    window.location.href = "/";
-                                }
-                            })
-                            .catch((error) => {
-                                console.log(error);
-                            });
+                    }).then(async function () {
+                    await handleSessionExpiration();
                     });
                 } else {
                     // Handle other errors

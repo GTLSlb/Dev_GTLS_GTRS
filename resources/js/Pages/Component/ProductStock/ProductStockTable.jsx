@@ -22,6 +22,8 @@ import PropTypes from "prop-types";
 import swal from "sweetalert";
 import { CustomContext } from "@/CommonContext";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import { handleSessionExpiration } from "@/CommonFunctions";
+
 export const SearchIcon = (props) => {
     return (
         <svg
@@ -112,17 +114,8 @@ export default function ProductStockTable() {
                     type: "error",
                     icon: "info",
                     confirmButtonText: "OK",
-                }).then(() => {
-                    axios
-                        .post("/logoutAPI")
-                        .then((response) => {
-                            if (response.status === 200) {
-                                window.location.href = "/";
-                            }
-                        })
-                        .catch((error) => {
-                            console.error(error);
-                        });
+                }).then(async function () {
+                    await handleSessionExpiration();
                 });
             } else {
                 console.error(error);
