@@ -862,3 +862,11 @@ export function canViewExcelDeliveryReport(userPermissions) {
         ? true
         : false;
 }
+
+export function canEditUtilizationReport(userPermissions) {
+    return userPermissions?.find(
+        (feature) => feature?.FunctionName === "UtilizationReport_edit"
+    )
+        ? true
+        : false;
+}

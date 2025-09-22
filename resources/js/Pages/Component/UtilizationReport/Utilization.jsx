@@ -15,6 +15,10 @@ import { getFiltersUtilization } from "@/Components/utils/filters";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import { createNewLabelObjects } from "@/Components/utils/dataUtils";
+import { forwardRef, useImperativeHandle } from "react";
+import { PencilIcon } from "@heroicons/react/20/solid";
+import { canEditUtilizationReport } from "@/permissions";
+import UtilizationModal from "./UtilizationModal";
 
 export default function Utilization() {
     const gridRef = useRef(null);
@@ -26,10 +30,13 @@ export default function Utilization() {
         getFiltersUtilization(minDate, maxDate)
     );
     const [isLoading, setIsLoading] = useState(true);
+    const [showEdit, setShowEdit] = useState(false);
+    const [selected, setSelected] = useState(null);
+
     useEffect(() => {
         fetchUtilizationReportData();
     }, []);
-    console.log(filterValue);
+
     const fetchUtilizationReportData = async () => {
         try {
             const res = await axios.get(`${url}Utilization/Report`, {
@@ -62,7 +69,88 @@ export default function Utilization() {
         }
     };
 
-    const columns = [
+    const TimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
+        const [value, setValue] = useState(
+            filterValue ? filterValue.value : ""
+        );
+
+        const handleChange = (event) => {
+            const newValue = event.target.value + ":00";
+            setValue(newValue);
+            onChange({
+                name: filterValue.name,
+                value: newValue,
+                operator: "eq",
+                emptyValue: "",
+                type: "string",
+            });
+        };
+
+        const handleClear = () => {
+            setValue("");
+            onChange({
+                name: filterValue.name,
+                value: "",
+                operator: "eq",
+                emptyValue: "",
+                type: "string",
+            });
+        };
+
+        useEffect(() => {
+            setValue(filterValue ? filterValue.value : "");
+        }, [filterValue]);
+
+        useImperativeHandle(ref, () => ({
+            setValue: (newValue) => {
+                setValue(newValue);
+            },
+        }));
+
+        return (
+            <div className="flex gap-2 p-[4px]">
+                <input
+                    type="time"
+                    className="w-full border-gray-300 rounded-md shadow-sm focus:border-gray-400 focus:ring-gray-400 sm:text-sm h-[32px]"
+                    value={value.slice(0, 5)}
+                    onChange={handleChange}
+                />
+                <button onClick={handleClear}>
+                    <svg
+                        tabIndex="0"
+                        className="InovuaReactDataGrid__column-header__filter-settings-icon"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                    >
+                        <path
+                            fillRule="evenodd"
+                            d="M13.222 2H.778C.348 2 0 1.552 0 1s.348-1 .778-1h12.444c.43 0 .778.448.778 1s-.348 1-.778 1zM1.556 3.111l3.888 4.667v5.444c0 .43.349.778.778.778h1.556c.43 0 .778-.348.778-.778V7.778l3.888-4.667H1.556z"
+                        ></path>
+                    </svg>
+                </button>
+            </div>
+        );
+    });
+
+    const scrollIntoView = () => {
+        const button = document.getElementById("modal-title");
+        if (button) {
+            button.scrollIntoView({
+                behavior: "smooth",
+                block: "end",
+                inline: "nearest",
+            });
+        }
+    };
+
+    const columns = useMemo(() => {
+        // Return null if we don't have the required data yet
+        if (!utilizationData) {
+            return null;
+        }
+
+        const baseColumns = [
         {
             name: "ManifestDateTime",
             header: "Date",
@@ -184,13 +272,11 @@ export default function Utilization() {
             header: "Vehicle Pallet Utilisation (%)",
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 170,
+            defaultWidth: 230,
             filterEditor: StringFilter,
-            // renderer: (instance, td, row, col, prop, value, cellProperties) => {
-            //     td.innerText = value + "%";
-            //     td.classList.add("htLeft");
-            //     return td;
-            // },
+            render: ({ value, data }) => {
+                return `${value} %`;
+            },
         },
         {
             name: "Weight",
@@ -205,7 +291,7 @@ export default function Utilization() {
             header: "Vehicle Capacity (T)",
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 170,
+            defaultWidth: 180,
             filterEditor: StringFilter,
         },
         {
@@ -213,13 +299,11 @@ export default function Utilization() {
             header: "Load Weight Utilisation (%)",
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 170,
+            defaultWidth: 230,
             filterEditor: StringFilter,
-            // renderer: (instance, td, row, col, prop, value, cellProperties) => {
-            //     td.innerText = value + "%";
-            //     td.classList.add("htLeft");
-            //     return td;
-            // },
+            render: ({ value, data }) => {
+                return `${value} %`;
+            }
         },
         {
             name: "PickupTimeIn",
@@ -227,39 +311,7 @@ export default function Utilization() {
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
-            // renderer: (instance, td, row, col, prop, value, cellProperties) => {
-            //     td.classList.remove("htInvalid");
-            //     td.classList.add("htLeft");
-
-            //     if (value != "" && value != null && value != undefined) {
-            //         if (timeValidatorRegexp.test(value)) {
-            //             const formattedTime = value.replace(
-            //                 timeValidatorRegexp,
-            //                 (_, hour, minute, second) => {
-            //                     const hours = hour.padStart(2, "0");
-            //                     const minutes = minute
-            //                         ? minute.padStart(2, "0")
-            //                         : "00";
-            //                     const seconds = second
-            //                         ? second.padStart(2, "0")
-            //                         : null;
-
-            //                     // return hh:mm if no seconds, otherwise hh:mm:ss
-            //                     return seconds
-            //                         ? `${hours}:${minutes}:${seconds}`
-            //                         : `${hours}:${minutes}`;
-            //                 }
-            //             );
-            //             td.innerText = formattedTime;
-            //         } else {
-            //             td.classList.add("htInvalid");
-            //         }
-            //     } else {
-            //         td.innerText = "";
-            //     }
-
-            //     return td;
-            // },
+            filterEditor: TimeFilter,
         },
         {
             name: "PickupTimeOut",
@@ -268,119 +320,29 @@ export default function Utilization() {
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
-            // renderer: (instance, td, row, col, prop, value, cellProperties) => {
-            //     td.classList.remove("htInvalid");
-
-            //     if (value != "" && value != null && value != undefined) {
-            //         if (timeValidatorRegexp.test(value)) {
-            //             const formattedTime = value.replace(
-            //                 timeValidatorRegexp,
-            //                 (_, hour, minute, second) => {
-            //                     const hours = hour.padStart(2, "0");
-            //                     const minutes = minute
-            //                         ? minute.padStart(2, "0")
-            //                         : "00";
-            //                     const seconds = second
-            //                         ? second.padStart(2, "0")
-            //                         : null;
-
-            //                     // Decide whether to include seconds
-            //                     return seconds
-            //                         ? `${hours}:${minutes}:${seconds}`
-            //                         : `${hours}:${minutes}`;
-            //                 }
-            //             );
-            //             td.innerText = formattedTime;
-            //         } else {
-            //             td.classList.add("htInvalid");
-            //         }
-            //     } else {
-            //         td.innerText = value ?? "";
-            //     }
-
-            //     td.classList.add("htLeft");
-            //     return td;
-            // },
+            filterEditor: TimeFilter,
         },
         {
-            name: "CollectionTurnaroundTime",
+            name: "CollectionTime",
             header: "Collection Turnaround Time",
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 170,
-            // renderer: (instance, td, row, col, prop, value, cellProperties) => {
-            //     const timeIn = instance.getDataAtCell(
-            //         row,
-            //         instance.propToCol("PickupTimeIn")
-            //     );
-            //     const timeOut = instance.getDataAtCell(
-            //         row,
-            //         instance.propToCol("PickupTimeOut")
-            //     );
-            //     const hasValidValues =
-            //         timeIn != null &&
-            //         timeOut != null &&
-            //         timeIn != "" &&
-            //         timeOut != "" &&
-            //         timeIn != undefined &&
-            //         timeOut != undefined;
-
-            //     const formattedDiff = hasValidValues
-            //         ? calculateTimeDifference(timeIn, timeOut)
-            //         : "";
-
-            //     td.innerText = formattedDiff;
-            //     td.classList.add("htLeft");
-            //     return td;
-            // },
+            defaultWidth: 230,
+            filterEditor: StringFilter,
         },
         {
             name: "PickupAllowTime",
             header: "North Rock Allow Time (45Min)",
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 170,
-            // renderer: (instance, td, row, col, prop, value, cellProperties) => {
-            //     const timeIn = instance.getDataAtCell(
-            //         row,
-            //         instance.propToCol("PickupTimeIn")
-            //     );
-            //     const timeOut = instance.getDataAtCell(
-            //         row,
-            //         instance.propToCol("PickupTimeOut")
-            //     );
-
-            //     const formattedDiff = calculateAllowTime(timeIn, timeOut, 45);
-            //     td.innerText = formattedDiff;
-
-            //     td.classList.add("htLeft");
-            //     return td;
-            // },
+            defaultWidth: 270,
         },
         {
             name: "CollectionDemurrageCharges",
             header: "Demurrage Charges ($97.85 Per Hr or $1.63 Per Minute)",
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 170,
-            // renderer: (instance, td, row, col, prop, value, cellProperties) => {
-            //     const timeIn = instance.getDataAtCell(
-            //         row,
-            //         instance.propToCol("PickupTimeIn")
-            //     );
-            //     const timeOut = instance.getDataAtCell(
-            //         row,
-            //         instance.propToCol("PickupTimeOut")
-            //     );
-            //     const demurrageCharges = calculateDemurrageCharges(
-            //         timeIn,
-            //         timeOut,
-            //         45
-            //     );
-            //     td.innerText = `$ ${demurrageCharges.toFixed(2)}`;
-            //     td.classList.add("htLeft");
-            //     return td;
-            // },
+            defaultWidth: 400,
         },
         {
             name: "PickupReason",
@@ -405,20 +367,7 @@ export default function Utilization() {
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
-            // renderer: (instance, td, row, col, prop, value, cellProperties) => {
-            //     if (value != null) {
-            //         let parts = value?.split(":");
-            //         let shortTimeStr = parts?.slice(0, 2).join(":");
-            //         td.innerText = shortTimeStr;
-
-            //         td.classList.add("htLeft");
-            //         return td;
-            //     } else {
-            //         td.innerText = "";
-            //         td.classList.add("htLeft");
-            //         return td;
-            //     }
-            // },
+            filterEditor: TimeFilter,
         },
         {
             name: "DelTimeOut",
@@ -426,101 +375,31 @@ export default function Utilization() {
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
-            // renderer: (instance, td, row, col, prop, value, cellProperties) => {
-            //     if (value != null) {
-            //         let parts = value?.split(":");
-            //         let shortTimeStr = parts?.slice(0, 2).join(":");
-            //         td.innerText = shortTimeStr;
-
-            //         td.classList.add("htLeft");
-            //         return td;
-            //     } else {
-            //         td.innerText = "";
-            //         td.classList.add("htLeft");
-            //         return td;
-            //     }
-            // },
+            filterEditor: TimeFilter,
         },
         {
-            name: "UnloadTime",
+            name: "ExtraUnloadTimeInMinutes",
             header: "Unload Turnaround Time",
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 170,
-            // renderer: (instance, td, row, col, prop, value, cellProperties) => {
-            //     if (value != null) {
-            //         let parts = value?.split(":");
-            //         let shortTimeStr = parts?.slice(0, 2).join(":");
-            //         td.innerText = shortTimeStr;
-
-            //         td.classList.add("htLeft");
-            //         return td;
-            //     } else {
-            //         td.innerText = "";
-            //         td.classList.add("htLeft");
-            //         return td;
-            //     }
-            // },
+            defaultWidth: 200,
+            filterEditor: StringFilter,
         },
         {
             name: "DeliveryAllowTime",
             header: "Ingleburn Allow Time (30Min)",
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 170,
+            defaultWidth: 270,
             filterEditor: StringFilter,
-            // renderer: (instance, td, row, col, prop, value, cellProperties) => {
-            //     const timeIn = instance.getDataAtCell(
-            //         row,
-            //         instance.propToCol("DelTimeIn")
-            //     );
-            //     const timeOut = instance.getDataAtCell(
-            //         row,
-            //         instance.propToCol("DelTimeOut")
-            //     );
-
-            //     const hasValidValues =
-            //         timeIn != null &&
-            //         timeOut != null &&
-            //         timeIn != "" &&
-            //         timeOut != "" &&
-            //         timeIn != undefined &&
-            //         timeOut != undefined;
-
-            //     const formattedDiff = hasValidValues
-            //         ? calculateAllowTime(timeIn, timeOut, 30)
-            //         : "";
-            //     td.innerText = formattedDiff;
-
-            //     td.classList.add("htLeft");
-            //     return td;
-            // },
         },
         {
             name: "UnloadDemurrageCharges",
             header: "Unload Demurrage Charges ($97.85 Per Hr or $1.63 Per Minute)",
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 170,
+            defaultWidth: 470,
             filterEditor: StringFilter,
-            // renderer: (instance, td, row, col, prop, value, cellProperties) => {
-            //     const timeIn = instance.getDataAtCell(
-            //         row,
-            //         instance.propToCol("DelTimeIn")
-            //     );
-            //     const timeOut = instance.getDataAtCell(
-            //         row,
-            //         instance.propToCol("DelTimeOut")
-            //     );
-            //     const demurrageCharges = calculateDemurrageCharges(
-            //         timeIn,
-            //         timeOut,
-            //         30
-            //     );
-            //     td.innerText = `$ ${demurrageCharges.toFixed(2)}`;
-            //     td.classList.add("htLeft");
-            //     return td;
-            // },
         },
         {
             name: "DeliveryReason",
@@ -535,27 +414,8 @@ export default function Utilization() {
             header: "Travel time between sites",
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 170,
+            defaultWidth: 210,
             filterEditor: StringFilter,
-            // renderer: (instance, td, row, col, prop, value, cellProperties) => {
-            //     const deliveryTimeIn = instance.getDataAtCell(
-            //         row,
-            //         instance.propToCol("DelTimeIn")
-            //     );
-            //     const pickupTimeOut = instance.getDataAtCell(
-            //         row,
-            //         instance.propToCol("PickupTimeOut")
-            //     );
-
-            //     const formattedDiff = getTimeDifference(
-            //         pickupTimeOut,
-            //         deliveryTimeIn
-            //     );
-
-            //     td.innerText = formattedDiff;
-            //     td.classList.add("htLeft");
-            //     return td;
-            // },
         },
         {
             name: "TotalCharge",
@@ -564,88 +424,67 @@ export default function Utilization() {
             textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
-            // renderer: (instance, td, row, col, prop, value, cellProperties) => {
-            //     const delTimeIn = instance.getDataAtCell(
-            //         row,
-            //         instance.propToCol("DelTimeIn")
-            //     );
-            //     const delTimeOut = instance.getDataAtCell(
-            //         row,
-            //         instance.propToCol("DelTimeOut")
-            //     );
-            //     const unloadDemurrageCharges = calculateDemurrageCharges(
-            //         delTimeIn,
-            //         delTimeOut,
-            //         30
-            //     );
-            //     const pickupTimeIn = instance.getDataAtCell(
-            //         row,
-            //         instance.propToCol("PickupTimeIn")
-            //     );
-            //     const pickupTimeOut = instance.getDataAtCell(
-            //         row,
-            //         instance.propToCol("PickupTimeOut")
-            //     );
-            //     const collectionDemurrageCharges = calculateDemurrageCharges(
-            //         pickupTimeIn,
-            //         pickupTimeOut,
-            //         45
-            //     );
-            //     const unloadDemurrageNumber =
-            //         typeof unloadDemurrageCharges === "string"
-            //             ? Number(unloadDemurrageCharges)
-            //             : unloadDemurrageCharges;
-            //     const collectionDemurrageNumber =
-            //         typeof collectionDemurrageCharges === "string"
-            //             ? Number(collectionDemurrageCharges)
-            //             : collectionDemurrageCharges;
-
-            //     const sum = unloadDemurrageNumber + collectionDemurrageNumber;
-            //     td.innerText = `$ ${sum.toFixed(2)}`;
-            //     td.classList.add("htLeft");
-            //     return td;
-            // },
         },
 
         {
             name: "ProofOfDemurrage",
-            header: "PROOF OF DEMURRAGE",
+            header: "Proof Of Demurrage",
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 170,
+            defaultWidth: 200,
             filterEditor: StringFilter,
         },
         {
             name: "RevisedUtilization",
-            header: "Revised Utilisation%",
+            header: "Revised Utilisation %",
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 170,
+            defaultWidth: 210,
             filterEditor: StringFilter,
-            // renderer: (instance, td, row, col, prop, value, cellProperties) => {
-            //     const vehicleUtil = calculateUtilization(
-            //         instance,
-            //         row,
-            //         "PalletsCollected",
-            //         "PalletsVehicleCapacity"
-            //     );
-
-            //     const weightUtil = calculateUtilization(
-            //         instance,
-            //         row,
-            //         "Weight",
-            //         "WeightVehicleCapacity"
-            //     );
-
-            //     const max = Math.max(vehicleUtil, weightUtil);
-            //     td.innerText = max + "%";
-            //     td.classList.add("htLeft");
-            //     return td;
-            // },
+            render: ({ value, data }) => {
+                return `${Math.max(data.WeightUtilization, data.PalletUtilization)} %`;
+            },
         },
     ];
 
-    const [selected, setSelected] = useState([]);
+        // Add edit column only if user has edit permissions
+        if (userPermissions && !canEditUtilizationReport(userPermissions)) {
+            baseColumns.push({
+                name: "edit",
+                header: "Edit",
+                headerAlign: "center",
+                textAlign: "center",
+                defaultWidth: 100,
+                render: ({ data }) => {
+                    return (
+                        <div>
+                            <button
+                                className="rounded text-blue-500 justify-center items-center"
+                                onClick={() => {
+                                    handleEditClick(data);
+                                    scrollIntoView();
+                                }}
+                            >
+                                <span className="flex gap-x-1">
+                                    <PencilIcon className="h-4" />
+                                    Edit
+                                </span>
+                            </button>
+                        </div>
+                    );
+                },
+            });
+        }
+
+        return baseColumns;
+    }, [utilizationData, userPermissions]);
+
+    function handleEditClick(object) {
+        // Open edit module with the selected object
+        setSelected(object);
+        setShowEdit(true);
+    }
+
     const handleDownloadExcel = () => {
         const jsonData = handleFilterTable(gridRef, utilizationData); // Fetch the filtered data
 
@@ -686,7 +525,13 @@ export default function Utilization() {
             <AnimatedLoading />
         </div>
     ) : (
-        <div className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
+        <div id="TitleSection" className="px-4 sm:px-6 lg:px-8 w-full bg-smooth pb-20">
+            <UtilizationModal
+                isOpen={showEdit}
+                handleClose={() => setShowEdit(false)}
+                item={selected}
+                fetchUtilizationReportData={fetchUtilizationReportData}
+            />
             <TableStructure
                 id={"ConsignmentID"}
                 gridRef={gridRef}

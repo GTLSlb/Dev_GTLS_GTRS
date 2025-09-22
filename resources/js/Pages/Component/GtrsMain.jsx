@@ -63,7 +63,7 @@ import Customers from "./Settings/Customers";
 import CustomerProfile from "./Settings/CustomerProfile";
 import ContactRep from "./ContactsRep/ContactRep";
 import DifotReport from "./DifotReport";
-import Utilization from "./UtilizationReport/OLD_Utilization";
+import Utilization from "./UtilizationReport/Utilization";
 import { CustomContext } from "@/CommonContext";
 
 export default function GtrsMain({

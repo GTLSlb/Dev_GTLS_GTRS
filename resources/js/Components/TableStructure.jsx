@@ -141,7 +141,7 @@ export default function TableStructure({
         <div className="">
             <div className="sm:flex sm:items-center mt-3">
                 <div className="sm:flex-auto">
-                    <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
+                    <h1 id="modal-title" className="text-2xl py-2 px-0 font-extrabold text-gray-600">
                         {title}
                     </h1>
                 </div>

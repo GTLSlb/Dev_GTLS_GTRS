@@ -2269,7 +2269,7 @@ export const getFiltersUtilization = (minDate, maxDate) => {
             emptyValue: "",
         },
         {
-            name: "CollectionTurnaroundTime",
+            name: "CollectionTime",
              operator: "contains",
             type: "string",
             value: "",
@@ -2319,7 +2319,7 @@ export const getFiltersUtilization = (minDate, maxDate) => {
             emptyValue: "",
         },
         {
-            name: "UnloadTime",
+            name: "ExtraUnloadTimeInMinutes",
              operator: "contains",
             type: "string",
             value: "",
