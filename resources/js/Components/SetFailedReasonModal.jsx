@@ -195,7 +195,6 @@ export default function SetFailedReasonModal({
             }));
         }
     };
-
     return (
         <ReactModal
             isOpen={isOpen}
@@ -434,8 +433,9 @@ export default function SetFailedReasonModal({
                             value={
                                 formData.occurredAt
                                     ? new Date(formData.occurredAt)
-                                          .toISOString()
+                                          .toLocaleString("sv-SE")
                                           .slice(0, 16)
+                                          .replace(" ", "T")
                                     : ""
                             }
                             onChange={(e) =>
