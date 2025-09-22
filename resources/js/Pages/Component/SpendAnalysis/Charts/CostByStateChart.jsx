@@ -43,6 +43,7 @@ function CostByStateChart() {
     );
 
     const hasData = getChartData.length > 0;
+    console.log("getChartData:", getChartData);
     return (
         <ChartWrapper
             title={"Spend By State"}

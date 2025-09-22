@@ -78,6 +78,8 @@ function TotalSpendChart({ filters, setFilters, setSelected }) {
         });
         setSelected("table");
     };
+
+    console.log("Total Spend Chart Data:", getChartData);
     return (
         <ChartWrapper
             title={"Total Spend"}

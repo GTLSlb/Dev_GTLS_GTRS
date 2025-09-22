@@ -106,16 +106,16 @@ export function generateDummySpendData(options = {}) {
         const additionalCost = generateAdditionalCosts();
 
         const baseCost = 8000 + Math.floor(Math.random() * 5000);
+        // Store as number, not string - this prevents concatenation issues
         const additional = additionalCost
-            .reduce((acc, item) => acc + parseFloat(item.cost), 0)
-            .toFixed(2);
+            .reduce((acc, item) => acc + parseFloat(item.cost), 0);
         const fuelLevy = 70 + Math.floor(Math.random() * 250);
         const gst = 3 + Math.random() * 3.5;
 
         data.push({
             date: formatDate(randomDate),
             cost: baseCost,
-            additional: additional,
+            additional: additional, // Now stored as number
             fuelLevy: fuelLevy,
             GST: Math.round(gst * 10) / 10,
             state: state,
