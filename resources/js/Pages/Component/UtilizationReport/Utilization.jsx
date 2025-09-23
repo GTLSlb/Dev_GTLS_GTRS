@@ -48,7 +48,7 @@ export default function Utilization() {
                     await handleSessionExpiration();
                 });
             } else {
-                console.log(err);
+                console.error(err);
 
                 if (typeof setCellLoading === "function") {
                     setCellLoading(null);

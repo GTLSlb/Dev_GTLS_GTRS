@@ -649,7 +649,7 @@ export default function ExcelDeliveryReport({
                 AlertToast("Saved successfully", 1);
             })
             .catch((err) => {
-                console.log(err);
+                console.error(err);
                 AlertToast("Something went wrong", 2);
 
                 if (err.response && err.response.status === 401) {
@@ -665,7 +665,7 @@ export default function ExcelDeliveryReport({
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                     setIsLoading(false);
                 }
             });
@@ -702,7 +702,7 @@ export default function ExcelDeliveryReport({
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                     setIsLoading(false);
                 }
             });

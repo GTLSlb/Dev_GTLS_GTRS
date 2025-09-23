@@ -85,7 +85,7 @@ export default function AddSafetyTypeModal({
                     await handleSessionExpiration();
                 });
 
-                console.log(err);
+                console.error(err);
             }
         }
     };

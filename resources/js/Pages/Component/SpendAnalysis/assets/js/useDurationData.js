@@ -101,8 +101,8 @@ export function useDurationData(dummySpendData) {
             demurrage: [],
             totalDemurrageCost: 0,
             serviceTypeOccurrences: [],
-            additionalCosts: [], 
-            _additionalCostMap: {}, 
+            additionalCosts: [],
+            _additionalCostMap: {},
         });
 
 

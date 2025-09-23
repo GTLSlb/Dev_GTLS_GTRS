@@ -6,6 +6,8 @@ import AdditionalCharts from "./Comp/AdditionalCharts";
 import { CustomModal } from "@/Components/common/CustomModal";
 import HeatMapContainer from "./Comp/HeatMap/HeatMapContainer";
 import { Tabs, Tab, useDisclosure, Select, SelectItem } from "@heroui/react";
+import { dummySpendData } from "./assets/js/dataHandler";
+
 export default function SpendDashboard() {
     const services = [
         { key: "general", label: "General" },
@@ -31,18 +33,36 @@ export default function SpendDashboard() {
         service: "",
         date: "",
         additionalCosts: "",
+        state: "",
+        receiver: "",
+        serviceType: "",
+        demurrageType: "",
         dateStart: "",
-        dateEnd: ""
+        dateEnd: "",
     });
 
     const clearChartsFilters = (key) => {
-            // clear all filters
-            setFilters({
+        // Find the earliest and latest dates from dummySpendData
+        const earliestDate = new Date(
+            Math.min(...dummySpendData.map((item) => new Date(item.date)))
+        );
+        const latestDate = new Date(
+            Math.max(...dummySpendData.map((item) => new Date(item.date)))
+        );
+
+        // Set the filters with the earliest and latest dates
+        setFilters({
             service: "",
             date: "",
             additionalCosts: "",
+            state: "",
+            receiver: "",
+            serviceType: "",
+            demurrageType: "",
+            dateStart: earliestDate.toISOString(),
+            dateEnd: latestDate.toISOString(),
         });
-    }
+    };
     const tabs = [
         {
             key: "spend",
@@ -126,12 +146,7 @@ export default function SpendDashboard() {
                         onSelectionChange={(e) => {
                             setSelected(e);
                             if (e !== "table") {
-                                setFilters((prev) => ({
-                                    ...prev,
-                                    service: "",
-                                    date: "",
-                                    additionalCosts: "",
-                                }));
+                                clearChartsFilters()
                             }
                         }}
                         variant="underlined"

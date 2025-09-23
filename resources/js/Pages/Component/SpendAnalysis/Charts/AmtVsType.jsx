@@ -41,7 +41,6 @@ export function AmtVsType({ filters, setFilters, setSelected, clearChartsFilters
     );
 
     const handleClick = (data) => {
-        // console.log(getDateRange(data.activeLabel, selectedYearValue));
         clearChartsFilters();
         setFilters({
             ...filters,

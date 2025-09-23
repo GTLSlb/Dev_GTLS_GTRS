@@ -480,3 +480,17 @@ export const parseOperationAnalysisInfo = (data) => {
 
     return information;
 }
+
+export function getUniqueStates(data) {
+    const uniqueStates = [...new Set(data.map((item) => item.state))];
+    const uniqueColors = [
+        "#FF6633", "#00c49f", "#FF33FF",
+        "#ffbb28", "#3366E6", "#8884d8", "#B34D4D",]
+    const stateOptions = uniqueStates.map((state, index) => ({
+    label: state,
+    value: state.toLowerCase(),
+    color: uniqueColors[index],
+    }));
+
+    return stateOptions;
+}

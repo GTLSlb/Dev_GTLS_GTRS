@@ -175,6 +175,11 @@ function DemurrageCost({
                             label={renderCustomizedLabel}
                             fill="#8884d8"
                             dataKey="value"
+                            onClick={(e) => {
+                                clearChartsFilters();
+                                setFilters({ ...filters, demurrageType: e.name });
+                                setSelected("table");
+                            }}
                         >
                             {/* Map over the filtered data to create cells with the correct colors */}
                             {filteredPieChartData.map((entry, index) => {

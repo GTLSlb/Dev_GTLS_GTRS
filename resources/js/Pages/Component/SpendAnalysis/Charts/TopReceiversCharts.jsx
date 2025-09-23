@@ -11,7 +11,7 @@ import {
 import { ChartWrapper } from "./Card/ChartWrapper";
 import { useState, useEffect } from "react"; // Import useEffect for initial state
 import { useDurationData } from "../assets/js/useDurationData";
-import { dummySpendData } from "../assets/js/dataHandler";
+import { dummySpendData, getDateRange } from "../assets/js/dataHandler";
 import { DurationFilter } from "./Card/DurationFilter";
 import { formatNumberWithCommas } from "@/CommonFunctions";
 import { NoData } from "../Comp/NoDataChart";
@@ -44,12 +44,20 @@ function TopReceiversCharts({
     );
     const chartData = displayAllReceivers
         ? sortedReceiverData
-        : sortedReceiverData.slice(0, 5);
+        : sortedReceiverData;
     const handleChartModalOpen = () => {
         setDisplayAllReceivers(true);
     };
     const handleChartModalClose = () => {
         setDisplayAllReceivers(false);
+    };
+    const handleClick = (data) => {
+        clearChartsFilters();
+        setFilters({
+            ...filters,
+            receiver: data.activeLabel,
+        });
+        setSelected("table");
     };
     const hasData = getChartData.length > 0;
     return (
@@ -87,6 +95,7 @@ function TopReceiversCharts({
                             bottom: displayAllReceivers ? 30 : 10,
                             left: 0,
                         }}
+                        onClick={handleClick}
                         syncId="chart-sync-id"
                         empty={<p className="text-center">No data available</p>}
                     >

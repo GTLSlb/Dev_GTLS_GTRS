@@ -9,7 +9,7 @@ import {
 } from "recharts";
 
 import { ChartWrapper } from "./Card/ChartWrapper";
-import { dummySpendData } from "../assets/js/dataHandler";
+import { dummySpendData, getUniqueStates, getDateRange } from "../assets/js/dataHandler";
 import { useDurationData } from "../assets/js/useDurationData";
 import { DurationFilter } from "./Card/DurationFilter";
 import { formatNumberWithCommas } from "@/CommonFunctions";
@@ -23,11 +23,7 @@ function CostByStateChart({
     setSelected,
     clearChartsFilters,
 }) {
-    const stateOptions = [
-        { label: "NSW", value: "nsw" },
-        { label: "QLD", value: "qld" },
-        { label: "SA", value: "sa" },
-    ];
+    const stateOptions = getUniqueStates(dummySpendData);
 
     const {
         getChartData,
@@ -40,15 +36,24 @@ function CostByStateChart({
         availableYears,
         selectedPeriodValue,
         selectedQuarterKey,
+        selectedYearValue,
         setSelectedQuarterKey,
     } = useDurationData(dummySpendData);
 
     const [selectedState, setSelectedState] = useState(
         new Set(stateOptions.map((option) => option.value))
     );
+    const handleClick = (data) => {
+        clearChartsFilters();
+        setFilters({
+            ...filters,
+            dateStart: getDateRange(data.activeLabel, selectedYearValue).start,
+            dateEnd: getDateRange(data.activeLabel, selectedYearValue).end,
+        });
+        setSelected("table");
+    };
 
     const hasData = getChartData.length > 0;
-    console.log("getChartData:", getChartData);
     return (
         <ChartWrapper
             title={"Spend By State"}
@@ -72,12 +77,12 @@ function CostByStateChart({
                             placeholder="Select Bar Types"
                             disallowEmptySelection
                             size="sm"
-                            selectionMode="multiple" // Key property for multi-select
+                            selectionMode="multiple"
                             selectedKeys={selectedState}
                             onSelectionChange={setSelectedState}
                             className="mt-2"
                         >
-                            {stateOptions.map((option) => (
+                            {stateOptions?.map((option) => (
                                 <SelectItem
                                     key={option.value}
                                     value={option.value}
@@ -101,6 +106,7 @@ function CostByStateChart({
                             bottom: 0,
                             left: 0,
                         }}
+                        onClick={handleClick}
                     >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" tick={{ fontSize: 12 }} />
@@ -119,30 +125,17 @@ function CostByStateChart({
                             }}
                         />
                         <Legend verticalAlign="top" height={50} />
-                        {selectedState.has("qld") && (
+                        {stateOptions
+                        .filter((state) => Array.from(selectedState)?.includes(state.value))
+                        .map((state) => (
                             <Bar
-                                dataKey="qld"
-                                stackId="a"
-                                name="QLD"
-                                fill="#8884d8"
+                            key={state.value}
+                            dataKey={state.value.toUpperCase()}
+                            stackId={state.value.slice(0, 1)}
+                            name={state.label}
+                            fill={state.color}
                             />
-                        )}
-                        {selectedState.has("nsw") && (
-                            <Bar
-                                dataKey="nsw"
-                                stackId="a"
-                                name="NSW"
-                                fill="#82ca9d"
-                            />
-                        )}
-                        {selectedState.has("sa") && (
-                            <Bar
-                                dataKey="sa"
-                                stackId="a"
-                                name="SA"
-                                fill="#952988"
-                            />
-                        )}
+                        ))}
                     </BarChart>
                 ) : (
                     <NoData />

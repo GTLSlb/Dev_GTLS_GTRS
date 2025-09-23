@@ -157,7 +157,6 @@ export default function SafetyModal({
                         : null,
                 };
 
-                console.log("Submitting data:", submitData);
 
                 // API call with enhanced error handling
                 const response = await axios.post(
@@ -174,8 +173,7 @@ export default function SafetyModal({
 
                 // Handle successful response
                 if (response.status === 200 || response.status === 201) {
-                    console.log("API Response:", response.data);
-                    
+
                     // Update local data if function is provided
                     if (updateLocalData && typeof updateLocalData === 'function') {
                         const updatedData = response.data || submitData;
@@ -188,11 +186,11 @@ export default function SafetyModal({
 
                     // Force refresh the data - this is the key fix
                     if (fetchData && typeof fetchData === 'function') {
-                        console.log("Forcing data refresh...");
+
                         try {
                             // Wait for the fetchData to complete
                             await fetchData();
-                            console.log("Data refresh completed");
+
                         } catch (fetchError) {
                             console.error("Error during data refresh:", fetchError);
                         }

@@ -35,38 +35,6 @@ function AdditionalCharts({
     clearChartsFilters,
 }) {
     const information = parseOperationAnalysisInfo(dummySpendData);
-    // const information = [
-    //     { label: "# of Receivers", value: "1,437", icon: <FaUsers /> },
-    //     {
-    //         label: "Total Spend",
-    //         value: "$11,952,429.18",
-    //         icon: <FaDollarSign />,
-    //     },
-    //     {
-    //         label: "Fuel Surcharge cost",
-    //         value: "$795,297.81",
-    //         icon: <FaGasPump />,
-    //     },
-    //     {
-    //         label: "Total Weight",
-    //         value: "112,426.15",
-    //         icon: <FaWeightHanging />,
-    //     },
-    //     { label: "Total pallet space", value: "196,146.50", icon: <FaBox /> },
-    //     { label: "Total Chep", value: "115,444", icon: <FaCube /> },
-    //     { label: "Total Loscam", value: "26,104", icon: <FaTruck /> },
-    //     {
-    //         label: "Total Customer OWN",
-    //         value: "111,159",
-    //         icon: <FaUserShield />,
-    //     },
-    //     {
-    //         label: "# of True PODs",
-    //         value: "17,357",
-    //         icon: <FaClipboardCheck />,
-    //     },
-    //     { label: "% of True PODs", value: "96.59%", icon: <FaChartLine /> },
-    // ];
     return (
         <div>
             <div className="flex gap-2 mt-2 h-[80vh]">
