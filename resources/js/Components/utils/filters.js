@@ -2145,6 +2145,7 @@ export const getFiltersDifot = () => {
 };
 
 export const getFiltersUtilization = (minDate, maxDate) => {
+
     return [
         {
             name: "ManifestDateTime",
@@ -2157,7 +2158,7 @@ export const getFiltersUtilization = (minDate, maxDate) => {
         },
         {
             name: "ManifestNo",
-                     operator: "contains",
+            operator: "contains",
             type: "string",
             value: "",
             emptyValue: "",

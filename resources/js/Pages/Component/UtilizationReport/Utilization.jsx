@@ -19,6 +19,7 @@ import { forwardRef, useImperativeHandle } from "react";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import { canEditUtilizationReport } from "@/permissions";
 import UtilizationModal from "./UtilizationModal";
+import moment from "moment";
 
 export default function Utilization() {
     const gridRef = useRef(null);
@@ -27,7 +28,7 @@ export default function Utilization() {
     const minDate = getMinMaxValue(utilizationData, "ManifestDateTime", 1);
     const maxDate = getMinMaxValue(utilizationData, "ManifestDateTime", 2);
     const [filterValue, setFilterValue] = useState(
-        getFiltersUtilization(minDate, maxDate)
+        null
     );
     const [isLoading, setIsLoading] = useState(true);
     const [showEdit, setShowEdit] = useState(false);
@@ -37,6 +38,11 @@ export default function Utilization() {
         fetchUtilizationReportData();
     }, []);
 
+    useEffect(() => {
+        if(utilizationData && minDate != null && maxDate != null){
+            setFilterValue(getFiltersUtilization(minDate, maxDate));
+        }
+    }, [utilizationData]);
     const fetchUtilizationReportData = async () => {
         try {
             const res = await axios.get(`${url}Utilization/Report`, {
@@ -58,7 +64,7 @@ export default function Utilization() {
                     await handleSessionExpiration();
                 });
             } else {
-                console.log(err);
+                console.error(err);
 
                 if (typeof setCellLoading === "function") {
                     setCellLoading(null);
@@ -146,7 +152,8 @@ export default function Utilization() {
 
     const columns = useMemo(() => {
         // Return null if we don't have the required data yet
-        if (!utilizationData) {
+        if (!utilizationData || minDate == null || maxDate == null || filterValue == null) {
+            setIsLoading(true);
             return null;
         }
 
@@ -158,10 +165,19 @@ export default function Utilization() {
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
+            dateFormat: "DD-MM-YYYY",
             filterEditor: DateFilter,
             filterEditorProps: {
                 minDate: minDate,
                 maxDate: maxDate,
+            },
+            render: ({ value, cellProps }) => {
+                return value == undefined || value == null
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY hh:mm A") ==
+                      "Invalid date"
+                    ? ""
+                    : moment(value).format("DD-MM-YYYY");
             },
         },
         {
@@ -475,9 +491,9 @@ export default function Utilization() {
                 },
             });
         }
-
+        setIsLoading(false);
         return baseColumns;
-    }, [utilizationData, userPermissions]);
+    }, [utilizationData, userPermissions, minDate, maxDate, filterValue]);
 
     function handleEditClick(object) {
         // Open edit module with the selected object
