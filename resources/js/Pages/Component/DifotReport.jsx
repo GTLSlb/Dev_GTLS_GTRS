@@ -863,34 +863,6 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
             },
         },
         {
-            name: "GtlsError",
-            header: "GTLS Error",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: false,
-                wrapMultiple: false,
-                dataSource: GtlsErrorOptions,
-            },
-            render: ({ value }) => {
-                return value?.toLowerCase() == "yes" ? (
-                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                        {value}
-                    </span>
-                ) : value?.toLowerCase() == "no" ? (
-                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        {value}
-                    </span>
-                ) : (
-                    <span className="inline-flex items-center px-3 py-0.5 text-sm">
-                        {value ? value : ""}
-                    </span>
-                );
-            },
-        },
-        {
             name: "DelayReason",
             header: "Fail Reason",
             type: "string",
@@ -918,6 +890,15 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
         {
             name: "Explanation",
             header: "Explanation",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
+        {
+            name: "Resolution",
+            header: "Resolution",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
@@ -1011,13 +992,32 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
             },
         },
         {
-            name: "Resolution",
-            header: "Resolution",
-            type: "string",
+            name: "GtlsError",
+            header: "GTLS Error",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
-            filterEditor: StringFilter,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: false,
+                wrapMultiple: false,
+                dataSource: GtlsErrorOptions,
+            },
+            render: ({ value }) => {
+                return value?.toLowerCase() == "yes" ? (
+                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                        {value}
+                    </span>
+                ) : value?.toLowerCase() == "no" ? (
+                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                        {value}
+                    </span>
+                ) : (
+                    <span className="inline-flex items-center px-3 py-0.5 text-sm">
+                        {value ? value : ""}
+                    </span>
+                );
+            },
         },
         {
             name: "POD",
