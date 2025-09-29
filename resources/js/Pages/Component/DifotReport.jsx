@@ -294,11 +294,11 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
             ReceiverReference: "Receiver Reference",
             Service: "Service",
             RDD: "RDD",
-            OldRdd: "Old RDD",
+            OldRdd: "Original RDD",
             NewRdd: "New RDD",
             RddTime: "RDD Time",
             NewRddTime: "New RDD Time",
-            Reason: "Reason",
+            Reason: "Reason RDD change",
             ReasonDesc: "Reason Description",
             ChangedAt: "ChangedAt",
             DeliveryComment: "Delivery Comment",
@@ -308,7 +308,8 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
             GtlsError: "GTLS Error",
             Status: "Status",
             POD: "POD",
-            DelayReason: "Delay Reason",
+            DelayReason: "Fail Reason",
+            DelayDescription: "Fail Description",
             TransportComment: "Transport Comments",
         };
 
@@ -431,7 +432,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                 cell.numFmt = "dd-mm-yyyy";
             }
 
-            const OldRddIndex = newSelectedColumns.indexOf("Old RDD");
+            const OldRddIndex = newSelectedColumns.indexOf("Original RDD");
             // console.log("OldRddIndex", OldRddIndex);
             if (OldRddIndex !== -1) {
                 const cell = row.getCell(OldRddIndex + 1);
@@ -757,7 +758,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
         },
         {
             name: "OldRdd",
-            header: "Old RDD",
+            header: "Original RDD",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
@@ -824,7 +825,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
         },
         {
             name: "Reason",
-            header: "Reason",
+            header: "Reason RDD change",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
@@ -860,6 +861,68 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                     ? ""
                     : moment(value).format("DD-MM-YYYY hh:mm A");
             },
+        },
+        {
+            name: "GtlsError",
+            header: "GTLS Error",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: SelectFilter,
+            filterEditorProps: {
+                multiple: false,
+                wrapMultiple: false,
+                dataSource: GtlsErrorOptions,
+            },
+            render: ({ value }) => {
+                return value?.toLowerCase() == "yes" ? (
+                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                        {value}
+                    </span>
+                ) : value?.toLowerCase() == "no" ? (
+                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                        {value}
+                    </span>
+                ) : (
+                    <span className="inline-flex items-center px-3 py-0.5 text-sm">
+                        {value ? value : ""}
+                    </span>
+                );
+            },
+        },
+        {
+            name: "DelayReason",
+            header: "Fail Reason",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+            render: ({ value }) => {
+                return (
+                    <span className="flex justify-start items-left text-left">
+                        {value}
+                    </span>
+                );
+            },
+        },
+        {
+            name: "DelayDescription",
+            header: "Fail Description",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
+        },
+        {
+            name: "Explanation",
+            header: "Explanation",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            filterEditor: StringFilter,
         },
         {
             name: "DeliveryComment",
@@ -946,68 +1009,6 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                     </span>
                 );
             },
-        },
-        {
-            name: "GtlsError",
-            header: "GTLS Error",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: SelectFilter,
-            filterEditorProps: {
-                multiple: false,
-                wrapMultiple: false,
-                dataSource: GtlsErrorOptions,
-            },
-            render: ({ value }) => {
-                return value?.toLowerCase() == "yes" ? (
-                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                        {value}
-                    </span>
-                ) : value?.toLowerCase() == "no" ? (
-                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                        {value}
-                    </span>
-                ) : (
-                    <span className="inline-flex items-center px-3 py-0.5 text-sm">
-                        {value ? value : ""}
-                    </span>
-                );
-            },
-        },
-        {
-            name: "DelayReason",
-            header: "Delay Reason",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-            render: ({ value }) => {
-                return (
-                    <span className="flex justify-start items-left text-left">
-                        {value}
-                    </span>
-                );
-            },
-        },
-        {
-            name: "DelayDescription",
-            header: "Delay Description",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
-        },
-        {
-            name: "Explanation",
-            header: "Explanation",
-            type: "string",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 170,
-            filterEditor: StringFilter,
         },
         {
             name: "Resolution",
