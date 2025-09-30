@@ -347,7 +347,7 @@ export default function Utilization() {
             filterEditor: StringFilter,
         },
         {
-            name: "PickupAllowTime",
+            name: "ExtraCollectionTimeInMinutes",
             header: "North Rock Allow Time (45Min)",
             headerAlign: "center",
             textAlign: "center",
@@ -402,7 +402,7 @@ export default function Utilization() {
             filterEditor: StringFilter,
         },
         {
-            name: "DeliveryAllowTime",
+            name: "ExtraUnloadTimeInMinutes",
             header: "Ingleburn Allow Time (30Min)",
             headerAlign: "center",
             textAlign: "center",
