@@ -5,7 +5,6 @@ import swal from "sweetalert";
 import { CustomContext } from "@/CommonContext";
 import {
     handleSessionExpiration,
-    AlertToast,
     renderConsDetailsLink,
 } from "@/CommonFunctions";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
@@ -20,6 +19,9 @@ import { PencilIcon } from "@heroicons/react/20/solid";
 import { canEditUtilizationReport } from "@/permissions";
 import UtilizationModal from "./UtilizationModal";
 import moment from "moment";
+import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
+import { handleFilterTable } from "@/Components/utils/filterUtils";
+import { exportToExcel } from "@/Components/utils/excelUtils";
 
 export default function Utilization() {
     const gridRef = useRef(null);
@@ -51,7 +53,18 @@ export default function Utilization() {
                     Authorization: `Bearer ${Token}`,
                 },
             });
-            setUtilizationData(res.data || []);
+            // Map over the data and add a new field called "RevisedUtilization"
+            // that has Math.max(data.WeightUtilization, data.PalletUtilization)
+            const revisedData = res.data?.length > 0 && res.data.map((item) => {
+                return {
+                    ...item,
+                    RevisedUtilization: Math.max(
+                        item.WeightUtilization,
+                        item.PalletUtilization
+                    ),
+                };
+            });
+            setUtilizationData(revisedData || []);
         } catch (err) {
             if (err.response && err.response.status === 401) {
                 swal({
@@ -273,7 +286,7 @@ export default function Utilization() {
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
-            filterEditor: StringFilter,
+            filterEditor: NumberFilter,
         },
         {
             name: "PalletsVehicleCapacity",
@@ -281,7 +294,7 @@ export default function Utilization() {
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
-            filterEditor: StringFilter,
+            filterEditor: NumberFilter,
         },
         {
             name: "PalletUtilization",
@@ -289,10 +302,7 @@ export default function Utilization() {
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 230,
-            filterEditor: StringFilter,
-            render: ({ value, data }) => {
-                return `${value} %`;
-            },
+            filterEditor: NumberFilter,
         },
         {
             name: "Weight",
@@ -300,7 +310,7 @@ export default function Utilization() {
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
-            filterEditor: StringFilter,
+            filterEditor: NumberFilter,
         },
         {
             name: "WeightVehicleCapacity",
@@ -308,7 +318,7 @@ export default function Utilization() {
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 180,
-            filterEditor: StringFilter,
+            filterEditor: NumberFilter,
         },
         {
             name: "WeightUtilization",
@@ -316,10 +326,7 @@ export default function Utilization() {
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 230,
-            filterEditor: StringFilter,
-            render: ({ value, data }) => {
-                return `${value} %`;
-            }
+            filterEditor: NumberFilter,
         },
         {
             name: "PickupTimeIn",
@@ -344,7 +351,7 @@ export default function Utilization() {
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 230,
-            filterEditor: StringFilter,
+            filterEditor: TimeFilter,
         },
         {
             name: "ExtraCollectionTimeInMinutes",
@@ -352,13 +359,15 @@ export default function Utilization() {
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 270,
+            filterEditor: NumberFilter,
         },
         {
             name: "CollectionDemurrageCharges",
-            header: "Demurrage Charges ($97.85 Per Hr or $1.63 Per Minute)",
+            header: "Demurrage Charges ($1.75 Per Minute)",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 400,
+            filterEditor: NumberFilter,
         },
         {
             name: "PickupReason",
@@ -394,12 +403,12 @@ export default function Utilization() {
             filterEditor: TimeFilter,
         },
         {
-            name: "ExtraUnloadTimeInMinutes",
+            name: "UnloadTime",
             header: "Unload Turnaround Time",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 200,
-            filterEditor: StringFilter,
+            filterEditor: TimeFilter,
         },
         {
             name: "ExtraUnloadTimeInMinutes",
@@ -407,15 +416,15 @@ export default function Utilization() {
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 270,
-            filterEditor: StringFilter,
+            filterEditor: NumberFilter,
         },
         {
             name: "UnloadDemurrageCharges",
-            header: "Unload Demurrage Charges ($97.85 Per Hr or $1.63 Per Minute)",
+            header: "Unload Demurrage Charges ($1.75 Per Minute)",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 470,
-            filterEditor: StringFilter,
+            filterEditor: NumberFilter,
         },
         {
             name: "DeliveryReason",
@@ -431,7 +440,7 @@ export default function Utilization() {
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 210,
-            filterEditor: StringFilter,
+            filterEditor: TimeFilter,
         },
         {
             name: "TotalCharge",
@@ -439,7 +448,7 @@ export default function Utilization() {
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
-            filterEditor: StringFilter,
+            filterEditor: NumberFilter,
         },
 
         {
@@ -456,9 +465,9 @@ export default function Utilization() {
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 210,
-            filterEditor: StringFilter,
+            filterEditor: NumberFilter,
             render: ({ value, data }) => {
-                return `${Math.max(data.WeightUtilization, data.PalletUtilization)} %`;
+                return data.RevisedUtilization;
             },
         },
     ];
@@ -524,13 +533,14 @@ export default function Utilization() {
             Timeslot: (value) => (value ? "True" : "False"),
             Status: (value, item) =>
                 item["AdminStatusCodes_Description"] || value,
+            RevisedUtilization: (value, item) => Math.max(item.WeightUtilization, item.PalletUtilization)
         };
 
         // Call the `exportToExcel` function
         exportToExcel(
             jsonData, // Filtered data
             columnMapping, // Dynamic column mapping from columns
-            "NoDeliveryinfo.xlsx", // Export file name
+            "UtilizationReport.xlsx", // Export file name
             customCellHandlers, // Custom handlers for formatting cells
             ["DespatchDateTime", "DeliveryRequiredDateTime"] // Column names
         );
