@@ -305,7 +305,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
             LTLFTL: "LTL/FTL",
             ActualDeliveyDate: "Actual Delivery Date",
             OnTime: "On Time",
-            GtlsError: "GTLS Error",
+            GtlsError: "Transport Fail",
             Status: "Status",
             POD: "POD",
             DelayReason: "Fail Reason",
@@ -993,7 +993,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
         },
         {
             name: "GtlsError",
-            header: "GTLS Error",
+            header: "Transport Fail",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
