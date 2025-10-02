@@ -368,6 +368,13 @@ export default function Utilization() {
             textAlign: "center",
             defaultWidth: 400,
             filterEditor: NumberFilter,
+            render: ({ value, data }) => {
+                return (
+                    <div className="flex justify-center items-center">
+                        <span>${value.toFixed(2)}</span>
+                    </div>
+                );
+            },
         },
         {
             name: "PickupReason",
@@ -425,6 +432,13 @@ export default function Utilization() {
             textAlign: "center",
             defaultWidth: 470,
             filterEditor: NumberFilter,
+            render: ({ value, data }) => {
+                return (
+                    <div className="flex justify-center items-center">
+                        <span>${value.toFixed(2)}</span>
+                    </div>
+                );
+            },
         },
         {
             name: "DeliveryReason",
