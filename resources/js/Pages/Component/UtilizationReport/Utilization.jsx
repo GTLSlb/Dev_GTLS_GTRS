@@ -303,6 +303,13 @@ export default function Utilization() {
             textAlign: "center",
             defaultWidth: 230,
             filterEditor: NumberFilter,
+            render: ({ value, data }) => {
+                return (
+                    <div className="flex justify-center items-center">
+                        <span>{value} %</span>
+                    </div>
+                );
+            },
         },
         {
             name: "Weight",
@@ -327,6 +334,13 @@ export default function Utilization() {
             textAlign: "center",
             defaultWidth: 230,
             filterEditor: NumberFilter,
+            render: ({ value, data }) => {
+                return (
+                    <div className="flex justify-center items-center">
+                        <span>{value} %</span>
+                    </div>
+                );
+            },
         },
         {
             name: "PickupTimeIn",
@@ -435,7 +449,7 @@ export default function Utilization() {
             render: ({ value, data }) => {
                 return (
                     <div className="flex justify-center items-center">
-                        <span>${value.toFixed(2)}</span>
+                        <span>$ {value.toFixed(2)}</span>
                     </div>
                 );
             },
@@ -481,7 +495,11 @@ export default function Utilization() {
             defaultWidth: 210,
             filterEditor: NumberFilter,
             render: ({ value, data }) => {
-                return data.RevisedUtilization;
+                return (
+                    <div className="flex justify-center items-center">
+                        <span>{data.RevisedUtilization} %</span>
+                    </div>
+                );
             },
         },
     ];
