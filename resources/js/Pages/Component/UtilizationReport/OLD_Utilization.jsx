@@ -49,7 +49,7 @@ export default function Utilization() {
                 });
             } else {
                 console.log(err);
-
+                AlertToast("Something went wrong", 2);
                 if (typeof setCellLoading === "function") {
                     setCellLoading(null);
                 }
@@ -855,9 +855,27 @@ export default function Utilization() {
                 setIsLoading(false);
             })
             .catch((err) => {
-                console.error(err);
-                AlertToast("Something went wrong", 2);
-                setIsLoading(false);
+                if (err.response && err.response.status === 401) {
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        icon: "info",
+                        buttons: {
+                            confirm: {
+                                text: "OK",
+                                value: true,
+                                visible: true,
+                                className: "",
+                                closeModal: true,
+                            },
+                        },
+                    }).then(() => handleSessionExpiration());
+                    throw err;
+                } else {
+                    AlertToast("Something went wrong", 2);
+                    console.error("API POST request error:", err);
+                    throw err;
+                }
             });
     };
 

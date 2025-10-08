@@ -16,7 +16,6 @@ import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import SupportModal from "@/Pages/Component/modals/SupportModal";
 import { CustomContext } from "@/CommonContext";
 import PropTypes from "prop-types";
-import axios from "axios";
 
 export default function MainSidebar({ setMobileMenuOpen, mobileMenuOpen }) {
     const { user, allowedApplications } = useContext(CustomContext);

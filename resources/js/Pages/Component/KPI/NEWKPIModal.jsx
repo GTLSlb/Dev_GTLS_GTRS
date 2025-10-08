@@ -57,7 +57,7 @@ export default function NewKPIModalAddReason({
             },
         ];
         try {
-            // Make the API request using Axios or any other library
+            // Make the API request
             SetIsLoading(true);
 
             const headers = {

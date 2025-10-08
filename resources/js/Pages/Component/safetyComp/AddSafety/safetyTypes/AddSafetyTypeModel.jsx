@@ -4,7 +4,7 @@ import { useContext, useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
 import swal from "sweetalert";
-import { handleSessionExpiration } from "@/CommonFunctions";
+import { AlertToast, handleSessionExpiration } from "@/CommonFunctions";
 import { CustomContext } from "@/CommonContext";
 
 export default function AddSafetyTypeModal({
@@ -84,8 +84,9 @@ export default function AddSafetyTypeModal({
                 }).then(async function () {
                     await handleSessionExpiration();
                 });
-
-                console.log(err);
+            }else{
+                console.log(error);
+                AlertToast("Something went wrong", 2);
             }
         }
     };

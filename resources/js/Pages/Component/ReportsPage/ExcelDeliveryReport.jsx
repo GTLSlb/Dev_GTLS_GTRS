@@ -687,8 +687,6 @@ export default function ExcelDeliveryReport({
                 AlertToast("Saved successfully", 1);
             })
             .catch((err) => {
-                AlertToast("Something went wrong", 2);
-
                 if (err.response && err.response.status === 401) {
                     // Handle 401 error using SweetAlert
                     swal({
@@ -701,6 +699,7 @@ export default function ExcelDeliveryReport({
                         await handleSessionExpiration();
                     });
                 } else {
+                    AlertToast("Something went wrong", 2);
                     // Handle other errors
                     console.log(err);
                     setIsLoading(false);

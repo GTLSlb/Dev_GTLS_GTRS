@@ -5,7 +5,8 @@ import axios from "axios";
 import "../../../../../css/graphTable.css";
 import PropTypes from "prop-types";
 import { CustomContext } from "@/CommonContext";
-
+import { AlertToast, handleSessionExpiration } from "@/CommonFunctions";
+import swal from "sweetalert";
 function InlineTable({
     graphData,
     CustomerId,
@@ -342,8 +343,28 @@ function InlineTable({
                     setGraphData(updatedData);
                 })
                 .catch((err) => {
-                    console.error("Error updating recordMap:", err);
-                });
+                if (err.response && err.response.status === 401) {
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        icon: "info",
+                        buttons: {
+                            confirm: {
+                                text: "OK",
+                                value: true,
+                                visible: true,
+                                className: "",
+                                closeModal: true,
+                            },
+                        },
+                    }).then(() => handleSessionExpiration());
+                    throw err;
+                } else {
+                    AlertToast("Something went wrong", 2);
+                    console.error("Error updating record map:", err);
+                    throw err;
+                }
+            });
         },
         [dataSource, url]
     );

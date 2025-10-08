@@ -7,6 +7,8 @@ import axios from "axios";
 import PropTypes from "prop-types";
 import { CustomContext } from "@/CommonContext";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import { handleSessionExpiration } from "@/CommonFunctions";
+import swal from "sweetalert";
 
 function ConsignmentGraph({ customers, CustomerId }) {
     const { Token, user, userPermissions, url } = useContext(CustomContext);
@@ -80,7 +82,26 @@ function ConsignmentGraph({ customers, CustomerId }) {
                 setGraphData(res.data);
             })
             .catch((err) => {
-                console.error(err);
+                if (err.response && err.response.status === 401) {
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        icon: "info",
+                        buttons: {
+                            confirm: {
+                                text: "OK",
+                                value: true,
+                                visible: true,
+                                className: "",
+                                closeModal: true,
+                            },
+                        },
+                    }).then(() => handleSessionExpiration());
+                    throw err;
+                } else {
+                    console.error("API POST request error:", err);
+                    throw err;
+                }
             });
     }
 

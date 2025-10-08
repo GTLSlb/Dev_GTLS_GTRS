@@ -6,7 +6,7 @@ import moment from "moment";
 import { PencilIcon } from "@heroicons/react/20/solid";
 import swal from "sweetalert";
 import axios from "axios";
-import { handleSessionExpiration } from "@/CommonFunctions";
+import { AlertToast, handleSessionExpiration } from "@/CommonFunctions";
 import { Spinner } from "@heroui/react";
 import ComboBox from "@/Components/ComboBox";
 import { CustomContext } from "@/CommonContext";
@@ -71,6 +71,7 @@ export default function ViewComments({
                     });
                 } else {
                     // Handle other errors
+                    AlertToast("Something went wrong", 2);
                     console.error(err);
                 }
             });

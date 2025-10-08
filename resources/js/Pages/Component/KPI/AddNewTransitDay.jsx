@@ -145,6 +145,7 @@ function AddNewTransitDay({ setNewTransitDays }) {
                     });
                 } else {
                     // Handle other errors
+                    AlertToast("Something went wrong", 2);
                     console.error(err);
                 }
             });

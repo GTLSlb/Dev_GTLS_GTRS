@@ -122,7 +122,26 @@ export default function Incident({ gtccrUrl }) {
                 setIncident(res.data[0]);
             })
             .catch((err) => {
-                console.error("Encountered an Error", err);
+                if (err.response && err.response.status === 401) {
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        icon: "info",
+                        buttons: {
+                            confirm: {
+                                text: "OK",
+                                value: true,
+                                visible: true,
+                                className: "",
+                                closeModal: true,
+                            },
+                        },
+                    }).then(() => handleSessionExpiration());
+                    throw err;
+                } else {
+                    console.error("API POST request error:", err);
+                    throw err;
+                }
             });
     }
 

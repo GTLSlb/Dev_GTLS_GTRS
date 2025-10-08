@@ -15,7 +15,7 @@ import {
 } from "@heroui/react";
 import "../../../../css/scroll.css";
 import swal from "sweetalert";
-import { handleSessionExpiration } from "@/CommonFunctions";
+import { AlertToast, handleSessionExpiration } from "@/CommonFunctions";
 import { CustomContext } from "@/CommonContext";
 import axios from "axios";
 
@@ -95,6 +95,7 @@ export default function AddFailedModal({ isOpen, handleClose, reason }) {
                     await handleSessionExpiration();
                 });
             } else {
+                AlertToast("Something went wrong", 2);
                 console.error(error);
             }
         }

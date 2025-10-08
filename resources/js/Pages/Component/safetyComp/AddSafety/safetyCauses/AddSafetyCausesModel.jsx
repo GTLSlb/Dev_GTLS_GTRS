@@ -39,9 +39,6 @@ export default function AddSafetyCausesModal({
         // Prevent the default form submission behavior
         try {
             SetIsLoading(true)
-            // Make the API request using Axios or any other library
-            // Handle the response as needed
-            // setInputValue("");
 
             setTimeout(() => {
                 handleClose();

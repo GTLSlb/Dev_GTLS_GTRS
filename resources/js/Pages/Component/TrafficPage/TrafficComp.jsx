@@ -12,6 +12,8 @@ import { useDisclosure } from "@heroui/react";
 import axios from "axios";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import EventModal from "./EventModal";
+import { handleSessionExpiration } from "@/CommonFunctions";
+import swal from "sweetalert";
 
 const gtrsWebUrl = window.Laravel.gtrsWeb;
 
@@ -42,7 +44,7 @@ const loadData = async ({ skip, limit, sortInfo, filterValue }) => {
 
     return fetch(url).then((response) => {
         const totalCount = response.headers.get("X-Total-Count");
-       
+
         return response.json().then((data) => {
             // const totalCount = data.pagination.total;
             return Promise.resolve({ data, count: parseInt(totalCount) });
@@ -131,12 +133,31 @@ function TrafficComp() {
             .then((res) => {
                 setCategoriesOptions(
                     createNewLabelObjectsUsingIds(res.data,"id", "event_category")
-                    
+
                 );
                 setCategories(res.data);
             })
             .catch((err) => {
-                console.error(err);
+                if (err.response && err.response.status === 401) {
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        icon: "info",
+                        buttons: {
+                            confirm: {
+                                text: "OK",
+                                value: true,
+                                visible: true,
+                                className: "",
+                                closeModal: true,
+                            },
+                        },
+                    }).then(() => handleSessionExpiration());
+                    throw err;
+                } else {
+                    console.error("API POST request error:", err);
+                    throw err;
+                }
             });
     }
 
@@ -298,7 +319,7 @@ function TrafficComp() {
         });
     };
 
-    
+
     const [filterValue, setFilterValue] = useState(defaultFilterValue);
 
     const dataSource = useCallback(loadData, []);

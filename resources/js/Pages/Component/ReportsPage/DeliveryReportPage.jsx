@@ -472,10 +472,11 @@ export default function DeliveryReportPage({
                                                     icon: "info",
                                                     confirmButtonText: "OK",
                                                 }).then(async function () {
-                    await handleSessionExpiration();
-                });
+                                                    await handleSessionExpiration();
+                                                });
                                             } else {
                                                 // Handle other errors
+                                                AlertToast("Something went wrong", 2);
                                                 console.error(error);
                                             }
                                         });
@@ -568,8 +569,8 @@ export default function DeliveryReportPage({
                                 icon: "info",
                                 confirmButtonText: "OK",
                             }).then(async function () {
-                    await handleSessionExpiration();
-                });
+                                await handleSessionExpiration();
+                            });
                         } else {
                             // Handle other errors
                             console.error(error);
@@ -1071,9 +1072,9 @@ export default function DeliveryReportPage({
             DeliveredDateTime: (value) => formatDateToExcel(value),
             Comments: (value) =>
                 Array.isArray(value)
-                    ?
-                // eslint-disable-next-line react/prop-types
-                    value.map(
+                    ? // eslint-disable-next-line react/prop-types
+                      value
+                          .map(
                               (item) =>
                                   `${formatDate(item.AddedAt)}, ${item.Comment}`
                           )

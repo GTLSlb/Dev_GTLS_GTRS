@@ -31,6 +31,8 @@ import {
 import { ChevronLeftIcon, MapPinIcon } from "@heroicons/react/20/solid";
 import { AlertToast } from "@/permissions";
 import axios from "axios";
+import { handleSessionExpiration } from "@/CommonFunctions";
+import swal from "sweetalert";
 
 const googleMapsKey = window.Laravel.googleMapsKey;
 const center = { lat: -25.2744, lng: 133.7751 };
@@ -148,10 +150,29 @@ function NewConsignmentTracking() {
                     zoomToPolyline(response.data.vehicleRoad);
                 }
             })
-            .catch((error) => {
-                setLoading(false);
-                console.error(error);
-                AlertToast(error.response.data.message, 2);
+            .catch((err) => {
+                setLoading(false)
+                if (err.response && err.response.status === 401) {
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        icon: "info",
+                        buttons: {
+                            confirm: {
+                                text: "OK",
+                                value: true,
+                                visible: true,
+                                className: "",
+                                closeModal: true,
+                            },
+                        },
+                    }).then(() => handleSessionExpiration());
+                    throw err;
+                } else {
+                    AlertToast(err.response.data.message || "Something went wrong", 2);
+                    console.error("API POST request error:", err);
+                    throw err;
+                }
             });
     };
 
