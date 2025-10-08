@@ -55,16 +55,16 @@ export default function Utilization() {
             });
             // Map over the data and add a new field called "RevisedUtilization"
             // that has Math.max(data.WeightUtilization, data.PalletUtilization)
-            const revisedData = res.data?.length > 0 && res.data.map((item) => {
-                return {
-                    ...item,
-                    RevisedUtilization: Math.max(
-                        item.WeightUtilization,
-                        item.PalletUtilization
-                    ),
-                };
-            });
-            setUtilizationData(revisedData || []);
+            // const revisedData = res.data?.length > 0 && res.data.map((item) => {
+            //     return {
+            //         ...item,
+            //         RevisedUtilization: Math.max(
+            //             item.WeightUtilization,
+            //             item.PalletUtilization
+            //         ),
+            //     };
+            // });
+            setUtilizationData(res.data || []);
         } catch (err) {
             if (err.response && err.response.status === 401) {
                 swal({
@@ -369,7 +369,8 @@ export default function Utilization() {
         },
         {
             name: "ExtraCollectionTimeInMinutes",
-            header: "North Rock Allow Time (45Min)",
+            // header: "North Rock Allow Time (45Min)",
+            header: "Extra Pickup Time (45Min)",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 270,
@@ -409,7 +410,7 @@ export default function Utilization() {
 
         {
             name: "DelTimeIn",
-            header: "Time In",
+            header: "Delivery Time In",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
@@ -417,7 +418,7 @@ export default function Utilization() {
         },
         {
             name: "DelTimeOut",
-            header: "Time Out",
+            header: "Delivery Time Out",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 170,
@@ -433,7 +434,8 @@ export default function Utilization() {
         },
         {
             name: "ExtraUnloadTimeInMinutes",
-            header: "Ingleburn Allow Time (30Min)",
+            // header: "Ingleburn Allow Time (30Min)",
+            header: "Extra Delivery Time (30Min)",
             headerAlign: "center",
             textAlign: "center",
             defaultWidth: 270,
@@ -487,21 +489,21 @@ export default function Utilization() {
             defaultWidth: 200,
             filterEditor: StringFilter,
         },
-        {
-            name: "RevisedUtilization",
-            header: "Revised Utilisation %",
-            headerAlign: "center",
-            textAlign: "center",
-            defaultWidth: 210,
-            filterEditor: NumberFilter,
-            render: ({ value, data }) => {
-                return (
-                    <div className="flex justify-center items-center">
-                        <span>{data.RevisedUtilization} %</span>
-                    </div>
-                );
-            },
-        },
+        // {
+        //     name: "RevisedUtilization",
+        //     header: "Revised Utilisation %",
+        //     headerAlign: "center",
+        //     textAlign: "center",
+        //     defaultWidth: 210,
+        //     filterEditor: NumberFilter,
+        //     render: ({ value, data }) => {
+        //         return (
+        //             <div className="flex justify-center items-center">
+        //                 <span>{data.RevisedUtilization} %</span>
+        //             </div>
+        //         );
+        //     },
+        // },
     ];
 
         // Add edit column only if user has edit permissions
@@ -565,7 +567,7 @@ export default function Utilization() {
             Timeslot: (value) => (value ? "True" : "False"),
             Status: (value, item) =>
                 item["AdminStatusCodes_Description"] || value,
-            RevisedUtilization: (value, item) => Math.max(item.WeightUtilization, item.PalletUtilization)
+            // RevisedUtilization: (value, item) => Math.max(item.WeightUtilization, item.PalletUtilization)
         };
 
         // Call the `exportToExcel` function
