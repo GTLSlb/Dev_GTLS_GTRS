@@ -45,6 +45,18 @@ export default function Utilization() {
             setFilterValue(getFiltersUtilization(minDate, maxDate));
         }
     }, [utilizationData]);
+    const isALink = (value) => {
+        const urlPattern = new RegExp(
+            "^(https?:\\/\\/)?" + // protocol
+                "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
+                "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+                "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+                "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+                "(\\#[-a-z\\d_]*)?$",
+            "i"
+        ); // fragment locator
+        return !!urlPattern.test(value);
+    }
     const fetchUtilizationReportData = async () => {
         try {
             const res = await axios.get(`${url}Utilization/Report`, {
@@ -53,17 +65,6 @@ export default function Utilization() {
                     Authorization: `Bearer ${Token}`,
                 },
             });
-            // Map over the data and add a new field called "RevisedUtilization"
-            // that has Math.max(data.WeightUtilization, data.PalletUtilization)
-            // const revisedData = res.data?.length > 0 && res.data.map((item) => {
-            //     return {
-            //         ...item,
-            //         RevisedUtilization: Math.max(
-            //             item.WeightUtilization,
-            //             item.PalletUtilization
-            //         ),
-            //     };
-            // });
             setUtilizationData(res.data || []);
         } catch (err) {
             if (err.response && err.response.status === 401) {
@@ -480,30 +481,26 @@ export default function Utilization() {
             defaultWidth: 170,
             filterEditor: NumberFilter,
         },
-
         {
             name: "ProofOfDemurrage",
             header: "Proof Of Demurrage",
             headerAlign: "center",
             textAlign: "center",
-            defaultWidth: 200,
+            defaultWidth: 250,
             filterEditor: StringFilter,
+            render: ({ value, data }) => {
+                const links = value.split('\n').map((link, index) => (
+                    <div key={index} className={`flex justify-center items-center ${isALink(link) && `text-blue-500 underline cursor-pointer`}`}>
+                        {isALink(link) ? <a target="_blank" href={link}>{link}</a> : <span>{link}</span>}
+                    </div>
+                ));
+                return (
+                    <div className="flex flex-col justify-center items-center">
+                        {links}
+                    </div>
+                );
+            },
         },
-        // {
-        //     name: "RevisedUtilization",
-        //     header: "Revised Utilisation %",
-        //     headerAlign: "center",
-        //     textAlign: "center",
-        //     defaultWidth: 210,
-        //     filterEditor: NumberFilter,
-        //     render: ({ value, data }) => {
-        //         return (
-        //             <div className="flex justify-center items-center">
-        //                 <span>{data.RevisedUtilization} %</span>
-        //             </div>
-        //         );
-        //     },
-        // },
     ];
 
         // Add edit column only if user has edit permissions
