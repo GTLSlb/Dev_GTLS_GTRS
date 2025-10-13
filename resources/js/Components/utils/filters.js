@@ -2200,7 +2200,7 @@ export const getFiltersUtilization = (minDate, maxDate) => {
             emptyValue: "",
         },
         {
-            name: "ReceiverReference",
+            name: "SenderReference",
                      operator: "contains",
             type: "string",
             value: "",

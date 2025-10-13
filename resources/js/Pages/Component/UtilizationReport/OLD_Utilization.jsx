@@ -259,7 +259,7 @@ export default function Utilization() {
             readOnly: true,
         },
         {
-            data: "ReceiverReference",
+            data: "SenderReference",
             title: "OBD Number",
             type: "text",
             readOnly: true,

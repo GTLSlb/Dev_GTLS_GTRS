@@ -267,7 +267,7 @@ export default function Utilization() {
             },
         },
         {
-            name: "ReceiverReference",
+            name: "SenderReference",
             header: "OBD Number",
             headerAlign: "center",
             textAlign: "center",
@@ -481,6 +481,13 @@ export default function Utilization() {
             textAlign: "center",
             defaultWidth: 170,
             filterEditor: NumberFilter,
+            render: ({ value, data }) => {
+                return (
+                    <div className="flex justify-center items-center">
+                        <span>$ {value}</span>
+                    </div>
+                );
+            },
         },
         {
             name: "ProofOfDemurrage",
@@ -560,6 +567,7 @@ export default function Utilization() {
             WeightUtilization: (value) => (typeof value === "number" ? `${value} %` : 0),
             CollectionDemurrageCharges: (value) => (typeof value === "number" ? `$${value.toFixed(2)}` : "$0.00"),
             UnloadDemurrageCharges: (value) => (typeof value === "number" ? `$${value.toFixed(2)}` : "$0.00"),
+            TotalCharge: (value) => (typeof value === "number" ? `$${value}` : "$0"),
         };
 
         // Call the `exportToExcel` function
