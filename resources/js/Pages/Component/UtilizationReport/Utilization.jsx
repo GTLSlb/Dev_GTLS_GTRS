@@ -6,6 +6,7 @@ import { CustomContext } from "@/CommonContext";
 import {
     handleSessionExpiration,
     renderConsDetailsLink,
+    formatDateToExcel,
 } from "@/CommonFunctions";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
@@ -552,19 +553,13 @@ export default function Utilization() {
 
         // Define custom cell handlers for specific columns
         const customCellHandlers = {
-            DespatchDateTime: (value) =>
-                value ? formatDateToExcel(value) : "",
-            DeliveryRequiredDateTime: (value) =>
-                value ? formatDateToExcel(value) : "",
-            SenderSuburb: (value, item) => item["Send_Suburb"] || value,
-            SenderState: (value, item) => item["Send_State"] || value,
-            ReceiverSuburb: (value, item) => item["Del_Suburb"] || value,
-            ReceiverState: (value, item) => item["Del_State"] || value,
-            POD: (value) => (value ? "True" : "False"),
-            Timeslot: (value) => (value ? "True" : "False"),
-            Status: (value, item) =>
-                item["AdminStatusCodes_Description"] || value,
-            // RevisedUtilization: (value, item) => Math.max(item.WeightUtilization, item.PalletUtilization)
+            // Date format like this "dd-mm-yyyy"
+            ManifestDateTime: (value) =>
+                value ? formatDateToExcel(value, "dd-mm-yyyy") : "",
+            PalletUtilization: (value) => (typeof value === "number" ? `${value} %` : 0),
+            WeightUtilization: (value) => (typeof value === "number" ? `${value} %` : 0),
+            CollectionDemurrageCharges: (value) => (typeof value === "number" ? `$${value.toFixed(2)}` : "$0.00"),
+            UnloadDemurrageCharges: (value) => (typeof value === "number" ? `$${value.toFixed(2)}` : "$0.00"),
         };
 
         // Call the `exportToExcel` function
@@ -573,7 +568,10 @@ export default function Utilization() {
             columnMapping, // Dynamic column mapping from columns
             "UtilizationReport.xlsx", // Export file name
             customCellHandlers, // Custom handlers for formatting cells
-            ["DespatchDateTime", "DeliveryRequiredDateTime"] // Column names
+            ["ManifestDateTime"], // Column names
+            [
+                { field: "ManifestDateTime", format: "dd-mm-yyyy" },
+            ]
         );
     };
 

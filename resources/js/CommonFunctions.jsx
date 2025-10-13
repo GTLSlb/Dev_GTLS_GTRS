@@ -202,8 +202,11 @@ export const isDummyAccountWithDummyData = (dummy, value) => {
     }
 };
 
-export const formatDateToExcel = (dateValue) => {
-    const date = new Date(dateValue);
+export const formatDateToExcel = (dateValue, format = "dd-mm-yyyy hh:mm") => {
+    let date = new Date(dateValue);
+    if (format !=  "dd-mm-yyyy hh:mm") {
+        date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    }
 
     // Check if the date is valid
     if (isNaN(date.getTime())) {

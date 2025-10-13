@@ -2,6 +2,16 @@
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 
+const formatDateToString = (date) => {
+    if (!(date instanceof Date) || isNaN(date)) return date; // Handle null/invalid dates
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+    const year = date.getFullYear();
+
+    return `${day}-${month}-${year}`;
+};
+
 // Utility function for exporting to Excel
 export const exportToExcel = (
     jsonData,
