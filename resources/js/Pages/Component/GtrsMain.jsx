@@ -65,6 +65,7 @@ import ContactRep from "./ContactsRep/ContactRep";
 import DifotReport from "./DifotReport";
 import Utilization from "./UtilizationReport/Utilization";
 import { CustomContext } from "@/CommonContext";
+import GMIKPIPack from "./GMI/GMIKPIPack";
 
 export default function GtrsMain({
     setCustomerAccounts,
@@ -1364,6 +1365,32 @@ export default function GtrsMain({
                                                 route="RealFoodReport_View"
                                                 element={
                                                     <RealFoodKPIPack
+                                                        url={url}
+                                                        userPermissions={
+                                                            userPermissions
+                                                        }
+                                                        Token={Token}
+                                                    />
+                                                }
+                                                userPermissions={
+                                                    userPermissions
+                                                }
+                                                setToken={setToken}
+                                                setUserPermissions={
+                                                    setUserPermissions
+                                                }
+                                            />
+                                        }
+                                    />
+                                    {/* //GMI KPI Pack Route */}
+                                    <Route
+                                        path="/gmi-kpi-pack"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermissions}
+                                                route="GMIReport_View"
+                                                element={
+                                                    <GMIKPIPack
                                                         url={url}
                                                         userPermissions={
                                                             userPermissions
