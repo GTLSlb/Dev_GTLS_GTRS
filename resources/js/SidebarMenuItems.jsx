@@ -16,8 +16,8 @@ import {
     CogIcon,
 } from "@heroicons/react/24/solid";
 import TaskIcon from "@mui/icons-material/Task";
-import ContactsIcon from '@mui/icons-material/Contacts';
-import DescriptionIcon from '@mui/icons-material/Description';
+import ContactsIcon from "@mui/icons-material/Contacts";
+import DescriptionIcon from "@mui/icons-material/Description";
 
 const menu = [
     {
@@ -183,6 +183,15 @@ const menu = [
         current: false,
         feature: "RealFoodReport_View",
         url: "/gtrs/real-food-report",
+    },
+    {
+        id: 35,
+        name: "GMI KPI Pack",
+        href: "#",
+        icon: DocumentTextIcon,
+        current: false,
+        feature: "GMIReport_View",
+        url: "/gtrs/gmi-kpi-pack",
     },
     {
         id: 10,
