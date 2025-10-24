@@ -276,7 +276,7 @@ const menu = [
     },
     {
         id: 34,
-        name: "Utilization Report",
+        name: "Utilisation Report",
         href: "#",
         icon: DocumentTextIcon,
         current: false,

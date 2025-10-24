@@ -574,7 +574,7 @@ export default function Utilization() {
         exportToExcel(
             jsonData, // Filtered data
             columnMapping, // Dynamic column mapping from columns
-            "UtilizationReport.xlsx", // Export file name
+            "ShuttleUtilisationReport.xlsx", // Export file name
             customCellHandlers, // Custom handlers for formatting cells
             ["ManifestDateTime"], // Column names
             [
@@ -599,7 +599,7 @@ export default function Utilization() {
                 id={"ConsignmentID"}
                 gridRef={gridRef}
                 handleDownloadExcel={handleDownloadExcel}
-                title={"Unilever Utilization Report"}
+                title={"Shuttle Utilisation Report"}
                 setFilterValueElements={setFilterValue}
                 setSelected={setSelected}
                 selected={selected}

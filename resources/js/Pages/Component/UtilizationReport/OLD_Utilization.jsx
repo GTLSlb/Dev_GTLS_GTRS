@@ -1093,7 +1093,7 @@ export default function Utilization() {
             <ToastContainer />
             <div className="sm:flex-auto mt-6">
                 <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                    Unilever Utilization Report
+                    Unilever Utilisation Report
                 </h1>
             </div>
             <div className="my-1 flex w-full items-center gap-3 justify-end">
