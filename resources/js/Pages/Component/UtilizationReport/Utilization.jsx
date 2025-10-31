@@ -175,7 +175,7 @@ export default function Utilization() {
         const baseColumns = [
         {
             name: "ManifestDateTime",
-            header: "Date",
+            header: "Manifest Date",
             type: "date",
             headerAlign: "center",
             textAlign: "center",
