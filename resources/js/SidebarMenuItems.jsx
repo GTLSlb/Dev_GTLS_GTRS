@@ -293,6 +293,15 @@ const menu = [
         url: "/gtrs/utilization-report",
     },
     {
+        id: 36,
+        name: "TimeSlot Report",
+        href: "#",
+        icon: ClockIcon,
+        current: false,
+        feature: "TimeSlotReport_View",
+        url: "/gtrs/timeslot-report",
+    },
+    {
         id: 31,
         name: "Settings",
         href: "#",

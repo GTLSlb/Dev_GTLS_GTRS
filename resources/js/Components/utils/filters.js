@@ -2145,7 +2145,6 @@ export const getFiltersDifot = () => {
 };
 
 export const getFiltersUtilization = (minDate, maxDate) => {
-
     return [
         {
             name: "ManifestDateTime",
@@ -2201,7 +2200,7 @@ export const getFiltersUtilization = (minDate, maxDate) => {
         },
         {
             name: "SenderReference",
-                     operator: "contains",
+            operator: "contains",
             type: "string",
             value: "",
             emptyValue: "",
@@ -2257,28 +2256,28 @@ export const getFiltersUtilization = (minDate, maxDate) => {
         },
         {
             name: "PickupTimeIn",
-             operator: "contains",
+            operator: "contains",
             type: "string",
             value: "",
             emptyValue: "",
         },
         {
             name: "PickupTimeOut",
-             operator: "contains",
+            operator: "contains",
             type: "string",
             value: "",
             emptyValue: "",
         },
         {
             name: "CollectionTime",
-             operator: "contains",
+            operator: "contains",
             type: "string",
             value: "",
             emptyValue: "",
         },
         {
             name: "PickupAllowTime",
-             operator: "contains",
+            operator: "contains",
             type: "string",
             value: "",
             emptyValue: "",
@@ -2307,28 +2306,28 @@ export const getFiltersUtilization = (minDate, maxDate) => {
 
         {
             name: "DelTimeIn",
-             operator: "contains",
+            operator: "contains",
             type: "string",
             value: "",
             emptyValue: "",
         },
         {
             name: "DelTimeOut",
-             operator: "contains",
+            operator: "contains",
             type: "string",
             value: "",
             emptyValue: "",
         },
         {
             name: "UnloadTime",
-             operator: "contains",
+            operator: "contains",
             type: "string",
             value: "",
             emptyValue: "",
         },
         {
             name: "ExtraCollectionTimeInMinutes",
-             operator: "eq",
+            operator: "eq",
             type: "number",
             value: "",
             emptyValue: "",
@@ -2342,7 +2341,7 @@ export const getFiltersUtilization = (minDate, maxDate) => {
         },
         {
             name: "DeliveryAllowTime",
-             operator: "contains",
+            operator: "contains",
             type: "string",
             value: "",
             emptyValue: "",
@@ -2363,7 +2362,7 @@ export const getFiltersUtilization = (minDate, maxDate) => {
         },
         {
             name: "TravelTime",
-             operator: "contains",
+            operator: "contains",
             type: "string",
             value: "",
             emptyValue: "",
@@ -2388,6 +2387,115 @@ export const getFiltersUtilization = (minDate, maxDate) => {
             operator: "eq",
             type: "number",
             value: null,
+            emptyValue: "",
+        },
+    ];
+};
+
+export const getFiltersTimeSlot = (minDate, maxDate) => {
+    return [
+        {
+            name: "ConsignmentNo",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "TimeslotRequired",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "TimeslotBooked",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "Information",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "OldData",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "NewData",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "LogCreatedBy",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "ConsStatus",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "AdminStatus",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ConsCreated",
+            operator: "inrange",
+            type: "date",
+            value: {
+                start: minDate,
+                end: maxDate,
+            },
+        },
+        {
+            name: "PickupCompletedDate",
+            operator: "inrange",
+            type: "date",
+            value: {
+                start: minDate,
+                end: maxDate,
+            },
+        },
+        {
+            name: "LogCreated",
+            operator: "inrange",
+            type: "date",
+            value: {
+                start: minDate,
+                end: maxDate,
+            },
+        },
+        {
+            name: "DiffConsTimeslot",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
+            name: "DiffTimeslotPickup",
+            operator: "contains",
+            type: "string",
+            value: "",
             emptyValue: "",
         },
     ];

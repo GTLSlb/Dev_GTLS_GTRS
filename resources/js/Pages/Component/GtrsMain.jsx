@@ -66,6 +66,7 @@ import DifotReport from "./DifotReport";
 import Utilization from "./UtilizationReport/Utilization";
 import { CustomContext } from "@/CommonContext";
 import GMIKPIPack from "./GMI/GMIKPIPack";
+import TimeSlotReport from "./Timeslot/TimeSlotReport";
 
 export default function GtrsMain({
     setCustomerAccounts,
@@ -1672,15 +1673,20 @@ export default function GtrsMain({
                                             <ProtectedRoute
                                                 permission={userPermissions}
                                                 route="UtilizationReport_View"
-                                                element={
-                                                    <Utilization
-                                                        url={url}
-                                                        Token={Token}
-                                                        userPermissions={
-                                                            userPermissions
-                                                        }
-                                                    />
-                                                }
+                                                element={<Utilization />}
+                                            />
+                                        }
+                                        userPermissions={userPermissions}
+                                        setToken={setToken}
+                                        setUserPermissions={setUserPermissions}
+                                    />
+                                    <Route
+                                        path="/timeslot-report"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermissions}
+                                                route="TimeSlotReport_View"
+                                                element={<TimeSlotReport />}
                                             />
                                         }
                                         userPermissions={userPermissions}
