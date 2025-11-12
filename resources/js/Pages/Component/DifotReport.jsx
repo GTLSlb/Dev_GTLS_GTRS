@@ -276,7 +276,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
     });
 
     const handleDownloadExcel = () => {
-        const jsonData = handleFilterTable(gridRef, difotData);
+        const jsonData = handleFilterTable(gridRef, filteredData);
         const columnMapping = {
             DeliveryNo: "Delivery No",
             PickupDate: "Pickup Date",

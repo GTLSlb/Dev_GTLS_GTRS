@@ -1686,7 +1686,11 @@ export default function GtrsMain({
                                             <ProtectedRoute
                                                 permission={userPermissions}
                                                 route="TimeSlotReport_View"
-                                                element={<TimeSlotReport />}
+                                                element={
+                                                    <TimeSlotReport
+                                                        accData={dataFromChild}
+                                                    />
+                                                }
                                             />
                                         }
                                         userPermissions={userPermissions}
