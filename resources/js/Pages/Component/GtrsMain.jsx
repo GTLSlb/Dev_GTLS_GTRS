@@ -67,6 +67,7 @@ import Utilization from "./UtilizationReport/Utilization";
 import { CustomContext } from "@/CommonContext";
 import GMIKPIPack from "./GMI/GMIKPIPack";
 import TimeSlotReport from "./Timeslot/TimeSlotReport";
+import FloorReport from "./floorReport/FloorReport";
 
 export default function GtrsMain({
     setCustomerAccounts,
@@ -1688,6 +1689,23 @@ export default function GtrsMain({
                                                 route="TimeSlotReport_View"
                                                 element={
                                                     <TimeSlotReport
+                                                        accData={dataFromChild}
+                                                    />
+                                                }
+                                            />
+                                        }
+                                        userPermissions={userPermissions}
+                                        setToken={setToken}
+                                        setUserPermissions={setUserPermissions}
+                                    />
+                                    <Route
+                                        path="/floor-report"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermissions}
+                                                route="FloorReport_View"
+                                                element={
+                                                    <FloorReport
                                                         accData={dataFromChild}
                                                     />
                                                 }

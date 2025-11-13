@@ -204,7 +204,7 @@ export const isDummyAccountWithDummyData = (dummy, value) => {
 
 export const formatDateToExcel = (dateValue, format = "dd-mm-yyyy hh:mm") => {
     let date = new Date(dateValue);
-    if (format !=  "dd-mm-yyyy hh:mm") {
+    if (format != "dd-mm-yyyy hh:mm") {
         date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     }
 
@@ -551,4 +551,32 @@ export function AlertToast(msg, status) {
             theme: "light",
         });
     }
+}
+
+export function convertToIso(dateString) {      
+    const parts = dateString.split(/[\s,]+/);
+    const datePart = parts[0];
+    const timePart = parts[1];
+    const meridiem = parts[2];   
+    const [day, month, year] = datePart.split("/").map(Number);
+    
+    let hour = 0;
+    let minute = 0;
+    let second = 0;
+    
+    if (timePart && meridiem) {
+        let [h, m, s] = timePart.split(":").map(Number);
+        hour = h;
+        minute = m;
+        second = s;      
+        if (meridiem === "PM" && hour < 12) {
+            hour += 12;
+        } else if (meridiem === "AM" && hour === 12) {       
+            hour = 0;
+        }
+    }
+    const dateObject = new Date(
+        Date.UTC(year, month - 1, day, hour, minute, second)
+    );
+    return dateObject.toISOString();
 }

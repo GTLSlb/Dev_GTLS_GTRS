@@ -114,36 +114,6 @@ function TimeSlotReport() {
                         },
                     },
                     {
-                        name: "TimeslotRequired",
-                        header: "Timeslot required",
-                        type: "string",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: TimeslotRequiredOptions,
-                        },
-                        render: ({ value }) => {
-                            return (
-                                <div>
-                                    {value == "TRUE" ? (
-                                        <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                                            True
-                                        </span>
-                                    ) : value == "FALSE" ? (
-                                        <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                                            False
-                                        </span>
-                                    ) : (
-                                        <></>
-                                    )}
-                                </div>
-                            );
-                        },
-                    },
-                    {
                         name: "TimeslotBooked",
                         header: "Timeslot Booked",
                         type: "string",
@@ -244,7 +214,7 @@ function TimeSlotReport() {
                     },
                     {
                         name: "LogCreatedBy",
-                        header: "Logs Created By",
+                        header: "Booked by",
                         type: "string",
                         headerAlign: "center",
                         textAlign: "center",
@@ -265,23 +235,24 @@ function TimeSlotReport() {
                             dataSource: ConsStatusOptions,
                         },
                     },
-                    {
-                        name: "AdminStatus",
-                        header: "Admin Status",
-                        type: "string",
-                        defaultWidth: 200,
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: AdminStatusOptions,
-                        },
-                    },
+                    // Hidden for now may remove it or keep it as it is
+                    // {
+                    //     name: "AdminStatus",
+                    //     header: "Admin Status",
+                    //     type: "string",
+                    //     defaultWidth: 200,
+                    //     headerAlign: "center",
+                    //     textAlign: "center",
+                    //     filterEditor: SelectFilter,
+                    //     filterEditorProps: {
+                    //         multiple: true,
+                    //         wrapMultiple: false,
+                    //         dataSource: AdminStatusOptions,
+                    //     },
+                    // },
                     {
                         name: "ConsCreated",
-                        header: "Cons Created",
+                        header: "Consignment created at",
                         headerAlign: "center",
                         textAlign: "center",
                         defaultFlex: 1,
@@ -302,7 +273,7 @@ function TimeSlotReport() {
                     },
                     {
                         name: "PickupCompletedDate",
-                        header: "Pickup Completed Date",
+                        header: "Pickup completed at",
                         headerAlign: "center",
                         textAlign: "center",
                         defaultFlex: 1,
@@ -323,7 +294,7 @@ function TimeSlotReport() {
                     },
                     {
                         name: "LogCreated",
-                        header: "Log Created",
+                        header: "Booking created at",
                         headerAlign: "center",
                         textAlign: "center",
                         defaultFlex: 1,
@@ -344,7 +315,7 @@ function TimeSlotReport() {
                     },
                     {
                         name: "DiffConsTimeslot",
-                        header: "Diff Cons Timeslot",
+                        header: "Time taken to book from creation of Consignment",
                         group: "senderDetails",
                         headerAlign: "center",
                         textAlign: "center",
@@ -353,7 +324,7 @@ function TimeSlotReport() {
                     },
                     {
                         name: "DiffTimeslotPickup",
-                        header: "Diff Timeslot Pickup",
+                        header: "Time taken to book from Pickup Completed.",
                         group: "senderDetails",
                         headerAlign: "center",
                         textAlign: "center",
@@ -430,9 +401,12 @@ function TimeSlotReport() {
             <>
                 <div className="sm:flex sm:items-center">
                     <div className="sm:flex-auto md:mt-2">
-                        <h1 className="text-2xl py-2 px-2 font-extrabold text-gray-600">
-                            TimeSlot Report
+                        <h1 className="text-2xl px-2 font-extrabold text-gray-600">
+                            Timeslot Booking Performance Report
                         </h1>
+                        <h4 className="text-base px-2 font-extrabold text-gray-500">
+                            This report returns only required timeslot consignments
+                        </h4>
                     </div>
                 </div>
             </>

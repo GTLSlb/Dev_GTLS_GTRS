@@ -302,6 +302,15 @@ const menu = [
         url: "/gtrs/timeslot-report",
     },
     {
+        id: 37,
+        name: "Floor Report",
+        href: "#",
+        icon: ClockIcon,
+        current: false,
+        feature: "FloorReport_View",
+        url: "/gtrs/floor-report",
+    },
+    {
         id: 31,
         name: "Settings",
         href: "#",

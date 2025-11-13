@@ -3,6 +3,17 @@ import "@inovua/reactdatagrid-community/index.css";
 import React, { useEffect, useCallback, useState, useMemo } from "react";
 import PropTypes from "prop-types";
 import ExportPopover from "./ExportPopover";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { ChevronRightIcon } from "@heroicons/react/24/solid";
+import {
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    Button,
+    useDisclosure,
+} from "@heroui/react";
 
 export default function TableStructure({
     tableDataElements,
@@ -19,10 +30,17 @@ export default function TableStructure({
     rowHeight,
     id,
     HeaderContent,
-    minHeight
+    minHeight,
+    renderRowDetails,
+    detailsDisplayMode = "modal", // "modal" or "inline"
 }) {
+    // Track expanded rows locally
+    const [expandedRows, setExpandedRows] = useState({});
+    const [selectedRowForModal, setSelectedRowForModal] = useState(null);
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
     // 1) Memoize columns and data
-    const columns = useMemo(() => columnsElements, [columnsElements]);
+    const memoizedColumns = useMemo(() => columnsElements, [columnsElements]);
     const filters = useMemo(() => filterValueElements, [filterValueElements]);
     const groups = useMemo(() => groupsElements, [groupsElements]);
 
@@ -53,6 +71,62 @@ export default function TableStructure({
         [setFilterValueElements]
     );
 
+    const toggleRowExpand = useCallback((rowId, rowData, rowIndex) => {
+        if (detailsDisplayMode === "modal") {
+            setSelectedRowForModal({ data: rowData, rowIndex, rowId });
+            onOpen();
+        } else {
+            setExpandedRows((prev) => ({
+                ...prev,
+                [rowId]: !prev[rowId],
+            }));
+        }
+    }, [detailsDisplayMode, onOpen]);
+
+    // Add expand button column at the beginning
+    const enhancedColumns = useMemo(() => {
+        if (!renderRowDetails) {
+            return memoizedColumns;
+        }
+
+        return [
+            {
+                name: "expandButton",
+                header: "",
+                width: 50,
+                textAlign: "center",
+                headerAlign: "center",
+                render: ({ data, rowIndex }) => {
+                    const isExpanded = expandedRows[data[id]];
+                    return (
+                        <button
+                            onClick={() => toggleRowExpand(data[id], data, rowIndex)}
+                            title={
+                                detailsDisplayMode === "modal"
+                                    ? "View Details"
+                                    : isExpanded
+                                    ? "Collapse"
+                                    : "Expand"
+                            }
+                            className="p-1 hover:bg-gray-100 rounded transition-colors"
+                        >
+                            <div>
+                                {detailsDisplayMode === "modal" ? (
+                                    <ChevronRightIcon className="w-4 h-4" />
+                                ) : isExpanded ? (
+                                    <ChevronDownIcon className="w-4 h-4" />
+                                ) : (
+                                    <ChevronRightIcon className="w-4 h-4" />
+                                )}
+                            </div>
+                        </button>
+                    );
+                },
+            },
+            ...memoizedColumns,
+        ];
+    }, [memoizedColumns, expandedRows, id, detailsDisplayMode, renderRowDetails]);
+
     useEffect(() => {
         const handleClick = (event) => {
             const target = event.target;
@@ -82,13 +156,13 @@ export default function TableStructure({
                 ".inovua-react-toolkit-menu__table"
             );
             if (menu) {
-                const handleClick = (event) => {
+                const handleMenuClick = (event) => {
                     const target = event.target;
                     const textContent = target.textContent.trim();
 
                     if (textContent === "Clear all") {
                         // Handle "Clear all" action
-                        gridRef.current.allColumns.forEach((column) => {
+                        gridRef.current?.allColumns?.forEach((column) => {
                             if (
                                 column.computedFilterValue &&
                                 column.computedFilterValue.type === "date"
@@ -100,9 +174,9 @@ export default function TableStructure({
                             }
                         });
                         // Re-render columns state to reflect the cleared filters
-                        setColumns((cols) => [...cols]);
+                        setColumns?.((cols) => [...cols]);
                     } else if (textContent === "Clear") {
-                        const column = gridRef.current.allColumns.find(
+                        const column = gridRef.current?.allColumns?.find(
                             (col) =>
                                 col.header === columnHeader &&
                                 col.computedFilterValue?.type === "date"
@@ -114,16 +188,16 @@ export default function TableStructure({
                             column.computedFilterValue.emptyValue = "";
 
                             // Re-render columns state to reflect the cleared filter
-                            setColumns((cols) => [...cols]);
+                            setColumns?.((cols) => [...cols]);
                         }
                     }
                 };
 
-                menu.addEventListener("click", handleClick);
+                menu.addEventListener("click", handleMenuClick);
 
                 // Cleanup to prevent multiple listeners
                 return () => {
-                    menu.removeEventListener("click", handleClick);
+                    menu.removeEventListener("click", handleMenuClick);
                 };
             }
         };
@@ -135,13 +209,16 @@ export default function TableStructure({
         return () => {
             document.body.removeEventListener("click", handleClick);
         };
-    }, [columns]);
+    }, [setColumns]);
 
     return (
         <div className="">
             <div className="sm:flex sm:items-center mt-3">
                 <div className="sm:flex-auto">
-                    <h1 id="modal-title" className="text-2xl py-2 px-0 font-extrabold text-gray-600">
+                    <h1
+                        id="modal-title"
+                        className="text-2xl py-2 px-0 font-extrabold text-gray-600"
+                    >
                         {title}
                     </h1>
                 </div>
@@ -161,33 +238,99 @@ export default function TableStructure({
                 <div>{HeaderContent}</div>
             </div>
             <div className="py-5">
-                {tableDataElements ? (
-                    <ReactDataGrid
-                        virtualized
-                        key={"persistend-grid"+title}
-                        idProperty={id}
-                        handle={(ref) =>
-                            (gridRef.current = ref ? ref.current : [])
-                        }
-                        className="rounded-lg shadow-lg overflow-hidden"
-                        pagination
-                        defaultPageSize={20}
-                        defaultLimit={20}
-                        rowHeight={rowHeight ?? 40}
-                        filterTypes={filterTypes}
-                        scrollProps={scrollProps}
-                        showColumnMenuTool={false}
-                        enableColumnAutosize={false}
-                        showColumnMenuLockOptions={false}
-                        showColumnMenuGroupOptions={false}
-                        selected={selectedRows}
-                        style={gridStyle}
-                        onFilterValueChange={onFilterValueChange}
-                        defaultFilterValue={filters}
-                        groups={groups}
-                        columns={columns}
-                        dataSource={tableDataElements}
-                    />
+                {tableDataElements && tableDataElements.length > 0 ? (
+                    <div>
+                        <ReactDataGrid
+                            virtualized
+                            key={"persistend-grid" + title}
+                            idProperty={id}
+                            ref={gridRef}
+                            className="rounded-lg shadow-lg overflow-hidden"
+                            pagination
+                            defaultPageSize={20}
+                            defaultLimit={20}
+                            rowHeight={rowHeight ?? 40}
+                            filterTypes={filterTypes}
+                            scrollProps={scrollProps}
+                            showColumnMenuTool={false}
+                            enableColumnAutosize={false}
+                            showColumnMenuLockOptions={false}
+                            showColumnMenuGroupOptions={false}
+                            selected={selectedRows}
+                            style={gridStyle}
+                            onFilterValueChange={onFilterValueChange}
+                            defaultFilterValue={filters}
+                            groups={groups}
+                            columns={enhancedColumns}
+                            dataSource={tableDataElements}
+                        />
+
+                        {/* Render expanded row details inline (below the grid) */}
+                        {detailsDisplayMode === "inline" && renderRowDetails && (
+                            <div className="mt-4">
+                                {tableDataElements.map((row, index) => {
+                                    const rowId = row[id];
+                                    return expandedRows[rowId] ? (
+                                        <div
+                                            key={`expanded-${rowId}`}
+                                            className="mb-4 border rounded-lg overflow-hidden shadow bg-white"
+                                        >
+                                            <div className="bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-3 font-semibold border-b border-blue-200">
+                                                <span className="text-gray-700">
+                                                    Details for {rowId}
+                                                </span>
+                                            </div>
+                                            <div className="p-4">
+                                                {renderRowDetails({
+                                                    data: row,
+                                                    rowIndex: index,
+                                                })}
+                                            </div>
+                                        </div>
+                                    ) : null;
+                                })}
+                            </div>
+                        )}
+
+                        {/* Modal for details (HeroUI Modal) */}
+                        {detailsDisplayMode === "modal" && selectedRowForModal && (
+                            <Modal
+                                isOpen={isOpen}
+                                onOpenChange={onOpenChange}
+                                size="3xl"
+                                scrollBehavior="inside"
+                            >
+                                <ModalContent>
+                                    {(onClose) => (
+                                        <>
+                                            <ModalHeader className="flex flex-col gap-1">
+                                                Details for{" "}
+                                                <span className="text-blue-600">
+                                                    {selectedRowForModal.rowId}
+                                                </span>
+                                            </ModalHeader>
+                                            <ModalBody>
+                                                {renderRowDetails({
+                                                    data: selectedRowForModal.data,
+                                                    rowIndex:
+                                                        selectedRowForModal.rowIndex,
+                                                })}
+                                            </ModalBody>
+                                            <ModalFooter>
+                                                <Button
+                                                    color="default"
+                                                    variant="light"
+                                                    onPress={onClose}
+                                                >
+                                                    Close
+                                                </Button>
+                                            </ModalFooter>
+                                        </>
+                                    )}
+                                </ModalContent>
+                            </Modal>
+                        )}
+                    </div>
                 ) : (
                     <div className="h-64 flex items-center justify-center mt-10">
                         <div className="text-center flex justify-center flex-col">
@@ -218,4 +361,6 @@ TableStructure.propTypes = {
     HeaderContent: PropTypes.node,
     setColumns: PropTypes.func,
     minHeight: PropTypes.number,
+    renderRowDetails: PropTypes.func,
+    detailsDisplayMode: PropTypes.oneOf(["modal", "inline"]),
 };
