@@ -71,17 +71,20 @@ export default function TableStructure({
         [setFilterValueElements]
     );
 
-    const toggleRowExpand = useCallback((rowId, rowData, rowIndex) => {
-        if (detailsDisplayMode === "modal") {
-            setSelectedRowForModal({ data: rowData, rowIndex, rowId });
-            onOpen();
-        } else {
-            setExpandedRows((prev) => ({
-                ...prev,
-                [rowId]: !prev[rowId],
-            }));
-        }
-    }, [detailsDisplayMode, onOpen]);
+    const toggleRowExpand = useCallback(
+        (rowId, rowData, rowIndex) => {
+            if (detailsDisplayMode === "modal") {
+                setSelectedRowForModal({ data: rowData, rowIndex, rowId });
+                onOpen();
+            } else {
+                setExpandedRows((prev) => ({
+                    ...prev,
+                    [rowId]: !prev[rowId],
+                }));
+            }
+        },
+        [detailsDisplayMode, onOpen]
+    );
 
     // Add expand button column at the beginning
     const enhancedColumns = useMemo(() => {
@@ -100,7 +103,9 @@ export default function TableStructure({
                     const isExpanded = expandedRows[data[id]];
                     return (
                         <button
-                            onClick={() => toggleRowExpand(data[id], data, rowIndex)}
+                            onClick={() =>
+                                toggleRowExpand(data[id], data, rowIndex)
+                            }
                             title={
                                 detailsDisplayMode === "modal"
                                     ? "View Details"
@@ -125,7 +130,13 @@ export default function TableStructure({
             },
             ...memoizedColumns,
         ];
-    }, [memoizedColumns, expandedRows, id, detailsDisplayMode, renderRowDetails]);
+    }, [
+        memoizedColumns,
+        expandedRows,
+        id,
+        detailsDisplayMode,
+        renderRowDetails,
+    ]);
 
     useEffect(() => {
         const handleClick = (event) => {
@@ -266,70 +277,65 @@ export default function TableStructure({
                         />
 
                         {/* Render expanded row details inline (below the grid) */}
-                        {detailsDisplayMode === "inline" && renderRowDetails && (
-                            <div className="mt-4">
-                                {tableDataElements.map((row, index) => {
-                                    const rowId = row[id];
-                                    return expandedRows[rowId] ? (
-                                        <div
-                                            key={`expanded-${rowId}`}
-                                            className="mb-4 border rounded-lg overflow-hidden shadow bg-white"
-                                        >
-                                            <div className="bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-3 font-semibold border-b border-blue-200">
-                                                <span className="text-gray-700">
-                                                    Details for {rowId}
-                                                </span>
+                        {detailsDisplayMode === "inline" &&
+                            renderRowDetails && (
+                                <div className="mt-4">
+                                    {tableDataElements.map((row, index) => {
+                                        const rowId = row[id];
+                                        return expandedRows[rowId] ? (
+                                            <div
+                                                key={`expanded-${rowId}`}
+                                                className="mb-4 border rounded-lg overflow-hidden shadow bg-white"
+                                            >
+                                                <div className="p-4">
+                                                    {renderRowDetails({
+                                                        data: row,
+                                                        rowIndex: index,
+                                                    })}
+                                                </div>
                                             </div>
-                                            <div className="p-4">
-                                                {renderRowDetails({
-                                                    data: row,
-                                                    rowIndex: index,
-                                                })}
-                                            </div>
-                                        </div>
-                                    ) : null;
-                                })}
-                            </div>
-                        )}
+                                        ) : null;
+                                    })}
+                                </div>
+                            )}
 
                         {/* Modal for details (HeroUI Modal) */}
-                        {detailsDisplayMode === "modal" && selectedRowForModal && (
-                            <Modal
-                                isOpen={isOpen}
-                                onOpenChange={onOpenChange}
-                                size="3xl"
-                                scrollBehavior="inside"
-                            >
-                                <ModalContent>
-                                    {(onClose) => (
-                                        <>
-                                            <ModalHeader className="flex flex-col gap-1">
-                                                Details for{" "}
-                                                <span className="text-blue-600">
+                        {detailsDisplayMode === "modal" &&
+                            selectedRowForModal && (
+                                <Modal
+                                    isOpen={isOpen}
+                                    onOpenChange={onOpenChange}
+                                    size="3xl"
+                                    scrollBehavior="inside"
+                                >
+                                    <ModalContent>
+                                        {(onClose) => (
+                                            <>
+                                                <ModalHeader className="gap-1">
+                                                    Details for{" "}
                                                     {selectedRowForModal.rowId}
-                                                </span>
-                                            </ModalHeader>
-                                            <ModalBody>
-                                                {renderRowDetails({
-                                                    data: selectedRowForModal.data,
-                                                    rowIndex:
-                                                        selectedRowForModal.rowIndex,
-                                                })}
-                                            </ModalBody>
-                                            <ModalFooter>
-                                                <Button
-                                                    color="default"
-                                                    variant="light"
-                                                    onPress={onClose}
-                                                >
-                                                    Close
-                                                </Button>
-                                            </ModalFooter>
-                                        </>
-                                    )}
-                                </ModalContent>
-                            </Modal>
-                        )}
+                                                </ModalHeader>
+                                                <ModalBody>
+                                                    {renderRowDetails({
+                                                        data: selectedRowForModal.data,
+                                                        rowIndex:
+                                                            selectedRowForModal.rowIndex,
+                                                    })}
+                                                </ModalBody>
+                                                <ModalFooter>
+                                                    <Button
+                                                        color="default"
+                                                        variant="light"
+                                                        onPress={onClose}
+                                                    >
+                                                        Close
+                                                    </Button>
+                                                </ModalFooter>
+                                            </>
+                                        )}
+                                    </ModalContent>
+                                </Modal>
+                            )}
                     </div>
                 ) : (
                     <div className="h-64 flex items-center justify-center mt-10">

@@ -18,7 +18,7 @@ import {
 import TaskIcon from "@mui/icons-material/Task";
 import ContactsIcon from "@mui/icons-material/Contacts";
 import DescriptionIcon from "@mui/icons-material/Description";
-
+import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
 const menu = [
     {
         id: 0,
@@ -294,7 +294,7 @@ const menu = [
     },
     {
         id: 36,
-        name: "TimeSlot Report",
+        name: "Timeslot Report",
         href: "#",
         icon: ClockIcon,
         current: false,
@@ -305,7 +305,7 @@ const menu = [
         id: 37,
         name: "Floor Report",
         href: "#",
-        icon: ClockIcon,
+        icon: DocumentScannerIcon,
         current: false,
         feature: "FloorReport_View",
         url: "/gtrs/floor-report",

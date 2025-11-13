@@ -732,6 +732,7 @@ export default function GtrsMain({
                         user={userPermissions}
                     />
 
+                    
                     <main className="w-full overflow-y-auto bg-smooth">
                         <div className="fixed left-0 top-20 z-10">
                             {broken && (
@@ -747,7 +748,7 @@ export default function GtrsMain({
                         </div>
 
                         {/* Main content area, displaying dynamically selected components */}
-                        <div className="">
+                        <div className="h-[90vh]">
                             <div className="rounded-lg h-full">
                                 <Routes>
                                     <Route

@@ -56,83 +56,49 @@ function FloorReport() {
             return formatted === "Invalid date" ? "N/A" : formatted;
         };
 
-        const renderBadge = (value, trueLabel = "Yes", falseLabel = "No") => {
-            if (value === "YES" || value === true) {
-                return (
-                    <Chip
-                        className="capitalize"
-                        color="success"
-                        size="sm"
-                        variant="flat"
-                    >
-                        {trueLabel}
-                    </Chip>
-                );
-            } else if (value === "NO" || value === false) {
-                return (
-                    <Chip
-                        className="capitalize"
-                        color="danger"
-                        size="sm"
-                        variant="flat"
-                    >
-                        {falseLabel}
-                    </Chip>
-                );
-            }
-            return <span className="text-gray-500">N/A</span>;
-        };
-
         return (
-            <div className="w-full space-y-4">
+            <div className="">
                 {/* Details Table - If there are line items */}
                 {data.Details && data.Details.length > 0 && (
-                    <Card>
-                        <CardBody className="space-y-3">
-                            <h3 className="text-sm font-bold text-gray-700 uppercase">
-                                Scan Details ({data.Details.length} items)
-                            </h3>
-                            <Table aria-label="Item details">
-                                <TableHeader>
-                                    <TableColumn className="w-20">
-                                        ITEM #
-                                    </TableColumn>
-                                    <TableColumn>TIMESTAMP</TableColumn>
-                                    {/* <TableColumn>FS REFERENCE</TableColumn> */}
-                                    <TableColumn>DEPOT</TableColumn>
-                                    <TableColumn>DOCK</TableColumn>
-                                    <TableColumn>CREATED BY</TableColumn>
-                                </TableHeader>
-                                <TableBody>
-                                    {data.Details.map((item, idx) => (
-                                        <TableRow key={idx}>
-                                            <TableCell className="text-xs font-medium">
-                                                {item.ItemNumber || "N/A"}
-                                            </TableCell>
-                                            <TableCell className="text-xs">
-                                                {formatDate(
-                                                    item.FSEventTimestamp
-                                                )}
-                                            </TableCell>
-                                            {/* <TableCell className="text-xs">
+                    <div className="w-full space-y-4">
+                        <Table aria-label="Item details">
+                            <TableHeader>
+                                <TableColumn className="w-20">
+                                    ITEM #
+                                </TableColumn>
+                                <TableColumn>TIMESTAMP</TableColumn>
+                                {/* <TableColumn>FS REFERENCE</TableColumn> */}
+                                <TableColumn>DEPOT</TableColumn>
+                                <TableColumn>DOCK</TableColumn>
+                                <TableColumn>CREATED BY</TableColumn>
+                            </TableHeader>
+                            <TableBody>
+                                {data.Details.map((item, idx) => (
+                                    <TableRow key={idx}>
+                                        <TableCell className="text-xs font-medium">
+                                            {item.ItemNumber || "N/A"}
+                                        </TableCell>
+                                        <TableCell className="text-xs">
+                                            {formatDate(item.FSEventTimestamp)}
+                                        </TableCell>
+                                        {/* <TableCell className="text-xs">
                                                 {item.FSReference || "N/A"}
                                             </TableCell> */}
-                                            <TableCell className="text-xs">
-                                                {item.Depot || "N/A"}
-                                            </TableCell>
-                                            <TableCell className="text-xs">
-                                                {item.DockLocation || "-"}
-                                            </TableCell>
+                                        <TableCell className="text-xs">
+                                            {item.Depot || "N/A"}
+                                        </TableCell>
+                                        <TableCell className="text-xs">
+                                            {item.DockLocation || "-"}
+                                        </TableCell>
 
-                                            <TableCell className="text-xs">
-                                                {item.CreatedBy || "N/A"}
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardBody>
-                    </Card>
+                                        <TableCell className="text-xs">
+                                            {item.CreatedBy || "N/A"}
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
                 )}
             </div>
         );
@@ -919,7 +885,6 @@ function FloorReport() {
             headerAlign: "center",
         },
     ];
-    console.log(floorData[0]);
 
     const renderTable = useCallback(() => {
         return (
