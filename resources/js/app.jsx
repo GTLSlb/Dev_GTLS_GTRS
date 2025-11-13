@@ -18,11 +18,15 @@ const appName =
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
-    resolve: (name) =>
-        resolvePageComponent(
+    resolve: (name) => {
+        if (!name) {
+            return;
+        }
+        return resolvePageComponent(
             `./Pages/${name}.jsx`,
             import.meta.glob("./Pages/**/*.jsx")
-        ),
+        );
+    },
     setup({ el, App, props }) {
         const root = createRoot(el);
         ReactGA.pageview(window.location.pathname + window.location.search);

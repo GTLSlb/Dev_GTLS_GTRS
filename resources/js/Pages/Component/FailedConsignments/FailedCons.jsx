@@ -27,7 +27,7 @@ export default function FailedCons({
     setFilterValue,
     accData,
 }) {
-    const { userPermissions } = useContext(CustomContext);
+    const { url, Token, userPermissions } = useContext(CustomContext);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [reason, setReason] = useState();
     const handleEditClick = (reason) => {
@@ -143,6 +143,21 @@ export default function FailedCons({
             },
         },
         {
+            name: "IncidentNo",
+            defaultWidth: 170,
+            header: "Incident No",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            render: ({ value, data }) => {
+                return renderIncidentDetailsLink(
+                    userPermissions,
+                    value,
+                    data.ConsignmentID
+                );
+            },
+        },
+        {
             name: "Status",
             header: "Status",
             type: "string",
@@ -166,7 +181,7 @@ export default function FailedCons({
             group: "senderInfo",
             filterEditor: StringFilter,
             render: ({ value }) => {
-                return isDummyAccount(value);
+                return value;
             },
         },
         {
@@ -179,7 +194,7 @@ export default function FailedCons({
             group: "senderInfo",
             filterEditor: StringFilter,
             render: ({ value }) => {
-                return isDummyAccount(value);
+                return value;
             },
         },
         {
@@ -220,7 +235,7 @@ export default function FailedCons({
             group: "receiverInfo",
             filterEditor: StringFilter,
             render: ({ value }) => {
-                return isDummyAccount(value);
+                return value;
             },
         },
         {
@@ -233,7 +248,7 @@ export default function FailedCons({
             group: "receiverInfo",
             filterEditor: StringFilter,
             render: ({ value }) => {
-                return isDummyAccount(value);
+                return value;
             },
         },
         {

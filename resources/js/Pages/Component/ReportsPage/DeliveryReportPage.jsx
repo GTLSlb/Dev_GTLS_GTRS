@@ -13,7 +13,7 @@ import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
 import moment from "moment";
 import axios from "axios";
 import swal from "sweetalert";
-import { handleSessionExpiration } from "@/CommonFunctions";
+import { handleSessionExpiration, AlertToast } from "@/CommonFunctions";
 import { EyeIcon } from "@heroicons/react/20/solid";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import { Spinner } from "@heroui/react";
@@ -27,7 +27,6 @@ import {
     canViewMetcashDeliveryReport,
     canViewWoolworthsDeliveryReport,
     canViewOtherDeliveryReport,
-    AlertToast,
 } from "@/permissions";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -1093,7 +1092,7 @@ export default function DeliveryReportPage({
             DeliveredDateTime: (value) => formatDateToExcel(value),
             Comments: (value) =>
                 Array.isArray(value)
-                    ? 
+                    ?
                 // eslint-disable-next-line react/prop-types
                     value.map(
                               (item) =>

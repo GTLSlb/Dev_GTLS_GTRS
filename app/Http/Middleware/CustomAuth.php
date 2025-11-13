@@ -2,14 +2,18 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
-use Inertia\Inertia;
 use Illuminate\Auth\SessionGuard;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
+use Closure;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Http;
+
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\SessionSharing;
 
 class CustomAuth extends Middleware
 {
@@ -27,25 +31,12 @@ class CustomAuth extends Middleware
         //$this->guard = $guard;
     }
 
-    public function attempt(array $credentials = [], $remember = false)
-    {
-        $emailDb = $credentials['EmailDb'];
-        $passwordDb = $credentials['PasswordDb'];
-        $emailInput = $credentials['EmailInput'];
-        $passwordInput = $credentials['PasswordInput'];
-        // Compare the provided credentials with the user's credentials
-
-        if (strtolower($emailDb) == strtolower($emailInput)) {
-            return true; // Validation successful
-        }
-
-        return false;
-    }
-
     public function validateAccessToken($accessToken, $userId)
     {
-        $url = $_ENV['GTAM_API_URL'] . 'Validate/Session';
-
+        \Log::info("Validating Access Token via GTAM API: " . config('app.gtam_api_url'));
+        \Log::info("UserId: " . $userId);
+        \Log::info("AccessToken: " . $accessToken);
+        $url = config('app.gtam_api_url') . 'Validate/Session';
         $headers = [
             'UserId' => $userId,
             'Token' => $accessToken,
@@ -65,9 +56,8 @@ class CustomAuth extends Middleware
 
     public function handle($request, $next, ...$guards)
     {
-        $auth_routes = ['loginComp', 'login', 'loginapi', 'forgot-password', 'auth/azure', 'auth/azure/callback', 'microsoftToken', 'logoutWithoutRequest'];
+        $auth_routes = ['loginComp', 'login', 'loginapi', 'forgot-password', 'auth/azure', 'auth/azure/callback', 'microsoftToken', 'logoutWithoutRequest', 'exchange-token'];
         $hasSession = $request->hasSession();
-
         $path = $request->path();
 
         if ($request->hasSession()) {
@@ -81,12 +71,14 @@ class CustomAuth extends Middleware
                 if (!$this->validateAccessToken($accessToken, $userId['UserId'])) {
                     return $next($request);
                 } else {
-                    return redirect($_ENV['REDIRECT_ROUTE']);
+                    return redirect(config('app.redirect_route') ?? '/gtam/main');
                 }
-            } elseif (!in_array($path, $auth_routes) && !$request->session()->has('user')) {
+            } elseif (!in_array($path, $auth_routes) && !$request->session()->has('user') && !isset($_COOKIE['jwt_token'])) {
                 return redirect()->route('login');
+            }elseif(in_array($path, $auth_routes) && isset($_COOKIE['jwt_token'])){
+                return redirect(config('app.redirect_route') ?? '/gtam/main');
             }
-        } elseif (in_array($request->path(), $auth_routes)) {
+        } elseif (in_array($request->path(), $auth_routes) && !isset($_COOKIE['jwt_token'])) {
             return $next($request);
         }
         return $next($request);

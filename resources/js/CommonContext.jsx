@@ -1,5 +1,6 @@
 import React, { createContext, useState } from "react";
-import menu from "./SidebarMenuItems";
+import Cookies from "js-cookie";
+import menu from "./data/SidebarMenuItems";
 import PropTypes from "prop-types";
 import { useApiRequests } from "./CommonFunctions";
 

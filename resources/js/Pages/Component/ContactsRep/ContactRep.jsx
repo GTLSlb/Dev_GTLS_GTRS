@@ -122,12 +122,12 @@ function ContactRep() {
                                 }
                             })
                             .catch((error) => {
-                                console.log(error);
+                                console.error(error);
                             });
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                 }
             });
     }, [userPermissions, Token, url]);

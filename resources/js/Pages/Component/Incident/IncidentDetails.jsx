@@ -147,12 +147,12 @@ export default function IncidentDetails({
                                         Customer Account
                                     </label>
                                     <label htmlFor="" className="">
-                                        {incident.Consignment[0].ChargeCode}
+                                        {incident?.Consignment[0]?.ChargeCode}
                                     </label>
                                 </div>
-                                {incident.Consignment[0].CustomerContacts?.filter(
+                                {incident?.Consignment[0]?.CustomerContacts?.filter(
                                     (contact) =>
-                                        incident.Consignment[0].ActiveContacts?.includes(
+                                        incident?.Consignment[0]?.ActiveContacts?.includes(
                                             contact.ContactId
                                         )
                                 )?.map((contact) => (

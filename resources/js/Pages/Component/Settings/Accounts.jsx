@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Switch, Button } from "@heroui/react";
-import { AlertToast, canEditUsers } from "@/permissions"; // Or replace with your toast system
+import { canEditUsers } from "@/permissions"; // Or replace with your toast system
 import PropTypes from "prop-types";
 import { CustomContext } from "@/CommonContext";
+import { AlertToast } from "@/CommonFunctions";
 
 export default function Accounts({ customer }) {
     const { userPermissions } = useContext(CustomContext);

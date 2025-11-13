@@ -14,9 +14,9 @@ import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import {
-    convertUtcToUserTimezone,
     formatDateToExcel,
     renderConsDetailsLink,
+    renderIncidentDetailsLink,
 } from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import { CustomContext } from "@/CommonContext";
@@ -30,8 +30,7 @@ export default function RDDTable({
     setFilterValue,
     rddReasons,
 }) {
-    const { url, userPermissions, Token, RDDReasonsData } =
-        useContext(CustomContext);
+    const { url, userPermissions, Token } = useContext(CustomContext);
     window.moment = moment;
     const updateLocalData = (id, reason, note) => {
         // Find the item in the local data with the matching id
@@ -181,6 +180,44 @@ export default function RDDTable({
                 multiple: true,
                 wrapMultiple: false,
                 dataSource: accountOptions,
+            },
+        },
+        {
+            name: "IncidentNo",
+            defaultWidth: 170,
+            header: "Incident No",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            render: ({ value, data }) => {
+                return renderIncidentDetailsLink(
+                    userPermissions,
+                    value,
+                    data.IncidentId
+                );
+            },
+            filterEditor: StringFilter,
+        },
+        {
+            name: "IncidentTypeName",
+            defaultWidth: 170,
+            header: "Incident Type",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            render: ({ value }) => {
+                return <span className=""> {value}</span>;
+            },
+            filterEditor: StringFilter,
+        },
+        {
+            name: "IncidentStatusName",
+            header: "Status",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            render: ({ data }) => {
+                return <span className=""> {data.IncidentStatusName}</span>;
             },
         },
         {

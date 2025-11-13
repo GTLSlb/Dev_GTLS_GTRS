@@ -34,7 +34,6 @@ import {
     canViewMetcashDeliveryReport,
     canViewWoolworthsDeliveryReport,
     canViewOtherDeliveryReport,
-    AlertToast,
     canApproveCommentExcelDeliveryReport,
     canEditCommentExcelDeliveryReport,
     canViewCommentsExcelDeliveryReport,
@@ -43,7 +42,7 @@ import swal from "sweetalert";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import CommentsModal from "./Modals/CommentsModal";
 import { CustomContext } from "@/CommonContext";
-import { handleSessionExpiration } from "@/CommonFunctions";
+import { handleSessionExpiration, AlertToast } from "@/CommonFunctions";
 
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -665,7 +664,7 @@ export default function ExcelDeliveryReport({
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                     setIsLoading(false);
                 }
             });
@@ -702,7 +701,7 @@ export default function ExcelDeliveryReport({
                     });
                 } else {
                     // Handle other errors
-                    console.log(err);
+                    console.error(err);
                     setIsLoading(false);
                 }
             });

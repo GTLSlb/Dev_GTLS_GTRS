@@ -445,8 +445,9 @@ export default function CollapseSidebar({
                                             : "rotate-180 transform  transition"
                                     }
                                 >
-                                    {/* <MenuIcon className="!w-[24px] !h-[24px]" /> */}
-                                    <ChevronRight className="!w-[24px] !h-[24px]" />
+                                    <MenuIcon
+                                        className={"!w-[24px] !h-[24px]"}
+                                    />
                                 </div>
                             </Button>
                         </div>

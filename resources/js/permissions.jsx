@@ -1,41 +1,3 @@
-import { toast } from "react-toastify";
-
-export function AlertToast(msg, status) {
-    if (status == 1) {
-        toast.success(msg, {
-            position: "bottom-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-        });
-    } else if (status == 2) {
-        toast.error(msg, {
-            position: "bottom-right",
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-        });
-    } else if (status == 3) {
-        toast.warning(msg, {
-            position: "bottom-right",
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-        });
-    }
-}
 /**
  * Checks if the user can calculate KPI Report based on their permissions for a specific page.
  *
@@ -858,6 +820,14 @@ export function canViewCommentsExcelDeliveryReport(userPermissions) {
 export function canViewExcelDeliveryReport(userPermissions) {
     return userPermissions?.find(
         (feature) => feature?.FunctionName === "ExcelTable_View"
+    )
+        ? true
+        : false;
+}
+
+export function canEditUtilizationReport(userPermissions) {
+    return userPermissions?.find(
+        (feature) => feature?.FunctionName === "UtilizationReport_edit"
     )
         ? true
         : false;

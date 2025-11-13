@@ -1,9 +1,9 @@
-import React from "react";
-import PropTypes from "prop-types";
 import { pca } from "@/CommonFunctions";
 import { LogoutPage } from "gtls-npm-libraries";
+import React from "react";
+import PropTypes from "prop-types";
 
-export default function Logout({ user, setToken, setUser }) {
+export default function Logout({ user, setToken, setUserPermissions }) {
     return (
         <LogoutPage
             pca={pca}
@@ -11,7 +11,7 @@ export default function Logout({ user, setToken, setUser }) {
             appDomain={window.Laravel.appDomain}
             user={user}
             gtamUrl={window.Laravel.gtamUrl}
-            setUser={setUser}
+            setUser={setUserPermissions}
             setToken={setToken}
         />
     );
@@ -20,5 +20,5 @@ export default function Logout({ user, setToken, setUser }) {
 Logout.propTypes = {
     user: PropTypes.object,
     setToken: PropTypes.func,
-    setUser: PropTypes.func,
+    setUserPermissions: PropTypes.func,
 };
