@@ -144,7 +144,12 @@ const menu = [
         href: "#",
         icon: ClipboardDocumentIcon,
         current: false,
-        feature: "DeliveryReport_View",
+        feature: [
+                                                    "DeliveryReport_View",
+                                                    "MetcashDeliveryReport_View",
+                                                    "WoolworthsDeliveryReport_View",
+                                                    "OtherDeliveryReport_View",
+                                                ],
         url: "/gtrs/delivery-report",
         options: [
             // {
@@ -162,7 +167,12 @@ const menu = [
                 href: "#",
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
-                feature: "DeliveryReport_View",
+                feature: [
+                                                    "DeliveryReport_View",
+                                                    "MetcashDeliveryReport_View",
+                                                    "WoolworthsDeliveryReport_View",
+                                                    "OtherDeliveryReport_View",
+                                                ],
                 url: "/gtrs/excel-delivery-report",
             },
             {
@@ -193,6 +203,15 @@ const menu = [
         current: false,
         feature: "RealFoodReport_View",
         url: "/gtrs/real-food-report",
+    },
+    {
+        id: 35,
+        name: "GMI KPI Pack",
+        href: "#",
+        icon: DocumentTextIcon,
+        current: false,
+        feature: "GMIReport_View",
+        url: "/gtrs/gmi-kpi-pack",
     },
     {
         id: 10,
@@ -291,7 +310,16 @@ const menu = [
         icon: DocumentTextIcon,
         current: false,
         feature: "UtilizationReport_View",
-        url: "/gtrs/utilization-report",
+        url: "/gtrs/utilisation-report",
+    },
+    {
+        id: 36,
+        name: "TimeSlot Report",
+        href: "#",
+        icon: ClockIcon,
+        current: false,
+        feature: "TimeSlotReport_View",
+        url: "/gtrs/timeslot-report",
     },
     {
         id: 31,

@@ -4,9 +4,8 @@ import PropTypes from "prop-types";
 import { useEffect } from "react";
 import swal from "sweetalert";
 import axios from "axios";
-import { handleSessionExpiration } from '@/CommonFunctions';
+import { handleSessionExpiration, AlertToast } from '@/CommonFunctions';
 import GtrsButton from "../../GtrsButton";
-import { AlertToast } from "@/permissions";
 import { CustomContext } from "@/CommonContext";
 
 

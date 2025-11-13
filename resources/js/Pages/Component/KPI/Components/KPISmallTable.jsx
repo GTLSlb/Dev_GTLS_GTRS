@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import { canEditKpiReasons } from "@/permissions";
 import { handleSessionExpiration } from '@/CommonFunctions';
 import { CustomContext } from "@/CommonContext";
+import { AlertToast } from "@/CommonFunctions";
 
 export default function SmallTableKPI({
     showAddRow,
@@ -19,7 +20,6 @@ export default function SmallTableKPI({
     editIndex,
     setEditIndex,
     dynamicHeaders,
-    AlertToast,
     getfunction,
     addurl,
     currentPage,
@@ -93,7 +93,7 @@ export default function SmallTableKPI({
                 });
         }
     }
-  
+
     function addObject() {
         let dataToSend = newObject;
         dataToSend = { ...dataToSend, ReasonStatus: 1, ReasonId: null };

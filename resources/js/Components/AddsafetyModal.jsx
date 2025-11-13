@@ -4,10 +4,9 @@ import PropTypes from "prop-types";
 import { useEffect } from "react";
 import "../../css/scroll.css";
 import swal from "sweetalert";
-import { handleSessionExpiration } from "@/CommonFunctions";
+import { handleSessionExpiration, AlertToast } from "@/CommonFunctions";
 import Select from "react-select";
 import {ToastContainer} from 'react-toastify';
-import { AlertToast } from "@/permissions";
 import { CustomContext } from "@/CommonContext";
 
 export default function SafetyModal({

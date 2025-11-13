@@ -1,19 +1,19 @@
 import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import NoAccessRedirect from "@/Pages/NoAccessRedirect";
-import menu from "@/SidebarMenuItems";
+import menu from "@/data/SidebarMenuItems";
 import Cookies from "js-cookie";
 import "react-toastify/dist/ReactToastify.css";
 import { PublicClientApplication } from "@azure/msal-browser";
 import swal from "sweetalert";
 import {
-    AlertToast,
     canViewDetails,
     canViewIncidentDetails,
 } from "./permissions";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { CustomContext } from "./CommonContext";
+import { toast } from "react-toastify";
 
 const msalConfig = {
     auth: {
@@ -29,6 +29,44 @@ const msalConfig = {
     },
 };
 export const pca = new PublicClientApplication(msalConfig);
+
+
+export function AlertToast(msg, status) {
+    if (status == 1) {
+        toast.success(msg, {
+            position: "bottom-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    } else if (status == 2) {
+        toast.error(msg, {
+            position: "bottom-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    } else if (status == 3) {
+        toast.warning(msg, {
+            position: "bottom-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    }
+}
 
 export async function handleSessionExpiration() {
     const appUrl = window.Laravel.appUrl;

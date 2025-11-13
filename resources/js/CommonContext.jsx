@@ -1,6 +1,6 @@
 import React, { createContext, useState } from "react";
 import Cookies from "js-cookie";
-import menu from "./SidebarMenuItems";
+import menu from "./data/SidebarMenuItems";
 import PropTypes from "prop-types";
 
 export const CustomContext = createContext({});

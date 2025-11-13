@@ -1,5 +1,4 @@
-import { handleSessionExpiration, useApiRequests } from "@/CommonFunctions";
-import { AlertToast } from "@/permissions";
+import { handleSessionExpiration, useApiRequests, AlertToast } from "@/CommonFunctions";
 import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";

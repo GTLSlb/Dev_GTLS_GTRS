@@ -16,10 +16,9 @@ import { ToastContainer } from "react-toastify";
 
 registerAllModules();
 
-import { AlertToast } from "@/permissions";
 import swal from "sweetalert";
 import { CustomContext } from "@/CommonContext";
-import { handleSessionExpiration } from "@/CommonFunctions";
+import { handleSessionExpiration, AlertToast } from "@/CommonFunctions";
 import { Spinner,Button } from "@heroui/react";
 
 export default function Utilization() {
@@ -51,7 +50,7 @@ export default function Utilization() {
                 });
             } else {
                 // Handle other errors
-                console.log(err);
+                console.error(err);
                 // Check if setCellLoading exists before calling it
                 if (typeof setCellLoading === "function") {
                     setCellLoading(null);
@@ -1133,7 +1132,7 @@ export default function Utilization() {
             <ToastContainer />
             <div className="sm:flex-auto mt-6">
                 <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                    Unilever Utilization Report
+                    Shuttle Utilization Report
                 </h1>
             </div>
             <div className="my-1 flex w-full items-center gap-3 justify-end">

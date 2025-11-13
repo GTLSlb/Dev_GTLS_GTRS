@@ -39,7 +39,7 @@ export default function DifotReport({
     // fetchData,
     accData,
 }) {
-    const { url, Token } = useContext(CustomContext);
+    const { url, Token, user } = useContext(CustomContext);
     const [filteredData, setFilteredData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [difotData, setDifotData] = useState([]);
@@ -82,7 +82,7 @@ export default function DifotReport({
                 });
             } else {
                 // Handle other errors
-                console.log(err);
+                console.error(err);
                 // Check if setCellLoading exists before calling it
                 if (typeof setCellLoading === "function") {
                     setCellLoading(null);
@@ -113,7 +113,7 @@ export default function DifotReport({
     }, [difotData, accData]);
 
     useEffect(() => {
-        if (filteredData != null && filteredData.length > 0) {
+        if (filteredData != null) {
             setIsLoading(false);
         }
     }, [filteredData]);
@@ -383,7 +383,6 @@ export default function DifotReport({
                         // Step 3: Convert to Excel serial number if valid
                         if (parsedDate && !isNaN(parsedDate.getTime())) {
                             parsedDate = formatDateToExcel(parsedDate);
-                            // console.log(parsedDate);
                             acc[columnKey] = parsedDate;
                         } else {
                             acc[columnKey] = "";
@@ -447,7 +446,6 @@ export default function DifotReport({
             }
 
             const OldRddIndex = newSelectedColumns.indexOf("Old RDD");
-            // console.log("OldRddIndex", OldRddIndex);
             if (OldRddIndex !== -1) {
                 const cell = row.getCell(OldRddIndex + 1);
                 cell.numFmt = "dd-mm-yyyy";

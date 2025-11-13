@@ -17,7 +17,7 @@ import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import moment from "moment";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ToastContainer } from 'react-toastify';
-import { AlertToast } from "@/permissions";
+import { AlertToast } from "@/CommonFunctions";
 import { CustomContext } from "@/CommonContext";
 
 export default function SafetyRepTable({
@@ -41,7 +41,7 @@ export default function SafetyRepTable({
     const [safetyDesc, setSafetyDesc] = useState();
     const [isSuccessfull, setIsSuccessfull] = useState(false);
     useLayoutEffect(() => {
-        
+
     }, []);
     const gridRef = useRef(null);
 

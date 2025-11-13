@@ -29,7 +29,7 @@ import {
     Image,
 } from "@heroui/react";
 import { ChevronLeftIcon, MapPinIcon } from "@heroicons/react/20/solid";
-import { AlertToast } from "@/permissions";
+import { AlertToast } from "@/CommonFunctions";
 import axios from "axios";
 
 const googleMapsKey = window.Laravel.googleMapsKey;

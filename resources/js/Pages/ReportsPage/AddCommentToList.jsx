@@ -55,11 +55,8 @@ export default function AddCommentToList({
                 fetchData();
                 setShowAdd(false);
                 setIsLoading(false);
-                // AlertToast("Saved successfully", 1);
             })
             .catch((err) => {
-                // AlertToast("Something went wrong", 2);
-
                 if (err.response && err.response.status === 401) {
                     // Handle 401 error using SweetAlert
                     swal({

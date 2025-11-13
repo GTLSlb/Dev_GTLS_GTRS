@@ -1,4 +1,4 @@
-import { AlertToast, canEditUsers } from "@/permissions";
+import { canEditUsers } from "@/permissions";
 import {
     Button,
     Card,
@@ -14,6 +14,7 @@ import {
 import React, { useContext, useState } from "react";
 import PropTypes from "prop-types";
 import { CustomContext } from "@/CommonContext";
+import { AlertToast } from "@/CommonFunctions";
 
 export default function Users({ customer }) {
     const { userPermissions } = useContext(CustomContext);
