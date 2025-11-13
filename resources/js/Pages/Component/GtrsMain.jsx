@@ -747,7 +747,7 @@ export default function GtrsMain({
                         </div>
 
                         {/* Main content area, displaying dynamically selected components */}
-                        <div className="h-full">
+                        <div className="">
                             <div className="rounded-lg h-full">
                                 <Routes>
                                     <Route

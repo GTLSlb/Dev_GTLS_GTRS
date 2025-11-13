@@ -524,6 +524,7 @@ export default function CollapseSidebar({
                             style={{
                                 flex: 1,
                                 marginBottom: "32px",
+                                paddingBottom: "32px",
                             }}
                             className=""
                         >
