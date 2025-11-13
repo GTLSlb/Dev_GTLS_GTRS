@@ -35,67 +35,6 @@ class RegisteredUserController extends Controller
         return Inertia::render('Auth/Register');
     }
 
-    private function mapUserByTypeId($user)
-    {
-        $user_type_id = $user->TypeId;
-        switch ($user_type_id) {
-            case 1:
-                // User is a customer
-                return [
-                    'UserId' => $user->UserId,
-                    'TypeId' => $user->TypeId,
-                    'TypeName' => $user->TypeName,
-                    'OwnerId' => $user->OwnerId,
-                    'PhoneNumber' => $user->PhoneNumber,
-                    'CustomerName' => $user->CustomerName,
-                    'Picture' => $user->Picture,
-                    'Username' => $user->Username,
-                    'Email' => $user->Email,
-                ];
-            case 2:
-                // User is an employee
-                return [
-                    'UserId' => $user->UserId,
-                    'TypeId' => $user->TypeId,
-                    'TypeName' => $user->TypeName,
-                    'OwnerId' => $user->OwnerId,
-                    'Username' => $user->Username,
-                    'FirstName' => $user->FirstName,
-                    'LastName' => $user->LastName,
-                    'Email' => $user->Email,
-                    'PhoneNo' => $user->PhoneNo,
-                    'Dob' => $user->Dob,
-                    'Address' => $user->Address,
-                    'Picture' => $user->Picture,
-                    'NationalityId' => $user->NationalityId,
-                    'NationalityName' => $user->NationalityName,
-                    'BranchId' => $user->BranchId,
-                    'RoleId' => $user->RoleId,
-                    'RoleName' => $user->RoleName,
-                    'ReportToId' => $user->ReportToId,
-                    'ReportToName' => $user->ReportToName,
-                    'HiringDate' => $user->HiringDate,
-                    'StateId' => $user->StateId,
-                    'StateName' => $user->StateName,
-                ];
-            case 3:
-                // User is a driver
-                return [
-                    'UserId' => $user->UserId,
-                    'TypeId' => $user->TypeId,
-                    'TypeName' => $user->TypeName,
-                    'truckNbr' => $user->truckNbr,
-                    'location' => $user->location,
-                    'driverNbr' => $user->driverNbr,
-                    'Username' => $user->Username,
-                    'Email' => $user->Email,
-                    'phoneNbr' => $user->phoneNbr,
-                ];
-            default:
-                return null;
-        }
-    }
-
     /**
      * Handle an incoming registration request.
      *
@@ -297,7 +236,7 @@ class RegisteredUserController extends Controller
 
     public function getChildrens($id)
     {
-        $UserId = $id;
+        $UserId=$id;
         $user = User::find($UserId);
         //dd($user);
         if ($user) {
@@ -412,7 +351,7 @@ class RegisteredUserController extends Controller
     }
     public function getUsersWhoCanApprove()
     {
-        $roles = [1, 6, 9, 10];
+        $roles = [1,6, 9, 10];
 
         $users = User::whereIn('role_id', $roles)
             ->select('id', 'user_id', 'name')
@@ -450,7 +389,7 @@ class RegisteredUserController extends Controller
         $notFoundFiles = [];
 
         foreach ($fileNames as $fileName) {
-            $filePath = $publicPath . '/' . "Invoices" . "/" . $fileName;
+            $filePath = $publicPath . '/'. "Invoices" . "/" . $fileName;
 
             if (File::exists($filePath)) {
                 File::delete($filePath);
