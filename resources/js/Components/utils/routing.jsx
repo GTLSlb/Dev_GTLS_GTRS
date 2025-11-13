@@ -41,10 +41,6 @@ const allRoutes = [
     {
         url: "/consignment-details",
         feature: "ConsignmentsDetails_view",
-    },
-    {
-        url: "/",
-        feature: "",
     }
 ]
 
