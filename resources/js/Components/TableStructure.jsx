@@ -255,7 +255,9 @@ export default function TableStructure({
                             virtualized
                             key={"persistend-grid" + title}
                             idProperty={id}
-                            ref={gridRef}
+                            handle={(ref) =>
+                                (gridRef.current = ref ? ref.current : [])
+                            }
                             className="rounded-lg shadow-lg overflow-hidden"
                             pagination
                             defaultPageSize={20}
