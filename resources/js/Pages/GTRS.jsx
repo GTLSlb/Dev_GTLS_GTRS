@@ -71,7 +71,7 @@ export default function Gtrs({
 
     const fetchDeliveryReport = () => {
         axios
-            .get(`${gtrsUrl}Delivery/Report`, {
+            .get(`${gtrsUrl}DeliveryReport`, {
                 headers: {
                     UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
@@ -191,7 +191,12 @@ export default function Gtrs({
                 },
             ];
             urls.forEach(({ url, setData, setApiStatus }) => {
-                fetchApiData(url, setData, user, Token, setApiStatus);
+                try {
+                    fetchApiData(url, setData, user, Token, setApiStatus);
+                } catch (error) {
+                    console.error(error);
+                    setData([]);
+                }
             });
         }
     }, [Token, user]);
