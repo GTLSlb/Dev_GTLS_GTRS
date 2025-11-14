@@ -2,7 +2,7 @@ import "../../../../css/dashboard.css";
 import Select from "react-select";
 import React, { useContext } from "react";
 import PropTypes from "prop-types";
-// import ReactGridLayout from 'react-grid-layout';
+
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import { useState } from "react";
@@ -22,12 +22,10 @@ const customStyles = {
         ...provided,
         minHeight: "unset",
         height: "auto",
-        // Add more styles here as needed
     }),
     option: (provided) => ({
         ...provided,
         color: "black",
-        // Add more styles here as needed
     }),
     multiValue: (provided) => ({
         ...provided,
@@ -39,9 +37,8 @@ const customStyles = {
     valueContainer: (provided) => ({
         ...provided,
         width: "400px",
-        maxHeight: "37px", // Set the maximum height for the value container
-        overflow: "auto", // Enable scrolling if the content exceeds the maximum height
-        // fontSize: '10px',
+        maxHeight: "37px",
+        overflow: "auto",
     }),
     inputContainer: (provided) => ({
         ...provided,
@@ -49,13 +46,11 @@ const customStyles = {
     }),
     multiValueLabel: (provided) => ({
         ...provided,
-        whiteSpace: "nowrap", // Prevent text wrapping
+        whiteSpace: "nowrap",
         overflow: "hidden",
-        textOverflow: "ellipsis", // Display ellipsis when text overflows
+        textOverflow: "ellipsis",
         fontSize: "10px",
-        // Add more styles here as needed
     }),
-    // Add more style functions here as needed
 };
 
 export default function MainCharts({
@@ -93,7 +88,6 @@ export default function MainCharts({
         { i: "card10", x: 2, y: 4, w: 1, h: 3 },
     ]);
     const ResetLayout = () => {
-        // Filter the options based on the selected receivers
         setLayout([
             { i: "card01", x: 0, y: 0, w: 1, h: 4.2 },
             { i: "card02", x: 2, y: 0, w: 1, h: 4.2 },
@@ -141,13 +135,11 @@ export default function MainCharts({
             return isNaN(intValue) ? 0 : intValue;
         });
 
-        // Convert date inputs into comparable Date objects
         const filterStartDate = new Date(startDate);
         const filterEndDate = new Date(endDate);
         filterStartDate.setHours(0, 0, 0, 0);
         filterEndDate.setHours(23, 59, 59, 999);
 
-        // **Single pass through chartsData to filter both data and receivers**
         const filtered = [];
         const receiversSet = new Set();
 
@@ -159,7 +151,6 @@ export default function MainCharts({
             const chargeToMatch =
                 intArray?.length === 0 || intArray?.includes(item.ChargeToId);
 
-            // Apply filters for main dataset
             if (
                 itemDate >= filterStartDate &&
                 itemDate <= filterEndDate &&
@@ -171,7 +162,6 @@ export default function MainCharts({
                 filtered.push(item);
             }
 
-            // Collect possible receivers for the dropdown (ignore receiver filter here)
             if (
                 itemDate >= filterStartDate &&
                 itemDate <= filterEndDate &&
@@ -185,16 +175,20 @@ export default function MainCharts({
         setFilteredData(filtered);
         setHasData(filtered.length > 0);
 
-        // Ensure the selected receivers are always included in the dropdown
         selectedReceiverNames.forEach((name) => receiversSet.add(name));
 
-        // Convert Set to an array for dropdown options
-        const updatedReceiverOptions = Array.from(receiversSet).map((name) => ({
-            value: name,
-            label: name,
-        }));
+        const updatedReceiverOptions = Array.from(receiversSet)
+            .filter((name) => name && name.trim() !== "")
+            .map((name) => ({
+                value: name,
+                label: name,
+            }));
 
-        setFilteredReceivers(updatedReceiverOptions);
+        setFilteredReceivers(
+            updatedReceiverOptions.sort((a, b) =>
+                a.label.trim().localeCompare(b.label.trim())
+            )
+        );
     };
 
     useEffect(() => {
