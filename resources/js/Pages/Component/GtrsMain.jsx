@@ -466,7 +466,7 @@ export default function GtrsMain({
     const [dailyReportData, setDailyReportData] = useState(deliveryReportData);
     const fetchDeliveryReport = async (setCellLoading) => {
         try {
-            const res = await axios.get(`${url}Delivery`, {
+            const res = await axios.get(`${url}Delivery/Report`, {
                 headers: {
                     UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
@@ -504,7 +504,7 @@ export default function GtrsMain({
     const [excelDailyReportData, setExcelDailyReportData] = useState();
     const fetchExcelDeliveryReportData = async (setCellLoading) => {
         try {
-            const res = await axios.get(`${url}DeliveryReport`, {
+            const res = await axios.get(`${url}Delivery/Report`, {
                 headers: {
                     UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
