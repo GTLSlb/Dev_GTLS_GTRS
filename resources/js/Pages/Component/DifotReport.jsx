@@ -573,7 +573,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
         },
         {
             name: "SenderName",
-            header: "Name",
+            header: "Sender Name",
             type: "string",
             headerAlign: "center",
             textAlign: "start",
@@ -583,7 +583,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
         },
         {
             name: "SenderSuburb",
-            header: "Suburb",
+            header: "Sender Suburb",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
@@ -593,7 +593,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
         },
         {
             name: "SenderState",
-            header: "State",
+            header: "Sender State",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
@@ -617,7 +617,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
         },
         {
             name: "ReceiverState",
-            header: "State",
+            header: "Receiver State",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
