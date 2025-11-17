@@ -466,7 +466,7 @@ function FloorReport() {
                     },
                     {
                         name: "DespatchDateTime",
-                        header: "Despatch Data",
+                        header: "Despatch Date",
                         headerAlign: "center",
                         textAlign: "center",
                         defaultFlex: 1,
@@ -617,8 +617,8 @@ function FloorReport() {
                         },
                     },
                     {
-                        name: "ActualScanned",
-                        header: "Actual Scanned",
+                        name: "OriginPalletSpaces",
+                        header: "Origin Pallet Spaces",
                         type: "number",
                         defaultWidth: 150,
                         headerAlign: "center",
@@ -626,8 +626,8 @@ function FloorReport() {
                         filterEditor: NumberFilter,
                     },
                     {
-                        name: "OriginPalletSpaces",
-                        header: "Origin Pallet Spaces",
+                        name: "ActualScanned",
+                        header: "Actual Scanned",
                         type: "number",
                         defaultWidth: 150,
                         headerAlign: "center",
@@ -644,10 +644,12 @@ function FloorReport() {
                         filterEditor: DateFilter,
 
                         render: ({ value }) => {
-                            return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                                "Invalid date"
+                            const formatted = moment
+                                .utc(value)
+                                .format("DD-MM-YYYY hh:mm A");
+                            return formatted === "Invalid date"
                                 ? ""
-                                : moment(value).format("DD-MM-YYYY hh:mm A");
+                                : formatted;
                         },
                     },
                     {
@@ -663,10 +665,12 @@ function FloorReport() {
                             maxDate: maxDateOldRdd,
                         },
                         render: ({ value }) => {
-                            return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                                "Invalid date"
+                            const formatted = moment
+                                .utc(value)
+                                .format("DD-MM-YYYY hh:mm A");
+                            return formatted === "Invalid date"
                                 ? ""
-                                : moment(value).format("DD-MM-YYYY hh:mm A");
+                                : formatted;
                         },
                     },
 
@@ -824,7 +828,7 @@ function FloorReport() {
         }, {});
 
         const customCellHandlers = {
-            ConsCreated: (value) => {
+            DespatchDateTime: (value) => {
                 const date = new Date(value);
                 return !isNaN(date)
                     ? (date.getTime() - date.getTimezoneOffset() * 60000) /
@@ -832,7 +836,7 @@ function FloorReport() {
                           25569
                     : "";
             },
-            PickupCompletedDate: (value) => {
+            EventDateTime: (value) => {
                 const date = new Date(value);
                 return !isNaN(date)
                     ? (date.getTime() - date.getTimezoneOffset() * 60000) /
@@ -840,7 +844,23 @@ function FloorReport() {
                           25569
                     : "";
             },
-            LogCreated: (value) => {
+            NewRdd: (value) => {
+                const date = new Date(value);
+                return !isNaN(date)
+                    ? (date.getTime() - date.getTimezoneOffset() * 60000) /
+                          86400000 +
+                          25569
+                    : "";
+            },
+            OldRdd: (value) => {
+                const date = new Date(value);
+                return !isNaN(date)
+                    ? (date.getTime() - date.getTimezoneOffset() * 60000) /
+                          86400000 +
+                          25569
+                    : "";
+            },
+            RDD: (value) => {
                 const date = new Date(value);
                 return !isNaN(date)
                     ? (date.getTime() - date.getTimezoneOffset() * 60000) /
@@ -855,7 +875,7 @@ function FloorReport() {
             columnMapping,
             "TimeSlot-Data.xlsx",
             customCellHandlers,
-            ["ConsCreated", "PickupCompletedDate", "LogCreated"]
+            ["DespatchDateTime", "EventDateTime", "NewRdd", "OldRdd", "RDD"]
         );
     }
 
@@ -885,6 +905,8 @@ function FloorReport() {
             headerAlign: "center",
         },
     ];
+
+    console.log("floorData", floorData[0]);
 
     const renderTable = useCallback(() => {
         return (
