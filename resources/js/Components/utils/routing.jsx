@@ -42,10 +42,6 @@ const allRoutes = [
         url: "/consignment-details",
         feature: "ConsignmentsDetails_view",
     },
-    {
-        url: "/",
-        feature: "",
-    }
 ]
 
 //Function that will render all of routes

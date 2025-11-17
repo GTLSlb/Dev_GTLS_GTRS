@@ -57,31 +57,16 @@ export default function Sidebar() {
 
         try {
             const userResponse = await getApiRequest(`/users`, {});
-            const { user } = userResponse;
+            const { user, token, jwt_token } = userResponse;
 
             setUser(user);
-
-            const token_headers = {
-                "Content-Type": "application/x-www-form-urlencoded",
-            };
-            const token_data = {
-                UserId: user.UserId,
-                OwnerId: user.OwnerId,
-            };
-
-            const tokenResponse = await postApiRequest(
-                `${gtamUrl}/Token`,
-                token_headers,
-                token_data
-            );
-
-            const { access_token } = tokenResponse;
-            setToken(access_token);
+            setToken(token);
+            Cookies.set("jwt_token", jwt_token, { secure: true, sameSite: 'Lax', domain: window.Laravel.appDomain });
 
             const appPermissionsHeaders = {
                 UserId: user.UserId,
                 AppId: appId,
-                Authorization: `Bearer ${access_token}`,
+                Authorization: `Bearer ${token}`,
             };
             const appPermissionsResponse = await getApiRequest(
                 `${gtamUrl}User/AppPermissions`,
@@ -92,7 +77,7 @@ export default function Sidebar() {
 
             const userPermissionsHeaders = {
                 UserId: user.UserId,
-                Authorization: `Bearer ${access_token}`,
+                Authorization: `Bearer ${token}`,
             };
             const userPermissionsResponse = await getApiRequest(
                 `${gtamUrl}User/Permissions`,
@@ -134,23 +119,6 @@ export default function Sidebar() {
     useEffect(() => {
         fetchUserData();
     }, [gtamUrl, appId]);
-
-    // useEffect(() => {
-    //     if (
-    //         currentUser &&
-    //         allowedApplications?.length > 0 &&
-    //         !Object.prototype.hasOwnProperty.call(currentUser, "AppRoleId")
-    //     ) {
-    //         const userAppRole = allowedApplications.find(
-    //             (item) => item.AppId === appId
-    //         );
-    //         setCurrentUser({
-    //             ...currentUser,
-    //             AppRoleId: userAppRole?.AppRoleId,
-    //             AppRoleName: userAppRole?.AppRoleName,
-    //         });
-    //     }
-    // }, [currentUser, allowedApplications, appId]);
 
     if (!userPermissions) {
         return null; // Render nothing

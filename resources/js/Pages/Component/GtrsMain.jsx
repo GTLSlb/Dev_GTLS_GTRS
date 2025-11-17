@@ -977,13 +977,6 @@ export default function GtrsMain({
                 }
             />
         ),
-        "/timeslot-report": (
-            <ProductStockTable
-                url={url}
-                Token={Token}
-                userPermissions={userPermissions}
-            />
-        ),
         "/settings": (
             <SettingMiddleware
                 url={url}
