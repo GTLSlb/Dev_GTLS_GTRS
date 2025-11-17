@@ -396,6 +396,8 @@ function TimeSlotReport() {
         );
     }
 
+
+    console.log(timeSlotData)
     const Title = () => {
         return (
             <>
