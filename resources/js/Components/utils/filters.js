@@ -2603,6 +2603,13 @@ export const getFiltersFloorReport = (minDate, maxDate) => {
             emptyValue: "",
         },
         {
+            name: "TotalDays",
+            operator: "eq",
+            type: "number",
+            value: "",
+            emptyValue: "",
+        },
+        {
             name: "ConsStatus",
             operator: "inlist",
             type: "select",

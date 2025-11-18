@@ -696,6 +696,15 @@ function FloorReport() {
                         },
                     },
                     {
+                        name: "TotalDays",
+                        header: "Total Days",
+                        type: "number",
+                        defaultWidth: 150,
+                        headerAlign: "center",
+                        textAlign: "center",
+                        filterEditor: NumberFilter,
+                    },
+                    {
                         name: "TimeslotRequired",
                         header: "Timeslot required",
                         type: "string",
