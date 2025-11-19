@@ -201,6 +201,8 @@ class RegisteredUserController extends Controller
         if($decoded_user !== null) {
             $user = $this->mapUserByTypeId($decoded_user);
             $jwt_token = !isset($_COOKIE['jwt_token']) ? $this->validateSessionFromNode($user_from_session, $sessionId, $request->session()->get('token')) : $_COOKIE['jwt_token'];
+            $token = !isset($_COOKIE['jwt_token']) ? $request->session()->get('token') : $this->decode_jwt_valid($jwt_token)->Token;
+            
             \Log::info("NEW JWT Token: " . $jwt_token);
             return response()->json([
                 'jwt_token' => $jwt_token,
