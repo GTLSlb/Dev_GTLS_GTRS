@@ -100,7 +100,7 @@ function TimeSlotReport() {
                 setColumns([
                     {
                         name: "ConsignmentNo",
-                        header: "Cons No",
+                        header: "Cnote Num",
                         group: "personalInfo",
                         filterEditor: StringFilter,
                         headerAlign: "center",
@@ -130,11 +130,11 @@ function TimeSlotReport() {
                                 <div>
                                     {value == "TRUE" ? (
                                         <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                                            True
+                                            Timeslot Booked
                                         </span>
                                     ) : value == "FALSE" ? (
                                         <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                                            False
+                                            Not booked
                                         </span>
                                     ) : (
                                         <></>
@@ -153,77 +153,8 @@ function TimeSlotReport() {
                         filterEditor: StringFilter,
                     },
                     {
-                        name: "OldData",
-                        header: "Old Data",
-                        type: "string",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: OldDataOptions,
-                        },
-                        render: ({ value }) => {
-                            return (
-                                <div>
-                                    {value == "True" ? (
-                                        <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                                            True
-                                        </span>
-                                    ) : value == "False" ? (
-                                        <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                                            False
-                                        </span>
-                                    ) : (
-                                        <></>
-                                    )}
-                                </div>
-                            );
-                        },
-                    },
-                    {
-                        name: "NewData",
-                        header: "New Data",
-                        type: "string",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: NewDataOptions,
-                        },
-                        render: ({ value }) => {
-                            return (
-                                <div>
-                                    {value == "True" ? (
-                                        <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                                            True
-                                        </span>
-                                    ) : value == "False" ? (
-                                        <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                                            False
-                                        </span>
-                                    ) : (
-                                        <></>
-                                    )}
-                                </div>
-                            );
-                        },
-                    },
-                    {
-                        name: "LogCreatedBy",
-                        header: "Booked by",
-                        type: "string",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        defaultWidth: 170,
-                        filterEditor: StringFilter,
-                    },
-                    {
                         name: "ConsStatus",
-                        header: "Cons Status",
+                        header: "Cnote Status",
                         type: "string",
                         defaultWidth: 200,
                         headerAlign: "center",
@@ -252,7 +183,7 @@ function TimeSlotReport() {
                     // },
                     {
                         name: "ConsCreated",
-                        header: "Consignment created at",
+                        header: "Cnote Created",
                         headerAlign: "center",
                         textAlign: "center",
                         defaultFlex: 1,
@@ -273,7 +204,7 @@ function TimeSlotReport() {
                     },
                     {
                         name: "PickupCompletedDate",
-                        header: "Pickup completed at",
+                        header: "Pickup Completed",
                         headerAlign: "center",
                         textAlign: "center",
                         defaultFlex: 1,
@@ -315,7 +246,7 @@ function TimeSlotReport() {
                     },
                     {
                         name: "DiffConsTimeslot",
-                        header: "Time taken to book from creation of Consignment",
+                        header: "Bkd from Creation",
                         group: "senderDetails",
                         headerAlign: "center",
                         textAlign: "center",
@@ -324,7 +255,7 @@ function TimeSlotReport() {
                     },
                     {
                         name: "DiffTimeslotPickup",
-                        header: "Time taken to book from Pickup Completed.",
+                        header: "Bkd from Pickup",
                         group: "senderDetails",
                         headerAlign: "center",
                         textAlign: "center",
@@ -396,8 +327,6 @@ function TimeSlotReport() {
         );
     }
 
-
-    console.log(timeSlotData)
     const Title = () => {
         return (
             <>

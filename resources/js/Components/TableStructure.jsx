@@ -265,6 +265,7 @@ export default function TableStructure({
                             rowHeight={rowHeight ?? 40}
                             filterTypes={filterTypes}
                             scrollProps={scrollProps}
+                            horizontalScrollMode="on"
                             showColumnMenuTool={false}
                             enableColumnAutosize={false}
                             showColumnMenuLockOptions={false}

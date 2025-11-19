@@ -1,38 +1,35 @@
-import { CustomContext } from "@/CommonContext";
-import AnimatedLoading from "@/Components/AnimatedLoading";
-import TableStructure from "@/Components/TableStructure";
-import { createNewLabelObjects } from "@/Components/utils/dataUtils";
-import { exportToExcel } from "@/Components/utils/excelUtils";
-import {
-    getFiltersFloorReport,
-    getFiltersTimeSlot,
-} from "@/Components/utils/filters";
-import { handleFilterTable } from "@/Components/utils/filterUtils";
-import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
-import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
-import axios from "axios";
+import { registerAllModules } from "handsontable/registry";
+registerAllModules();
+import Handsontable from "handsontable";
 import React, {
+    useState,
+    useEffect,
+    useMemo,
+    useRef,
     useCallback,
     useContext,
-    useEffect,
-    useRef,
-    useState,
 } from "react";
-import swal from "sweetalert";
-import {
-    convertToIso,
-    handleSessionExpiration,
-    renderConsDetailsLink,
-} from "@/CommonFunctions";
-import { getMinMaxValue } from "@/Components/utils/dateUtils";
-import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
+import { HotTable } from "@handsontable/react-wrapper";
+
+import "handsontable/styles/handsontable.min.css";
+import "handsontable/styles/ht-theme-horizon.css";
+import "handsontable/styles/ht-theme-main.min.css";
 import moment from "moment";
-import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
+import axios from "axios";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 import {
-    Card,
-    CardBody,
-    Chip,
-    Divider,
+    Button,
+    Dropdown,
+    DropdownItem,
+    DropdownMenu,
+    DropdownTrigger,
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    useDisclosure,
     Table,
     TableBody,
     TableCell,
@@ -40,17 +37,598 @@ import {
     TableHeader,
     TableRow,
 } from "@heroui/react";
+import { ToastContainer } from "react-toastify";
+import AnimatedLoading from "@/Components/AnimatedLoading";
+import { AlertToast } from "@/permissions";
+import swal from "sweetalert";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { CustomContext } from "@/CommonContext";
+import { handleSessionExpiration } from "@/CommonFunctions";
+import CommentsModal from "../ReportsPage/Modals/CommentsModal";
 
-function FloorReport() {
-    const { url, Token, user, userPermissions } = useContext(CustomContext);
-    const gridRef = useRef(null);
-    const [selected] = useState({});
-    const [floorData, setFloorData] = useState([]);
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export default function FloorReport() {
+    const { Token, user, userPermissions, url } = useContext(CustomContext);
     const [loading, setLoading] = useState(true);
-    const [columns, setColumns] = useState([]);
-    const [expandedRows, setExpandedRows] = useState({});
+    const [floorData, setFloorData] = useState([]);
+    const hotTableRef = useRef(null);
+    const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
-    const renderRowDetailsWithTable = ({ data, rowIndex }) => {
+    const dateFields = [
+        "DespatchDateTime",
+        "EventDateTime",
+        "RDD",
+        "OldRdd",
+        "NewRdd",
+    ];
+
+    // Format dates from backend
+    const formattedData = useMemo(
+        () =>
+            floorData?.map((row) => {
+                const newRow = { ...row };
+
+                dateFields.forEach((field) => {
+                    if (row[field]) {
+                        const parsed = moment(row[field], [
+                            "DD-MM-YYYY hh:mm A",
+                            "DD/MM/YYYY hh:mm A",
+                            "YYYY-MM-DDTHH:mm:ssZ",
+                            "YYYY-MM-DD",
+                        ]);
+
+                        newRow[field] = parsed.isValid()
+                            ? parsed.toDate()
+                            : null;
+                    } else {
+                        newRow[field] = null;
+                    }
+                });
+
+                return newRow;
+            }) || [],
+        [floorData]
+    );
+
+    // Column visibility state
+    const [visibleColumns, setVisibleColumns] = useState(
+        new Set([
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+        ])
+    );
+    const [hiddenColumns, setHiddenColumns] = useState([]);
+
+    // Fetch floor report data
+    useEffect(() => {
+        axios
+            .get(`${url}/FloorReport`, {
+                headers: {
+                    UserId: user.UserId,
+                    Authorization: `Bearer ${Token}`,
+                },
+            })
+            .then((res) => {
+                setFloorData(res.data || []);
+                setLoading(false);
+            })
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then(async function () {
+                        await handleSessionExpiration();
+                    });
+                } else {
+                    console.log(err);
+                    setLoading(false);
+                }
+            });
+    }, [userPermissions, Token, url, user.UserId]);
+
+    // Handsontable renderers
+    const dateRenderer = useCallback((instance, td, row, col, prop, value) => {
+        td.innerText = value ? moment(value).format("DD/MM/YYYY hh:mm A") : "";
+        td.classList.add("htLeft");
+        return td;
+    }, []);
+
+    const booleanRenderer = useCallback(
+        (instance, td, row, col, prop, value) => {
+            Handsontable.dom.empty(td);
+            td.classList.add("htCenter");
+
+            if (value === "YES") {
+                const badge = document.createElement("span");
+                badge.className =
+                    "inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800";
+                badge.textContent = "Yes";
+                td.appendChild(badge);
+            } else if (value === "NO") {
+                const badge = document.createElement("span");
+                badge.className =
+                    "inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800";
+                badge.textContent = "No";
+                td.appendChild(badge);
+            }
+
+            return td;
+        },
+        []
+    );
+
+    const timeslotbookedRenderer = useCallback(
+        (instance, td, row, col, prop, value) => {
+            Handsontable.dom.empty(td);
+            td.classList.add("htCenter");
+
+            const visualRowData = instance.getSourceDataAtRow(row);
+            if (visualRowData.TimeslotRequired !== "YES") {
+                return td;
+            }
+
+            if (value === "YES") {
+                const badge = document.createElement("span");
+                badge.className =
+                    "inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800";
+                badge.textContent = "Yes";
+                td.appendChild(badge);
+            } else if (value === "NO") {
+                const badge = document.createElement("span");
+                badge.className =
+                    "inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800";
+                badge.textContent = "No";
+                td.appendChild(badge);
+            }
+
+            return td;
+        },
+        []
+    );
+    const [detailsData, setDetailsData] = useState(null);
+
+    const handleViewDetails = (data) => {
+        setDetailsData(data);
+        onOpen();
+    };
+
+    // Handsontable columns configuration
+    const hotColumns = useMemo(
+        () => [
+            {
+                data: "ConsignmentID",
+                title: "",
+                renderer: (instance, td, row, col, prop, value) => {
+                    Handsontable.dom.empty(td);
+
+                    const button = document.createElement("button");
+                    button.className = `
+                        p-1
+                        hover:bg-gray-100
+                        rounded
+                        transition-colors
+                        flex
+                        items-center
+                        justify-center
+                        w-full
+                    `;
+                    button.title = "View Details";
+
+                    // Right arrow SVG icon
+                    const svg = document.createElementNS(
+                        "http://www.w3.org/2000/svg",
+                        "svg"
+                    );
+                    svg.setAttribute("viewBox", "0 0 24 24");
+                    svg.setAttribute("fill", "currentColor");
+                    svg.setAttribute("class", "w-4 h-4");
+                    svg.setAttribute("aria-hidden", "true");
+
+                    const path = document.createElementNS(
+                        "http://www.w3.org/2000/svg",
+                        "path"
+                    );
+                    path.setAttribute("fill-rule", "evenodd");
+                    path.setAttribute(
+                        "d",
+                        "M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z"
+                    );
+                    path.setAttribute("clip-rule", "evenodd");
+
+                    svg.appendChild(path);
+                    button.appendChild(svg);
+
+                    button.addEventListener("click", () => {
+                        // Option 1: Get the visual (filtered/sorted) row data
+                        const visualRowData = instance.getSourceDataAtRow(row);
+
+                        handleViewDetails(visualRowData);
+                    });
+
+                    td.classList.add("content-center");
+                    td.style.textAlign = "center";
+                    td.appendChild(button);
+
+                    return td;
+                },
+                className: "htCenter",
+                readOnly: true,
+                editor: false,
+                width: 50,
+                headerClassName: "htCenter",
+            },
+            {
+                data: "ConsignmentNo",
+                title: "Cons No",
+                type: "text",
+                readOnly: true,
+                editor: false,
+                width: 120,
+                headerClassName: "htLeft",
+            },
+            {
+                data: "ChargeTo",
+                title: "Account Name",
+                type: "text",
+                readOnly: true,
+                editor: false,
+                width: 170,
+                headerClassName: "htLeft",
+            },
+            {
+                data: "DespatchDateTime",
+                title: "Despatch Date",
+                type: "date",
+                dateFormat: "DD/MM/YYYY",
+                readOnly: true,
+                editor: false,
+                width: 170,
+                headerClassName: "htLeft",
+                renderer: dateRenderer,
+            },
+            {
+                data: "SenderName",
+                title: "Sender Name",
+                type: "text",
+                readOnly: true,
+                editor: false,
+                width: 150,
+                headerClassName: "htLeft",
+            },
+            {
+                data: "SenderState",
+                title: "Sender State",
+                type: "text",
+                readOnly: true,
+                editor: false,
+                width: 120,
+                headerClassName: "htLeft",
+            },
+            {
+                data: "SenderSuburb",
+                title: "Sender Suburb",
+                type: "text",
+                readOnly: true,
+                editor: false,
+                width: 130,
+                headerClassName: "htLeft",
+            },
+            {
+                data: "SenderZone",
+                title: "Sender Zone",
+                type: "text",
+                readOnly: true,
+                editor: false,
+                width: 110,
+                headerClassName: "htLeft",
+            },
+            {
+                data: "ReceiverName",
+                title: "Receiver Name",
+                type: "text",
+                readOnly: true,
+                editor: false,
+                width: 150,
+                headerClassName: "htLeft",
+            },
+            {
+                data: "ReceiverState",
+                title: "Receiver State",
+                type: "text",
+                readOnly: true,
+                editor: false,
+                width: 130,
+                headerClassName: "htLeft",
+            },
+            {
+                data: "ReceiverSuburb",
+                title: "Receiver Suburb",
+                type: "text",
+                readOnly: true,
+                editor: false,
+                width: 130,
+                headerClassName: "htLeft",
+            },
+            {
+                data: "ReceiverZone",
+                title: "Receiver Zone",
+                type: "text",
+                readOnly: true,
+                editor: false,
+                width: 110,
+                headerClassName: "htLeft",
+            },
+            {
+                data: "ConsStatus",
+                title: "Cons Status",
+                type: "text",
+                readOnly: true,
+                editor: false,
+                width: 120,
+                headerClassName: "htLeft",
+            },
+            {
+                data: "EventDateTime",
+                title: "Floor Scan Date",
+                type: "date",
+                dateFormat: "DD/MM/YYYY",
+                readOnly: true,
+                editor: false,
+                width: 170,
+                headerClassName: "htLeft",
+                renderer: dateRenderer,
+            },
+            {
+                data: "OriginPalletSpaces",
+                title: "Cnote Pallet Space",
+                type: "numeric",
+                readOnly: true,
+                editor: false,
+                width: 150,
+                headerClassName: "htLeft",
+            },
+            {
+                data: "ActualScanned",
+                title: "Scanned Events",
+                type: "numeric",
+                readOnly: true,
+                editor: false,
+                width: 150,
+                headerClassName: "htLeft",
+            },
+            {
+                data: "RDD",
+                title: "RDD",
+                type: "date",
+                dateFormat: "DD/MM/YYYY",
+                readOnly: true,
+                editor: false,
+                width: 170,
+                headerClassName: "htLeft",
+                renderer: dateRenderer,
+            },
+            {
+                data: "OldRdd",
+                title: "Original RDD",
+                type: "date",
+                dateFormat: "DD/MM/YYYY",
+                readOnly: true,
+                editor: false,
+                width: 170,
+                headerClassName: "htLeft",
+                renderer: dateRenderer,
+            },
+            {
+                data: "TotalDays",
+                title: "Total Days",
+                type: "numeric",
+                readOnly: true,
+                editor: false,
+                width: 110,
+                headerClassName: "htLeft",
+            },
+            {
+                data: "TimeslotRequired",
+                title: "Timeslot Required",
+                type: "text",
+                readOnly: true,
+                editor: false,
+                width: 130,
+                headerClassName: "htLeft",
+                renderer: booleanRenderer,
+            },
+            {
+                data: "TimeslotBooked",
+                title: "Timeslot Booked",
+                type: "text",
+                readOnly: true,
+                editor: false,
+                width: 130,
+                headerClassName: "htLeft",
+                renderer: timeslotbookedRenderer,
+            },
+            {
+                data: "DockLocation",
+                title: "Dock Location",
+                type: "text",
+                readOnly: true,
+                editor: false,
+                width: 130,
+                headerClassName: "htLeft",
+            },
+            {
+                data: "Depot",
+                title: "Depot",
+                type: "text",
+                readOnly: true,
+                editor: false,
+                width: 110,
+                headerClassName: "htLeft",
+            },
+        ],
+        [dateRenderer, booleanRenderer]
+    );
+
+    const colHeaders = useMemo(
+        () => hotColumns.map((col) => col.title),
+        [hotColumns]
+    );
+
+    // Export to Excel
+    const buttonClickCallback = async () => {
+        const hot = hotTableRef.current?.hotInstance;
+        if (!hot) return;
+
+        const exportData = hot.getData();
+        const allColumns = hot.getColHeader();
+
+        // Filter out empty column headers and get their indices
+        const validColumnIndices = allColumns
+            .map((col, index) => (col && col.trim() !== "" ? index : null))
+            .filter((index) => index !== null);
+
+        // Get only valid columns
+        const selectedColumns = validColumnIndices.map(
+            (index) => allColumns[index]
+        );
+
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet("Floor Report");
+
+        const headerRow = worksheet.addRow(selectedColumns);
+        headerRow.font = { bold: true };
+        headerRow.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFE2B540" },
+        };
+        headerRow.alignment = { horizontal: "center", vertical: "middle" };
+
+        const dateColumnIndexes = selectedColumns
+            .map((col, index) =>
+                [
+                    "Despatch Date",
+                    "Floor Scan Date",
+                    "RDD",
+                    "Original RDD",
+                ].includes(col)
+                    ? index
+                    : null
+            )
+            .filter((index) => index !== null);
+
+        exportData.forEach((rowData) => {
+            // Extract only valid columns from row data
+            const filteredRowData = validColumnIndices.map(
+                (index) => rowData[index]
+            );
+            const row = worksheet.addRow(filteredRowData);
+
+            let maxHeight = 15;
+            row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                const cellValue = cell.value;
+
+                cell.alignment = { wrapText: true, vertical: "top" };
+
+                if (dateColumnIndexes.includes(colNumber - 1) && cellValue) {
+                    const date = new Date(cellValue);
+                    if (!isNaN(date)) {
+                        const excelSerial =
+                            (date.getTime() -
+                                date.getTimezoneOffset() * 60000) /
+                                86400000 +
+                            25569;
+                        cell.value = excelSerial;
+                        cell.numFmt = "dd-mm-yyyy hh:mm";
+                    }
+                }
+
+                maxHeight = Math.max(
+                    maxHeight,
+                    (cellValue?.toString() || "").split("\n").length * 25
+                );
+            });
+
+            row.height = maxHeight;
+        });
+
+        worksheet.columns = selectedColumns.map(() => ({ width: 20 }));
+
+        workbook.xlsx.writeBuffer().then((buffer) => {
+            const blob = new Blob([buffer], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+            saveAs(blob, "Floor-Report.xlsx");
+        });
+    };
+
+    // Column visibility management
+    const applyHiddenColumns = () => {
+        const hotInstance = hotTableRef.current?.hotInstance;
+        if (!hotInstance) return;
+
+        const totalColumns = hotInstance.countCols();
+        const visibleIndexes = Array.from(visibleColumns).map(Number);
+
+        const newColumnsToHide = [];
+        for (let i = 0; i < totalColumns; i++) {
+            if (!visibleIndexes.includes(i)) {
+                newColumnsToHide.push(i);
+            }
+        }
+
+        const isSame =
+            JSON.stringify(hiddenColumns) === JSON.stringify(newColumnsToHide);
+
+        if (!isSame) {
+            setHiddenColumns(newColumnsToHide);
+
+            const hiddenPlugin = hotInstance.getPlugin("hiddenColumns");
+            hiddenPlugin.hideColumns(newColumnsToHide);
+            hiddenPlugin.showColumns(visibleIndexes);
+            hotInstance.render();
+        }
+    };
+
+    useEffect(() => {
+        applyHiddenColumns();
+    }, [visibleColumns, formattedData]);
+
+    const clearAllFilters = () => {
+        const hotInstance = hotTableRef.current?.hotInstance;
+        if (hotInstance) {
+            const filtersPlugin = hotInstance?.getPlugin("filters");
+            filtersPlugin.clearConditions();
+            filtersPlugin.filter();
+        }
+    };
+
+    const renderRowDetails = ({ data, rowIndex }) => {
         const formatDate = (date) => {
             const formatted = moment(date).format("DD-MM-YYYY hh:mm A");
             return formatted === "Invalid date" ? "N/A" : formatted;
@@ -104,852 +682,143 @@ function FloorReport() {
         );
     };
 
-    const renderRowDetails = useCallback(({ data, rowIndex }) => {
-        return (
-            <div
-                style={{
-                    padding: "20px",
-                    backgroundColor: "#f9f9f9",
-                    borderTop: "1px solid #e0e0e0",
-                }}
-            >
-                <div className="grid grid-cols-2 gap-6">
-                    {/* Left Column - Sender Details */}
-                    <div>
-                        <h4 className="font-bold text-gray-800 mb-3 border-b pb-2">
-                            Sender Details
-                        </h4>
-                        <div className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-600">
-                                    Name:
-                                </span>
-                                <span className="text-gray-800">
-                                    {data.SenderName || "N/A"}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-600">
-                                    State:
-                                </span>
-                                <span className="text-gray-800">
-                                    {data.SenderState || "N/A"}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-600">
-                                    Zone:
-                                </span>
-                                <span className="text-gray-800">
-                                    {data.SenderZone || "N/A"}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-600">
-                                    Suburb:
-                                </span>
-                                <span className="text-gray-800">
-                                    {data.SenderSuburb || "N/A"}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Right Column - Receiver Details */}
-                    <div>
-                        <h4 className="font-bold text-gray-800 mb-3 border-b pb-2">
-                            Receiver Details
-                        </h4>
-                        <div className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-600">
-                                    Name:
-                                </span>
-                                <span className="text-gray-800">
-                                    {data.ReceiverName || "N/A"}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-600">
-                                    State:
-                                </span>
-                                <span className="text-gray-800">
-                                    {data.ReceiverState || "N/A"}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-600">
-                                    Zone:
-                                </span>
-                                <span className="text-gray-800">
-                                    {data.ReceiverZone || "N/A"}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-600">
-                                    Suburb:
-                                </span>
-                                <span className="text-gray-800">
-                                    {data.ReceiverSuburb || "N/A"}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Operational Details */}
-                <div className="grid grid-cols-2 gap-6 mt-6">
-                    <div>
-                        <h4 className="font-bold text-gray-800 mb-3 border-b pb-2">
-                            Operational Info
-                        </h4>
-                        <div className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-600">
-                                    Depot:
-                                </span>
-                                <span className="text-gray-800">
-                                    {data.Depot || "N/A"}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-600">
-                                    Dock Location:
-                                </span>
-                                <span className="text-gray-800">
-                                    {data.DockLocation || "N/A"}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-600">
-                                    Scan Action:
-                                </span>
-                                <span className="text-gray-800">
-                                    {data.ScanAction || "N/A"}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-600">
-                                    Account Name:
-                                </span>
-                                <span className="text-gray-800">
-                                    {data.ChargeTo || "N/A"}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h4 className="font-bold text-gray-800 mb-3 border-b pb-2">
-                            Status & Dates
-                        </h4>
-                        <div className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-600">
-                                    Status:
-                                </span>
-                                <span className="text-gray-800">
-                                    {data.ConsStatus || "N/A"}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-600">
-                                    Event Date:
-                                </span>
-                                <span className="text-gray-800">
-                                    {moment(data.EventDateTime).format(
-                                        "DD-MM-YYYY hh:mm A"
-                                    ) === "Invalid date"
-                                        ? "N/A"
-                                        : moment(data.EventDateTime).format(
-                                              "DD-MM-YYYY hh:mm A"
-                                          )}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-600">
-                                    RDD:
-                                </span>
-                                <span className="text-gray-800">
-                                    {moment(data.RDD).format(
-                                        "DD-MM-YYYY hh:mm A"
-                                    ) === "Invalid date"
-                                        ? "N/A"
-                                        : moment(data.RDD).format(
-                                              "DD-MM-YYYY hh:mm A"
-                                          )}
-                                </span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="font-medium text-gray-600">
-                                    Despatch Date:
-                                </span>
-                                <span className="text-gray-800">
-                                    {moment(data.DespatchDateTime).format(
-                                        "DD-MM-YYYY hh:mm A"
-                                    ) === "Invalid date"
-                                        ? "N/A"
-                                        : moment(data.DespatchDateTime).format(
-                                              "DD-MM-YYYY hh:mm A"
-                                          )}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Timeslot Info */}
-                <div className="mt-6 pt-4 border-t">
-                    <h4 className="font-bold text-gray-800 mb-3">
-                        Timeslot Information
-                    </h4>
-                    <div className="flex gap-6">
-                        <div className="flex items-center gap-2">
-                            <span className="font-medium text-gray-600">
-                                Timeslot Required:
-                            </span>
-                            {data.TimeslotRequired === "YES" ? (
-                                <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                                    Yes
-                                </span>
-                            ) : data.TimeslotRequired === "NO" ? (
-                                <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                                    No
-                                </span>
-                            ) : (
-                                <span>N/A</span>
-                            )}
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className="font-medium text-gray-600">
-                                Timeslot Booked:
-                            </span>
-                            {data.TimeslotBooked === "YES" ? (
-                                <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                                    Yes
-                                </span>
-                            ) : data.TimeslotBooked === "NO" ? (
-                                <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                                    No
-                                </span>
-                            ) : (
-                                <span>N/A</span>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }, []);
-
-    useEffect(() => {
-        axios
-            .get(`${url}/FloorReport`, {
-                headers: {
-                    UserId: user.UserId,
-                    Authorization: `Bearer ${Token}`,
-                },
-            })
-            .then((res) => {
-                const rawData = res.data;
-                const parsedData = rawData.map((item) => {
-                    if (item.OldRdd) {
-                        return {
-                            ...item,
-                            OldRdd: convertToIso(item.OldRdd),
-                            NewRdd: convertToIso(item.NewRdd),
-                        };
-                    }
-                    return item;
-                });
-                setFloorData(parsedData || []);
-
-                const senderStateOptions = createNewLabelObjects(
-                    parsedData,
-                    "SenderState"
-                );
-                const senderZoneOptions = createNewLabelObjects(
-                    parsedData,
-                    "SenderZone"
-                );
-                const senderSuburbOptions = createNewLabelObjects(
-                    parsedData,
-                    "SenderSuburb"
-                );
-                const receiverStateOptions = createNewLabelObjects(
-                    parsedData,
-                    "ReceiverState"
-                );
-                const receiverZoneOptions = createNewLabelObjects(
-                    parsedData,
-                    "ReceiverZone"
-                );
-                const receiverSuburbOptions = createNewLabelObjects(
-                    parsedData,
-                    "ReceiverSuburb"
-                );
-                const ConsStatusOptions = createNewLabelObjects(
-                    parsedData,
-                    "ConsStatus"
-                );
-                const ScanActionsOptions = createNewLabelObjects(
-                    parsedData,
-                    "ScanAction"
-                );
-                const DockLocationOptions = createNewLabelObjects(
-                    parsedData,
-                    "DockLocation"
-                );
-                const DepotOptions = createNewLabelObjects(parsedData, "Depot");
-                const TimeslotRequiredOptions = createNewLabelObjects(
-                    parsedData,
-                    "TimeslotRequired"
-                );
-                const TimeslotBookedOptions = createNewLabelObjects(
-                    parsedData,
-                    "TimeslotBooked"
-                );
-                const minDespatchDateCreated = getMinMaxValue(
-                    parsedData,
-                    "DespatchDateTime",
-                    1
-                );
-                const maxDespatchDateCreated = getMinMaxValue(
-                    parsedData,
-                    "ConsCreated",
-                    2
-                );
-                const minEventDateCreated = getMinMaxValue(
-                    parsedData,
-                    "EventDateTime",
-                    1
-                );
-                const maxEventDateCreated = getMinMaxValue(
-                    parsedData,
-                    "EventDateTime",
-                    2
-                );
-
-                const minDateOldRdd = getMinMaxValue(parsedData, "OldRdd", 1);
-                const maxDateOldRdd = getMinMaxValue(parsedData, "OldRdd", 2);
-
-                const minDateNewRdd = getMinMaxValue(parsedData, "NewRdd", 1);
-                const maxDateNewRdd = getMinMaxValue(parsedData, "NewRdd", 2);
-
-                const minRDDDate = getMinMaxValue(parsedData, "RDD", 1);
-                const maxRDDDate = getMinMaxValue(parsedData, "RDD", 2);
-
-                setColumns([
-                    {
-                        name: "ConsignmentNo",
-                        header: "Cons No",
-                        group: "personalInfo",
-                        filterEditor: StringFilter,
-                        headerAlign: "center",
-                        textAlign: "center",
-                        render: ({ value, data }) => {
-                            return renderConsDetailsLink(
-                                userPermissions,
-                                value,
-                                data.ConsignmentID
-                            );
-                        },
-                    },
-                    {
-                        name: "ChargeTo",
-                        header: "Account Name",
-                        type: "string",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        defaultWidth: 170,
-                        filterEditor: StringFilter,
-                    },
-                    {
-                        name: "DespatchDateTime",
-                        header: "Despatch Date",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        defaultFlex: 1,
-                        minWidth: 200,
-                        dateFormat: "DD-MM-YYYY",
-                        filterable: true,
-                        filterEditor: DateFilter,
-                        filterEditorProps: {
-                            minDate: minDespatchDateCreated,
-                            maxDate: maxDespatchDateCreated,
-                        },
-                        render: ({ value }) => {
-                            return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                                "Invalid date"
-                                ? ""
-                                : moment(value).format("DD-MM-YYYY hh:mm A");
-                        },
-                    },
-                    {
-                        name: "SenderName",
-                        header: "Sender Name",
-                        group: "senderDetails",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        defaultWidth: 200,
-                        filterEditor: StringFilter,
-                    },
-                    {
-                        name: "SenderState",
-                        header: "Sender State",
-                        group: "senderDetails",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: senderStateOptions,
-                        },
-                    },
-                    {
-                        name: "SenderSuburb",
-                        header: "Sender Suburb",
-                        group: "senderDetails",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: senderSuburbOptions,
-                        },
-                    },
-                    {
-                        name: "SenderZone",
-                        header: "Sender Zone",
-                        group: "senderDetails",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: senderZoneOptions,
-                        },
-                    },
-                    {
-                        name: "ReceiverName",
-                        header: "Receiver Name",
-                        group: "receiverDetails",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        defaultWidth: 200,
-                        filterEditor: StringFilter,
-                    },
-                    {
-                        name: "ReceiverState",
-                        header: "Receiver State",
-                        group: "receiverDetails",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: receiverStateOptions,
-                        },
-                    },
-                    {
-                        name: "ReceiverSuburb",
-                        header: "Receiver Suburb",
-                        group: "receiverDetails",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: receiverSuburbOptions,
-                        },
-                    },
-                    {
-                        name: "ReceiverZone",
-                        header: "Receiver Zone",
-                        group: "receiverDetails",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: receiverZoneOptions,
-                        },
-                    },
-                    {
-                        name: "ConsStatus",
-                        header: "Cons Status",
-                        type: "string",
-                        defaultWidth: 200,
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: ConsStatusOptions,
-                        },
-                    },
-                    {
-                        name: "EventDateTime",
-                        header: "Event Date",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        defaultFlex: 1,
-                        minWidth: 200,
-                        dateFormat: "DD-MM-YYYY",
-                        filterable: true,
-                        filterEditor: DateFilter,
-                        filterEditorProps: {
-                            minDate: minEventDateCreated,
-                            maxDate: maxEventDateCreated,
-                        },
-                        render: ({ value }) => {
-                            return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                                "Invalid date"
-                                ? ""
-                                : moment(value).format("DD-MM-YYYY hh:mm A");
-                        },
-                    },
-                    {
-                        name: "OriginPalletSpaces",
-                        header: "Origin Pallet Spaces",
-                        type: "number",
-                        defaultWidth: 150,
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: NumberFilter,
-                    },
-                    {
-                        name: "ActualScanned",
-                        header: "Actual Scanned",
-                        type: "number",
-                        defaultWidth: 150,
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: NumberFilter,
-                    },
-                    {
-                        name: "OldRdd",
-                        header: "Original RDD",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        defaultWidth: 170,
-                        dateFormat: "DD-MM-YYYY",
-                        filterEditor: DateFilter,
-
-                        render: ({ value }) => {
-                            const formatted = moment
-                                .utc(value)
-                                .format("DD-MM-YYYY hh:mm A");
-                            return formatted === "Invalid date"
-                                ? ""
-                                : formatted;
-                        },
-                    },
-                    {
-                        name: "NewRdd",
-                        header: "New RDD",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        defaultWidth: 170,
-                        dateFormat: "DD-MM-YYYY",
-                        filterEditor: DateFilter,
-                        filterEditorProps: {
-                            minDate: minDateOldRdd,
-                            maxDate: maxDateOldRdd,
-                        },
-                        render: ({ value }) => {
-                            const formatted = moment
-                                .utc(value)
-                                .format("DD-MM-YYYY hh:mm A");
-                            return formatted === "Invalid date"
-                                ? ""
-                                : formatted;
-                        },
-                    },
-
-                    {
-                        name: "RDD",
-                        header: "RDD",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        defaultFlex: 1,
-                        minWidth: 200,
-                        dateFormat: "DD-MM-YYYY",
-                        filterable: true,
-                        filterEditor: DateFilter,
-                        filterEditorProps: {
-                            minDate: minRDDDate,
-                            maxDate: maxRDDDate,
-                        },
-                        render: ({ value }) => {
-                            return moment(value).format("DD-MM-YYYY hh:mm A") ==
-                                "Invalid date"
-                                ? ""
-                                : moment(value).format("DD-MM-YYYY hh:mm A");
-                        },
-                    },
-                    {
-                        name: "TotalDays",
-                        header: "Total Days",
-                        type: "number",
-                        defaultWidth: 150,
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: NumberFilter,
-                    },
-                    {
-                        name: "TimeslotRequired",
-                        header: "Timeslot required",
-                        type: "string",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: TimeslotRequiredOptions,
-                        },
-                        render: ({ value }) => {
-                            return (
-                                <div>
-                                    {value == "YES" ? (
-                                        <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                                            True
-                                        </span>
-                                    ) : value == "NO" ? (
-                                        <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                                            False
-                                        </span>
-                                    ) : (
-                                        <></>
-                                    )}
-                                </div>
-                            );
-                        },
-                    },
-                    {
-                        name: "TimeslotBooked",
-                        header: "Timeslot Booked",
-                        type: "string",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: TimeslotBookedOptions,
-                        },
-                        render: ({ value }) => {
-                            return (
-                                <div>
-                                    {value == "YES" ? (
-                                        <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                                            True
-                                        </span>
-                                    ) : value == "NO" ? (
-                                        <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                                            False
-                                        </span>
-                                    ) : (
-                                        <></>
-                                    )}
-                                </div>
-                            );
-                        },
-                    },
-                    {
-                        name: "ScanAction",
-                        header: "Scan Action",
-                        type: "string",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        defaultWidth: 170,
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: ScanActionsOptions,
-                        },
-                    },
-
-                    {
-                        name: "DockLocation",
-                        header: "Dock Location",
-                        type: "string",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        defaultWidth: 170,
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: DockLocationOptions,
-                        },
-                    },
-                    {
-                        name: "Depot",
-                        header: "Depot",
-                        type: "string",
-                        headerAlign: "center",
-                        textAlign: "center",
-                        defaultWidth: 170,
-                        filterEditor: SelectFilter,
-                        filterEditorProps: {
-                            multiple: true,
-                            wrapMultiple: false,
-                            dataSource: DepotOptions,
-                        },
-                    },
-                ]);
-                setLoading(false);
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(async function () {
-                        await handleSessionExpiration();
-                    });
-                } else {
-                    console.log(err);
-                }
-            });
-    }, [userPermissions, Token, url]);
-
-    const [filtersValue, setFiltersValue] = useState(getFiltersFloorReport());
-
-    function handleDownloadExcel() {
-        const jsonData = handleFilterTable(gridRef, floorData);
-
-        const columnMapping = columns.reduce((acc, column) => {
-            acc[column.name] = column.header;
-            return acc;
-        }, {});
-
-        const customCellHandlers = {
-            DespatchDateTime: (value) => {
-                const date = new Date(value);
-                return !isNaN(date)
-                    ? (date.getTime() - date.getTimezoneOffset() * 60000) /
-                          86400000 +
-                          25569
-                    : "";
-            },
-            EventDateTime: (value) => {
-                const date = new Date(value);
-                return !isNaN(date)
-                    ? (date.getTime() - date.getTimezoneOffset() * 60000) /
-                          86400000 +
-                          25569
-                    : "";
-            },
-            NewRdd: (value) => {
-                const date = new Date(value);
-                return !isNaN(date)
-                    ? (date.getTime() - date.getTimezoneOffset() * 60000) /
-                          86400000 +
-                          25569
-                    : "";
-            },
-            OldRdd: (value) => {
-                const date = new Date(value);
-                return !isNaN(date)
-                    ? (date.getTime() - date.getTimezoneOffset() * 60000) /
-                          86400000 +
-                          25569
-                    : "";
-            },
-            RDD: (value) => {
-                const date = new Date(value);
-                return !isNaN(date)
-                    ? (date.getTime() - date.getTimezoneOffset() * 60000) /
-                          86400000 +
-                          25569
-                    : "";
-            },
-        };
-
-        exportToExcel(
-            jsonData,
-            columnMapping,
-            "TimeSlot-Data.xlsx",
-            customCellHandlers,
-            ["DespatchDateTime", "EventDateTime", "NewRdd", "OldRdd", "RDD"]
-        );
+    if (loading) {
+        return <AnimatedLoading />;
     }
 
-    const Title = () => {
-        return (
-            <>
-                <div className="sm:flex sm:items-center">
-                    <div className="sm:flex-auto md:mt-2">
-                        <h1 className="text-2xl px-2 font-extrabold text-gray-600">
-                            Floor Report
-                        </h1>
-                    </div>
-                </div>
-            </>
-        );
-    };
+    return (
+        <div className="min-h-full px-8">
+            <ToastContainer />
+            <div className="sm:flex-auto mt-6">
+                <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
+                    Floor Report
+                </h1>
+            </div>
 
-    const groups = [
-        {
-            name: "senderDetails",
-            header: "Sender Details",
-            headerAlign: "center",
-        },
-        {
-            name: "receiverDetails",
-            header: "Receiver Details",
-            headerAlign: "center",
-        },
-    ];
+            <div className="my-4 flex w-full items-center gap-3 justify-end">
+                <Dropdown>
+                    <DropdownTrigger className="hidden xl:flex">
+                        <Button
+                            endContent={
+                                <ChevronDownIcon className="text-small w-3" />
+                            }
+                            size="sm"
+                            variant="flat"
+                            className="bg-gray-800 text-white"
+                        >
+                            Columns
+                        </Button>
+                    </DropdownTrigger>
+                    <DropdownMenu
+                        disallowEmptySelection
+                        aria-label="Table Columns"
+                        closeOnSelect={false}
+                        selectedKeys={visibleColumns}
+                        selectionMode="multiple"
+                        onSelectionChange={(keys) => {
+                            setVisibleColumns(new Set(keys));
+                        }}
+                    >
+                        {hotColumns
+                            .filter((item) => !item.title == "")
+                            .map((column, index) => (
+                                <DropdownItem
+                                    key={String(index)}
+                                    className="capitalize"
+                                >
+                                    {capitalize(column.title)}
+                                </DropdownItem>
+                            ))}
+                    </DropdownMenu>
+                </Dropdown>
+                <Button
+                    className="bg-dark text-white px-4 py-2"
+                    size="sm"
+                    onClick={clearAllFilters}
+                >
+                    Clear Filters
+                </Button>
+                <Button
+                    className="bg-dark text-white px-4 py-2"
+                    onClick={() => buttonClickCallback()}
+                    size="sm"
+                >
+                    Export
+                </Button>
+            </div>
 
-    console.log("floorData", floorData[0]);
-
-    const renderTable = useCallback(() => {
-        return (
-            <div className="px-4 sm:px-6 pb-4 bg-smooth">
-                <div className="px-4 sm:px-6 lg:px-0 w-full bg-smooth">
-                    <TableStructure
-                        handleDownloadExcel={handleDownloadExcel}
-                        title={Title()}
-                        id={"ConsignmentNo"}
-                        gridRef={gridRef}
-                        selected={selected}
-                        tableDataElements={floorData}
-                        filterValueElements={filtersValue}
-                        setFilterValueElements={setFiltersValue}
-                        columnsElements={columns}
-                        renderRowDetails={renderRowDetailsWithTable}
-                        rowExpandHeight={400}
-                        groupsElements={groups}
-                        detailsDisplayMode="modal"
+            {formattedData && (
+                <div id="" className="ht-theme-main mt-4 pb-10">
+                    <HotTable
+                        ref={hotTableRef}
+                        data={formattedData}
+                        colHeaders={colHeaders}
+                        columns={hotColumns}
+                        fixedColumnsStart={3}
+                        width="100%"
+                        height={"600px"}
+                        contextMenu={[
+                            "hidden_columns_show",
+                            "hidden_columns_hide",
+                        ]}
+                        hiddenColumns={{
+                            columns: hiddenColumns,
+                            indicators: true,
+                        }}
+                        manualColumnMove={true}
+                        licenseKey="non-commercial-and-evaluation"
+                        rowHeaders={false}
+                        autoWrapRow={true}
+                        manualColumnResize={true}
+                        autoWrapCol={true}
+                        filters={true}
+                        dropdownMenu={{
+                            items: {
+                                filter_by_condition: {},
+                                filter_by_value: {},
+                                filter_action_bar: {},
+                            },
+                        }}
+                        columnSorting={true}
+                        settings={{
+                            useTheme: null,
+                        }}
                     />
                 </div>
-            </div>
-        );
-    }, [
-        columns,
-        floorData,
-        filtersValue,
-        setFiltersValue,
-        expandedRows,
-        renderRowDetails,
-        renderRowDetailsWithTable,
-    ]);
+            )}
 
-    return loading ? <AnimatedLoading /> : renderTable();
+            <Modal
+                isOpen={isOpen}
+                onOpenChange={onOpenChange}
+                size="3xl"
+                scrollBehavior="inside"
+            >
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="gap-1">
+                                Details for {detailsData?.ConsignmentNo}
+                            </ModalHeader>
+                            <ModalBody>
+                                {detailsData &&
+                                    renderRowDetails({
+                                        data: detailsData,
+                                        rowIndex: detailsData.ConsignmentID,
+                                    })}
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button
+                                    color="default"
+                                    variant="light"
+                                    onPress={onClose}
+                                >
+                                    Close
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
+        </div>
+    );
 }
-
-export default FloorReport;
