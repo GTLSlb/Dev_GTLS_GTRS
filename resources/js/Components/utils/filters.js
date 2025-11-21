@@ -2409,6 +2409,20 @@ export const getFiltersTimeSlot = (minDate, maxDate) => {
             emptyValue: "",
         },
         {
+            name: "REceiverState",
+            operator: "inlist",
+            type: "select",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ReceiverName",
+            operator: "contains",
+            type: "string",
+            value: "",
+            emptyValue: "",
+        },
+        {
             name: "TimeslotBooked",
             operator: "inlist",
             type: "select",

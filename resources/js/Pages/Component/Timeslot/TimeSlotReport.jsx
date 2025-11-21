@@ -42,30 +42,17 @@ function TimeSlotReport() {
             .then((res) => {
                 const parsedData = res.data;
                 setTimeSlotData(parsedData || []);
-                const TimeslotRequiredOptions = createNewLabelObjects(
-                    parsedData,
-                    "TimeslotRequired"
-                );
                 const TimeslotBookedOptions = createNewLabelObjects(
                     parsedData,
                     "TimeslotBooked"
                 );
-                const OldDataOptions = createNewLabelObjects(
-                    parsedData,
-                    "OldData"
-                );
-                const NewDataOptions = createNewLabelObjects(
-                    parsedData,
-                    "NewData"
-                );
-
                 const ConsStatusOptions = createNewLabelObjects(
                     parsedData,
                     "ConsStatus"
                 );
-                const AdminStatusOptions = createNewLabelObjects(
+                const receiverStateOptions = createNewLabelObjects(
                     parsedData,
-                    "AdminStatus"
+                    "REceiverState"
                 );
                 const minDateCreated = getMinMaxValue(
                     parsedData,
@@ -151,6 +138,29 @@ function TimeSlotReport() {
                         textAlign: "center",
                         defaultWidth: 170,
                         filterEditor: StringFilter,
+                    },
+                    {
+                        name: "ReceiverName",
+                        header: "Receiver Name",
+                        type: "string",
+                        headerAlign: "center",
+                        textAlign: "center",
+                        defaultWidth: 170,
+                        filterEditor: StringFilter,
+                    },
+                    {
+                        name: "REceiverState",
+                        header: "Receiver State",
+                        type: "string",
+                        headerAlign: "center",
+                        textAlign: "center",
+                        defaultWidth: 170,
+                        filterEditor: SelectFilter,
+                        filterEditorProps: {
+                            multiple: true,
+                            wrapMultiple: false,
+                            dataSource: receiverStateOptions,
+                        },
                     },
                     {
                         name: "ConsStatus",
@@ -336,7 +346,8 @@ function TimeSlotReport() {
                             Timeslot Booking Performance Report
                         </h1>
                         <h4 className="text-base px-2 font-extrabold text-gray-500">
-                            This report returns only required timeslot consignments
+                            This report returns only required timeslot
+                            consignments
                         </h4>
                     </div>
                 </div>
