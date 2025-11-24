@@ -55,6 +55,7 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+    'gtam_api_url' => env('GTAM_API_URL'),
     'gtrr_api_url' => env('GTRR_API_URL', 'http://localhost:3001'),
 
     'asset_url' => env('ASSET_URL'),

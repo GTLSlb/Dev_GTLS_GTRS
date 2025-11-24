@@ -10,8 +10,10 @@ import NoAccess from "@/Components/NoAccess";
 import Logout from "@/Pages/Auth/Logout";
 import { CustomContext } from "@/CommonContext";
 import swal from "sweetalert";
-
+import InactiveApp from "@/Pages/Auth/InactiveApp";
+import { useNavigate } from "react-router-dom";
 export default function Sidebar() {
+        const navigate = useNavigate();
     const {
         Token,
         user,
@@ -46,18 +48,28 @@ export default function Sidebar() {
             setUser(user);
             setToken(token);
 
+            let isAppInactive = false;
             const appPermissionsHeaders = {
                 UserId: user.UserId,
                 AppId: appId,
                 Authorization: `Bearer ${token}`,
             };
-            const appPermissionsResponse = await getApiRequest(
-                `${gtamUrl}User/AppPermissions`,
-                appPermissionsHeaders
-            );
+            try {
+                const appPermissionsResponse = await getApiRequest(
+                    `${gtamUrl}User/AppPermissions`,
+                    appPermissionsHeaders
+                );
 
-            setUserPermissions(appPermissionsResponse.Features);
+                setUserPermissions(appPermissionsResponse.Features);
+            } catch (err) {
+                if (err.status == 403) {
+                    // Inactive application
+                    isAppInactive = true;
+                    await navigate("/inactive-app");
+                }
+            }
 
+            if (!isAppInactive) {
             const userPermissionsHeaders = {
                 UserId: user.UserId,
                 Authorization: `Bearer ${token}`,
@@ -80,6 +92,7 @@ export default function Sidebar() {
             } else {
                 setCanAccess(true);
             }
+        }
         } catch (err) {
             console.error("Error during initial data fetch:", err);
             setCanAccess(false);
@@ -152,6 +165,16 @@ export default function Sidebar() {
                                         />
                                     }
                                 />
+                                <Route
+                                path="/inactive-app"
+                                element={
+                                    <InactiveApp
+                                        user={user}
+                                        setToken={setToken}
+                                        setUser={setUser}
+                                    />
+                                }
+                            />
                                 <Route path="/*" element={<NotFound />} />
                             </Routes>
                         </div>
