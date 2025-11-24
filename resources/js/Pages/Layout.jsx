@@ -13,7 +13,7 @@ import swal from "sweetalert";
 import InactiveApp from "@/Pages/Auth/InactiveApp";
 import { useNavigate } from "react-router-dom";
 export default function Sidebar() {
-        const navigate = useNavigate();
+    const navigate = useNavigate();
     const {
         Token,
         user,
@@ -65,34 +65,34 @@ export default function Sidebar() {
                 if (err.status == 403) {
                     // Inactive application
                     isAppInactive = true;
-                    await navigate("/inactive-app");
+                    navigate("/inactive-app");
                 }
             }
 
             if (!isAppInactive) {
-            const userPermissionsHeaders = {
-                UserId: user.UserId,
-                Authorization: `Bearer ${token}`,
-            };
-            const userPermissionsResponse = await getApiRequest(
-                `${gtamUrl}User/Permissions`,
-                userPermissionsHeaders
-            );
-            setAllowedApplications(userPermissionsResponse);
+                const userPermissionsHeaders = {
+                    UserId: user.UserId,
+                    Authorization: `Bearer ${token}`,
+                };
+                const userPermissionsResponse = await getApiRequest(
+                    `${gtamUrl}User/Permissions`,
+                    userPermissionsHeaders
+                );
+                setAllowedApplications(userPermissionsResponse);
 
-            const isAllowed = allowedApplications?.find(
-                (item) => item.AppId == window.Laravel.appId
-            );
-            if (
-                userPermissions?.length == 0 &&
-                !isAllowed &&
-                window.location.pathname != "/logout"
-            ) {
-                setCanAccess(false);
-            } else {
-                setCanAccess(true);
+                const isAllowed = allowedApplications?.find(
+                    (item) => item.AppId == window.Laravel.appId
+                );
+                if (
+                    userPermissions?.length == 0 &&
+                    !isAllowed &&
+                    window.location.pathname != "/logout"
+                ) {
+                    setCanAccess(false);
+                } else {
+                    setCanAccess(true);
+                }
             }
-        }
         } catch (err) {
             console.error("Error during initial data fetch:", err);
             setCanAccess(false);
@@ -114,10 +114,7 @@ export default function Sidebar() {
         fetchUserData();
     }, [gtamUrl, appId]);
 
-    if (!userPermissions) {
-        return null; // Render nothing
-    } else {
-        if (canAccess === false) {
+    if (canAccess === false) {
             return (
                 <NoAccess setToken={setToken} setUser={setUser} user={user} />
             );
@@ -166,15 +163,15 @@ export default function Sidebar() {
                                     }
                                 />
                                 <Route
-                                path="/inactive-app"
-                                element={
-                                    <InactiveApp
-                                        user={user}
-                                        setToken={setToken}
-                                        setUser={setUser}
-                                    />
-                                }
-                            />
+                                    path="/inactive-app"
+                                    element={
+                                        <InactiveApp
+                                            user={user}
+                                            setToken={setToken}
+                                            setUser={setUser}
+                                        />
+                                    }
+                                />
                                 <Route path="/*" element={<NotFound />} />
                             </Routes>
                         </div>
@@ -183,6 +180,5 @@ export default function Sidebar() {
                     )}
                 </div>
             );
-        }
     }
 }

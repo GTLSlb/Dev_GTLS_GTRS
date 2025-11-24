@@ -14,19 +14,10 @@ import { ToastContainer } from "react-toastify";
 
 registerAllModules();
 
-<<<<<<< HEAD:resources/js/Pages/Component/UtilizationReport/Utilization.jsx
-import { CustomContext } from "@/CommonContext";
-import { handleSessionExpiration } from "@/CommonFunctions";
-import { AlertToast } from "@/permissions";
-import { Button, Spinner } from "@heroui/react";
-import swal from "sweetalert";
-import AnimatedLoading from "@/Components/AnimatedLoading";
-=======
 import swal from "sweetalert";
 import { CustomContext } from "@/CommonContext";
 import { handleSessionExpiration, AlertToast } from "@/CommonFunctions";
 import { Spinner,Button } from "@heroui/react";
->>>>>>> f48b3bb27bcb12ce99bb2095b18cd82ad2571cd9:resources/js/Pages/Component/UtilizationReport/OLD_Utilization.jsx
 
 export default function Utilization() {
     const { url, Token, user } = useContext(CustomContext);
@@ -55,14 +46,9 @@ export default function Utilization() {
                     await handleSessionExpiration();
                 });
             } else {
-<<<<<<< HEAD:resources/js/Pages/Component/UtilizationReport/Utilization.jsx
-                console.log(err);
-
-=======
                 // Handle other errors
                 console.error(err);
                 // Check if setCellLoading exists before calling it
->>>>>>> f48b3bb27bcb12ce99bb2095b18cd82ad2571cd9:resources/js/Pages/Component/UtilizationReport/OLD_Utilization.jsx
                 if (typeof setCellLoading === "function") {
                     setCellLoading(null);
                 }

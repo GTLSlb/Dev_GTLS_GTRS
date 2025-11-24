@@ -1051,13 +1051,11 @@ export default function GtrsMain({
         ),
         "/gmi-kpi-pack": (
             <GMIKPIPack
-                                                        url={url}
-                                                        userPermissions={
-                                                            userPermissions
-                                                        }
-                                                        Token={Token}
-                                                    />
-        )
+                url={url}
+                userPermissions={userPermissions}
+                Token={Token}
+            />
+        ),
     };
     return (
         <div className="h-full">

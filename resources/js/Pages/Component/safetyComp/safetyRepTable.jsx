@@ -16,13 +16,8 @@ import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
 import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import moment from "moment";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-<<<<<<< HEAD
-import { ToastContainer } from "react-toastify";
-import { AlertToast } from "@/permissions";
-=======
 import { ToastContainer } from 'react-toastify';
 import { AlertToast } from "@/CommonFunctions";
->>>>>>> f48b3bb27bcb12ce99bb2095b18cd82ad2571cd9
 import { CustomContext } from "@/CommonContext";
 
 export default function SafetyRepTable({
@@ -46,13 +41,7 @@ export default function SafetyRepTable({
     const [isModalOpendesc, setIsModalOpendesc] = useState(false);
     const [safetyDesc, setSafetyDesc] = useState();
     const [isSuccessfull, setIsSuccessfull] = useState(false);
-<<<<<<< HEAD
     useLayoutEffect(() => {}, []);
-=======
-    useLayoutEffect(() => {
-
-    }, []);
->>>>>>> f48b3bb27bcb12ce99bb2095b18cd82ad2571cd9
     const gridRef = useRef(null);
 
     const handleDownloadExcel = () => {

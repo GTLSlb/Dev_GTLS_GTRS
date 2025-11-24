@@ -3,12 +3,7 @@ import ReactDataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
 import axios from "axios";
 import "../../../../../css/graphTable.css";
-<<<<<<< HEAD
 import PropTypes from "prop-types";
-=======
-import { AlertToast } from "@/CommonFunctions";
-import { ToastContainer } from "react-toastify";
->>>>>>> f48b3bb27bcb12ce99bb2095b18cd82ad2571cd9
 import { CustomContext } from "@/CommonContext";
 
 function InlineTable({
