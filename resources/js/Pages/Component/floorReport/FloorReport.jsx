@@ -1,12 +1,21 @@
-registerAllModules();
 import React, {
     useState,
     useEffect,
     useMemo,
-    useRef,
     useCallback,
     useContext,
 } from "react";
+
+import {
+    useReactTable,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getSortedRowModel,
+    getPaginationRowModel,
+    flexRender,
+    getFacetedRowModel,
+    getFacetedUniqueValues,
+} from "@tanstack/react-table";
 
 import {
     Button,
@@ -26,50 +35,548 @@ import {
     TableColumn,
     TableHeader,
     TableRow,
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
 } from "@heroui/react";
 import axios from "axios";
 import moment from "moment";
 import swal from "sweetalert";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
-import Handsontable from "handsontable";
-import { canViewDetails } from "@/permissions";
 import { useNavigate } from "react-router-dom";
 import { CustomContext } from "@/CommonContext";
 import { ToastContainer } from "react-toastify";
-import "handsontable/styles/handsontable.min.css";
-import "handsontable/styles/ht-theme-horizon.css";
-import "handsontable/styles/ht-theme-main.min.css";
-import { HotTable } from "@handsontable/react-wrapper";
-import { registerAllModules } from "handsontable/registry";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import { handleSessionExpiration } from "@/CommonFunctions";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import {
+    ChevronDownIcon,
+    ChevronUpIcon,
+    ChevronUpDownIcon,
+    FunnelIcon,
+    XMarkIcon,
+    ChevronRightIcon,
+    ChevronLeftIcon,
+    ChevronDoubleLeftIcon,
+    ChevronDoubleRightIcon,
+    CalendarDaysIcon,
+} from "@heroicons/react/24/outline";
 
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-// Date range filter options
-const DATE_RANGE_OPTIONS = {
-    TODAY: "today",
-    YESTERDAY: "yesterday",
-    LAST_WEEK: "lastWeek",
-    LAST_MONTH: "lastMonth",
-    LAST_2_MONTHS: "last2Months",
-    LAST_3_MONTHS: "last3Months",
-    LAST_6_MONTHS: "last6Months",
-    LAST_YEAR: "lastYear",
+function DateColumnFilter({ column, table }) {
+    const [expandedYears, setExpandedYears] = useState(new Set());
+    const [expandedMonths, setExpandedMonths] = useState(new Set());
+    const [selectedDates, setSelectedDates] = useState(new Set());
+
+    // Get all unique dates from the column data
+    const availableDates = useMemo(() => {
+        const dates = new Set();
+        const rows = table.getPreFilteredRowModel().rows;
+
+        rows.forEach((row) => {
+            const value = row.getValue(column.id);
+            if (value) {
+                const dateStr = moment(value).format("YYYY-MM-DD");
+                dates.add(dateStr);
+            }
+        });
+
+        return Array.from(dates).sort().reverse(); // Most recent first
+    }, [table.getPreFilteredRowModel().rows, column.id]);
+
+    // Group dates by year and month
+    const dateHierarchy = useMemo(() => {
+        const hierarchy = {};
+
+        availableDates.forEach((dateStr) => {
+            const date = moment(dateStr);
+            const year = date.year();
+            const month = date.month(); // 0-11
+            const day = date.date();
+
+            if (!hierarchy[year]) {
+                hierarchy[year] = {};
+            }
+            if (!hierarchy[year][month]) {
+                hierarchy[year][month] = [];
+            }
+            hierarchy[year][month].push({
+                date: dateStr,
+                day: day,
+                fullDate: date.format("DD/MM/YYYY"),
+            });
+        });
+
+        return hierarchy;
+    }, [availableDates]);
+
+    // Sync selected dates with filter value
+    useEffect(() => {
+        const currentFilter = column.getFilterValue();
+        if (currentFilter && currentFilter.size > 0) {
+            setSelectedDates(new Set(currentFilter));
+        } else {
+            setSelectedDates(new Set());
+        }
+    }, [column.getFilterValue()]);
+
+    const toggleYear = (year) => {
+        const newExpanded = new Set(expandedYears);
+        if (newExpanded.has(year)) {
+            newExpanded.delete(year);
+        } else {
+            newExpanded.add(year);
+        }
+        setExpandedYears(newExpanded);
+    };
+
+    const toggleMonth = (yearMonth) => {
+        const newExpanded = new Set(expandedMonths);
+        if (newExpanded.has(yearMonth)) {
+            newExpanded.delete(yearMonth);
+        } else {
+            newExpanded.add(yearMonth);
+        }
+        setExpandedMonths(newExpanded);
+    };
+
+    const handleDateSelection = (dateStr) => {
+        const newSelected = new Set(selectedDates);
+        if (newSelected.has(dateStr)) {
+            newSelected.delete(dateStr);
+        } else {
+            newSelected.add(dateStr);
+        }
+        setSelectedDates(newSelected);
+
+        // Apply filter based on selection
+        if (newSelected.size > 0) {
+            column.setFilterValue(newSelected);
+        } else {
+            column.setFilterValue(undefined);
+        }
+    };
+
+    const handleYearSelection = (year) => {
+        const yearDates = Object.values(dateHierarchy[year] || {})
+            .flat()
+            .map((d) => d.date);
+        const allSelected = yearDates.every((date) => selectedDates.has(date));
+
+        const newSelected = new Set(selectedDates);
+        yearDates.forEach((date) => {
+            if (allSelected) {
+                newSelected.delete(date);
+            } else {
+                newSelected.add(date);
+            }
+        });
+        setSelectedDates(newSelected);
+
+        // Apply filter
+        if (newSelected.size > 0) {
+            column.setFilterValue(newSelected);
+        } else {
+            column.setFilterValue(undefined);
+        }
+    };
+
+    const handleMonthSelection = (year, month) => {
+        const monthDates = (dateHierarchy[year]?.[month] || []).map(
+            (d) => d.date
+        );
+        const allSelected = monthDates.every((date) => selectedDates.has(date));
+
+        const newSelected = new Set(selectedDates);
+        monthDates.forEach((date) => {
+            if (allSelected) {
+                newSelected.delete(date);
+            } else {
+                newSelected.add(date);
+            }
+        });
+        setSelectedDates(newSelected);
+
+        // Apply filter
+        if (newSelected.size > 0) {
+            column.setFilterValue(newSelected);
+        } else {
+            column.setFilterValue(undefined);
+        }
+    };
+
+    const clearFilter = () => {
+        setSelectedDates(new Set());
+        column.setFilterValue(undefined);
+    };
+
+    const hasFilter = selectedDates.size > 0;
+    const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ];
+
+    return (
+        <div className="flex flex-col gap-2 p-3 w-80">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                    <CalendarDaysIcon className="w-4 h-4" />
+                    <span>Filter by Date</span>
+                </div>
+                {hasFilter && (
+                    <button
+                        onClick={clearFilter}
+                        className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1"
+                    >
+                        <XMarkIcon className="w-3 h-3" />
+                        Clear ({selectedDates.size} selected)
+                    </button>
+                )}
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-gray-200" />
+
+            {/* Hierarchical Date Selection */}
+            <div className="max-h-96 overflow-y-auto border border-gray-200 rounded-md">
+                {Object.keys(dateHierarchy).length === 0 ? (
+                    <div className="p-4 text-center text-sm text-gray-500">
+                        No dates available
+                    </div>
+                ) : (
+                    Object.keys(dateHierarchy)
+                        .sort((a, b) => b - a)
+                        .map((year) => {
+                            const yearNum = parseInt(year);
+                            const isYearExpanded = expandedYears.has(yearNum);
+                            const yearDates = Object.values(
+                                dateHierarchy[yearNum]
+                            )
+                                .flat()
+                                .map((d) => d.date);
+                            const yearSelectedCount = yearDates.filter((d) =>
+                                selectedDates.has(d)
+                            ).length;
+                            const isYearFullySelected =
+                                yearSelectedCount === yearDates.length;
+                            const isYearPartiallySelected =
+                                yearSelectedCount > 0 && !isYearFullySelected;
+
+                            return (
+                                <div
+                                    key={year}
+                                    className="border-b border-gray-200 last:border-b-0"
+                                >
+                                    {/* Year Row */}
+                                    <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 bg-gray-100">
+                                        <button
+                                            onClick={() => toggleYear(yearNum)}
+                                            className="p-0.5 hover:bg-gray-200 rounded"
+                                        >
+                                            {isYearExpanded ? (
+                                                <ChevronDownIcon className="w-3 h-3" />
+                                            ) : (
+                                                <ChevronRightIcon className="w-3 h-3" />
+                                            )}
+                                        </button>
+                                        <input
+                                            type="checkbox"
+                                            checked={isYearFullySelected}
+                                            ref={(el) => {
+                                                if (el)
+                                                    el.indeterminate =
+                                                        isYearPartiallySelected;
+                                            }}
+                                            onChange={() =>
+                                                handleYearSelection(yearNum)
+                                            }
+                                            className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                                        />
+                                        <span className="text-sm font-semibold text-gray-800 flex-1">
+                                            {year}
+                                        </span>
+                                        {yearSelectedCount > 0 && (
+                                            <span className="text-xs text-blue-600 font-medium">
+                                                ({yearSelectedCount})
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {/* Months */}
+                                    {isYearExpanded && (
+                                        <div className="bg-white">
+                                            {Object.keys(dateHierarchy[yearNum])
+                                                .sort((a, b) => b - a)
+                                                .map((month) => {
+                                                    const monthNum =
+                                                        parseInt(month);
+                                                    const monthKey = `${year}-${month}`;
+                                                    const isMonthExpanded =
+                                                        expandedMonths.has(
+                                                            monthKey
+                                                        );
+                                                    const monthDates =
+                                                        dateHierarchy[yearNum][
+                                                            monthNum
+                                                        ].map((d) => d.date);
+                                                    const monthSelectedCount =
+                                                        monthDates.filter((d) =>
+                                                            selectedDates.has(d)
+                                                        ).length;
+                                                    const isMonthFullySelected =
+                                                        monthSelectedCount ===
+                                                        monthDates.length;
+                                                    const isMonthPartiallySelected =
+                                                        monthSelectedCount >
+                                                            0 &&
+                                                        !isMonthFullySelected;
+
+                                                    return (
+                                                        <div key={monthKey}>
+                                                            {/* Month Row */}
+                                                            <div className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50 pl-8">
+                                                                <button
+                                                                    onClick={() =>
+                                                                        toggleMonth(
+                                                                            monthKey
+                                                                        )
+                                                                    }
+                                                                    className="p-0.5 hover:bg-gray-200 rounded"
+                                                                >
+                                                                    {isMonthExpanded ? (
+                                                                        <ChevronDownIcon className="w-3 h-3" />
+                                                                    ) : (
+                                                                        <ChevronRightIcon className="w-3 h-3" />
+                                                                    )}
+                                                                </button>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={
+                                                                        isMonthFullySelected
+                                                                    }
+                                                                    ref={(
+                                                                        el
+                                                                    ) => {
+                                                                        if (el)
+                                                                            el.indeterminate =
+                                                                                isMonthPartiallySelected;
+                                                                    }}
+                                                                    onChange={() =>
+                                                                        handleMonthSelection(
+                                                                            yearNum,
+                                                                            monthNum
+                                                                        )
+                                                                    }
+                                                                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                                                                />
+                                                                <span className="text-sm text-gray-700 flex-1">
+                                                                    {
+                                                                        monthNames[
+                                                                            monthNum
+                                                                        ]
+                                                                    }
+                                                                </span>
+                                                                {monthSelectedCount >
+                                                                    0 && (
+                                                                    <span className="text-xs text-blue-600 font-medium">
+                                                                        (
+                                                                        {
+                                                                            monthSelectedCount
+                                                                        }
+                                                                        )
+                                                                    </span>
+                                                                )}
+                                                            </div>
+
+                                                            {/* Days */}
+                                                            {isMonthExpanded && (
+                                                                <div className="bg-gray-50">
+                                                                    {dateHierarchy[
+                                                                        yearNum
+                                                                    ][
+                                                                        monthNum
+                                                                    ].map(
+                                                                        (
+                                                                            dateObj
+                                                                        ) => (
+                                                                            <div
+                                                                                key={
+                                                                                    dateObj.date
+                                                                                }
+                                                                                className="flex items-center gap-2 px-3 py-1 hover:bg-gray-100 pl-16"
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    checked={selectedDates.has(
+                                                                                        dateObj.date
+                                                                                    )}
+                                                                                    onChange={() =>
+                                                                                        handleDateSelection(
+                                                                                            dateObj.date
+                                                                                        )
+                                                                                    }
+                                                                                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                                                                                />
+                                                                                <span className="text-xs text-gray-600">
+                                                                                    {
+                                                                                        dateObj.fullDate
+                                                                                    }
+                                                                                </span>
+                                                                            </div>
+                                                                        )
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })
+                )}
+            </div>
+        </div>
+    );
+}
+
+// Filter component for column headers
+function ColumnFilter({ column, table }) {
+    const columnFilterValue = column.getFilterValue();
+    const { filterVariant } = column.columnDef.meta ?? {};
+
+    const sortedUniqueValues = useMemo(() => {
+        if (filterVariant === "select") {
+            const uniqueValues = Array.from(
+                column.getFacetedUniqueValues().keys()
+            )
+                .filter((v) => v !== null && v !== undefined && v !== "")
+                .sort();
+            return uniqueValues;
+        }
+        return [];
+    }, [column.getFacetedUniqueValues(), filterVariant]);
+
+    if (filterVariant === "select") {
+        return (
+            <div className="flex flex-col gap-2 p-3 min-w-[200px]">
+                <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-medium text-gray-700">
+                        Filter
+                    </span>
+                    {columnFilterValue && (
+                        <button
+                            onClick={() => column.setFilterValue(undefined)}
+                            className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1"
+                        >
+                            <XMarkIcon className="w-3 h-3" />
+                            Clear
+                        </button>
+                    )}
+                </div>
+                <select
+                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onChange={(e) =>
+                        column.setFilterValue(e.target.value || undefined)
+                    }
+                    value={columnFilterValue ?? ""}
+                >
+                    <option value="">All</option>
+                    {sortedUniqueValues.map((value) => (
+                        <option key={value} value={value}>
+                            {value}
+                        </option>
+                    ))}
+                </select>
+            </div>
+        );
+    }
+
+    if (filterVariant === "date") {
+        return <DateColumnFilter column={column} table={table} />;
+    }
+
+    // Default text filter
+    return (
+        <div className="flex flex-col gap-2 p-3 min-w-[200px]">
+            <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-medium text-gray-700">
+                    Search
+                </span>
+                {columnFilterValue && (
+                    <button
+                        onClick={() => column.setFilterValue(undefined)}
+                        className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1"
+                    >
+                        <XMarkIcon className="w-3 h-3" />
+                        Clear
+                    </button>
+                )}
+            </div>
+            <input
+                type="text"
+                placeholder="Type to search..."
+                value={columnFilterValue ?? ""}
+                onChange={(e) =>
+                    column.setFilterValue(e.target.value || undefined)
+                }
+                className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+        </div>
+    );
+}
+
+// Date filter function - for individual date selection
+const dateFilterFn = (row, columnId, filterValue) => {
+    if (!filterValue || filterValue.size === 0) return true;
+
+    const cellValue = row.getValue(columnId);
+    if (!cellValue) return false;
+
+    const cellDate = moment(cellValue).format("YYYY-MM-DD");
+    return filterValue.has(cellDate);
 };
 
+// Column width constants for sticky columns (fixed)
+const ACTION_COL_WIDTH = 50;
+const CONS_NO_COL_WIDTH = 130;
+const ACCOUNT_COL_WIDTH = 180;
+
 export default function FloorReport() {
-    const navigate = useNavigate();
-    const hotTableRef = useRef(null);
     const [loading, setLoading] = useState(true);
     const [floorData, setFloorData] = useState([]);
-    const [dateRange, setDateRange] = useState(DATE_RANGE_OPTIONS.TODAY);
     const { Token, user, userPermissions, url } = useContext(CustomContext);
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+
+    const [sorting, setSorting] = useState([]);
+    const [columnFilters, setColumnFilters] = useState([]);
+    const [columnVisibility, setColumnVisibility] = useState({
+        DespatchDateTime: false,
+        SenderName: false,
+        SenderState: false,
+        SenderSuburb: false,
+        SenderZone: false,
+        ReceiverSuburb: false,
+        ReceiverZone: false,
+        OldRdd: false,
+        TimeslotRequired: false,
+        TimeslotBooked: false,
+    });
 
     const dateFields = [
         "DespatchDateTime",
@@ -77,20 +584,6 @@ export default function FloorReport() {
         "RDD",
         "OldRdd",
         "NewRdd",
-    ];
-
-    // Columns to hide by default
-    const defaultHiddenColumnTitles = [
-        "Despatch Date",
-        "Sender Name",
-        "Sender State",
-        "Sender Suburb",
-        "Sender Zone",
-        "Receiver Suburb",
-        "Receiver Zone",
-        "Original RDD",
-        "Timeslot Required",
-        "Timeslot Booked",
     ];
 
     // Format dates from backend
@@ -125,123 +618,6 @@ export default function FloorReport() {
         [floorData]
     );
 
-    // Initialize visible columns with defaults
-    const initializeVisibleColumns = useCallback((columns) => {
-        const visibleSet = new Set();
-        columns.forEach((col, index) => {
-            if (!defaultHiddenColumnTitles.includes(col.title)) {
-                visibleSet.add(String(index));
-            }
-        });
-        return visibleSet;
-    }, []);
-
-    const [hiddenColumns, setHiddenColumns] = useState([]);
-
-    // Handsontable renderers
-    const dateRenderer = useCallback((instance, td, row, col, prop, value) => {
-        // Display date with time
-        td.innerText = value ? moment(value).format("DD/MM/YYYY hh:mm A") : "";
-        td.classList.add("htLeft");
-        // Store the date-only value for filtering
-        td.setAttribute('data-filter-value', value ? moment(value).format("DD/MM/YYYY") : "");
-        return td;
-    }, []);
-
-    const noTimeDateRenderer = useCallback(
-        (instance, td, row, col, prop, value) => {
-            td.innerText = value ? moment(value).format("DD/MM/YYYY") : "";
-            td.classList.add("htLeft");
-            return td;
-        },
-        []
-    );
-
-    const rddDateRenderer = useCallback(
-        (instance, td, row, col, prop, value) => {
-            // Display date without time to avoid filter issues
-            const formatted = value
-                ? moment(value).format("DD/MM/YYYY")
-                : "";
-            td.innerText = formatted;
-            td.classList.add("htLeft");
-
-            // Highlight RDD based on date comparison
-            if (value) {
-                const today = moment().startOf("day");
-                const rddDate = moment(value).startOf("day");
-
-                if (rddDate.isBefore(today)) {
-                    // RDD has passed - highlight in red
-                    td.style.backgroundColor = "#fee2e2"; // light red
-                    td.style.color = "#991b1b"; // dark red
-                    td.style.fontWeight = "600";
-                } else if (rddDate.isSame(today)) {
-                    // RDD is today - highlight in yellow
-                    td.style.backgroundColor = "#fef3c7"; // light yellow
-                    td.style.color = "#92400e"; // dark yellow/brown
-                    td.style.fontWeight = "600";
-                }
-            }
-
-            return td;
-        },
-        []
-    );
-
-    const booleanRenderer = useCallback(
-        (instance, td, row, col, prop, value) => {
-            Handsontable.dom.empty(td);
-            td.classList.add("htCenter");
-
-            if (value === "YES") {
-                const badge = document.createElement("span");
-                badge.className =
-                    "inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800";
-                badge.textContent = "Yes";
-                td.appendChild(badge);
-            } else if (value === "NO") {
-                const badge = document.createElement("span");
-                badge.className =
-                    "inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800";
-                badge.textContent = "No";
-                td.appendChild(badge);
-            }
-
-            return td;
-        },
-        []
-    );
-
-    const timeslotbookedRenderer = useCallback(
-        (instance, td, row, col, prop, value) => {
-            Handsontable.dom.empty(td);
-            td.classList.add("htCenter");
-
-            const visualRowData = instance.getSourceDataAtRow(row);
-            if (visualRowData.TimeslotRequired !== "YES") {
-                return td;
-            }
-
-            if (value === "YES") {
-                const badge = document.createElement("span");
-                badge.className =
-                    "inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800";
-                badge.textContent = "Yes";
-                td.appendChild(badge);
-            } else if (value === "NO") {
-                const badge = document.createElement("span");
-                badge.className =
-                    "inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800";
-                badge.textContent = "No";
-                td.appendChild(badge);
-            }
-
-            return td;
-        },
-        []
-    );
-
     const [detailsData, setDetailsData] = useState(null);
 
     const handleViewDetails = (data) => {
@@ -250,386 +626,316 @@ export default function FloorReport() {
     };
 
     const handleConsignmentClick = (consignmentData) => {
-        const url = route('consignment-details', { id: consignmentData.ConsignmentID });
-        window.open(url, '_blank');
+        const url = `/gtrs/consignment-details?consId=${consignmentData.ConsignmentID}`;
+        window.open(url, "_blank");
     };
 
-    // Handsontable columns configuration
-    const hotColumns = useMemo(
-        () => [
-            {
-                data: "ConsignmentID",
-                title: "",
-                renderer: (instance, td, row, col, prop, value) => {
-                    Handsontable.dom.empty(td);
+    // Cell renderers
+    const DateCell = ({ value, showTime = true }) => {
+        if (!value) return <span className="text-gray-400">-</span>;
+        const format = showTime ? "DD/MM/YYYY hh:mm A" : "DD/MM/YYYY";
+        return <span>{moment(value).format(format)}</span>;
+    };
 
-                    const button = document.createElement("button");
-                    button.className = `
-                        p-1
-                        hover:bg-gray-100
-                        rounded
-                        transition-colors
-                        flex
-                        items-center
-                        justify-center
-                        w-full
-                    `;
-                    button.title = "View Details";
+    const RDDCell = ({ value }) => {
+        if (!value) return <span className="text-gray-400">-</span>;
 
-                    // Right arrow SVG icon
-                    const svg = document.createElementNS(
-                        "http://www.w3.org/2000/svg",
-                        "svg"
-                    );
-                    svg.setAttribute("viewBox", "0 0 24 24");
-                    svg.setAttribute("fill", "currentColor");
-                    svg.setAttribute("class", "w-4 h-4");
-                    svg.setAttribute("aria-hidden", "true");
-
-                    const path = document.createElementNS(
-                        "http://www.w3.org/2000/svg",
-                        "path"
-                    );
-                    path.setAttribute("fill-rule", "evenodd");
-                    path.setAttribute(
-                        "d",
-                        "M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z"
-                    );
-                    path.setAttribute("clip-rule", "evenodd");
-
-                    svg.appendChild(path);
-                    button.appendChild(svg);
-
-                    button.addEventListener("click", () => {
-                        // Convert visual row index to physical row index
-                        const physicalRow = instance.toPhysicalRow(row);
-                        // Get the full source data object (includes Details array)
-                        const visualRowData =
-                            instance.getSourceDataAtRow(physicalRow);
-                        handleViewDetails(visualRowData);
-                    });
-
-                    td.classList.add("content-center");
-                    td.style.textAlign = "center";
-                    td.appendChild(button);
-
-                    return td;
-                },
-                className: "htCenter",
-                readOnly: true,
-                editor: false,
-                width: 50,
-                headerClassName: "htCenter",
-            },
-            {
-                data: "ConsignmentNo",
-                title: "Cons No",
-                type: "text",
-                readOnly: true,
-                editor: false,
-                width: 120,
-                headerClassName: "htLeft",
-                renderer: (instance, td, row, col, prop, value) => {
-                    Handsontable.dom.empty(td);
-                    td.classList.add("htLeft");
-
-                    if (canViewDetails(userPermissions)) {
-                        const link = document.createElement("a");
-                        link.href = "#";
-                        link.style.color = "#3b82f6";
-                        link.style.textDecoration = "underline";
-                        link.style.fontWeight = "600";
-                        link.style.cursor = "pointer";
-                        link.textContent = value || "";
-
-                        link.addEventListener("click", (e) => {
-                            e.preventDefault();
-                            const physicalRow = instance.toPhysicalRow(row);
-                            const rowData =
-                                instance.getSourceDataAtRow(physicalRow);
-
-                            // Call function to handle navigation
-                            handleConsignmentClick(rowData);
-                        });
-
-                        td.appendChild(link);
-                    } else {
-                        td.innerText = value || "";
-                        td.style.fontWeight = "600";
-                    }
-
-                    return td;
-                },
-            },
-            {
-                data: "ChargeTo",
-                title: "Account Name",
-                type: "text",
-                readOnly: true,
-                editor: false,
-                width: 170,
-                headerClassName: "htLeft",
-            },
-            {
-                data: "DespatchDateTime",
-                title: "Despatch Date",
-                type: "text",
-                readOnly: true,
-                editor: false,
-                width: 170,
-                headerClassName: "htLeft",
-                renderer: dateRenderer,
-            },
-            {
-                data: "SenderName",
-                title: "Sender Name",
-                type: "text",
-                readOnly: true,
-                editor: false,
-                width: 150,
-                headerClassName: "htLeft",
-            },
-            {
-                data: "SenderState",
-                title: "Sender State",
-                type: "text",
-                readOnly: true,
-                editor: false,
-                width: 120,
-                headerClassName: "htLeft",
-            },
-            {
-                data: "SenderSuburb",
-                title: "Sender Suburb",
-                type: "text",
-                readOnly: true,
-                editor: false,
-                width: 130,
-                headerClassName: "htLeft",
-            },
-            {
-                data: "SenderZone",
-                title: "Sender Zone",
-                type: "text",
-                readOnly: true,
-                editor: false,
-                width: 110,
-                headerClassName: "htLeft",
-            },
-            {
-                data: "ReceiverName",
-                title: "Receiver Name",
-                type: "text",
-                readOnly: true,
-                editor: false,
-                width: 150,
-                headerClassName: "htLeft",
-            },
-            {
-                data: "ReceiverState",
-                title: "Receiver State",
-                type: "text",
-                readOnly: true,
-                editor: false,
-                width: 130,
-                headerClassName: "htLeft",
-            },
-            {
-                data: "ReceiverSuburb",
-                title: "Receiver Suburb",
-                type: "text",
-                readOnly: true,
-                editor: false,
-                width: 130,
-                headerClassName: "htLeft",
-            },
-            {
-                data: "ReceiverZone",
-                title: "Receiver Zone",
-                type: "text",
-                readOnly: true,
-                editor: false,
-                width: 110,
-                headerClassName: "htLeft",
-            },
-            {
-                data: "ConsStatus",
-                title: "Cons Status",
-                type: "text",
-                readOnly: true,
-                editor: false,
-                width: 120,
-                headerClassName: "htLeft",
-            },
-            {
-                data: "EventDateTime",
-                title: "Floor Scan Date",
-                type: "text",
-                readOnly: true,
-                editor: false,
-                width: 170,
-                headerClassName: "htLeft",
-                renderer: dateRenderer,
-            },
-            {
-                data: "OriginPalletSpaces",
-                title: "Cnote Pallet Space",
-                type: "numeric",
-                readOnly: true,
-                editor: false,
-                width: 150,
-                headerClassName: "htLeft",
-            },
-            {
-                data: "ActualScanned",
-                title: "Scanned Events",
-                type: "numeric",
-                readOnly: true,
-                editor: false,
-                width: 150,
-                headerClassName: "htLeft",
-            },
-            {
-                data: "RDD",
-                title: "RDD",
-                type: "text",
-                readOnly: true,
-                editor: false,
-                width: 170,
-                headerClassName: "htLeft",
-                renderer: rddDateRenderer,
-            },
-            {
-                data: "OldRdd",
-                title: "Original RDD",
-                type: "text",
-                readOnly: true,
-                editor: false,
-                width: 170,
-                headerClassName: "htLeft",
-                renderer: noTimeDateRenderer,
-            },
-            {
-                data: "TotalDays",
-                title: "Total Days",
-                type: "numeric",
-                readOnly: true,
-                editor: false,
-                width: 110,
-                headerClassName: "htLeft",
-            },
-            {
-                data: "TimeslotRequired",
-                title: "Timeslot Required",
-                type: "text",
-                readOnly: true,
-                editor: false,
-                width: 130,
-                headerClassName: "htLeft",
-                renderer: booleanRenderer,
-            },
-            {
-                data: "TimeslotBooked",
-                title: "Timeslot Booked",
-                type: "text",
-                readOnly: true,
-                editor: false,
-                width: 130,
-                headerClassName: "htLeft",
-                renderer: timeslotbookedRenderer,
-            },
-            {
-                data: "DockLocation",
-                title: "Dock Location",
-                type: "text",
-                readOnly: true,
-                editor: false,
-                width: 130,
-                headerClassName: "htLeft",
-            },
-            {
-                data: "Depot",
-                title: "Depot",
-                type: "text",
-                readOnly: true,
-                editor: false,
-                width: 110,
-                headerClassName: "htLeft",
-            },
-        ],
-        [dateRenderer, booleanRenderer, rddDateRenderer, noTimeDateRenderer]
-    );
-
-    // Initialize visible columns on mount
-    const [visibleColumns, setVisibleColumns] = useState(new Set());
-
-    useEffect(() => {
-        setVisibleColumns(initializeVisibleColumns(hotColumns));
-    }, [hotColumns, initializeVisibleColumns]);
-
-    const colHeaders = useMemo(
-        () => hotColumns.map((col) => col.title),
-        [hotColumns]
-    );
-
-    // Calculate date range filter
-    const getDateRange = useCallback(() => {
         const today = moment().startOf("day");
-        let startDate, endDate;
+        const rddDate = moment(value).startOf("day");
 
-        switch (dateRange) {
-            case DATE_RANGE_OPTIONS.TODAY:
-                startDate = today.clone();
-                endDate = today.clone().endOf("day");
-                break;
-            case DATE_RANGE_OPTIONS.YESTERDAY:
-                startDate = today.clone().subtract(1, "day");
-                endDate = startDate.clone().endOf("day");
-                break;
-            case DATE_RANGE_OPTIONS.LAST_WEEK:
-                startDate = today.clone().subtract(7, "days");
-                endDate = today.clone().endOf("day");
-                break;
-            case DATE_RANGE_OPTIONS.LAST_MONTH:
-                startDate = today.clone().subtract(1, "month");
-                endDate = today.clone().endOf("day");
-                break;
-            case DATE_RANGE_OPTIONS.LAST_2_MONTHS:
-                startDate = today.clone().subtract(2, "months");
-                endDate = today.clone().endOf("day");
-                break;
-            case DATE_RANGE_OPTIONS.LAST_3_MONTHS:
-                startDate = today.clone().subtract(3, "months");
-                endDate = today.clone().endOf("day");
-                break;
-            case DATE_RANGE_OPTIONS.LAST_6_MONTHS:
-                startDate = today.clone().subtract(6, "months");
-                endDate = today.clone().endOf("day");
-                break;
-            case DATE_RANGE_OPTIONS.LAST_YEAR:
-                startDate = today.clone().subtract(1, "year");
-                endDate = today.clone().endOf("day");
-                break;
-            default:
-                startDate = today.clone();
-                endDate = today.clone().endOf("day");
+        let className = "";
+        if (rddDate.isBefore(today)) {
+            className =
+                "bg-red-100 text-red-800 font-semibold px-2 py-1 rounded";
+        } else if (rddDate.isSame(today)) {
+            className =
+                "bg-yellow-100 text-yellow-800 font-semibold px-2 py-1 rounded";
         }
 
-        return { startDate, endDate };
-    }, [dateRange]);
+        return (
+            <span className={className}>
+                {moment(value).format("DD/MM/YYYY hh:mm A")}
+            </span>
+        );
+    };
 
-    // Filter data based on date range
-    const filteredData = useMemo(() => {
-        const { startDate, endDate } = getDateRange();
+    const BooleanCell = ({ value }) => {
+        if (value === "YES") {
+            return (
+                <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
+                    Yes
+                </span>
+            );
+        } else if (value === "NO") {
+            return (
+                <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
+                    No
+                </span>
+            );
+        }
+        return null;
+    };
 
-        return formattedData.filter((row) => {
-            if (row.EventDateTime) {
-                const eventDate = moment(row.EventDateTime);
-                return eventDate.isBetween(startDate, endDate, null, "[]");
-            }
-            return false;
-        });
-    }, [formattedData, dateRange, getDateRange]);
+    const TimeslotBookedCell = ({ value, row }) => {
+        if (row.original.TimeslotRequired !== "YES") {
+            return null;
+        }
+        return <BooleanCell value={value} />;
+    };
+
+    // TanStack Table columns configuration
+    const columns = useMemo(
+        () => [
+            {
+                id: "actions",
+                header: "",
+                size: ACTION_COL_WIDTH,
+                minSize: ACTION_COL_WIDTH,
+                maxSize: ACTION_COL_WIDTH,
+                enableSorting: false,
+                enableColumnFilter: false,
+                cell: ({ row }) => (
+                    <button
+                        className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
+                        title="View Details"
+                        onClick={() => handleViewDetails(row.original)}
+                    >
+                        <ChevronRightIcon className="w-4 h-4" />
+                    </button>
+                ),
+            },
+            {
+                accessorKey: "ConsignmentNo",
+                header: "Cons No",
+                size: CONS_NO_COL_WIDTH,
+                minSize: CONS_NO_COL_WIDTH,
+                maxSize: CONS_NO_COL_WIDTH,
+                meta: { filterVariant: "text" },
+                cell: ({ row }) => {
+                    return (
+                        <span
+                            className="underline text-blue-500 hover:cursor-pointer"
+                            onClick={(e) => {
+                                handleConsignmentClick(row.original);
+                            }}
+                        >
+                            {row.original.ConsignmentNo}
+                        </span>
+                    );
+                },
+            },
+            {
+                accessorKey: "ChargeTo",
+                header: "Account Name",
+                size: ACCOUNT_COL_WIDTH,
+                minSize: ACCOUNT_COL_WIDTH,
+                maxSize: ACCOUNT_COL_WIDTH,
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "DespatchDateTime",
+                header: "Despatch Date",
+                size: 170,
+                minSize: 120,
+                maxSize: 250,
+                meta: { filterVariant: "date" },
+                filterFn: dateFilterFn,
+                cell: ({ getValue }) => <DateCell value={getValue()} />,
+            },
+            {
+                accessorKey: "SenderName",
+                header: "Sender Name",
+                size: 150,
+                minSize: 100,
+                maxSize: 350,
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "SenderState",
+                header: "Sender State",
+                size: 110,
+                minSize: 80,
+                maxSize: 200,
+                meta: { filterVariant: "select" },
+            },
+            {
+                accessorKey: "SenderSuburb",
+                header: "Sender Suburb",
+                size: 140,
+                minSize: 100,
+                maxSize: 300,
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "SenderZone",
+                header: "Sender Zone",
+                size: 110,
+                minSize: 80,
+                maxSize: 200,
+                meta: { filterVariant: "select" },
+            },
+            {
+                accessorKey: "ReceiverName",
+                header: "Receiver Name",
+                size: 150,
+                minSize: 100,
+                maxSize: 350,
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "ReceiverState",
+                header: "Receiver State",
+                size: 120,
+                minSize: 80,
+                maxSize: 200,
+                meta: { filterVariant: "select" },
+            },
+            {
+                accessorKey: "ReceiverSuburb",
+                header: "Receiver Suburb",
+                size: 140,
+                minSize: 100,
+                maxSize: 300,
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "ReceiverZone",
+                header: "Receiver Zone",
+                size: 120,
+                minSize: 80,
+                maxSize: 200,
+                meta: { filterVariant: "select" },
+            },
+            {
+                accessorKey: "ConsStatus",
+                header: "Cons Status",
+                size: 120,
+                minSize: 100,
+                maxSize: 250,
+                meta: { filterVariant: "select" },
+            },
+            {
+                accessorKey: "EventDateTime",
+                header: "Floor Scan Date",
+                size: 170,
+                minSize: 120,
+                maxSize: 250,
+                meta: { filterVariant: "date" },
+                filterFn: dateFilterFn,
+                cell: ({ getValue }) => <DateCell value={getValue()} />,
+            },
+            {
+                accessorKey: "OriginPalletSpaces",
+                header: "Cnote Pallet Space",
+                size: 150,
+                minSize: 100,
+                maxSize: 250,
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "ActualScanned",
+                header: "Scanned Events",
+                size: 130,
+                minSize: 100,
+                maxSize: 220,
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "RDD",
+                header: "RDD",
+                size: 120,
+                minSize: 100,
+                maxSize: 200,
+                meta: { filterVariant: "date" },
+                filterFn: dateFilterFn,
+                cell: ({ getValue }) => <RDDCell value={getValue()} />,
+            },
+            {
+                accessorKey: "OldRdd",
+                header: "Original RDD",
+                size: 130,
+                minSize: 100,
+                maxSize: 200,
+                meta: { filterVariant: "date" },
+                filterFn: dateFilterFn,
+                cell: ({ getValue }) => (
+                    <DateCell value={getValue()} showTime={false} />
+                ),
+            },
+            {
+                accessorKey: "TotalDays",
+                header: "Total Days",
+                size: 100,
+                minSize: 80,
+                maxSize: 180,
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "TimeslotRequired",
+                header: "Timeslot Required",
+                size: 140,
+                minSize: 100,
+                maxSize: 220,
+                meta: { filterVariant: "select" },
+                cell: ({ getValue }) => <BooleanCell value={getValue()} />,
+            },
+            {
+                accessorKey: "TimeslotBooked",
+                header: "Timeslot Booked",
+                size: 140,
+                minSize: 100,
+                maxSize: 220,
+                meta: { filterVariant: "select" },
+                cell: ({ getValue, row }) => (
+                    <TimeslotBookedCell value={getValue()} row={row} />
+                ),
+            },
+            {
+                accessorKey: "DockLocation",
+                header: "Dock Location",
+                size: 130,
+                minSize: 100,
+                maxSize: 250,
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "Depot",
+                header: "Depot",
+                size: 100,
+                minSize: 80,
+                maxSize: 200,
+                meta: { filterVariant: "select" },
+            },
+        ],
+        [userPermissions]
+    );
+
+    // Initialize TanStack Table
+    const table = useReactTable({
+        data: formattedData,
+        columns,
+        state: {
+            sorting,
+            columnFilters,
+            columnVisibility,
+        },
+        initialState: {
+            pagination: {
+                pageSize: 20,
+            },
+        },
+        onSortingChange: setSorting,
+        onColumnFiltersChange: setColumnFilters,
+        onColumnVisibilityChange: setColumnVisibility,
+        getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        getFacetedRowModel: getFacetedRowModel(),
+        getFacetedUniqueValues: getFacetedUniqueValues(),
+        // columnResizeMode: "onChange",
+        // enableColumnResizing: true,
+    });
 
     // Fetch floor report data
     useEffect(() => {
@@ -662,27 +968,18 @@ export default function FloorReport() {
     }, [userPermissions, Token, url, user.UserId]);
 
     // Export to Excel
-    const buttonClickCallback = async () => {
-        const hot = hotTableRef.current?.hotInstance;
-        if (!hot) return;
-
-        const exportData = hot.getData();
-        const allColumns = hot.getColHeader();
-
-        // Filter out empty column headers and get their indices
-        const validColumnIndices = allColumns
-            .map((col, index) => (col && col.trim() !== "" ? index : null))
-            .filter((index) => index !== null);
-
-        // Get only valid columns
-        const selectedColumns = validColumnIndices.map(
-            (index) => allColumns[index]
-        );
+    const exportToExcel = async () => {
+        const rows = table.getFilteredRowModel().rows;
+        const visibleColumns = table
+            .getAllColumns()
+            .filter((col) => col.id !== "actions");
 
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Floor Report");
 
-        const headerRow = worksheet.addRow(selectedColumns);
+        // Add headers
+        const headers = visibleColumns.map((col) => col.columnDef.header);
+        const headerRow = worksheet.addRow(headers);
         headerRow.font = { bold: true };
         headerRow.fill = {
             type: "pattern",
@@ -691,30 +988,27 @@ export default function FloorReport() {
         };
         headerRow.alignment = { horizontal: "center", vertical: "middle" };
 
-        const dateColumnIndexes = selectedColumns
-            .map((col, index) =>
-                [
-                    "Despatch Date",
-                    "Floor Scan Date",
-                    "RDD",
-                    "Original RDD",
-                ].includes(col)
-                    ? index
-                    : null
-            )
-            .filter((index) => index !== null);
+        const dateColumns = [
+            "Despatch Date",
+            "Floor Scan Date",
+            "RDD",
+            "Original RDD",
+        ];
+        const dateColumnIndexes = headers
+            .map((h, i) => (dateColumns.includes(h) ? i : null))
+            .filter((i) => i !== null);
 
-        exportData.forEach((rowData) => {
-            // Extract only valid columns from row data
-            const filteredRowData = validColumnIndices.map(
-                (index) => rowData[index]
-            );
-            const row = worksheet.addRow(filteredRowData);
+        // Add data rows
+        rows.forEach((row) => {
+            const rowData = visibleColumns.map((col) => {
+                const value = row.getValue(col.id);
+                return value;
+            });
 
-            let maxHeight = 15;
-            row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+            const excelRow = worksheet.addRow(rowData);
+
+            excelRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
                 const cellValue = cell.value;
-
                 cell.alignment = { wrapText: true, vertical: "top" };
 
                 if (dateColumnIndexes.includes(colNumber - 1) && cellValue) {
@@ -729,17 +1023,10 @@ export default function FloorReport() {
                         cell.numFmt = "dd-mm-yyyy hh:mm";
                     }
                 }
-
-                maxHeight = Math.max(
-                    maxHeight,
-                    (cellValue?.toString() || "").split("\n").length * 25
-                );
             });
-
-            row.height = maxHeight;
         });
 
-        worksheet.columns = selectedColumns.map(() => ({ width: 20 }));
+        worksheet.columns = headers.map(() => ({ width: 20 }));
 
         workbook.xlsx.writeBuffer().then((buffer) => {
             const blob = new Blob([buffer], {
@@ -749,48 +1036,11 @@ export default function FloorReport() {
         });
     };
 
-    // Column visibility management
-    const applyHiddenColumns = () => {
-        const hotInstance = hotTableRef.current?.hotInstance;
-        if (!hotInstance) return;
-
-        const totalColumns = hotInstance.countCols();
-        const visibleIndexes = Array.from(visibleColumns).map(Number);
-
-        const newColumnsToHide = [];
-        for (let i = 0; i < totalColumns; i++) {
-            if (!visibleIndexes.includes(i)) {
-                newColumnsToHide.push(i);
-            }
-        }
-
-        const isSame =
-            JSON.stringify(hiddenColumns) === JSON.stringify(newColumnsToHide);
-
-        if (!isSame) {
-            setHiddenColumns(newColumnsToHide);
-
-            const hiddenPlugin = hotInstance.getPlugin("hiddenColumns");
-            hiddenPlugin.hideColumns(newColumnsToHide);
-            hiddenPlugin.showColumns(visibleIndexes);
-            hotInstance.render();
-        }
-    };
-
-    useEffect(() => {
-        applyHiddenColumns();
-    }, [visibleColumns, filteredData]);
-
     const clearAllFilters = () => {
-        const hotInstance = hotTableRef.current?.hotInstance;
-        if (hotInstance) {
-            const filtersPlugin = hotInstance?.getPlugin("filters");
-            filtersPlugin.clearConditions();
-            filtersPlugin.filter();
-        }
+        setColumnFilters([]);
     };
 
-    const renderRowDetails = ({ data, rowIndex }) => {
+    const renderRowDetails = ({ data }) => {
         const formatDate = (date) => {
             const formatted = moment(date).format("DD-MM-YYYY HH:mm");
             return formatted === "Invalid date" ? "N/A" : formatted;
@@ -838,6 +1088,20 @@ export default function FloorReport() {
         );
     };
 
+    // Helper function to check if column is sticky
+    const isStickyColumn = (columnId) => {
+        return ["actions", "ConsignmentNo", "ChargeTo"].includes(columnId);
+    };
+
+    // Calculate sticky left position based on column
+    const getStickyLeft = (columnId) => {
+        if (columnId === "actions") return 0;
+        if (columnId === "ConsignmentNo") return ACTION_COL_WIDTH;
+        if (columnId === "ChargeTo")
+            return ACTION_COL_WIDTH + CONS_NO_COL_WIDTH;
+        return undefined;
+    };
+
     if (loading) {
         return <AnimatedLoading />;
     }
@@ -845,49 +1109,15 @@ export default function FloorReport() {
     return (
         <div className="min-h-full px-8">
             <ToastContainer />
-            <div className="sm:flex-auto mt-6">
-                <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                    Floor Report
-                </h1>
-            </div>
 
-            <div className="my-4 flex w-full items-center gap-3 justify-between flex-wrap">
-                {/* Date Range Filter */}
-                <div className="flex items-center gap-2">
-                    <label className="text-sm font-medium text-gray-700">
-                        Date Range:
-                    </label>
-                    <select
-                        value={dateRange}
-                        onChange={(e) => setDateRange(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                        <option value={DATE_RANGE_OPTIONS.TODAY}>Today</option>
-                        <option value={DATE_RANGE_OPTIONS.YESTERDAY}>
-                            Yesterday
-                        </option>
-                        <option value={DATE_RANGE_OPTIONS.LAST_WEEK}>
-                            Last 7 Days
-                        </option>
-                        <option value={DATE_RANGE_OPTIONS.LAST_MONTH}>
-                            Last Month
-                        </option>
-                        <option value={DATE_RANGE_OPTIONS.LAST_2_MONTHS}>
-                            Last 2 Months
-                        </option>
-                        <option value={DATE_RANGE_OPTIONS.LAST_3_MONTHS}>
-                            Last 3 Months
-                        </option>
-                        <option value={DATE_RANGE_OPTIONS.LAST_6_MONTHS}>
-                            Last 6 Months
-                        </option>
-                        <option value={DATE_RANGE_OPTIONS.LAST_YEAR}>
-                            Last Year
-                        </option>
-                    </select>
+            <div className="my-4 flex w-full items-center gap-3 justify-end flex-wrap">
+                <div className="sm:flex-auto mt-6">
+                    <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
+                        Floor Report
+                    </h1>
                 </div>
-
                 <div className="flex items-center gap-3">
+                    {/* Column Visibility Dropdown */}
                     <Dropdown>
                         <DropdownTrigger className="hidden xl:flex">
                             <Button
@@ -905,25 +1135,45 @@ export default function FloorReport() {
                             disallowEmptySelection
                             aria-label="Table Columns"
                             closeOnSelect={false}
-                            selectedKeys={visibleColumns}
+                            selectedKeys={
+                                new Set(
+                                    table
+                                        .getAllColumns()
+                                        .filter(
+                                            (col) =>
+                                                col.getIsVisible() &&
+                                                col.id !== "actions"
+                                        )
+                                        .map((col) => col.id)
+                                )
+                            }
                             selectionMode="multiple"
                             onSelectionChange={(keys) => {
-                                setVisibleColumns(new Set(keys));
+                                const selectedKeys = new Set(keys);
+                                const newVisibility = {};
+                                table.getAllColumns().forEach((col) => {
+                                    if (col.id !== "actions") {
+                                        newVisibility[col.id] =
+                                            selectedKeys.has(col.id);
+                                    }
+                                });
+                                setColumnVisibility(newVisibility);
                             }}
                         >
-                            {hotColumns.map(
-                                (column, index) =>
-                                    column.title !== "" && (
-                                        <DropdownItem
-                                            key={String(index)}
-                                            className="capitalize"
-                                        >
-                                            {capitalize(column.title)}
-                                        </DropdownItem>
-                                    )
-                            )}
+                            {table
+                                .getAllColumns()
+                                .filter((col) => col.id !== "actions")
+                                .map((column) => (
+                                    <DropdownItem
+                                        key={column.id}
+                                        className="capitalize"
+                                    >
+                                        {capitalize(column.columnDef.header)}
+                                    </DropdownItem>
+                                ))}
                         </DropdownMenu>
                     </Dropdown>
+
                     <Button
                         className="bg-dark text-white px-4 py-2"
                         size="sm"
@@ -933,7 +1183,7 @@ export default function FloorReport() {
                     </Button>
                     <Button
                         className="bg-dark text-white px-4 py-2"
-                        onClick={() => buttonClickCallback()}
+                        onClick={exportToExcel}
                         size="sm"
                     >
                         Export
@@ -941,46 +1191,364 @@ export default function FloorReport() {
                 </div>
             </div>
 
-            {filteredData && (
-                <div id="" className="ht-theme-main mt-4 pb-10">
-                    <HotTable
-                        ref={hotTableRef}
-                        data={filteredData}
-                        colHeaders={colHeaders}
-                        columns={hotColumns}
-                        fixedColumnsStart={3}
-                        width="100%"
-                        height={"600px"}
-                        contextMenu={[
-                            "hidden_columns_show",
-                            "hidden_columns_hide",
-                        ]}
-                        hiddenColumns={{
-                            columns: hiddenColumns,
-                            indicators: true,
-                        }}
-                        manualColumnMove={true}
-                        licenseKey="non-commercial-and-evaluation"
-                        rowHeaders={false}
-                        autoWrapRow={true}
-                        manualColumnResize={true}
-                        autoWrapCol={true}
-                        filters={true}
-                        dropdownMenu={{
-                            items: {
-                                filter_by_condition: {},
-                                filter_by_value: {},
-                                filter_action_bar: {},
-                            },
-                        }}
-                        columnSorting={true}
-                        settings={{
-                            useTheme: null,
-                        }}
-                    />
-                </div>
-            )}
+            {/* Table Container */}
+            <div className="mt-4 pb-4">
+                <div
+                    className="overflow-auto border border-gray-200 rounded-t-lg shadow-sm relative"
+                    style={{ maxHeight: "600px" }}
+                >
+                    <table
+                        className="w-full border-collapse"
+                        style={{ minWidth: "max-content" }}
+                    >
+                        <thead className="sticky top-0 z-30">
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <tr key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => {
+                                        const isSticky = isStickyColumn(
+                                            header.column.id
+                                        );
+                                        const stickyLeft = getStickyLeft(
+                                            header.column.id
+                                        );
+                                        const isLastSticky =
+                                            header.column.id === "ChargeTo";
 
+                                        return (
+                                            <th
+                                                key={header.id}
+                                                className={`
+                                                        px-3 py-3 text-left text-xs font-semibold text-gray-700 
+                                                        uppercase tracking-wider bg-gray-100 border-b-2 border-gray-300
+                                                        border-r
+                                                        ${
+                                                            isSticky
+                                                                ? "sticky z-40"
+                                                                : ""
+                                                        }
+                                                        ${
+                                                            isLastSticky
+                                                                ? "border-r border-gray-300"
+                                                                : ""
+                                                        }
+                                                    `}
+                                                style={{
+                                                    width: header.getSize(),
+                                                    minWidth:
+                                                        header.column.columnDef
+                                                            .minSize,
+                                                    left: stickyLeft,
+                                                }}
+                                            >
+                                                <div className="flex items-center gap-1 relative pr-2">
+                                                    {header.isPlaceholder ? null : (
+                                                        <>
+                                                            <div
+                                                                className={`flex items-center gap-1 flex-1 truncate ${
+                                                                    header.column.getCanSort()
+                                                                        ? "cursor-pointer select-none hover:text-gray-900"
+                                                                        : ""
+                                                                }`}
+                                                                onClick={header.column.getToggleSortingHandler()}
+                                                                title={
+                                                                    header
+                                                                        .column
+                                                                        .columnDef
+                                                                        .header
+                                                                }
+                                                            >
+                                                                <span className="truncate">
+                                                                    {flexRender(
+                                                                        header
+                                                                            .column
+                                                                            .columnDef
+                                                                            .header,
+                                                                        header.getContext()
+                                                                    )}
+                                                                </span>
+                                                                {header.column.getCanSort() && (
+                                                                    <span className="flex-shrink-0">
+                                                                        {{
+                                                                            asc: (
+                                                                                <ChevronUpIcon className="w-3 h-3" />
+                                                                            ),
+                                                                            desc: (
+                                                                                <ChevronDownIcon className="w-3 h-3" />
+                                                                            ),
+                                                                        }[
+                                                                            header.column.getIsSorted()
+                                                                        ] ?? (
+                                                                            <ChevronUpDownIcon className="w-3 h-3 opacity-40" />
+                                                                        )}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            {header.column.getCanFilter() && (
+                                                                <Popover placement="bottom-end">
+                                                                    <PopoverTrigger>
+                                                                        <button
+                                                                            className={`p-1 rounded hover:bg-gray-200 flex-shrink-0 ${
+                                                                                header.column.getFilterValue()
+                                                                                    ? "text-blue-600"
+                                                                                    : "text-gray-400"
+                                                                            }`}
+                                                                        >
+                                                                            <FunnelIcon className="w-3 h-3" />
+                                                                        </button>
+                                                                    </PopoverTrigger>
+                                                                    <PopoverContent className="p-0 shadow-lg border border-gray-200">
+                                                                        <ColumnFilter
+                                                                            column={
+                                                                                header.column
+                                                                            }
+                                                                            table={
+                                                                                table
+                                                                            }
+                                                                        />
+                                                                    </PopoverContent>
+                                                                </Popover>
+                                                            )}
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </th>
+                                        );
+                                    })}
+                                </tr>
+                            ))}
+                        </thead>
+                        <tbody className="bg-white">
+                            {table.getRowModel().rows.length === 0 ? (
+                                <tr>
+                                    <td
+                                        colSpan={columns.length}
+                                        className="px-6 py-12 text-center text-gray-500"
+                                    >
+                                        No data available
+                                    </td>
+                                </tr>
+                            ) : (
+                                table
+                                    .getRowModel()
+                                    .rows.map((row, rowIndex) => {
+                                        const rowBg =
+                                            rowIndex % 2 === 0
+                                                ? "bg-white"
+                                                : "bg-gray-50";
+                                        const rowBgColor =
+                                            rowIndex % 2 === 0
+                                                ? "#ffffff"
+                                                : "#f9fafb";
+
+                                        return (
+                                            <tr
+                                                key={row.id}
+                                                className={`hover:bg-blue-50 transition-colors ${rowBg}`}
+                                            >
+                                                {row
+                                                    .getVisibleCells()
+                                                    .map((cell) => {
+                                                        const isSticky =
+                                                            isStickyColumn(
+                                                                cell.column.id
+                                                            );
+                                                        const stickyLeft =
+                                                            getStickyLeft(
+                                                                cell.column.id
+                                                            );
+                                                        const isLastSticky =
+                                                            cell.column.id ===
+                                                            "ChargeTo";
+
+                                                        return (
+                                                            <td
+                                                                key={cell.id}
+                                                                className={`
+                                                                    px-3 py-2.5 text-sm text-gray-700 border-b border-gray-300
+                                                                    border-r
+                                                                    overflow-hidden text-ellipsis whitespace-nowrap
+                                                                    ${
+                                                                        isSticky
+                                                                            ? "sticky z-20"
+                                                                            : ""
+                                                                    }
+                                                                    ${
+                                                                        isLastSticky
+                                                                            ? "border-r border-gray-300"
+                                                                            : ""
+                                                                    }
+                                                                `}
+                                                                style={{
+                                                                    width: cell.column.getSize(),
+                                                                    minWidth:
+                                                                        cell
+                                                                            .column
+                                                                            .columnDef
+                                                                            .minSize,
+                                                                    left: stickyLeft,
+                                                                    backgroundColor:
+                                                                        isSticky
+                                                                            ? rowBgColor
+                                                                            : undefined,
+                                                                }}
+                                                                title={
+                                                                    typeof cell.getValue() ===
+                                                                    "string"
+                                                                        ? cell.getValue()
+                                                                        : ""
+                                                                }
+                                                            >
+                                                                {flexRender(
+                                                                    cell.column
+                                                                        .columnDef
+                                                                        .cell,
+                                                                    cell.getContext()
+                                                                )}
+                                                            </td>
+                                                        );
+                                                    })}
+                                            </tr>
+                                        );
+                                    })
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* Pagination */}
+                <div className="flex items-center justify-between px-4 py-3 bg-white border border-t-0 border-gray-200 rounded-b-lg">
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-700">
+                            Page{" "}
+                            <strong>
+                                {table.getState().pagination.pageIndex + 1} of{" "}
+                                {table.getPageCount() || 1}
+                            </strong>
+                        </span>
+                        <span className="text-sm text-gray-500">
+                            | {table.getFilteredRowModel().rows.length} total
+                            records
+                        </span>
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                        <Button
+                            size="sm"
+                            variant="flat"
+                            isIconOnly
+                            onClick={() => table.setPageIndex(0)}
+                            isDisabled={!table.getCanPreviousPage()}
+                            className="min-w-8 w-8 h-8"
+                        >
+                            <ChevronDoubleLeftIcon className="w-4 h-4" />
+                        </Button>
+                        <Button
+                            size="sm"
+                            variant="flat"
+                            isIconOnly
+                            onClick={() => table.previousPage()}
+                            isDisabled={!table.getCanPreviousPage()}
+                            className="min-w-8 w-8 h-8"
+                        >
+                            <ChevronLeftIcon className="w-4 h-4" />
+                        </Button>
+
+                        {/* Page number buttons */}
+                        <div className="flex items-center gap-1 mx-2">
+                            {(() => {
+                                const currentPage =
+                                    table.getState().pagination.pageIndex;
+                                const totalPages = table.getPageCount() || 1;
+                                const pages = [];
+
+                                let startPage = Math.max(0, currentPage - 2);
+                                let endPage = Math.min(
+                                    totalPages - 1,
+                                    currentPage + 2
+                                );
+
+                                if (endPage - startPage < 4) {
+                                    if (startPage === 0) {
+                                        endPage = Math.min(totalPages - 1, 4);
+                                    } else if (endPage === totalPages - 1) {
+                                        startPage = Math.max(0, totalPages - 5);
+                                    }
+                                }
+
+                                for (let i = startPage; i <= endPage; i++) {
+                                    pages.push(
+                                        <Button
+                                            key={i}
+                                            size="sm"
+                                            variant={
+                                                currentPage === i
+                                                    ? "solid"
+                                                    : "flat"
+                                            }
+                                            className={`min-w-8 w-8 h-8 ${
+                                                currentPage === i
+                                                    ? "bg-gray-800 text-white"
+                                                    : "bg-gray-100"
+                                            }`}
+                                            onClick={() =>
+                                                table.setPageIndex(i)
+                                            }
+                                        >
+                                            {i + 1}
+                                        </Button>
+                                    );
+                                }
+
+                                return pages;
+                            })()}
+                        </div>
+
+                        <Button
+                            size="sm"
+                            variant="flat"
+                            isIconOnly
+                            onClick={() => table.nextPage()}
+                            isDisabled={!table.getCanNextPage()}
+                            className="min-w-8 w-8 h-8"
+                        >
+                            <ChevronRightIcon className="w-4 h-4" />
+                        </Button>
+                        <Button
+                            size="sm"
+                            variant="flat"
+                            isIconOnly
+                            onClick={() =>
+                                table.setPageIndex(table.getPageCount() - 1)
+                            }
+                            isDisabled={!table.getCanNextPage()}
+                            className="min-w-8 w-8 h-8"
+                        >
+                            <ChevronDoubleRightIcon className="w-4 h-4" />
+                        </Button>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-700">
+                            Rows per page:
+                        </span>
+                        <select
+                            value={table.getState().pagination.pageSize}
+                            onChange={(e) => {
+                                table.setPageSize(Number(e.target.value));
+                            }}
+                            className="px-5 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            {[10, 20, 30, 50, 100].map((pageSize) => (
+                                <option key={pageSize} value={pageSize}>
+                                    {pageSize}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            {/* Details Modal */}
             <Modal
                 isOpen={isOpen}
                 onOpenChange={onOpenChange}
@@ -997,7 +1565,6 @@ export default function FloorReport() {
                                 {detailsData &&
                                     renderRowDetails({
                                         data: detailsData,
-                                        rowIndex: detailsData.ConsignmentID,
                                     })}
                             </ModalBody>
                             <ModalFooter>
