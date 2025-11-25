@@ -41,6 +41,7 @@
         "@mui/material": "^5.13.2",
         "@react-google-maps/api": "^2.19.3",
         "@tailwindcss/aspect-ratio": "^0.4.2",
+        "@tanstack/react-table": "^8.21.3",
         "chart.js": "^4.4.3",
         "chartjs-adapter-moment": "^1.0.1",
         "exceljs": "^4.3.0",
