@@ -1,10 +1,9 @@
-import { useContext, useState } from "react";
-import { useEffect } from "react";
+import { useContext, useState, useEffect, useCallback } from "react";
 import "../../css/scroll.css";
 import React from "react";
 import PropTypes from "prop-types";
 import { useApiRequests } from "@/CommonFunctions";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import MainDetails from "./Component/ConsDetailsComp/MainDetails";
@@ -16,14 +15,15 @@ import PickupDelInfo from "./Component/ConsDetailsComp/PickupDelInfo";
 import BackButton from "@/Components/BackButton";
 import { CustomContext } from "@/CommonContext";
 
-
-
 export default function ConsDetails() {
     const { user, url } = useContext(CustomContext);
+    const [searchParams] = useSearchParams();
     const { getApiRequest } = useApiRequests();
     const navigate = useNavigate();
     const location = useLocation();
+    const consId = searchParams.get("consId");
 
+    console.log(consId)
     useEffect(() => {
         const handleScrollToTop = () => {
             window.scrollTo({
@@ -42,22 +42,33 @@ export default function ConsDetails() {
     }, []);
     const [Consignment, setConsignment] = useState(null);
 
-    async function fetchData() {
+    const fetchData = useCallback(async () => {
+        // Use consId from URL query param, fallback to location state
+        const consignmentId = consId || location?.state?.activeCons;
+
+        if (!consignmentId) {
+            console.error("No consignment ID provided");
+            return;
+        }
+
         const data = await getApiRequest(`${url}ConsignmentById`, {
             UserId: user?.UserId,
-            Consignment_id: location?.state?.activeCons,
+            Consignment_id: consignmentId,
         });
 
         if (data) {
             setConsignment(data);
         }
-    }
+    }, [consId, location?.state?.activeCons, getApiRequest, url, user?.UserId]);
+
     useEffect(() => {
-        if (!location?.state?.activeCons){
-            navigate("/gtrs/consignments");
+        // if (!location?.state?.activeCons){
+        //     navigate("/gtrs/consignments");
+        // }
+        if (consId || location?.state?.activeCons) {
+            fetchData();
         }
-        fetchData();
-    }, []);
+    }, [consId, location?.state?.activeCons, fetchData]);
     let width = 0;
     if (Consignment)
         if (

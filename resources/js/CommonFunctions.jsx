@@ -350,7 +350,9 @@ export function navigateToFirstAllowedPage({
         window.location.pathname != "/gtrs"
     ) {
         setSidebarElements(findCurrentItem(items, window.location.pathname));
-        navigate(window.location.pathname);
+        // Preserve query parameters when navigating
+        const fullPath = window.location.pathname + window.location.search;
+        navigate(fullPath);
     } else {
         // Navigate to the first allowed page
         if (items.length === 0) {

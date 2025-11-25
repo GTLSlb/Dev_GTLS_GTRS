@@ -1,6 +1,4 @@
-import { registerAllModules } from "handsontable/registry";
 registerAllModules();
-import Handsontable from "handsontable";
 import React, {
     useState,
     useEffect,
@@ -9,15 +7,7 @@ import React, {
     useCallback,
     useContext,
 } from "react";
-import { HotTable } from "@handsontable/react-wrapper";
 
-import "handsontable/styles/handsontable.min.css";
-import "handsontable/styles/ht-theme-horizon.css";
-import "handsontable/styles/ht-theme-main.min.css";
-import moment from "moment";
-import axios from "axios";
-import ExcelJS from "exceljs";
-import { saveAs } from "file-saver";
 import {
     Button,
     Dropdown,
@@ -37,24 +27,48 @@ import {
     TableHeader,
     TableRow,
 } from "@heroui/react";
-import { ToastContainer } from "react-toastify";
-import AnimatedLoading from "@/Components/AnimatedLoading";
-import { AlertToast } from "@/permissions";
+import axios from "axios";
+import moment from "moment";
 import swal from "sweetalert";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
+import Handsontable from "handsontable";
+import { canViewDetails } from "@/permissions";
+import { useNavigate } from "react-router-dom";
 import { CustomContext } from "@/CommonContext";
+import { ToastContainer } from "react-toastify";
+import "handsontable/styles/handsontable.min.css";
+import "handsontable/styles/ht-theme-horizon.css";
+import "handsontable/styles/ht-theme-main.min.css";
+import { HotTable } from "@handsontable/react-wrapper";
+import { registerAllModules } from "handsontable/registry";
+import AnimatedLoading from "@/Components/AnimatedLoading";
 import { handleSessionExpiration } from "@/CommonFunctions";
-import CommentsModal from "../ReportsPage/Modals/CommentsModal";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+// Date range filter options
+const DATE_RANGE_OPTIONS = {
+    TODAY: "today",
+    YESTERDAY: "yesterday",
+    LAST_WEEK: "lastWeek",
+    LAST_MONTH: "lastMonth",
+    LAST_2_MONTHS: "last2Months",
+    LAST_3_MONTHS: "last3Months",
+    LAST_6_MONTHS: "last6Months",
+    LAST_YEAR: "lastYear",
+};
+
 export default function FloorReport() {
-    const { Token, user, userPermissions, url } = useContext(CustomContext);
+    const navigate = useNavigate();
+    const hotTableRef = useRef(null);
     const [loading, setLoading] = useState(true);
     const [floorData, setFloorData] = useState([]);
-    const hotTableRef = useRef(null);
+    const [dateRange, setDateRange] = useState(DATE_RANGE_OPTIONS.TODAY);
+    const { Token, user, userPermissions, url } = useContext(CustomContext);
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
     const dateFields = [
@@ -63,6 +77,20 @@ export default function FloorReport() {
         "RDD",
         "OldRdd",
         "NewRdd",
+    ];
+
+    // Columns to hide by default
+    const defaultHiddenColumnTitles = [
+        "Despatch Date",
+        "Sender Name",
+        "Sender State",
+        "Sender Suburb",
+        "Sender Zone",
+        "Receiver Suburb",
+        "Receiver Zone",
+        "Original RDD",
+        "Timeslot Required",
+        "Timeslot Booked",
     ];
 
     // Format dates from backend
@@ -74,9 +102,13 @@ export default function FloorReport() {
                 dateFields.forEach((field) => {
                     if (row[field]) {
                         const parsed = moment(row[field], [
+                            "YYYY-MM-DDTHH:mm:ssZ",
+                            "YYYY-MM-DDTHH:mm:ss",
+                            "DD-MM-YYYY HH:mm A",
+                            "DD/MM/YYYY HH:mm A",
+                            "YYYY-MM-DD HH:mm:ss",
                             "DD-MM-YYYY hh:mm A",
                             "DD/MM/YYYY hh:mm A",
-                            "YYYY-MM-DDTHH:mm:ssZ",
                             "YYYY-MM-DD",
                         ]);
 
@@ -93,70 +125,69 @@ export default function FloorReport() {
         [floorData]
     );
 
-    // Column visibility state
-    const [visibleColumns, setVisibleColumns] = useState(
-        new Set([
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "15",
-            "16",
-            "17",
-            "18",
-            "19",
-            "20",
-        ])
-    );
-    const [hiddenColumns, setHiddenColumns] = useState([]);
+    // Initialize visible columns with defaults
+    const initializeVisibleColumns = useCallback((columns) => {
+        const visibleSet = new Set();
+        columns.forEach((col, index) => {
+            if (!defaultHiddenColumnTitles.includes(col.title)) {
+                visibleSet.add(String(index));
+            }
+        });
+        return visibleSet;
+    }, []);
 
-    // Fetch floor report data
-    useEffect(() => {
-        axios
-            .get(`${url}/FloorReport`, {
-                headers: {
-                    UserId: user.UserId,
-                    Authorization: `Bearer ${Token}`,
-                },
-            })
-            .then((res) => {
-                setFloorData(res.data || []);
-                setLoading(false);
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 401) {
-                    swal({
-                        title: "Session Expired!",
-                        text: "Please login again",
-                        icon: "info",
-                        confirmButtonText: "OK",
-                    }).then(async function () {
-                        await handleSessionExpiration();
-                    });
-                } else {
-                    console.log(err);
-                    setLoading(false);
-                }
-            });
-    }, [userPermissions, Token, url, user.UserId]);
+    const [hiddenColumns, setHiddenColumns] = useState([]);
 
     // Handsontable renderers
     const dateRenderer = useCallback((instance, td, row, col, prop, value) => {
+        // Display date with time
         td.innerText = value ? moment(value).format("DD/MM/YYYY hh:mm A") : "";
         td.classList.add("htLeft");
+        // Store the date-only value for filtering
+        td.setAttribute('data-filter-value', value ? moment(value).format("DD/MM/YYYY") : "");
         return td;
     }, []);
+
+    const noTimeDateRenderer = useCallback(
+        (instance, td, row, col, prop, value) => {
+            td.innerText = value ? moment(value).format("DD/MM/YYYY") : "";
+            td.classList.add("htLeft");
+            return td;
+        },
+        []
+    );
+
+    const rddDateRenderer = useCallback(
+        (instance, td, row, col, prop, value) => {
+            // Display date without time to avoid filter issues
+            const formatted = value
+                ? moment(value).format("DD/MM/YYYY")
+                : "";
+            td.innerText = formatted;
+            td.classList.add("htLeft");
+
+            // Highlight RDD based on date comparison
+            if (value) {
+                const today = moment().startOf("day");
+                const rddDate = moment(value).startOf("day");
+
+                if (rddDate.isBefore(today)) {
+                    // RDD has passed - highlight in red
+                    td.style.backgroundColor = "#fee2e2"; // light red
+                    td.style.color = "#991b1b"; // dark red
+                    td.style.fontWeight = "600";
+                } else if (rddDate.isSame(today)) {
+                    // RDD is today - highlight in yellow
+                    td.style.backgroundColor = "#fef3c7"; // light yellow
+                    td.style.color = "#92400e"; // dark yellow/brown
+                    td.style.fontWeight = "600";
+                }
+            }
+
+            return td;
+        },
+        []
+    );
 
     const booleanRenderer = useCallback(
         (instance, td, row, col, prop, value) => {
@@ -210,11 +241,17 @@ export default function FloorReport() {
         },
         []
     );
+
     const [detailsData, setDetailsData] = useState(null);
 
     const handleViewDetails = (data) => {
         setDetailsData(data);
         onOpen();
+    };
+
+    const handleConsignmentClick = (consignmentData) => {
+        const url = route('consignment-details', { id: consignmentData.ConsignmentID });
+        window.open(url, '_blank');
     };
 
     // Handsontable columns configuration
@@ -264,9 +301,11 @@ export default function FloorReport() {
                     button.appendChild(svg);
 
                     button.addEventListener("click", () => {
-                        // Option 1: Get the visual (filtered/sorted) row data
-                        const visualRowData = instance.getSourceDataAtRow(row);
-
+                        // Convert visual row index to physical row index
+                        const physicalRow = instance.toPhysicalRow(row);
+                        // Get the full source data object (includes Details array)
+                        const visualRowData =
+                            instance.getSourceDataAtRow(physicalRow);
                         handleViewDetails(visualRowData);
                     });
 
@@ -290,6 +329,37 @@ export default function FloorReport() {
                 editor: false,
                 width: 120,
                 headerClassName: "htLeft",
+                renderer: (instance, td, row, col, prop, value) => {
+                    Handsontable.dom.empty(td);
+                    td.classList.add("htLeft");
+
+                    if (canViewDetails(userPermissions)) {
+                        const link = document.createElement("a");
+                        link.href = "#";
+                        link.style.color = "#3b82f6";
+                        link.style.textDecoration = "underline";
+                        link.style.fontWeight = "600";
+                        link.style.cursor = "pointer";
+                        link.textContent = value || "";
+
+                        link.addEventListener("click", (e) => {
+                            e.preventDefault();
+                            const physicalRow = instance.toPhysicalRow(row);
+                            const rowData =
+                                instance.getSourceDataAtRow(physicalRow);
+
+                            // Call function to handle navigation
+                            handleConsignmentClick(rowData);
+                        });
+
+                        td.appendChild(link);
+                    } else {
+                        td.innerText = value || "";
+                        td.style.fontWeight = "600";
+                    }
+
+                    return td;
+                },
             },
             {
                 data: "ChargeTo",
@@ -303,8 +373,7 @@ export default function FloorReport() {
             {
                 data: "DespatchDateTime",
                 title: "Despatch Date",
-                type: "date",
-                dateFormat: "DD/MM/YYYY",
+                type: "text",
                 readOnly: true,
                 editor: false,
                 width: 170,
@@ -395,8 +464,7 @@ export default function FloorReport() {
             {
                 data: "EventDateTime",
                 title: "Floor Scan Date",
-                type: "date",
-                dateFormat: "DD/MM/YYYY",
+                type: "text",
                 readOnly: true,
                 editor: false,
                 width: 170,
@@ -424,24 +492,22 @@ export default function FloorReport() {
             {
                 data: "RDD",
                 title: "RDD",
-                type: "date",
-                dateFormat: "DD/MM/YYYY",
+                type: "text",
                 readOnly: true,
                 editor: false,
                 width: 170,
                 headerClassName: "htLeft",
-                renderer: dateRenderer,
+                renderer: rddDateRenderer,
             },
             {
                 data: "OldRdd",
                 title: "Original RDD",
-                type: "date",
-                dateFormat: "DD/MM/YYYY",
+                type: "text",
                 readOnly: true,
                 editor: false,
                 width: 170,
                 headerClassName: "htLeft",
-                renderer: dateRenderer,
+                renderer: noTimeDateRenderer,
             },
             {
                 data: "TotalDays",
@@ -491,13 +557,109 @@ export default function FloorReport() {
                 headerClassName: "htLeft",
             },
         ],
-        [dateRenderer, booleanRenderer]
+        [dateRenderer, booleanRenderer, rddDateRenderer, noTimeDateRenderer]
     );
+
+    // Initialize visible columns on mount
+    const [visibleColumns, setVisibleColumns] = useState(new Set());
+
+    useEffect(() => {
+        setVisibleColumns(initializeVisibleColumns(hotColumns));
+    }, [hotColumns, initializeVisibleColumns]);
 
     const colHeaders = useMemo(
         () => hotColumns.map((col) => col.title),
         [hotColumns]
     );
+
+    // Calculate date range filter
+    const getDateRange = useCallback(() => {
+        const today = moment().startOf("day");
+        let startDate, endDate;
+
+        switch (dateRange) {
+            case DATE_RANGE_OPTIONS.TODAY:
+                startDate = today.clone();
+                endDate = today.clone().endOf("day");
+                break;
+            case DATE_RANGE_OPTIONS.YESTERDAY:
+                startDate = today.clone().subtract(1, "day");
+                endDate = startDate.clone().endOf("day");
+                break;
+            case DATE_RANGE_OPTIONS.LAST_WEEK:
+                startDate = today.clone().subtract(7, "days");
+                endDate = today.clone().endOf("day");
+                break;
+            case DATE_RANGE_OPTIONS.LAST_MONTH:
+                startDate = today.clone().subtract(1, "month");
+                endDate = today.clone().endOf("day");
+                break;
+            case DATE_RANGE_OPTIONS.LAST_2_MONTHS:
+                startDate = today.clone().subtract(2, "months");
+                endDate = today.clone().endOf("day");
+                break;
+            case DATE_RANGE_OPTIONS.LAST_3_MONTHS:
+                startDate = today.clone().subtract(3, "months");
+                endDate = today.clone().endOf("day");
+                break;
+            case DATE_RANGE_OPTIONS.LAST_6_MONTHS:
+                startDate = today.clone().subtract(6, "months");
+                endDate = today.clone().endOf("day");
+                break;
+            case DATE_RANGE_OPTIONS.LAST_YEAR:
+                startDate = today.clone().subtract(1, "year");
+                endDate = today.clone().endOf("day");
+                break;
+            default:
+                startDate = today.clone();
+                endDate = today.clone().endOf("day");
+        }
+
+        return { startDate, endDate };
+    }, [dateRange]);
+
+    // Filter data based on date range
+    const filteredData = useMemo(() => {
+        const { startDate, endDate } = getDateRange();
+
+        return formattedData.filter((row) => {
+            if (row.EventDateTime) {
+                const eventDate = moment(row.EventDateTime);
+                return eventDate.isBetween(startDate, endDate, null, "[]");
+            }
+            return false;
+        });
+    }, [formattedData, dateRange, getDateRange]);
+
+    // Fetch floor report data
+    useEffect(() => {
+        axios
+            .get(`${url}/FloorReport`, {
+                headers: {
+                    UserId: user.UserId,
+                    Authorization: `Bearer ${Token}`,
+                },
+            })
+            .then((res) => {
+                setFloorData(res.data || []);
+                setLoading(false);
+            })
+            .catch((err) => {
+                if (err.response && err.response.status === 401) {
+                    swal({
+                        title: "Session Expired!",
+                        text: "Please login again",
+                        icon: "info",
+                        confirmButtonText: "OK",
+                    }).then(async function () {
+                        await handleSessionExpiration();
+                    });
+                } else {
+                    console.log(err);
+                    setLoading(false);
+                }
+            });
+    }, [userPermissions, Token, url, user.UserId]);
 
     // Export to Excel
     const buttonClickCallback = async () => {
@@ -617,7 +779,7 @@ export default function FloorReport() {
 
     useEffect(() => {
         applyHiddenColumns();
-    }, [visibleColumns, formattedData]);
+    }, [visibleColumns, filteredData]);
 
     const clearAllFilters = () => {
         const hotInstance = hotTableRef.current?.hotInstance;
@@ -630,13 +792,12 @@ export default function FloorReport() {
 
     const renderRowDetails = ({ data, rowIndex }) => {
         const formatDate = (date) => {
-            const formatted = moment(date).format("DD-MM-YYYY hh:mm A");
+            const formatted = moment(date).format("DD-MM-YYYY HH:mm");
             return formatted === "Invalid date" ? "N/A" : formatted;
         };
 
         return (
             <div className="">
-                {/* Details Table - If there are line items */}
                 {data.Details && data.Details.length > 0 && (
                     <div className="w-full space-y-4">
                         <Table aria-label="Item details">
@@ -645,7 +806,6 @@ export default function FloorReport() {
                                     ITEM #
                                 </TableColumn>
                                 <TableColumn>TIMESTAMP</TableColumn>
-                                {/* <TableColumn>FS REFERENCE</TableColumn> */}
                                 <TableColumn>DEPOT</TableColumn>
                                 <TableColumn>DOCK</TableColumn>
                                 <TableColumn>CREATED BY</TableColumn>
@@ -659,16 +819,12 @@ export default function FloorReport() {
                                         <TableCell className="text-xs">
                                             {formatDate(item.FSEventTimestamp)}
                                         </TableCell>
-                                        {/* <TableCell className="text-xs">
-                                                {item.FSReference || "N/A"}
-                                            </TableCell> */}
                                         <TableCell className="text-xs">
                                             {item.Depot || "N/A"}
                                         </TableCell>
                                         <TableCell className="text-xs">
                                             {item.DockLocation || "-"}
                                         </TableCell>
-
                                         <TableCell className="text-xs">
                                             {item.CreatedBy || "N/A"}
                                         </TableCell>
@@ -695,63 +851,101 @@ export default function FloorReport() {
                 </h1>
             </div>
 
-            <div className="my-4 flex w-full items-center gap-3 justify-end">
-                <Dropdown>
-                    <DropdownTrigger className="hidden xl:flex">
-                        <Button
-                            endContent={
-                                <ChevronDownIcon className="text-small w-3" />
-                            }
-                            size="sm"
-                            variant="flat"
-                            className="bg-gray-800 text-white"
-                        >
-                            Columns
-                        </Button>
-                    </DropdownTrigger>
-                    <DropdownMenu
-                        disallowEmptySelection
-                        aria-label="Table Columns"
-                        closeOnSelect={false}
-                        selectedKeys={visibleColumns}
-                        selectionMode="multiple"
-                        onSelectionChange={(keys) => {
-                            setVisibleColumns(new Set(keys));
-                        }}
+            <div className="my-4 flex w-full items-center gap-3 justify-between flex-wrap">
+                {/* Date Range Filter */}
+                <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium text-gray-700">
+                        Date Range:
+                    </label>
+                    <select
+                        value={dateRange}
+                        onChange={(e) => setDateRange(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                        {hotColumns
-                            .filter((item) => !item.title == "")
-                            .map((column, index) => (
-                                <DropdownItem
-                                    key={String(index)}
-                                    className="capitalize"
-                                >
-                                    {capitalize(column.title)}
-                                </DropdownItem>
-                            ))}
-                    </DropdownMenu>
-                </Dropdown>
-                <Button
-                    className="bg-dark text-white px-4 py-2"
-                    size="sm"
-                    onClick={clearAllFilters}
-                >
-                    Clear Filters
-                </Button>
-                <Button
-                    className="bg-dark text-white px-4 py-2"
-                    onClick={() => buttonClickCallback()}
-                    size="sm"
-                >
-                    Export
-                </Button>
+                        <option value={DATE_RANGE_OPTIONS.TODAY}>Today</option>
+                        <option value={DATE_RANGE_OPTIONS.YESTERDAY}>
+                            Yesterday
+                        </option>
+                        <option value={DATE_RANGE_OPTIONS.LAST_WEEK}>
+                            Last 7 Days
+                        </option>
+                        <option value={DATE_RANGE_OPTIONS.LAST_MONTH}>
+                            Last Month
+                        </option>
+                        <option value={DATE_RANGE_OPTIONS.LAST_2_MONTHS}>
+                            Last 2 Months
+                        </option>
+                        <option value={DATE_RANGE_OPTIONS.LAST_3_MONTHS}>
+                            Last 3 Months
+                        </option>
+                        <option value={DATE_RANGE_OPTIONS.LAST_6_MONTHS}>
+                            Last 6 Months
+                        </option>
+                        <option value={DATE_RANGE_OPTIONS.LAST_YEAR}>
+                            Last Year
+                        </option>
+                    </select>
+                </div>
+
+                <div className="flex items-center gap-3">
+                    <Dropdown>
+                        <DropdownTrigger className="hidden xl:flex">
+                            <Button
+                                endContent={
+                                    <ChevronDownIcon className="text-small w-3" />
+                                }
+                                size="sm"
+                                variant="flat"
+                                className="bg-gray-800 text-white"
+                            >
+                                Columns
+                            </Button>
+                        </DropdownTrigger>
+                        <DropdownMenu
+                            disallowEmptySelection
+                            aria-label="Table Columns"
+                            closeOnSelect={false}
+                            selectedKeys={visibleColumns}
+                            selectionMode="multiple"
+                            onSelectionChange={(keys) => {
+                                setVisibleColumns(new Set(keys));
+                            }}
+                        >
+                            {hotColumns.map(
+                                (column, index) =>
+                                    column.title !== "" && (
+                                        <DropdownItem
+                                            key={String(index)}
+                                            className="capitalize"
+                                        >
+                                            {capitalize(column.title)}
+                                        </DropdownItem>
+                                    )
+                            )}
+                        </DropdownMenu>
+                    </Dropdown>
+                    <Button
+                        className="bg-dark text-white px-4 py-2"
+                        size="sm"
+                        onClick={clearAllFilters}
+                    >
+                        Clear Filters
+                    </Button>
+                    <Button
+                        className="bg-dark text-white px-4 py-2"
+                        onClick={() => buttonClickCallback()}
+                        size="sm"
+                    >
+                        Export
+                    </Button>
+                </div>
             </div>
 
-            {formattedData && (
+            {filteredData && (
                 <div id="" className="ht-theme-main mt-4 pb-10">
                     <HotTable
                         ref={hotTableRef}
-                        data={formattedData}
+                        data={filteredData}
                         colHeaders={colHeaders}
                         columns={hotColumns}
                         fixedColumnsStart={3}

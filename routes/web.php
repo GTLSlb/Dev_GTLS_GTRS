@@ -22,6 +22,7 @@ use gtls\loginstory\LoginClass;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 Route::get('/', function () {
     return Inertia::render('Layout');
 })->middleware(['custom.auth'])->name('Main');
@@ -43,15 +44,15 @@ Route::get('/forgot-password', function () {
     return Inertia::render('Auth/ForgotPassword');
 })->name('forgot.password');
 
-Route::post('/loginComp', [ LoginClass::class, 'login'])->name('loginComp');
+Route::post('/loginComp', [LoginClass::class, 'login'])->name('loginComp');
 
 Route::get('/auth/azure/callback', [LoginClass::class, 'handleCallback'])->name('azure.callback');
 
 Route::post('/microsoftToken', [LoginClass::class, 'sendToken'])->name('azure.token');
 
-Route::post('/composerLogout', [ LoginClass::class, 'logout'])->middleware(['custom.auth'])->name('composerLogout');
+Route::post('/composerLogout', [LoginClass::class, 'logout'])->middleware(['custom.auth'])->name('composerLogout');
 
-Route::post('/logoutWithoutReq', [ LoginClass::class, 'logoutWithoutRequest'])->middleware(['custom.auth'])->name('composerLogoutWithoutReq');
+Route::post('/logoutWithoutReq', [LoginClass::class, 'logoutWithoutRequest'])->middleware(['custom.auth'])->name('composerLogoutWithoutReq');
 
 Route::redirect('/', '/gtrs');
 
@@ -66,16 +67,16 @@ Route::post('/sendemail', [SendDailyEmail::class, 'SendEmail']);
 // Route::post('/saveImg', [NewUserController::class, 'storePic']);
 
 Route::post('/upload', function (Request $request) {
-    if($request->hasFile('file')){
+    if ($request->hasFile('file')) {
         $file = $request->file('file');
-    $fileName = $file->getClientOriginalName();
-    $destinationPath = public_path('userImgs');
-    if (file_exists($destinationPath . '/' . $fileName)) {
-        return response()->json(['message' => 'File already exists']);
-    } else {
-        $file->move($destinationPath, $fileName);
-        return response()->json(['message' => 'File uploaded successfully', 'filename' => $fileName]);
-    }
+        $fileName = $file->getClientOriginalName();
+        $destinationPath = public_path('userImgs');
+        if (file_exists($destinationPath . '/' . $fileName)) {
+            return response()->json(['message' => 'File already exists']);
+        } else {
+            $file->move($destinationPath, $fileName);
+            return response()->json(['message' => 'File uploaded successfully', 'filename' => $fileName]);
+        }
     }
 });
 
@@ -104,8 +105,13 @@ Route::middleware('custom.auth')->group(function () {
     Route::post('/auth/azure', function () {
         return Socialite::driver('azure')->redirect();
     })->name('azure.login');
+
+
     Route::get('/{path?}', function (Request $request) {
-        return Inertia::render('Layout');
+        // Preserve query parameters when rendering Layout
+        return Inertia::render('Layout', [
+            'queryParams' => $request->query()
+        ]);
     })->where('path', '.*');
 });
 
