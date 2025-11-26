@@ -43,10 +43,10 @@ import {
     ChevronDoubleRightIcon,
     CalendarDaysIcon,
 } from "@heroicons/react/24/outline";
-import { EyeIcon, PencilIcon } from "@heroicons/react/24/solid";
+// import { EyeIcon, PencilIcon } from "@heroicons/react/24/solid";
 import DetailsModal from "./DetailsModal";
-import FloorCommentsModal from "./FloorCommentsModal";
-import AddFloorCommentsModal from "./AddFloorCommentsModal";
+// import FloorCommentsModal from "./FloorCommentsModal";
+// import AddFloorCommentsModal from "./AddFloorCommentsModal";
 
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
