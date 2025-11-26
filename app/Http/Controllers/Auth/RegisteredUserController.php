@@ -148,6 +148,21 @@ class RegisteredUserController extends Controller
         $allowed_algs = ['HS256'];
         $currentTime = time();
 
+        if (empty($jwt_token)) {
+            \Log::error("JWT Token is empty");
+            return false;
+        }
+
+        // Check if token has 3 segments
+        $segments = explode('.', $jwt_token);
+        if (count($segments) !== 3) {
+            \Log::error("Invalid JWT Token format. Expected 3 segments, got " . count($segments));
+            return false;
+        }
+
+        if($jwt_token == null || $jwt_token == undefined) return false;
+
+
         try {
         // This single call performs three checks:
         // 1. Decodes the token.
@@ -202,7 +217,7 @@ class RegisteredUserController extends Controller
             $user = $this->mapUserByTypeId($decoded_user);
             $jwt_token = !isset($_COOKIE['jwt_token']) ? $this->validateSessionFromNode($user_from_session, $sessionId, $request->session()->get('token')) : $_COOKIE['jwt_token'];
             $token = !isset($_COOKIE['jwt_token']) ? $request->session()->get('token') : $this->decode_jwt_valid($jwt_token)->Token;
-            
+
             \Log::info("NEW JWT Token: " . $jwt_token);
             return response()->json([
                 'jwt_token' => $jwt_token,
