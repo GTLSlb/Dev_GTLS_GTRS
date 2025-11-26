@@ -1,11 +1,4 @@
-import React, {
-    useState,
-    useEffect,
-    useMemo,
-    useCallback,
-    useContext,
-} from "react";
-
+import "../../../../css/resizer.css";
 import {
     useReactTable,
     getCoreRowModel,
@@ -23,18 +16,7 @@ import {
     DropdownItem,
     DropdownMenu,
     DropdownTrigger,
-    Modal,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
     useDisclosure,
-    Table,
-    TableBody,
-    TableCell,
-    TableColumn,
-    TableHeader,
-    TableRow,
     Popover,
     PopoverTrigger,
     PopoverContent,
@@ -44,11 +26,11 @@ import moment from "moment";
 import swal from "sweetalert";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
-import { useNavigate } from "react-router-dom";
 import { CustomContext } from "@/CommonContext";
 import { ToastContainer } from "react-toastify";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import { handleSessionExpiration } from "@/CommonFunctions";
+import { useState, useEffect, useMemo, useContext } from "react";
 import {
     ChevronDownIcon,
     ChevronUpIcon,
@@ -70,77 +52,7 @@ function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-// Date range filter options
-const DATE_RANGE_OPTIONS = {
-    TODAY: "today",
-    YESTERDAY: "yesterday",
-    LAST_WEEK: "lastWeek",
-    LAST_MONTH: "lastMonth",
-    LAST_2_MONTHS: "last2Months",
-    LAST_3_MONTHS: "last3Months",
-    LAST_6_MONTHS: "last6Months",
-    LAST_YEAR: "lastYear",
-};
-
-// Date Filter Quick Options
-const DATE_FILTER_PRESETS = [
-    {
-        label: "Today",
-        getValue: () => {
-            const today = moment().format("YYYY-MM-DD");
-            return [today, today];
-        },
-    },
-    {
-        label: "Yesterday",
-        getValue: () => {
-            const yesterday = moment().subtract(1, "day").format("YYYY-MM-DD");
-            return [yesterday, yesterday];
-        },
-    },
-    {
-        label: "Last 7 Days",
-        getValue: () => {
-            const end = moment().format("YYYY-MM-DD");
-            const start = moment().subtract(6, "days").format("YYYY-MM-DD");
-            return [start, end];
-        },
-    },
-    {
-        label: "Last 30 Days",
-        getValue: () => {
-            const end = moment().format("YYYY-MM-DD");
-            const start = moment().subtract(29, "days").format("YYYY-MM-DD");
-            return [start, end];
-        },
-    },
-    {
-        label: "This Month",
-        getValue: () => {
-            const start = moment().startOf("month").format("YYYY-MM-DD");
-            const end = moment().endOf("month").format("YYYY-MM-DD");
-            return [start, end];
-        },
-    },
-    {
-        label: "Last Month",
-        getValue: () => {
-            const start = moment()
-                .subtract(1, "month")
-                .startOf("month")
-                .format("YYYY-MM-DD");
-            const end = moment()
-                .subtract(1, "month")
-                .endOf("month")
-                .format("YYYY-MM-DD");
-            return [start, end];
-        },
-    },
-];
-
-// Excel-like Date Filter Component with hierarchical selection
 function DateColumnFilter({ column, table }) {
-    const filterValue = column.getFilterValue() || new Set();
     const [expandedYears, setExpandedYears] = useState(new Set());
     const [expandedMonths, setExpandedMonths] = useState(new Set());
     const [selectedDates, setSelectedDates] = useState(new Set());
@@ -180,7 +92,7 @@ function DateColumnFilter({ column, table }) {
             hierarchy[year][month].push({
                 date: dateStr,
                 day: day,
-                fullDate: date.format("DD/MM/YYYY")
+                fullDate: date.format("DD/MM/YYYY"),
             });
         });
 
@@ -235,11 +147,13 @@ function DateColumnFilter({ column, table }) {
     };
 
     const handleYearSelection = (year) => {
-        const yearDates = Object.values(dateHierarchy[year] || {}).flat().map(d => d.date);
-        const allSelected = yearDates.every(date => selectedDates.has(date));
+        const yearDates = Object.values(dateHierarchy[year] || {})
+            .flat()
+            .map((d) => d.date);
+        const allSelected = yearDates.every((date) => selectedDates.has(date));
 
         const newSelected = new Set(selectedDates);
-        yearDates.forEach(date => {
+        yearDates.forEach((date) => {
             if (allSelected) {
                 newSelected.delete(date);
             } else {
@@ -257,11 +171,13 @@ function DateColumnFilter({ column, table }) {
     };
 
     const handleMonthSelection = (year, month) => {
-        const monthDates = (dateHierarchy[year]?.[month] || []).map(d => d.date);
-        const allSelected = monthDates.every(date => selectedDates.has(date));
+        const monthDates = (dateHierarchy[year]?.[month] || []).map(
+            (d) => d.date
+        );
+        const allSelected = monthDates.every((date) => selectedDates.has(date));
 
         const newSelected = new Set(selectedDates);
-        monthDates.forEach(date => {
+        monthDates.forEach((date) => {
             if (allSelected) {
                 newSelected.delete(date);
             } else {
@@ -284,8 +200,20 @@ function DateColumnFilter({ column, table }) {
     };
 
     const hasFilter = selectedDates.size > 0;
-    const monthNames = ["January", "February", "March", "April", "May", "June",
-                       "July", "August", "September", "October", "November", "December"];
+    const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ];
 
     return (
         <div className="flex flex-col gap-2 p-3 w-80">
@@ -316,121 +244,197 @@ function DateColumnFilter({ column, table }) {
                         No dates available
                     </div>
                 ) : (
-                    Object.keys(dateHierarchy).sort((a, b) => b - a).map((year) => {
-                        const yearNum = parseInt(year);
-                        const isYearExpanded = expandedYears.has(yearNum);
-                        const yearDates = Object.values(dateHierarchy[yearNum]).flat().map(d => d.date);
-                        const yearSelectedCount = yearDates.filter(d => selectedDates.has(d)).length;
-                        const isYearFullySelected = yearSelectedCount === yearDates.length;
-                        const isYearPartiallySelected = yearSelectedCount > 0 && !isYearFullySelected;
+                    Object.keys(dateHierarchy)
+                        .sort((a, b) => b - a)
+                        .map((year) => {
+                            const yearNum = parseInt(year);
+                            const isYearExpanded = expandedYears.has(yearNum);
+                            const yearDates = Object.values(
+                                dateHierarchy[yearNum]
+                            )
+                                .flat()
+                                .map((d) => d.date);
+                            const yearSelectedCount = yearDates.filter((d) =>
+                                selectedDates.has(d)
+                            ).length;
+                            const isYearFullySelected =
+                                yearSelectedCount === yearDates.length;
+                            const isYearPartiallySelected =
+                                yearSelectedCount > 0 && !isYearFullySelected;
 
-                        return (
-                            <div key={year} className="border-b border-gray-200 last:border-b-0">
-                                {/* Year Row */}
-                                <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 bg-gray-100">
-                                    <button
-                                        onClick={() => toggleYear(yearNum)}
-                                        className="p-0.5 hover:bg-gray-200 rounded"
-                                    >
-                                        {isYearExpanded ? (
-                                            <ChevronDownIcon className="w-3 h-3" />
-                                        ) : (
-                                            <ChevronRightIcon className="w-3 h-3" />
-                                        )}
-                                    </button>
-                                    <input
-                                        type="checkbox"
-                                        checked={isYearFullySelected}
-                                        ref={(el) => {
-                                            if (el) el.indeterminate = isYearPartiallySelected;
-                                        }}
-                                        onChange={() => handleYearSelection(yearNum)}
-                                        className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                                    />
-                                    <span className="text-sm font-semibold text-gray-800 flex-1">
-                                        {year}
-                                    </span>
-                                    {yearSelectedCount > 0 && (
-                                        <span className="text-xs text-blue-600 font-medium">
-                                            ({yearSelectedCount})
+                            return (
+                                <div
+                                    key={year}
+                                    className="border-b border-gray-200 last:border-b-0"
+                                >
+                                    {/* Year Row */}
+                                    <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 bg-gray-100">
+                                        <button
+                                            onClick={() => toggleYear(yearNum)}
+                                            className="p-0.5 hover:bg-gray-200 rounded"
+                                        >
+                                            {isYearExpanded ? (
+                                                <ChevronDownIcon className="w-3 h-3" />
+                                            ) : (
+                                                <ChevronRightIcon className="w-3 h-3" />
+                                            )}
+                                        </button>
+                                        <input
+                                            type="checkbox"
+                                            checked={isYearFullySelected}
+                                            ref={(el) => {
+                                                if (el)
+                                                    el.indeterminate =
+                                                        isYearPartiallySelected;
+                                            }}
+                                            onChange={() =>
+                                                handleYearSelection(yearNum)
+                                            }
+                                            className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                                        />
+                                        <span className="text-sm font-semibold text-gray-800 flex-1">
+                                            {year}
                                         </span>
+                                        {yearSelectedCount > 0 && (
+                                            <span className="text-xs text-blue-600 font-medium">
+                                                ({yearSelectedCount})
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {/* Months */}
+                                    {isYearExpanded && (
+                                        <div className="bg-white">
+                                            {Object.keys(dateHierarchy[yearNum])
+                                                .sort((a, b) => b - a)
+                                                .map((month) => {
+                                                    const monthNum =
+                                                        parseInt(month);
+                                                    const monthKey = `${year}-${month}`;
+                                                    const isMonthExpanded =
+                                                        expandedMonths.has(
+                                                            monthKey
+                                                        );
+                                                    const monthDates =
+                                                        dateHierarchy[yearNum][
+                                                            monthNum
+                                                        ].map((d) => d.date);
+                                                    const monthSelectedCount =
+                                                        monthDates.filter((d) =>
+                                                            selectedDates.has(d)
+                                                        ).length;
+                                                    const isMonthFullySelected =
+                                                        monthSelectedCount ===
+                                                        monthDates.length;
+                                                    const isMonthPartiallySelected =
+                                                        monthSelectedCount >
+                                                            0 &&
+                                                        !isMonthFullySelected;
+
+                                                    return (
+                                                        <div key={monthKey}>
+                                                            {/* Month Row */}
+                                                            <div className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50 pl-8">
+                                                                <button
+                                                                    onClick={() =>
+                                                                        toggleMonth(
+                                                                            monthKey
+                                                                        )
+                                                                    }
+                                                                    className="p-0.5 hover:bg-gray-200 rounded"
+                                                                >
+                                                                    {isMonthExpanded ? (
+                                                                        <ChevronDownIcon className="w-3 h-3" />
+                                                                    ) : (
+                                                                        <ChevronRightIcon className="w-3 h-3" />
+                                                                    )}
+                                                                </button>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={
+                                                                        isMonthFullySelected
+                                                                    }
+                                                                    ref={(
+                                                                        el
+                                                                    ) => {
+                                                                        if (el)
+                                                                            el.indeterminate =
+                                                                                isMonthPartiallySelected;
+                                                                    }}
+                                                                    onChange={() =>
+                                                                        handleMonthSelection(
+                                                                            yearNum,
+                                                                            monthNum
+                                                                        )
+                                                                    }
+                                                                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                                                                />
+                                                                <span className="text-sm text-gray-700 flex-1">
+                                                                    {
+                                                                        monthNames[
+                                                                            monthNum
+                                                                        ]
+                                                                    }
+                                                                </span>
+                                                                {monthSelectedCount >
+                                                                    0 && (
+                                                                    <span className="text-xs text-blue-600 font-medium">
+                                                                        (
+                                                                        {
+                                                                            monthSelectedCount
+                                                                        }
+                                                                        )
+                                                                    </span>
+                                                                )}
+                                                            </div>
+
+                                                            {/* Days */}
+                                                            {isMonthExpanded && (
+                                                                <div className="bg-gray-50">
+                                                                    {dateHierarchy[
+                                                                        yearNum
+                                                                    ][
+                                                                        monthNum
+                                                                    ].map(
+                                                                        (
+                                                                            dateObj
+                                                                        ) => (
+                                                                            <div
+                                                                                key={
+                                                                                    dateObj.date
+                                                                                }
+                                                                                className="flex items-center gap-2 px-3 py-1 hover:bg-gray-100 pl-16"
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    checked={selectedDates.has(
+                                                                                        dateObj.date
+                                                                                    )}
+                                                                                    onChange={() =>
+                                                                                        handleDateSelection(
+                                                                                            dateObj.date
+                                                                                        )
+                                                                                    }
+                                                                                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                                                                                />
+                                                                                <span className="text-xs text-gray-600">
+                                                                                    {
+                                                                                        dateObj.fullDate
+                                                                                    }
+                                                                                </span>
+                                                                            </div>
+                                                                        )
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
+                                        </div>
                                     )}
                                 </div>
-
-                                {/* Months */}
-                                {isYearExpanded && (
-                                    <div className="bg-white">
-                                        {Object.keys(dateHierarchy[yearNum]).sort((a, b) => b - a).map((month) => {
-                                            const monthNum = parseInt(month);
-                                            const monthKey = `${year}-${month}`;
-                                            const isMonthExpanded = expandedMonths.has(monthKey);
-                                            const monthDates = dateHierarchy[yearNum][monthNum].map(d => d.date);
-                                            const monthSelectedCount = monthDates.filter(d => selectedDates.has(d)).length;
-                                            const isMonthFullySelected = monthSelectedCount === monthDates.length;
-                                            const isMonthPartiallySelected = monthSelectedCount > 0 && !isMonthFullySelected;
-
-                                            return (
-                                                <div key={monthKey}>
-                                                    {/* Month Row */}
-                                                    <div className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50 pl-8">
-                                                        <button
-                                                            onClick={() => toggleMonth(monthKey)}
-                                                            className="p-0.5 hover:bg-gray-200 rounded"
-                                                        >
-                                                            {isMonthExpanded ? (
-                                                                <ChevronDownIcon className="w-3 h-3" />
-                                                            ) : (
-                                                                <ChevronRightIcon className="w-3 h-3" />
-                                                            )}
-                                                        </button>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={isMonthFullySelected}
-                                                            ref={(el) => {
-                                                                if (el) el.indeterminate = isMonthPartiallySelected;
-                                                            }}
-                                                            onChange={() => handleMonthSelection(yearNum, monthNum)}
-                                                            className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                                                        />
-                                                        <span className="text-sm text-gray-700 flex-1">
-                                                            {monthNames[monthNum]}
-                                                        </span>
-                                                        {monthSelectedCount > 0 && (
-                                                            <span className="text-xs text-blue-600 font-medium">
-                                                                ({monthSelectedCount})
-                                                            </span>
-                                                        )}
-                                                    </div>
-
-                                                    {/* Days */}
-                                                    {isMonthExpanded && (
-                                                        <div className="bg-gray-50">
-                                                            {dateHierarchy[yearNum][monthNum].map((dateObj) => (
-                                                                <div
-                                                                    key={dateObj.date}
-                                                                    className="flex items-center gap-2 px-3 py-1 hover:bg-gray-100 pl-16"
-                                                                >
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        checked={selectedDates.has(dateObj.date)}
-                                                                        onChange={() => handleDateSelection(dateObj.date)}
-                                                                        className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                                                                    />
-                                                                    <span className="text-xs text-gray-600">
-                                                                        {dateObj.fullDate}
-                                                                    </span>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })
+                            );
+                        })
                 )}
             </div>
         </div>
@@ -537,18 +541,35 @@ const dateFilterFn = (row, columnId, filterValue) => {
 // Column width constants for sticky columns (fixed)
 const ACTION_COL_WIDTH = 50;
 const CONS_NO_COL_WIDTH = 130;
-const ACCOUNT_COL_WIDTH = 180;
 
 export default function FloorReport() {
-    const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [floorData, setFloorData] = useState([]);
-    const [dateRange, setDateRange] = useState(DATE_RANGE_OPTIONS.TODAY);
     const { Token, user, userPermissions, url } = useContext(CustomContext);
-    const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-
-    const [sorting, setSorting] = useState([]);
-    const [columnFilters, setColumnFilters] = useState([]);
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const {
+        isOpen: isCommentOpen,
+        onOpen: onCommentOpen,
+        onOpenChange: onCommentChange,
+    } = useDisclosure();
+    const {
+        isOpen: isAddCommentOpen,
+        onOpen: onAddCommentOpen,
+        onOpenChange: onAddCommentChange,
+    } = useDisclosure();
+    const [sorting, setSorting] = useState([
+        { id: "EventDateTime", desc: true },
+        { id: "RDD", desc: true },
+    ]);
+    const [columnFilters, setColumnFilters] = useState(() => {
+        const today = moment().format("YYYY-MM-DD");
+        return [
+            {
+                id: "EventDateTime",
+                value: new Set([today]),
+            },
+        ];
+    });
     const [columnVisibility, setColumnVisibility] = useState({
         DespatchDateTime: false,
         SenderName: false,
@@ -602,74 +623,26 @@ export default function FloorReport() {
         [floorData]
     );
 
-    // Calculate date range filter
-    const getDateRange = useCallback(() => {
-        const today = moment().startOf("day");
-        let startDate, endDate;
-
-        switch (dateRange) {
-            case DATE_RANGE_OPTIONS.TODAY:
-                startDate = today.clone();
-                endDate = today.clone().endOf("day");
-                break;
-            case DATE_RANGE_OPTIONS.YESTERDAY:
-                startDate = today.clone().subtract(1, "day");
-                endDate = startDate.clone().endOf("day");
-                break;
-            case DATE_RANGE_OPTIONS.LAST_WEEK:
-                startDate = today.clone().subtract(7, "days");
-                endDate = today.clone().endOf("day");
-                break;
-            case DATE_RANGE_OPTIONS.LAST_MONTH:
-                startDate = today.clone().subtract(1, "month");
-                endDate = today.clone().endOf("day");
-                break;
-            case DATE_RANGE_OPTIONS.LAST_2_MONTHS:
-                startDate = today.clone().subtract(2, "months");
-                endDate = today.clone().endOf("day");
-                break;
-            case DATE_RANGE_OPTIONS.LAST_3_MONTHS:
-                startDate = today.clone().subtract(3, "months");
-                endDate = today.clone().endOf("day");
-                break;
-            case DATE_RANGE_OPTIONS.LAST_6_MONTHS:
-                startDate = today.clone().subtract(6, "months");
-                endDate = today.clone().endOf("day");
-                break;
-            case DATE_RANGE_OPTIONS.LAST_YEAR:
-                startDate = today.clone().subtract(1, "year");
-                endDate = today.clone().endOf("day");
-                break;
-            default:
-                startDate = today.clone();
-                endDate = today.clone().endOf("day");
-        }
-
-        return { startDate, endDate };
-    }, [dateRange]);
-
-    // Filter data based on date range
-    const filteredData = useMemo(() => {
-        const { startDate, endDate } = getDateRange();
-
-        return formattedData.filter((row) => {
-            if (row.EventDateTime) {
-                const eventDate = moment(row.EventDateTime);
-                return eventDate.isBetween(startDate, endDate, null, "[]");
-            }
-            return false;
-        });
-    }, [formattedData, dateRange, getDateRange]);
-
     const [detailsData, setDetailsData] = useState(null);
 
     const handleViewDetails = (data) => {
         setDetailsData(data);
         onOpen();
     };
+    const handleViewComments = (data) => {
+        setDetailsData(data);
+        onCommentOpen();
+    };
+    const handleAddComments = (data) => {
+        setDetailsData({
+            Comment: "",
+            ConsId: data.ConsignmentID,
+            FloorCommentId: null,
+        });
+        onAddCommentOpen();
+    };
 
     const handleConsignmentClick = (consignmentData) => {
-        console.log(consignmentData);
         const url = `/gtrs/consignment-details?consId=${consignmentData.ConsignmentID}`;
         window.open(url, "_blank");
     };
@@ -769,88 +742,6 @@ export default function FloorReport() {
                 },
             },
             {
-                accessorKey: "ChargeTo",
-                header: "Account Name",
-                size: ACCOUNT_COL_WIDTH,
-                minSize: ACCOUNT_COL_WIDTH,
-                maxSize: ACCOUNT_COL_WIDTH,
-                meta: { filterVariant: "text" },
-            },
-            {
-                accessorKey: "DespatchDateTime",
-                header: "Despatch Date",
-                size: 170,
-                minSize: 120,
-                maxSize: 250,
-                meta: { filterVariant: "date" },
-                filterFn: dateFilterFn,
-                cell: ({ getValue }) => <DateCell value={getValue()} />,
-            },
-            {
-                accessorKey: "SenderName",
-                header: "Sender Name",
-                size: 150,
-                minSize: 100,
-                maxSize: 350,
-                meta: { filterVariant: "text" },
-            },
-            {
-                accessorKey: "SenderState",
-                header: "Sender State",
-                size: 110,
-                minSize: 80,
-                maxSize: 200,
-                meta: { filterVariant: "select" },
-            },
-            {
-                accessorKey: "SenderSuburb",
-                header: "Sender Suburb",
-                size: 140,
-                minSize: 100,
-                maxSize: 300,
-                meta: { filterVariant: "text" },
-            },
-            {
-                accessorKey: "SenderZone",
-                header: "Sender Zone",
-                size: 110,
-                minSize: 80,
-                maxSize: 200,
-                meta: { filterVariant: "select" },
-            },
-            {
-                accessorKey: "ReceiverName",
-                header: "Receiver Name",
-                size: 150,
-                minSize: 100,
-                maxSize: 350,
-                meta: { filterVariant: "text" },
-            },
-            {
-                accessorKey: "ReceiverState",
-                header: "Receiver State",
-                size: 120,
-                minSize: 80,
-                maxSize: 200,
-                meta: { filterVariant: "select" },
-            },
-            {
-                accessorKey: "ReceiverSuburb",
-                header: "Receiver Suburb",
-                size: 140,
-                minSize: 100,
-                maxSize: 300,
-                meta: { filterVariant: "text" },
-            },
-            {
-                accessorKey: "ReceiverZone",
-                header: "Receiver Zone",
-                size: 120,
-                minSize: 80,
-                maxSize: 200,
-                meta: { filterVariant: "select" },
-            },
-            {
                 accessorKey: "ConsStatus",
                 header: "Cons Status",
                 size: 120,
@@ -859,47 +750,16 @@ export default function FloorReport() {
                 meta: { filterVariant: "select" },
             },
             {
-                accessorKey: "EventDateTime",
-                header: "Floor Scan Date",
-                size: 170,
-                minSize: 120,
-                maxSize: 250,
-                meta: { filterVariant: "date" },
-                filterFn: dateFilterFn,
-                cell: ({ getValue }) => <DateCell value={getValue()} />,
-            },
-            {
-                accessorKey: "OriginPalletSpaces",
-                header: "Cnote Pallet Space",
-                size: 150,
-                minSize: 100,
-                maxSize: 250,
-                meta: { filterVariant: "text" },
-            },
-            {
-                accessorKey: "ActualScanned",
-                header: "Scanned Events",
-                size: 130,
-                minSize: 100,
-                maxSize: 220,
-                meta: { filterVariant: "text" },
-            },
-            {
                 accessorKey: "RDD",
                 header: "RDD",
-                size: 120,
-                minSize: 100,
-                maxSize: 200,
                 meta: { filterVariant: "date" },
                 filterFn: dateFilterFn,
                 cell: ({ getValue }) => <RDDCell value={getValue()} />,
             },
+
             {
                 accessorKey: "OldRdd",
                 header: "Original RDD",
-                size: 130,
-                minSize: 100,
-                maxSize: 200,
                 meta: { filterVariant: "date" },
                 filterFn: dateFilterFn,
                 cell: ({ getValue }) => (
@@ -907,28 +767,93 @@ export default function FloorReport() {
                 ),
             },
             {
+                accessorKey: "ChargeTo",
+                header: "Account Name",
+                // size: ACTION_COL_WIDTH,
+                // minSize: ACTION_COL_WIDTH,
+                // maxSize: ACTION_COL_WIDTH,
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "DespatchDateTime",
+                header: "Despatch Date",
+                meta: { filterVariant: "date" },
+                filterFn: dateFilterFn,
+                cell: ({ getValue }) => <DateCell value={getValue()} />,
+            },
+            {
+                accessorKey: "SenderName",
+                header: "Sender Name",
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "SenderState",
+                header: "Sender State",
+                meta: { filterVariant: "select" },
+            },
+            {
+                accessorKey: "SenderSuburb",
+                header: "Sender Suburb",
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "SenderZone",
+                header: "Sender Zone",
+                meta: { filterVariant: "select" },
+            },
+            {
+                accessorKey: "ReceiverName",
+                header: "Receiver Name",
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "ReceiverState",
+                header: "Receiver State",
+                meta: { filterVariant: "select" },
+            },
+            {
+                accessorKey: "ReceiverSuburb",
+                header: "Receiver Suburb",
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "ReceiverZone",
+                header: "Receiver Zone",
+                meta: { filterVariant: "select" },
+            },
+            {
+                accessorKey: "EventDateTime",
+                header: "Floor Scan Date",
+                meta: { filterVariant: "date" },
+                filterFn: dateFilterFn,
+                cell: ({ getValue }) => (
+                    <DateCell value={getValue()} showTime={false} />
+                ),
+            },
+            {
+                accessorKey: "OriginPalletSpaces",
+                header: "Cnote Pallet Space",
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "ActualScanned",
+                header: "Scanned Events",
+                meta: { filterVariant: "text" },
+            },
+            {
                 accessorKey: "TotalDays",
                 header: "Total Days",
-                size: 100,
-                minSize: 80,
-                maxSize: 180,
                 meta: { filterVariant: "text" },
             },
             {
                 accessorKey: "TimeslotRequired",
                 header: "Timeslot Required",
-                size: 140,
-                minSize: 100,
-                maxSize: 220,
                 meta: { filterVariant: "select" },
                 cell: ({ getValue }) => <BooleanCell value={getValue()} />,
             },
             {
                 accessorKey: "TimeslotBooked",
                 header: "Timeslot Booked",
-                size: 140,
-                minSize: 100,
-                maxSize: 220,
                 meta: { filterVariant: "select" },
                 cell: ({ getValue, row }) => (
                     <TimeslotBookedCell value={getValue()} row={row} />
@@ -937,45 +862,70 @@ export default function FloorReport() {
             {
                 accessorKey: "DockLocation",
                 header: "Dock Location",
-                size: 130,
-                minSize: 100,
-                maxSize: 250,
                 meta: { filterVariant: "text" },
             },
             {
                 accessorKey: "Depot",
                 header: "Depot",
-                size: 100,
-                minSize: 80,
-                maxSize: 200,
                 meta: { filterVariant: "select" },
             },
+            // {
+            //     id: "comments-actions",
+            //     header: "",
+            //     size: 70,
+            //     enableSorting: false,
+            //     enableColumnFilter: false,
+            //     cell: ({ row }) => (
+            //         <div className="flex gap-1">
+            //             <button
+            //                 className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
+            //                 title="View Details"
+            //                 onClick={() => handleAddComments(row.original)}
+            //             >
+            //                 <PencilIcon className="w-4 h-4 text-blue-500" />
+            //             </button>
+            //             <button
+            //                 className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
+            //                 title="View Details"
+            //                 onClick={() => handleViewComments(row.original)}
+            //             >
+            //                 <EyeIcon className="w-4 h-4 text-yellow-500" />
+            //             </button>
+            //         </div>
+            //     ),
+            // },
         ],
         [userPermissions]
     );
 
     // Initialize TanStack Table
     const table = useReactTable({
-        data: filteredData,
+        data: formattedData,
         columns,
         state: {
             sorting,
             columnFilters,
             columnVisibility,
         },
+        defaultColumn: {
+            minSize: 60,
+            maxSize: 800,
+        },
         initialState: {
             pagination: {
                 pageSize: 20,
             },
         },
+        enableColumnResizing: true,
+        columnResizeMode: "onChange",
         onSortingChange: setSorting,
-        onColumnFiltersChange: setColumnFilters,
-        onColumnVisibilityChange: setColumnVisibility,
         getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
+        onColumnFiltersChange: setColumnFilters,
         getFacetedRowModel: getFacetedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        onColumnVisibilityChange: setColumnVisibility,
+        getPaginationRowModel: getPaginationRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
         // columnResizeMode: "onChange",
         // enableColumnResizing: true,
@@ -1084,64 +1034,16 @@ export default function FloorReport() {
         setColumnFilters([]);
     };
 
-    const renderRowDetails = ({ data }) => {
-        const formatDate = (date) => {
-            const formatted = moment(date).format("DD-MM-YYYY HH:mm");
-            return formatted === "Invalid date" ? "N/A" : formatted;
-        };
-
-        return (
-            <div className="">
-                {data.Details && data.Details.length > 0 && (
-                    <div className="w-full space-y-4">
-                        <Table aria-label="Item details">
-                            <TableHeader>
-                                <TableColumn className="w-20">
-                                    ITEM #
-                                </TableColumn>
-                                <TableColumn>TIMESTAMP</TableColumn>
-                                <TableColumn>DEPOT</TableColumn>
-                                <TableColumn>DOCK</TableColumn>
-                                <TableColumn>CREATED BY</TableColumn>
-                            </TableHeader>
-                            <TableBody>
-                                {data.Details.map((item, idx) => (
-                                    <TableRow key={idx}>
-                                        <TableCell className="text-xs font-medium">
-                                            {item.ItemNumber || "N/A"}
-                                        </TableCell>
-                                        <TableCell className="text-xs">
-                                            {formatDate(item.FSEventTimestamp)}
-                                        </TableCell>
-                                        <TableCell className="text-xs">
-                                            {item.Depot || "N/A"}
-                                        </TableCell>
-                                        <TableCell className="text-xs">
-                                            {item.DockLocation || "-"}
-                                        </TableCell>
-                                        <TableCell className="text-xs">
-                                            {item.CreatedBy || "N/A"}
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
-                )}
-            </div>
-        );
-    };
-
     // Helper function to check if column is sticky
     const isStickyColumn = (columnId) => {
-        return ["actions", "ConsignmentNo", "ChargeTo"].includes(columnId);
+        return ["actions", "ConsignmentNo", "ConsStatus"].includes(columnId);
     };
 
     // Calculate sticky left position based on column
     const getStickyLeft = (columnId) => {
         if (columnId === "actions") return 0;
         if (columnId === "ConsignmentNo") return ACTION_COL_WIDTH;
-        if (columnId === "ChargeTo")
+        if (columnId === "ConsStatus")
             return ACTION_COL_WIDTH + CONS_NO_COL_WIDTH;
         return undefined;
     };
@@ -1151,117 +1053,125 @@ export default function FloorReport() {
     }
 
     return (
-        <div className="min-h-full px-8">
-            <ToastContainer />
-            <div className="sm:flex-auto mt-6">
-                <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                    Floor Report
-                </h1>
-            </div>
+        <>
+            <div className="min-h-full px-8">
+                <ToastContainer />
 
-            <div className="my-4 flex w-full items-center gap-3 justify-end flex-wrap">
-                <div className="flex items-center gap-3">
-                    {/* Column Visibility Dropdown */}
-                    <Dropdown>
-                        <DropdownTrigger className="hidden xl:flex">
-                            <Button
-                                endContent={
-                                    <ChevronDownIcon className="text-small w-3" />
-                                }
-                                size="sm"
-                                variant="flat"
-                                className="bg-gray-800 text-white"
-                            >
-                                Columns
-                            </Button>
-                        </DropdownTrigger>
-                        <DropdownMenu
-                            disallowEmptySelection
-                            aria-label="Table Columns"
-                            closeOnSelect={false}
-                            selectedKeys={
-                                new Set(
-                                    table
-                                        .getAllColumns()
-                                        .filter(
-                                            (col) =>
-                                                col.getIsVisible() &&
-                                                col.id !== "actions"
-                                        )
-                                        .map((col) => col.id)
-                                )
-                            }
-                            selectionMode="multiple"
-                            onSelectionChange={(keys) => {
-                                const selectedKeys = new Set(keys);
-                                const newVisibility = {};
-                                table.getAllColumns().forEach((col) => {
-                                    if (col.id !== "actions") {
-                                        newVisibility[col.id] =
-                                            selectedKeys.has(col.id);
+                <div className="my-4 flex w-full items-center gap-3 justify-end flex-wrap">
+                    <div className="sm:flex-auto mt-6">
+                        <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
+                            Floor Report
+                        </h1>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        {/* Column Visibility Dropdown */}
+                        <Dropdown>
+                            <DropdownTrigger className="hidden xl:flex">
+                                <Button
+                                    endContent={
+                                        <ChevronDownIcon className="text-small w-3" />
                                     }
-                                });
-                                setColumnVisibility(newVisibility);
+                                    size="sm"
+                                    variant="flat"
+                                    className="bg-gray-800 text-white"
+                                >
+                                    Columns
+                                </Button>
+                            </DropdownTrigger>
+                            <DropdownMenu
+                                disallowEmptySelection
+                                aria-label="Table Columns"
+                                closeOnSelect={false}
+                                selectedKeys={
+                                    new Set(
+                                        table
+                                            .getAllColumns()
+                                            .filter(
+                                                (col) =>
+                                                    col.getIsVisible() &&
+                                                    col.id !== "actions"
+                                            )
+                                            .map((col) => col.id)
+                                    )
+                                }
+                                selectionMode="multiple"
+                                onSelectionChange={(keys) => {
+                                    const selectedKeys = new Set(keys);
+                                    const newVisibility = {};
+                                    table.getAllColumns().forEach((col) => {
+                                        if (col.id !== "actions") {
+                                            newVisibility[col.id] =
+                                                selectedKeys.has(col.id);
+                                        }
+                                    });
+                                    setColumnVisibility(newVisibility);
+                                }}
+                            >
+                                {table
+                                    .getAllColumns()
+                                    .filter((col) => col.id !== "actions")
+                                    .map((column) => (
+                                        <DropdownItem
+                                            key={column.id}
+                                            className="capitalize"
+                                        >
+                                            {capitalize(
+                                                column.columnDef.header
+                                            )}
+                                        </DropdownItem>
+                                    ))}
+                            </DropdownMenu>
+                        </Dropdown>
+
+                        <Button
+                            className="bg-dark text-white px-4 py-2"
+                            size="sm"
+                            onClick={clearAllFilters}
+                        >
+                            Clear Filters
+                        </Button>
+                        <Button
+                            className="bg-dark text-white px-4 py-2"
+                            onClick={exportToExcel}
+                            size="sm"
+                        >
+                            Export
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Table Container */}
+                <div className="mt-4 tanstackTable pb-4">
+                    <div
+                        className="overflow-auto border border-gray-200 rounded-t-lg shadow-sm relative"
+                        style={{ maxHeight: "600px" }}
+                    >
+                        <table
+                            className="w-full border-collapse"
+                            style={{
+                                minWidth: "max-content",
+                                tableLayout: "fixed",
                             }}
                         >
-                            {table
-                                .getAllColumns()
-                                .filter((col) => col.id !== "actions")
-                                .map((column) => (
-                                    <DropdownItem
-                                        key={column.id}
-                                        className="capitalize"
-                                    >
-                                        {capitalize(column.columnDef.header)}
-                                    </DropdownItem>
-                                ))}
-                        </DropdownMenu>
-                    </Dropdown>
+                            <thead className="sticky top-0 z-30">
+                                {table.getHeaderGroups().map((headerGroup) => (
+                                    <tr key={headerGroup.id}>
+                                        {headerGroup.headers.map((header) => {
+                                            const isSticky = isStickyColumn(
+                                                header.column.id
+                                            );
+                                            const stickyLeft = getStickyLeft(
+                                                header.column.id
+                                            );
+                                            const isLastSticky =
+                                                header.column.id ===
+                                                "ConsStatus";
 
-                    <Button
-                        className="bg-dark text-white px-4 py-2"
-                        size="sm"
-                        onClick={clearAllFilters}
-                    >
-                        Clear Filters
-                    </Button>
-                    <Button
-                        className="bg-dark text-white px-4 py-2"
-                        onClick={exportToExcel}
-                        size="sm"
-                    >
-                        Export
-                    </Button>
-                </div>
-            </div>
-
-            {/* Table Container */}
-            <div className="mt-4 pb-4">
-                <div
-                    className="overflow-auto border border-gray-200 rounded-t-lg shadow-sm relative"
-                    style={{ maxHeight: "600px" }}
-                >
-                    <table
-                        className="w-full border-collapse"
-                        style={{ minWidth: "max-content" }}
-                    >
-                        <thead className="sticky top-0 z-30">
-                            {table.getHeaderGroups().map((headerGroup) => (
-                                <tr key={headerGroup.id}>
-                                    {headerGroup.headers.map((header) => {
-                                        const isSticky = isStickyColumn(
-                                            header.column.id
-                                        );
-                                        const stickyLeft = getStickyLeft(
-                                            header.column.id
-                                        );
-                                        const isLastSticky =
-                                            header.column.id === "ChargeTo";
-
-                                        return (
-                                            <th
-                                                key={header.id}
-                                                className={`
+                                            return (
+                                                <th
+                                                    key={header.id}
+                                                    colSpan={header.colSpan}
+                                                    className={`
                                                         px-3 py-3 text-left text-xs font-semibold text-gray-700 
                                                         uppercase tracking-wider bg-gray-100 border-b-2 border-gray-300
                                                         border-r
@@ -1276,138 +1186,155 @@ export default function FloorReport() {
                                                                 : ""
                                                         }
                                                     `}
-                                                style={{
-                                                    width: header.getSize(),
-                                                    minWidth:
-                                                        header.column.columnDef
-                                                            .minSize,
-                                                    left: stickyLeft,
-                                                }}
-                                            >
-                                                <div className="flex items-center gap-1 relative pr-2">
-                                                    {header.isPlaceholder ? null : (
-                                                        <>
-                                                            <div
-                                                                className={`flex items-center gap-1 flex-1 truncate ${
-                                                                    header.column.getCanSort()
-                                                                        ? "cursor-pointer select-none hover:text-gray-900"
-                                                                        : ""
-                                                                }`}
-                                                                onClick={header.column.getToggleSortingHandler()}
-                                                                title={
-                                                                    header
-                                                                        .column
-                                                                        .columnDef
-                                                                        .header
-                                                                }
-                                                            >
-                                                                <span className="truncate">
-                                                                    {flexRender(
+                                                    style={{
+                                                        width: header.getSize(),
+                                                        minWidth:
+                                                            header.column
+                                                                .columnDef
+                                                                .minSize,
+                                                        left: stickyLeft,
+                                                    }}
+                                                >
+                                                    <div className="flex items-center gap-1 relative pr-2">
+                                                        {header.isPlaceholder ? null : (
+                                                            <>
+                                                                <div
+                                                                    className={`flex items-center gap-1 flex-1 truncate ${
+                                                                        header.column.getCanSort()
+                                                                            ? "cursor-pointer select-none hover:text-gray-900"
+                                                                            : ""
+                                                                    }`}
+                                                                    onClick={header.column.getToggleSortingHandler()}
+                                                                    title={
                                                                         header
                                                                             .column
                                                                             .columnDef
-                                                                            .header,
-                                                                        header.getContext()
-                                                                    )}
-                                                                </span>
-                                                                {header.column.getCanSort() && (
-                                                                    <span className="flex-shrink-0">
-                                                                        {{
-                                                                            asc: (
-                                                                                <ChevronUpIcon className="w-3 h-3" />
-                                                                            ),
-                                                                            desc: (
-                                                                                <ChevronDownIcon className="w-3 h-3" />
-                                                                            ),
-                                                                        }[
-                                                                            header.column.getIsSorted()
-                                                                        ] ?? (
-                                                                            <ChevronUpDownIcon className="w-3 h-3 opacity-40" />
+                                                                            .header
+                                                                    }
+                                                                >
+                                                                    <span className="truncate">
+                                                                        {flexRender(
+                                                                            header
+                                                                                .column
+                                                                                .columnDef
+                                                                                .header,
+                                                                            header.getContext()
                                                                         )}
                                                                     </span>
+                                                                    {header.column.getCanSort() && (
+                                                                        <span className="flex-shrink-0">
+                                                                            {{
+                                                                                asc: (
+                                                                                    <ChevronUpIcon className="w-3 h-3" />
+                                                                                ),
+                                                                                desc: (
+                                                                                    <ChevronDownIcon className="w-3 h-3" />
+                                                                                ),
+                                                                            }[
+                                                                                header.column.getIsSorted()
+                                                                            ] ?? (
+                                                                                <ChevronUpDownIcon className="w-3 h-3 opacity-40" />
+                                                                            )}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                {header.column.getCanFilter() && (
+                                                                    <Popover placement="bottom-end">
+                                                                        <PopoverTrigger>
+                                                                            <button
+                                                                                className={`p-1 rounded hover:bg-gray-200 flex-shrink-0 ${
+                                                                                    header.column.getFilterValue()
+                                                                                        ? "text-blue-600"
+                                                                                        : "text-gray-400"
+                                                                                }`}
+                                                                            >
+                                                                                <FunnelIcon className="w-3 h-3" />
+                                                                            </button>
+                                                                        </PopoverTrigger>
+                                                                        <PopoverContent className="p-0 shadow-lg border border-gray-200">
+                                                                            <ColumnFilter
+                                                                                column={
+                                                                                    header.column
+                                                                                }
+                                                                                table={
+                                                                                    table
+                                                                                }
+                                                                            />
+                                                                        </PopoverContent>
+                                                                    </Popover>
                                                                 )}
-                                                            </div>
-                                                            {header.column.getCanFilter() && (
-                                                                <Popover placement="bottom-end">
-                                                                    <PopoverTrigger>
-                                                                        <button
-                                                                            className={`p-1 rounded hover:bg-gray-200 flex-shrink-0 ${
-                                                                                header.column.getFilterValue()
-                                                                                    ? "text-blue-600"
-                                                                                    : "text-gray-400"
-                                                                            }`}
-                                                                        >
-                                                                            <FunnelIcon className="w-3 h-3" />
-                                                                        </button>
-                                                                    </PopoverTrigger>
-                                                                    <PopoverContent className="p-0 shadow-lg border border-gray-200">
-                                                                        <ColumnFilter
-                                                                            column={
-                                                                                header.column
-                                                                            }
-                                                                            table={
-                                                                                table
-                                                                            }
-                                                                        />
-                                                                    </PopoverContent>
-                                                                </Popover>
-                                                            )}
-                                                        </>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                    {header.column.getCanResize() && (
+                                                        <div
+                                                            onMouseDown={header.getResizeHandler()}
+                                                            onTouchStart={header.getResizeHandler()}
+                                                            className={`resizer ${
+                                                                header.column.getIsResizing()
+                                                                    ? "isResizing"
+                                                                    : ""
+                                                            }`}
+                                                        />
                                                     )}
-                                                </div>
-                                            </th>
-                                        );
-                                    })}
-                                </tr>
-                            ))}
-                        </thead>
-                        <tbody className="bg-white">
-                            {table.getRowModel().rows.length === 0 ? (
-                                <tr>
-                                    <td
-                                        colSpan={columns.length}
-                                        className="px-6 py-12 text-center text-gray-500"
-                                    >
-                                        No data available
-                                    </td>
-                                </tr>
-                            ) : (
-                                table
-                                    .getRowModel()
-                                    .rows.map((row, rowIndex) => {
-                                        const rowBg =
-                                            rowIndex % 2 === 0
-                                                ? "bg-white"
-                                                : "bg-gray-50";
-                                        const rowBgColor =
-                                            rowIndex % 2 === 0
-                                                ? "#ffffff"
-                                                : "#f9fafb";
+                                                </th>
+                                            );
+                                        })}
+                                    </tr>
+                                ))}
+                            </thead>
+                            <tbody className="bg-white">
+                                {table.getRowModel().rows.length === 0 ? (
+                                    <tr>
+                                        <td
+                                            colSpan={columns.length}
+                                            className="px-6 py-12 text-center text-gray-500"
+                                        >
+                                            No data available
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    table
+                                        .getRowModel()
+                                        .rows.map((row, rowIndex) => {
+                                            const rowBg =
+                                                rowIndex % 2 === 0
+                                                    ? "bg-white"
+                                                    : "bg-gray-50";
+                                            const rowBgColor =
+                                                rowIndex % 2 === 0
+                                                    ? "#ffffff"
+                                                    : "#f9fafb";
 
-                                        return (
-                                            <tr
-                                                key={row.id}
-                                                className={`hover:bg-blue-50 transition-colors ${rowBg}`}
-                                            >
-                                                {row
-                                                    .getVisibleCells()
-                                                    .map((cell) => {
-                                                        const isSticky =
-                                                            isStickyColumn(
-                                                                cell.column.id
-                                                            );
-                                                        const stickyLeft =
-                                                            getStickyLeft(
-                                                                cell.column.id
-                                                            );
-                                                        const isLastSticky =
-                                                            cell.column.id ===
-                                                            "ChargeTo";
+                                            return (
+                                                <tr
+                                                    key={row.id}
+                                                    className={`hover:bg-blue-50 transition-colors ${rowBg}`}
+                                                >
+                                                    {row
+                                                        .getVisibleCells()
+                                                        .map((cell) => {
+                                                            const isSticky =
+                                                                isStickyColumn(
+                                                                    cell.column
+                                                                        .id
+                                                                );
+                                                            const stickyLeft =
+                                                                getStickyLeft(
+                                                                    cell.column
+                                                                        .id
+                                                                );
+                                                            const isLastSticky =
+                                                                cell.column
+                                                                    .id ===
+                                                                "ConsStatus";
 
-                                                        return (
-                                                            <td
-                                                                key={cell.id}
-                                                                className={`
+                                                            return (
+                                                                <td
+                                                                    key={
+                                                                        cell.id
+                                                                    }
+                                                                    className={`
                                                                     px-3 py-2.5 text-sm text-gray-700 border-b border-gray-300
                                                                     border-r
                                                                     overflow-hidden text-ellipsis whitespace-nowrap
@@ -1422,208 +1349,206 @@ export default function FloorReport() {
                                                                             : ""
                                                                     }
                                                                 `}
-                                                                style={{
-                                                                    width: cell.column.getSize(),
-                                                                    minWidth:
+                                                                    style={{
+                                                                        width: cell.column.getSize(),
+                                                                        minWidth:
+                                                                            cell
+                                                                                .column
+                                                                                .columnDef
+                                                                                .minSize,
+                                                                        left: stickyLeft,
+                                                                        backgroundColor:
+                                                                            isSticky
+                                                                                ? rowBgColor
+                                                                                : undefined,
+                                                                    }}
+                                                                    title={
+                                                                        typeof cell.getValue() ===
+                                                                        "string"
+                                                                            ? cell.getValue()
+                                                                            : ""
+                                                                    }
+                                                                >
+                                                                    {flexRender(
                                                                         cell
                                                                             .column
                                                                             .columnDef
-                                                                            .minSize,
-                                                                    left: stickyLeft,
-                                                                    backgroundColor:
-                                                                        isSticky
-                                                                            ? rowBgColor
-                                                                            : undefined,
-                                                                }}
-                                                                title={
-                                                                    typeof cell.getValue() ===
-                                                                    "string"
-                                                                        ? cell.getValue()
-                                                                        : ""
-                                                                }
-                                                            >
-                                                                {flexRender(
-                                                                    cell.column
-                                                                        .columnDef
-                                                                        .cell,
-                                                                    cell.getContext()
-                                                                )}
-                                                            </td>
-                                                        );
-                                                    })}
-                                            </tr>
-                                        );
-                                    })
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-
-                {/* Pagination */}
-                <div className="flex items-center justify-between px-4 py-3 bg-white border border-t-0 border-gray-200 rounded-b-lg">
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-700">
-                            Page{" "}
-                            <strong>
-                                {table.getState().pagination.pageIndex + 1} of{" "}
-                                {table.getPageCount() || 1}
-                            </strong>
-                        </span>
-                        <span className="text-sm text-gray-500">
-                            | {table.getFilteredRowModel().rows.length} total
-                            records
-                        </span>
+                                                                            .cell,
+                                                                        cell.getContext()
+                                                                    )}
+                                                                </td>
+                                                            );
+                                                        })}
+                                                </tr>
+                                            );
+                                        })
+                                )}
+                            </tbody>
+                        </table>
                     </div>
 
-                    <div className="flex items-center gap-1">
-                        <Button
-                            size="sm"
-                            variant="flat"
-                            isIconOnly
-                            onClick={() => table.setPageIndex(0)}
-                            isDisabled={!table.getCanPreviousPage()}
-                            className="min-w-8 w-8 h-8"
-                        >
-                            <ChevronDoubleLeftIcon className="w-4 h-4" />
-                        </Button>
-                        <Button
-                            size="sm"
-                            variant="flat"
-                            isIconOnly
-                            onClick={() => table.previousPage()}
-                            isDisabled={!table.getCanPreviousPage()}
-                            className="min-w-8 w-8 h-8"
-                        >
-                            <ChevronLeftIcon className="w-4 h-4" />
-                        </Button>
-
-                        {/* Page number buttons */}
-                        <div className="flex items-center gap-1 mx-2">
-                            {(() => {
-                                const currentPage =
-                                    table.getState().pagination.pageIndex;
-                                const totalPages = table.getPageCount() || 1;
-                                const pages = [];
-
-                                let startPage = Math.max(0, currentPage - 2);
-                                let endPage = Math.min(
-                                    totalPages - 1,
-                                    currentPage + 2
-                                );
-
-                                if (endPage - startPage < 4) {
-                                    if (startPage === 0) {
-                                        endPage = Math.min(totalPages - 1, 4);
-                                    } else if (endPage === totalPages - 1) {
-                                        startPage = Math.max(0, totalPages - 5);
-                                    }
-                                }
-
-                                for (let i = startPage; i <= endPage; i++) {
-                                    pages.push(
-                                        <Button
-                                            key={i}
-                                            size="sm"
-                                            variant={
-                                                currentPage === i
-                                                    ? "solid"
-                                                    : "flat"
-                                            }
-                                            className={`min-w-8 w-8 h-8 ${
-                                                currentPage === i
-                                                    ? "bg-gray-800 text-white"
-                                                    : "bg-gray-100"
-                                            }`}
-                                            onClick={() =>
-                                                table.setPageIndex(i)
-                                            }
-                                        >
-                                            {i + 1}
-                                        </Button>
-                                    );
-                                }
-
-                                return pages;
-                            })()}
+                    {/* Pagination */}
+                    <div className="flex items-center justify-between px-4 py-3 bg-white border border-t-0 border-gray-200 rounded-b-lg">
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-700">
+                                Page{" "}
+                                <strong>
+                                    {table.getState().pagination.pageIndex + 1}{" "}
+                                    of {table.getPageCount() || 1}
+                                </strong>
+                            </span>
+                            <span className="text-sm text-gray-500">
+                                | {table.getFilteredRowModel().rows.length}{" "}
+                                total records
+                            </span>
                         </div>
 
-                        <Button
-                            size="sm"
-                            variant="flat"
-                            isIconOnly
-                            onClick={() => table.nextPage()}
-                            isDisabled={!table.getCanNextPage()}
-                            className="min-w-8 w-8 h-8"
-                        >
-                            <ChevronRightIcon className="w-4 h-4" />
-                        </Button>
-                        <Button
-                            size="sm"
-                            variant="flat"
-                            isIconOnly
-                            onClick={() =>
-                                table.setPageIndex(table.getPageCount() - 1)
-                            }
-                            isDisabled={!table.getCanNextPage()}
-                            className="min-w-8 w-8 h-8"
-                        >
-                            <ChevronDoubleRightIcon className="w-4 h-4" />
-                        </Button>
-                    </div>
+                        <div className="flex items-center gap-1">
+                            <Button
+                                size="sm"
+                                variant="flat"
+                                isIconOnly
+                                onClick={() => table.setPageIndex(0)}
+                                isDisabled={!table.getCanPreviousPage()}
+                                className="min-w-8 w-8 h-8"
+                            >
+                                <ChevronDoubleLeftIcon className="w-4 h-4" />
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="flat"
+                                isIconOnly
+                                onClick={() => table.previousPage()}
+                                isDisabled={!table.getCanPreviousPage()}
+                                className="min-w-8 w-8 h-8"
+                            >
+                                <ChevronLeftIcon className="w-4 h-4" />
+                            </Button>
 
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-700">
-                            Rows per page:
-                        </span>
-                        <select
-                            value={table.getState().pagination.pageSize}
-                            onChange={(e) => {
-                                table.setPageSize(Number(e.target.value));
-                            }}
-                            className="px-5 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            {[10, 20, 30, 50, 100].map((pageSize) => (
-                                <option key={pageSize} value={pageSize}>
-                                    {pageSize}
-                                </option>
-                            ))}
-                        </select>
+                            {/* Page number buttons */}
+                            <div className="flex items-center gap-1 mx-2">
+                                {(() => {
+                                    const currentPage =
+                                        table.getState().pagination.pageIndex;
+                                    const totalPages =
+                                        table.getPageCount() || 1;
+                                    const pages = [];
+
+                                    let startPage = Math.max(
+                                        0,
+                                        currentPage - 2
+                                    );
+                                    let endPage = Math.min(
+                                        totalPages - 1,
+                                        currentPage + 2
+                                    );
+
+                                    if (endPage - startPage < 4) {
+                                        if (startPage === 0) {
+                                            endPage = Math.min(
+                                                totalPages - 1,
+                                                4
+                                            );
+                                        } else if (endPage === totalPages - 1) {
+                                            startPage = Math.max(
+                                                0,
+                                                totalPages - 5
+                                            );
+                                        }
+                                    }
+
+                                    for (let i = startPage; i <= endPage; i++) {
+                                        pages.push(
+                                            <Button
+                                                key={i}
+                                                size="sm"
+                                                variant={
+                                                    currentPage === i
+                                                        ? "solid"
+                                                        : "flat"
+                                                }
+                                                className={`min-w-8 w-8 h-8 ${
+                                                    currentPage === i
+                                                        ? "bg-gray-800 text-white"
+                                                        : "bg-gray-100"
+                                                }`}
+                                                onClick={() =>
+                                                    table.setPageIndex(i)
+                                                }
+                                            >
+                                                {i + 1}
+                                            </Button>
+                                        );
+                                    }
+
+                                    return pages;
+                                })()}
+                            </div>
+
+                            <Button
+                                size="sm"
+                                variant="flat"
+                                isIconOnly
+                                onClick={() => table.nextPage()}
+                                isDisabled={!table.getCanNextPage()}
+                                className="min-w-8 w-8 h-8"
+                            >
+                                <ChevronRightIcon className="w-4 h-4" />
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="flat"
+                                isIconOnly
+                                onClick={() =>
+                                    table.setPageIndex(table.getPageCount() - 1)
+                                }
+                                isDisabled={!table.getCanNextPage()}
+                                className="min-w-8 w-8 h-8"
+                            >
+                                <ChevronDoubleRightIcon className="w-4 h-4" />
+                            </Button>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-700">
+                                Rows per page:
+                            </span>
+                            <select
+                                value={table.getState().pagination.pageSize}
+                                onChange={(e) => {
+                                    table.setPageSize(Number(e.target.value));
+                                }}
+                                className="py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                {[10, 20, 30, 50, 100].map((pageSize) => (
+                                    <option key={pageSize} value={pageSize}>
+                                        {pageSize}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Details Modal */}
-            <Modal
-                isOpen={isOpen}
-                onOpenChange={onOpenChange}
-                size="3xl"
-                scrollBehavior="inside"
-            >
-                <ModalContent>
-                    {(onClose) => (
-                        <>
-                            <ModalHeader className="gap-1">
-                                Details for {detailsData?.ConsignmentNo}
-                            </ModalHeader>
-                            <ModalBody>
-                                {detailsData &&
-                                    renderRowDetails({
-                                        data: detailsData,
-                                    })}
-                            </ModalBody>
-                            <ModalFooter>
-                                <Button
-                                    color="default"
-                                    variant="light"
-                                    onPress={onClose}
-                                >
-                                    Close
-                                </Button>
-                            </ModalFooter>
-                        </>
-                    )}
-                </ModalContent>
-            </Modal>
-        </div>
+                <DetailsModal
+                    isOpen={isOpen}
+                    onOpenChange={onOpenChange}
+                    detailsData={detailsData}
+                />
+
+                {/* <FloorCommentsModal
+                    isOpen={isCommentOpen}
+                    onOpenChange={onCommentChange}
+                    commentsData={detailsData}
+                    handleAddComments={handleAddComments}
+                />
+
+                <AddFloorCommentsModal
+                    isOpen={isAddCommentOpen}
+                    onOpenChange={onAddCommentChange}
+                    commentsData={detailsData}
+                /> */}
+            </div>
+        </>
     );
 }

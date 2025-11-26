@@ -1,9 +1,9 @@
- * {
+.tanstackTable * {
     box-sizing: border-box;
 }
 
 .tanstackTable table,
-.divTable {
+.tanstackTable .divTable {
     border: 1px solid lightgray;
     width: fit-content;
 }
@@ -33,7 +33,7 @@
     white-space: nowrap;
 }
 
- th,
+th,
 .th {
     padding: 2px 4px;
     position: relative;
