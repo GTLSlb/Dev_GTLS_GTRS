@@ -1,11 +1,4 @@
-import React, {
-    useState,
-    useEffect,
-    useMemo,
-    useCallback,
-    useContext,
-} from "react";
-
+import "../../../../css/resizer.css";
 import {
     useReactTable,
     getCoreRowModel,
@@ -23,18 +16,7 @@ import {
     DropdownItem,
     DropdownMenu,
     DropdownTrigger,
-    Modal,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
     useDisclosure,
-    Table,
-    TableBody,
-    TableCell,
-    TableColumn,
-    TableHeader,
-    TableRow,
     Popover,
     PopoverTrigger,
     PopoverContent,
@@ -44,11 +26,11 @@ import moment from "moment";
 import swal from "sweetalert";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
-import { useNavigate } from "react-router-dom";
 import { CustomContext } from "@/CommonContext";
 import { ToastContainer } from "react-toastify";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import { handleSessionExpiration } from "@/CommonFunctions";
+import { useState, useEffect, useMemo, useContext } from "react";
 import {
     ChevronDownIcon,
     ChevronUpIcon,
@@ -61,6 +43,10 @@ import {
     ChevronDoubleRightIcon,
     CalendarDaysIcon,
 } from "@heroicons/react/24/outline";
+import { EyeIcon, PencilIcon } from "@heroicons/react/24/solid";
+import DetailsModal from "./DetailsModal";
+import FloorCommentsModal from "./FloorCommentsModal";
+import AddFloorCommentsModal from "./AddFloorCommentsModal";
 
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -555,14 +541,22 @@ const dateFilterFn = (row, columnId, filterValue) => {
 // Column width constants for sticky columns (fixed)
 const ACTION_COL_WIDTH = 50;
 const CONS_NO_COL_WIDTH = 130;
-const ACCOUNT_COL_WIDTH = 180;
 
 export default function FloorReport() {
     const [loading, setLoading] = useState(true);
     const [floorData, setFloorData] = useState([]);
     const { Token, user, userPermissions, url } = useContext(CustomContext);
-    const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const {
+        isOpen: isCommentOpen,
+        onOpen: onCommentOpen,
+        onOpenChange: onCommentChange,
+    } = useDisclosure();
+    const {
+        isOpen: isAddCommentOpen,
+        onOpen: onAddCommentOpen,
+        onOpenChange: onAddCommentChange,
+    } = useDisclosure();
     const [sorting, setSorting] = useState([
         { id: "EventDateTime", desc: true },
         { id: "RDD", desc: true },
@@ -634,6 +628,18 @@ export default function FloorReport() {
     const handleViewDetails = (data) => {
         setDetailsData(data);
         onOpen();
+    };
+    const handleViewComments = (data) => {
+        setDetailsData(data);
+        onCommentOpen();
+    };
+    const handleAddComments = (data) => {
+        setDetailsData({
+            Comment: "",
+            ConsId: data.ConsignmentID,
+            FloorCommentId: null,
+        });
+        onAddCommentOpen();
     };
 
     const handleConsignmentClick = (consignmentData) => {
@@ -863,6 +869,31 @@ export default function FloorReport() {
                 header: "Depot",
                 meta: { filterVariant: "select" },
             },
+            // {
+            //     id: "comments-actions",
+            //     header: "",
+            //     size: 70,
+            //     enableSorting: false,
+            //     enableColumnFilter: false,
+            //     cell: ({ row }) => (
+            //         <div className="flex gap-1">
+            //             <button
+            //                 className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
+            //                 title="View Details"
+            //                 onClick={() => handleAddComments(row.original)}
+            //             >
+            //                 <PencilIcon className="w-4 h-4 text-blue-500" />
+            //             </button>
+            //             <button
+            //                 className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
+            //                 title="View Details"
+            //                 onClick={() => handleViewComments(row.original)}
+            //             >
+            //                 <EyeIcon className="w-4 h-4 text-yellow-500" />
+            //             </button>
+            //         </div>
+            //     ),
+            // },
         ],
         [userPermissions]
     );
@@ -1003,54 +1034,6 @@ export default function FloorReport() {
         setColumnFilters([]);
     };
 
-    const renderRowDetails = ({ data }) => {
-        const formatDate = (date) => {
-            const formatted = moment(date).format("DD-MM-YYYY HH:mm");
-            return formatted === "Invalid date" ? "N/A" : formatted;
-        };
-
-        return (
-            <div className="">
-                {data.Details && data.Details.length > 0 && (
-                    <div className="w-full space-y-4">
-                        <Table aria-label="Item details">
-                            <TableHeader>
-                                <TableColumn className="w-20">
-                                    ITEM #
-                                </TableColumn>
-                                <TableColumn>TIMESTAMP</TableColumn>
-                                <TableColumn>DEPOT</TableColumn>
-                                <TableColumn>DOCK</TableColumn>
-                                <TableColumn>CREATED BY</TableColumn>
-                            </TableHeader>
-                            <TableBody>
-                                {data.Details.map((item, idx) => (
-                                    <TableRow key={idx}>
-                                        <TableCell className="text-xs font-medium">
-                                            {item.ItemNumber || "N/A"}
-                                        </TableCell>
-                                        <TableCell className="text-xs">
-                                            {formatDate(item.FSEventTimestamp)}
-                                        </TableCell>
-                                        <TableCell className="text-xs">
-                                            {item.Depot || "N/A"}
-                                        </TableCell>
-                                        <TableCell className="text-xs">
-                                            {item.DockLocation || "-"}
-                                        </TableCell>
-                                        <TableCell className="text-xs">
-                                            {item.CreatedBy || "N/A"}
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
-                )}
-            </div>
-        );
-    };
-
     // Helper function to check if column is sticky
     const isStickyColumn = (columnId) => {
         return ["actions", "ConsignmentNo", "ConsStatus"].includes(columnId);
@@ -1158,7 +1141,7 @@ export default function FloorReport() {
                 </div>
 
                 {/* Table Container */}
-                <div className="mt-4 pb-4">
+                <div className="mt-4 tanstackTable pb-4">
                     <div
                         className="overflow-auto border border-gray-200 rounded-t-lg shadow-sm relative"
                         style={{ maxHeight: "600px" }}
@@ -1547,38 +1530,24 @@ export default function FloorReport() {
                     </div>
                 </div>
 
-                {/* Details Modal */}
-                <Modal
+                <DetailsModal
                     isOpen={isOpen}
                     onOpenChange={onOpenChange}
-                    size="3xl"
-                    scrollBehavior="inside"
-                >
-                    <ModalContent>
-                        {(onClose) => (
-                            <>
-                                <ModalHeader className="gap-1">
-                                    Details for {detailsData?.ConsignmentNo}
-                                </ModalHeader>
-                                <ModalBody>
-                                    {detailsData &&
-                                        renderRowDetails({
-                                            data: detailsData,
-                                        })}
-                                </ModalBody>
-                                <ModalFooter>
-                                    <Button
-                                        color="default"
-                                        variant="light"
-                                        onPress={onClose}
-                                    >
-                                        Close
-                                    </Button>
-                                </ModalFooter>
-                            </>
-                        )}
-                    </ModalContent>
-                </Modal>
+                    detailsData={detailsData}
+                />
+
+                {/* <FloorCommentsModal
+                    isOpen={isCommentOpen}
+                    onOpenChange={onCommentChange}
+                    commentsData={detailsData}
+                    handleAddComments={handleAddComments}
+                />
+
+                <AddFloorCommentsModal
+                    isOpen={isAddCommentOpen}
+                    onOpenChange={onAddCommentChange}
+                    commentsData={detailsData}
+                /> */}
             </div>
         </>
     );
