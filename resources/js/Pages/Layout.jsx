@@ -111,7 +111,9 @@ export default function Sidebar() {
                     type: "info",
                     icon: "info",
                     confirmButtonText: "OK",
-                }).then(() => {});
+                }).then(async () => {
+                    await handleSessionExpiration();
+                });
             }
         }
     };
