@@ -36,12 +36,12 @@ class CustomAuth extends Middleware
         \Log::info("Validating Access Token via GTAM API: " . config('app.gtam_api_url'));
         \Log::info("UserId: " . $userId);
         \Log::info("AccessToken: " . $accessToken);
-        $url = config('app.gtam_api_url') . 'Validate/Session';
+        $url = $_ENV['GTAM_API_URL'] ?? config('app.gtam_api_url') ?? $gtam_api_url ?? '';
         $headers = [
             'UserId' => $userId,
             'Token' => $accessToken,
         ];
-        $response = Http::withHeaders($headers)->get($url);
+        $response = Http::withHeaders($headers)->get($url . 'Validate/Session');
         switch ($response->status()) {
             case 200:
                 return true;
