@@ -563,8 +563,19 @@ export default function FloorReport() {
     const { Token, user, userPermissions, url } = useContext(CustomContext);
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
-    const [sorting, setSorting] = useState([]);
-    const [columnFilters, setColumnFilters] = useState([]);
+    const [sorting, setSorting] = useState([
+        { id: "EventDateTime", desc: true },
+        { id: "RDD", desc: true },
+    ]);
+    const [columnFilters, setColumnFilters] = useState(() => {
+        const today = moment().format("YYYY-MM-DD");
+        return [
+            {
+                id: "EventDateTime",
+                value: new Set([today]),
+            },
+        ];
+    });
     const [columnVisibility, setColumnVisibility] = useState({
         DespatchDateTime: false,
         SenderName: false,
@@ -725,88 +736,6 @@ export default function FloorReport() {
                 },
             },
             {
-                accessorKey: "ChargeTo",
-                header: "Account Name",
-                size: ACCOUNT_COL_WIDTH,
-                minSize: ACCOUNT_COL_WIDTH,
-                maxSize: ACCOUNT_COL_WIDTH,
-                meta: { filterVariant: "text" },
-            },
-            {
-                accessorKey: "DespatchDateTime",
-                header: "Despatch Date",
-                size: 170,
-                minSize: 120,
-                maxSize: 250,
-                meta: { filterVariant: "date" },
-                filterFn: dateFilterFn,
-                cell: ({ getValue }) => <DateCell value={getValue()} />,
-            },
-            {
-                accessorKey: "SenderName",
-                header: "Sender Name",
-                size: 150,
-                minSize: 100,
-                maxSize: 350,
-                meta: { filterVariant: "text" },
-            },
-            {
-                accessorKey: "SenderState",
-                header: "Sender State",
-                size: 110,
-                minSize: 80,
-                maxSize: 200,
-                meta: { filterVariant: "select" },
-            },
-            {
-                accessorKey: "SenderSuburb",
-                header: "Sender Suburb",
-                size: 140,
-                minSize: 100,
-                maxSize: 300,
-                meta: { filterVariant: "text" },
-            },
-            {
-                accessorKey: "SenderZone",
-                header: "Sender Zone",
-                size: 110,
-                minSize: 80,
-                maxSize: 200,
-                meta: { filterVariant: "select" },
-            },
-            {
-                accessorKey: "ReceiverName",
-                header: "Receiver Name",
-                size: 150,
-                minSize: 100,
-                maxSize: 350,
-                meta: { filterVariant: "text" },
-            },
-            {
-                accessorKey: "ReceiverState",
-                header: "Receiver State",
-                size: 120,
-                minSize: 80,
-                maxSize: 200,
-                meta: { filterVariant: "select" },
-            },
-            {
-                accessorKey: "ReceiverSuburb",
-                header: "Receiver Suburb",
-                size: 140,
-                minSize: 100,
-                maxSize: 300,
-                meta: { filterVariant: "text" },
-            },
-            {
-                accessorKey: "ReceiverZone",
-                header: "Receiver Zone",
-                size: 120,
-                minSize: 80,
-                maxSize: 200,
-                meta: { filterVariant: "select" },
-            },
-            {
                 accessorKey: "ConsStatus",
                 header: "Cons Status",
                 size: 120,
@@ -815,47 +744,16 @@ export default function FloorReport() {
                 meta: { filterVariant: "select" },
             },
             {
-                accessorKey: "EventDateTime",
-                header: "Floor Scan Date",
-                size: 170,
-                minSize: 120,
-                maxSize: 250,
-                meta: { filterVariant: "date" },
-                filterFn: dateFilterFn,
-                cell: ({ getValue }) => <DateCell value={getValue()} />,
-            },
-            {
-                accessorKey: "OriginPalletSpaces",
-                header: "Cnote Pallet Space",
-                size: 150,
-                minSize: 100,
-                maxSize: 250,
-                meta: { filterVariant: "text" },
-            },
-            {
-                accessorKey: "ActualScanned",
-                header: "Scanned Events",
-                size: 130,
-                minSize: 100,
-                maxSize: 220,
-                meta: { filterVariant: "text" },
-            },
-            {
                 accessorKey: "RDD",
                 header: "RDD",
-                size: 120,
-                minSize: 100,
-                maxSize: 200,
                 meta: { filterVariant: "date" },
                 filterFn: dateFilterFn,
                 cell: ({ getValue }) => <RDDCell value={getValue()} />,
             },
+
             {
                 accessorKey: "OldRdd",
                 header: "Original RDD",
-                size: 130,
-                minSize: 100,
-                maxSize: 200,
                 meta: { filterVariant: "date" },
                 filterFn: dateFilterFn,
                 cell: ({ getValue }) => (
@@ -863,28 +761,93 @@ export default function FloorReport() {
                 ),
             },
             {
+                accessorKey: "ChargeTo",
+                header: "Account Name",
+                // size: ACTION_COL_WIDTH,
+                // minSize: ACTION_COL_WIDTH,
+                // maxSize: ACTION_COL_WIDTH,
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "DespatchDateTime",
+                header: "Despatch Date",
+                meta: { filterVariant: "date" },
+                filterFn: dateFilterFn,
+                cell: ({ getValue }) => <DateCell value={getValue()} />,
+            },
+            {
+                accessorKey: "SenderName",
+                header: "Sender Name",
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "SenderState",
+                header: "Sender State",
+                meta: { filterVariant: "select" },
+            },
+            {
+                accessorKey: "SenderSuburb",
+                header: "Sender Suburb",
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "SenderZone",
+                header: "Sender Zone",
+                meta: { filterVariant: "select" },
+            },
+            {
+                accessorKey: "ReceiverName",
+                header: "Receiver Name",
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "ReceiverState",
+                header: "Receiver State",
+                meta: { filterVariant: "select" },
+            },
+            {
+                accessorKey: "ReceiverSuburb",
+                header: "Receiver Suburb",
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "ReceiverZone",
+                header: "Receiver Zone",
+                meta: { filterVariant: "select" },
+            },
+            {
+                accessorKey: "EventDateTime",
+                header: "Floor Scan Date",
+                meta: { filterVariant: "date" },
+                filterFn: dateFilterFn,
+                cell: ({ getValue }) => (
+                    <DateCell value={getValue()} showTime={false} />
+                ),
+            },
+            {
+                accessorKey: "OriginPalletSpaces",
+                header: "Cnote Pallet Space",
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "ActualScanned",
+                header: "Scanned Events",
+                meta: { filterVariant: "text" },
+            },
+            {
                 accessorKey: "TotalDays",
                 header: "Total Days",
-                size: 100,
-                minSize: 80,
-                maxSize: 180,
                 meta: { filterVariant: "text" },
             },
             {
                 accessorKey: "TimeslotRequired",
                 header: "Timeslot Required",
-                size: 140,
-                minSize: 100,
-                maxSize: 220,
                 meta: { filterVariant: "select" },
                 cell: ({ getValue }) => <BooleanCell value={getValue()} />,
             },
             {
                 accessorKey: "TimeslotBooked",
                 header: "Timeslot Booked",
-                size: 140,
-                minSize: 100,
-                maxSize: 220,
                 meta: { filterVariant: "select" },
                 cell: ({ getValue, row }) => (
                     <TimeslotBookedCell value={getValue()} row={row} />
@@ -893,17 +856,11 @@ export default function FloorReport() {
             {
                 accessorKey: "DockLocation",
                 header: "Dock Location",
-                size: 130,
-                minSize: 100,
-                maxSize: 250,
                 meta: { filterVariant: "text" },
             },
             {
                 accessorKey: "Depot",
                 header: "Depot",
-                size: 100,
-                minSize: 80,
-                maxSize: 200,
                 meta: { filterVariant: "select" },
             },
         ],
@@ -919,19 +876,25 @@ export default function FloorReport() {
             columnFilters,
             columnVisibility,
         },
+        defaultColumn: {
+            minSize: 60,
+            maxSize: 800,
+        },
         initialState: {
             pagination: {
                 pageSize: 20,
             },
         },
+        enableColumnResizing: true,
+        columnResizeMode: "onChange",
         onSortingChange: setSorting,
-        onColumnFiltersChange: setColumnFilters,
-        onColumnVisibilityChange: setColumnVisibility,
         getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
+        onColumnFiltersChange: setColumnFilters,
         getFacetedRowModel: getFacetedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        onColumnVisibilityChange: setColumnVisibility,
+        getPaginationRowModel: getPaginationRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
         // columnResizeMode: "onChange",
         // enableColumnResizing: true,
@@ -1090,14 +1053,14 @@ export default function FloorReport() {
 
     // Helper function to check if column is sticky
     const isStickyColumn = (columnId) => {
-        return ["actions", "ConsignmentNo", "ChargeTo"].includes(columnId);
+        return ["actions", "ConsignmentNo", "ConsStatus"].includes(columnId);
     };
 
     // Calculate sticky left position based on column
     const getStickyLeft = (columnId) => {
         if (columnId === "actions") return 0;
         if (columnId === "ConsignmentNo") return ACTION_COL_WIDTH;
-        if (columnId === "ChargeTo")
+        if (columnId === "ConsStatus")
             return ACTION_COL_WIDTH + CONS_NO_COL_WIDTH;
         return undefined;
     };
@@ -1107,117 +1070,125 @@ export default function FloorReport() {
     }
 
     return (
-        <div className="min-h-full px-8">
-            <ToastContainer />
+        <>
+            <div className="min-h-full px-8">
+                <ToastContainer />
 
-            <div className="my-4 flex w-full items-center gap-3 justify-end flex-wrap">
-                <div className="sm:flex-auto mt-6">
-                    <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                        Floor Report
-                    </h1>
-                </div>
-                <div className="flex items-center gap-3">
-                    {/* Column Visibility Dropdown */}
-                    <Dropdown>
-                        <DropdownTrigger className="hidden xl:flex">
-                            <Button
-                                endContent={
-                                    <ChevronDownIcon className="text-small w-3" />
-                                }
-                                size="sm"
-                                variant="flat"
-                                className="bg-gray-800 text-white"
-                            >
-                                Columns
-                            </Button>
-                        </DropdownTrigger>
-                        <DropdownMenu
-                            disallowEmptySelection
-                            aria-label="Table Columns"
-                            closeOnSelect={false}
-                            selectedKeys={
-                                new Set(
-                                    table
-                                        .getAllColumns()
-                                        .filter(
-                                            (col) =>
-                                                col.getIsVisible() &&
-                                                col.id !== "actions"
-                                        )
-                                        .map((col) => col.id)
-                                )
-                            }
-                            selectionMode="multiple"
-                            onSelectionChange={(keys) => {
-                                const selectedKeys = new Set(keys);
-                                const newVisibility = {};
-                                table.getAllColumns().forEach((col) => {
-                                    if (col.id !== "actions") {
-                                        newVisibility[col.id] =
-                                            selectedKeys.has(col.id);
+                <div className="my-4 flex w-full items-center gap-3 justify-end flex-wrap">
+                    <div className="sm:flex-auto mt-6">
+                        <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
+                            Floor Report
+                        </h1>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        {/* Column Visibility Dropdown */}
+                        <Dropdown>
+                            <DropdownTrigger className="hidden xl:flex">
+                                <Button
+                                    endContent={
+                                        <ChevronDownIcon className="text-small w-3" />
                                     }
-                                });
-                                setColumnVisibility(newVisibility);
+                                    size="sm"
+                                    variant="flat"
+                                    className="bg-gray-800 text-white"
+                                >
+                                    Columns
+                                </Button>
+                            </DropdownTrigger>
+                            <DropdownMenu
+                                disallowEmptySelection
+                                aria-label="Table Columns"
+                                closeOnSelect={false}
+                                selectedKeys={
+                                    new Set(
+                                        table
+                                            .getAllColumns()
+                                            .filter(
+                                                (col) =>
+                                                    col.getIsVisible() &&
+                                                    col.id !== "actions"
+                                            )
+                                            .map((col) => col.id)
+                                    )
+                                }
+                                selectionMode="multiple"
+                                onSelectionChange={(keys) => {
+                                    const selectedKeys = new Set(keys);
+                                    const newVisibility = {};
+                                    table.getAllColumns().forEach((col) => {
+                                        if (col.id !== "actions") {
+                                            newVisibility[col.id] =
+                                                selectedKeys.has(col.id);
+                                        }
+                                    });
+                                    setColumnVisibility(newVisibility);
+                                }}
+                            >
+                                {table
+                                    .getAllColumns()
+                                    .filter((col) => col.id !== "actions")
+                                    .map((column) => (
+                                        <DropdownItem
+                                            key={column.id}
+                                            className="capitalize"
+                                        >
+                                            {capitalize(
+                                                column.columnDef.header
+                                            )}
+                                        </DropdownItem>
+                                    ))}
+                            </DropdownMenu>
+                        </Dropdown>
+
+                        <Button
+                            className="bg-dark text-white px-4 py-2"
+                            size="sm"
+                            onClick={clearAllFilters}
+                        >
+                            Clear Filters
+                        </Button>
+                        <Button
+                            className="bg-dark text-white px-4 py-2"
+                            onClick={exportToExcel}
+                            size="sm"
+                        >
+                            Export
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Table Container */}
+                <div className="mt-4 pb-4">
+                    <div
+                        className="overflow-auto border border-gray-200 rounded-t-lg shadow-sm relative"
+                        style={{ maxHeight: "600px" }}
+                    >
+                        <table
+                            className="w-full border-collapse"
+                            style={{
+                                minWidth: "max-content",
+                                tableLayout: "fixed",
                             }}
                         >
-                            {table
-                                .getAllColumns()
-                                .filter((col) => col.id !== "actions")
-                                .map((column) => (
-                                    <DropdownItem
-                                        key={column.id}
-                                        className="capitalize"
-                                    >
-                                        {capitalize(column.columnDef.header)}
-                                    </DropdownItem>
-                                ))}
-                        </DropdownMenu>
-                    </Dropdown>
+                            <thead className="sticky top-0 z-30">
+                                {table.getHeaderGroups().map((headerGroup) => (
+                                    <tr key={headerGroup.id}>
+                                        {headerGroup.headers.map((header) => {
+                                            const isSticky = isStickyColumn(
+                                                header.column.id
+                                            );
+                                            const stickyLeft = getStickyLeft(
+                                                header.column.id
+                                            );
+                                            const isLastSticky =
+                                                header.column.id ===
+                                                "ConsStatus";
 
-                    <Button
-                        className="bg-dark text-white px-4 py-2"
-                        size="sm"
-                        onClick={clearAllFilters}
-                    >
-                        Clear Filters
-                    </Button>
-                    <Button
-                        className="bg-dark text-white px-4 py-2"
-                        onClick={exportToExcel}
-                        size="sm"
-                    >
-                        Export
-                    </Button>
-                </div>
-            </div>
-
-            {/* Table Container */}
-            <div className="mt-4 pb-4">
-                <div
-                    className="overflow-auto border border-gray-200 rounded-t-lg shadow-sm relative"
-                    style={{ maxHeight: "600px" }}
-                >
-                    <table
-                        className="w-full border-collapse"
-                        style={{ minWidth: "max-content" }}
-                    >
-                        <thead className="sticky top-0 z-30">
-                            {table.getHeaderGroups().map((headerGroup) => (
-                                <tr key={headerGroup.id}>
-                                    {headerGroup.headers.map((header) => {
-                                        const isSticky = isStickyColumn(
-                                            header.column.id
-                                        );
-                                        const stickyLeft = getStickyLeft(
-                                            header.column.id
-                                        );
-                                        const isLastSticky =
-                                            header.column.id === "ChargeTo";
-
-                                        return (
-                                            <th
-                                                key={header.id}
-                                                className={`
+                                            return (
+                                                <th
+                                                    key={header.id}
+                                                    colSpan={header.colSpan}
+                                                    className={`
                                                         px-3 py-3 text-left text-xs font-semibold text-gray-700 
                                                         uppercase tracking-wider bg-gray-100 border-b-2 border-gray-300
                                                         border-r
@@ -1232,138 +1203,155 @@ export default function FloorReport() {
                                                                 : ""
                                                         }
                                                     `}
-                                                style={{
-                                                    width: header.getSize(),
-                                                    minWidth:
-                                                        header.column.columnDef
-                                                            .minSize,
-                                                    left: stickyLeft,
-                                                }}
-                                            >
-                                                <div className="flex items-center gap-1 relative pr-2">
-                                                    {header.isPlaceholder ? null : (
-                                                        <>
-                                                            <div
-                                                                className={`flex items-center gap-1 flex-1 truncate ${
-                                                                    header.column.getCanSort()
-                                                                        ? "cursor-pointer select-none hover:text-gray-900"
-                                                                        : ""
-                                                                }`}
-                                                                onClick={header.column.getToggleSortingHandler()}
-                                                                title={
-                                                                    header
-                                                                        .column
-                                                                        .columnDef
-                                                                        .header
-                                                                }
-                                                            >
-                                                                <span className="truncate">
-                                                                    {flexRender(
+                                                    style={{
+                                                        width: header.getSize(),
+                                                        minWidth:
+                                                            header.column
+                                                                .columnDef
+                                                                .minSize,
+                                                        left: stickyLeft,
+                                                    }}
+                                                >
+                                                    <div className="flex items-center gap-1 relative pr-2">
+                                                        {header.isPlaceholder ? null : (
+                                                            <>
+                                                                <div
+                                                                    className={`flex items-center gap-1 flex-1 truncate ${
+                                                                        header.column.getCanSort()
+                                                                            ? "cursor-pointer select-none hover:text-gray-900"
+                                                                            : ""
+                                                                    }`}
+                                                                    onClick={header.column.getToggleSortingHandler()}
+                                                                    title={
                                                                         header
                                                                             .column
                                                                             .columnDef
-                                                                            .header,
-                                                                        header.getContext()
-                                                                    )}
-                                                                </span>
-                                                                {header.column.getCanSort() && (
-                                                                    <span className="flex-shrink-0">
-                                                                        {{
-                                                                            asc: (
-                                                                                <ChevronUpIcon className="w-3 h-3" />
-                                                                            ),
-                                                                            desc: (
-                                                                                <ChevronDownIcon className="w-3 h-3" />
-                                                                            ),
-                                                                        }[
-                                                                            header.column.getIsSorted()
-                                                                        ] ?? (
-                                                                            <ChevronUpDownIcon className="w-3 h-3 opacity-40" />
+                                                                            .header
+                                                                    }
+                                                                >
+                                                                    <span className="truncate">
+                                                                        {flexRender(
+                                                                            header
+                                                                                .column
+                                                                                .columnDef
+                                                                                .header,
+                                                                            header.getContext()
                                                                         )}
                                                                     </span>
+                                                                    {header.column.getCanSort() && (
+                                                                        <span className="flex-shrink-0">
+                                                                            {{
+                                                                                asc: (
+                                                                                    <ChevronUpIcon className="w-3 h-3" />
+                                                                                ),
+                                                                                desc: (
+                                                                                    <ChevronDownIcon className="w-3 h-3" />
+                                                                                ),
+                                                                            }[
+                                                                                header.column.getIsSorted()
+                                                                            ] ?? (
+                                                                                <ChevronUpDownIcon className="w-3 h-3 opacity-40" />
+                                                                            )}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                {header.column.getCanFilter() && (
+                                                                    <Popover placement="bottom-end">
+                                                                        <PopoverTrigger>
+                                                                            <button
+                                                                                className={`p-1 rounded hover:bg-gray-200 flex-shrink-0 ${
+                                                                                    header.column.getFilterValue()
+                                                                                        ? "text-blue-600"
+                                                                                        : "text-gray-400"
+                                                                                }`}
+                                                                            >
+                                                                                <FunnelIcon className="w-3 h-3" />
+                                                                            </button>
+                                                                        </PopoverTrigger>
+                                                                        <PopoverContent className="p-0 shadow-lg border border-gray-200">
+                                                                            <ColumnFilter
+                                                                                column={
+                                                                                    header.column
+                                                                                }
+                                                                                table={
+                                                                                    table
+                                                                                }
+                                                                            />
+                                                                        </PopoverContent>
+                                                                    </Popover>
                                                                 )}
-                                                            </div>
-                                                            {header.column.getCanFilter() && (
-                                                                <Popover placement="bottom-end">
-                                                                    <PopoverTrigger>
-                                                                        <button
-                                                                            className={`p-1 rounded hover:bg-gray-200 flex-shrink-0 ${
-                                                                                header.column.getFilterValue()
-                                                                                    ? "text-blue-600"
-                                                                                    : "text-gray-400"
-                                                                            }`}
-                                                                        >
-                                                                            <FunnelIcon className="w-3 h-3" />
-                                                                        </button>
-                                                                    </PopoverTrigger>
-                                                                    <PopoverContent className="p-0 shadow-lg border border-gray-200">
-                                                                        <ColumnFilter
-                                                                            column={
-                                                                                header.column
-                                                                            }
-                                                                            table={
-                                                                                table
-                                                                            }
-                                                                        />
-                                                                    </PopoverContent>
-                                                                </Popover>
-                                                            )}
-                                                        </>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                    {header.column.getCanResize() && (
+                                                        <div
+                                                            onMouseDown={header.getResizeHandler()}
+                                                            onTouchStart={header.getResizeHandler()}
+                                                            className={`resizer ${
+                                                                header.column.getIsResizing()
+                                                                    ? "isResizing"
+                                                                    : ""
+                                                            }`}
+                                                        />
                                                     )}
-                                                </div>
-                                            </th>
-                                        );
-                                    })}
-                                </tr>
-                            ))}
-                        </thead>
-                        <tbody className="bg-white">
-                            {table.getRowModel().rows.length === 0 ? (
-                                <tr>
-                                    <td
-                                        colSpan={columns.length}
-                                        className="px-6 py-12 text-center text-gray-500"
-                                    >
-                                        No data available
-                                    </td>
-                                </tr>
-                            ) : (
-                                table
-                                    .getRowModel()
-                                    .rows.map((row, rowIndex) => {
-                                        const rowBg =
-                                            rowIndex % 2 === 0
-                                                ? "bg-white"
-                                                : "bg-gray-50";
-                                        const rowBgColor =
-                                            rowIndex % 2 === 0
-                                                ? "#ffffff"
-                                                : "#f9fafb";
+                                                </th>
+                                            );
+                                        })}
+                                    </tr>
+                                ))}
+                            </thead>
+                            <tbody className="bg-white">
+                                {table.getRowModel().rows.length === 0 ? (
+                                    <tr>
+                                        <td
+                                            colSpan={columns.length}
+                                            className="px-6 py-12 text-center text-gray-500"
+                                        >
+                                            No data available
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    table
+                                        .getRowModel()
+                                        .rows.map((row, rowIndex) => {
+                                            const rowBg =
+                                                rowIndex % 2 === 0
+                                                    ? "bg-white"
+                                                    : "bg-gray-50";
+                                            const rowBgColor =
+                                                rowIndex % 2 === 0
+                                                    ? "#ffffff"
+                                                    : "#f9fafb";
 
-                                        return (
-                                            <tr
-                                                key={row.id}
-                                                className={`hover:bg-blue-50 transition-colors ${rowBg}`}
-                                            >
-                                                {row
-                                                    .getVisibleCells()
-                                                    .map((cell) => {
-                                                        const isSticky =
-                                                            isStickyColumn(
-                                                                cell.column.id
-                                                            );
-                                                        const stickyLeft =
-                                                            getStickyLeft(
-                                                                cell.column.id
-                                                            );
-                                                        const isLastSticky =
-                                                            cell.column.id ===
-                                                            "ChargeTo";
+                                            return (
+                                                <tr
+                                                    key={row.id}
+                                                    className={`hover:bg-blue-50 transition-colors ${rowBg}`}
+                                                >
+                                                    {row
+                                                        .getVisibleCells()
+                                                        .map((cell) => {
+                                                            const isSticky =
+                                                                isStickyColumn(
+                                                                    cell.column
+                                                                        .id
+                                                                );
+                                                            const stickyLeft =
+                                                                getStickyLeft(
+                                                                    cell.column
+                                                                        .id
+                                                                );
+                                                            const isLastSticky =
+                                                                cell.column
+                                                                    .id ===
+                                                                "ConsStatus";
 
-                                                        return (
-                                                            <td
-                                                                key={cell.id}
-                                                                className={`
+                                                            return (
+                                                                <td
+                                                                    key={
+                                                                        cell.id
+                                                                    }
+                                                                    className={`
                                                                     px-3 py-2.5 text-sm text-gray-700 border-b border-gray-300
                                                                     border-r
                                                                     overflow-hidden text-ellipsis whitespace-nowrap
@@ -1378,208 +1366,220 @@ export default function FloorReport() {
                                                                             : ""
                                                                     }
                                                                 `}
-                                                                style={{
-                                                                    width: cell.column.getSize(),
-                                                                    minWidth:
+                                                                    style={{
+                                                                        width: cell.column.getSize(),
+                                                                        minWidth:
+                                                                            cell
+                                                                                .column
+                                                                                .columnDef
+                                                                                .minSize,
+                                                                        left: stickyLeft,
+                                                                        backgroundColor:
+                                                                            isSticky
+                                                                                ? rowBgColor
+                                                                                : undefined,
+                                                                    }}
+                                                                    title={
+                                                                        typeof cell.getValue() ===
+                                                                        "string"
+                                                                            ? cell.getValue()
+                                                                            : ""
+                                                                    }
+                                                                >
+                                                                    {flexRender(
                                                                         cell
                                                                             .column
                                                                             .columnDef
-                                                                            .minSize,
-                                                                    left: stickyLeft,
-                                                                    backgroundColor:
-                                                                        isSticky
-                                                                            ? rowBgColor
-                                                                            : undefined,
-                                                                }}
-                                                                title={
-                                                                    typeof cell.getValue() ===
-                                                                    "string"
-                                                                        ? cell.getValue()
-                                                                        : ""
-                                                                }
-                                                            >
-                                                                {flexRender(
-                                                                    cell.column
-                                                                        .columnDef
-                                                                        .cell,
-                                                                    cell.getContext()
-                                                                )}
-                                                            </td>
-                                                        );
-                                                    })}
-                                            </tr>
-                                        );
-                                    })
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-
-                {/* Pagination */}
-                <div className="flex items-center justify-between px-4 py-3 bg-white border border-t-0 border-gray-200 rounded-b-lg">
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-700">
-                            Page{" "}
-                            <strong>
-                                {table.getState().pagination.pageIndex + 1} of{" "}
-                                {table.getPageCount() || 1}
-                            </strong>
-                        </span>
-                        <span className="text-sm text-gray-500">
-                            | {table.getFilteredRowModel().rows.length} total
-                            records
-                        </span>
+                                                                            .cell,
+                                                                        cell.getContext()
+                                                                    )}
+                                                                </td>
+                                                            );
+                                                        })}
+                                                </tr>
+                                            );
+                                        })
+                                )}
+                            </tbody>
+                        </table>
                     </div>
 
-                    <div className="flex items-center gap-1">
-                        <Button
-                            size="sm"
-                            variant="flat"
-                            isIconOnly
-                            onClick={() => table.setPageIndex(0)}
-                            isDisabled={!table.getCanPreviousPage()}
-                            className="min-w-8 w-8 h-8"
-                        >
-                            <ChevronDoubleLeftIcon className="w-4 h-4" />
-                        </Button>
-                        <Button
-                            size="sm"
-                            variant="flat"
-                            isIconOnly
-                            onClick={() => table.previousPage()}
-                            isDisabled={!table.getCanPreviousPage()}
-                            className="min-w-8 w-8 h-8"
-                        >
-                            <ChevronLeftIcon className="w-4 h-4" />
-                        </Button>
-
-                        {/* Page number buttons */}
-                        <div className="flex items-center gap-1 mx-2">
-                            {(() => {
-                                const currentPage =
-                                    table.getState().pagination.pageIndex;
-                                const totalPages = table.getPageCount() || 1;
-                                const pages = [];
-
-                                let startPage = Math.max(0, currentPage - 2);
-                                let endPage = Math.min(
-                                    totalPages - 1,
-                                    currentPage + 2
-                                );
-
-                                if (endPage - startPage < 4) {
-                                    if (startPage === 0) {
-                                        endPage = Math.min(totalPages - 1, 4);
-                                    } else if (endPage === totalPages - 1) {
-                                        startPage = Math.max(0, totalPages - 5);
-                                    }
-                                }
-
-                                for (let i = startPage; i <= endPage; i++) {
-                                    pages.push(
-                                        <Button
-                                            key={i}
-                                            size="sm"
-                                            variant={
-                                                currentPage === i
-                                                    ? "solid"
-                                                    : "flat"
-                                            }
-                                            className={`min-w-8 w-8 h-8 ${
-                                                currentPage === i
-                                                    ? "bg-gray-800 text-white"
-                                                    : "bg-gray-100"
-                                            }`}
-                                            onClick={() =>
-                                                table.setPageIndex(i)
-                                            }
-                                        >
-                                            {i + 1}
-                                        </Button>
-                                    );
-                                }
-
-                                return pages;
-                            })()}
+                    {/* Pagination */}
+                    <div className="flex items-center justify-between px-4 py-3 bg-white border border-t-0 border-gray-200 rounded-b-lg">
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-700">
+                                Page{" "}
+                                <strong>
+                                    {table.getState().pagination.pageIndex + 1}{" "}
+                                    of {table.getPageCount() || 1}
+                                </strong>
+                            </span>
+                            <span className="text-sm text-gray-500">
+                                | {table.getFilteredRowModel().rows.length}{" "}
+                                total records
+                            </span>
                         </div>
 
-                        <Button
-                            size="sm"
-                            variant="flat"
-                            isIconOnly
-                            onClick={() => table.nextPage()}
-                            isDisabled={!table.getCanNextPage()}
-                            className="min-w-8 w-8 h-8"
-                        >
-                            <ChevronRightIcon className="w-4 h-4" />
-                        </Button>
-                        <Button
-                            size="sm"
-                            variant="flat"
-                            isIconOnly
-                            onClick={() =>
-                                table.setPageIndex(table.getPageCount() - 1)
-                            }
-                            isDisabled={!table.getCanNextPage()}
-                            className="min-w-8 w-8 h-8"
-                        >
-                            <ChevronDoubleRightIcon className="w-4 h-4" />
-                        </Button>
-                    </div>
+                        <div className="flex items-center gap-1">
+                            <Button
+                                size="sm"
+                                variant="flat"
+                                isIconOnly
+                                onClick={() => table.setPageIndex(0)}
+                                isDisabled={!table.getCanPreviousPage()}
+                                className="min-w-8 w-8 h-8"
+                            >
+                                <ChevronDoubleLeftIcon className="w-4 h-4" />
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="flat"
+                                isIconOnly
+                                onClick={() => table.previousPage()}
+                                isDisabled={!table.getCanPreviousPage()}
+                                className="min-w-8 w-8 h-8"
+                            >
+                                <ChevronLeftIcon className="w-4 h-4" />
+                            </Button>
 
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-700">
-                            Rows per page:
-                        </span>
-                        <select
-                            value={table.getState().pagination.pageSize}
-                            onChange={(e) => {
-                                table.setPageSize(Number(e.target.value));
-                            }}
-                            className="px-5 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            {[10, 20, 30, 50, 100].map((pageSize) => (
-                                <option key={pageSize} value={pageSize}>
-                                    {pageSize}
-                                </option>
-                            ))}
-                        </select>
+                            {/* Page number buttons */}
+                            <div className="flex items-center gap-1 mx-2">
+                                {(() => {
+                                    const currentPage =
+                                        table.getState().pagination.pageIndex;
+                                    const totalPages =
+                                        table.getPageCount() || 1;
+                                    const pages = [];
+
+                                    let startPage = Math.max(
+                                        0,
+                                        currentPage - 2
+                                    );
+                                    let endPage = Math.min(
+                                        totalPages - 1,
+                                        currentPage + 2
+                                    );
+
+                                    if (endPage - startPage < 4) {
+                                        if (startPage === 0) {
+                                            endPage = Math.min(
+                                                totalPages - 1,
+                                                4
+                                            );
+                                        } else if (endPage === totalPages - 1) {
+                                            startPage = Math.max(
+                                                0,
+                                                totalPages - 5
+                                            );
+                                        }
+                                    }
+
+                                    for (let i = startPage; i <= endPage; i++) {
+                                        pages.push(
+                                            <Button
+                                                key={i}
+                                                size="sm"
+                                                variant={
+                                                    currentPage === i
+                                                        ? "solid"
+                                                        : "flat"
+                                                }
+                                                className={`min-w-8 w-8 h-8 ${
+                                                    currentPage === i
+                                                        ? "bg-gray-800 text-white"
+                                                        : "bg-gray-100"
+                                                }`}
+                                                onClick={() =>
+                                                    table.setPageIndex(i)
+                                                }
+                                            >
+                                                {i + 1}
+                                            </Button>
+                                        );
+                                    }
+
+                                    return pages;
+                                })()}
+                            </div>
+
+                            <Button
+                                size="sm"
+                                variant="flat"
+                                isIconOnly
+                                onClick={() => table.nextPage()}
+                                isDisabled={!table.getCanNextPage()}
+                                className="min-w-8 w-8 h-8"
+                            >
+                                <ChevronRightIcon className="w-4 h-4" />
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="flat"
+                                isIconOnly
+                                onClick={() =>
+                                    table.setPageIndex(table.getPageCount() - 1)
+                                }
+                                isDisabled={!table.getCanNextPage()}
+                                className="min-w-8 w-8 h-8"
+                            >
+                                <ChevronDoubleRightIcon className="w-4 h-4" />
+                            </Button>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-700">
+                                Rows per page:
+                            </span>
+                            <select
+                                value={table.getState().pagination.pageSize}
+                                onChange={(e) => {
+                                    table.setPageSize(Number(e.target.value));
+                                }}
+                                className="py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                {[10, 20, 30, 50, 100].map((pageSize) => (
+                                    <option key={pageSize} value={pageSize}>
+                                        {pageSize}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Details Modal */}
-            <Modal
-                isOpen={isOpen}
-                onOpenChange={onOpenChange}
-                size="3xl"
-                scrollBehavior="inside"
-            >
-                <ModalContent>
-                    {(onClose) => (
-                        <>
-                            <ModalHeader className="gap-1">
-                                Details for {detailsData?.ConsignmentNo}
-                            </ModalHeader>
-                            <ModalBody>
-                                {detailsData &&
-                                    renderRowDetails({
-                                        data: detailsData,
-                                    })}
-                            </ModalBody>
-                            <ModalFooter>
-                                <Button
-                                    color="default"
-                                    variant="light"
-                                    onPress={onClose}
-                                >
-                                    Close
-                                </Button>
-                            </ModalFooter>
-                        </>
-                    )}
-                </ModalContent>
-            </Modal>
-        </div>
+                {/* Details Modal */}
+                <Modal
+                    isOpen={isOpen}
+                    onOpenChange={onOpenChange}
+                    size="3xl"
+                    scrollBehavior="inside"
+                >
+                    <ModalContent>
+                        {(onClose) => (
+                            <>
+                                <ModalHeader className="gap-1">
+                                    Details for {detailsData?.ConsignmentNo}
+                                </ModalHeader>
+                                <ModalBody>
+                                    {detailsData &&
+                                        renderRowDetails({
+                                            data: detailsData,
+                                        })}
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button
+                                        color="default"
+                                        variant="light"
+                                        onPress={onClose}
+                                    >
+                                        Close
+                                    </Button>
+                                </ModalFooter>
+                            </>
+                        )}
+                    </ModalContent>
+                </Modal>
+            </div>
+        </>
     );
 }
