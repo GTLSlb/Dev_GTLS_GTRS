@@ -223,7 +223,7 @@ class RegisteredUserController extends Controller
             \Log::info("NEW JWT Token: " . $jwt_token);
             return response()->json([
                 'jwt_token' => $jwt_token,
-                'token' => $request->session()->get('token'),
+                'token' => $token,
                 'user' => $user
             ]);
         }else{
