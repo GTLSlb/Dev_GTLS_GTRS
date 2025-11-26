@@ -558,8 +558,8 @@ export default function FloorReport() {
         onOpenChange: onAddCommentChange,
     } = useDisclosure();
     const [sorting, setSorting] = useState([
-        { id: "EventDateTime", desc: true },
-        { id: "RDD", desc: true },
+        // { id: "EventDateTime", desc: true },
+        // { id: "RDD", desc: false },
     ]);
     const [columnFilters, setColumnFilters] = useState(() => {
         const today = moment().format("YYYY-MM-DD");
@@ -726,7 +726,7 @@ export default function FloorReport() {
                 header: "Cons No",
                 size: CONS_NO_COL_WIDTH,
                 minSize: CONS_NO_COL_WIDTH,
-                maxSize: CONS_NO_COL_WIDTH,
+                // maxSize: CONS_NO_COL_WIDTH,
                 meta: { filterVariant: "text" },
                 cell: ({ row }) => {
                     return (
@@ -744,9 +744,9 @@ export default function FloorReport() {
             {
                 accessorKey: "ConsStatus",
                 header: "Cons Status",
-                size: 120,
-                minSize: 100,
-                maxSize: 250,
+                size: 200,
+                // minSize: 100,
+                // maxSize: 250,
                 meta: { filterVariant: "select" },
             },
             {
@@ -1212,7 +1212,13 @@ export default function FloorReport() {
                                                                             .header
                                                                     }
                                                                 >
-                                                                    <span className="truncate">
+                                                                    <span
+                                                                        className="truncate"
+                                                                        style={{
+                                                                            whiteSpace:
+                                                                                "break-spaces",
+                                                                        }}
+                                                                    >
                                                                         {flexRender(
                                                                             header
                                                                                 .column

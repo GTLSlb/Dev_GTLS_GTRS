@@ -4,7 +4,7 @@
 
 .tanstackTable table,
 .tanstackTable .divTable {
-    border: 1px solid lightgray;
+    /* border: 0.5px solid lightgray; */
     width: fit-content;
 }
 
@@ -22,7 +22,7 @@
 .tanstackTable .th,
 .tanstackTable td,
 .tanstackTable .td {
-    box-shadow: inset 0 0 0 1px lightgray;
+    box-shadow: inset 0 0 0 0.5px white;
     padding: 0.25rem;
 }
 
