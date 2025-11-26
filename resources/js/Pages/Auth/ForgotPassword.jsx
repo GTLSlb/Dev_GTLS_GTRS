@@ -13,6 +13,7 @@ export default function ForgotPassword() {
             truck={truck}
             LottieComponent={LottieComponent}
             success={success}
+            forgotPasswordPageLink={"/forgot-password"}
         />
     );
 }
