@@ -160,7 +160,9 @@ class RegisteredUserController extends Controller
             return false;
         }
 
-        if($jwt_token == null || $jwt_token == undefined) return false;
+        if ($jwt_token == null || !isset($jwt_token)) {
+            return false;
+        }
 
 
         try {
