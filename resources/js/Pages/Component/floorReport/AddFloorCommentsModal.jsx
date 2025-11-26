@@ -18,10 +18,12 @@ const AddFloorCommentsModal = ({
     const [isLoading, setIsLoading] = useState(false);
 
     const [formData, setFormData] = useState({
-        Comment: commentsData?.Comment || "",
+        Comment: commentsData.Comment || "",
         ConsId: commentsData?.ConsId,
         FloorCommentId: commentsData?.FloorCommentId || null,
     });
+
+    console.log("Form Data State:", formData.Comment, commentsData.Comment);
     const handleSubmit = (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -56,7 +58,7 @@ const AddFloorCommentsModal = ({
                                         placeholder="Enter comments"
                                         labelPlacement="outside"
                                         variant="bordered"
-                                        value={formData.Comment}
+                                        value={commentsData.Comment}
                                         onValueChange={(value) =>
                                             setFormData((prev) => ({
                                                 ...prev,

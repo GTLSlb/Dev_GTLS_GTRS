@@ -28,6 +28,10 @@ const FloorCommentsModal = ({
     commentsData,
     handleAddComments,
 }) => {
+
+    const handleEditItem = (item) => {
+        console.log("Edit item:", item);
+    }
     if (!isOpen) return null;
     return (
         <Modal

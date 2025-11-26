@@ -43,10 +43,11 @@ import {
     ChevronDoubleRightIcon,
     CalendarDaysIcon,
 } from "@heroicons/react/24/outline";
-// import { EyeIcon, PencilIcon } from "@heroicons/react/24/solid";
+import { EyeIcon, PencilIcon } from "@heroicons/react/24/solid";
+
 import DetailsModal from "./DetailsModal";
-// import FloorCommentsModal from "./FloorCommentsModal";
-// import AddFloorCommentsModal from "./AddFloorCommentsModal";
+import FloorCommentsModal from "./FloorCommentsModal";
+import AddFloorCommentsModal from "./AddFloorCommentsModal";
 
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -559,7 +560,7 @@ export default function FloorReport() {
     } = useDisclosure();
     const [sorting, setSorting] = useState([
         { id: "EventDateTime", desc: true },
-        { id: "RDD", desc: true },
+        { id: "RDD", desc: false },
     ]);
     const [columnFilters, setColumnFilters] = useState(() => {
         const today = moment().format("YYYY-MM-DD");
@@ -638,6 +639,15 @@ export default function FloorReport() {
             Comment: "",
             ConsId: data.ConsignmentID,
             FloorCommentId: null,
+        });
+        onAddCommentOpen();
+    };
+
+    const handleEditComments = (data) => {
+        setDetailsData({
+            Comment: data.Comment,
+            ConsId: data.ConsId,
+            FloorCommentId: data.FloorCommentId,
         });
         onAddCommentOpen();
     };
@@ -869,31 +879,31 @@ export default function FloorReport() {
                 header: "Depot",
                 meta: { filterVariant: "select" },
             },
-            // {
-            //     id: "comments-actions",
-            //     header: "",
-            //     size: 70,
-            //     enableSorting: false,
-            //     enableColumnFilter: false,
-            //     cell: ({ row }) => (
-            //         <div className="flex gap-1">
-            //             <button
-            //                 className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
-            //                 title="View Details"
-            //                 onClick={() => handleAddComments(row.original)}
-            //             >
-            //                 <PencilIcon className="w-4 h-4 text-blue-500" />
-            //             </button>
-            //             <button
-            //                 className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
-            //                 title="View Details"
-            //                 onClick={() => handleViewComments(row.original)}
-            //             >
-            //                 <EyeIcon className="w-4 h-4 text-yellow-500" />
-            //             </button>
-            //         </div>
-            //     ),
-            // },
+            {
+                id: "comments-actions",
+                header: "",
+                size: 70,
+                enableSorting: false,
+                enableColumnFilter: false,
+                cell: ({ row }) => (
+                    <div className="flex gap-1">
+                        <button
+                            className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
+                            title="View Details"
+                            onClick={() => handleAddComments(row.original)}
+                        >
+                            <PencilIcon className="w-4 h-4 text-blue-500" />
+                        </button>
+                        <button
+                            className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
+                            title="View Details"
+                            onClick={() => handleViewComments(row.original)}
+                        >
+                            <EyeIcon className="w-4 h-4 text-yellow-500" />
+                        </button>
+                    </div>
+                ),
+            },
         ],
         [userPermissions]
     );
@@ -1536,18 +1546,18 @@ export default function FloorReport() {
                     detailsData={detailsData}
                 />
 
-                {/* <FloorCommentsModal
+                <FloorCommentsModal
                     isOpen={isCommentOpen}
                     onOpenChange={onCommentChange}
                     commentsData={detailsData}
-                    handleAddComments={handleAddComments}
+                    handleAddComments={handleEditComments}
                 />
 
                 <AddFloorCommentsModal
                     isOpen={isAddCommentOpen}
                     onOpenChange={onAddCommentChange}
                     commentsData={detailsData}
-                /> */}
+                />
             </div>
         </>
     );
