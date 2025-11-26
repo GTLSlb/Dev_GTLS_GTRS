@@ -104,7 +104,7 @@ export default function Sidebar() {
             console.error("Error during initial data fetch:", err);
             setLoading(false);
             setCanAccess(false);
-            if (err.response && err.response.status === 401) {
+            if (err.response && (err.response.status === 401 || err.status == 401)) {
                 swal({
                     title: "Session Expired!",
                     text: "Please login again",
