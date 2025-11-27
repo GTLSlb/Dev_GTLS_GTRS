@@ -1002,7 +1002,7 @@ export default function FloorReport() {
             },
             {
                 id: "comments-actions",
-                header: "",
+                header: "Actions",
                 size: 70,
                 enableSorting: false,
                 enableColumnFilter: false,
