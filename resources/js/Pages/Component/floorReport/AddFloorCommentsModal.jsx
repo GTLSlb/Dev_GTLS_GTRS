@@ -8,31 +8,73 @@ import {
     Textarea,
     Spinner,
 } from "@heroui/react";
-import { useState } from "react";
-
+import axios from "axios";
+import { useContext, useEffect, useState } from "react";
+import { CustomContext } from "@/CommonContext";
+import { AlertToast, handleSessionExpiration } from "@/CommonFunctions";
 const AddFloorCommentsModal = ({
     isOpen,
     onOpenChange,
     commentsData,
+    updateData,
 }) => {
     const [isLoading, setIsLoading] = useState(false);
 
+    const { url, user, Token } = useContext(CustomContext);
     const [formData, setFormData] = useState({
-        Comment: commentsData.Comment || "",
+        Comment: commentsData?.Comment || "",
         ConsId: commentsData?.ConsId,
         FloorCommentId: commentsData?.FloorCommentId || null,
     });
 
-    console.log("Form Data State:", formData.Comment, commentsData.Comment);
-    const handleSubmit = (e) => {
+    useEffect(() => {
+        setFormData({
+            Comment: commentsData?.Comment || "",
+            ConsId: commentsData?.ConsId,
+            FloorCommentId: commentsData?.FloorCommentId || null,
+        });
+    }, [commentsData]);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
 
-        console.log("Form Data Submitted:", formData);
-        setTimeout(() => {
-            setIsLoading(false);
-            onOpenChange(false);
-        }, 2000);
+        try {
+            const data = {
+                Comment: formData.Comment,
+                ConsId: commentsData.ConsId,
+                FloorCommentId: formData.FloorCommentId,
+            };
+            await axios
+                .post(`${url}Floor/Comment`, data, {
+                    headers: {
+                        UserId: user.UserId,
+                        Authorization: `Bearer ${Token}`,
+                    },
+                })
+                .then((response) => {
+                    updateData();
+                    setIsLoading(false);
+                    onOpenChange(false);
+                });
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                swal({
+                    title: "Session Expired!",
+                    text: "Please login again",
+                    type: "success",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                }).then(async function () {
+                    await handleSessionExpiration();
+                });
+            } else {
+                setIsLoading(false);
+                onOpenChange(false);
+                AlertToast(error.response.data.Message, 2);
+                console.error(error.response.data.Message);
+            }
+        }
     };
 
     if (!isOpen) return null;
@@ -48,7 +90,9 @@ const AddFloorCommentsModal = ({
                     <>
                         <form onSubmit={handleSubmit}>
                             <ModalHeader className="flex flex-col gap-1">
-                                Add comment
+                                {formData.FloorCommentId
+                                    ? "Edit Comment"
+                                    : "Add Comment"}{" "}
                             </ModalHeader>
                             <ModalBody>
                                 <div className="flex flex-col gap-3">
@@ -58,7 +102,7 @@ const AddFloorCommentsModal = ({
                                         placeholder="Enter comments"
                                         labelPlacement="outside"
                                         variant="bordered"
-                                        value={commentsData.Comment}
+                                        value={formData.Comment}
                                         onValueChange={(value) =>
                                             setFormData((prev) => ({
                                                 ...prev,

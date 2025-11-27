@@ -230,6 +230,20 @@ export const formatDate = (dateString) => {
     }
 };
 
+export const formatDateWithTime = (dateString) => {
+    if (dateString) {
+        const [date, timeWithExtras] = dateString.split("T");
+
+        const formattedDate = date;
+
+        const [time] = timeWithExtras.split(".");
+
+        return `${formattedDate} ${time}`;
+    } else {
+        return dateString;
+    }
+};
+
 export function formatDateFromExcelWithNoTime(dateValue) {
     const date = new Date(dateValue);
 
@@ -555,25 +569,25 @@ export function AlertToast(msg, status) {
     }
 }
 
-export function convertToIso(dateString) {      
+export function convertToIso(dateString) {
     const parts = dateString.split(/[\s,]+/);
     const datePart = parts[0];
     const timePart = parts[1];
-    const meridiem = parts[2];   
+    const meridiem = parts[2];
     const [day, month, year] = datePart.split("/").map(Number);
-    
+
     let hour = 0;
     let minute = 0;
     let second = 0;
-    
+
     if (timePart && meridiem) {
         let [h, m, s] = timePart.split(":").map(Number);
         hour = h;
         minute = m;
-        second = s;      
+        second = s;
         if (meridiem === "PM" && hour < 12) {
             hour += 12;
-        } else if (meridiem === "AM" && hour === 12) {       
+        } else if (meridiem === "AM" && hour === 12) {
             hour = 0;
         }
     }

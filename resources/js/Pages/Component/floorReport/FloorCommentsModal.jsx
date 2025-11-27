@@ -1,3 +1,7 @@
+import { CustomContext } from "@/CommonContext";
+import { formatDate } from "@/CommonFunctions";
+import { canAddEditFloorComments } from "@/permissions";
+import { isNull } from "@antv/util";
 import { PencilIcon } from "@heroicons/react/24/solid";
 import {
     Button,
@@ -8,6 +12,7 @@ import {
     ModalFooter,
     Divider,
 } from "@heroui/react";
+import { useContext } from "react";
 
 const TestData = [
     {
@@ -28,11 +33,10 @@ const FloorCommentsModal = ({
     commentsData,
     handleAddComments,
 }) => {
+    const { userPermissions } = useContext(CustomContext);
+    const data = commentsData?.Comments ?? [];
 
-    const handleEditItem = (item) => {
-        console.log("Edit item:", item);
-    }
-    if (!isOpen) return null;
+    if (!isOpen || isNull(data)) return null;
     return (
         <Modal
             isOpen={isOpen}
@@ -48,22 +52,32 @@ const FloorCommentsModal = ({
                         </ModalHeader>
                         <ModalBody>
                             <div className="flex flex-col gap-3">
-                                {TestData.map((item, index) => (
+                                {data.map((item, index) => (
                                     <div
                                         className="flex flex-col gap-1"
                                         key={index}
                                     >
                                         <div className="flex justify-between">
-                                            <p>{item.Comment}</p>
-                                            <Button
-                                                isIconOnly
-                                                variant="light"
-                                                onPress={(e) => {
-                                                    handleAddComments(item);
-                                                }}
-                                            >
-                                                <PencilIcon className="h-4 w-4 text-blue-500" />
-                                            </Button>
+                                            <div>
+                                                {item.Comment}
+                                                <p className="text-gray-500 text-sm">
+                                                    {formatDate(item.AddedAt)}
+                                                </p>
+                                            </div>
+
+                                            {canAddEditFloorComments(
+                                                userPermissions
+                                            ) && (
+                                                <Button
+                                                    isIconOnly
+                                                    variant="light"
+                                                    onPress={(e) => {
+                                                        handleAddComments(item);
+                                                    }}
+                                                >
+                                                    <PencilIcon className="h-4 w-4 text-blue-500" />
+                                                </Button>
+                                            )}
                                         </div>
 
                                         <Divider />
