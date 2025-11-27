@@ -784,7 +784,6 @@ export function canViewSettings(userPermissions) {
         : false;
 }
 
-
 /**
  * Checks if the user can edit Users based on their permissions.
  *
@@ -866,6 +865,22 @@ export function canViewExcelDeliveryReport(userPermissions) {
 export function canEditUtilizationReport(userPermissions) {
     return userPermissions?.find(
         (feature) => feature?.FunctionName === "UtilizationReport_edit"
+    )
+        ? true
+        : false;
+}
+
+export function canViewFloorComments(userPermissions) {
+    return userPermissions?.find(
+        (feature) => feature?.FunctionName === "FloorComments_view"
+    )
+        ? true
+        : false;
+}
+
+export function canAddEditFloorComments(userPermissions) {
+    return userPermissions?.find(
+        (feature) => feature?.FunctionName === "FloorComments_AddEdit"
     )
         ? true
         : false;

@@ -42,11 +42,14 @@ import {
     ChevronDoubleLeftIcon,
     ChevronDoubleRightIcon,
     CalendarDaysIcon,
+    PlusCircleIcon,
 } from "@heroicons/react/24/outline";
-// import { EyeIcon, PencilIcon } from "@heroicons/react/24/solid";
+import { EyeIcon, PencilIcon } from "@heroicons/react/24/solid";
+
 import DetailsModal from "./DetailsModal";
-// import FloorCommentsModal from "./FloorCommentsModal";
-// import AddFloorCommentsModal from "./AddFloorCommentsModal";
+import FloorCommentsModal from "./FloorCommentsModal";
+import AddFloorCommentsModal from "./AddFloorCommentsModal";
+import { canAddEditFloorComments, canViewFloorComments } from "@/permissions";
 
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -497,6 +500,10 @@ function ColumnFilter({ column, table }) {
         return <DateColumnFilter column={column} table={table} />;
     }
 
+    if (filterVariant === "number") {
+        return <NumberColumnFilter column={column} />;
+    }
+
     // Default text filter
     return (
         <div className="flex flex-col gap-2 p-3 min-w-[200px]">
@@ -527,6 +534,89 @@ function ColumnFilter({ column, table }) {
     );
 }
 
+// Number filter component
+function NumberColumnFilter({ column }) {
+    const columnFilterValue = column.getFilterValue() || {};
+    const [min, setMin] = useState(columnFilterValue.min ?? "");
+    const [max, setMax] = useState(columnFilterValue.max ?? "");
+
+    const applyFilter = (newMin, newMax) => {
+        const minVal = newMin === "" ? undefined : Number(newMin);
+        const maxVal = newMax === "" ? undefined : Number(newMax);
+
+        if (minVal === undefined && maxVal === undefined) {
+            column.setFilterValue(undefined);
+        } else {
+            column.setFilterValue({ min: minVal, max: maxVal });
+        }
+    };
+
+    const handleMinChange = (e) => {
+        const value = e.target.value;
+        setMin(value);
+        applyFilter(value, max);
+    };
+
+    const handleMaxChange = (e) => {
+        const value = e.target.value;
+        setMax(value);
+        applyFilter(min, value);
+    };
+
+    const clearFilter = () => {
+        setMin("");
+        setMax("");
+        column.setFilterValue(undefined);
+    };
+
+    const hasFilter = min !== "" || max !== "";
+
+    return (
+        <div className="flex flex-col gap-2 p-3 min-w-[200px]">
+            <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-medium text-gray-700">
+                    Filter by Range
+                </span>
+                {hasFilter && (
+                    <button
+                        onClick={clearFilter}
+                        className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1"
+                    >
+                        <XMarkIcon className="w-3 h-3" />
+                        Clear
+                    </button>
+                )}
+            </div>
+            <div className="flex flex-col gap-2">
+                <div>
+                    <label className="text-xs text-gray-600 mb-1 block">
+                        Minimum
+                    </label>
+                    <input
+                        type="number"
+                        placeholder="Min"
+                        value={min}
+                        onChange={handleMinChange}
+                        className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                </div>
+                <div>
+                    <label className="text-xs text-gray-600 mb-1 block">
+                        Maximum
+                    </label>
+                    <input
+                        type="number"
+                        placeholder="Max"
+                        value={max}
+                        onChange={handleMaxChange}
+                        className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                </div>
+            </div>
+        </div>
+    );
+}
+
 // Date filter function - for individual date selection
 const dateFilterFn = (row, columnId, filterValue) => {
     if (!filterValue || filterValue.size === 0) return true;
@@ -536,6 +626,29 @@ const dateFilterFn = (row, columnId, filterValue) => {
 
     const cellDate = moment(cellValue).format("YYYY-MM-DD");
     return filterValue.has(cellDate);
+};
+
+// Number filter function - for range filtering
+const numberFilterFn = (row, columnId, filterValue) => {
+    if (!filterValue) return true;
+
+    const cellValue = row.getValue(columnId);
+    if (cellValue === null || cellValue === undefined) return false;
+
+    const numValue = Number(cellValue);
+    if (isNaN(numValue)) return false;
+
+    const { min, max } = filterValue;
+
+    if (min !== undefined && max !== undefined) {
+        return numValue >= min && numValue <= max;
+    } else if (min !== undefined) {
+        return numValue >= min;
+    } else if (max !== undefined) {
+        return numValue <= max;
+    }
+
+    return true;
 };
 
 // Column width constants for sticky columns (fixed)
@@ -639,6 +752,16 @@ export default function FloorReport() {
             ConsId: data.ConsignmentID,
             FloorCommentId: null,
         });
+        onAddCommentOpen();
+    };
+
+    const handleEditComments = (data) => {
+        setDetailsData({
+            Comment: data.Comment,
+            ConsId: data.ConsId,
+            FloorCommentId: data.FloorCommentId,
+        });
+        onCommentChange();
         onAddCommentOpen();
     };
 
@@ -833,17 +956,20 @@ export default function FloorReport() {
             {
                 accessorKey: "OriginPalletSpaces",
                 header: "Cnote Pallet Space",
-                meta: { filterVariant: "text" },
+                meta: { filterVariant: "number" },
+                filterFn: numberFilterFn,
             },
             {
                 accessorKey: "ActualScanned",
                 header: "Scanned Events",
-                meta: { filterVariant: "text" },
+                meta: { filterVariant: "number" },
+                filterFn: numberFilterFn,
             },
             {
                 accessorKey: "TotalDays",
                 header: "Total Days",
-                meta: { filterVariant: "text" },
+                meta: { filterVariant: "number" },
+                filterFn: numberFilterFn,
             },
             {
                 accessorKey: "TimeslotRequired",
@@ -869,31 +995,40 @@ export default function FloorReport() {
                 header: "Depot",
                 meta: { filterVariant: "select" },
             },
-            // {
-            //     id: "comments-actions",
-            //     header: "",
-            //     size: 70,
-            //     enableSorting: false,
-            //     enableColumnFilter: false,
-            //     cell: ({ row }) => (
-            //         <div className="flex gap-1">
-            //             <button
-            //                 className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
-            //                 title="View Details"
-            //                 onClick={() => handleAddComments(row.original)}
-            //             >
-            //                 <PencilIcon className="w-4 h-4 text-blue-500" />
-            //             </button>
-            //             <button
-            //                 className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
-            //                 title="View Details"
-            //                 onClick={() => handleViewComments(row.original)}
-            //             >
-            //                 <EyeIcon className="w-4 h-4 text-yellow-500" />
-            //             </button>
-            //         </div>
-            //     ),
-            // },
+            {
+                accessorKey: "Comment",
+                header: "Comment",
+                meta: { filterVariant: "text" },
+            },
+            {
+                id: "comments-actions",
+                header: "",
+                size: 70,
+                enableSorting: false,
+                enableColumnFilter: false,
+                cell: ({ row }) => (
+                    <div className="flex gap-1">
+                        {canAddEditFloorComments(userPermissions) && (
+                            <button
+                                className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
+                                title="View Details"
+                                onClick={() => handleAddComments(row.original)}
+                            >
+                                <PlusCircleIcon className="w-4 h-4 text-blue-500" />
+                            </button>
+                        )}
+                        {canViewFloorComments(userPermissions) && (
+                            <button
+                                className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
+                                title="View Details"
+                                onClick={() => handleViewComments(row.original)}
+                            >
+                                <EyeIcon className="w-4 h-4 text-yellow-500" />
+                            </button>
+                        )}
+                    </div>
+                ),
+            },
         ],
         [userPermissions]
     );
@@ -931,8 +1066,8 @@ export default function FloorReport() {
         // enableColumnResizing: true,
     });
 
-    // Fetch floor report data
-    useEffect(() => {
+    const fetchData = () => {
+        setLoading(true);
         axios
             .get(`${url}/FloorReport`, {
                 headers: {
@@ -959,6 +1094,10 @@ export default function FloorReport() {
                     setLoading(false);
                 }
             });
+    };
+
+    useEffect(() => {
+        fetchData();
     }, [userPermissions, Token, url, user.UserId]);
 
     // Export to Excel
@@ -1542,18 +1681,19 @@ export default function FloorReport() {
                     detailsData={detailsData}
                 />
 
-                {/* <FloorCommentsModal
+                <FloorCommentsModal
                     isOpen={isCommentOpen}
                     onOpenChange={onCommentChange}
                     commentsData={detailsData}
-                    handleAddComments={handleAddComments}
+                    handleAddComments={handleEditComments}
                 />
 
                 <AddFloorCommentsModal
                     isOpen={isAddCommentOpen}
                     onOpenChange={onAddCommentChange}
+                    updateData={fetchData}
                     commentsData={detailsData}
-                /> */}
+                />
             </div>
         </>
     );
