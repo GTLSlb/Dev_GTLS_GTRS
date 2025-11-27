@@ -121,7 +121,10 @@ class RegisteredUserController extends Controller
 
     private function validateSessionFromNode($user, $sessionId, $token){
         // Implement session validation logic
-        $url = config('app.gtrr_api_url') . 'exchange-token';
+        $url = $_ENV['GTRR_API_URL'] . 'exchange-token';
+        if($_ENV['GTRR_API_URL'] == ""){
+            return null;
+        }
         try{
             $body = [
                 'user' => $user,
