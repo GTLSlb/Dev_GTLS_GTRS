@@ -10,7 +10,7 @@ import {
     ModalFooter,
     Divider,
 } from "@heroui/react";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 
 const FloorCommentsModal = ({
     isOpen,
@@ -18,10 +18,20 @@ const FloorCommentsModal = ({
     commentsData,
     handleAddComments,
 }) => {
-    const { userPermissions } = useContext(CustomContext);
-    const data = commentsData?.Comments ?? [];
+    const comments = commentsData?.Comments ?? [];
 
-    if (!isOpen || isNull(data)) return null;
+    // Sort comments by AddedAt (newest first)
+    const sortedComments = useMemo(() => {
+        return [...comments].sort((a, b) => {
+            const dateA = new Date(a.AddedAt).getTime();
+            const dateB = new Date(b.AddedAt).getTime();
+            return dateB - dateA; // Newest first
+        });
+    }, [comments]);
+
+    if (!isOpen || isNull(sortedComments) || sortedComments.length === 0)
+        return null;
+
     return (
         <Modal
             isOpen={isOpen}
@@ -33,44 +43,40 @@ const FloorCommentsModal = ({
                 {(onClose) => (
                     <>
                         <ModalHeader className="flex flex-col gap-1">
-                            Comments for: {commentsData.ConsignmentNo}
+                            Comments for: {commentsData?.ConsignmentNo}
                         </ModalHeader>
                         <ModalBody>
                             <div className="flex flex-col gap-3">
-                                {data.map((item, index) => (
-                                    <div
-                                        className="flex flex-col gap-1"
-                                        key={index}
-                                    >
-                                        <div className="flex justify-between">
-                                            <div>
-                                                {item.Comment}
-                                                <p className="text-gray-500 text-sm">
-                                                    {item.AddedBy} -{" "}
-                                                    {formatDateWithTimeToSydney(
-                                                        item.AddedAt
-                                                    )}
-                                                </p>
+                                {sortedComments.length > 0 ? (
+                                    sortedComments.map((item, index) => (
+                                        <div
+                                            className="flex flex-col gap-1"
+                                            key={index}
+                                        >
+                                            <div className="flex justify-between items-start">
+                                                <div className="flex-1">
+                                                    <div className="p-2 rounded">
+                                                        <p className="text-gray-800 mb-2">
+                                                            {item.Comment}
+                                                        </p>
+                                                        <p className="text-gray-500 text-sm">
+                                                            {item.AddedBy} -{" "}
+                                                            {formatDateWithTimeToSydney(
+                                                                item.AddedAt
+                                                            )}
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </div>
 
-                                            {/* {canAddEditFloorComments(
-                                                userPermissions
-                                            ) && (
-                                                <Button
-                                                    isIconOnly
-                                                    variant="light"
-                                                    onPress={(e) => {
-                                                        handleAddComments(item);
-                                                    }}
-                                                >
-                                                    <PencilIcon className="h-4 w-4 text-blue-500" />
-                                                </Button>
-                                            )} */}
+                                            <Divider />
                                         </div>
-
-                                        <Divider />
+                                    ))
+                                ) : (
+                                    <div className="text-center text-gray-500 py-6">
+                                        No comments yet
                                     </div>
-                                ))}
+                                )}
                             </div>
                         </ModalBody>
                         <ModalFooter>

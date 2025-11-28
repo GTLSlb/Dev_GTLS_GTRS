@@ -12,11 +12,13 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { CustomContext } from "@/CommonContext";
 import { AlertToast, handleSessionExpiration } from "@/CommonFunctions";
+import swal from "sweetalert";
+
 const AddFloorCommentsModal = ({
     isOpen,
     onOpenChange,
     commentsData,
-    updateData,
+    onCommentSaved,
 }) => {
     const [isLoading, setIsLoading] = useState(false);
 
@@ -53,11 +55,13 @@ const AddFloorCommentsModal = ({
                     },
                 })
                 .then((response) => {
-                    updateData();
                     setIsLoading(false);
-                    onOpenChange(false);
+                    // Call the callback with the comment data instead of refetching
+                    onCommentSaved(commentsData.ConsId, formData.Comment);
+                    AlertToast("Comment saved successfully", 1);
                 });
         } catch (error) {
+            setIsLoading(false);
             if (error.response && error.response.status === 401) {
                 swal({
                     title: "Session Expired!",
@@ -69,10 +73,12 @@ const AddFloorCommentsModal = ({
                     await handleSessionExpiration();
                 });
             } else {
-                setIsLoading(false);
                 onOpenChange(false);
-                AlertToast(error.response.data.Message, 2);
-                console.error(error.response.data.Message);
+                AlertToast(
+                    error.response?.data?.Message || "Error saving comment",
+                    2
+                );
+                console.error(error.response?.data?.Message);
             }
         }
     };
@@ -92,7 +98,7 @@ const AddFloorCommentsModal = ({
                             <ModalHeader className="flex flex-col gap-1">
                                 {formData.FloorCommentId
                                     ? "Edit Comment"
-                                    : "Add Comment"}{" "}
+                                    : "Add Comment"}
                             </ModalHeader>
                             <ModalBody>
                                 <div className="flex flex-col gap-3">
@@ -122,6 +128,7 @@ const AddFloorCommentsModal = ({
                                     color="primary"
                                     spinner={<Spinner size="sm" />}
                                     className="bg-gray-800 min-w-20"
+                                    disabled={isLoading}
                                 >
                                     {isLoading ? "Saving..." : "Save"}
                                 </Button>
@@ -129,6 +136,7 @@ const AddFloorCommentsModal = ({
                                     color="default"
                                     variant="light"
                                     onPress={onClose}
+                                    disabled={isLoading}
                                 >
                                     Close
                                 </Button>

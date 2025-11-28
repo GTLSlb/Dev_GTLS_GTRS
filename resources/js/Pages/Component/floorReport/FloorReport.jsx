@@ -44,7 +44,7 @@ import {
     CalendarDaysIcon,
     PlusCircleIcon,
 } from "@heroicons/react/24/outline";
-import { EyeIcon, PencilIcon } from "@heroicons/react/24/solid";
+import { EyeIcon } from "@heroicons/react/24/solid";
 
 import DetailsModal from "./DetailsModal";
 import FloorCommentsModal from "./FloorCommentsModal";
@@ -674,6 +674,47 @@ export default function FloorReport() {
         // { id: "EventDateTime", desc: true },
         // { id: "RDD", desc: false },
     ]);
+
+    const [detailsData, setDetailsData] = useState(null);
+    const [localComments, setLocalComments] = useState({});
+
+    const handleCommentSaved = (consignmentId, comment) => {
+        const newCommentObj = {
+            Comment: comment,
+            AddedBy:
+                user?.FullName ||
+                user?.UserName ||
+                `${user?.FirstName} ${user?.LastName}`,
+            AddedAt: new Date().toISOString(),
+            ConsId: consignmentId,
+        };
+
+        // Update local floor data
+        setFloorData((prevData) =>
+            prevData.map((row) =>
+                row.ConsignmentID === consignmentId
+                    ? {
+                          ...row,
+                          Comment: comment,
+                          Comments: [...(row.Comments || []), newCommentObj],
+                      }
+                    : row
+            )
+        );
+
+        // Update detailsData to show the new comment in the view modal
+        if (detailsData && detailsData.ConsignmentID === consignmentId) {
+            setDetailsData((prev) => ({
+                ...prev,
+                Comment: comment,
+                Comments: [...(prev.Comments || []), newCommentObj],
+            }));
+        }
+
+        // Switch from add modal to view modal to show the saved comment
+        onAddCommentChange(false);
+    };
+
     const [columnFilters, setColumnFilters] = useState(() => {
         const today = moment().format("YYYY-MM-DD");
         return [
@@ -736,8 +777,6 @@ export default function FloorReport() {
         [floorData]
     );
 
-    const [detailsData, setDetailsData] = useState(null);
-
     const handleViewDetails = (data) => {
         setDetailsData(data);
         onOpen();
@@ -746,11 +785,14 @@ export default function FloorReport() {
         setDetailsData(data);
         onCommentOpen();
     };
+
+    // 4. Update handleAddComments
     const handleAddComments = (data) => {
         setDetailsData({
             Comment: "",
             ConsId: data.ConsignmentID,
             FloorCommentId: null,
+            ConsignmentID: data.ConsignmentID,
         });
         onAddCommentOpen();
     };
@@ -1712,7 +1754,7 @@ export default function FloorReport() {
                 <AddFloorCommentsModal
                     isOpen={isAddCommentOpen}
                     onOpenChange={onAddCommentChange}
-                    updateData={fetchData}
+                    onCommentSaved={handleCommentSaved}
                     commentsData={detailsData}
                 />
             </div>
