@@ -1,8 +1,6 @@
 import { CustomContext } from "@/CommonContext";
-import { formatDate } from "@/CommonFunctions";
-import { canAddEditFloorComments } from "@/permissions";
+import { formatDateWithTimeToSydney } from "@/CommonFunctions";
 import { isNull } from "@antv/util";
-import { PencilIcon } from "@heroicons/react/24/solid";
 import {
     Button,
     Modal,
@@ -13,19 +11,6 @@ import {
     Divider,
 } from "@heroui/react";
 import { useContext } from "react";
-
-const TestData = [
-    {
-        Comment: "This is the first comment.",
-        FloorCommentId: 1,
-        ConsId: 123,
-    },
-    {
-        Comment: "This is the second comment.",
-        FloorCommentId: 2,
-        ConsId: 123,
-    },
-];
 
 const FloorCommentsModal = ({
     isOpen,
@@ -61,11 +46,14 @@ const FloorCommentsModal = ({
                                             <div>
                                                 {item.Comment}
                                                 <p className="text-gray-500 text-sm">
-                                                    {formatDate(item.AddedAt)}
+                                                    {item.AddedBy} -{" "}
+                                                    {formatDateWithTimeToSydney(
+                                                        item.AddedAt
+                                                    )}
                                                 </p>
                                             </div>
 
-                                            {canAddEditFloorComments(
+                                            {/* {canAddEditFloorComments(
                                                 userPermissions
                                             ) && (
                                                 <Button
@@ -77,7 +65,7 @@ const FloorCommentsModal = ({
                                                 >
                                                     <PencilIcon className="h-4 w-4 text-blue-500" />
                                                 </Button>
-                                            )}
+                                            )} */}
                                         </div>
 
                                         <Divider />

@@ -782,6 +782,7 @@ export default function FloorReport() {
 
         const today = moment().startOf("day");
         const rddDate = moment(value).startOf("day");
+        const momentValue = moment(value);
 
         let className = "";
         if (rddDate.isBefore(today)) {
@@ -792,11 +793,12 @@ export default function FloorReport() {
                 "bg-yellow-100 text-yellow-800 font-semibold px-2 py-1 rounded";
         }
 
-        return (
-            <span className={className}>
-                {moment(value).format("DD/MM/YYYY hh:mm A")}
-            </span>
-        );
+        // Check if time is 00:00
+        const isTimeEmpty =
+            momentValue.hour() === 0 && momentValue.minute() === 0;
+        const format = isTimeEmpty ? "DD/MM/YYYY" : "DD/MM/YYYY hh:mm A";
+
+        return <span className={className}>{momentValue.format(format)}</span>;
     };
 
     const BooleanCell = ({ value }) => {
@@ -1009,7 +1011,9 @@ export default function FloorReport() {
             {
                 id: "comments-actions",
                 header: "Actions",
-                size: 70,
+                size: 100,
+                minSize: 100,
+                maxSize: 100,
                 enableSorting: false,
                 enableColumnFilter: false,
                 cell: ({ row }) => (
@@ -1049,7 +1053,8 @@ export default function FloorReport() {
             columnVisibility,
         },
         defaultColumn: {
-            minSize: 60,
+            size: 180,
+            minSize: 80,
             maxSize: 800,
         },
         initialState: {
@@ -1218,7 +1223,7 @@ export default function FloorReport() {
                                     }
                                     size="sm"
                                     variant="flat"
-                                    className="bg-gray-800 text-white"
+                                    className="bg-dark text-white"
                                 >
                                     Columns
                                 </Button>
@@ -1234,17 +1239,23 @@ export default function FloorReport() {
                                             .filter(
                                                 (col) =>
                                                     col.getIsVisible() &&
-                                                    col.id !== "actions"
+                                                    col.id !== "actions" &&
+                                                    col.id !==
+                                                        "comments-actions"
                                             )
                                             .map((col) => col.id)
                                     )
                                 }
+                                className="max-h-96 overflow-y-scroll "
                                 selectionMode="multiple"
                                 onSelectionChange={(keys) => {
                                     const selectedKeys = new Set(keys);
                                     const newVisibility = {};
                                     table.getAllColumns().forEach((col) => {
-                                        if (col.id !== "actions") {
+                                        if (
+                                            col.id !== "actions" &&
+                                            col.id === "comments-actions"
+                                        ) {
                                             newVisibility[col.id] =
                                                 selectedKeys.has(col.id);
                                         }
@@ -1254,7 +1265,11 @@ export default function FloorReport() {
                             >
                                 {table
                                     .getAllColumns()
-                                    .filter((col) => col.id !== "actions")
+                                    .filter(
+                                        (col) =>
+                                            col.id !== "actions" &&
+                                            col.id !== "comments-actions"
+                                    )
                                     .map((column) => (
                                         <DropdownItem
                                             key={column.id}
@@ -1434,7 +1449,7 @@ export default function FloorReport() {
                                     </tr>
                                 ))}
                             </thead>
-                            <tbody className="bg-white">
+                            <tbody className="bg-white h-[300px]">
                                 {table.getRowModel().rows.length === 0 ? (
                                     <tr>
                                         <td

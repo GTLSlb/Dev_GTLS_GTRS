@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { CustomContext } from "./CommonContext";
 import { toast } from "react-toastify";
+import moment from "moment-timezone";
 
 const msalConfig = {
     auth: {
@@ -234,11 +235,26 @@ export const formatDateWithTime = (dateString) => {
     if (dateString) {
         const [date, timeWithExtras] = dateString.split("T");
 
-        const formattedDate = date;
+        const [year, month, day] = date.split("-"); // ← Changed this order
+
+        const formattedDate = `${day}-${month}-${year}`;
 
         const [time] = timeWithExtras.split(".");
 
         return `${formattedDate} ${time}`;
+    } else {
+        return dateString;
+    }
+};
+
+export const formatDateWithTimeToSydney = (dateString) => {
+    if (dateString) {
+        // Convert to Sydney timezone (AEDT/AEST)
+        const sydneyTime = moment.utc(dateString).tz("Australia/Sydney");
+
+        const formattedDate = sydneyTime.format("DD-MM-YYYY hh:mm A");
+
+        return formattedDate;
     } else {
         return dateString;
     }
