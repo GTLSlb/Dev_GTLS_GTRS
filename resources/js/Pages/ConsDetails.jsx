@@ -23,7 +23,6 @@ export default function ConsDetails() {
     const location = useLocation();
     const consId = searchParams.get("consId");
 
-    console.log(consId)
     useEffect(() => {
         const handleScrollToTop = () => {
             window.scrollTo({
@@ -62,13 +61,10 @@ export default function ConsDetails() {
     }, [consId, location?.state?.activeCons, getApiRequest, url, user?.UserId]);
 
     useEffect(() => {
-        // if (!location?.state?.activeCons){
-        //     navigate("/gtrs/consignments");
-        // }
         if (consId || location?.state?.activeCons) {
             fetchData();
         }
-    }, [consId, location?.state?.activeCons, fetchData]);
+    }, [consId, location?.state?.activeCons]);
     let width = 0;
     if (Consignment)
         if (
