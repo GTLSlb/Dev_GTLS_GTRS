@@ -960,6 +960,12 @@ export default function FloorReport() {
                 filterFn: numberFilterFn,
             },
             {
+                accessorKey: "PalletQuantity",
+                header: "Pallet Quantity",
+                meta: { filterVariant: "number" },
+                filterFn: numberFilterFn,
+            },
+            {
                 accessorKey: "ActualScanned",
                 header: "Scanned Events",
                 meta: { filterVariant: "number" },
