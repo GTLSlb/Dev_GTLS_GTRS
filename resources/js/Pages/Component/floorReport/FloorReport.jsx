@@ -793,6 +793,7 @@ export default function FloorReport() {
             ConsId: data.ConsignmentID,
             FloorCommentId: null,
             ConsignmentID: data.ConsignmentID,
+            ConsignmentNo: data.ConsignmentNo,
         });
         onAddCommentOpen();
     };

@@ -84,6 +84,8 @@ const AddFloorCommentsModal = ({
     };
 
     if (!isOpen) return null;
+
+    console.log(commentsData);
     return (
         <Modal
             isOpen={isOpen}
@@ -97,15 +99,15 @@ const AddFloorCommentsModal = ({
                         <form onSubmit={handleSubmit}>
                             <ModalHeader className="flex flex-col gap-1">
                                 {formData.FloorCommentId
-                                    ? "Edit Comment"
-                                    : "Add Comment"}
+                                    ? `Edit Comment for ${commentsData.ConsignmentNo}`
+                                    : `Add Comment for ${commentsData.ConsignmentNo}`}
                             </ModalHeader>
                             <ModalBody>
                                 <div className="flex flex-col gap-3">
                                     <Textarea
-                                        label="Comments"
+                                        label=""
                                         aria-labelledby="comments"
-                                        placeholder="Enter comments"
+                                        placeholder="Enter Comment"
                                         labelPlacement="outside"
                                         variant="bordered"
                                         value={formData.Comment}
@@ -124,6 +126,14 @@ const AddFloorCommentsModal = ({
                             </ModalBody>
                             <ModalFooter>
                                 <Button
+                                    color="default"
+                                    variant="light"
+                                    onPress={onClose}
+                                    disabled={isLoading}
+                                >
+                                    Close
+                                </Button>
+                                <Button
                                     type="submit"
                                     color="primary"
                                     spinner={<Spinner size="sm" />}
@@ -131,14 +141,6 @@ const AddFloorCommentsModal = ({
                                     disabled={isLoading}
                                 >
                                     {isLoading ? "Saving..." : "Save"}
-                                </Button>
-                                <Button
-                                    color="default"
-                                    variant="light"
-                                    onPress={onClose}
-                                    disabled={isLoading}
-                                >
-                                    Close
                                 </Button>
                             </ModalFooter>
                         </form>
