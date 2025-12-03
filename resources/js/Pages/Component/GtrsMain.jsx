@@ -67,6 +67,7 @@ import { CustomContext } from "@/CommonContext";
 import TimeSlotReport from "./Timeslot/TimeSlotReport";
 import { getRoute } from "@/Components/utils/routing.jsx";
 import GMIKPIPack from "./GMI/GMIKPIPack";
+import SpendDashboard from "./SpendAnalysis/SpendDashboard";
 
 export default function GtrsMain({
     setCustomerAccounts,

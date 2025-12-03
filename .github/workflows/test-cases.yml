@@ -1,0 +1,45 @@
+name: test-cases using test framework
+
+on:
+  push:
+    branches: [ staging, store ]
+  pull_request:
+    branches: [ staging, store ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout current repo
+        uses: actions/checkout@v4
+        with:
+          path: main-repo
+
+      - name: Checkout test framework repo
+        uses: actions/checkout@v4
+        with:
+          repository: MiraCh-gtls/TestCases
+          token: ${{ secrets.TEST_FRAMEWORK_KEY }}
+          path: test-repo
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies in main repo
+        working-directory: ./main-repo
+        run: npm ci
+
+      - name: Install dependencies in test repo
+        working-directory: ./test-repo
+        run: npm ci
+
+      - name: Run tests from test repo against main repo
+        working-directory: ./test-repo
+        run: npm run test -- --target=../main-repo
+        env:
+          TARGET_REPO: ${{ github.workspace }}/main-repo
+          NODE_ENV: test
