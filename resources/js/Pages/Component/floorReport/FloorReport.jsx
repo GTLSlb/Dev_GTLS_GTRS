@@ -953,7 +953,9 @@ export default function FloorReport() {
                 header: "Despatch Date",
                 meta: { filterVariant: "date" },
                 filterFn: dateFilterFn,
-                cell: ({ getValue }) => <DateCell value={getValue()} />,
+                cell: ({ getValue }) => (
+                    <DateCell value={getValue()} showTime={false} />
+                ),
             },
             {
                 accessorKey: "SenderName",
@@ -1182,8 +1184,8 @@ export default function FloorReport() {
         headerRow.alignment = { horizontal: "center", vertical: "middle" };
 
         // Define date columns with their format types
-        const dateTimeColumns = ["Despatch Date"];
-        const dateOnlyColumns = ["Floor Scan Date", "Original RDD"];
+        const dateTimeColumns = [];
+        const dateOnlyColumns = ["Floor Scan Date", "Original RDD", "Despatch Date"];
         const rddColumns = ["RDD"];
 
         const dateTimeIndexes = headers
@@ -1209,7 +1211,11 @@ export default function FloorReport() {
                 const cellValue = cell.value;
                 cell.alignment = { wrapText: true, vertical: "top" };
 
-                if (cellValue && cellValue instanceof Date && !isNaN(cellValue)) {
+                if (
+                    cellValue &&
+                    cellValue instanceof Date &&
+                    !isNaN(cellValue)
+                ) {
                     const excelSerial =
                         (cellValue.getTime() -
                             cellValue.getTimezoneOffset() * 60000) /
@@ -1319,7 +1325,7 @@ export default function FloorReport() {
                                     table.getAllColumns().forEach((col) => {
                                         if (
                                             col.id !== "actions" &&
-                                            col.id === "comments-actions"
+                                            col.id !== "comments-actions"
                                         ) {
                                             newVisibility[col.id] =
                                                 selectedKeys.has(col.id);
