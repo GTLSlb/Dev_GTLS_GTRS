@@ -758,10 +758,14 @@ export default function FloorReport() {
                             "YYYY-MM-DDTHH:mm:ss",
                             "DD-MM-YYYY HH:mm A",
                             "DD/MM/YYYY HH:mm A",
+                            "D/M/YYYY HH:mm A",
                             "YYYY-MM-DD HH:mm:ss",
                             "DD-MM-YYYY hh:mm A",
                             "DD/MM/YYYY hh:mm A",
+                            "D/M/YYYY hh:mm A",
                             "YYYY-MM-DD",
+                            "DD/MM/YYYY",
+                            "D/M/YYYY",
                         ]);
 
                         newRow[field] = parsed.isValid()
@@ -816,8 +820,10 @@ export default function FloorReport() {
     // Cell renderers
     const DateCell = ({ value, showTime = true }) => {
         if (!value) return <span className="text-gray-400">-</span>;
-        const format = showTime ? "DD/MM/YYYY hh:mm A" : "DD/MM/YYYY";
-        return <span>{moment(value).format(format)}</span>;
+        const outputFormat = showTime ? "DD/MM/YYYY hh:mm A" : "DD/MM/YYYY";
+        // value is already a Date object from formattedData
+        const parsedDate = moment(value);
+        return <span>{parsedDate.format(outputFormat)}</span>;
     };
 
     const RDDCell = ({ value }) => {
@@ -1175,14 +1181,19 @@ export default function FloorReport() {
         };
         headerRow.alignment = { horizontal: "center", vertical: "middle" };
 
-        const dateColumns = [
-            "Despatch Date",
-            "Floor Scan Date",
-            "RDD",
-            "Original RDD",
-        ];
-        const dateColumnIndexes = headers
-            .map((h, i) => (dateColumns.includes(h) ? i : null))
+        // Define date columns with their format types
+        const dateTimeColumns = ["Despatch Date"];
+        const dateOnlyColumns = ["Floor Scan Date", "Original RDD"];
+        const rddColumns = ["RDD"];
+
+        const dateTimeIndexes = headers
+            .map((h, i) => (dateTimeColumns.includes(h) ? i : null))
+            .filter((i) => i !== null);
+        const dateOnlyIndexes = headers
+            .map((h, i) => (dateOnlyColumns.includes(h) ? i : null))
+            .filter((i) => i !== null);
+        const rddIndexes = headers
+            .map((h, i) => (rddColumns.includes(h) ? i : null))
             .filter((i) => i !== null);
 
         // Add data rows
@@ -1198,16 +1209,27 @@ export default function FloorReport() {
                 const cellValue = cell.value;
                 cell.alignment = { wrapText: true, vertical: "top" };
 
-                if (dateColumnIndexes.includes(colNumber - 1) && cellValue) {
-                    const date = new Date(cellValue);
-                    if (!isNaN(date)) {
-                        const excelSerial =
-                            (date.getTime() -
-                                date.getTimezoneOffset() * 60000) /
-                                86400000 +
-                            25569;
-                        cell.value = excelSerial;
+                if (cellValue && cellValue instanceof Date && !isNaN(cellValue)) {
+                    const excelSerial =
+                        (cellValue.getTime() -
+                            cellValue.getTimezoneOffset() * 60000) /
+                            86400000 +
+                        25569;
+                    cell.value = excelSerial;
+
+                    // Apply appropriate format based on column type
+                    if (dateTimeIndexes.includes(colNumber - 1)) {
                         cell.numFmt = "dd-mm-yyyy hh:mm";
+                    } else if (dateOnlyIndexes.includes(colNumber - 1)) {
+                        cell.numFmt = "dd-mm-yyyy";
+                    } else if (rddIndexes.includes(colNumber - 1)) {
+                        // RDD shows time only if not 00:00
+                        const isTimeEmpty =
+                            cellValue.getHours() === 0 &&
+                            cellValue.getMinutes() === 0;
+                        cell.numFmt = isTimeEmpty
+                            ? "dd-mm-yyyy"
+                            : "dd-mm-yyyy hh:mm";
                     }
                 }
             });
