@@ -975,19 +975,12 @@ export default function GtrsMain({
                 permission={userPermissions}
                 route="UtilizationReport_View"
                 element={
-                    <ProductStockTable
+                    <Utilization
                         url={url}
                         Token={Token}
                         userPermissions={userPermissions}
                     />
                 }
-            />
-        ),
-        "/timeslot-report": (
-            <ProductStockTable
-                url={url}
-                Token={Token}
-                userPermissions={userPermissions}
             />
         ),
         "/settings": (

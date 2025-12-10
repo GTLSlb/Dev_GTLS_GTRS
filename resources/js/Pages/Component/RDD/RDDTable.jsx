@@ -30,7 +30,7 @@ export default function RDDTable({
     setFilterValue,
     rddReasons,
 }) {
-    const { url, userPermissions, Token } = useContext(CustomContext);
+    const { url, userPermissions, Token, RDDReasonsData } = useContext(CustomContext);
     window.moment = moment;
     const updateLocalData = (id, reason, note) => {
         // Find the item in the local data with the matching id

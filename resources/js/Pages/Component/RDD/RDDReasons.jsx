@@ -71,8 +71,8 @@ export default function RDDReasons() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-300  max-h-80 overflow-y-scroll">
-                                        {RDDReasonsData.length > 0 ? (
-                                            RDDReasonsData.map(
+                                        {RDDReasonsData?.length > 0 ? (
+                                            RDDReasonsData?.map(
                                                 (reason, index) => (
                                                     <tr
                                                         key={index}

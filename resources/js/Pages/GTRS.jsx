@@ -56,7 +56,7 @@ export default function Gtrs({
         setFailedReasonsApi,
         setFailedReasonsData,
         setRDDReasonsApi,
-        setRDDReasonsData,
+        setRDDReasonsData
     } = useContext(CustomContext);
 
     const [chartsData, setchartsData] = useState([]);
