@@ -206,7 +206,7 @@ class RegisteredUserController extends Controller
         if (is_string($valid_user)) {
             $decoded_user = json_decode($valid_user);
         } elseif ($valid_user === null) {
-            if (isset($_COOKIE['jwt_token'])) {
+            if (empty($_COOKIE['jwt_token'])) {
                 $decoded_user = $this->decode_jwt_valid($_COOKIE['jwt_token'])->user;
             } else {
                 $decoded_user = null;
@@ -217,8 +217,8 @@ class RegisteredUserController extends Controller
 
         if($decoded_user !== null) {
             $user = $this->mapUserByTypeId($decoded_user);
-            $jwt_token = !isset($_COOKIE['jwt_token']) ? $this->validateSessionFromNode($user_from_session, $sessionId, $request->session()->get('token')) : $_COOKIE['jwt_token'];
-            $token = !isset($_COOKIE['jwt_token']) ? $request->session()->get('token') : $this->decode_jwt_valid($jwt_token)->Token;
+            $jwt_token = !empty($_COOKIE['jwt_token']) ? $this->validateSessionFromNode($user_from_session, $sessionId, $request->session()->get('token')) : $_COOKIE['jwt_token'];
+            $token = !empty($_COOKIE['jwt_token']) ? $request->session()->get('token') : $this->decode_jwt_valid($jwt_token)->Token;
 
             \Log::info("NEW JWT Token: " . $jwt_token);
             return response()->json([
