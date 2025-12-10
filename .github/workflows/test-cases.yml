@@ -2,9 +2,9 @@ name: test-cases using test framework
 
 on:
   push:
-    branches: [ staging, store ]
+    branches: [ main, staging, store ]
   pull_request:
-    branches: [ staging, store ]
+    branches: [ main, staging, store ]
 
 jobs:
   lint-and-test:
@@ -28,6 +28,9 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
+          cache-dependency-path: |
+            main-repo/package-lock.json
+            test-repo/package-lock.json
 
       - name: Install dependencies in main repo
         working-directory: ./main-repo
@@ -37,9 +40,9 @@ jobs:
         working-directory: ./test-repo
         run: npm ci
 
-      - name: Run tests from test repo against main repo
+      - name: Run test:gtrs from test repo
         working-directory: ./test-repo
-        run: npm run test -- --target=../main-repo
+        run: npm run test:gtrs
         env:
           TARGET_REPO: ${{ github.workspace }}/main-repo
           NODE_ENV: test
