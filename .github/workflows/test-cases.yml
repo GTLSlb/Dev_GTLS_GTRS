@@ -48,3 +48,18 @@ jobs:
         env:
           TARGET_REPO: ${{ github.workspace }}/main-repo
           NODE_ENV: test
+          # AUTHENTICATION TEST USER
+          CUSTOMER_EMAIL: ${{ secrets.CUSTOMER_EMAIL }}
+          CUSTOMER_PASS: ${{ secrets.CUSTOMER_PASS }}
+          # API URLS
+          GTAM_API_URL: ${{ github.base_ref == 'staging' && secrets.GTAM_API_URL_STAGING ||
+            github.base_ref == 'store' && secrets.GTAM_API_URL_STORE ||
+            github.base_ref == 'main' && secrets.GTAM_API_URL_PROD }}
+          GTIS_API_URL: ${{ github.base_ref == 'staging' && secrets.GTIS_API_URL_STAGING ||
+            github.base_ref == 'store' && secrets.GTIS_API_URL_STORE ||
+            github.base_ref == 'main' && secrets.GTIS_API_URL_PROD }}
+          GTRS_API_URL: ${{ github.base_ref == 'staging' && secrets.GTRS_API_URL_STAGING ||
+            github.base_ref == 'store' && secrets.GTRS_API_URL_STORE ||
+            github.base_ref == 'main' && secrets.GTRS_API_URL_PROD }}
+          # JWT CONFIG
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
