@@ -44,7 +44,7 @@ jobs:
 
       - name: Run test:gtrs from test repo
         working-directory: ./test-repo
-        run: npm run batch:gtrs --headless
+        run: npm run batch:gtrs -- --headless
         env:
           TARGET_REPO: ${{ github.workspace }}/main-repo
           NODE_ENV: test
