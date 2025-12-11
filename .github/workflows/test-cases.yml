@@ -39,10 +39,12 @@ jobs:
       - name: Install dependencies in test repo
         working-directory: ./test-repo
         run: npm ci
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@latest
 
       - name: Run test:gtrs from test repo
         working-directory: ./test-repo
-        run: npm run test:gtrs
+        run: npm run batch:gtrs --headless
         env:
           TARGET_REPO: ${{ github.workspace }}/main-repo
           NODE_ENV: test
