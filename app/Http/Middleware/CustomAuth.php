@@ -96,7 +96,7 @@ class CustomAuth extends Middleware
                 if (!$this->validateAccessToken($accessToken, $userId['UserId'])) {
                     return $next($request);
                 } else {
-                    return redirect(config('app.redirect_route') ?? '/gtam/main');
+                    return redirect(config('app.redirect_route') ?? '/gtrs/main');
                 }
             }
             /**
@@ -111,7 +111,7 @@ class CustomAuth extends Middleware
              * If the user is on a login/auth page but already has a valid JWT cookie.
              */
             elseif(in_array($path, $auth_routes) && isset($_COOKIE['jwt_token'])){
-                return redirect(config('app.redirect_route') ?? '/gtam/main');
+                return redirect(config('app.redirect_route') ?? '/gtrs/main');
             }
         }
         /**
