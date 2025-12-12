@@ -896,6 +896,28 @@ export default function FloorReport() {
                 ),
             },
             {
+                accessorKey: "EventDateTime",
+                header: "Floor Scan Date",
+                meta: { filterVariant: "date" },
+                filterFn: dateFilterFn,
+                cell: ({ getValue }) => (
+                    <DateCell value={getValue()} showTime={false} />
+                ),
+            },
+            {
+                accessorKey: "Depot",
+                header: "Depot",
+                meta: { filterVariant: "select" },
+            },
+            {
+                accessorKey: "ChargeTo",
+                header: "Account Name",
+                // size: ACTION_COL_WIDTH,
+                // minSize: ACTION_COL_WIDTH,
+                // maxSize: ACTION_COL_WIDTH,
+                meta: { filterVariant: "text" },
+            },
+            {
                 accessorKey: "ConsignmentNo",
                 header: "Cons No",
                 size: CONS_NO_COL_WIDTH,
@@ -916,12 +938,13 @@ export default function FloorReport() {
                 },
             },
             {
-                accessorKey: "ConsStatus",
-                header: "Cons Status",
-                size: 200,
-                // minSize: 100,
-                // maxSize: 250,
-                meta: { filterVariant: "select" },
+                accessorKey: "DespatchDateTime",
+                header: "Despatch Date",
+                meta: { filterVariant: "date" },
+                filterFn: dateFilterFn,
+                cell: ({ getValue }) => (
+                    <DateCell value={getValue()} showTime={false} />
+                ),
             },
             {
                 accessorKey: "RDD",
@@ -941,21 +964,12 @@ export default function FloorReport() {
                 ),
             },
             {
-                accessorKey: "ChargeTo",
-                header: "Account Name",
-                // size: ACTION_COL_WIDTH,
-                // minSize: ACTION_COL_WIDTH,
-                // maxSize: ACTION_COL_WIDTH,
-                meta: { filterVariant: "text" },
-            },
-            {
-                accessorKey: "DespatchDateTime",
-                header: "Despatch Date",
-                meta: { filterVariant: "date" },
-                filterFn: dateFilterFn,
-                cell: ({ getValue }) => (
-                    <DateCell value={getValue()} showTime={false} />
-                ),
+                accessorKey: "ConsStatus",
+                header: "Cons Status",
+                size: 200,
+                // minSize: 100,
+                // maxSize: 250,
+                meta: { filterVariant: "select" },
             },
             {
                 accessorKey: "SenderName",
@@ -997,15 +1011,7 @@ export default function FloorReport() {
                 header: "Receiver Zone",
                 meta: { filterVariant: "select" },
             },
-            {
-                accessorKey: "EventDateTime",
-                header: "Floor Scan Date",
-                meta: { filterVariant: "date" },
-                filterFn: dateFilterFn,
-                cell: ({ getValue }) => (
-                    <DateCell value={getValue()} showTime={false} />
-                ),
-            },
+
             {
                 accessorKey: "OriginPalletSpaces",
                 header: "Cnote Pallet Space",
@@ -1048,11 +1054,6 @@ export default function FloorReport() {
                 accessorKey: "DockLocation",
                 header: "Dock Location",
                 meta: { filterVariant: "text" },
-            },
-            {
-                accessorKey: "Depot",
-                header: "Depot",
-                meta: { filterVariant: "select" },
             },
             {
                 accessorKey: "Comment",
@@ -1185,7 +1186,11 @@ export default function FloorReport() {
 
         // Define date columns with their format types
         const dateTimeColumns = [];
-        const dateOnlyColumns = ["Floor Scan Date", "Original RDD", "Despatch Date"];
+        const dateOnlyColumns = [
+            "Floor Scan Date",
+            "Original RDD",
+            "Despatch Date",
+        ];
         const rddColumns = ["RDD"];
 
         const dateTimeIndexes = headers
@@ -1403,7 +1408,7 @@ export default function FloorReport() {
                                                     key={header.id}
                                                     colSpan={header.colSpan}
                                                     className={`
-                                                        px-3 py-3 text-left text-xs font-semibold text-gray-700 
+                                                        px-3 py-3 text-left text-xs font-semibold text-gray-700
                                                         uppercase tracking-wider bg-gray-100 border-b-2 border-gray-300
                                                         border-r
                                                         ${
