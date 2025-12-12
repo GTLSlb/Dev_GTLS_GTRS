@@ -7,7 +7,7 @@ on:
     branches: [ main, staging, store ]
 
 jobs:
-  lint-and-test:
+  run-unit-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -39,8 +39,8 @@ jobs:
       - name: Install dependencies in test repo
         working-directory: ./test-repo
         run: npm ci
-      - name: Setup Chrome
-        uses: browser-actions/setup-chrome@latest
+      # - name: Setup Chrome
+      #   uses: browser-actions/setup-chrome@latest
 
       - name: Run gtrs unit tests from test repo
         working-directory: ./test-repo
