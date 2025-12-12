@@ -42,7 +42,7 @@ jobs:
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@latest
 
-      - name: Run test:gtrs from test repo
+      - name: Run gtrs unit tests from test repo
         working-directory: ./test-repo
         run: npm run unit:gtrs
         env:
