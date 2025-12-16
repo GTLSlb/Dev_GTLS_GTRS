@@ -59,6 +59,7 @@ function DateColumnFilter({ column, table }) {
     const [expandedYears, setExpandedYears] = useState(new Set());
     const [expandedMonths, setExpandedMonths] = useState(new Set());
     const [selectedDates, setSelectedDates] = useState(new Set());
+    const [includeEmpty, setIncludeEmpty] = useState(false);
 
     // Get all unique dates from the column data
     const availableDates = useMemo(() => {
@@ -105,10 +106,18 @@ function DateColumnFilter({ column, table }) {
     // Sync selected dates with filter value
     useEffect(() => {
         const currentFilter = column.getFilterValue();
-        if (currentFilter && currentFilter.size > 0) {
-            setSelectedDates(new Set(currentFilter));
+        if (currentFilter) {
+            if (currentFilter.dates && currentFilter.dates.size > 0) {
+                setSelectedDates(new Set(currentFilter.dates));
+            } else {
+                setSelectedDates(new Set());
+            }
+            if (currentFilter.includeEmpty !== undefined) {
+                setIncludeEmpty(currentFilter.includeEmpty);
+            }
         } else {
             setSelectedDates(new Set());
+            setIncludeEmpty(false);
         }
     }, [column.getFilterValue()]);
 
@@ -141,9 +150,12 @@ function DateColumnFilter({ column, table }) {
         }
         setSelectedDates(newSelected);
 
+        // When selecting dates, disable "Only Null" filter
+        setIncludeEmpty(false);
+
         // Apply filter based on selection
         if (newSelected.size > 0) {
-            column.setFilterValue(newSelected);
+            column.setFilterValue({ dates: newSelected, includeEmpty: false });
         } else {
             column.setFilterValue(undefined);
         }
@@ -165,9 +177,12 @@ function DateColumnFilter({ column, table }) {
         });
         setSelectedDates(newSelected);
 
+        // When selecting dates, disable "Only Null" filter
+        setIncludeEmpty(false);
+
         // Apply filter
         if (newSelected.size > 0) {
-            column.setFilterValue(newSelected);
+            column.setFilterValue({ dates: newSelected, includeEmpty: false });
         } else {
             column.setFilterValue(undefined);
         }
@@ -189,9 +204,25 @@ function DateColumnFilter({ column, table }) {
         });
         setSelectedDates(newSelected);
 
+        // When selecting dates, disable "Only Null" filter
+        setIncludeEmpty(false);
+
         // Apply filter
         if (newSelected.size > 0) {
-            column.setFilterValue(newSelected);
+            column.setFilterValue({ dates: newSelected, includeEmpty: false });
+        } else {
+            column.setFilterValue(undefined);
+        }
+    };
+
+    const handleEmptyToggle = () => {
+        const newIncludeEmpty = !includeEmpty;
+        setIncludeEmpty(newIncludeEmpty);
+
+        // When checking "Only Null", clear selected dates
+        if (newIncludeEmpty) {
+            setSelectedDates(new Set());
+            column.setFilterValue({ dates: new Set(), includeEmpty: true });
         } else {
             column.setFilterValue(undefined);
         }
@@ -199,10 +230,11 @@ function DateColumnFilter({ column, table }) {
 
     const clearFilter = () => {
         setSelectedDates(new Set());
+        setIncludeEmpty(false);
         column.setFilterValue(undefined);
     };
 
-    const hasFilter = selectedDates.size > 0;
+    const hasFilter = selectedDates.size > 0 || includeEmpty;
     const monthNames = [
         "January",
         "February",
@@ -232,9 +264,23 @@ function DateColumnFilter({ column, table }) {
                         className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1"
                     >
                         <XMarkIcon className="w-3 h-3" />
-                        Clear ({selectedDates.size} selected)
+                        Clear {includeEmpty ? '(Null)' : `(${selectedDates.size})`}
                     </button>
                 )}
+            </div>
+
+            {/* Empty/Null Filter Option */}
+            <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-md border border-gray-200">
+                <input
+                    type="checkbox"
+                    id="only-null-dates"
+                    checked={includeEmpty}
+                    onChange={handleEmptyToggle}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                />
+                <label htmlFor="only-null-dates" className="text-sm text-gray-700 cursor-pointer">
+                    Null Dates
+                </label>
             </div>
 
             {/* Divider */}
@@ -619,13 +665,31 @@ function NumberColumnFilter({ column }) {
 
 // Date filter function - for individual date selection
 const dateFilterFn = (row, columnId, filterValue) => {
-    if (!filterValue || filterValue.size === 0) return true;
+    if (!filterValue) return true;
 
     const cellValue = row.getValue(columnId);
-    if (!cellValue) return false;
 
-    const cellDate = moment(cellValue).format("YYYY-MM-DD");
-    return filterValue.has(cellDate);
+    // Handle the new filter structure with dates Set and includeEmpty boolean
+    const dates = filterValue.dates || filterValue;
+    const includeEmpty = filterValue.includeEmpty || false;
+
+    // If cell value is empty/null
+    if (!cellValue) {
+        return includeEmpty;
+    }
+
+    // If no dates selected but includeEmpty is true, don't show non-empty dates
+    if ((!dates || dates.size === 0) && includeEmpty) {
+        return false;
+    }
+
+    // If dates are selected, check if cell date matches
+    if (dates && dates.size > 0) {
+        const cellDate = moment(cellValue).format("YYYY-MM-DD");
+        return dates.has(cellDate);
+    }
+
+    return true;
 };
 
 // Number filter function - for range filtering
@@ -720,7 +784,7 @@ export default function FloorReport() {
         return [
             {
                 id: "EventDateTime",
-                value: new Set([today]),
+                value: { dates: new Set([today]), includeEmpty: false },
             },
         ];
     });
