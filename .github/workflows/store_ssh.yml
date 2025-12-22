@@ -1,0 +1,139 @@
+name: Build and Deploy SHH Store
+
+on:
+  push:
+    branches: ["store"]
+
+jobs:
+  build-deploy-aapanel:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout code
+      - uses: actions/checkout@v4
+
+      # Install dependencies
+      - run: npm ci
+
+      # Build (Vite)
+      - run: npm run build
+
+      - name: Install Dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      # Debug output
+      - name: Show directory tree
+        run: |
+          echo "--- PROJECT ROOT ---"
+          ls -al
+          echo "--- PUBLIC ---"
+          ls -al public || true
+          echo "--- BUILD / DIST ---"
+          ls -al public/build || true
+          ls -al build || true
+          ls -al dist || true
+
+    # Package EVERYTHING except node_modules and git
+      - name: Package Artifact
+        run: |
+          # Create the tarball in the parent directory to avoid "file changed" error
+          tar -czf ../gtrs-store-${{ github.run_number }}.tar.gz \
+          --exclude='node_modules' \
+          --exclude='.git' \
+          .
+          
+          # Move it back into the workspace so SCP can see it
+          mv ../gtrs-store-${{ github.run_number }}.tar.gz .
+          echo "Tarball successfully created."
+
+      # 🚚 COPY FILE TO SERVER
+      - name: Upload artifact to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
+          source: "gtrs-store-${{ github.run_number }}.tar.gz"
+          target: "/tmp"
+
+      # 🚀 Deploy using USERNAME + PASSWORD SSH
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
+          script: |
+            # set -e
+            # APP_NAME=gtrs.gtls.store
+            # DEPLOY_BASE=/www/wwwroot/deployments
+            # WEBROOT=/www/wwwroot/$APP_NAME
+            # ARTIFACT_PATH=/tmp/gtrs-store-${{ github.run_number }}.tar.gz
+            # VERSION=$(basename "$ARTIFACT_PATH" .tar.gz)
+            # DEPLOY_DIR=$DEPLOY_BASE/$APP_NAME/$VERSION
+
+            # # Create versioned deployment foldery
+            # mkdir -p "$DEPLOY_DIR"
+            # tar -xzf "$ARTIFACT_PATH" -C "$DEPLOY_DIR"
+
+            # # Symlink handling
+            # rm -f "$WEBROOT"
+            # ln -s "$DEPLOY_DIR" "$WEBROOT"
+
+            # # Cleanup
+            # rm -f "$ARTIFACT_PATH"
+            
+            set -e
+            echo "DEPLOY STARTED"
+
+            APP_NAME=gtrs.gtls.store
+            DEPLOY_BASE=/www/wwwroot/deployments
+            WEBROOT=/www/wwwroot/$APP_NAME
+
+            ARTIFACT_PATH=/tmp/gtrs-store-${{ github.run_number }}.tar.gz
+            VERSION=$(basename "$ARTIFACT_PATH" .tar.gz)
+            DEPLOY_DIR=$DEPLOY_BASE/$APP_NAME/$VERSION
+
+            echo "User: $(whoami) | Groups: $(groups)"
+            echo "Target: $DEPLOY_DIR"
+
+            echo "Creating deployment folder..."
+            mkdir -p "$DEPLOY_BASE/$APP_NAME"
+            mkdir "$DEPLOY_DIR"
+
+            echo "Extracting artifact..."
+            tar -xzf "$ARTIFACT_PATH" -C "$DEPLOY_DIR"
+
+            # --- NEW SECTION: Copy .env from current live site ---
+            if [ -f "$WEBROOT/.env" ]; then
+              echo "Copying .env from $WEBROOT..."
+              cp "$WEBROOT/.env" "$DEPLOY_DIR/.env"
+            else
+              echo "WARNING: No .env found in $WEBROOT. You may need to upload one manually."
+            fi
+            # ----------------------------------------------------
+
+            # Use the secret variable directly in the script
+            echo "${{ secrets.SSH_PASSWORD }}" | sudo -S chown -R www:www "$DEPLOY_DIR/storage"
+            echo "${{ secrets.SSH_PASSWORD }}" | sudo -S chown -R www:www "$DEPLOY_DIR/bootstrap/cache"
+            echo "${{ secrets.SSH_PASSWORD }}" | sudo -S chmod -R 775 "$DEPLOY_DIR/storage"
+            echo "${{ secrets.SSH_PASSWORD }}" | sudo -S chmod -R 775 "$DEPLOY_DIR/bootstrap/cache"
+
+            # Safe symlink replacement
+            if [ -L "$WEBROOT" ]; then
+              echo "Removing old symlink..."
+              rm "$WEBROOT"
+            elif [ -d "$WEBROOT" ]; then
+              echo "Backing up existing directory..."
+              mv "$WEBROOT" "${WEBROOT}_backup_$(date +%s)"
+            fi
+
+            ln -s "$DEPLOY_DIR" "$WEBROOT"
+            echo "Symlink updated: $WEBROOT -> $DEPLOY_DIR"
+
+            echo "Cleaning up artifact..."
+            rm -f "$ARTIFACT_PATH"
+
+            echo "Deployment complete!"
