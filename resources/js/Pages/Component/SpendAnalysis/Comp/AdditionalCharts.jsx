@@ -1,4 +1,5 @@
 import "../assets/css/chart.css";
+import React from "react";
 import {
     Card,
     CardBody, CardHeader,
@@ -62,7 +63,7 @@ function AdditionalCharts() {
                     <CostByStateChart />
                     <DemurrageCost />
                     <TopReceiversCharts />
-                    
+
                 </div>
                 <div className="w-1/3 h-full">
                     <Card fullWidth className="h-full">

@@ -6,10 +6,7 @@ import Cookies from "js-cookie";
 import "react-toastify/dist/ReactToastify.css";
 import { PublicClientApplication } from "@azure/msal-browser";
 import swal from "sweetalert";
-import {
-    canViewDetails,
-    canViewIncidentDetails,
-} from "./permissions";
+import { canViewDetails, canViewIncidentDetails } from "./permissions";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { CustomContext } from "./CommonContext";
@@ -28,7 +25,6 @@ const msalConfig = {
     },
 };
 export const pca = new PublicClientApplication(msalConfig);
-
 
 export function AlertToast(msg, status) {
     if (status == 1) {
@@ -213,6 +209,10 @@ export const fetchApiData = async (url, setData, user, Token, setApiStatus) => {
             }).then(async () => {
                 await handleSessionExpiration();
             });
+        }
+        if (err.response && err.response.status === 403) {
+            // App is inactive
+            window.location.href = "/inactive-app";
         } else {
             console.error(err);
         }
@@ -451,7 +451,7 @@ export const formatNumberWithCommas = (value) => {
 };
 
 export function useApiRequests() {
-    const { Token } = useContext(CustomContext);
+    const { Token, setIsAppInactive } = useContext(CustomContext);
 
     const getApiRequest = (url, headers = {}, passedToken = null) => {
         // Create a new headers object to avoid mutating the original
@@ -484,6 +484,11 @@ export function useApiRequests() {
                         },
                     }).then(() => handleSessionExpiration());
                     throw err;
+                }
+                if (err.response && err.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
                 } else {
                     console.error("API GET request error:", err);
                     throw err;
@@ -524,6 +529,11 @@ export function useApiRequests() {
                         },
                     }).then(() => handleSessionExpiration());
                     throw err;
+                }
+                if (err.response && err.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
                 } else {
                     console.error("API POST request error:", err);
                     throw err;

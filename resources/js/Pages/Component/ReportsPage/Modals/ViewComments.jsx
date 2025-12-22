@@ -18,7 +18,7 @@ export default function ViewComments({
     deliveryCommentsOptions,
     fetchDeliveryReportCommentsData,
 }) {
-    const { Token, user, url } = useContext(CustomContext);
+    const { Token, user, url, setIsAppInactive } = useContext(CustomContext);
     const [data, setData] = useState([]);
     const [comment, setComment] = useState(null);
     const [commentId, setCommentId] = useState(null);
@@ -69,6 +69,11 @@ export default function ViewComments({
                     }).then(async function () {
                         await handleSessionExpiration();
                     });
+                }
+                if (err.response && err.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
                 } else {
                     // Handle other errors
                     console.error(err);
@@ -114,6 +119,11 @@ export default function ViewComments({
                 }).then(async function () {
                     await handleSessionExpiration();
                 });
+            }
+            if (error.response && error.response.status === 403) {
+                // App is inactive
+                setIsAppInactive(true);
+                window.location.href = "/inactive-app";
             } else {
                 // Handle other errors
                 console.error(error);
@@ -188,7 +198,10 @@ export default function ViewComments({
                     {data?.length > 0 ? (
                         <div className="max-h-[21rem] overflow-auto pr-1 containerscroll">
                             {data?.map((c, index) => (
-                                <div key={index} className="flex flex-col gap-4 border-b-1 border-[#D5D5D5] py-3">
+                                <div
+                                    key={index}
+                                    className="flex flex-col gap-4 border-b-1 border-[#D5D5D5] py-3"
+                                >
                                     <div className="flex pr-2">
                                         <div className="w-[95%]">
                                             {isEditing && editIndx === index ? (

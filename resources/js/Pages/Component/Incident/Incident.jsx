@@ -12,7 +12,7 @@ import { canViewIncidentDetails } from "@/permissions";
 import { CustomContext } from "@/CommonContext";
 
 export default function Incident({ gtccrUrl }) {
-    const { Token, user, userPermissions } = useContext(CustomContext);
+    const { Token, user, userPermissions, setIsAppInactive } = useContext(CustomContext);
     const location = useLocation();
     const [selected, setSelected] = useState("details");
     const [filters, setFilters] = useState();
@@ -59,6 +59,10 @@ export default function Incident({ gtccrUrl }) {
                     }).then(async function () {
                         await handleSessionExpiration();
                     });
+                }if (err.response && err.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
                 } else {
                     // Handle other errors
                     console.error(err);
@@ -102,6 +106,10 @@ export default function Incident({ gtccrUrl }) {
                     }).then(async function () {
                         await handleSessionExpiration();
                     });
+                }if (err.response && err.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
                 } else {
                     // Handle other errors
                     console.error(err);
@@ -129,7 +137,7 @@ export default function Incident({ gtccrUrl }) {
     useEffect(() => {
         getIncident();
     }, []);
-    
+
     return (
         <div className="relative p-5">
             {incident && filters && mainCauses ? (

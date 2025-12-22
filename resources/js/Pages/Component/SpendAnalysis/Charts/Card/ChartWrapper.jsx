@@ -1,4 +1,4 @@
-
+import React from "react";
 import { CustomModal } from "@/Components/common/CustomModal";
 import { ArrowsPointingOutIcon, FunnelIcon } from "@heroicons/react/24/outline";
 import {

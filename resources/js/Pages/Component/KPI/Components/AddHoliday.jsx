@@ -23,7 +23,7 @@ export default function AddHoliday({
     fetchData,
     closeModal,
 }) {
-    const { Token, url, user } = useContext(CustomContext);
+    const { Token, url, user, setIsAppInactive } = useContext(CustomContext);
     const [selected, setSelected] = useState(states[0]);
     const [isChecked, setIsChecked] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -88,6 +88,10 @@ export default function AddHoliday({
                     }).then(async function () {
                         await handleSessionExpiration();
                     });
+                }if (err.response && err.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
                 } else {
                     // Handle other errors
                     console.error(err);

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
     Bar,
     BarChart,
@@ -28,6 +28,12 @@ function TotalSpendChart({ filters, setFilters, setSelected }) {
         new Set(barTypeOptions.map((option) => option.value))
     );
 
+    const [activeLegend, setActiveLegend] = useState({
+        cost: true,
+        additional: true,
+        fuelLevy: true,
+        GST: true,
+    });
     const {
         getChartData,
         selectedPeriodKey,

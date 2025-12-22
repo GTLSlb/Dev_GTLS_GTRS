@@ -26,7 +26,7 @@ import { exportToExcel } from "@/Components/utils/excelUtils";
 
 export default function Utilization() {
     const gridRef = useRef(null);
-    const { url, Token, user, userPermissions } = useContext(CustomContext);
+    const { url, Token, user, userPermissions, setIsAppInactive } = useContext(CustomContext);
     const [utilizationData, setUtilizationData] = useState(null);
     const minDate = getMinMaxValue(utilizationData, "ManifestDateTime", 1);
     const maxDate = getMinMaxValue(utilizationData, "ManifestDateTime", 2);
@@ -79,7 +79,11 @@ export default function Utilization() {
                 }).then(async function () {
                     await handleSessionExpiration();
                 });
-            } else {
+            }if (err.response && err.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
+                } else {
                 setUtilizationData([]);
                 console.error(err);
 
@@ -500,7 +504,7 @@ export default function Utilization() {
             render: ({ value, data }) => {
                 const links = value.split('\n').map((link, index) => (
                     <div key={index} className={`flex justify-center items-center ${isALink(link) && `text-blue-500 underline cursor-pointer`}`}>
-                        {isALink(link) ? <a target="_blank" href={link}>{link}</a> : <span>{link}</span>}
+                        {isALink(link) ? <a target="_blank" href={link} rel="noreferrer">{link}</a> : <span>{link}</span>}
                     </div>
                 ));
                 return (

@@ -203,7 +203,19 @@ class RegisteredUserController extends Controller
 
         if($decoded_user !== null) {
             $user = $this->mapUserByTypeId($decoded_user);
-            $jwt_token = !isset($_COOKIE['jwt_token']) ? $this->validateSessionFromNode($user_from_session, $sessionId, $request->session()->get('token')) : $_COOKIE['jwt_token'];
+            if(isset($_COOKIE['jwt_token'])){
+                // JWT Token exists in cookie
+                // User has an existing session from a Node.js service
+                 \Log::info("JWT Token exists in cookie");
+                 $jwt_token = $_COOKIE['jwt_token'];
+                 $token = $this->decode_jwt_valid($jwt_token)->Token;
+            }else{
+                // User has no JWT Token in cookie
+                // Create a new session in Node.js service and get JWT Token
+                \Log::info("Creating new JWT Token as it does not exist in cookie");
+                $jwt_token = $this->validateSessionFromNode($user_from_session, $sessionId, $request->session()->get('token'));
+                $token = $request->session()->get('token');
+            }
             \Log::info("NEW JWT Token: " . $jwt_token);
             return response()->json([
                 'jwt_token' => $jwt_token,

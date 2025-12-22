@@ -4,9 +4,9 @@ import React from "react";
 import PropTypes from "prop-types";
 import swal from "sweetalert";
 import { useState } from "react";
-import { useEffect } from "react";
-import { handleSessionExpiration } from '@/CommonFunctions';
-
+import { useEffect, useContext } from "react";
+import { handleSessionExpiration } from "@/CommonFunctions";
+import { CustomContext } from "@/CommonContext";
 
 export default function AddSafetyCausesModal({
     isOpen,
@@ -17,9 +17,10 @@ export default function AddSafetyCausesModal({
 }) {
     const [isSaveEnabled, setIsSaveEnabled] = useState(true);
     const [causeStatus, setCauseStatus] = useState(true);
-    const [isLoading,SetIsLoading] = useState(false)
+    const [isLoading, SetIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
+    const { setIsAppInactive } = useContext(CustomContext);
     useEffect(() => {
         if (cause) {
             setCauseStatus(cause?.CauseStatus);
@@ -38,7 +39,7 @@ export default function AddSafetyCausesModal({
         event.preventDefault();
         // Prevent the default form submission behavior
         try {
-            SetIsLoading(true)
+            SetIsLoading(true);
             // Make the API request using Axios or any other library
             // Handle the response as needed
             // setInputValue("");
@@ -46,28 +47,33 @@ export default function AddSafetyCausesModal({
             setTimeout(() => {
                 handleClose();
                 // setdescription("");
-                SetIsLoading(false)
+                SetIsLoading(false);
                 updateLocalData();
             }, 1000);
         } catch (error) {
-            SetIsLoading(false)
+            SetIsLoading(false);
             // Handle error
             setError("Error occurred while saving the data. Please try again."); // Set the error message
-                if (error.response && error.response.status === 401) {
-                  // Handle 401 error using SweetAlert
-                  swal({
-                    title: 'Session Expired!',
+            if (error.response && error.response.status === 401) {
+                // Handle 401 error using SweetAlert
+                swal({
+                    title: "Session Expired!",
                     text: "Please login again",
-                    type: 'success',
+                    type: "success",
                     icon: "info",
-                    confirmButtonText: 'OK'
-                  }).then(async function () {
+                    confirmButtonText: "OK",
+                }).then(async function () {
                     await handleSessionExpiration();
                 });
-                } else {
-                  // Handle other errors
-                  console.error(error);
-                }
+            }
+            if (error.response && error.response.status === 403) {
+                // App is inactive
+                setIsAppInactive(true);
+                window.location.href = "/inactive-app";
+            } else {
+                // Handle other errors
+                console.error(error);
+            }
         }
     };
 
@@ -207,12 +213,12 @@ export default function AddSafetyCausesModal({
                             className="rounded-md bg-dark w-20 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-goldd focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         >
                             {isLoading ? (
-                                    <div className=" inset-0 flex justify-center items-center bg-opacity-50">
-                                        <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-smooth"></div>
-                                    </div>
-                                ) : (
-                                    "Save"
-                                )}
+                                <div className=" inset-0 flex justify-center items-center bg-opacity-50">
+                                    <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-smooth"></div>
+                                </div>
+                            ) : (
+                                "Save"
+                            )}
                         </button>
                     </div>
                 </form>

@@ -1,4 +1,5 @@
 import { ChartWrapper } from "./Card/ChartWrapper";
+import React from "react";
 import {
     Bar,
     CartesianGrid,

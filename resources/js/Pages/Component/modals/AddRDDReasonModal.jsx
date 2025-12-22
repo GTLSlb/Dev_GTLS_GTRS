@@ -20,7 +20,7 @@ import { CustomContext } from "@/CommonContext";
 import axios from "axios";
 
 export default function AddRDDReasonModal({ isOpen, handleClose, reason }) {
-    const { url, user, Token, RDDReasonsData, getRDDReasons } =
+    const { url, user, Token, RDDReasonsData, getRDDReasons, setIsAppInactive } =
         useContext(CustomContext);
     const [isSaveEnabled, setIsSaveEnabled] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
@@ -94,7 +94,11 @@ export default function AddRDDReasonModal({ isOpen, handleClose, reason }) {
                 }).then(async function () {
                     await handleSessionExpiration();
                 });
-            } else {
+            }if (error.response && error.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
+                } else {
                 console.error(error);
             }
         }

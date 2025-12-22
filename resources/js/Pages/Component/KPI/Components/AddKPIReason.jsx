@@ -16,7 +16,7 @@ export default function AddKPIReason({
     fetchData,
     closeModal
 }) {
-    const { Token, user, url } = useContext(CustomContext);
+    const { Token, user, url, setIsAppInactive } = useContext(CustomContext);
     const [isChecked, setIsChecked] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [object, setObject] = useState();
@@ -71,7 +71,11 @@ export default function AddKPIReason({
                     }).then(async function () {
                         await handleSessionExpiration();
                     });
-                  } else {
+                  }if (err.response && err.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
+                } else {
                     // Handle other errors
                     console.error(err);
                     setIsLoading(false);

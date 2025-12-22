@@ -10,6 +10,7 @@ export default function ContextProvider({ children }) {
     const url = window.Laravel.gtrsUrl;
     const [user, setUser] = useState(null);
     const [canAccess, setCanAccess] = useState(true);
+    const [isAppInactive, setIsAppInactive] = useState(false);
     const [userPermissions, setUserPermissions] = useState(null);
 
     const [sidebarElements, setSidebarElements] = useState(menu);
@@ -107,6 +108,7 @@ export default function ContextProvider({ children }) {
                 RDDReasonsApi,
                 setRDDReasonsApi,
                 getRDDReasons,
+                isAppInactive, setIsAppInactive,
             }}
         >
             {children}

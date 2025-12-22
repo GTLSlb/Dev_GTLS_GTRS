@@ -6,7 +6,7 @@ import "../../css/scroll.css";
 import swal from "sweetalert";
 import { handleSessionExpiration, AlertToast } from "@/CommonFunctions";
 import Select from "react-select";
-import {ToastContainer} from 'react-toastify';
+import { ToastContainer } from "react-toastify";
 import { CustomContext } from "@/CommonContext";
 
 export default function SafetyModal({
@@ -28,7 +28,7 @@ export default function SafetyModal({
     setIsSuccessfull,
     fetchData,
 }) {
-    const { user, Token, url } = useContext(CustomContext);
+    const { user, Token, url, setIsAppInactive } = useContext(CustomContext);
 
     // Enhanced date formatting with error handling
     const formatDate = useCallback((dateString) => {
@@ -222,6 +222,11 @@ export default function SafetyModal({
                         confirmButtonText: "OK",
                     });
                     await handleSessionExpiration();
+                }
+                if (error.response && error.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
                 } else if (error.response?.data?.message) {
                     const errorMessage = error.response.data.message;
                     setError(errorMessage);

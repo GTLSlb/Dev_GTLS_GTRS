@@ -19,6 +19,7 @@ import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 import moment from "moment";
 import PropTypes from "prop-types";
 import React, { useContext, useEffect, useRef, useState } from "react";
+import { renderIncidentDetailsLink } from "@/CommonFunctions";
 
 export default function FailedCons({
     PerfData,

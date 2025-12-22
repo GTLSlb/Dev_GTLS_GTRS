@@ -1,3 +1,4 @@
+import React from "react";
 import { PieChart, Pie, Cell, Legend, Tooltip } from "recharts";
 import { ChartWrapper } from "./Card/ChartWrapper";
 import { DurationFilter } from "./Card/DurationFilter";

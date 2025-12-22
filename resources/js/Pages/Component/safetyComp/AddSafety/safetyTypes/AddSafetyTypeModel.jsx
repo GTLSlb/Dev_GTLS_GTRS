@@ -1,3 +1,4 @@
+import React from "react";
 import ReactModal from "react-modal";
 import InputError from "@/Components/InputError";
 import { useContext, useState } from "react";
@@ -14,7 +15,7 @@ export default function AddSafetyTypeModal({
     updateLocalData,
     safetyTypes,
 }) {
-    const { user, Token, url } = useContext(CustomContext);
+    const { user, Token, url, setIsAppInactive } = useContext(CustomContext);
     const [Name, setName] = useState(null);
     const [isSaveEnabled, setIsSaveEnabled] = useState(true);
     const [Status, setStatus] = useState(true);
@@ -85,8 +86,12 @@ export default function AddSafetyTypeModal({
                     await handleSessionExpiration();
                 });
 
-                console.log(err);
-            }
+                console.log(error);
+            }if (error.response && error.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
+                }
         }
     };
 

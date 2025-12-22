@@ -7,7 +7,7 @@ import {
     Tooltip,
     Legend,
 } from "recharts";
-
+import React from "react";
 import { ChartWrapper } from "./Card/ChartWrapper";
 import { dummySpendData } from "../assets/js/dataHandler";
 import { useDurationData } from "../assets/js/useDurationData";

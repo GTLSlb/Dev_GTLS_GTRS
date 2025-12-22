@@ -25,7 +25,7 @@ export default function UtilizationModal({
     item,
     fetchUtilizationReportData,
 }) {
-    const { url, user, Token } = useContext(CustomContext);
+    const { url, user, Token, setIsAppInactive } = useContext(CustomContext);
     const [isSaveEnabled, setIsSaveEnabled] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -94,6 +94,10 @@ export default function UtilizationModal({
                     }).then(async function () {
                         await handleSessionExpiration();
                     });
+                }if (err.response && err.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
                 } else {
                     AlertToast("An error occurred. Please try again.", 2);
                     // Handle other errors
