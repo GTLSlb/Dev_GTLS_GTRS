@@ -1,3 +1,4 @@
+import React from "react";
 import { Card, CardBody, CardHeader, Divider, Progress } from "@heroui/react";
 import { FaDollarSign, FaUsers, FaTruckLoading } from "react-icons/fa";
 

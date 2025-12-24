@@ -8,6 +8,7 @@ import {
     XAxis,
     YAxis,
 } from "recharts";
+import React from "react";
 import { ChartWrapper } from "./Card/ChartWrapper";
 import { useState, useEffect } from "react"; // Import useEffect for initial state
 import { useDurationData } from "../assets/js/useDurationData";

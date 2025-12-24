@@ -18,9 +18,10 @@ import swal from "sweetalert";
 import { CustomContext } from "@/CommonContext";
 import { handleSessionExpiration, AlertToast } from "@/CommonFunctions";
 import { Spinner,Button } from "@heroui/react";
+import AnimatedLoading from "@/Components/AnimatedLoading";
 
 export default function Utilization() {
-    const { url, Token, user } = useContext(CustomContext);
+    const { url, Token, user, setIsAppInactive } = useContext(CustomContext);
     const [utilizationData, setUtilizationData] = useState();
     useEffect(() => {
         fetchUtilizationReportData();
@@ -45,7 +46,11 @@ export default function Utilization() {
                 }).then(async function () {
                     await handleSessionExpiration();
                 });
-            } else {
+            }if (err.response && err.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
+                } else {
                 // Handle other errors
                 console.error(err);
                 // Check if setCellLoading exists before calling it

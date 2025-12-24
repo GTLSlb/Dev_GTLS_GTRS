@@ -58,6 +58,7 @@ return [
     'gtam_api_url' => env('GTAM_API_URL'),
     'gtrr_api_url' => env('GTRR_API_URL', 'http://localhost:3001'),
 
+    'redirect_route' => env('REDIRECT_ROUTE', '/gtrs/main'),
     'asset_url' => env('ASSET_URL'),
 
     /*

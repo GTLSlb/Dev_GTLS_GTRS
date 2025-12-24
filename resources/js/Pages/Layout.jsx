@@ -25,8 +25,9 @@ export default function Sidebar() {
         setCanAccess,
         setUserPermissions,
         setAllowedApplications,
+        setIsAppInactive,
     } = useContext(CustomContext);
-    const { getApiRequest, postApiRequest } = useApiRequests();
+    const { getApiRequest } = useApiRequests();
     const gtamUrl = window.Laravel.gtamUrl;
     const appId = window.Laravel?.appId;
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -107,6 +108,11 @@ export default function Sidebar() {
                     await handleSessionExpiration();
                 });
             }
+            if (err.response && err.response.status === 403) {
+                // App is inactive
+                setIsAppInactive(true);
+                window.location.href = "/inactive-app";
+            }
         }
     };
 
@@ -115,70 +121,63 @@ export default function Sidebar() {
     }, [gtamUrl, appId]);
 
     if (canAccess === false) {
-            return (
-                <NoAccess setToken={setToken} setUser={setUser} user={user} />
-            );
-        } else {
-            return (
-                <div className="h-screen">
-                    {Token ? (
-                        <div className="bg-smooth h-full ">
-                            <Routes>
-                                <Route
-                                    path="/*"
-                                    element={
-                                        <Gtrs
-                                            setMobileMenuOpen={
-                                                setMobileMenuOpen
-                                            }
-                                            mobileMenuOpen={mobileMenuOpen}
-                                            loadingGtrs={loadingGtrs}
-                                            setLoadingGtrs={setLoadingGtrs}
-                                        />
-                                    }
-                                />
-                                <Route path="/login" element={<Login />} />
-                                <Route
-                                    path="/notFound"
-                                    element={<NotFound />}
-                                />
-                                <Route
-                                    path="/logout"
-                                    element={
-                                        <Logout
-                                            user={user}
-                                            setToken={setToken}
-                                            setUser={setUser}
-                                        />
-                                    }
-                                />
-                                <Route
-                                    path="/no-access"
-                                    element={
-                                        <NoAccess
-                                            setToken={setToken}
-                                            setUser={setUser}
-                                            user={user}
-                                        />
-                                    }
-                                />
-                                <Route
-                                    path="/inactive-app"
-                                    element={
-                                        <InactiveApp
-                                            user={user}
-                                            setToken={setToken}
-                                            setUser={setUser}
-                                        />
-                                    }
-                                />
-                                <Route path="/*" element={<NotFound />} />
-                            </Routes>
-                        </div>
-                    ) : (
-                        <AnimatedLoading />
-                    )}
-                </div>
-            );
+        return <NoAccess setToken={setToken} setUser={setUser} user={user} />;
+    } else {
+        return (
+            <div className="h-screen">
+                {Token ? (
+                    <div className="bg-smooth h-full ">
+                        <Routes>
+                            <Route
+                                path="/*"
+                                element={
+                                    <Gtrs
+                                        setMobileMenuOpen={setMobileMenuOpen}
+                                        mobileMenuOpen={mobileMenuOpen}
+                                        loadingGtrs={loadingGtrs}
+                                        setLoadingGtrs={setLoadingGtrs}
+                                    />
+                                }
+                            />
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/notFound" element={<NotFound />} />
+                            <Route
+                                path="/logout"
+                                element={
+                                    <Logout
+                                        user={user}
+                                        setToken={setToken}
+                                        setUser={setUser}
+                                    />
+                                }
+                            />
+                            <Route
+                                path="/no-access"
+                                element={
+                                    <NoAccess
+                                        setToken={setToken}
+                                        setUser={setUser}
+                                        user={user}
+                                    />
+                                }
+                            />
+                            <Route
+                                path="/inactive-app"
+                                element={
+                                    <InactiveApp
+                                        user={user}
+                                        setToken={setToken}
+                                        setUser={setUser}
+                                    />
+                                }
+                            />
+                            <Route path="/*" element={<NotFound />} />
+                        </Routes>
+                    </div>
+                ) : (
+                    <AnimatedLoading />
+                )}
+            </div>
+        );
     }
 }

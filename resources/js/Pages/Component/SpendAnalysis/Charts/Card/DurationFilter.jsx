@@ -4,6 +4,7 @@ import {
     periodOptions,
     quarters,
 } from "../../assets/js/useDurationData";
+import React from "react";
 
 export function DurationFilter({
     selectedPeriodKey,

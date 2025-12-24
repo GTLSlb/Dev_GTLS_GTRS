@@ -20,11 +20,12 @@ import {
     handleSessionExpiration,
     renderConsDetailsLink,
 } from "@/CommonFunctions";
-import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
+import moment from "moment";
+
 function TimeSlotReport() {
-    const { url, Token, user, userPermissions } = useContext(CustomContext);
+    const { url, Token, user, userPermissions, setIsAppInactive } = useContext(CustomContext);
     const gridRef = useRef(null);
     const [selected] = useState({});
     const [timeSlotData, setTimeSlotData] = useState([]);
@@ -373,6 +374,10 @@ function TimeSlotReport() {
                     }).then(async function () {
                         await handleSessionExpiration();
                     });
+                }if (err.response && err.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
                 } else {
                     console.error(err);
                 }

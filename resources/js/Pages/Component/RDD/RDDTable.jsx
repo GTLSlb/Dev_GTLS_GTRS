@@ -143,6 +143,26 @@ export default function RDDTable({
             label: reason.ReasonName,
         })
     ).sort((a, b) => a.label.localeCompare(b.label));
+
+        function convertUtcToUserTimezone(utcDateString) {
+        // Create a Date object from the UTC date string
+        const utcDate = new Date(utcDateString);
+
+        // Get the current user's timezone
+        const targetTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        const formatter = new Intl.DateTimeFormat("en-US", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            timeZone: targetTimezone,
+        });
+        const convertedDate = formatter.format(utcDate);
+        return convertedDate;
+    }
     const columns = [
         {
             name: "ConsignmentNo",

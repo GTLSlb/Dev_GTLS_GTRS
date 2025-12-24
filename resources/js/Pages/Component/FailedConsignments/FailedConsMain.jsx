@@ -17,7 +17,7 @@ export default function FailedConsMain({
     failedReasons,
     setFailedReasons,
 }) {
-    const { url, Token, user, userPermissions } = useContext(CustomContext);
+    const { url, Token, user, userPermissions, setIsAppInactive } = useContext(CustomContext);
     const [isFetching, setIsfetching] = useState();
     const [activeComponentIndex, setActiveComponentIndex] = useState(0);
 
@@ -60,6 +60,11 @@ export default function FailedConsMain({
                         }).then(async function () {
                             await handleSessionExpiration();
                         });
+                    }
+                    if (err.response && err.response.status === 403) {
+                        // App is inactive
+                        setIsAppInactive(true);
+                        window.location.href = "/inactive-app";
                     } else {
                         // Handle other errors
                         console.error(err);

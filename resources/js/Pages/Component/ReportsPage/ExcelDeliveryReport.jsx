@@ -54,7 +54,8 @@ export default function ExcelDeliveryReport({
     fetchDeliveryReport,
     deliveryCommentsOptions,
 }) {
-    const { Token, user, userPermissions, url } = useContext(CustomContext);
+    const { Token, user, userPermissions, url, setIsAppInactive } =
+        useContext(CustomContext);
 
     const dateFields = [
         "DeliveryRequiredDateTime",
@@ -662,6 +663,11 @@ export default function ExcelDeliveryReport({
                     }).then(async function () {
                         await handleSessionExpiration();
                     });
+                }
+                if (err.response && err.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
                 } else {
                     // Handle other errors
                     console.error(err);
@@ -699,6 +705,11 @@ export default function ExcelDeliveryReport({
                     }).then(async function () {
                         await handleSessionExpiration();
                     });
+                }
+                if (err.response && err.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
                 } else {
                     // Handle other errors
                     console.error(err);

@@ -39,7 +39,7 @@ export default function DeliveryReportPage({
     deliveryReportComments,
     fetchDeliveryReportCommentsDataGTRS,
 }) {
-    const { Token, user, userPermissions, url } = useContext(CustomContext);
+    const { Token, user, userPermissions, url, setIsAppInactive } = useContext(CustomContext);
     const navigate = useNavigate();
     const handleClick = (coindex) => {
         navigate("/gtrs/consignment-details", {
@@ -381,7 +381,11 @@ export default function DeliveryReportPage({
                 }).then(async function () {
                     await handleSessionExpiration();
                 });
-            } else {
+            }if (err.response && err.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
+                } else {
                 // Handle other errors
                 console.error(err);
             }
@@ -507,7 +511,11 @@ export default function DeliveryReportPage({
                         }).then(async function () {
                             await handleSessionExpiration();
                         });
-                    } else {
+                    }if (err.response && err.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
+                } else {
                         // Handle other errors
                         console.error(err);
                     }

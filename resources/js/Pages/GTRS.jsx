@@ -56,7 +56,8 @@ export default function Gtrs({
         setFailedReasonsApi,
         setFailedReasonsData,
         setRDDReasonsApi,
-        setRDDReasonsData
+        setRDDReasonsData,
+        setIsAppInactive,
     } = useContext(CustomContext);
 
     const [chartsData, setchartsData] = useState([]);
@@ -141,6 +142,11 @@ export default function Gtrs({
                 }).then(async function () {
                     await handleSessionExpiration();
                 });
+            }
+            if (err.response && err.response.status === 403) {
+                // App is inactive
+                setIsAppInactive(true);
+                window.location.href = "/inactive-app";
             } else {
                 // Handle other errors
                 console.error(err);

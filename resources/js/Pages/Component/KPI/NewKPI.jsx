@@ -41,7 +41,7 @@ function NewKPI({
     accData,
     kpireasonsData,
 }) {
-    const { Token, user, userPermissions, url } = useContext(CustomContext);
+    const { Token, user, userPermissions, url, setIsAppInactive } = useContext(CustomContext);
     const { getApiRequest } = useApiRequests();
     window.moment = moment;
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -602,6 +602,10 @@ function NewKPI({
                     }).then(async function () {
                         await handleSessionExpiration();
                     });
+                }if (err.response && err.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
                 } else {
                     // Handle other errors
                     setLoading(false);

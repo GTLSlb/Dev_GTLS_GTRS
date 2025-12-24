@@ -28,7 +28,7 @@ import {
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import { Button } from "@heroui/react";
 import { useEffect, useState } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ConsDetails from "../ConsDetails";
 import AdditionalCharges from "./AdditionalCharges";
 import CollapseSidebar from "./CollapseSidebar";
@@ -91,8 +91,15 @@ export default function GtrsMain({
     deliveryReportComments,
     fetchDeliveryReportCommentsData,
 }) {
-    const { url, user, Token, setToken, userPermissions, setUserPermissions } =
-        useContext(CustomContext);
+    const {
+        url,
+        user,
+        Token,
+        setToken,
+        userPermissions,
+        setUserPermissions,
+        setIsAppInactive,
+    } = useContext(CustomContext);
     window.moment = moment;
     const KPIData = [];
     const [commentsCheck, setCommentsCheck] = useState(false);
@@ -491,6 +498,11 @@ export default function GtrsMain({
                 }).then(async function () {
                     await handleSessionExpiration();
                 });
+            }
+            if (err.response && err.response.status === 403) {
+                // App is inactive
+                setIsAppInactive(true);
+                window.location.href = "/inactive-app";
             } else {
                 // Handle other errors
                 console.error(err);
@@ -534,6 +546,11 @@ export default function GtrsMain({
                 }).then(async function () {
                     await handleSessionExpiration();
                 });
+            }
+            if (err.response && err.response.status === 403) {
+                // App is inactive
+                setIsAppInactive(true);
+                window.location.href = "/inactive-app";
             } else {
                 // Handle other errors
                 console.error(err);

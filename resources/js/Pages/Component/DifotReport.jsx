@@ -28,7 +28,7 @@ export default function DifotReport({
     // fetchData,
     accData,
 }) {
-    const { url, Token, user } = useContext(CustomContext);
+    const { url, Token, user, setIsAppInactive } = useContext(CustomContext);
     const [filteredData, setFilteredData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [difotData, setDifotData] = useState([]);
@@ -71,6 +71,11 @@ export default function DifotReport({
                 }).then(async function () {
                     await handleSessionExpiration();
                 });
+            }
+            if (err.response && err.response.status === 403) {
+                // App is inactive
+                setIsAppInactive(true);
+                window.location.href = "/inactive-app";
             } else {
                 // Handle other errors
                 console.error(err);

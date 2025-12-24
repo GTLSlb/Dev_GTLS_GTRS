@@ -10,7 +10,7 @@ import { ToastContainer } from "react-toastify";
 import { CustomContext } from "@/CommonContext";
 
 function AddNewTransitDay({ setNewTransitDays }) {
-    const { Token, user, url } = useContext(CustomContext);
+    const { Token, user, url, setIsAppInactive } = useContext(CustomContext);
 
     const [loading, setLoading] = useState(false);
 
@@ -142,6 +142,10 @@ function AddNewTransitDay({ setNewTransitDays }) {
                     }).then(async function () {
                         await handleSessionExpiration();
                     });
+                }if (err.response && err.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
                 } else {
                     // Handle other errors
                     console.error(err);

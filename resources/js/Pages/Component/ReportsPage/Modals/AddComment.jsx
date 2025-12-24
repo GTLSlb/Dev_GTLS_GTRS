@@ -1,63 +1,56 @@
 import ReactModal from "react-modal";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import React from "react";
 import PropTypes from "prop-types";
 import "../../../../../css/scroll.css";
 import swal from "sweetalert";
 import { handleSessionExpiration } from "@/CommonFunctions";
-import {
-    Spinner,
-} from "@heroui/react";
+import { Spinner } from "@heroui/react";
+import { CustomContext } from "@/CommonContext";
 
-export default function AddComment({
-    isOpen,
-    handleClose,
-    consId,
-    fetchData,
-}) {
+export default function AddComment({ isOpen, handleClose, consId, fetchData }) {
     const [isLoading, SetIsLoading] = useState(false);
     const [formValues, setFormValues] = useState({
-        "CommentId":null,
-        "ConsId": consId,
-        "Comment": ""
+        CommentId: null,
+        ConsId: consId,
+        Comment: "",
     });
 
+     const { setIsAppInactive } = useContext(CustomContext);
     const handlePopUpClose = () => {
         setError(null);
         // Clear the error message
         setFormValues({
-            "CommentId":null,
-            "ConsId": null,
-            "Comment": ""
+            CommentId: null,
+            ConsId: null,
+            Comment: "",
         });
         handleClose(); // Clear the input value
     };
     useEffect(() => {
-        if(consId){
-            setFormValues(
-                {
-                    "CommentId":null,
-                    "ConsId": consId,
-                    "Comment": ""
-                }
-            )
+        if (consId) {
+            setFormValues({
+                CommentId: null,
+                ConsId: consId,
+                Comment: "",
+            });
         }
-    },[consId]);
+    }, [consId]);
 
     const [error, setError] = useState(null);
     const handleChange = (e) => {
         setFormValues({
             ...formValues,
-            "Comment": e.target.value,
+            Comment: e.target.value,
         });
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault(); // Prevent the default form submission behavior
-        if(formValues?.Comment === "" || formValues?.Comment === null){
+        if (formValues?.Comment === "" || formValues?.Comment === null) {
             setError("Comment cannot be empty");
             return;
-        }else{
+        } else {
             try {
                 SetIsLoading(true);
 
@@ -80,12 +73,19 @@ export default function AddComment({
                     }).then(async function () {
                         await handleSessionExpiration();
                     });
+                }
+                if (error.response && error.response.status === 403) {
+                    // App is inactive
+                    setIsAppInactive(true);
+                    window.location.href = "/inactive-app";
                 } else {
                     // Handle other errors
                     console.error(error);
                 }
                 console.error(error);
-                setError("Error occurred while saving the data. Please try again."); // Set the error message
+                setError(
+                    "Error occurred while saving the data. Please try again."
+                ); // Set the error message
             }
         }
     };
@@ -157,8 +157,10 @@ export default function AddComment({
                                 {isLoading ? (
                                     <div className=" inset-0 flex justify-center items-center bg-opacity-50">
                                         <Spinner color="default" size="sm" />
-                                  </div>
-                                ) : ("Add")}
+                                    </div>
+                                ) : (
+                                    "Add"
+                                )}
                             </button>
                         </div>
                     </div>

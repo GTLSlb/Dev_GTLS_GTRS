@@ -97,6 +97,7 @@ class CustomAuth extends Middleware
                     return $next($request);
                 } else {
                     return redirect(config('app.redirect_route') ?? '/gtrs/main');
+                    return redirect(config('app.redirect_route') ?? '/gtrs/main');
                 }
             }
             /**
@@ -105,12 +106,7 @@ class CustomAuth extends Middleware
              */
             elseif (!in_array($path, $auth_routes) && !$request->session()->has('user') && !isset($_COOKIE['jwt_token']) && !$performing_test) {
                 return redirect()->route('login');
-            }
-            /**
-             * CASE 3: Cookie-based Authentication on Auth Routes
-             * If the user is on a login/auth page but already has a valid JWT cookie.
-             */
-            elseif(in_array($path, $auth_routes) && isset($_COOKIE['jwt_token'])){
+            }elseif(in_array($path, $auth_routes) && isset($_COOKIE['jwt_token'])){
                 return redirect(config('app.redirect_route') ?? '/gtrs/main');
             }
         }
