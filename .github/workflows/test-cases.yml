@@ -2,12 +2,12 @@ name: test-cases using test framework
 
 on:
   push:
-    branches: [ staging, store ]
+    branches: [ main, staging, store ]
   pull_request:
-    branches: [ staging, store ]
+    branches: [ main, staging, store ]
 
 jobs:
-  lint-and-test:
+  run-unit-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,6 +28,9 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
+          cache-dependency-path: |
+            main-repo/package-lock.json
+            test-repo/package-lock.json
 
       - name: Install dependencies in main repo
         working-directory: ./main-repo
@@ -36,10 +39,27 @@ jobs:
       - name: Install dependencies in test repo
         working-directory: ./test-repo
         run: npm ci
+      # - name: Setup Chrome
+      #   uses: browser-actions/setup-chrome@latest
 
-      - name: Run tests from test repo against main repo
+      - name: Run gtrs unit tests from test repo
         working-directory: ./test-repo
-        run: npm run test -- --target=../main-repo
+        run: npm run unit:gtrs
         env:
           TARGET_REPO: ${{ github.workspace }}/main-repo
           NODE_ENV: test
+          # AUTHENTICATION TEST USER
+          CUSTOMER_EMAIL: ${{ secrets.CUSTOMER_EMAIL }}
+          CUSTOMER_PASS: ${{ secrets.CUSTOMER_PASS }}
+          # API URLS
+          GTAM_API_URL: ${{ github.base_ref == 'staging' && secrets.GTAM_API_URL_STAGING ||
+            github.base_ref == 'store' && secrets.GTAM_API_URL_STORE ||
+            github.base_ref == 'main' && secrets.GTAM_API_URL_PROD }}
+          GTIS_API_URL: ${{ github.base_ref == 'staging' && secrets.GTIS_API_URL_STAGING ||
+            github.base_ref == 'store' && secrets.GTIS_API_URL_STORE ||
+            github.base_ref == 'main' && secrets.GTIS_API_URL_PROD }}
+          GTRS_API_URL: ${{ github.base_ref == 'staging' && secrets.GTRS_API_URL_STAGING ||
+            github.base_ref == 'store' && secrets.GTRS_API_URL_STORE ||
+            github.base_ref == 'main' && secrets.GTRS_API_URL_PROD }}
+          # JWT CONFIG
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
