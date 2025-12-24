@@ -151,7 +151,7 @@ export default function Gtrs({
             }
         }
     };
-
+console.log('Token', Token, 'user', user);
     useEffect(() => {
         if (Token != null && user) {
             setLoadingGtrs(false);
