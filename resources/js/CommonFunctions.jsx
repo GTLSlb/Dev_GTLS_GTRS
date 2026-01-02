@@ -90,7 +90,7 @@ export async function handleSessionExpiration() {
                 // Clear MSAL-related data from localStorage
                 clearMSALLocalStorage();
                 Cookies.remove("access_token");
-
+                Cookies.remove("jwt_token");
                 // Remove all items
                 sessionStorage.clear();
 
