@@ -121,7 +121,10 @@ class RegisteredUserController extends Controller
 
     private function validateSessionFromNode($user, $sessionId, $token){
         // Implement session validation logic
-        $url = config('app.gtrr_api_url') . 'exchange-token';
+        $url = $_ENV['GTRR_API_URL'] . 'exchange-token';
+        if($_ENV['GTRR_API_URL'] == ""){
+            return null;
+        }
         try{
             $body = [
                 'user' => $user,
@@ -143,16 +146,6 @@ class RegisteredUserController extends Controller
             return $jwt_token;
     }
 
-    protected function is_performing_test(){
-        $is_testing = false;
-        if(isset($_COOKIE['gtls_test'])){
-            $val = $_COOKIE['gtls_test'];
-            $is_testing = empty($val) ? false : ($val === null || $val === "true" ? true : false);
-        }
-
-        return $is_testing;
-    }
-
     private function decode_jwt_valid($jwt_token) {
         $secretKey = $_ENV['JWT_SECRET'] ?? '2zX!8fD@qY6k#eT^mP9w$Jr1&uV5g*Bf3';
         $allowed_algs = ['HS256'];
@@ -170,7 +163,7 @@ class RegisteredUserController extends Controller
             return false;
         }
 
-        if ($jwt_token == "null" || $jwt_token == null || !isset($jwt_token)) {
+        if ($jwt_token == null || !isset($jwt_token)) {
             return false;
         }
 
@@ -202,22 +195,7 @@ class RegisteredUserController extends Controller
 
         public function getCurrentUserName(Request $request)
     {
-        if($this->is_performing_test()){
-            // We have a simulated session for testing
-            // Decode the jwt token from the cookie
-            $jwt_token = $_COOKIE['jwt_token'];
-            $decoded_info=$this->decode_jwt_valid($_COOKIE['jwt_token']);
-            $decoded_user = $decoded_info != null ? $decoded_info->user : null;
-            $token = $decoded_info != null ? $decoded_info->token : null;
-            return [
-                'jwt_token' => $jwt_token,
-                'user' => $decoded_user,
-                'token' => $token
-            ];
-        }else{
-            // Normal flow
-            // Retrieve user from session or database
-            $sessionId = $request->session()->getId();
+        $sessionId = $request->session()->getId();
         $user_from_db = DB::table('custom_sessions')
                 ->where('id', $sessionId)
                 ->value('user');
@@ -226,14 +204,11 @@ class RegisteredUserController extends Controller
 
         $valid_user = $user_from_db != null ? $user_from_db : $user_from_session;
         $decoded_user = null;
-        $token = $request->session()->get('token');
         if (is_string($valid_user)) {
             $decoded_user = json_decode($valid_user);
         } elseif ($valid_user === null) {
-            if (isset($_COOKIE['jwt_token'])) {
-                $decoded_info=$this->decode_jwt_valid($_COOKIE['jwt_token']);
-                $decoded_user = $decoded_info != null ? $decoded_info->user : null;
-                $token = $decoded_info != null ? $decoded_info->token : $request->session()->get('token');
+            if (isset($_COOKIE['jwt_token']) && !empty($_COOKIE['jwt_token'])) {
+                $decoded_user = $this->decode_jwt_valid($_COOKIE['jwt_token'])->user;
             } else {
                 $decoded_user = null;
             }
@@ -242,7 +217,6 @@ class RegisteredUserController extends Controller
         }
 
         if($decoded_user !== null) {
-            $is_jwt_set=isset($_COOKIE['jwt_token']);
             $user = $this->mapUserByTypeId($decoded_user);
             if(isset($_COOKIE['jwt_token'])){
                 // JWT Token exists in cookie
@@ -257,6 +231,7 @@ class RegisteredUserController extends Controller
                 $jwt_token = $this->validateSessionFromNode($user_from_session, $sessionId, $request->session()->get('token'));
                 $token = $request->session()->get('token');
             }
+
             \Log::info("NEW JWT Token: " . $jwt_token);
             return response()->json([
                 'jwt_token' => $jwt_token,
@@ -267,8 +242,6 @@ class RegisteredUserController extends Controller
             // User object is null
             return response()->json(['error' => 'Session not found'], 401);
         }
-        }
-
     }
 
     public function getUserName($id)
