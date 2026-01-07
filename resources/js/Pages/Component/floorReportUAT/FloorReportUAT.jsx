@@ -732,7 +732,7 @@ const CONS_NO_COL_WIDTH = 130;
 // Summary Cards Components
 function TotalScannedCard({ total, depotBreakdown, availableDepots }) {
     return (
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+        <div className="bg-white rounded-lg shadow-md p-6 col-span-2 border border-gray-200">
             <div className="flex items-center gap-3 mb-2">
                 <CubeIcon className="w-6 h-6 text-blue-600" />
                 <h3 className="text-sm font-semibold text-gray-600 uppercase">
@@ -785,25 +785,30 @@ TotalScannedCard.propTypes = {
 };
 
 function RDDStatusCard({ data }) {
-    const rddChartData = [
-        { category: "Past Due", value: data.rddPast, type: "RDD" },
-        { category: "Today", value: data.rddToday, type: "RDD" },
-        { category: "Future", value: data.rddFuture, type: "RDD" },
-    ].filter((item) => item.value > 0);
+    const rddChartData = useMemo(() => {
+        return [
+            { category: "Past Due", value: data.rddPast, type: "RDD" },
+            { category: "Today", value: data.rddToday, type: "RDD" },
+            { category: "Future", value: data.rddFuture, type: "RDD" },
+        ].filter((item) => item.value > 0);
+    }, [data.rddPast, data.rddToday, data.rddFuture]);
 
-    const rddPieConfig = {
+    const rddPieConfig = useMemo(() => ({
         data: rddChartData,
         angleField: "value",
         colorField: "category",
         color: ["#ef4444", "#eab308", "#22c55e"], // red, yellow, green
-        radius: 0.9,
-        innerRadius: 0.6,
+        radius: 0.7,
+        innerRadius: 0.5,
         label: {
-            type: "spider",
-            content: "{name}\n{value}",
+            type: "inner",
+            offset: "-30%",
+            content: "{value}",
             style: {
-                fontSize: 12,
+                fontSize: 14,
+                fontWeight: "bold",
                 textAlign: "center",
+                fill: "#fff",
             },
         },
         legend: {
@@ -830,10 +835,10 @@ function RDDStatusCard({ data }) {
                 ).toString(),
             },
         },
-    };
+    }), [rddChartData, data.rddPast, data.rddToday, data.rddFuture]);
 
     return (
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+        <div className="bg-white rounded-lg shadow-md p-6 col-span-3 border border-gray-200">
             <h3 className="text-sm font-semibold text-gray-600 uppercase mb-4">
                 RDD Status
             </h3>
@@ -859,15 +864,17 @@ RDDStatusCard.propTypes = {
 };
 
 function TopStatusesCard({ data }) {
-    const statusChartData = Object.entries(data)
-        .map(([status, count]) => ({
-            label: status,
-            value: count,
-        }))
-        .sort((a, b) => b.value - a.value)
-        .slice(0, 10); // Top 10 statuses
+    const statusChartData = useMemo(() => {
+        return Object.entries(data)
+            .map(([status, count]) => ({
+                label: status,
+                value: count,
+            }))
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 10); // Top 10 statuses
+    }, [data]);
 
-    const statusColumnConfig = {
+    const statusColumnConfig = useMemo(() => ({
         data: statusChartData,
         xField: "label",
         yField: "value",
@@ -899,10 +906,10 @@ function TopStatusesCard({ data }) {
             },
         },
         appendPadding: [0, 0, 60, 0], // Add padding at bottom for wrapped labels
-    };
+    }), [statusChartData]);
 
     return (
-        <div className="bg-white rounded-lg shadow-md p-6 pb-0 border border-gray-200 col-span-2">
+        <div className="bg-white rounded-lg shadow-md p-6 pb-0 border border-gray-200 col-span-4">
             <h3 className="text-sm font-semibold text-gray-600 uppercase mb-4">
                 Consignment Status
             </h3>
@@ -1193,7 +1200,7 @@ export default function FloorReportUAT() {
                 meta: { filterVariant: "date" },
                 filterFn: dateFilterFn,
                 cell: ({ getValue }) => (
-                    <DateCell value={getValue()} showTime={false} />
+                    <DateCell value={getValue()} showTime={true} />
                 ),
             },
             {
@@ -1558,12 +1565,12 @@ export default function FloorReportUAT() {
         headerRow.alignment = { horizontal: "center", vertical: "middle" };
 
         // Define date columns with their format types
-        const dateTimeColumns = ["Cons Status Date", "POD Date"];
-        const dateOnlyColumns = [
+        const dateTimeColumns = [
             "Floor Scan Date",
-            "Original RDD",
-            "Despatch Date",
+            "Cons Status Date",
+            "POD Date",
         ];
+        const dateOnlyColumns = ["Original RDD", "Despatch Date"];
         const rddColumns = ["RDD"];
 
         const dateTimeIndexes = headers
@@ -1712,7 +1719,7 @@ export default function FloorReportUAT() {
 
                 {/* Summary Cards Section */}
                 <div
-                    className={`mb-6 grid grid-cols-1 md:grid-cols-4 gap-4 transition-all duration-300 ease-in-out overflow-hidden ${
+                    className={`mb-6 grid grid-cols-1 md:grid-cols-9 gap-4 transition-all duration-300 ease-in-out overflow-hidden ${
                         showCharts
                             ? "opacity-100 max-h-[500px]"
                             : "opacity-0 max-h-0 mb-0"
