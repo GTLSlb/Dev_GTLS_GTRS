@@ -885,3 +885,19 @@ export function canAddEditFloorComments(userPermissions) {
         ? true
         : false;
 }
+
+export function canViewFloorUATComments(userPermissions) {
+    return userPermissions?.find(
+        (feature) => feature?.FunctionName === "FloorCommentsUAT_view"
+    )
+        ? true
+        : false;
+}
+
+export function canAddEditFloorUATComments(userPermissions) {
+    return userPermissions?.find(
+        (feature) => feature?.FunctionName === "FloorCommentsUAT_AddEdit"
+    )
+        ? true
+        : false;
+}

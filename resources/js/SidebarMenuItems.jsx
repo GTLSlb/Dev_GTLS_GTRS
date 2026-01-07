@@ -18,7 +18,7 @@ import {
 import TaskIcon from "@mui/icons-material/Task";
 import ContactsIcon from "@mui/icons-material/Contacts";
 import DescriptionIcon from "@mui/icons-material/Description";
-import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
+import DocumentScannerIcon from "@mui/icons-material/DocumentScanner";
 const menu = [
     {
         id: 0,
@@ -309,6 +309,15 @@ const menu = [
         current: false,
         feature: "FloorReport_View",
         url: "/gtrs/floor-report",
+    },
+    {
+        id: 38,
+        name: "Floor Report UAT",
+        href: "#",
+        icon: DocumentScannerIcon,
+        current: false,
+        feature: "FloorReportUAT_View",
+        url: "/gtrs/floor-report-uat",
     },
     {
         id: 31,
