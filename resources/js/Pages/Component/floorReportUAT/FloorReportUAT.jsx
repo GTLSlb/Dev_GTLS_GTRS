@@ -730,7 +730,7 @@ const ACTION_COL_WIDTH = 50;
 const CONS_NO_COL_WIDTH = 130;
 
 // Summary Cards Components
-function TotalScannedCard({ total, depotBreakdown }) {
+function TotalScannedCard({ total, depotBreakdown, availableDepots }) {
     return (
         <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
             <div className="flex items-center gap-3 mb-2">
@@ -744,7 +744,7 @@ function TotalScannedCard({ total, depotBreakdown }) {
             </p>
 
             {/* Depot Breakdown Table */}
-            {Object.keys(depotBreakdown).length > 0 && (
+            {availableDepots && availableDepots.length > 0 && (
                 <div className="mt-4 border-t pt-4">
                     <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">
                         By Depot
@@ -752,9 +752,9 @@ function TotalScannedCard({ total, depotBreakdown }) {
                     <div className="max-h-40 overflow-y-auto">
                         <table className="w-full text-sm">
                             <tbody>
-                                {Object.entries(depotBreakdown)
-                                    .sort(([a], [b]) => a.localeCompare(b))
-                                    .map(([depot, count]) => (
+                                {availableDepots
+                                    .sort((a, b) => a.localeCompare(b))
+                                    .map((depot) => (
                                         <tr
                                             key={depot}
                                             className="border-b border-gray-100 last:border-b-0"
@@ -763,7 +763,9 @@ function TotalScannedCard({ total, depotBreakdown }) {
                                                 {depot}
                                             </td>
                                             <td className="py-1.5 text-right font-semibold text-gray-900">
-                                                {count.toLocaleString()}
+                                                {(
+                                                    depotBreakdown[depot] || 0
+                                                ).toLocaleString()}
                                             </td>
                                         </tr>
                                     ))}
@@ -779,6 +781,7 @@ function TotalScannedCard({ total, depotBreakdown }) {
 TotalScannedCard.propTypes = {
     total: PropTypes.number.isRequired,
     depotBreakdown: PropTypes.object.isRequired,
+    availableDepots: PropTypes.array,
 };
 
 function RDDStatusCard({ data }) {
@@ -881,12 +884,12 @@ function TopStatusesCard({ data }) {
                 autoRotate: false,
                 autoHide: false,
                 style: {
-                    fontSize: 10,
+                    fontSize: 11,
                     fontWeight: "bold",
                 },
                 formatter: (text) => {
                     // Wrap words - each word on a new line
-                    return text.split(' ').join('\n');
+                    return text.split(" ").join("\n");
                 },
             },
         },
@@ -899,13 +902,13 @@ function TopStatusesCard({ data }) {
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-md p-6 pb-0 border border-gray-200">
+        <div className="bg-white rounded-lg shadow-md p-6 pb-0 border border-gray-200 col-span-2">
             <h3 className="text-sm font-semibold text-gray-600 uppercase mb-4">
-                Consignment Statuses
+                Consignment Status
             </h3>
             <div className="h-64">
                 {statusChartData.length > 0 ? (
-                    <Column {...statusColumnConfig} className="!h-80"/>
+                    <Column {...statusColumnConfig} className="!h-80" />
                 ) : (
                     <div className="flex items-center justify-center h-full text-gray-400">
                         No status data available
@@ -1412,7 +1415,8 @@ export default function FloorReportUAT() {
     const table = useReactTable({
         data: depotFilteredData,
         columns,
-        getRowId: (row) => row.ConsignmentID?.toString() || Math.random().toString(),
+        getRowId: (row) =>
+            row.ConsignmentID?.toString() || Math.random().toString(),
         state: {
             sorting,
             columnFilters,
@@ -1703,7 +1707,34 @@ export default function FloorReportUAT() {
                                 ))}
                             </DropdownMenu>
                         </Dropdown>
+                    </div>
+                </div>
 
+                {/* Summary Cards Section */}
+                <div
+                    className={`mb-6 grid grid-cols-1 md:grid-cols-4 gap-4 transition-all duration-300 ease-in-out overflow-hidden ${
+                        showCharts
+                            ? "opacity-100 max-h-[500px]"
+                            : "opacity-0 max-h-0 mb-0"
+                    }`}
+                >
+                    <TotalScannedCard
+                        total={overallSummary.totalScanned}
+                        depotBreakdown={overallSummary.depotBreakdown}
+                        availableDepots={availableDepots}
+                    />
+                    <RDDStatusCard
+                        data={{
+                            rddPast: overallSummary.rddPast,
+                            rddToday: overallSummary.rddToday,
+                            rddFuture: overallSummary.rddFuture,
+                        }}
+                    />
+                    <TopStatusesCard data={overallSummary.statusBreakdown} />
+                </div>
+
+                <div className="flex w-full items-center gap-3 justify-end flex-wrap">
+                    <div className="flex items-center gap-3">
                         {/* Column Visibility Dropdown */}
                         <Dropdown>
                             <DropdownTrigger className="hidden xl:flex">
@@ -1788,28 +1819,6 @@ export default function FloorReportUAT() {
                             Export
                         </Button>
                     </div>
-                </div>
-
-                {/* Summary Cards Section */}
-                <div
-                    className={`mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 transition-all duration-300 ease-in-out overflow-hidden ${
-                        showCharts
-                            ? "opacity-100 max-h-[500px]"
-                            : "opacity-0 max-h-0 mb-0"
-                    }`}
-                >
-                    <TotalScannedCard
-                        total={overallSummary.totalScanned}
-                        depotBreakdown={overallSummary.depotBreakdown}
-                    />
-                    <RDDStatusCard
-                        data={{
-                            rddPast: overallSummary.rddPast,
-                            rddToday: overallSummary.rddToday,
-                            rddFuture: overallSummary.rddFuture,
-                        }}
-                    />
-                    <TopStatusesCard data={overallSummary.statusBreakdown} />
                 </div>
 
                 {/* Table Container */}
@@ -1978,15 +1987,17 @@ export default function FloorReportUAT() {
                                             // Check if row is flagged
 
                                             const isFlaggedRed =
-                                                row.original.Flag == 1 ||
+                                                row.original.Flag == 1;
+                                            const isFlaggedBlue =
                                                 row.original.Flag == 2;
-
                                             const isFlaggedYellow =
                                                 row.original.Flag == 3;
                                             const rowBg = isFlaggedRed
                                                 ? "bg-red-100"
                                                 : isFlaggedYellow
                                                 ? "bg-yellow-100"
+                                                : isFlaggedBlue
+                                                ? "bg-blue-100"
                                                 : rowIndex % 2 === 0
                                                 ? "bg-white"
                                                 : "bg-gray-50";
@@ -1994,6 +2005,8 @@ export default function FloorReportUAT() {
                                                 ? "#fee2e2"
                                                 : isFlaggedYellow
                                                 ? "#fef3c7"
+                                                : isFlaggedBlue
+                                                ? "#dbeafe"
                                                 : rowIndex % 2 === 0
                                                 ? "#ffffff"
                                                 : "#f9fafb";
