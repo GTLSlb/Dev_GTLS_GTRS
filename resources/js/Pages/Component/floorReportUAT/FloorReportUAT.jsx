@@ -793,49 +793,52 @@ function RDDStatusCard({ data }) {
         ].filter((item) => item.value > 0);
     }, [data.rddPast, data.rddToday, data.rddFuture]);
 
-    const rddPieConfig = useMemo(() => ({
-        data: rddChartData,
-        angleField: "value",
-        colorField: "category",
-        color: ["#ef4444", "#eab308", "#22c55e"], // red, yellow, green
-        radius: 0.7,
-        innerRadius: 0.5,
-        label: {
-            type: "inner",
-            offset: "-30%",
-            content: "{value}",
-            style: {
-                fontSize: 14,
-                fontWeight: "bold",
-                textAlign: "center",
-                fill: "#fff",
-            },
-        },
-        legend: {
-            position: "bottom",
-            layout: "horizontal",
-        },
-        interactions: [{ type: "element-active" }],
-        statistic: {
-            title: {
-                content: "Total",
+    const rddPieConfig = useMemo(
+        () => ({
+            data: rddChartData,
+            angleField: "value",
+            colorField: "category",
+            color: ["#ef4444", "#eab308", "#22c55e"], // red, yellow, green
+            radius: 0.7,
+            innerRadius: 0.5,
+            label: {
+                type: "inner",
+                offset: "-30%",
+                content: "{value}",
                 style: {
-                    fontSize: "14px",
-                },
-            },
-            content: {
-                style: {
-                    fontSize: "24px",
+                    fontSize: 14,
                     fontWeight: "bold",
+                    textAlign: "center",
+                    fill: "#fff",
                 },
-                content: (
-                    data.rddPast +
-                    data.rddToday +
-                    data.rddFuture
-                ).toString(),
             },
-        },
-    }), [rddChartData, data.rddPast, data.rddToday, data.rddFuture]);
+            legend: {
+                position: "bottom",
+                layout: "horizontal",
+            },
+            interactions: [{ type: "element-active" }],
+            statistic: {
+                title: {
+                    content: "Total",
+                    style: {
+                        fontSize: "14px",
+                    },
+                },
+                content: {
+                    style: {
+                        fontSize: "24px",
+                        fontWeight: "bold",
+                    },
+                    content: (
+                        data.rddPast +
+                        data.rddToday +
+                        data.rddFuture
+                    ).toString(),
+                },
+            },
+        }),
+        [rddChartData, data.rddPast, data.rddToday, data.rddFuture]
+    );
 
     return (
         <div className="bg-white rounded-lg shadow-md p-6 col-span-3 border border-gray-200">
@@ -874,39 +877,42 @@ function TopStatusesCard({ data }) {
             .slice(0, 10); // Top 10 statuses
     }, [data]);
 
-    const statusColumnConfig = useMemo(() => ({
-        data: statusChartData,
-        xField: "label",
-        yField: "value",
-        color: "#E2C047",
-        label: {
-            position: "middle",
-            style: {
-                fill: "#000",
-                fontSize: 12,
-            },
-        },
-        xAxis: {
+    const statusColumnConfig = useMemo(
+        () => ({
+            data: statusChartData,
+            xField: "label",
+            yField: "value",
+            color: "#E2C047",
             label: {
-                autoRotate: false,
-                autoHide: false,
+                position: "middle",
                 style: {
-                    fontSize: 11,
-                    fontWeight: "bold",
-                },
-                formatter: (text) => {
-                    // Wrap words - each word on a new line
-                    return text.split(" ").join("\n");
+                    fill: "#000",
+                    fontSize: 12,
                 },
             },
-        },
-        yAxis: {
-            label: {
-                formatter: (v) => `${v}`,
+            xAxis: {
+                label: {
+                    autoRotate: false,
+                    autoHide: false,
+                    style: {
+                        fontSize: 11,
+                        fontWeight: "bold",
+                    },
+                    formatter: (text) => {
+                        // Wrap words - each word on a new line
+                        return text.split(" ").join("\n");
+                    },
+                },
             },
-        },
-        appendPadding: [0, 0, 60, 0], // Add padding at bottom for wrapped labels
-    }), [statusChartData]);
+            yAxis: {
+                label: {
+                    formatter: (v) => `${v}`,
+                },
+            },
+            appendPadding: [0, 0, 60, 0], // Add padding at bottom for wrapped labels
+        }),
+        [statusChartData]
+    );
 
     return (
         <div className="bg-white rounded-lg shadow-md p-6 pb-0 border border-gray-200 col-span-4">
@@ -1638,6 +1644,7 @@ export default function FloorReportUAT() {
 
     const clearAllFilters = () => {
         setColumnFilters([]);
+        setSelectedDepots([]);
     };
 
     // Helper function to check if column is sticky
@@ -1694,6 +1701,9 @@ export default function FloorReportUAT() {
                                         ? "All Depots"
                                         : selectedDepots.length === 1
                                         ? selectedDepots[0]
+                                        : selectedDepots.length ===
+                                          availableDepots.length
+                                        ? "All Depots"
                                         : `${selectedDepots.length} Depots`}
                                 </Button>
                             </DropdownTrigger>
@@ -1714,6 +1724,14 @@ export default function FloorReportUAT() {
                                 ))}
                             </DropdownMenu>
                         </Dropdown>
+
+                        <Button
+                            className="bg-dark text-white px-4 py-2"
+                            size="sm"
+                            onClick={clearAllFilters}
+                        >
+                            Clear Filters
+                        </Button>
                     </div>
                 </div>
 
@@ -1811,13 +1829,6 @@ export default function FloorReportUAT() {
                             </DropdownMenu>
                         </Dropdown>
 
-                        <Button
-                            className="bg-dark text-white px-4 py-2"
-                            size="sm"
-                            onClick={clearAllFilters}
-                        >
-                            Clear Filters
-                        </Button>
                         <Button
                             className="bg-dark text-white px-4 py-2"
                             onClick={exportToExcel}
