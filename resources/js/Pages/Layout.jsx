@@ -46,32 +46,57 @@ export default function Sidebar() {
     }
 
     const fetchUserData = async () => {
+        console.log("🚀 fetchUserData started");
+
+        console.log("gtamUrl:", gtamUrl);
+        console.log("appId:", appId);
+        console.log("window.Laravel:", window.Laravel);
+
         if (!gtamUrl || !appId) {
-            console.error(
-                "Error: window.Laravel.gtamUrl or window.Laravel.appId is undefined. Environment not properly configured."
-            );
+            console.error("❌ Missing config:", { gtamUrl, appId });
             setLoading(false);
             setCanAccess(false);
             return;
         }
 
         try {
+            console.log("➡️ Fetching user data...");
             const userResponse = await getApiRequest(`/users`, {});
+            console.log("✅ User response:", userResponse);
+
             const { user, token, jwt_token } = userResponse;
+            console.log("User:", user);
+            console.log("Token exists:", !!token);
+            console.log("JWT exists:", !!jwt_token);
 
             setUser(user);
             setToken(token);
-            Cookies.set("jwt_token", jwt_token, { secure: true, sameSite: 'Lax', domain: window.Laravel.appDomain });
+
+            console.log(
+                "🍪 Setting cookie for domain:",
+                window.Laravel.appDomain
+            );
+            Cookies.set("jwt_token", jwt_token, {
+                secure: true,
+                sameSite: "Lax",
+                domain: window.Laravel.appDomain,
+            });
 
             const appPermissionsHeaders = {
                 UserId: user.UserId,
                 AppId: appId,
                 Authorization: `Bearer ${token}`,
             };
+
+            console.log(
+                "➡️ Fetching app permissions...",
+                appPermissionsHeaders
+            );
             const appPermissionsResponse = await getApiRequest(
                 `${gtamUrl}User/AppPermissions`,
                 appPermissionsHeaders
             );
+            console.log("✅ App permissions response:", appPermissionsResponse);
 
             setUserPermissions(appPermissionsResponse.Features);
 
@@ -79,36 +104,60 @@ export default function Sidebar() {
                 UserId: user.UserId,
                 Authorization: `Bearer ${token}`,
             };
+
+            console.log(
+                "➡️ Fetching user permissions...",
+                userPermissionsHeaders
+            );
             const userPermissionsResponse = await getApiRequest(
                 `${gtamUrl}User/Permissions`,
                 userPermissionsHeaders
             );
+            console.log(
+                "✅ User permissions response:",
+                userPermissionsResponse
+            );
+
             setAllowedApplications(userPermissionsResponse);
 
-            const isAllowed = allowedApplications?.find(
+            console.log("Allowed apps:", userPermissionsResponse);
+
+            const isAllowed = userPermissionsResponse?.find(
                 (item) => item.AppId == window.Laravel.appId
             );
+
+            console.log("Is allowed:", isAllowed);
+            console.log("userPermissions:", userPermissions);
+
             if (
                 userPermissions?.length == 0 &&
                 !isAllowed &&
                 window.location.pathname != "/logout"
             ) {
+                console.warn("🚫 Access denied");
                 setCanAccess(false);
             } else {
+                console.log("✅ Access granted");
                 setCanAccess(true);
             }
 
+            setLoading(false);
+            console.log("🏁 fetchUserData finished");
+        } catch (err) {
+            console.error("🔥 Error during initial data fetch:", err);
+
+            if (err?.response) {
+                console.error("Status:", err.response.status);
+                console.error("Response data:", err.response.data);
+            }
 
             setLoading(false);
-        } catch (err) {
-            console.error("Error during initial data fetch:", err);
-            setLoading(false);
             setCanAccess(false);
-            if (err.response && (err.response.status === 401 || err.status == 401)) {
+
+            if (err.response?.status === 401 || err.status === 401) {
                 swal({
                     title: "Session Expired!",
                     text: "Please login again",
-                    type: "info",
                     icon: "info",
                     confirmButtonText: "OK",
                 }).then(async () => {
@@ -130,7 +179,7 @@ export default function Sidebar() {
         } else {
             return (
                 <div className="h-screen">
-                    { Token ? (
+                    {Token ? (
                         <div className="bg-smooth h-full ">
                             <Routes>
                                 <Route
