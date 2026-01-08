@@ -780,6 +780,11 @@ export default function RunsheetReport() {
         return <span>{parsedDate.format(outputFormat)}</span>;
     };
 
+    const handleConsignmentClick = (consignmentData) => {
+        const url = `/gtrs/consignment-details?consId=${consignmentData.ConsignmentID}`;
+        window.open(url, "_blank");
+    };
+
     // TanStack Table columns configuration
     const columns = useMemo(
         () => [
@@ -1309,10 +1314,6 @@ export default function RunsheetReport() {
                                                 rowIndex % 2 === 0
                                                     ? "bg-white"
                                                     : "bg-gray-50";
-                                            const rowBgColor =
-                                                rowIndex % 2 === 0
-                                                    ? "#ffffff"
-                                                    : "#f9fafb";
 
                                             const isExpanded = expandedRows.has(
                                                 row.original.ManifestID
@@ -1399,7 +1400,14 @@ export default function RunsheetReport() {
                                                                                         className="bg-white rounded-lg border border-gray-200 p-3 shadow-sm"
                                                                                     >
                                                                                         <div className="flex items-center justify-between">
-                                                                                            <div className="text-sm font-medium text-gray-900">
+                                                                                            <div
+                                                                                                className="text-sm font-medium text-blue-500 cursor-pointer"
+                                                                                                onClick={() =>
+                                                                                                    handleConsignmentClick(
+                                                                                                        consignment
+                                                                                                    )
+                                                                                                }
+                                                                                            >
                                                                                                 {
                                                                                                     consignment.ConsignmentNo
                                                                                                 }
