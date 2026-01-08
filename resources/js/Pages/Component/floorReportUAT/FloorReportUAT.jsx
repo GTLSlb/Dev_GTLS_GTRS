@@ -682,6 +682,8 @@ const dateFilterFn = (row, columnId, filterValue) => {
     // Handle the new filter structure with dates Set and includeEmpty boolean
     const dates = filterValue.dates || filterValue;
     const includeEmpty = filterValue.includeEmpty || false;
+    const beforeDate = filterValue.beforeDate;
+    const afterDate = filterValue.afterDate;
 
     // If cell value is empty/null
     if (!cellValue) {
@@ -693,9 +695,20 @@ const dateFilterFn = (row, columnId, filterValue) => {
         return false;
     }
 
+    const cellDate = moment(cellValue).format("YYYY-MM-DD");
+
+    // Handle before date filter (Past Due)
+    if (beforeDate) {
+        return moment(cellDate).isBefore(beforeDate);
+    }
+
+    // Handle after date filter (Future)
+    if (afterDate) {
+        return moment(cellDate).isAfter(afterDate);
+    }
+
     // If dates are selected, check if cell date matches
     if (dates && dates.size > 0) {
-        const cellDate = moment(cellValue).format("YYYY-MM-DD");
         return dates.has(cellDate);
     }
 
@@ -784,7 +797,7 @@ TotalScannedCard.propTypes = {
     availableDepots: PropTypes.array,
 };
 
-function RDDStatusCard({ data }) {
+function RDDStatusCard({ data, onFilterByRDD }) {
     const rddChartData = useMemo(() => {
         return [
             { category: "Past Due", value: data.rddPast, type: "RDD" },
@@ -798,12 +811,12 @@ function RDDStatusCard({ data }) {
             data: rddChartData,
             angleField: "value",
             colorField: "category",
-            color: ["#ef4444", "#eab308", "#22c55e"], // red, yellow, green
+            color: ["#ef4444", "#eab308", "#22c55e"],
             radius: 0.7,
             innerRadius: 0.5,
             label: {
                 type: "inner",
-                offset: "-30%",
+                offset: "-40%",
                 content: "{value}",
                 style: {
                     fontSize: 14,
@@ -836,8 +849,22 @@ function RDDStatusCard({ data }) {
                     ).toString(),
                 },
             },
+            onReady: (plot) => {
+                plot.on("element:dblclick", (evt) => {
+                    const { category } = evt.data.data;
+                    if (onFilterByRDD) {
+                        onFilterByRDD(category);
+                    }
+                });
+            },
         }),
-        [rddChartData, data.rddPast, data.rddToday, data.rddFuture]
+        [
+            rddChartData,
+            data.rddPast,
+            data.rddToday,
+            data.rddFuture,
+            onFilterByRDD,
+        ]
     );
 
     return (
@@ -845,7 +872,7 @@ function RDDStatusCard({ data }) {
             <h3 className="text-sm font-semibold text-gray-600 uppercase mb-4">
                 RDD Status
             </h3>
-            <div className="h-64">
+            <div className="h-64 cursor-pointer">
                 {rddChartData.length > 0 ? (
                     <Pie {...rddPieConfig} />
                 ) : (
@@ -864,9 +891,10 @@ RDDStatusCard.propTypes = {
         rddToday: PropTypes.number.isRequired,
         rddFuture: PropTypes.number.isRequired,
     }).isRequired,
+    onFilterByRDD: PropTypes.func,
 };
 
-function TopStatusesCard({ data }) {
+function TopStatusesCard({ data, onFilterByStatus }) {
     const statusChartData = useMemo(() => {
         return Object.entries(data)
             .map(([status, count]) => ({
@@ -910,8 +938,28 @@ function TopStatusesCard({ data }) {
                 },
             },
             appendPadding: [0, 0, 60, 0], // Add padding at bottom for wrapped labels
+            onReady: (plot) => {
+                plot.on("element:dblclick", (evt) => {
+                    const { label } = evt.data.data;
+                    if (onFilterByStatus) {
+                        onFilterByStatus(label);
+                    }
+                });
+
+                // Change cursor to pointer on hover
+                const canvas = plot.chart.getCanvas();
+                const canvasEl = canvas.get("el");
+
+                plot.on("element:mouseenter", () => {
+                    canvasEl.style.cursor = "pointer";
+                });
+
+                plot.on("element:mouseleave", () => {
+                    canvasEl.style.cursor = "default";
+                });
+            },
         }),
-        [statusChartData]
+        [statusChartData, onFilterByStatus]
     );
 
     return (
@@ -919,9 +967,12 @@ function TopStatusesCard({ data }) {
             <h3 className="text-sm font-semibold text-gray-600 uppercase mb-4">
                 Consignment Status
             </h3>
-            <div className="h-64">
+            <div className="h-64 ">
                 {statusChartData.length > 0 ? (
-                    <Column {...statusColumnConfig} className="!h-80" />
+                    <Column
+                        {...statusColumnConfig}
+                        className="!h-80 !cursor-pointer"
+                    />
                 ) : (
                     <div className="flex items-center justify-center h-full text-gray-400">
                         No status data available
@@ -934,6 +985,7 @@ function TopStatusesCard({ data }) {
 
 TopStatusesCard.propTypes = {
     data: PropTypes.object.isRequired,
+    onFilterByStatus: PropTypes.func,
 };
 
 export default function FloorReportUAT() {
@@ -1399,7 +1451,7 @@ export default function FloorReportUAT() {
                 enableColumnFilter: false,
                 cell: ({ row }) => (
                     <div className="flex gap-1">
-                        {canAddEditFloorUATComments(userPermissions) && (
+                        {/* {canAddEditFloorUATComments(userPermissions) && (
                             <button
                                 className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
                                 title="View Details"
@@ -1407,7 +1459,7 @@ export default function FloorReportUAT() {
                             >
                                 <PlusCircleIcon className="w-4 h-4 text-blue-500" />
                             </button>
-                        )}
+                        )} */}
                         {canViewFloorUATComments(userPermissions) && (
                             <button
                                 className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
@@ -1661,6 +1713,70 @@ export default function FloorReportUAT() {
         return undefined;
     };
 
+    // Chart click handlers for filtering
+    const handleFilterByRDD = (category) => {
+        const today = moment().format("YYYY-MM-DD");
+
+        setColumnFilters((prevFilters) => {
+            // Remove existing RDD filter if any
+            const otherFilters = prevFilters.filter((f) => f.id !== "RDD");
+
+            // Add RDD filter based on category
+            if (category === "Past Due") {
+                return [
+                    ...otherFilters,
+                    {
+                        id: "RDD",
+                        value: {
+                            dates: new Set(),
+                            includeEmpty: false,
+                            beforeDate: today,
+                        },
+                    },
+                ];
+            } else if (category === "Today") {
+                return [
+                    ...otherFilters,
+                    {
+                        id: "RDD",
+                        value: { dates: new Set([today]), includeEmpty: false },
+                    },
+                ];
+            } else if (category === "Future") {
+                return [
+                    ...otherFilters,
+                    {
+                        id: "RDD",
+                        value: {
+                            dates: new Set(),
+                            includeEmpty: false,
+                            afterDate: today,
+                        },
+                    },
+                ];
+            }
+            return prevFilters;
+        });
+    };
+
+    const handleFilterByStatus = (status) => {
+        setColumnFilters((prevFilters) => {
+            // Remove existing ConsStatus filter if any
+            const otherFilters = prevFilters.filter(
+                (f) => f.id !== "ConsStatus"
+            );
+
+            // Add ConsStatus filter
+            return [
+                ...otherFilters,
+                {
+                    id: "ConsStatus",
+                    value: status,
+                },
+            ];
+        });
+    };
+
     if (loading) {
         return <AnimatedLoading />;
     }
@@ -1754,8 +1870,12 @@ export default function FloorReportUAT() {
                             rddToday: overallSummary.rddToday,
                             rddFuture: overallSummary.rddFuture,
                         }}
+                        onFilterByRDD={handleFilterByRDD}
                     />
-                    <TopStatusesCard data={overallSummary.statusBreakdown} />
+                    <TopStatusesCard
+                        data={overallSummary.statusBreakdown}
+                        onFilterByStatus={handleFilterByStatus}
+                    />
                 </div>
 
                 <div className="flex w-full items-center gap-3 justify-end flex-wrap">
