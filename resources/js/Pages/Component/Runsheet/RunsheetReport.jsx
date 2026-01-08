@@ -985,7 +985,7 @@ export default function RunsheetReport() {
                     cell.alignment = {
                         wrapText: true,
                         vertical: "middle",
-                        horizontal: "center",
+                        horizontal: "left",
                     };
 
                     // Bold and background for manifest columns
@@ -1035,7 +1035,36 @@ export default function RunsheetReport() {
                 currentRow++;
             }
 
-            // Merge cells for manifest columns if there are multiple consignment rows
+            // Add thick border around the entire manifest group
+            const thickBorder = {
+                style: "hair",
+                color: { argb: "FF66686b" },
+            };
+
+            // Apply borders to the box BEFORE merging
+            for (let rowNum = startRow; rowNum < currentRow; rowNum++) {
+                for (let colNum = 1; colNum <= headers.length; colNum++) {
+                    const cell = worksheet.getCell(rowNum, colNum);
+
+                    const isTopRow = rowNum === startRow;
+                    const isBottomRow = rowNum === currentRow - 1;
+                    const isLeftCol = colNum === 1;
+                    const isRightCol = colNum === headers.length;
+
+                    // Build border object
+                    const cellBorder = {
+                        top: isTopRow ? thickBorder : undefined,
+                        bottom: isBottomRow ? thickBorder : undefined,
+                        left: isLeftCol ? thickBorder : undefined,
+                        right: isRightCol ? thickBorder : undefined,
+                    };
+
+                    // Apply border
+                    cell.border = cellBorder;
+                }
+            }
+
+            // Merge cells for manifest columns AFTER applying borders
             if (maxRows > 1) {
                 for (let col = 1; col <= visibleColumns.length; col++) {
                     worksheet.mergeCells(startRow, col, currentRow - 1, col);
