@@ -19,6 +19,7 @@ import TaskIcon from "@mui/icons-material/Task";
 import ContactsIcon from "@mui/icons-material/Contacts";
 import DescriptionIcon from "@mui/icons-material/Description";
 import DocumentScannerIcon from "@mui/icons-material/DocumentScanner";
+import PendingActionsIcon from "@mui/icons-material/PendingActions";
 const menu = [
     {
         id: 0,
@@ -300,6 +301,15 @@ const menu = [
         current: false,
         feature: "TimeSlotReport_View",
         url: "/gtrs/timeslot-report",
+    },
+    {
+        id: 39,
+        name: "Runsheet Report",
+        href: "#",
+        icon: PendingActionsIcon,
+        current: false,
+        feature: "RunsheetReport_View",
+        url: "/gtrs/runsheet-report",
     },
     {
         id: 37,

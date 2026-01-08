@@ -69,6 +69,7 @@ import GMIKPIPack from "./GMI/GMIKPIPack";
 import TimeSlotReport from "./Timeslot/TimeSlotReport";
 import FloorReport from "./floorReport/FloorReport";
 import FloorReportUAT from "./floorReportUAT/FloorReportUAT";
+import RunsheetReport from "./Runsheet/RunsheetReport";
 
 export default function GtrsMain({
     setCustomerAccounts,
@@ -733,7 +734,6 @@ export default function GtrsMain({
                         user={userPermissions}
                     />
 
-                    
                     <main className="w-full overflow-y-auto bg-smooth">
                         <div className="fixed left-0 top-20 z-10">
                             {broken && (
@@ -1717,7 +1717,24 @@ export default function GtrsMain({
                                         setToken={setToken}
                                         setUserPermissions={setUserPermissions}
                                     />
-                                     <Route
+                                    <Route
+                                        path="/runsheet-report"
+                                        element={
+                                            <ProtectedRoute
+                                                permission={userPermissions}
+                                                route="RunsheetReport_View"
+                                                element={
+                                                    <RunsheetReport
+                                                        accData={dataFromChild}
+                                                    />
+                                                }
+                                            />
+                                        }
+                                        userPermissions={userPermissions}
+                                        setToken={setToken}
+                                        setUserPermissions={setUserPermissions}
+                                    />
+                                    <Route
                                         path="/floor-report-uat"
                                         element={
                                             <ProtectedRoute

@@ -26,7 +26,6 @@ import moment from "moment";
 import swal from "sweetalert";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
-import PropTypes from "prop-types";
 import { CustomContext } from "@/CommonContext";
 import { ToastContainer } from "react-toastify";
 import AnimatedLoading from "@/Components/AnimatedLoading";
@@ -44,18 +43,7 @@ import {
     ChevronDoubleRightIcon,
     CalendarDaysIcon,
     PlusCircleIcon,
-    CubeIcon,
 } from "@heroicons/react/24/outline";
-import { EyeIcon } from "@heroicons/react/24/solid";
-import { Pie, Column } from "@ant-design/plots";
-
-import DetailsModal from "./DetailsModal";
-import FloorCommentsModal from "./FloorCommentsModal";
-import AddFloorCommentsModal from "./AddFloorCommentsModal";
-import {
-    canAddEditFloorUATComments,
-    canViewFloorUATComments,
-} from "@/permissions";
 
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -682,8 +670,6 @@ const dateFilterFn = (row, columnId, filterValue) => {
     // Handle the new filter structure with dates Set and includeEmpty boolean
     const dates = filterValue.dates || filterValue;
     const includeEmpty = filterValue.includeEmpty || false;
-    const beforeDate = filterValue.beforeDate;
-    const afterDate = filterValue.afterDate;
 
     // If cell value is empty/null
     if (!cellValue) {
@@ -695,44 +681,10 @@ const dateFilterFn = (row, columnId, filterValue) => {
         return false;
     }
 
-    const cellDate = moment(cellValue).format("YYYY-MM-DD");
-
-    // Handle before date filter (Past Due)
-    if (beforeDate) {
-        return moment(cellDate).isBefore(beforeDate);
-    }
-
-    // Handle after date filter (Future)
-    if (afterDate) {
-        return moment(cellDate).isAfter(afterDate);
-    }
-
     // If dates are selected, check if cell date matches
     if (dates && dates.size > 0) {
+        const cellDate = moment(cellValue).format("YYYY-MM-DD");
         return dates.has(cellDate);
-    }
-
-    return true;
-};
-
-// Number filter function - for range filtering
-const numberFilterFn = (row, columnId, filterValue) => {
-    if (!filterValue) return true;
-
-    const cellValue = row.getValue(columnId);
-    if (cellValue === null || cellValue === undefined) return false;
-
-    const numValue = Number(cellValue);
-    if (isNaN(numValue)) return false;
-
-    const { min, max } = filterValue;
-
-    if (min !== undefined && max !== undefined) {
-        return numValue >= min && numValue <= max;
-    } else if (min !== undefined) {
-        return numValue >= min;
-    } else if (max !== undefined) {
-        return numValue <= max;
     }
 
     return true;
@@ -740,356 +692,33 @@ const numberFilterFn = (row, columnId, filterValue) => {
 
 // Column width constants for sticky columns (fixed)
 const ACTION_COL_WIDTH = 50;
-const CONS_NO_COL_WIDTH = 130;
 
-// Summary Cards Components
-function TotalScannedCard({ total, depotBreakdown, availableDepots }) {
-    return (
-        <div className="bg-white rounded-lg shadow-md p-6 col-span-2 border border-gray-200">
-            <div className="flex items-center gap-3 mb-2">
-                <CubeIcon className="w-6 h-6 text-blue-600" />
-                <h3 className="text-sm font-semibold text-gray-600 uppercase">
-                    Total Items Scanned
-                </h3>
-            </div>
-            <p className="text-5xl font-bold text-blue-600 mb-4">
-                {total.toLocaleString()}
-            </p>
-
-            {/* Depot Breakdown Table */}
-            {availableDepots && availableDepots.length > 0 && (
-                <div className="mt-4 border-t pt-4">
-                    <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">
-                        By Depot
-                    </h4>
-                    <div className="max-h-40 overflow-y-auto">
-                        <table className="w-full text-sm">
-                            <tbody>
-                                {availableDepots
-                                    .sort((a, b) => a.localeCompare(b))
-                                    .map((depot) => (
-                                        <tr
-                                            key={depot}
-                                            className="border-b border-gray-100 last:border-b-0"
-                                        >
-                                            <td className="py-1.5 text-gray-700">
-                                                {depot}
-                                            </td>
-                                            <td className="py-1.5 text-right font-semibold text-gray-900">
-                                                {(
-                                                    depotBreakdown[depot] || 0
-                                                ).toLocaleString()}
-                                            </td>
-                                        </tr>
-                                    ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-}
-
-TotalScannedCard.propTypes = {
-    total: PropTypes.number.isRequired,
-    depotBreakdown: PropTypes.object.isRequired,
-    availableDepots: PropTypes.array,
-};
-
-function RDDStatusCard({ data, onFilterByRDD }) {
-    const rddChartData = useMemo(() => {
-        return [
-            { category: "Past Due", value: data.rddPast, type: "RDD" },
-            { category: "Today", value: data.rddToday, type: "RDD" },
-            { category: "Future", value: data.rddFuture, type: "RDD" },
-        ].filter((item) => item.value > 0);
-    }, [data.rddPast, data.rddToday, data.rddFuture]);
-
-    const rddPieConfig = useMemo(
-        () => ({
-            data: rddChartData,
-            angleField: "value",
-            colorField: "category",
-            color: (datum) => {
-                const colorMap = {
-                    "Past Due": "#ef4444",
-                    "Today": "#eab308",
-                    "Future": "#22c55e",
-                };
-                return colorMap[datum.category];
-            },
-            radius: 0.7,
-            innerRadius: 0.5,
-            label: {
-                type: "inner",
-                offset: "-40%",
-                content: "{value}",
-                style: {
-                    fontSize: 14,
-                    fontWeight: "bold",
-                    textAlign: "center",
-                    fill: "#fff",
-                },
-            },
-            legend: {
-                position: "bottom",
-                layout: "horizontal",
-            },
-            interactions: [{ type: "element-active" }],
-            state: {
-                active: {
-                    style: {
-                        lineWidth: 2,
-                        stroke: "#000",
-                    },
-                },
-                selected: {
-                    style: {
-                        lineWidth: 2,
-                        stroke: "#000",
-                    },
-                },
-            },
-            statistic: {
-                title: {
-                    content: "Total",
-                    style: {
-                        fontSize: "14px",
-                    },
-                },
-                content: {
-                    style: {
-                        fontSize: "24px",
-                        fontWeight: "bold",
-                    },
-                    content: (
-                        data.rddPast +
-                        data.rddToday +
-                        data.rddFuture
-                    ).toString(),
-                },
-            },
-            onReady: (plot) => {
-                plot.on("element:click", (evt) => {
-                    const { category } = evt.data.data;
-                    if (onFilterByRDD) {
-                        onFilterByRDD(category);
-                    }
-                });
-
-                // Change cursor to pointer on hover
-                const canvas = plot.chart.getCanvas();
-                const canvasEl = canvas.get("el");
-
-                plot.on("element:mouseenter", () => {
-                    canvasEl.style.cursor = "pointer";
-                });
-
-                plot.on("element:mouseleave", () => {
-                    canvasEl.style.cursor = "default";
-                });
-            },
-        }),
-        [
-            rddChartData,
-            data.rddPast,
-            data.rddToday,
-            data.rddFuture,
-            onFilterByRDD,
-        ]
-    );
-
-    return (
-        <div className="bg-white rounded-lg shadow-md p-6 col-span-3 border border-gray-200">
-            <h3 className="text-sm font-semibold text-gray-600 uppercase mb-4">
-                RDD Status
-            </h3>
-            <div className="h-64 cursor-pointer">
-                {rddChartData.length > 0 ? (
-                    <Pie {...rddPieConfig} />
-                ) : (
-                    <div className="flex items-center justify-center h-full text-gray-400">
-                        No RDD data available
-                    </div>
-                )}
-            </div>
-        </div>
-    );
-}
-
-RDDStatusCard.propTypes = {
-    data: PropTypes.shape({
-        rddPast: PropTypes.number.isRequired,
-        rddToday: PropTypes.number.isRequired,
-        rddFuture: PropTypes.number.isRequired,
-    }).isRequired,
-    onFilterByRDD: PropTypes.func,
-};
-
-function TopStatusesCard({ data, onFilterByStatus }) {
-    const statusChartData = useMemo(() => {
-        return Object.entries(data)
-            .map(([status, count]) => ({
-                label: status,
-                value: count,
-            }))
-            .sort((a, b) => b.value - a.value)
-            .slice(0, 10); // Top 10 statuses
-    }, [data]);
-
-    const statusColumnConfig = useMemo(
-        () => ({
-            data: statusChartData,
-            xField: "label",
-            yField: "value",
-            color: "#E2C047",
-            label: {
-                position: "middle",
-                style: {
-                    fill: "#000",
-                    fontSize: 12,
-                },
-            },
-            xAxis: {
-                label: {
-                    autoRotate: false,
-                    autoHide: false,
-                    style: {
-                        fontSize: 11,
-                        fontWeight: "bold",
-                    },
-                    formatter: (text) => {
-                        // Wrap words - each word on a new line
-                        return text.split(" ").join("\n");
-                    },
-                },
-            },
-            yAxis: {
-                label: {
-                    formatter: (v) => `${v}`,
-                },
-            },
-            appendPadding: [0, 0, 60, 0], // Add padding at bottom for wrapped labels
-            onReady: (plot) => {
-                plot.on("element:dblclick", (evt) => {
-                    const { label } = evt.data.data;
-                    if (onFilterByStatus) {
-                        onFilterByStatus(label);
-                    }
-                });
-
-                // Change cursor to pointer on hover
-                const canvas = plot.chart.getCanvas();
-                const canvasEl = canvas.get("el");
-
-                plot.on("element:mouseenter", () => {
-                    canvasEl.style.cursor = "pointer";
-                });
-
-                plot.on("element:mouseleave", () => {
-                    canvasEl.style.cursor = "default";
-                });
-            },
-        }),
-        [statusChartData, onFilterByStatus]
-    );
-
-    return (
-        <div className="bg-white rounded-lg shadow-md p-6 pb-0 border border-gray-200 col-span-4">
-            <h3 className="text-sm font-semibold text-gray-600 uppercase mb-4">
-                Consignment Status
-            </h3>
-            <div className="h-64 ">
-                {statusChartData.length > 0 ? (
-                    <Column
-                        {...statusColumnConfig}
-                        className="!h-80 !cursor-pointer"
-                    />
-                ) : (
-                    <div className="flex items-center justify-center h-full text-gray-400">
-                        No status data available
-                    </div>
-                )}
-            </div>
-        </div>
-    );
-}
-
-TopStatusesCard.propTypes = {
-    data: PropTypes.object.isRequired,
-    onFilterByStatus: PropTypes.func,
-};
-
-export default function FloorReportUAT() {
+export default function RunsheetReport() {
     const [loading, setLoading] = useState(true);
-    const [floorData, setFloorData] = useState([]);
+    const [runsheetData, setRunsheetData] = useState([]);
     const { Token, user, userPermissions, url } = useContext(CustomContext);
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    const {
-        isOpen: isCommentOpen,
-        onOpen: onCommentOpen,
-        onOpenChange: onCommentChange,
-    } = useDisclosure();
-    const {
-        isOpen: isAddCommentOpen,
-        onOpen: onAddCommentOpen,
-        onOpenChange: onAddCommentChange,
-    } = useDisclosure();
+
     const [sorting, setSorting] = useState([
         // { id: "EventDateTime", desc: true },
         // { id: "RDD", desc: false },
     ]);
 
-    const [detailsData, setDetailsData] = useState(null);
+    const [expandedRows, setExpandedRows] = useState(new Set());
 
-    const handleCommentSaved = (consignmentId, comment) => {
-        const newCommentObj = {
-            Comment: comment,
-            AddedBy:
-                user?.FullName ||
-                user?.UserName ||
-                `${user?.FirstName} ${user?.LastName}`,
-            AddedAt: new Date().toISOString(),
-            ConsId: consignmentId,
-        };
-
-        // Update local floor data
-        setFloorData((prevData) =>
-            prevData.map((row) =>
-                row.ConsignmentID === consignmentId
-                    ? {
-                          ...row,
-                          Comment: comment,
-                          Comments: [...(row.Comments || []), newCommentObj],
-                      }
-                    : row
-            )
-        );
-
-        // Update detailsData to show the new comment in the view modal
-        if (detailsData && detailsData.ConsignmentID === consignmentId) {
-            setDetailsData((prev) => ({
-                ...prev,
-                Comment: comment,
-                Comments: [...(prev.Comments || []), newCommentObj],
-            }));
-        }
-
-        // Switch from add modal to view modal to show the saved comment
-        onAddCommentChange(false);
+    const toggleRowExpansion = (manifestId) => {
+        setExpandedRows((prev) => {
+            const newSet = new Set(prev);
+            if (newSet.has(manifestId)) {
+                newSet.delete(manifestId);
+            } else {
+                newSet.add(manifestId);
+            }
+            return newSet;
+        });
     };
 
-    const [selectedDepots, setSelectedDepots] = useState([]);
-    const [showCharts, setShowCharts] = useState(true);
     const [columnFilters, setColumnFilters] = useState(() => {
-        const today = moment().format("YYYY-MM-DD");
-        return [
-            {
-                id: "EventDateTime",
-                value: { dates: new Set([today]), includeEmpty: false },
-            },
-        ];
+        return [];
     });
     const [columnVisibility, setColumnVisibility] = useState({
         DespatchDateTime: false,
@@ -1104,20 +733,12 @@ export default function FloorReportUAT() {
         TimeslotBooked: false,
     });
 
-    const dateFields = [
-        "DespatchDateTime",
-        "EventDateTime",
-        "PODDateTime",
-        "ConsStatusDate",
-        "RDD",
-        "OldRdd",
-        "NewRdd",
-    ];
+    const dateFields = ["ManifestDateTime"];
 
     // Format dates from backend
     const formattedData = useMemo(
         () =>
-            floorData?.map((row) => {
+            runsheetData?.map((row) => {
                 const newRow = { ...row };
 
                 dateFields.forEach((field) => {
@@ -1147,44 +768,8 @@ export default function FloorReportUAT() {
 
                 return newRow;
             }) || [],
-        [floorData]
+        [runsheetData]
     );
-
-    const handleViewDetails = (data) => {
-        setDetailsData(data);
-        onOpen();
-    };
-    const handleViewComments = (data) => {
-        setDetailsData(data);
-        onCommentOpen();
-    };
-
-    // 4. Update handleAddComments
-    const handleAddComments = (data) => {
-        setDetailsData({
-            Comment: "",
-            ConsId: data.ConsignmentID,
-            FloorCommentId: null,
-            ConsignmentID: data.ConsignmentID,
-            ConsignmentNo: data.ConsignmentNo,
-        });
-        onAddCommentOpen();
-    };
-
-    const handleEditComments = (data) => {
-        setDetailsData({
-            Comment: data.Comment,
-            ConsId: data.ConsId,
-            FloorCommentId: data.FloorCommentId,
-        });
-        onCommentChange();
-        onAddCommentOpen();
-    };
-
-    const handleConsignmentClick = (consignmentData) => {
-        const url = `/gtrs/consignment-details?consId=${consignmentData.ConsignmentID}`;
-        window.open(url, "_blank");
-    };
 
     // Cell renderers
     const DateCell = ({ value, showTime = true }) => {
@@ -1194,75 +779,6 @@ export default function FloorReportUAT() {
         const parsedDate = moment(value);
         return <span>{parsedDate.format(outputFormat)}</span>;
     };
-
-    const RDDCell = ({ value }) => {
-        if (!value) return <span className="text-gray-400">-</span>;
-
-        const today = moment().startOf("day");
-        const rddDate = moment(value).startOf("day");
-        const momentValue = moment(value);
-
-        let className = "";
-        if (rddDate.isBefore(today)) {
-            className =
-                "bg-red-100 text-red-800 font-semibold px-2 py-1 rounded";
-        } else if (rddDate.isSame(today)) {
-            className =
-                "bg-yellow-100 text-yellow-800 font-semibold px-2 py-1 rounded";
-        }
-
-        // Check if time is 00:00
-        const isTimeEmpty =
-            momentValue.hour() === 0 && momentValue.minute() === 0;
-        const format = isTimeEmpty ? "DD/MM/YYYY" : "DD/MM/YYYY hh:mm A";
-
-        return <span className={className}>{momentValue.format(format)}</span>;
-    };
-
-    const BooleanCell = ({ value }) => {
-        if (value === "YES" || value === true) {
-            return (
-                <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                    {value === true ? " True" : "Yes"}
-                </span>
-            );
-        } else if (value === "NO" || value === false) {
-            return (
-                <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                    {value === false ? " False" : "No"}
-                </span>
-            );
-        }
-        return null;
-    };
-
-    const TimeslotBookedCell = ({ value, row }) => {
-        if (row.original.TimeslotRequired !== "YES") {
-            return null;
-        }
-        return <BooleanCell value={value} />;
-    };
-
-    // Get all available depots from the data
-    const availableDepots = useMemo(() => {
-        const depots = new Set();
-        formattedData.forEach((row) => {
-            if (row.Depot) {
-                depots.add(row.Depot);
-            }
-        });
-        return Array.from(depots).sort();
-    }, [formattedData]);
-
-    // Apply depot filter to the data
-    const depotFilteredData = useMemo(() => {
-        if (selectedDepots.length === 0) {
-            return formattedData;
-        }
-        return formattedData.filter((row) =>
-            selectedDepots.includes(row.Depot)
-        );
-    }, [formattedData, selectedDepots]);
 
     // TanStack Table columns configuration
     const columns = useMemo(
@@ -1275,19 +791,36 @@ export default function FloorReportUAT() {
                 maxSize: ACTION_COL_WIDTH,
                 enableSorting: false,
                 enableColumnFilter: false,
-                cell: ({ row }) => (
-                    <button
-                        className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
-                        title="View Details"
-                        onClick={() => handleViewDetails(row.original)}
-                    >
-                        <ChevronRightIcon className="w-4 h-4" />
-                    </button>
-                ),
+                cell: ({ row }) => {
+                    const isExpanded = expandedRows.has(
+                        row.original.ManifestID
+                    );
+                    return (
+                        <button
+                            className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
+                            title={isExpanded ? "Collapse" : "Expand"}
+                            onClick={() =>
+                                toggleRowExpansion(row.original.ManifestID)
+                            }
+                        >
+                            {isExpanded ? (
+                                <ChevronDownIcon className="w-4 h-4" />
+                            ) : (
+                                <ChevronRightIcon className="w-4 h-4" />
+                            )}
+                        </button>
+                    );
+                },
             },
             {
-                accessorKey: "EventDateTime",
-                header: "Floor Scan Date",
+                accessorKey: "ManifestNo",
+                header: "Manifest No",
+                // maxSize: CONS_NO_COL_WIDTH,
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "ManifestDateTime",
+                header: "Manifest Date Time",
                 meta: { filterVariant: "date" },
                 filterFn: dateFilterFn,
                 cell: ({ getValue }) => (
@@ -1300,230 +833,29 @@ export default function FloorReportUAT() {
                 meta: { filterVariant: "select" },
             },
             {
-                accessorKey: "ChargeTo",
-                header: "Account Name",
+                accessorKey: "DriverName",
+                header: "Driver Name",
                 // size: ACTION_COL_WIDTH,
                 // minSize: ACTION_COL_WIDTH,
                 // maxSize: ACTION_COL_WIDTH,
                 meta: { filterVariant: "text" },
             },
-            {
-                accessorKey: "ConsignmentNo",
-                header: "Cons No",
-                size: CONS_NO_COL_WIDTH,
-                minSize: CONS_NO_COL_WIDTH,
-                // maxSize: CONS_NO_COL_WIDTH,
-                meta: { filterVariant: "text" },
-                cell: ({ row }) => {
-                    return (
-                        <span
-                            className="underline text-blue-500 hover:cursor-pointer"
-                            onClick={(e) => {
-                                handleConsignmentClick(row.original);
-                            }}
-                        >
-                            {row.original.ConsignmentNo}
-                        </span>
-                    );
-                },
-            },
-            {
-                accessorKey: "DespatchDateTime",
-                header: "Despatch Date",
-                meta: { filterVariant: "date" },
-                filterFn: dateFilterFn,
-                cell: ({ getValue }) => (
-                    <DateCell value={getValue()} showTime={false} />
-                ),
-            },
-            {
-                accessorKey: "RDD",
-                header: "RDD",
-                meta: { filterVariant: "date" },
-                filterFn: dateFilterFn,
-                cell: ({ getValue }) => <RDDCell value={getValue()} />,
-            },
-
-            {
-                accessorKey: "OldRdd",
-                header: "Original RDD",
-                meta: { filterVariant: "date" },
-                filterFn: dateFilterFn,
-                cell: ({ getValue }) => (
-                    <DateCell value={getValue()} showTime={false} />
-                ),
-            },
-            {
-                accessorKey: "ConsStatus",
-                header: "Cons Status",
-                size: 200,
-                // minSize: 100,
-                // maxSize: 250,
-                meta: { filterVariant: "select" },
-            },
-            {
-                accessorKey: "ConsStatusDate",
-                header: "Cons Status Date",
-                meta: { filterVariant: "date" },
-                filterFn: dateFilterFn,
-                cell: ({ getValue }) => (
-                    <DateCell value={getValue()} showTime={true} />
-                ),
-            },
-            {
-                accessorKey: "POD",
-                header: "POD",
-                meta: { filterVariant: "select" },
-                cell: ({ getValue }) => <BooleanCell value={getValue()} />,
-            },
-            {
-                accessorKey: "PODDateTime",
-                header: "POD Date",
-                meta: { filterVariant: "date" },
-                filterFn: dateFilterFn,
-                cell: ({ getValue }) => (
-                    <DateCell value={getValue()} showTime={true} />
-                ),
-            },
-            {
-                accessorKey: "SenderName",
-                header: "Sender Name",
-                meta: { filterVariant: "text" },
-            },
-            {
-                accessorKey: "SenderState",
-                header: "Sender State",
-                meta: { filterVariant: "select" },
-            },
-            {
-                accessorKey: "SenderSuburb",
-                header: "Sender Suburb",
-                meta: { filterVariant: "text" },
-            },
-            {
-                accessorKey: "SenderZone",
-                header: "Sender Zone",
-                meta: { filterVariant: "select" },
-            },
-            {
-                accessorKey: "ReceiverName",
-                header: "Receiver Name",
-                meta: { filterVariant: "text" },
-            },
-            {
-                accessorKey: "ReceiverState",
-                header: "Receiver State",
-                meta: { filterVariant: "select" },
-            },
-            {
-                accessorKey: "ReceiverSuburb",
-                header: "Receiver Suburb",
-                meta: { filterVariant: "text" },
-            },
-            {
-                accessorKey: "ReceiverZone",
-                header: "Receiver Zone",
-                meta: { filterVariant: "select" },
-            },
-
-            {
-                accessorKey: "OriginPalletSpaces",
-                header: "Cnote Pallet Space",
-                meta: { filterVariant: "number" },
-                filterFn: numberFilterFn,
-            },
-            {
-                accessorKey: "PalletQuantity",
-                header: "Pallet Quantity",
-                meta: { filterVariant: "number" },
-                filterFn: numberFilterFn,
-            },
-            {
-                accessorKey: "ActualScanned",
-                header: "Scanned Events",
-                meta: { filterVariant: "number" },
-                filterFn: numberFilterFn,
-            },
-            {
-                accessorKey: "TotalDays",
-                header: "Total Days",
-                meta: { filterVariant: "number" },
-                filterFn: numberFilterFn,
-            },
-            {
-                accessorKey: "TimeslotRequired",
-                header: "Timeslot Required",
-                meta: { filterVariant: "select" },
-                cell: ({ getValue }) => <BooleanCell value={getValue()} />,
-            },
-            {
-                accessorKey: "TimeslotBooked",
-                header: "Timeslot Booked",
-                meta: { filterVariant: "select" },
-                cell: ({ getValue, row }) => (
-                    <TimeslotBookedCell value={getValue()} row={row} />
-                ),
-            },
-            {
-                accessorKey: "DockLocation",
-                header: "Dock Location",
-                meta: { filterVariant: "text" },
-            },
-            {
-                accessorKey: "Comment",
-                header: "Comment",
-                meta: { filterVariant: "text" },
-            },
-            {
-                id: "comments-actions",
-                header: "Actions",
-                size: 100,
-                minSize: 100,
-                maxSize: 100,
-                enableSorting: false,
-                enableColumnFilter: false,
-                cell: ({ row }) => (
-                    <div className="flex gap-1">
-                        {/* {canAddEditFloorUATComments(userPermissions) && (
-                            <button
-                                className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
-                                title="View Details"
-                                onClick={() => handleAddComments(row.original)}
-                            >
-                                <PlusCircleIcon className="w-4 h-4 text-blue-500" />
-                            </button>
-                        )} */}
-                        {canViewFloorUATComments(userPermissions) && (
-                            <button
-                                className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
-                                title="View Details"
-                                onClick={() => handleViewComments(row.original)}
-                            >
-                                <EyeIcon className="w-4 h-4 text-yellow-500" />
-                            </button>
-                        )}
-                    </div>
-                ),
-            },
         ],
-        [userPermissions]
+        [userPermissions, expandedRows]
     );
 
     // Initialize TanStack Table
     const table = useReactTable({
-        data: depotFilteredData,
+        data: formattedData,
         columns,
-        getRowId: (row) =>
-            row.ConsignmentID?.toString() || Math.random().toString(),
         state: {
             sorting,
             columnFilters,
             columnVisibility,
         },
         defaultColumn: {
-            size: 180,
-            minSize: 80,
-            maxSize: 800,
+            size: 400,
+            minSize: 200,
         },
         initialState: {
             pagination: {
@@ -1545,72 +877,17 @@ export default function FloorReportUAT() {
         // enableColumnResizing: true,
     });
 
-    // Calculate overall summary from filtered data
-    const overallSummary = useMemo(() => {
-        const filteredRows = table.getFilteredRowModel().rows;
-        const summary = {
-            totalScanned: 0,
-            rddPast: 0,
-            rddToday: 0,
-            rddFuture: 0,
-            rddNull: 0,
-            statusBreakdown: {},
-            depotBreakdown: {},
-        };
-
-        filteredRows.forEach((row) => {
-            const rdd = row.original.RDD;
-            const status = row.original.ConsStatus;
-            const depot = row.original.Depot;
-            const details = row.original.Details || [];
-
-            // Count items in Details array instead of just counting rows
-            const itemCount = details.length > 0 ? details.length : 1;
-            summary.totalScanned += itemCount;
-
-            // Depot breakdown - count items per depot
-            if (depot) {
-                summary.depotBreakdown[depot] =
-                    (summary.depotBreakdown[depot] || 0) + itemCount;
-            }
-
-            // RDD categorization
-            if (rdd) {
-                const rddDate = moment(rdd).startOf("day");
-                const today = moment().startOf("day");
-
-                if (rddDate.isBefore(today)) {
-                    summary.rddPast++;
-                } else if (rddDate.isSame(today)) {
-                    summary.rddToday++;
-                } else {
-                    summary.rddFuture++;
-                }
-            } else {
-                summary.rddNull++;
-            }
-
-            // Status breakdown
-            if (status) {
-                summary.statusBreakdown[status] =
-                    (summary.statusBreakdown[status] || 0) + 1;
-            }
-        });
-
-        return summary;
-    }, [table.getFilteredRowModel().rows]);
-
     const fetchData = () => {
         setLoading(true);
         axios
-            .get(`${url}/FloorReport/v2`, {
+            .get(`${url}/Runsheets`, {
                 headers: {
                     UserId: user.UserId,
                     Authorization: `Bearer ${Token}`,
                 },
             })
             .then((res) => {
-                setFloorData(res.data || []);
+                setRunsheetData(res.data || []);
                 setLoading(false);
             })
             .catch((err) => {
@@ -1642,10 +919,15 @@ export default function FloorReportUAT() {
             .filter((col) => col.id !== "actions");
 
         const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet("Floor Report");
+        const worksheet = workbook.addWorksheet("Runsheet Report");
 
-        // Add headers
-        const headers = visibleColumns.map((col) => col.columnDef.header);
+        // Add headers with additional consignment columns
+        const headers = [
+            ...visibleColumns.map((col) => col.columnDef.header),
+            "Consignments",
+            "POD",
+            "Consignment Status",
+        ];
         const headerRow = worksheet.addRow(headers);
         headerRow.font = { bold: true };
         headerRow.fill = {
@@ -1656,158 +938,128 @@ export default function FloorReportUAT() {
         headerRow.alignment = { horizontal: "center", vertical: "middle" };
 
         // Define date columns with their format types
-        const dateTimeColumns = [
-            "Floor Scan Date",
-            "Cons Status Date",
-            "POD Date",
-        ];
-        const dateOnlyColumns = ["Original RDD", "Despatch Date"];
-        const rddColumns = ["RDD"];
-
+        const dateTimeColumns = ["Manifest Date Time"];
         const dateTimeIndexes = headers
             .map((h, i) => (dateTimeColumns.includes(h) ? i : null))
             .filter((i) => i !== null);
-        const dateOnlyIndexes = headers
-            .map((h, i) => (dateOnlyColumns.includes(h) ? i : null))
-            .filter((i) => i !== null);
-        const rddIndexes = headers
-            .map((h, i) => (rddColumns.includes(h) ? i : null))
-            .filter((i) => i !== null);
 
         // Add data rows
+        let currentRow = 2; // Start after header row
         rows.forEach((row) => {
-            const rowData = visibleColumns.map((col) => {
-                const value = row.getValue(col.id);
-                return value;
-            });
+            const consignments = row.original.Consignments || [];
+            const maxRows = Math.max(1, consignments.length);
+            const startRow = currentRow;
 
-            const excelRow = worksheet.addRow(rowData);
-
-            excelRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-                const cellValue = cell.value;
-                cell.alignment = { wrapText: true, vertical: "top" };
-
-                if (
-                    cellValue &&
-                    cellValue instanceof Date &&
-                    !isNaN(cellValue)
-                ) {
-                    const excelSerial =
-                        (cellValue.getTime() -
-                            cellValue.getTimezoneOffset() * 60000) /
-                            86400000 +
-                        25569;
-                    cell.value = excelSerial;
-
-                    // Apply appropriate format based on column type
-                    if (dateTimeIndexes.includes(colNumber - 1)) {
-                        cell.numFmt = "dd-mm-yyyy hh:mm";
-                    } else if (dateOnlyIndexes.includes(colNumber - 1)) {
-                        cell.numFmt = "dd-mm-yyyy";
-                    } else if (rddIndexes.includes(colNumber - 1)) {
-                        // RDD shows time only if not 00:00
-                        const isTimeEmpty =
-                            cellValue.getHours() === 0 &&
-                            cellValue.getMinutes() === 0;
-                        cell.numFmt = isTimeEmpty
-                            ? "dd-mm-yyyy"
-                            : "dd-mm-yyyy hh:mm";
+            // Create rows for this manifest (one row per consignment, or one empty row if no consignments)
+            for (let i = 0; i < maxRows; i++) {
+                const rowData = visibleColumns.map((col) => {
+                    // Only show manifest data in the first row
+                    if (i === 0) {
+                        const value = row.getValue(col.id);
+                        return value;
                     }
+                    return "";
+                });
+
+                // Add consignment data if it exists
+                const consignment = consignments[i];
+                if (consignment) {
+                    rowData.push(consignment.ConsignmentNo);
+                    rowData.push(consignment.POD ? "TRUE" : "FALSE");
+                    rowData.push(consignment.ConsignmentStatus);
+                } else {
+                    rowData.push("");
+                    rowData.push("");
                 }
-            });
+
+                const excelRow = worksheet.addRow(rowData);
+
+                // Style the row
+                excelRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                    const cellValue = cell.value;
+                    cell.alignment = {
+                        wrapText: true,
+                        vertical: "middle",
+                        horizontal: "center",
+                    };
+
+                    // Bold and background for manifest columns
+                    if (colNumber <= visibleColumns.length) {
+                        cell.font = { bold: true };
+                        cell.fill = {
+                            type: "pattern",
+                            pattern: "solid",
+                            fgColor: { argb: "FFF9FAFB" },
+                        };
+                    }
+
+                    // Handle date formatting
+                    if (
+                        cellValue &&
+                        cellValue instanceof Date &&
+                        !isNaN(cellValue)
+                    ) {
+                        const excelSerial =
+                            (cellValue.getTime() -
+                                cellValue.getTimezoneOffset() * 60000) /
+                                86400000 +
+                            25569;
+                        cell.value = excelSerial;
+
+                        if (dateTimeIndexes.includes(colNumber - 1)) {
+                            cell.numFmt = "dd-mm-yyyy hh:mm";
+                        }
+                    }
+
+                    // Color code POD column
+                    if (colNumber === headers.length && cellValue) {
+                        if (cellValue === "TRUE") {
+                            cell.font = {
+                                color: { argb: "FF22C55E" },
+                                bold: true,
+                            };
+                        } else if (cellValue === "FALSE") {
+                            cell.font = {
+                                color: { argb: "FFEF4444" },
+                                bold: true,
+                            };
+                        }
+                    }
+                });
+
+                currentRow++;
+            }
+
+            // Merge cells for manifest columns if there are multiple consignment rows
+            if (maxRows > 1) {
+                for (let col = 1; col <= visibleColumns.length; col++) {
+                    worksheet.mergeCells(startRow, col, currentRow - 1, col);
+                }
+            }
         });
 
-        worksheet.columns = headers.map(() => ({ width: 20 }));
+        // Set column widths
+        worksheet.columns = headers.map((header) => {
+            if (header === "Manifest No") return { width: 15 };
+            if (header === "Manifest Date Time") return { width: 20 };
+            if (header === "Depot") return { width: 10 };
+            if (header === "Driver Name") return { width: 30 };
+            if (header === "Consignments") return { width: 20 };
+            if (header === "POD") return { width: 12 };
+            if (header === "Consignment Status") return { width: 30 };
+            return { width: 20 };
+        });
 
         workbook.xlsx.writeBuffer().then((buffer) => {
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             });
-            saveAs(blob, "Floor-Report.xlsx");
+            saveAs(blob, "Runsheet-Report.xlsx");
         });
     };
 
     const clearAllFilters = () => {
         setColumnFilters([]);
-        setSelectedDepots([]);
-    };
-
-    // Helper function to check if column is sticky
-    const isStickyColumn = (columnId) => {
-        return ["actions", "ConsignmentNo", "ConsStatus"].includes(columnId);
-    };
-
-    // Calculate sticky left position based on column
-    const getStickyLeft = (columnId) => {
-        if (columnId === "actions") return 0;
-        if (columnId === "ConsignmentNo") return ACTION_COL_WIDTH;
-        if (columnId === "ConsStatus")
-            return ACTION_COL_WIDTH + CONS_NO_COL_WIDTH;
-        return undefined;
-    };
-
-    // Chart click handlers for filtering
-    const handleFilterByRDD = (category) => {
-        const today = moment().format("YYYY-MM-DD");
-
-        setColumnFilters((prevFilters) => {
-            // Remove existing RDD filter if any
-            const otherFilters = prevFilters.filter((f) => f.id !== "RDD");
-
-            // Add RDD filter based on category
-            if (category === "Past Due") {
-                return [
-                    ...otherFilters,
-                    {
-                        id: "RDD",
-                        value: {
-                            dates: new Set(),
-                            includeEmpty: false,
-                            beforeDate: today,
-                        },
-                    },
-                ];
-            } else if (category === "Today") {
-                return [
-                    ...otherFilters,
-                    {
-                        id: "RDD",
-                        value: { dates: new Set([today]), includeEmpty: false },
-                    },
-                ];
-            } else if (category === "Future") {
-                return [
-                    ...otherFilters,
-                    {
-                        id: "RDD",
-                        value: {
-                            dates: new Set(),
-                            includeEmpty: false,
-                            afterDate: today,
-                        },
-                    },
-                ];
-            }
-            return prevFilters;
-        });
-    };
-
-    const handleFilterByStatus = (status) => {
-        setColumnFilters((prevFilters) => {
-            // Remove existing ConsStatus filter if any
-            const otherFilters = prevFilters.filter(
-                (f) => f.id !== "ConsStatus"
-            );
-
-            // Add ConsStatus filter
-            return [
-                ...otherFilters,
-                {
-                    id: "ConsStatus",
-                    value: status,
-                },
-            ];
-        });
     };
 
     if (loading) {
@@ -1819,99 +1071,12 @@ export default function FloorReportUAT() {
             <div className="min-h-full px-8">
                 <ToastContainer />
 
-                <div className="flex w-full items-center gap-3 justify-between flex-wrap">
+                <div className="my-4 flex w-full items-center gap-3 justify-end flex-wrap">
                     <div className="sm:flex-auto mt-6">
                         <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
-                            Floor Report UAT
+                            Runsheet Report
                         </h1>
                     </div>
-                    <div className="flex items-center gap-3">
-                        {/* Toggle Charts Button */}
-                        <Button
-                            onClick={() => setShowCharts(!showCharts)}
-                            size="sm"
-                            variant="flat"
-                            className="bg-gray-700 text-white hover:bg-gray-800"
-                        >
-                            {showCharts ? "Hide Charts" : "Show Charts"}
-                        </Button>
-
-                        <Dropdown closeOnSelect={false}>
-                            <DropdownTrigger>
-                                <Button
-                                    endContent={
-                                        <ChevronDownIcon className="text-small w-3" />
-                                    }
-                                    size="sm"
-                                    variant="flat"
-                                    className="bg-blue-600 text-white"
-                                >
-                                    {selectedDepots.length === 0
-                                        ? "All Depots"
-                                        : selectedDepots.length === 1
-                                        ? selectedDepots[0]
-                                        : selectedDepots.length ===
-                                          availableDepots.length
-                                        ? "All Depots"
-                                        : `${selectedDepots.length} Depots`}
-                                </Button>
-                            </DropdownTrigger>
-                            <DropdownMenu
-                                aria-label="Depot Selection"
-                                closeOnSelect={false}
-                                selectedKeys={new Set(selectedDepots)}
-                                selectionMode="multiple"
-                                onSelectionChange={(keys) => {
-                                    const selected = Array.from(keys);
-                                    setSelectedDepots(selected);
-                                }}
-                            >
-                                {availableDepots.map((depot) => (
-                                    <DropdownItem key={depot}>
-                                        {depot}
-                                    </DropdownItem>
-                                ))}
-                            </DropdownMenu>
-                        </Dropdown>
-
-                        <Button
-                            className="bg-dark text-white px-4 py-2"
-                            size="sm"
-                            onClick={clearAllFilters}
-                        >
-                            Clear Filters
-                        </Button>
-                    </div>
-                </div>
-
-                {/* Summary Cards Section */}
-                <div
-                    className={`mb-6 grid grid-cols-1 md:grid-cols-9 gap-4 transition-all duration-300 ease-in-out overflow-hidden ${
-                        showCharts
-                            ? "opacity-100 max-h-[500px]"
-                            : "opacity-0 max-h-0 mb-0"
-                    }`}
-                >
-                    <TotalScannedCard
-                        total={overallSummary.totalScanned}
-                        depotBreakdown={overallSummary.depotBreakdown}
-                        availableDepots={availableDepots}
-                    />
-                    <RDDStatusCard
-                        data={{
-                            rddPast: overallSummary.rddPast,
-                            rddToday: overallSummary.rddToday,
-                            rddFuture: overallSummary.rddFuture,
-                        }}
-                        onFilterByRDD={handleFilterByRDD}
-                    />
-                    <TopStatusesCard
-                        data={overallSummary.statusBreakdown}
-                        onFilterByStatus={handleFilterByStatus}
-                    />
-                </div>
-
-                <div className="flex w-full items-center gap-3 justify-end flex-wrap">
                     <div className="flex items-center gap-3">
                         {/* Column Visibility Dropdown */}
                         <Dropdown>
@@ -1984,6 +1149,13 @@ export default function FloorReportUAT() {
 
                         <Button
                             className="bg-dark text-white px-4 py-2"
+                            size="sm"
+                            onClick={clearAllFilters}
+                        >
+                            Clear Filters
+                        </Button>
+                        <Button
+                            className="bg-dark text-white px-4 py-2"
                             onClick={exportToExcel}
                             size="sm"
                         >
@@ -2001,24 +1173,13 @@ export default function FloorReportUAT() {
                         <table
                             className="w-full border-collapse"
                             style={{
-                                minWidth: "max-content",
-                                tableLayout: "fixed",
+                                tableLayout: "auto",
                             }}
                         >
                             <thead className="sticky top-0 z-30">
                                 {table.getHeaderGroups().map((headerGroup) => (
                                     <tr key={headerGroup.id}>
                                         {headerGroup.headers.map((header) => {
-                                            const isSticky = isStickyColumn(
-                                                header.column.id
-                                            );
-                                            const stickyLeft = getStickyLeft(
-                                                header.column.id
-                                            );
-                                            const isLastSticky =
-                                                header.column.id ===
-                                                "ConsStatus";
-
                                             return (
                                                 <th
                                                     key={header.id}
@@ -2027,16 +1188,6 @@ export default function FloorReportUAT() {
                                                         px-3 py-3 text-left text-xs font-semibold text-gray-700
                                                         uppercase tracking-wider bg-gray-100 border-b-2 border-gray-300
                                                         border-r
-                                                        ${
-                                                            isSticky
-                                                                ? "sticky z-40"
-                                                                : ""
-                                                        }
-                                                        ${
-                                                            isLastSticky
-                                                                ? "border-r border-gray-300"
-                                                                : ""
-                                                        }
                                                     `}
                                                     style={{
                                                         width: header.getSize(),
@@ -2044,7 +1195,6 @@ export default function FloorReportUAT() {
                                                             header.column
                                                                 .columnDef
                                                                 .minSize,
-                                                        left: stickyLeft,
                                                     }}
                                                 >
                                                     <div className="flex items-center gap-1 relative pr-2">
@@ -2155,107 +1305,131 @@ export default function FloorReportUAT() {
                                     table
                                         .getRowModel()
                                         .rows.map((row, rowIndex) => {
-                                            // Check if row is flagged
+                                            const rowBg =
+                                                rowIndex % 2 === 0
+                                                    ? "bg-white"
+                                                    : "bg-gray-50";
+                                            const rowBgColor =
+                                                rowIndex % 2 === 0
+                                                    ? "#ffffff"
+                                                    : "#f9fafb";
 
-                                            const isFlaggedRed =
-                                                row.original.Flag == 1;
-                                            const isFlaggedBlue =
-                                                row.original.Flag == 2;
-                                            const isFlaggedYellow =
-                                                row.original.Flag == 3;
-                                            const rowBg = isFlaggedRed
-                                                ? "bg-red-100"
-                                                : isFlaggedYellow
-                                                ? "bg-yellow-100"
-                                                : isFlaggedBlue
-                                                ? "bg-blue-100"
-                                                : rowIndex % 2 === 0
-                                                ? "bg-white"
-                                                : "bg-gray-50";
-                                            const rowBgColor = isFlaggedRed
-                                                ? "#fee2e2"
-                                                : isFlaggedYellow
-                                                ? "#fef3c7"
-                                                : isFlaggedBlue
-                                                ? "#dbeafe"
-                                                : rowIndex % 2 === 0
-                                                ? "#ffffff"
-                                                : "#f9fafb";
+                                            const isExpanded = expandedRows.has(
+                                                row.original.ManifestID
+                                            );
+                                            const consignments =
+                                                row.original.Consignments || [];
 
                                             return (
-                                                <tr
-                                                    key={row.id}
-                                                    className={` transition-colors ${rowBg}`}
-                                                >
-                                                    {row
-                                                        .getVisibleCells()
-                                                        .map((cell) => {
-                                                            const isSticky =
-                                                                isStickyColumn(
-                                                                    cell.column
-                                                                        .id
-                                                                );
-                                                            const stickyLeft =
-                                                                getStickyLeft(
-                                                                    cell.column
-                                                                        .id
-                                                                );
-                                                            const isLastSticky =
-                                                                cell.column
-                                                                    .id ===
-                                                                "ConsStatus";
+                                                <>
+                                                    <tr
+                                                        key={row.id}
+                                                        className={`hover:bg-blue-50 transition-colors ${rowBg}`}
+                                                    >
+                                                        {row
+                                                            .getVisibleCells()
+                                                            .map((cell) => {
+                                                                return (
+                                                                    <td
+                                                                        key={
+                                                                            cell.id
+                                                                        }
+                                                                        className={`
+                                                                        px-3 py-2.5 text-sm text-gray-700 border-b border-gray-300
+                                                                        border-r
+                                                                        overflow-hidden text-ellipsis whitespace-nowrap
 
-                                                            return (
-                                                                <td
-                                                                    key={
-                                                                        cell.id
-                                                                    }
-                                                                    className={`
-                                                                    px-3 py-2.5 text-sm text-gray-700 border-b border-gray-300
-                                                                    border-r
-                                                                    overflow-hidden text-ellipsis whitespace-nowrap
-                                                                    ${
-                                                                        isSticky
-                                                                            ? "sticky z-20"
-                                                                            : ""
-                                                                    }
-                                                                    ${
-                                                                        isLastSticky
-                                                                            ? "border-r border-gray-300"
-                                                                            : ""
-                                                                    }
-                                                                `}
-                                                                    style={{
-                                                                        width: cell.column.getSize(),
-                                                                        minWidth:
+                                                                    `}
+                                                                        style={{
+                                                                            width: cell.column.getSize(),
+                                                                            minWidth:
+                                                                                cell
+                                                                                    .column
+                                                                                    .columnDef
+                                                                                    .minSize,
+                                                                        }}
+                                                                        title={
+                                                                            typeof cell.getValue() ===
+                                                                            "string"
+                                                                                ? cell.getValue()
+                                                                                : ""
+                                                                        }
+                                                                    >
+                                                                        {flexRender(
                                                                             cell
                                                                                 .column
                                                                                 .columnDef
-                                                                                .minSize,
-                                                                        left: stickyLeft,
-                                                                        backgroundColor:
-                                                                            isSticky
-                                                                                ? rowBgColor
-                                                                                : undefined,
-                                                                    }}
-                                                                    title={
-                                                                        typeof cell.getValue() ===
-                                                                        "string"
-                                                                            ? cell.getValue()
-                                                                            : ""
+                                                                                .cell,
+                                                                            cell.getContext()
+                                                                        )}
+                                                                    </td>
+                                                                );
+                                                            })}
+                                                    </tr>
+                                                    {isExpanded &&
+                                                        consignments.length >
+                                                            0 && (
+                                                            <tr
+                                                                key={`${row.id}-expanded`}
+                                                            >
+                                                                <td
+                                                                    colSpan={
+                                                                        columns.length
                                                                     }
+                                                                    className="px-6 py-4 bg-gray-50 border-b border-gray-300"
                                                                 >
-                                                                    {flexRender(
-                                                                        cell
-                                                                            .column
-                                                                            .columnDef
-                                                                            .cell,
-                                                                        cell.getContext()
-                                                                    )}
+                                                                    <div className="space-y-2">
+                                                                        <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                                                                            Consignments
+                                                                            (
+                                                                            {
+                                                                                consignments.length
+                                                                            }
+                                                                            )
+                                                                        </h4>
+                                                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                                                            {consignments.map(
+                                                                                (
+                                                                                    consignment
+                                                                                ) => (
+                                                                                    <div
+                                                                                        key={
+                                                                                            consignment.ConsignmentID
+                                                                                        }
+                                                                                        className="bg-white rounded-lg border border-gray-200 p-3 shadow-sm"
+                                                                                    >
+                                                                                        <div className="flex items-center justify-between">
+                                                                                            <div className="text-sm font-medium text-gray-900">
+                                                                                                {
+                                                                                                    consignment.ConsignmentNo
+                                                                                                }
+                                                                                                <p className="text-gray-500 text-xs">
+                                                                                                    {
+                                                                                                        consignment.ConsignmentStatus
+                                                                                                    }
+                                                                                                </p>
+                                                                                            </div>
+                                                                                            <span
+                                                                                                className={`px-2 py-1 text-xs font-semibold rounded ${
+                                                                                                    consignment.POD
+                                                                                                        ? "bg-green-100 text-green-800"
+                                                                                                        : "bg-red-100 text-red-800"
+                                                                                                }`}
+                                                                                            >
+                                                                                                {consignment.POD
+                                                                                                    ? "POD"
+                                                                                                    : "No POD"}
+                                                                                            </span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                )
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
                                                                 </td>
-                                                            );
-                                                        })}
-                                                </tr>
+                                                            </tr>
+                                                        )}
+                                                </>
                                             );
                                         })
                                 )}
@@ -2394,7 +1568,7 @@ export default function FloorReportUAT() {
                                 onChange={(e) => {
                                     table.setPageSize(Number(e.target.value));
                                 }}
-                                className="py-1 text-sm border border-gray-300 roundexd-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 {[10, 20, 30, 50, 100].map((pageSize) => (
                                     <option key={pageSize} value={pageSize}>
@@ -2405,26 +1579,6 @@ export default function FloorReportUAT() {
                         </div>
                     </div>
                 </div>
-
-                <DetailsModal
-                    isOpen={isOpen}
-                    onOpenChange={onOpenChange}
-                    detailsData={detailsData}
-                />
-
-                <FloorCommentsModal
-                    isOpen={isCommentOpen}
-                    onOpenChange={onCommentChange}
-                    commentsData={detailsData}
-                    handleAddComments={handleEditComments}
-                />
-
-                <AddFloorCommentsModal
-                    isOpen={isAddCommentOpen}
-                    onOpenChange={onAddCommentChange}
-                    onCommentSaved={handleCommentSaved}
-                    commentsData={detailsData}
-                />
             </div>
         </>
     );
