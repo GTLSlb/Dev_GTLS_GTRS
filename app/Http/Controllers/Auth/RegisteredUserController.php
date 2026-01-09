@@ -222,7 +222,7 @@ class RegisteredUserController extends Controller
 
             if($is_jwt_set){
                 $jwt_token = $_COOKIE['jwt_token'] == "null" || $_COOKIE['jwt_token'] == null ? $this->validateSessionFromNode($user_from_session, $sessionId, $request->session()->get('token')) : $_COOKIE['jwt_token'];
-                $token = !empty($_COOKIE['jwt_token']) ? $request->session()->get('token') : $this->decode_jwt_valid($jwt_token)->Token;
+                $token = empty($_COOKIE['jwt_token']) ? $request->session()->get('token') : $this->decode_jwt_valid($jwt_token)->Token;
             }else{
                 $jwt_token = $this->validateSessionFromNode($user_from_session, $sessionId, $request->session()->get('token'));
                 $token = $request->session()->get('token');
