@@ -1343,6 +1343,9 @@ export default function RunsheetReport() {
                                                             >
                                                                 <div
                                                                     className={`py-2 ml-[${ACTION_COL_WIDTH}px]`}
+                                                                    style={{
+                                                                        marginLeft: `${ACTION_COL_WIDTH}px`,
+                                                                    }}
                                                                 >
                                                                     <h4 className="text-sm font-semibold text-gray-700 mb-3">
                                                                         Consignments
@@ -1408,6 +1411,9 @@ export default function RunsheetReport() {
                                                                 >
                                                                     <div
                                                                         className={`py-5 ml-[${ACTION_COL_WIDTH}px]`}
+                                                                        style={{
+                                                                            marginLeft: `${ACTION_COL_WIDTH}px`,
+                                                                        }}
                                                                     >
                                                                         No
                                                                         consignments
