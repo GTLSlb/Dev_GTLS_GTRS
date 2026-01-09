@@ -706,17 +706,16 @@ export default function RunsheetReport() {
         // { id: "RDD", desc: false },
     ]);
 
-    const [expandedRows, setExpandedRows] = useState(new Set());
+    const [expandedRowId, setExpandedRowId] = useState(null);
 
     const toggleRowExpansion = (manifestId) => {
-        setExpandedRows((prev) => {
-            const newSet = new Set(prev);
-            if (newSet.has(manifestId)) {
-                newSet.delete(manifestId);
-            } else {
-                newSet.add(manifestId);
+        setExpandedRowId((prev) => {
+            // If clicking the same row, collapse it
+            if (prev === manifestId) {
+                return null;
             }
-            return newSet;
+            // Otherwise, expand the new row (collapsing any previously expanded row)
+            return manifestId;
         });
     };
 
@@ -800,9 +799,7 @@ export default function RunsheetReport() {
                 enableSorting: false,
                 enableColumnFilter: false,
                 cell: ({ row }) => {
-                    const isExpanded = expandedRows.has(
-                        row.original.ManifestID
-                    );
+                    const isExpanded = expandedRowId === row.original.ManifestID;
                     return (
                         <button
                             className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
@@ -849,7 +846,7 @@ export default function RunsheetReport() {
                 meta: { filterVariant: "text" },
             },
         ],
-        [userPermissions, expandedRows]
+        [userPermissions, expandedRowId]
     );
 
     // Initialize TanStack Table
@@ -1038,13 +1035,13 @@ export default function RunsheetReport() {
                 currentRow++;
             }
 
-            // Add thick border around the entire manifest group
-            const thickBorder = {
-                style: "hair",
-                color: { argb: "FF66686b" },
+
+            const thinBorder = {
+                style: "thin",
+                color: { argb: "FF000000" },
             };
 
-            // Apply borders to the box BEFORE merging
+            // Apply borders to all cells
             for (let rowNum = startRow; rowNum < currentRow; rowNum++) {
                 for (let colNum = 1; colNum <= headers.length; colNum++) {
                     const cell = worksheet.getCell(rowNum, colNum);
@@ -1054,12 +1051,12 @@ export default function RunsheetReport() {
                     const isLeftCol = colNum === 1;
                     const isRightCol = colNum === headers.length;
 
-                    // Build border object
+                    // Build border object - thin borders between cells, thick on outer edges
                     const cellBorder = {
-                        top: isTopRow ? thickBorder : undefined,
-                        bottom: isBottomRow ? thickBorder : undefined,
-                        left: isLeftCol ? thickBorder : undefined,
-                        right: isRightCol ? thickBorder : undefined,
+                        top: isTopRow ? thinBorder : thinBorder,
+                        bottom: isBottomRow ? thinBorder : thinBorder,
+                        left: isLeftCol ? thinBorder : thinBorder,
+                        right: isRightCol ? thinBorder : thinBorder,
                     };
 
                     // Apply border
@@ -1278,9 +1275,7 @@ export default function RunsheetReport() {
                                                     ? "bg-white"
                                                     : "bg-gray-50";
 
-                                            const isExpanded = expandedRows.has(
-                                                row.original.ManifestID
-                                            );
+                                            const isExpanded = expandedRowId === row.original.ManifestID;
                                             const consignments =
                                                 row.original.Consignments || [];
 
