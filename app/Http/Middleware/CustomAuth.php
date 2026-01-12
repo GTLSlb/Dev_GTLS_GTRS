@@ -62,8 +62,9 @@ class CustomAuth extends Middleware
         $secretKey = $_ENV['JWT_SECRET'];
         $allowed_algs = ['HS256'];
         $currentTime = time();
+        $token = $_COOKIE['jwt_token'];
+        
         if(isset($token)){
-            $token = $_COOKIE['jwt_token'];
             // JWT Cookie exists
             if (empty($token)) {
                 // JWT Cookie is null or empty
@@ -113,12 +114,12 @@ class CustomAuth extends Middleware
                 if (!$this->validateAccessToken($accessToken, $userId['UserId'])) {
                     return $next($request);
                 } else {
-                    return redirect(config('app.redirect_route') ?? '/gtam/main');
+                    return redirect(config('app.redirect_route') ?? '/gtrs/main');
                 }
             } elseif (!in_array($path, $auth_routes) && !$request->session()->has('user') && !$this->validateJWTToken()) {
                 return redirect()->route('login');
             }elseif(in_array($path, $auth_routes) && $this->validateJWTToken()){
-                return redirect(config('app.redirect_route') ?? '/gtam/main');
+                return redirect(config('app.redirect_route') ?? '/gtrs/main');
             }
         } elseif (in_array($request->path(), $auth_routes) && !$this->validateJWTToken()) {
             return $next($request);
