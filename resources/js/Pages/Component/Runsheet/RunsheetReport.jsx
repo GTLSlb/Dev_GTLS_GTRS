@@ -1386,6 +1386,10 @@ export default function RunsheetReport() {
                                                                                                 : "No POD"}
                                                                                         </span>
                                                                                     </div>
+                                                                                    <div className="mt-2 text-xs text-gray-600">
+                                                                                        <p className="font-medium">{consignment.ReceiverName}</p>
+                                                                                        <p>{consignment.ReceiverSuburb}, {consignment.ReceiverState}</p>
+                                                                                    </div>
                                                                                 </div>
                                                                             )
                                                                         )}
