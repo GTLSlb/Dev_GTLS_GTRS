@@ -146,51 +146,53 @@ class RegisteredUserController extends Controller
             return $jwt_token;
     }
 
-    private function decode_jwt_valid($jwt_token) {
-        $secretKey = $_ENV['JWT_SECRET'] ?? '2zX!8fD@qY6k#eT^mP9w$Jr1&uV5g*Bf3';
+    public static function decode_jwt_valid()
+    {
+        $jwt_token = isset($_COOKIE['jwt_token']) ? $_COOKIE['jwt_token'] : null;
+        $secretKey = $_ENV['JWT_SECRET'];
         $allowed_algs = ['HS256'];
         $currentTime = time();
 
         if (empty($jwt_token)) {
             \Log::error("JWT Token is empty");
-            return false;
+            return null;
         }
 
         // Check if token has 3 segments
         $segments = explode('.', $jwt_token);
         if (count($segments) !== 3) {
             \Log::error("Invalid JWT Token format. Expected 3 segments, got " . count($segments));
-            return false;
+            return null;
         }
 
         if ($jwt_token == null || !isset($jwt_token)) {
-            return false;
+            \Log::error("JWT Token is null or undefined");
+            return null;
         }
 
         try {
-        // This single call performs three checks:
-        // 1. Decodes the token.
-        // 2. Verifies the signature using the secret key.
-        // 3. Verifies the expiration (exp), not before (nbf), and issued at (iat) claims.
+            // This single call performs three checks:
+            // 1. Decodes the token.
+            // 2. Verifies the signature using the secret key.
+            // 3. Verifies the expiration (exp), not before (nbf), and issued at (iat) claims.
 
-        $decoded = JWT::decode(
-            $jwt_token,
-            new Key($secretKey, $allowed_algs[0]) // Pass the key and the algorithm
-        );
+            $decoded = JWT::decode(
+                $jwt_token,
+                new Key($secretKey, $allowed_algs[0]) // Pass the key and the algorithm
+            );
 
-        // If decoding succeeds without exceptions, the token is valid.
-        return $decoded;
-
-    } catch (ExpiredException $e) {
-        \Log::error("JWT Expired: " . $e->getMessage());
-        return null;
-    } catch (SignatureInvalidException $e) {
-        \Log::error("JWT Signature Invalid: " . $e->getMessage());
-        return null;
-    } catch (Exception $e) {
-        \Log::error("JWT Decode Error: " . $e->getMessage());
-        return null;
-    }
+            // If decoding succeeds without exceptions, the token is valid.
+            return $decoded;
+        } catch (ExpiredException $e) {
+            \Log::error("JWT Expired: " . $e->getMessage());
+            return null;
+        } catch (SignatureInvalidException $e) {
+            \Log::error("JWT Signature Invalid: " . $e->getMessage());
+            return null;
+        } catch (Exception $e) {
+            \Log::error("JWT Decode Error: " . $e->getMessage());
+            return null;
+        }
     }
 
         public function getCurrentUserName(Request $request)
@@ -203,12 +205,14 @@ class RegisteredUserController extends Controller
         $user_from_session = $request->session()->get('user');
 
         $valid_user = $user_from_db != null ? $user_from_db : $user_from_session;
+
+        $jwt_token = $_COOKIE['jwt_token'] ?? null;
         $decoded_user = null;
         if (is_string($valid_user)) {
             $decoded_user = json_decode($valid_user);
         } elseif ($valid_user === null) {
-            if (isset($_COOKIE['jwt_token']) && !empty($_COOKIE['jwt_token'])) {
-                $decoded_user = $this->decode_jwt_valid($_COOKIE['jwt_token'])->user;
+            if (!empty($jwt_token)) {
+                $decoded_user = $this->decode_jwt_valid()->user;
             } else {
                 $decoded_user = null;
             }
@@ -218,16 +222,13 @@ class RegisteredUserController extends Controller
 
         if($decoded_user !== null) {
             $user = $this->mapUserByTypeId($decoded_user);
-            if(isset($_COOKIE['jwt_token'])){
-                // JWT Token exists in cookie
-                // User has an existing session from a Node.js service
-                 \Log::info("JWT Token exists in cookie");
-                 $jwt_token = $_COOKIE['jwt_token'];
-                 $token = $this->decode_jwt_valid($jwt_token)->Token;
+            $is_jwt_set=isset($jwt_token);
+
+
+            if($is_jwt_set){
+                $jwt_token = $jwt_token == "null" || $jwt_token == null ? $this->validateSessionFromNode($user_from_session, $sessionId, $request->session()->get('token')) : $jwt_token;
+                $token = empty($jwt_token) ? $request->session()->get('token') : $this->decode_jwt_valid()->token;
             }else{
-                // User has no JWT Token in cookie
-                // Create a new session in Node.js service and get JWT Token
-                \Log::info("Creating new JWT Token as it does not exist in cookie");
                 $jwt_token = $this->validateSessionFromNode($user_from_session, $sessionId, $request->session()->get('token'));
                 $token = $request->session()->get('token');
             }

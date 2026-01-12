@@ -85,6 +85,7 @@ export async function handleSessionExpiration() {
                 // Clear MSAL-related data from localStorage
                 clearMSALLocalStorage();
                 Cookies.remove("access_token");
+                Cookies.remove("jwt_token");
 
                 // Remove all items
                 sessionStorage.clear();
@@ -94,8 +95,8 @@ export async function handleSessionExpiration() {
                     window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=${appUrl}/login`;
                 } else {
                     // Clear any session cookies related to CSRF or session before redirect
-                    Cookies.remove("XSRF-TOKEN"); // If using js-cookie
-                    Cookies.remove("gtls_session"); // Adjust according to your session cookie name
+                    Cookies.remove("XSRF-TOKEN");
+                    Cookies.remove("gtls_session");
                     // Force a reload to ensure new CSRF token generation
                     window.location.href = `/login`;
                 }
