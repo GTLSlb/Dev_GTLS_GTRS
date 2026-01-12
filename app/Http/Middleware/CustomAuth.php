@@ -62,8 +62,8 @@ class CustomAuth extends Middleware
         $secretKey = $_ENV['JWT_SECRET'];
         $allowed_algs = ['HS256'];
         $currentTime = time();
-        $token = $_COOKIE['jwt_token'];
-        
+        $token = isset($_COOKIE['jwt_token']) ? $_COOKIE['jwt_token'] : null;
+
         if(isset($token)){
             // JWT Cookie exists
             if (empty($token)) {
