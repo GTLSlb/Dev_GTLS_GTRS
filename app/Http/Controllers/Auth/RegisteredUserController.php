@@ -222,12 +222,37 @@ class RegisteredUserController extends Controller
             $is_jwt_set = isset($_COOKIE['jwt_token']);
             $jwt_token = null;
 
+            $sessionToken = $request->session()->get('token');
+            $cookieJwt    = $_COOKIE['jwt_token'] ?? null;
+
             if ($is_jwt_set) {
-                $jwt_token = $_COOKIE['jwt_token'] == "null" || $_COOKIE['jwt_token'] == null ? $this->validateSessionFromNode($user_from_session, $sessionId, $request->session()->get('token')) : $_COOKIE['jwt_token'];
-                $token = empty($_COOKIE['jwt_token']) ? $request->session()->get('token') : $this->decode_jwt_valid($jwt_token)->Token;
+
+                // Treat "null" and null as invalid cookie values
+                if ($cookieJwt === null || $cookieJwt === 'null' || $cookieJwt === '') {
+                    $jwt_token = $this->validateSessionFromNode(
+                        $user_from_session,
+                        $sessionId,
+                        $sessionToken
+                    );
+                    $token = $sessionToken;
+                } else {
+                    $jwt_token = $cookieJwt;
+
+                    $decoded = $this->decode_jwt_valid($jwt_token);
+
+                    // Safely extract Token
+                    $token = $decoded && isset($decoded->Token)
+                        ? $decoded->Token
+                        : $sessionToken;
+                }
             } else {
-                $jwt_token = $this->validateSessionFromNode($user_from_session, $sessionId, $request->session()->get('token'));
-                $token = $request->session()->get('token');
+                $jwt_token = $this->validateSessionFromNode(
+                    $user_from_session,
+                    $sessionId,
+                    $sessionToken
+                );
+
+                $token = $sessionToken;
             }
 
             \Log::info("NEW JWT Token: " . $jwt_token);
