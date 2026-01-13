@@ -814,8 +814,8 @@ function RDDStatusCard({ data, onFilterByRDD }) {
             color: (datum) => {
                 const colorMap = {
                     "Past Due": "#ef4444",
-                    "Today": "#eab308",
-                    "Future": "#22c55e",
+                    Today: "#eab308",
+                    Future: "#22c55e",
                 };
                 return colorMap[datum.category];
             },
@@ -1639,7 +1639,9 @@ export default function FloorReportUAT() {
         const rows = table.getFilteredRowModel().rows;
         const visibleColumns = table
             .getAllColumns()
-            .filter((col) => col.id !== "actions");
+            .filter(
+                (col) => col.id !== "actions" && col.id !== "comments-actions"
+            );
 
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Floor Report");

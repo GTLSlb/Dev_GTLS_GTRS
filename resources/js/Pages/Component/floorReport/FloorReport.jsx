@@ -264,7 +264,8 @@ function DateColumnFilter({ column, table }) {
                         className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1"
                     >
                         <XMarkIcon className="w-3 h-3" />
-                        Clear {includeEmpty ? '(Null)' : `(${selectedDates.size})`}
+                        Clear{" "}
+                        {includeEmpty ? "(Null)" : `(${selectedDates.size})`}
                     </button>
                 )}
             </div>
@@ -278,7 +279,10 @@ function DateColumnFilter({ column, table }) {
                     onChange={handleEmptyToggle}
                     className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
                 />
-                <label htmlFor="only-null-dates" className="text-sm text-gray-700 cursor-pointer">
+                <label
+                    htmlFor="only-null-dates"
+                    className="text-sm text-gray-700 cursor-pointer"
+                >
                     Null Dates
                 </label>
             </div>
@@ -1134,7 +1138,7 @@ export default function FloorReport() {
                 enableColumnFilter: false,
                 cell: ({ row }) => (
                     <div className="flex gap-1">
-                        {canAddEditFloorComments(userPermissions) && (
+                        {/* {canAddEditFloorComments(userPermissions) && (
                             <button
                                 className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
                                 title="View Details"
@@ -1142,7 +1146,7 @@ export default function FloorReport() {
                             >
                                 <PlusCircleIcon className="w-4 h-4 text-blue-500" />
                             </button>
-                        )}
+                        )} */}
                         {canViewFloorComments(userPermissions) && (
                             <button
                                 className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
@@ -1232,7 +1236,7 @@ export default function FloorReport() {
         const rows = table.getFilteredRowModel().rows;
         const visibleColumns = table
             .getAllColumns()
-            .filter((col) => col.id !== "actions");
+            .filter((col) => col.id !== "actions" && col.id !== "comments-actions");
 
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Floor Report");
