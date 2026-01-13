@@ -799,7 +799,8 @@ export default function RunsheetReport() {
                 enableSorting: false,
                 enableColumnFilter: false,
                 cell: ({ row }) => {
-                    const isExpanded = expandedRowId === row.original.ManifestID;
+                    const isExpanded =
+                        expandedRowId === row.original.ManifestID;
                     return (
                         <button
                             className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
@@ -932,6 +933,9 @@ export default function RunsheetReport() {
             "Consignments",
             "POD",
             "Consignment Status",
+            "Receiver Name",
+            "Receiver State",
+            "Receiver Suburb",
         ];
         const headerRow = worksheet.addRow(headers);
         headerRow.font = { bold: true };
@@ -972,6 +976,9 @@ export default function RunsheetReport() {
                     rowData.push(consignment.ConsignmentNo);
                     rowData.push(consignment.POD ? "TRUE" : "FALSE");
                     rowData.push(consignment.ConsignmentStatus);
+                    rowData.push(consignment.ReceiverName);
+                    rowData.push(consignment.ReceiverState);
+                    rowData.push(consignment.ReceiverSuburb);
                 } else {
                     rowData.push("");
                     rowData.push("");
@@ -1035,7 +1042,6 @@ export default function RunsheetReport() {
                 currentRow++;
             }
 
-
             const thinBorder = {
                 style: "thin",
                 color: { argb: "FF000000" },
@@ -1081,6 +1087,9 @@ export default function RunsheetReport() {
             if (header === "Consignments") return { width: 20 };
             if (header === "POD") return { width: 12 };
             if (header === "Consignment Status") return { width: 30 };
+            if (header === "Receiver Name") return { width: 30 };
+            if (header === "Receiver State") return { width: 15 };
+            if (header === "Receiver Suburb") return { width: 20 };
             return { width: 20 };
         });
 
@@ -1275,7 +1284,9 @@ export default function RunsheetReport() {
                                                     ? "bg-white"
                                                     : "bg-gray-50";
 
-                                            const isExpanded = expandedRowId === row.original.ManifestID;
+                                            const isExpanded =
+                                                expandedRowId ===
+                                                row.original.ManifestID;
                                             const consignments =
                                                 row.original.Consignments || [];
 
@@ -1387,8 +1398,20 @@ export default function RunsheetReport() {
                                                                                         </span>
                                                                                     </div>
                                                                                     <div className="mt-2 text-xs text-gray-600">
-                                                                                        <p className="font-medium">{consignment.ReceiverName}</p>
-                                                                                        <p>{consignment.ReceiverSuburb}, {consignment.ReceiverState}</p>
+                                                                                        <p className="font-medium">
+                                                                                            {
+                                                                                                consignment.ReceiverName
+                                                                                            }
+                                                                                        </p>
+                                                                                        <p>
+                                                                                            {
+                                                                                                consignment.ReceiverSuburb
+                                                                                            }
+                                                                                            ,{" "}
+                                                                                            {
+                                                                                                consignment.ReceiverState
+                                                                                            }
+                                                                                        </p>
                                                                                     </div>
                                                                                 </div>
                                                                             )
