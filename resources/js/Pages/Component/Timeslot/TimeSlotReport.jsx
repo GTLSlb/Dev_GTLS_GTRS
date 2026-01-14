@@ -54,6 +54,10 @@ function TimeSlotReport() {
                     parsedData,
                     "REceiverState"
                 );
+                const receiverZoneOptions = createNewLabelObjects(
+                    parsedData,
+                    "ReceiverZone"
+                );
                 const minDateCreated = getMinMaxValue(
                     parsedData,
                     "ConsCreated",
@@ -160,6 +164,20 @@ function TimeSlotReport() {
                             multiple: true,
                             wrapMultiple: false,
                             dataSource: receiverStateOptions,
+                        },
+                    },
+                    {
+                        name: "ReceiverZone",
+                        header: "Receiver Zone",
+                        type: "string",
+                        headerAlign: "center",
+                        textAlign: "center",
+                        defaultWidth: 170,
+                        filterEditor: SelectFilter,
+                        filterEditorProps: {
+                            multiple: true,
+                            wrapMultiple: false,
+                            dataSource: receiverZoneOptions,
                         },
                     },
                     {
