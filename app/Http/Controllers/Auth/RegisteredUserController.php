@@ -171,14 +171,16 @@ class RegisteredUserController extends Controller
         }
 
         try {
+            // Set leeway to handle clock skew
+            JWT::$leeway = 60;
+
             // This single call performs three checks:
             // 1. Decodes the token.
             // 2. Verifies the signature using the secret key.
             // 3. Verifies the expiration (exp), not before (nbf), and issued at (iat) claims.
-
             $decoded = JWT::decode(
                 $jwt_token,
-                new Key($secretKey, $allowed_algs[0]) // Pass the key and the algorithm
+                new Key($secretKey, $allowed_algs[0]),
             );
 
             // If decoding succeeds without exceptions, the token is valid.
