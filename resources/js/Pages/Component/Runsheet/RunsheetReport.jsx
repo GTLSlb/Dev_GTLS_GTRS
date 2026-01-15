@@ -791,17 +791,26 @@ export default function RunsheetReport() {
             });
         });
 
-        // Calculate percentages and sort (ascending - worst POD rate first)
+        // Calculate missing POD percentages and sort (descending - highest missing POD rate first)
         const driverList = Object.entries(driverStats)
-            .map(([name, stats]) => ({
-                name,
-                total: stats.total,
-                withPod: stats.withPod,
-                percentage:
-                    stats.total > 0 ? (stats.withPod / stats.total) * 100 : 0,
-            }))
-            .filter((d) => d.total > 0)
-            .sort((a, b) => a.percentage - b.percentage || b.total - a.total);
+            .map(([name, stats]) => {
+                const missingPod = stats.total - stats.withPod;
+                const missingPercentage =
+                    stats.total > 0 ? (missingPod / stats.total) * 100 : 0;
+                return {
+                    name,
+                    total: stats.total,
+                    withPod: stats.withPod,
+                    missingPod,
+                    missingPercentage,
+                };
+            })
+            .filter((d) => d.total > 0 && d.missingPod > 0) // Only show drivers with missing PODs
+            .sort(
+                (a, b) =>
+                    b.missingPercentage - a.missingPercentage ||
+                    b.missingPod - a.missingPod
+            );
 
         return driverList;
     }, [runsheetData]);
@@ -1274,13 +1283,13 @@ export default function RunsheetReport() {
                                                                 </span>
                                                                 <span
                                                                     className={`text-sm font-semibold ${
-                                                                        driver.percentage >
+                                                                        driver.missingPercentage >=
                                                                         50
-                                                                            ? "text-green-600"
-                                                                            : "text-red-600"
+                                                                            ? "text-red-600"
+                                                                            : "text-green-500"
                                                                     }`}
                                                                 >
-                                                                    {driver.percentage.toFixed(
+                                                                    {driver.missingPercentage.toFixed(
                                                                         1
                                                                     )}
                                                                     %
@@ -1289,20 +1298,23 @@ export default function RunsheetReport() {
                                                             <div className="w-full bg-gray-200 rounded-full h-2">
                                                                 <div
                                                                     className={`h-2 rounded-full transition-all duration-300 ${
-                                                                        driver.percentage >
+                                                                        driver.missingPercentage >=
                                                                         50
-                                                                            ? "bg-green-500"
-                                                                            : "bg-red-500"
+                                                                            ? "bg-red-500"
+                                                                            : "bg-green-500"
                                                                     }`}
                                                                     style={{
-                                                                        width: `${driver.percentage}%`,
+                                                                        width: `${driver.missingPercentage}%`,
                                                                     }}
                                                                 />
                                                             </div>
                                                             <div className="text-xs text-gray-500 mt-1">
-                                                                {driver.withPod}{" "}
+                                                                {
+                                                                    driver.missingPod
+                                                                }{" "}
                                                                 / {driver.total}{" "}
                                                                 consignments
+                                                                with missing POD
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1349,7 +1361,7 @@ export default function RunsheetReport() {
                                                     )}
                                                 </div>
                                                 <div className="text-xs text-gray-600">
-                                                    Total Departed
+                                                    Total Departed Receiver
                                                 </div>
                                             </div>
                                             <div className="text-center p-3 bg-green-50 rounded-lg">
@@ -1359,7 +1371,7 @@ export default function RunsheetReport() {
                                                     )}
                                                 </div>
                                                 <div className="text-xs text-gray-600">
-                                                    With POD (
+                                                    Departed Receiver With POD (
                                                     {departedMissingPodAnalytics.podPercentage.toFixed(
                                                         1
                                                     )}
@@ -1373,6 +1385,7 @@ export default function RunsheetReport() {
                                                     }
                                                 </div>
                                                 <div className="text-xs text-gray-600">
+                                                    Departed Receiver With
                                                     Missing POD (
                                                     {departedMissingPodAnalytics.missingPodPercentage.toFixed(
                                                         1
