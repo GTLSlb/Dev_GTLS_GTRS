@@ -10,17 +10,7 @@ import {
     getFacetedUniqueValues,
 } from "@tanstack/react-table";
 
-import {
-    Button,
-    Dropdown,
-    DropdownItem,
-    DropdownMenu,
-    DropdownTrigger,
-    useDisclosure,
-    Popover,
-    PopoverTrigger,
-    PopoverContent,
-} from "@heroui/react";
+import { Button, Popover, PopoverTrigger, PopoverContent } from "@heroui/react";
 import axios from "axios";
 import moment from "moment";
 import swal from "sweetalert";
@@ -30,6 +20,7 @@ import { CustomContext } from "@/CommonContext";
 import { ToastContainer } from "react-toastify";
 import AnimatedLoading from "@/Components/AnimatedLoading";
 import {
+    formatNumberWithCommas,
     handleSessionExpiration,
     renderConsDetailsLink,
 } from "@/CommonFunctions";
@@ -45,12 +36,10 @@ import {
     ChevronDoubleLeftIcon,
     ChevronDoubleRightIcon,
     CalendarDaysIcon,
-    PlusCircleIcon,
+    ExclamationTriangleIcon,
+    EyeIcon,
+    EyeSlashIcon,
 } from "@heroicons/react/24/outline";
-
-function capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
 
 function DateColumnFilter({ column, table }) {
     const [expandedYears, setExpandedYears] = useState(new Set());
@@ -773,6 +762,98 @@ export default function RunsheetReport() {
         [runsheetData]
     );
 
+    // Analytics: Toggle visibility
+    const [showAnalytics, setShowAnalytics] = useState(true);
+
+    // Analytics: Worst Drivers by POD percentage (only Departed Receiver consignments)
+    const driverPodAnalytics = useMemo(() => {
+        const driverStats = {};
+
+        runsheetData.forEach((runsheet) => {
+            const driverName = runsheet.DriverName;
+            if (!driverName) return;
+
+            const consignments = runsheet.Consignments || [];
+            if (consignments.length === 0) return;
+
+            consignments.forEach((cons) => {
+                // Only count consignments with "Departed Receiver" status
+                if (cons.ConsignmentStatus !== "Departed Receiver") return;
+
+                if (!driverStats[driverName]) {
+                    driverStats[driverName] = { total: 0, withPod: 0 };
+                }
+
+                driverStats[driverName].total++;
+                if (cons.POD) {
+                    driverStats[driverName].withPod++;
+                }
+            });
+        });
+
+        // Calculate percentages and sort (ascending - worst POD rate first)
+        const driverList = Object.entries(driverStats)
+            .map(([name, stats]) => ({
+                name,
+                total: stats.total,
+                withPod: stats.withPod,
+                percentage:
+                    stats.total > 0 ? (stats.withPod / stats.total) * 100 : 0,
+            }))
+            .filter((d) => d.total > 0)
+            .sort((a, b) => a.percentage - b.percentage || b.total - a.total);
+
+        return driverList;
+    }, [runsheetData]);
+
+    // Analytics: Departed consignments with missing POD
+    const departedMissingPodAnalytics = useMemo(() => {
+        let totalDeparted = 0;
+        let departedWithPod = 0;
+        let departedMissingPod = 0;
+        let totalConsignments = 0;
+        const missingPodList = [];
+
+        runsheetData.forEach((runsheet) => {
+            const consignments = runsheet.Consignments || [];
+
+            consignments.forEach((cons) => {
+                totalConsignments++;
+                if (cons.ConsignmentStatus === "Departed Receiver") {
+                    totalDeparted++;
+                    if (cons.POD) {
+                        departedWithPod++;
+                    } else {
+                        departedMissingPod++;
+                        missingPodList.push({
+                            consignmentNo: cons.ConsignmentNo,
+                            consignmentId: cons.ConsignmentID,
+                            driverName: runsheet.DriverName,
+                            manifestNo: runsheet.ManifestNo,
+                            receiverName: cons.ReceiverName,
+                            receiverSuburb: cons.ReceiverSuburb,
+                            receiverState: cons.ReceiverState,
+                        });
+                    }
+                }
+            });
+        });
+
+        return {
+            totalConsignments,
+            totalDeparted,
+            departedWithPod,
+            departedMissingPod,
+            missingPodPercentage:
+                totalDeparted > 0
+                    ? (departedMissingPod / totalDeparted) * 100
+                    : 0,
+            podPercentage:
+                totalDeparted > 0 ? (departedWithPod / totalDeparted) * 100 : 0,
+            missingPodList,
+        };
+    }, [runsheetData]);
+
     // Cell renderers
     const DateCell = ({ value, showTime = true }) => {
         if (!value) return <span className="text-gray-400">-</span>;
@@ -780,11 +861,6 @@ export default function RunsheetReport() {
         // value is already a Date object from formattedData
         const parsedDate = moment(value);
         return <span>{parsedDate.format(outputFormat)}</span>;
-    };
-
-    const handleConsignmentClick = (consignmentData) => {
-        const url = `/gtrs/consignment-details?consId=${consignmentData.ConsignmentID}`;
-        window.open(url, "_blank");
     };
 
     // TanStack Table columns configuration
@@ -1122,6 +1198,24 @@ export default function RunsheetReport() {
                     </div>
                     <div className="flex items-center gap-3">
                         <Button
+                            className={`px-4 py-2 flex items-center gap-2 ${
+                                showAnalytics
+                                    ? "bg-gray-200 text-gray-700"
+                                    : "bg-dark text-white"
+                            }`}
+                            size="sm"
+                            onClick={() => setShowAnalytics(!showAnalytics)}
+                        >
+                            {showAnalytics ? (
+                                <EyeSlashIcon className="w-4 h-4" />
+                            ) : (
+                                <EyeIcon className="w-4 h-4" />
+                            )}
+                            {showAnalytics
+                                ? "Hide Analytics"
+                                : "Show Analytics"}
+                        </Button>
+                        <Button
                             className="bg-dark text-white px-4 py-2"
                             size="sm"
                             onClick={clearAllFilters}
@@ -1137,6 +1231,241 @@ export default function RunsheetReport() {
                         </Button>
                     </div>
                 </div>
+
+                {/* Analytics Section */}
+                {showAnalytics && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        {/* Worst Drivers by POD Percentage */}
+                        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+                            <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <ExclamationTriangleIcon className="w-5 h-5 text-red-500" />
+                                    <h3 className="text-sm font-semibold text-gray-700">
+                                        Drivers with outstanding PODs for
+                                        Departed Receiver Consignments
+                                    </h3>
+                                </div>
+                            </div>
+                            <div className="p-4">
+                                {driverPodAnalytics.length === 0 ? (
+                                    <p className="text-sm text-gray-500 text-center py-4">
+                                        No driver data available
+                                    </p>
+                                ) : (
+                                    <div className="max-h-[280px] overflow-y-auto pr-2">
+                                        <div className="space-y-3">
+                                            {driverPodAnalytics.map(
+                                                (driver, index) => (
+                                                    <div
+                                                        key={driver.name}
+                                                        className="flex items-center gap-3"
+                                                    >
+                                                        <div
+                                                            className={`w-6 h-6 flex-shrink-0 rounded-full flex items-center justify-center text-xs font-bold bg-gray-100 text-gray-500`}
+                                                        >
+                                                            {index + 1}
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="flex items-center justify-between mb-1">
+                                                                <span className="text-sm font-medium text-gray-700 truncate">
+                                                                    {
+                                                                        driver.name
+                                                                    }
+                                                                </span>
+                                                                <span
+                                                                    className={`text-sm font-semibold ${
+                                                                        driver.percentage >
+                                                                        50
+                                                                            ? "text-green-600"
+                                                                            : "text-red-600"
+                                                                    }`}
+                                                                >
+                                                                    {driver.percentage.toFixed(
+                                                                        1
+                                                                    )}
+                                                                    %
+                                                                </span>
+                                                            </div>
+                                                            <div className="w-full bg-gray-200 rounded-full h-2">
+                                                                <div
+                                                                    className={`h-2 rounded-full transition-all duration-300 ${
+                                                                        driver.percentage >
+                                                                        50
+                                                                            ? "bg-green-500"
+                                                                            : "bg-red-500"
+                                                                    }`}
+                                                                    style={{
+                                                                        width: `${driver.percentage}%`,
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                            <div className="text-xs text-gray-500 mt-1">
+                                                                {driver.withPod}{" "}
+                                                                / {driver.total}{" "}
+                                                                consignments
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Departed Consignments Missing POD */}
+                        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+                            <div className="px-4 py-3 border-b border-gray-200 flex items-center gap-2">
+                                <ExclamationTriangleIcon className="w-5 h-5 text-amber-500" />
+                                <h3 className="text-sm font-semibold text-gray-700">
+                                    Departed Consignments - POD Status
+                                </h3>
+                            </div>
+                            <div className="p-4">
+                                {departedMissingPodAnalytics.totalDeparted ===
+                                0 ? (
+                                    <p className="text-sm text-gray-500 text-center py-4">
+                                        No departed consignments found
+                                    </p>
+                                ) : (
+                                    <>
+                                        {/* Summary Stats */}
+                                        <div className="grid grid-cols-4 gap-4 mb-4">
+                                            <div className="text-center p-3 bg-yellow-50 rounded-lg">
+                                                <div className="text-2xl font-bold text-yellow-600">
+                                                    {formatNumberWithCommas(
+                                                        departedMissingPodAnalytics.totalConsignments
+                                                    )}
+                                                </div>
+                                                <div className="text-xs text-gray-600">
+                                                    Total Consignments
+                                                </div>
+                                            </div>
+                                            <div className="text-center p-3 bg-blue-50 rounded-lg">
+                                                <div className="text-2xl font-bold text-blue-600">
+                                                    {formatNumberWithCommas(
+                                                        departedMissingPodAnalytics.totalDeparted
+                                                    )}
+                                                </div>
+                                                <div className="text-xs text-gray-600">
+                                                    Total Departed
+                                                </div>
+                                            </div>
+                                            <div className="text-center p-3 bg-green-50 rounded-lg">
+                                                <div className="text-2xl font-bold text-green-600">
+                                                    {formatNumberWithCommas(
+                                                        departedMissingPodAnalytics.departedWithPod
+                                                    )}
+                                                </div>
+                                                <div className="text-xs text-gray-600">
+                                                    With POD (
+                                                    {departedMissingPodAnalytics.podPercentage.toFixed(
+                                                        1
+                                                    )}
+                                                    %)
+                                                </div>
+                                            </div>
+                                            <div className="text-center p-3 bg-red-50 rounded-lg">
+                                                <div className="text-2xl font-bold text-red-600">
+                                                    {
+                                                        departedMissingPodAnalytics.departedMissingPod
+                                                    }
+                                                </div>
+                                                <div className="text-xs text-gray-600">
+                                                    Missing POD (
+                                                    {departedMissingPodAnalytics.missingPodPercentage.toFixed(
+                                                        1
+                                                    )}
+                                                    %)
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Progress Bar */}
+                                        <div className="mb-4">
+                                            <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+                                                <span>POD Completion Rate</span>
+                                                <span>
+                                                    {departedMissingPodAnalytics.podPercentage.toFixed(
+                                                        1
+                                                    )}
+                                                    %
+                                                </span>
+                                            </div>
+                                            <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                                                <div
+                                                    className="bg-green-500 h-3 transition-all duration-300"
+                                                    style={{
+                                                        width: `${departedMissingPodAnalytics.podPercentage}%`,
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Missing POD List (scrollable) */}
+                                        {departedMissingPodAnalytics.departedMissingPod >
+                                            0 && (
+                                            <div>
+                                                <div className="text-xs font-medium text-gray-700 mb-2">
+                                                    Consignments Missing POD:
+                                                </div>
+                                                <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-md">
+                                                    {departedMissingPodAnalytics.missingPodList.map(
+                                                        (item, index) => (
+                                                            <div
+                                                                key={
+                                                                    item.consignmentId
+                                                                }
+                                                                className={`px-3 py-2 text-xs flex items-center justify-between ${
+                                                                    index %
+                                                                        2 ===
+                                                                    0
+                                                                        ? "bg-white"
+                                                                        : "bg-gray-50"
+                                                                }`}
+                                                            >
+                                                                <div>
+                                                                    <span className="font-medium text-blue-600">
+                                                                        {renderConsDetailsLink(
+                                                                            userPermissions,
+                                                                            item.consignmentNo,
+                                                                            item.consignmentId
+                                                                        )}
+                                                                    </span>
+                                                                    <span className="text-gray-500 ml-2">
+                                                                        (
+                                                                        {
+                                                                            item.manifestNo
+                                                                        }
+                                                                        ), (
+                                                                        {
+                                                                            item.driverName
+                                                                        }
+                                                                        )
+                                                                    </span>
+                                                                </div>
+                                                                <span className="text-gray-500 truncate max-w-[150px]">
+                                                                    {
+                                                                        item.receiverSuburb
+                                                                    }
+                                                                    ,{" "}
+                                                                    {
+                                                                        item.receiverState
+                                                                    }
+                                                                </span>
+                                                            </div>
+                                                        )
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Table Container */}
                 <div className="mt-4 tanstackTable pb-4">
@@ -1407,6 +1736,7 @@ export default function RunsheetReport() {
                                                                                             {
                                                                                                 consignment.ReceiverSuburb
                                                                                             }
+
                                                                                             ,{" "}
                                                                                             {
                                                                                                 consignment.ReceiverState

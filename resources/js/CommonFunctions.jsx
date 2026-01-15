@@ -260,6 +260,16 @@ export const formatDateWithTimeToSydney = (dateString) => {
     }
 };
 
+export const formatUTCDateWithTimeToSydney = (dateString) => {
+    if (!dateString) return dateString;
+
+    const sydneyTime = moment
+        .tz(dateString, "YYYY-MM-DD HH:mm:ss.SSS", "UTC")
+        .tz("Australia/Sydney");
+
+    return sydneyTime.format("DD-MM-YYYY hh:mm A");
+};
+
 export function formatDateFromExcelWithNoTime(dateValue) {
     const date = new Date(dateValue);
 

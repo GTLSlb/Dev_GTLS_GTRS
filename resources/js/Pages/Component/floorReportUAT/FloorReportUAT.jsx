@@ -30,7 +30,9 @@ import PropTypes from "prop-types";
 import { CustomContext } from "@/CommonContext";
 import { ToastContainer } from "react-toastify";
 import AnimatedLoading from "@/Components/AnimatedLoading";
-import { handleSessionExpiration } from "@/CommonFunctions";
+import {
+    handleSessionExpiration,
+} from "@/CommonFunctions";
 import { useState, useEffect, useMemo, useContext } from "react";
 import {
     ChevronDownIcon,
@@ -1367,7 +1369,9 @@ export default function FloorReportUAT() {
                 meta: { filterVariant: "date" },
                 filterFn: dateFilterFn,
                 cell: ({ getValue }) => (
-                    <DateCell value={getValue()} showTime={true} />
+                    <>
+                        <DateCell value={getValue()} showTime={true} />
+                    </>
                 ),
             },
             {
@@ -1913,7 +1917,18 @@ export default function FloorReportUAT() {
                     />
                 </div>
 
-                <div className="flex w-full items-center gap-3 justify-end flex-wrap">
+                <div className="flex w-full items-center gap-3 justify-between flex-wrap">
+                    {/* Reference for the row colors in the table */}
+                    <div>
+                        <span className="inline-block w-3 h-3 bg-red-100 border border-red-300 mr-1"></span>
+                        <span className="text-sm text-gray-600 mr-4">
+                            Scanned Items after POD
+                        </span>
+                        <span className="inline-block w-3 h-3 bg-blue-100 border border-blue-300 mr-1"></span>
+                        <span className="text-sm text-gray-600">
+                            Scanned Items after Departure Receiver
+                        </span>
+                    </div>
                     <div className="flex items-center gap-3">
                         {/* Column Visibility Dropdown */}
                         <Dropdown>
