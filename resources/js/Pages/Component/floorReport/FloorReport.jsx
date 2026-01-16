@@ -1470,15 +1470,18 @@ export default function FloorReport() {
             },
             {
                 accessorKey: "Comment",
-                header: "Comment",
+                header: "Jaix Latest Comment",
                 meta: { filterVariant: "text" },
+                size: 230,
+                minSize: 230,
+                maxSize: 230,
             },
             {
                 id: "comments-actions",
-                header: "Jaix Latest Comments",
-                size: 200,
-                minSize: 200,
-                maxSize: 200,
+                header: "Jaix Comments",
+                size: 150,
+                minSize: 150,
+                maxSize: 150,
                 enableSorting: false,
                 enableColumnFilter: false,
                 cell: ({ row }) => (
@@ -1709,7 +1712,13 @@ export default function FloorReport() {
             });
         });
 
-        worksheet.columns = headers.map(() => ({ width: 20 }));
+         worksheet.columns = headers.map((header) => {
+
+            if (header === "Jaix Latest Comment") return { width: 40 };
+            return { width: 20 };
+        });
+
+        // worksheet.columns = headers.map(() => ({ width: 20 }));
 
         workbook.xlsx.writeBuffer().then((buffer) => {
             const blob = new Blob([buffer], {
