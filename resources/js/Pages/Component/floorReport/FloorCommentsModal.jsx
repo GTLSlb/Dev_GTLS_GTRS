@@ -10,7 +10,7 @@ import {
     ModalFooter,
     Divider,
 } from "@heroui/react";
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 
 const FloorCommentsModal = ({
     isOpen,

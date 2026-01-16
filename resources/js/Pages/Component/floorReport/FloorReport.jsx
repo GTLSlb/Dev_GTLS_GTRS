@@ -26,6 +26,7 @@ import moment from "moment";
 import swal from "sweetalert";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import PropTypes from "prop-types";
 import { CustomContext } from "@/CommonContext";
 import { ToastContainer } from "react-toastify";
 import AnimatedLoading from "@/Components/AnimatedLoading";
@@ -43,13 +44,15 @@ import {
     ChevronDoubleRightIcon,
     CalendarDaysIcon,
     PlusCircleIcon,
+    CubeIcon,
 } from "@heroicons/react/24/outline";
 import { EyeIcon } from "@heroicons/react/24/solid";
+import { Pie, Column } from "@ant-design/plots";
 
 import DetailsModal from "./DetailsModal";
 import FloorCommentsModal from "./FloorCommentsModal";
 import AddFloorCommentsModal from "./AddFloorCommentsModal";
-import { canAddEditFloorComments, canViewFloorComments } from "@/permissions";
+import { canViewFloorComments } from "@/permissions";
 
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -676,6 +679,8 @@ const dateFilterFn = (row, columnId, filterValue) => {
     // Handle the new filter structure with dates Set and includeEmpty boolean
     const dates = filterValue.dates || filterValue;
     const includeEmpty = filterValue.includeEmpty || false;
+    const beforeDate = filterValue.beforeDate;
+    const afterDate = filterValue.afterDate;
 
     // If cell value is empty/null
     if (!cellValue) {
@@ -687,9 +692,20 @@ const dateFilterFn = (row, columnId, filterValue) => {
         return false;
     }
 
+    const cellDate = moment(cellValue).format("YYYY-MM-DD");
+
+    // Handle before date filter (Past Due)
+    if (beforeDate) {
+        return moment(cellDate).isBefore(beforeDate);
+    }
+
+    // Handle after date filter (Future)
+    if (afterDate) {
+        return moment(cellDate).isAfter(afterDate);
+    }
+
     // If dates are selected, check if cell date matches
     if (dates && dates.size > 0) {
-        const cellDate = moment(cellValue).format("YYYY-MM-DD");
         return dates.has(cellDate);
     }
 
@@ -723,6 +739,285 @@ const numberFilterFn = (row, columnId, filterValue) => {
 const ACTION_COL_WIDTH = 50;
 const CONS_NO_COL_WIDTH = 130;
 
+// Summary Cards Components
+function TotalScannedCard({ total, depotBreakdown, availableDepots }) {
+    return (
+        <div className="bg-white rounded-lg shadow-md p-6 col-span-2 border border-gray-200">
+            <div className="flex items-center gap-3 mb-2">
+                <CubeIcon className="w-6 h-6 text-blue-600" />
+                <h3 className="text-sm font-semibold text-gray-600 uppercase">
+                    Total Items Scanned
+                </h3>
+            </div>
+            <p className="text-5xl font-bold text-blue-600 mb-4">
+                {total.toLocaleString()}
+            </p>
+
+            {/* Depot Breakdown Table */}
+            {availableDepots && availableDepots.length > 0 && (
+                <div className="mt-4 border-t pt-4">
+                    <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">
+                        By Depot
+                    </h4>
+                    <div className="max-h-40 overflow-y-auto">
+                        <table className="w-full text-sm">
+                            <tbody>
+                                {availableDepots
+                                    .sort((a, b) => a.localeCompare(b))
+                                    .map((depot) => (
+                                        <tr
+                                            key={depot}
+                                            className="border-b border-gray-100 last:border-b-0"
+                                        >
+                                            <td className="py-1.5 text-gray-700">
+                                                {depot}
+                                            </td>
+                                            <td className="py-1.5 text-right font-semibold text-gray-900">
+                                                {(
+                                                    depotBreakdown[depot] || 0
+                                                ).toLocaleString()}
+                                            </td>
+                                        </tr>
+                                    ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+TotalScannedCard.propTypes = {
+    total: PropTypes.number.isRequired,
+    depotBreakdown: PropTypes.object.isRequired,
+    availableDepots: PropTypes.array,
+};
+
+function RDDStatusCard({ data, onFilterByRDD }) {
+    const rddChartData = useMemo(() => {
+        return [
+            { category: "Past Due", value: data.rddPast, type: "RDD" },
+            { category: "Today", value: data.rddToday, type: "RDD" },
+            { category: "Future", value: data.rddFuture, type: "RDD" },
+        ].filter((item) => item.value > 0);
+    }, [data.rddPast, data.rddToday, data.rddFuture]);
+
+    const rddPieConfig = useMemo(
+        () => ({
+            data: rddChartData,
+            angleField: "value",
+            colorField: "category",
+            color: (datum) => {
+                const colorMap = {
+                    "Past Due": "#ef4444",
+                    Today: "#eab308",
+                    Future: "#22c55e",
+                };
+                return colorMap[datum.category];
+            },
+            radius: 0.7,
+            innerRadius: 0.5,
+            label: {
+                type: "inner",
+                offset: "-40%",
+                content: "{value}",
+                style: {
+                    fontSize: 14,
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    fill: "#fff",
+                },
+            },
+            legend: {
+                position: "bottom",
+                layout: "horizontal",
+            },
+            interactions: [{ type: "element-active" }],
+            state: {
+                active: {
+                    style: {
+                        lineWidth: 2,
+                        stroke: "#000",
+                    },
+                },
+                selected: {
+                    style: {
+                        lineWidth: 2,
+                        stroke: "#000",
+                    },
+                },
+            },
+            statistic: {
+                title: {
+                    content: "Total",
+                    style: {
+                        fontSize: "14px",
+                    },
+                },
+                content: {
+                    style: {
+                        fontSize: "24px",
+                        fontWeight: "bold",
+                    },
+                    content: (
+                        data.rddPast +
+                        data.rddToday +
+                        data.rddFuture
+                    ).toString(),
+                },
+            },
+            onReady: (plot) => {
+                plot.on("element:click", (evt) => {
+                    const { category } = evt.data.data;
+                    if (onFilterByRDD) {
+                        onFilterByRDD(category);
+                    }
+                });
+
+                // Change cursor to pointer on hover
+                const canvas = plot.chart.getCanvas();
+                const canvasEl = canvas.get("el");
+
+                plot.on("element:mouseenter", () => {
+                    canvasEl.style.cursor = "pointer";
+                });
+
+                plot.on("element:mouseleave", () => {
+                    canvasEl.style.cursor = "default";
+                });
+            },
+        }),
+        [
+            rddChartData,
+            data.rddPast,
+            data.rddToday,
+            data.rddFuture,
+            onFilterByRDD,
+        ]
+    );
+
+    return (
+        <div className="bg-white rounded-lg shadow-md p-6 col-span-3 border border-gray-200">
+            <h3 className="text-sm font-semibold text-gray-600 uppercase mb-4">
+                RDD Status
+            </h3>
+            <div className="h-64 cursor-pointer">
+                {rddChartData.length > 0 ? (
+                    <Pie {...rddPieConfig} />
+                ) : (
+                    <div className="flex items-center justify-center h-full text-gray-400">
+                        No RDD data available
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+RDDStatusCard.propTypes = {
+    data: PropTypes.shape({
+        rddPast: PropTypes.number.isRequired,
+        rddToday: PropTypes.number.isRequired,
+        rddFuture: PropTypes.number.isRequired,
+    }).isRequired,
+    onFilterByRDD: PropTypes.func,
+};
+
+function TopStatusesCard({ data, onFilterByStatus }) {
+    const statusChartData = useMemo(() => {
+        return Object.entries(data)
+            .map(([status, count]) => ({
+                label: status,
+                value: count,
+            }))
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 10); // Top 10 statuses
+    }, [data]);
+
+    const statusColumnConfig = useMemo(
+        () => ({
+            data: statusChartData,
+            xField: "label",
+            yField: "value",
+            color: "#E2C047",
+            label: {
+                position: "middle",
+                style: {
+                    fill: "#000",
+                    fontSize: 12,
+                },
+            },
+            xAxis: {
+                label: {
+                    autoRotate: false,
+                    autoHide: false,
+                    style: {
+                        fontSize: 11,
+                        fontWeight: "bold",
+                    },
+                    formatter: (text) => {
+                        // Wrap words - each word on a new line
+                        return text.split(" ").join("\n");
+                    },
+                },
+            },
+            yAxis: {
+                label: {
+                    formatter: (v) => `${v}`,
+                },
+            },
+            appendPadding: [0, 0, 60, 0], // Add padding at bottom for wrapped labels
+            onReady: (plot) => {
+                plot.on("element:dblclick", (evt) => {
+                    const { label } = evt.data.data;
+                    if (onFilterByStatus) {
+                        onFilterByStatus(label);
+                    }
+                });
+
+                // Change cursor to pointer on hover
+                const canvas = plot.chart.getCanvas();
+                const canvasEl = canvas.get("el");
+
+                plot.on("element:mouseenter", () => {
+                    canvasEl.style.cursor = "pointer";
+                });
+
+                plot.on("element:mouseleave", () => {
+                    canvasEl.style.cursor = "default";
+                });
+            },
+        }),
+        [statusChartData, onFilterByStatus]
+    );
+
+    return (
+        <div className="bg-white rounded-lg shadow-md p-6 pb-0 border border-gray-200 col-span-4">
+            <h3 className="text-sm font-semibold text-gray-600 uppercase mb-4">
+                Consignment Status
+            </h3>
+            <div className="h-64 ">
+                {statusChartData.length > 0 ? (
+                    <Column
+                        {...statusColumnConfig}
+                        className="!h-80 !cursor-pointer"
+                    />
+                ) : (
+                    <div className="flex items-center justify-center h-full text-gray-400">
+                        No status data available
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+TopStatusesCard.propTypes = {
+    data: PropTypes.object.isRequired,
+    onFilterByStatus: PropTypes.func,
+};
+
 export default function FloorReport() {
     const [loading, setLoading] = useState(true);
     const [floorData, setFloorData] = useState([]);
@@ -744,7 +1039,6 @@ export default function FloorReport() {
     ]);
 
     const [detailsData, setDetailsData] = useState(null);
-    const [localComments, setLocalComments] = useState({});
 
     const handleCommentSaved = (consignmentId, comment) => {
         const newCommentObj = {
@@ -783,6 +1077,8 @@ export default function FloorReport() {
         onAddCommentChange(false);
     };
 
+    const [selectedDepots, setSelectedDepots] = useState([]);
+    const [showCharts, setShowCharts] = useState(false);
     const [columnFilters, setColumnFilters] = useState(() => {
         const today = moment().format("YYYY-MM-DD");
         return [
@@ -808,6 +1104,8 @@ export default function FloorReport() {
     const dateFields = [
         "DespatchDateTime",
         "EventDateTime",
+        "PODDateTime",
+        "ConsStatusDate",
         "RDD",
         "OldRdd",
         "NewRdd",
@@ -904,7 +1202,7 @@ export default function FloorReport() {
         let className = "";
         if (rddDate.isBefore(today)) {
             className =
-                "bg-red-100 text-red-800 font-semibold px-2 py-1 rounded";
+                "bg-red-300 border-1 border-red-400  text-red-800 font-semibold px-2 py-1 rounded";
         } else if (rddDate.isSame(today)) {
             className =
                 "bg-yellow-100 text-yellow-800 font-semibold px-2 py-1 rounded";
@@ -919,16 +1217,16 @@ export default function FloorReport() {
     };
 
     const BooleanCell = ({ value }) => {
-        if (value === "YES") {
+        if (value === "YES" || value === true) {
             return (
                 <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
-                    Yes
+                    {value === true ? " True" : "Yes"}
                 </span>
             );
-        } else if (value === "NO") {
+        } else if (value === "NO" || value === false) {
             return (
                 <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                    No
+                    {value === false ? " False" : "No"}
                 </span>
             );
         }
@@ -941,6 +1239,27 @@ export default function FloorReport() {
         }
         return <BooleanCell value={value} />;
     };
+
+    // Get all available depots from the data
+    const availableDepots = useMemo(() => {
+        const depots = new Set();
+        formattedData.forEach((row) => {
+            if (row.Depot) {
+                depots.add(row.Depot);
+            }
+        });
+        return Array.from(depots).sort();
+    }, [formattedData]);
+
+    // Apply depot filter to the data
+    const depotFilteredData = useMemo(() => {
+        if (selectedDepots.length === 0) {
+            return formattedData;
+        }
+        return formattedData.filter((row) =>
+            selectedDepots.includes(row.Depot)
+        );
+    }, [formattedData, selectedDepots]);
 
     // TanStack Table columns configuration
     const columns = useMemo(
@@ -969,7 +1288,7 @@ export default function FloorReport() {
                 meta: { filterVariant: "date" },
                 filterFn: dateFilterFn,
                 cell: ({ getValue }) => (
-                    <DateCell value={getValue()} showTime={false} />
+                    <DateCell value={getValue()} showTime={true} />
                 ),
             },
             {
@@ -1038,6 +1357,32 @@ export default function FloorReport() {
                 // minSize: 100,
                 // maxSize: 250,
                 meta: { filterVariant: "select" },
+            },
+            {
+                accessorKey: "ConsStatusDate",
+                header: "Cons Status Date",
+                meta: { filterVariant: "date" },
+                filterFn: dateFilterFn,
+                cell: ({ getValue }) => (
+                    <>
+                        <DateCell value={getValue()} showTime={true} />
+                    </>
+                ),
+            },
+            {
+                accessorKey: "POD",
+                header: "POD",
+                meta: { filterVariant: "select" },
+                cell: ({ getValue }) => <BooleanCell value={getValue()} />,
+            },
+            {
+                accessorKey: "PODDateTime",
+                header: "POD Date",
+                meta: { filterVariant: "date" },
+                filterFn: dateFilterFn,
+                cell: ({ getValue }) => (
+                    <DateCell value={getValue()} showTime={true} />
+                ),
             },
             {
                 accessorKey: "SenderName",
@@ -1138,15 +1483,6 @@ export default function FloorReport() {
                 enableColumnFilter: false,
                 cell: ({ row }) => (
                     <div className="flex gap-1">
-                        {/* {canAddEditFloorComments(userPermissions) && (
-                            <button
-                                className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
-                                title="View Details"
-                                onClick={() => handleAddComments(row.original)}
-                            >
-                                <PlusCircleIcon className="w-4 h-4 text-blue-500" />
-                            </button>
-                        )} */}
                         {canViewFloorComments(userPermissions) && (
                             <button
                                 className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
@@ -1165,8 +1501,10 @@ export default function FloorReport() {
 
     // Initialize TanStack Table
     const table = useReactTable({
-        data: formattedData,
+        data: depotFilteredData,
         columns,
+        getRowId: (row) =>
+            row.ConsignmentID?.toString() || Math.random().toString(),
         state: {
             sorting,
             columnFilters,
@@ -1179,7 +1517,7 @@ export default function FloorReport() {
         },
         initialState: {
             pagination: {
-                pageSize: 20,
+                pageSize: 50,
             },
         },
         enableColumnResizing: true,
@@ -1196,6 +1534,61 @@ export default function FloorReport() {
         // columnResizeMode: "onChange",
         // enableColumnResizing: true,
     });
+
+    // Calculate overall summary from filtered data
+    const overallSummary = useMemo(() => {
+        const filteredRows = table.getFilteredRowModel().rows;
+        const summary = {
+            totalScanned: 0,
+            rddPast: 0,
+            rddToday: 0,
+            rddFuture: 0,
+            rddNull: 0,
+            statusBreakdown: {},
+            depotBreakdown: {},
+        };
+
+        filteredRows.forEach((row) => {
+            const rdd = row.original.RDD;
+            const status = row.original.ConsStatus;
+            const depot = row.original.Depot;
+            const details = row.original.Details || [];
+
+            // Count items in Details array instead of just counting rows
+            const itemCount = details.length > 0 ? details.length : 1;
+            summary.totalScanned += itemCount;
+
+            // Depot breakdown - count items per depot
+            if (depot) {
+                summary.depotBreakdown[depot] =
+                    (summary.depotBreakdown[depot] || 0) + itemCount;
+            }
+
+            // RDD categorization
+            if (rdd) {
+                const rddDate = moment(rdd).startOf("day");
+                const today = moment().startOf("day");
+
+                if (rddDate.isBefore(today)) {
+                    summary.rddPast++;
+                } else if (rddDate.isSame(today)) {
+                    summary.rddToday++;
+                } else {
+                    summary.rddFuture++;
+                }
+            } else {
+                summary.rddNull++;
+            }
+
+            // Status breakdown
+            if (status) {
+                summary.statusBreakdown[status] =
+                    (summary.statusBreakdown[status] || 0) + 1;
+            }
+        });
+
+        return summary;
+    }, [table.getFilteredRowModel().rows]);
 
     const fetchData = () => {
         setLoading(true);
@@ -1236,7 +1629,9 @@ export default function FloorReport() {
         const rows = table.getFilteredRowModel().rows;
         const visibleColumns = table
             .getAllColumns()
-            .filter((col) => col.id !== "actions" && col.id !== "comments-actions");
+            .filter(
+                (col) => col.id !== "actions" && col.id !== "comments-actions"
+            );
 
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Floor Report");
@@ -1253,12 +1648,12 @@ export default function FloorReport() {
         headerRow.alignment = { horizontal: "center", vertical: "middle" };
 
         // Define date columns with their format types
-        const dateTimeColumns = [];
-        const dateOnlyColumns = [
+        const dateTimeColumns = [
             "Floor Scan Date",
-            "Original RDD",
-            "Despatch Date",
+            "Cons Status Date",
+            "POD Date",
         ];
+        const dateOnlyColumns = ["Original RDD", "Despatch Date"];
         const rddColumns = ["RDD"];
 
         const dateTimeIndexes = headers
@@ -1326,6 +1721,7 @@ export default function FloorReport() {
 
     const clearAllFilters = () => {
         setColumnFilters([]);
+        setSelectedDepots([]);
     };
 
     // Helper function to check if column is sticky
@@ -1342,6 +1738,70 @@ export default function FloorReport() {
         return undefined;
     };
 
+    // Chart click handlers for filtering
+    const handleFilterByRDD = (category) => {
+        const today = moment().format("YYYY-MM-DD");
+
+        setColumnFilters((prevFilters) => {
+            // Remove existing RDD filter if any
+            const otherFilters = prevFilters.filter((f) => f.id !== "RDD");
+
+            // Add RDD filter based on category
+            if (category === "Past Due") {
+                return [
+                    ...otherFilters,
+                    {
+                        id: "RDD",
+                        value: {
+                            dates: new Set(),
+                            includeEmpty: false,
+                            beforeDate: today,
+                        },
+                    },
+                ];
+            } else if (category === "Today") {
+                return [
+                    ...otherFilters,
+                    {
+                        id: "RDD",
+                        value: { dates: new Set([today]), includeEmpty: false },
+                    },
+                ];
+            } else if (category === "Future") {
+                return [
+                    ...otherFilters,
+                    {
+                        id: "RDD",
+                        value: {
+                            dates: new Set(),
+                            includeEmpty: false,
+                            afterDate: today,
+                        },
+                    },
+                ];
+            }
+            return prevFilters;
+        });
+    };
+
+    const handleFilterByStatus = (status) => {
+        setColumnFilters((prevFilters) => {
+            // Remove existing ConsStatus filter if any
+            const otherFilters = prevFilters.filter(
+                (f) => f.id !== "ConsStatus"
+            );
+
+            // Add ConsStatus filter
+            return [
+                ...otherFilters,
+                {
+                    id: "ConsStatus",
+                    value: status,
+                },
+            ];
+        });
+    };
+
     if (loading) {
         return <AnimatedLoading />;
     }
@@ -1351,12 +1811,129 @@ export default function FloorReport() {
             <div className="min-h-full px-8">
                 <ToastContainer />
 
-                <div className="my-4 flex w-full items-center gap-3 justify-end flex-wrap">
+                <div className="flex w-full items-center gap-3 justify-between flex-wrap">
                     <div className="sm:flex-auto mt-6">
                         <h1 className="text-2xl py-2 px-0 font-extrabold text-gray-600">
                             Floor Report
                         </h1>
                     </div>
+                    <div className="flex items-center gap-3">
+                        {/* Toggle Charts Button */}
+                        <Button
+                            onClick={() => setShowCharts(!showCharts)}
+                            size="sm"
+                            variant="flat"
+                            className="bg-gray-700 text-white hover:bg-gray-800"
+                        >
+                            {showCharts ? "Hide Charts" : "Show Charts"}
+                        </Button>
+
+                        <Dropdown closeOnSelect={false}>
+                            <DropdownTrigger>
+                                <Button
+                                    endContent={
+                                        <ChevronDownIcon className="text-small w-3" />
+                                    }
+                                    size="sm"
+                                    variant="flat"
+                                    className="bg-blue-600 text-white"
+                                >
+                                    {selectedDepots.length === 0
+                                        ? "All Depots"
+                                        : selectedDepots.length === 1
+                                        ? selectedDepots[0]
+                                        : selectedDepots.length ===
+                                          availableDepots.length
+                                        ? "All Depots"
+                                        : `${selectedDepots.length} Depots`}
+                                </Button>
+                            </DropdownTrigger>
+                            <DropdownMenu
+                                aria-label="Depot Selection"
+                                closeOnSelect={false}
+                                selectedKeys={new Set(selectedDepots)}
+                                selectionMode="multiple"
+                                onSelectionChange={(keys) => {
+                                    const selected = Array.from(keys);
+                                    setSelectedDepots(selected);
+                                }}
+                            >
+                                {availableDepots.map((depot) => (
+                                    <DropdownItem key={depot}>
+                                        {depot}
+                                    </DropdownItem>
+                                ))}
+                            </DropdownMenu>
+                        </Dropdown>
+
+                        <Button
+                            className="bg-dark text-white px-4 py-2"
+                            size="sm"
+                            onClick={clearAllFilters}
+                        >
+                            Clear Filters
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Summary Cards Section */}
+                <div
+                    className={`mb-6 grid grid-cols-1 md:grid-cols-9 gap-4 transition-all duration-300 ease-in-out overflow-hidden ${
+                        showCharts
+                            ? "opacity-100 max-h-[500px]"
+                            : "opacity-0 max-h-0 mb-0"
+                    }`}
+                >
+                    <TotalScannedCard
+                        total={overallSummary.totalScanned}
+                        depotBreakdown={overallSummary.depotBreakdown}
+                        availableDepots={availableDepots}
+                    />
+                    <RDDStatusCard
+                        data={{
+                            rddPast: overallSummary.rddPast,
+                            rddToday: overallSummary.rddToday,
+                            rddFuture: overallSummary.rddFuture,
+                        }}
+                        onFilterByRDD={handleFilterByRDD}
+                    />
+                    <TopStatusesCard
+                        data={overallSummary.statusBreakdown}
+                        onFilterByStatus={handleFilterByStatus}
+                    />
+                </div>
+
+                <div className="flex w-full items-center gap-3 justify-between flex-wrap">
+                    {/* Reference for the row colors in the table */}
+                    <div>
+                        <div>
+                            <span className="text-sm text-gray-800 mr-4">
+                                Row:
+                            </span>
+                            <span className="inline-block w-3 h-3 bg-red-100 border border-red-300 mr-1"></span>
+                            <span className="text-sm text-gray-600 mr-4">
+                                Scanned Items after POD
+                            </span>
+                            <span className="inline-block w-3 h-3 bg-blue-100 border border-blue-300 mr-1"></span>
+                            <span className="text-sm text-gray-600">
+                                Scanned Items after Departure Receiver
+                            </span>
+                        </div>
+                        <div>
+                            <span className="text-sm text-gray-800 mr-4">
+                                RDD:
+                            </span>
+                            <span className="inline-block w-3 h-3 bg-red-300 border-1 border-red-500 mr-1"></span>
+                            <span className="text-sm text-gray-600 mr-4">
+                                Passed RDD
+                            </span>
+                            <span className="inline-block w-3 h-3 bg-yellow-100 border border-yellow-300 mr-1"></span>
+                            <span className="text-sm text-gray-600">
+                                Due Today
+                            </span>
+                        </div>
+                    </div>
+
                     <div className="flex items-center gap-3">
                         {/* Column Visibility Dropdown */}
                         <Dropdown>
@@ -1427,13 +2004,6 @@ export default function FloorReport() {
                             </DropdownMenu>
                         </Dropdown>
 
-                        <Button
-                            className="bg-dark text-white px-4 py-2"
-                            size="sm"
-                            onClick={clearAllFilters}
-                        >
-                            Clear Filters
-                        </Button>
                         <Button
                             className="bg-dark text-white px-4 py-2"
                             onClick={exportToExcel}
@@ -1607,19 +2177,37 @@ export default function FloorReport() {
                                     table
                                         .getRowModel()
                                         .rows.map((row, rowIndex) => {
-                                            const rowBg =
-                                                rowIndex % 2 === 0
-                                                    ? "bg-white"
-                                                    : "bg-gray-50";
-                                            const rowBgColor =
-                                                rowIndex % 2 === 0
-                                                    ? "#ffffff"
-                                                    : "#f9fafb";
+                                            // Check if row is flagged
+
+                                            const isFlaggedRed =
+                                                row.original.Flag == 1;
+                                            const isFlaggedBlue =
+                                                row.original.Flag == 2;
+                                            const isFlaggedYellow =
+                                                row.original.Flag == 3;
+                                            const rowBg = isFlaggedRed
+                                                ? "bg-red-100"
+                                                : isFlaggedYellow
+                                                ? "bg-yellow-100"
+                                                : isFlaggedBlue
+                                                ? "bg-blue-100"
+                                                : rowIndex % 2 === 0
+                                                ? "bg-white"
+                                                : "bg-gray-50";
+                                            const rowBgColor = isFlaggedRed
+                                                ? "#fee2e2"
+                                                : isFlaggedYellow
+                                                ? "#fef3c7"
+                                                : isFlaggedBlue
+                                                ? "#dbeafe"
+                                                : rowIndex % 2 === 0
+                                                ? "#ffffff"
+                                                : "#f9fafb";
 
                                             return (
                                                 <tr
                                                     key={row.id}
-                                                    className={`hover:bg-blue-50 transition-colors ${rowBg}`}
+                                                    className={` transition-colors ${rowBg}`}
                                                 >
                                                     {row
                                                         .getVisibleCells()
@@ -1828,7 +2416,7 @@ export default function FloorReport() {
                                 onChange={(e) => {
                                     table.setPageSize(Number(e.target.value));
                                 }}
-                                className="py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="py-1 text-sm border border-gray-300 roundexd-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 {[10, 20, 30, 50, 100].map((pageSize) => (
                                     <option key={pageSize} value={pageSize}>

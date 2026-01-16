@@ -1,10 +1,4 @@
-import { navigateToFirstAllowedPage, ProtectedRoute } from "@/CommonFunctions";
-import axios from "axios";
-import swal from "sweetalert";
-import moment from "moment";
-import { handleSessionExpiration } from "@/CommonFunctions";
-import React, { useContext } from "react";
-import PropTypes from "prop-types";
+
 import {
     getLatestDespatchDate,
     getMinMaxValue,
@@ -25,51 +19,57 @@ import {
     getFiltersSafety,
     getFiltersTransport,
 } from "@/Components/utils/filters";
-import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
+import axios from "axios";
+import moment from "moment";
+import swal from "sweetalert";
+import ConsPerf from "./ConsPerf";
+import GtrsCons from "./GtrsCons";
+import NewKPI from "./KPI/NewKPI";
+import PropTypes from "prop-types";
+import RDDMain from "./RDD/RDDMain";
+import SafetyRep from "./safetyRep";
+import Holidays from "./KPI/Holidays";
+import MissingPOD from "./MissingPOD";
+import NoDelivery from "./NoDelivery";
 import { Button } from "@heroui/react";
-import { useEffect, useState } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import DriverLogin from "./DriverLogin";
+import DifotReport from "./DifotReport";
 import ConsDetails from "../ConsDetails";
+import React, { useContext } from "react";
+import TransportRep from "./TransportRep";
+import KPIReasons from "./KPI/KPIReasons";
+import GMIKPIPack from "./GMI/GMIKPIPack";
+import Incident from "./Incident/Incident";
+import { useEffect, useState } from "react";
+import Customers from "./Settings/Customers";
+// import ConsMap from "./TrafficPage/ConsMap";
+import CollapseSidebar from "./CollapseSidebar";
+import { CustomContext } from "@/CommonContext";
+import NewTransitDays from "./KPI/NewTransitDays";
+import ContactRep from "./ContactsRep/ContactRep";
 import NotFoundRedirect from "../NotFoundRedirect";
 import AdditionalCharges from "./AdditionalCharges";
-import CollapseSidebar from "./CollapseSidebar";
-import ConsPerf from "./ConsPerf";
+import FloorReport from "./floorReport/FloorReport";
 import MainCharts from "./Dashboard_Comp/MainCharts";
-import DriverLogin from "./DriverLogin";
-import FailedConsMain from "./FailedConsignments/FailedConsMain";
-import GtrsCons from "./GtrsCons";
-import Incident from "./Incident/Incident";
 import AddNewTransitDay from "./KPI/AddNewTransitDay";
-import Holidays from "./KPI/Holidays";
-import NewKPI from "./KPI/NewKPI";
-import NewTransitDays from "./KPI/NewTransitDays";
-import MissingPOD from "./MissingPOD";
-// import NewConsignmentTracking from "./New Consignment Tracking/NewConsignmentTracking";
-import NoDelivery from "./NoDelivery";
-import GraphPresentation from "./Presentation/GraphPresentation";
-import RDDMain from "./RDD/RDDMain";
+// import TrafficComp from "./TrafficPage/TrafficComp";
+import TimeSlotReport from "./Timeslot/TimeSlotReport";
+import RunsheetReport from "./Runsheet/RunsheetReport";
+import CustomerProfile from "./Settings/CustomerProfile";
+import Utilization from "./UtilizationReport/Utilization";
+import { handleSessionExpiration } from "@/CommonFunctions";
+import SettingMiddleware from "./Settings/SettingMiddleware";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import RealFoodKPIPack from "./RealFoodKPIPack/RealFoodKPIPack";
+import FailedConsMain from "./FailedConsignments/FailedConsMain";
+import GraphPresentation from "./Presentation/GraphPresentation";
+import ProductStockTable from "./ProductStock/ProductStockTable";
 import DeliveryReportPage from "./ReportsPage/DeliveryReportPage";
 import ExcelDeliveryReport from "./ReportsPage/ExcelDeliveryReport";
+import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
+import { navigateToFirstAllowedPage, ProtectedRoute } from "@/CommonFunctions";
+// import NewConsignmentTracking from "./New Consignment Tracking/NewConsignmentTracking";
 import DeliveryReportCommentsPage from "./ReportsPage/CommentsTableView/DeliveryReportCommentsPage";
-import SafetyRep from "./safetyRep";
-// import ConsMap from "./TrafficPage/ConsMap";
-// import TrafficComp from "./TrafficPage/TrafficComp";
-import TransportRep from "./TransportRep";
-import ProductStockTable from "./ProductStock/ProductStockTable";
-import KPIReasons from "./KPI/KPIReasons";
-import SettingMiddleware from "./Settings/SettingMiddleware";
-import Customers from "./Settings/Customers";
-import CustomerProfile from "./Settings/CustomerProfile";
-import ContactRep from "./ContactsRep/ContactRep";
-import DifotReport from "./DifotReport";
-import Utilization from "./UtilizationReport/Utilization";
-import { CustomContext } from "@/CommonContext";
-import GMIKPIPack from "./GMI/GMIKPIPack";
-import TimeSlotReport from "./Timeslot/TimeSlotReport";
-import FloorReport from "./floorReport/FloorReport";
-import FloorReportUAT from "./floorReportUAT/FloorReportUAT";
-import RunsheetReport from "./Runsheet/RunsheetReport";
 
 export default function GtrsMain({
     setCustomerAccounts,
@@ -1725,23 +1725,6 @@ export default function GtrsMain({
                                                 route="RunsheetReport_View"
                                                 element={
                                                     <RunsheetReport
-                                                        accData={dataFromChild}
-                                                    />
-                                                }
-                                            />
-                                        }
-                                        userPermissions={userPermissions}
-                                        setToken={setToken}
-                                        setUserPermissions={setUserPermissions}
-                                    />
-                                    <Route
-                                        path="/floor-report-uat"
-                                        element={
-                                            <ProtectedRoute
-                                                permission={userPermissions}
-                                                route="FloorReportUAT_View"
-                                                element={
-                                                    <FloorReportUAT
                                                         accData={dataFromChild}
                                                     />
                                                 }

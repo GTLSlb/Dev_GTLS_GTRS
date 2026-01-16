@@ -321,15 +321,6 @@ const menu = [
         url: "/gtrs/floor-report",
     },
     {
-        id: 38,
-        name: "Floor Report UAT",
-        href: "#",
-        icon: DocumentScannerIcon,
-        current: false,
-        feature: "FloorReportUAT_View",
-        url: "/gtrs/floor-report-uat",
-    },
-    {
         id: 31,
         name: "Settings",
         href: "#",
