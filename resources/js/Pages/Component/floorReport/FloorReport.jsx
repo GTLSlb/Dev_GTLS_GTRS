@@ -1476,9 +1476,9 @@ export default function FloorReport() {
             {
                 id: "comments-actions",
                 header: "Jaix Latest Comments",
-                size: 150,
-                minSize: 150,
-                maxSize: 150,
+                size: 200,
+                minSize: 200,
+                maxSize: 200,
                 enableSorting: false,
                 enableColumnFilter: false,
                 cell: ({ row }) => (
