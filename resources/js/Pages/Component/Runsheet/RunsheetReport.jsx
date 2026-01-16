@@ -1032,9 +1032,14 @@ export default function RunsheetReport() {
         headerRow.alignment = { horizontal: "center", vertical: "middle" };
 
         // Define date columns with their format types
-        const dateTimeColumns = ["Manifest Date Time"];
+        const dateTimeColumns = [""];
+        const dateOnlyColumns = ["Runsheet Date"];
         const dateTimeIndexes = headers
             .map((h, i) => (dateTimeColumns.includes(h) ? i : null))
+            .filter((i) => i !== null);
+
+        const dateOnlyIndexes = headers
+            .map((h, i) => (dateOnlyColumns.includes(h) ? i : null))
             .filter((i) => i !== null);
 
         // Add data rows
@@ -1103,8 +1108,11 @@ export default function RunsheetReport() {
                             25569;
                         cell.value = excelSerial;
 
+                        // Apply appropriate format based on column type
                         if (dateTimeIndexes.includes(colNumber - 1)) {
                             cell.numFmt = "dd-mm-yyyy hh:mm";
+                        } else if (dateOnlyIndexes.includes(colNumber - 1)) {
+                            cell.numFmt = "dd-mm-yyyy";
                         }
                     }
 
@@ -1166,7 +1174,7 @@ export default function RunsheetReport() {
         // Set column widths
         worksheet.columns = headers.map((header) => {
             if (header === "Manifest No") return { width: 15 };
-            if (header === "Manifest Date Time") return { width: 20 };
+            if (header === "Runsheet Date") return { width: 20 };
             if (header === "Depot") return { width: 10 };
             if (header === "Driver Name") return { width: 30 };
             if (header === "Consignments") return { width: 20 };
