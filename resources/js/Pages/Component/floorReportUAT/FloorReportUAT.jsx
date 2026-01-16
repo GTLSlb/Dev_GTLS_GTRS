@@ -30,9 +30,7 @@ import PropTypes from "prop-types";
 import { CustomContext } from "@/CommonContext";
 import { ToastContainer } from "react-toastify";
 import AnimatedLoading from "@/Components/AnimatedLoading";
-import {
-    handleSessionExpiration,
-} from "@/CommonFunctions";
+import { handleSessionExpiration } from "@/CommonFunctions";
 import { useState, useEffect, useMemo, useContext } from "react";
 import {
     ChevronDownIcon,
@@ -1083,7 +1081,7 @@ export default function FloorReportUAT() {
     };
 
     const [selectedDepots, setSelectedDepots] = useState([]);
-    const [showCharts, setShowCharts] = useState(true);
+    const [showCharts, setShowCharts] = useState(false);
     const [columnFilters, setColumnFilters] = useState(() => {
         const today = moment().format("YYYY-MM-DD");
         return [
@@ -1207,7 +1205,7 @@ export default function FloorReportUAT() {
         let className = "";
         if (rddDate.isBefore(today)) {
             className =
-                "bg-red-100 text-red-800 font-semibold px-2 py-1 rounded";
+                "bg-red-200 border-1 border-red-300  text-red-800 font-semibold px-2 py-1 rounded";
         } else if (rddDate.isSame(today)) {
             className =
                 "bg-yellow-100 text-yellow-800 font-semibold px-2 py-1 rounded";
@@ -1531,7 +1529,7 @@ export default function FloorReportUAT() {
         },
         initialState: {
             pagination: {
-                pageSize: 20,
+                pageSize: 50,
             },
         },
         enableColumnResizing: true,
@@ -1920,15 +1918,34 @@ export default function FloorReportUAT() {
                 <div className="flex w-full items-center gap-3 justify-between flex-wrap">
                     {/* Reference for the row colors in the table */}
                     <div>
-                        <span className="inline-block w-3 h-3 bg-red-100 border border-red-300 mr-1"></span>
-                        <span className="text-sm text-gray-600 mr-4">
-                            Scanned Items after POD
-                        </span>
-                        <span className="inline-block w-3 h-3 bg-blue-100 border border-blue-300 mr-1"></span>
-                        <span className="text-sm text-gray-600">
-                            Scanned Items after Departure Receiver
-                        </span>
+                        <div>
+                            <span className="text-sm text-gray-800 mr-4">
+                                Row:
+                            </span>
+                            <span className="inline-block w-3 h-3 bg-red-100 border border-red-300 mr-1"></span>
+                            <span className="text-sm text-gray-600 mr-4">
+                                Scanned Items after POD
+                            </span>
+                            <span className="inline-block w-3 h-3 bg-blue-100 border border-blue-300 mr-1"></span>
+                            <span className="text-sm text-gray-600">
+                                Scanned Items after Departure Receiver
+                            </span>
+                        </div>
+                        <div>
+                            <span className="text-sm text-gray-800 mr-4">
+                                RDD:
+                            </span>
+                            <span className="inline-block w-3 h-3 bg-red-200 border-1 border-red-300 mr-1"></span>
+                            <span className="text-sm text-gray-600 mr-4">
+                                Passed RDD
+                            </span>
+                            <span className="inline-block w-3 h-3 bg-yellow-100 border border-yellow-300 mr-1"></span>
+                            <span className="text-sm text-gray-600">
+                                Due Today
+                            </span>
+                        </div>
                     </div>
+
                     <div className="flex items-center gap-3">
                         {/* Column Visibility Dropdown */}
                         <Dropdown>
