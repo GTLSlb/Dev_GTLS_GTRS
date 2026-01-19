@@ -2506,6 +2506,15 @@ export const getFiltersTimeSlot = (minDate, maxDate) => {
             },
         },
         {
+            name: "RDD",
+            operator: "inrange",
+            type: "date",
+            value: {
+                start: minDate,
+                end: maxDate,
+            },
+        },
+        {
             name: "DiffConsTimeslot",
             operator: "contains",
             type: "string",

@@ -1,13 +1,3 @@
-import { CustomContext } from "@/CommonContext";
-import AnimatedLoading from "@/Components/AnimatedLoading";
-import TableStructure from "@/Components/TableStructure";
-import { createNewLabelObjects } from "@/Components/utils/dataUtils";
-import { exportToExcel } from "@/Components/utils/excelUtils";
-import { getFiltersTimeSlot } from "@/Components/utils/filters";
-import { handleFilterTable } from "@/Components/utils/filterUtils";
-import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
-import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
-import axios from "axios";
 import React, {
     useCallback,
     useContext,
@@ -20,9 +10,18 @@ import {
     handleSessionExpiration,
     renderConsDetailsLink,
 } from "@/CommonFunctions";
-import NumberFilter from "@inovua/reactdatagrid-community/NumberFilter";
+import axios from "axios";
+import { CustomContext } from "@/CommonContext";
+import TableStructure from "@/Components/TableStructure";
+import AnimatedLoading from "@/Components/AnimatedLoading";
+import { exportToExcel } from "@/Components/utils/excelUtils";
 import { getMinMaxValue } from "@/Components/utils/dateUtils";
+import { getFiltersTimeSlot } from "@/Components/utils/filters";
+import { handleFilterTable } from "@/Components/utils/filterUtils";
 import DateFilter from "@inovua/reactdatagrid-community/DateFilter";
+import { createNewLabelObjects } from "@/Components/utils/dataUtils";
+import SelectFilter from "@inovua/reactdatagrid-community/SelectFilter";
+import StringFilter from "@inovua/reactdatagrid-community/StringFilter";
 function TimeSlotReport() {
     const { url, Token, user, userPermissions } = useContext(CustomContext);
     const gridRef = useRef(null);
@@ -88,6 +87,8 @@ function TimeSlotReport() {
                     "PickupCompletedDate",
                     2
                 );
+                const minDateRDD = getMinMaxValue(parsedData, "RDD", 1);
+                const maxDateRDD = getMinMaxValue(parsedData, "RDD", 2);
                 setColumns([
                     {
                         name: "ConsignmentNo",
@@ -231,6 +232,27 @@ function TimeSlotReport() {
                         },
                     },
                     {
+                        name: "RDD",
+                        header: "RDD",
+                        headerAlign: "center",
+                        textAlign: "center",
+                        defaultFlex: 1,
+                        minWidth: 200,
+                        dateFormat: "DD-MM-YYYY",
+                        filterable: true,
+                        filterEditor: DateFilter,
+                        filterEditorProps: {
+                            minDate: minDateRDD,
+                            maxDate: maxDateRDD,
+                        },
+                        render: ({ value }) => {
+                            return moment(value).format("DD-MM-YYYY hh:mm A") ==
+                                "Invalid date"
+                                ? ""
+                                : moment(value).format("DD-MM-YYYY hh:mm A");
+                        },
+                    },
+                    {
                         name: "PickupCompletedDate",
                         header: "Pickup Completed",
                         headerAlign: "center",
@@ -344,6 +366,14 @@ function TimeSlotReport() {
                           25569
                     : "";
             },
+            RDD: (value) => {
+                const date = new Date(value);
+                return !isNaN(date)
+                    ? (date.getTime() - date.getTimezoneOffset() * 60000) /
+                          86400000 +
+                          25569
+                    : "";
+            },
         };
 
         exportToExcel(
@@ -351,7 +381,7 @@ function TimeSlotReport() {
             columnMapping,
             "TimeSlot-Data.xlsx",
             customCellHandlers,
-            ["ConsCreated", "PickupCompletedDate", "LogCreated"]
+            ["ConsCreated", "PickupCompletedDate", "LogCreated", "RDD"]
         );
     }
 
