@@ -34,12 +34,11 @@ function NewTransitDays({
         const data = await getApiRequest(`${url}Transits`, {
             UserId: user?.UserId,
         });
-
         if (data) {
-            const sortedTransit = data.sort((a, b) =>
-                b.AddedAt.localeCompare(a.AddedAt)
-            );
-            setNewTransitDays(sortedTransit);
+            // const sortedTransit = data.sort((a, b) =>
+            //     b.AddedAt.localeCompare(a.AddedAt)
+            // );
+            setNewTransitDays(data);
             setIsFetching(false);
         }
     }
@@ -424,7 +423,6 @@ function NewTransitDays({
             className="w-[5.5rem] h-[36px]"
         />
     ) : null;
-
     if (isFetching || !senderStateOptions) {
         return <AnimatedLoading />;
     }

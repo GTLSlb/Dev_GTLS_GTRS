@@ -138,7 +138,7 @@ class RegisteredUserController extends Controller
                     $data = $response->json();
                     $jwt_token = $data['jwt_token'] ?? null;
                 }
-            }catch(Exception $e){
+            }catch(\Exception $e){
                 \Log::error("Error validating session from Node: " . $e->getMessage());
                 return null;
             }
@@ -223,16 +223,43 @@ class RegisteredUserController extends Controller
         }
 
         if($decoded_user !== null) {
-            $user = $this->mapUserByTypeId($decoded_user);
-            $is_jwt_set=isset($jwt_token);
+             $user = $this->mapUserByTypeId($decoded_user);
+            $is_jwt_set = isset($_COOKIE['jwt_token']);
+            $jwt_token = null;
 
+            $sessionToken = $request->session()->get('token');
+            $cookieJwt = $_COOKIE['jwt_token'] ?? null;
 
-            if($is_jwt_set){
-                $jwt_token = $jwt_token == "null" || $jwt_token == null ? $this->validateSessionFromNode($user_from_session, $sessionId, $request->session()->get('token')) : $jwt_token;
-                $token = empty($jwt_token) ? $request->session()->get('token') : $this->decode_jwt_valid()->token;
-            }else{
-                $jwt_token = $this->validateSessionFromNode($user_from_session, $sessionId, $request->session()->get('token'));
-                $token = $request->session()->get('token');
+            if ($is_jwt_set) {
+                // Treat "null" and null as invalid cookie values
+                if ($cookieJwt === null || $cookieJwt === 'null' || $cookieJwt === '') {
+                    $jwt_token = $this->validateSessionFromNode(
+                        $user_from_session,
+                        $sessionId,
+                        $sessionToken
+                    );
+                    $token = $sessionToken;
+                } else {
+                    $jwt_token = $cookieJwt;
+
+                    $decoded = $this->decode_jwt_valid($jwt_token);
+                    // Safely extract Token
+                    if ($decoded && isset($decoded->Token)) {
+                        $token = $decoded->Token;
+                    } elseif ($decoded && isset($decoded->token)) {
+                        $token = $decoded->token;
+                    } else {
+                        $token = $sessionToken;
+                    }
+                }
+            } else {
+                $jwt_token = $this->validateSessionFromNode(
+                    $user_from_session,
+                    $sessionId,
+                    $sessionToken
+                );
+
+                $token = $sessionToken;
             }
 
             \Log::info("NEW JWT Token: " . $jwt_token);

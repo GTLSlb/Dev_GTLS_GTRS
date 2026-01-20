@@ -125,14 +125,14 @@ export function clearMSALLocalStorage() {
 
     // Find all keys in localStorage starting with 'msal' and remove them
     const msalKeys = Object.keys(localStorage).filter((key) =>
-        key.startsWith("msal")
+        key.startsWith("msal"),
     );
     msalKeys.forEach((key) => {
         localStorage.removeItem(key);
     });
     // Find all keys in sessionStorage starting with 'msal' and remove them
     const msalSessionKeys = Object.keys(sessionStorage).filter((key) =>
-        key.startsWith("msal")
+        key.startsWith("msal"),
     );
     msalSessionKeys.forEach((key) => {
         sessionStorage.removeItem(key);
@@ -151,7 +151,7 @@ export function getMinMaxValue(data, fieldName, identifier) {
 
     // Filter out entries with empty or invalid dates
     const validData = data.filter(
-        (item) => item[fieldName] && !isNaN(new Date(item[fieldName]))
+        (item) => item[fieldName] && !isNaN(new Date(item[fieldName])),
     );
 
     // If no valid dates are found, return null
@@ -279,7 +279,7 @@ export function formatDateFromExcelWithNoTime(dateValue) {
     const utcDate = Date.UTC(
         date.getUTCFullYear(),
         date.getUTCMonth(),
-        date.getUTCDate()
+        date.getUTCDate(),
     );
     return utcDate / 86400000 + 25569;
 }
@@ -351,20 +351,40 @@ export function navigateToFirstAllowedPage({
     menu?.forEach((menuItem) => {
         if (Object.prototype.hasOwnProperty.call(menuItem, "options")) {
             menuItem.options.forEach((option) => {
-                if (
-                    userPermissions?.some(
-                        (item) => item?.FunctionName === option?.feature
-                    )
-                ) {
-                    const existingItem = items.find(
-                        (item) => item.name === menuItem.name
+                // 1. Determine if the user has permission for this option
+                let hasPermission = false;
+
+                if (Array.isArray(option?.feature)) {
+                    // Check if user has AT LEAST ONE of the features in the array
+                    hasPermission = option.feature.some((f) =>
+                        userPermissions?.some((p) => p?.FunctionName === f),
                     );
+                } else {
+                    // Check single string feature
+                    hasPermission = userPermissions?.some(
+                        (p) => p?.FunctionName === option?.feature,
+                    );
+                }
+
+                // 2. If permission exists, add the option uniquely
+                if (hasPermission) {
+                    const existingItem = items.find(
+                        (item) => item.name === menuItem.name,
+                    );
+
                     if (existingItem) {
-                        existingItem.options.push({
-                            ...option,
-                            current: false,
-                        });
+                        // Check if the option is already inside this menu item to prevent duplicates
+                        const optionExists = existingItem.options.some(
+                            (opt) => opt.name === option.name,
+                        );
+                        if (!optionExists) {
+                            existingItem.options.push({
+                                ...option,
+                                current: false,
+                            });
+                        }
                     } else {
+                        // Create the Parent Menu Item and add this first option
                         items.push({
                             ...menuItem,
                             current: false,
@@ -376,13 +396,14 @@ export function navigateToFirstAllowedPage({
         } else {
             if (
                 userPermissions?.some(
-                    (item) => item?.FunctionName === menuItem?.feature
+                    (item) => item?.FunctionName === menuItem?.feature,
                 )
             ) {
                 items.push({ ...menuItem, current: false });
             }
         }
     });
+
     // Navigate to the page specified in the browser URL
     if (
         window.location.pathname != "/gtrs/" &&
@@ -501,7 +522,7 @@ export function useApiRequests() {
         url,
         headers = {},
         body = {},
-        passedToken = null
+        passedToken = null,
     ) => {
         const tokenHeaders = {
             ...headers,

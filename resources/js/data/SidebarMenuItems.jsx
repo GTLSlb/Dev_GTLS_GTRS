@@ -144,11 +144,11 @@ const menu = [
         icon: ClipboardDocumentIcon,
         current: false,
         feature: [
-                                                    "DeliveryReport_View",
-                                                    "MetcashDeliveryReport_View",
-                                                    "WoolworthsDeliveryReport_View",
-                                                    "OtherDeliveryReport_View",
-                                                ],
+            "DeliveryReport_View",
+            "MetcashDeliveryReport_View",
+            "WoolworthsDeliveryReport_View",
+            "OtherDeliveryReport_View",
+        ],
         url: "/gtrs/delivery-report",
         options: [
             // {
@@ -167,11 +167,11 @@ const menu = [
                 current: false,
                 icon: ClipboardDocumentCheckIcon,
                 feature: [
-                                                    "DeliveryReport_View",
-                                                    "MetcashDeliveryReport_View",
-                                                    "WoolworthsDeliveryReport_View",
-                                                    "OtherDeliveryReport_View",
-                                                ],
+                    "DeliveryReport_View",
+                    "MetcashDeliveryReport_View",
+                    "WoolworthsDeliveryReport_View",
+                    "OtherDeliveryReport_View",
+                ],
                 url: "/gtrs/excel-delivery-report",
             },
             {
