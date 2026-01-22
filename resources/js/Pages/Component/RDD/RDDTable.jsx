@@ -16,7 +16,6 @@ import { handleFilterTable } from "@/Components/utils/filterUtils";
 import {
     convertUtcToUserTimezone,
     formatDateToExcel,
-    formatDateToExcelWithNoTime,
     renderConsDetailsLink,
 } from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
@@ -86,8 +85,7 @@ export default function RDDTable({
             ChangeAt: (value) => {
                 if (!value) return "";
                 const converted = convertUtcToUserTimezone(value + "Z");
-                const dateOnly = moment(converted, "MM/DD/YYYY, h:mm:ss A").format("YYYY-MM-DD");
-                return dateOnly === "Invalid date" ? "" : formatDateToExcelWithNoTime(dateOnly, "date-only");
+                return formatDateToExcel(converted);
             },
             OldRdd: (value) => (value ? formatDateToExcel(value) : ""),
             NewRdd: (value) => (value ? formatDateToExcel(value) : ""),
@@ -105,8 +103,7 @@ export default function RDDTable({
             columnMapping,
             "RDD-Report.xlsx",
             customCellHandlers,
-            ["DespatchDate", "ChangeAt", "OldRdd", "NewRdd"],
-            [{ field: "ChangeAt", format: "dd-mm-yyyy" }]
+            ["DespatchDate", "ChangeAt", "OldRdd", "NewRdd"]
         );
     };
     const handleEditClick = (consignmentrdd) => {
@@ -463,15 +460,13 @@ export default function RDDTable({
                         <p>
                             {moment(
                                 convertUtcToUserTimezone(value + "Z"),
-
                                 "MM/DD/YYYY, h:mm:ss A"
-                            ).format("YYYY-MM-DD hh:mm A") == "Invalid date"
+                            ).format("DD-MM-YYYY hh:mm A") == "Invalid date"
                                 ? ""
                                 : moment(
                                       convertUtcToUserTimezone(value + "Z"),
-
                                       "MM/DD/YYYY, h:mm:ss A"
-                                  ).format("DD-MM-YYYY")}
+                                  ).format("DD-MM-YYYY hh:mm A")}
                         </p>
                     );
                 }
