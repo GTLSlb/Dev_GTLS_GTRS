@@ -220,6 +220,23 @@ export const formatDateToExcel = (dateValue, format = "dd-mm-yyyy hh:mm") => {
     );
 };
 
+export const formatDateToExcelWithNoTime = (dateValue, format = "dd-mm-yyyy") => {
+    let date = new Date(dateValue);
+    if (format != "dd-mm-yyyy") {
+        date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    }
+
+    // Check if the date is valid
+    if (isNaN(date.getTime())) {
+        return ""; // Return empty string if invalid date
+    }
+
+    // Convert to Excel date serial number format
+    return (
+        (date.getTime() - date.getTimezoneOffset() * 60000) / 86400000 + 25569
+    );
+};
+
 export const formatDate = (dateString) => {
     if (dateString) {
         const [date] = dateString.split("T");

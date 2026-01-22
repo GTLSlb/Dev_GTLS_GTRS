@@ -16,6 +16,7 @@ import { handleFilterTable } from "@/Components/utils/filterUtils";
 import {
     convertUtcToUserTimezone,
     formatDateToExcel,
+    formatDateToExcelWithNoTime,
     renderConsDetailsLink,
 } from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
@@ -82,7 +83,12 @@ export default function RDDTable({
         // Define custom cell handlers (for formatting dates and other custom fields)
         const customCellHandlers = {
             DespatchDate: (value) => (value ? formatDateToExcel(value) : ""),
-            ChangeAt: (value) => (value ? formatDateToExcel(value) : ""),
+            ChangeAt: (value) => {
+                if (!value) return "";
+                const converted = convertUtcToUserTimezone(value + "Z");
+                const dateOnly = moment(converted, "MM/DD/YYYY, h:mm:ss A").format("YYYY-MM-DD");
+                return dateOnly === "Invalid date" ? "" : formatDateToExcelWithNoTime(dateOnly, "date-only");
+            },
             OldRdd: (value) => (value ? formatDateToExcel(value) : ""),
             NewRdd: (value) => (value ? formatDateToExcel(value) : ""),
             Reason: (value, item) => {
@@ -99,7 +105,8 @@ export default function RDDTable({
             columnMapping,
             "RDD-Report.xlsx",
             customCellHandlers,
-            ["DespatchDate", "ChangeAt", "OldRdd", "NewRdd"]
+            ["DespatchDate", "ChangeAt", "OldRdd", "NewRdd"],
+            [{ field: "ChangeAt", format: "dd-mm-yyyy" }]
         );
     };
     const handleEditClick = (consignmentrdd) => {
