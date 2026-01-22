@@ -575,6 +575,26 @@ export function convertUtcToUserTimezone(utcDateString) {
     return convertedDate;
 }
 
+export function convertUtcToSydneyTimezone(utcDateString) { // No Formatting
+    // Create a Date object from the UTC date string
+    const utcDate = new Date(utcDateString);
+
+    // Always use Sydney timezone
+    const targetTimezone = "Australia/Sydney";
+
+    const formatter = new Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        timeZone: targetTimezone,
+    });
+    const convertedDate = formatter.format(utcDate);
+    return convertedDate;
+}
+
 export function AlertToast(msg, status) {
     if (status == 1) {
         toast.success(msg, {

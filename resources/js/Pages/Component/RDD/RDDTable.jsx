@@ -14,8 +14,10 @@ import { createNewLabelObjects } from "@/Components/utils/dataUtils";
 import { exportToExcel } from "@/Components/utils/excelUtils";
 import { handleFilterTable } from "@/Components/utils/filterUtils";
 import {
+    convertUtcToSydneyTimezone,
     convertUtcToUserTimezone,
     formatDateToExcel,
+    formatDateWithTimeToSydney,
     renderConsDetailsLink,
 } from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
@@ -84,14 +86,14 @@ export default function RDDTable({
             DespatchDate: (value) => (value ? formatDateToExcel(value) : ""),
             ChangeAt: (value) => {
                 if (!value) return "";
-                const converted = convertUtcToUserTimezone(value + "Z");
+                const converted = convertUtcToSydneyTimezone(value + "Z");
                 return formatDateToExcel(converted);
             },
             OldRdd: (value) => (value ? formatDateToExcel(value) : ""),
             NewRdd: (value) => (value ? formatDateToExcel(value) : ""),
             Reason: (value, item) => {
                 const reason = rddReasons?.find(
-                    (reason) => reason.ReasonId === item.Reason
+                    (reason) => reason.ReasonId === item.Reason,
                 );
                 return reason?.ReasonName || "";
             },
@@ -103,7 +105,7 @@ export default function RDDTable({
             columnMapping,
             "RDD-Report.xlsx",
             customCellHandlers,
-            ["DespatchDate", "ChangeAt", "OldRdd", "NewRdd"]
+            ["DespatchDate", "ChangeAt", "OldRdd", "NewRdd"],
         );
     };
     const handleEditClick = (consignmentrdd) => {
@@ -142,12 +144,10 @@ export default function RDDTable({
     const maxNewRddDate = getMinMaxValue(rddData, "NewRdd", 2);
     const minChangeAtDate = getMinMaxValue(rddData, "ChangeAt", 1);
     const maxChangeAtDate = getMinMaxValue(rddData, "ChangeAt", 2);
-    const reasonOptions = RDDReasonsData.map((reason) =>
-        ({
-            id: reason.ReasonId,
-            label: reason.ReasonName,
-        })
-    ).sort((a, b) => a.label.localeCompare(b.label));
+    const reasonOptions = RDDReasonsData.map((reason) => ({
+        id: reason.ReasonId,
+        label: reason.ReasonName,
+    })).sort((a, b) => a.label.localeCompare(b.label));
     const columns = [
         {
             name: "ConsignmentNo",
@@ -160,7 +160,7 @@ export default function RDDTable({
                 return renderConsDetailsLink(
                     userPermissions,
                     value,
-                    data.ConsignmentId
+                    data.ConsignmentId,
                 );
             },
         },
@@ -427,7 +427,7 @@ export default function RDDTable({
                         {/* {value} */}
                         {
                             rddReasons?.find(
-                                (reason) => reason.ReasonId === value
+                                (reason) => reason.ReasonId === value,
                             )?.ReasonName
                         }
                     </div>
@@ -456,19 +456,7 @@ export default function RDDTable({
             },
             render: ({ value }) => {
                 {
-                    return (
-                        <p>
-                            {moment(
-                                convertUtcToUserTimezone(value + "Z"),
-                                "MM/DD/YYYY, h:mm:ss A"
-                            ).format("DD-MM-YYYY hh:mm A") == "Invalid date"
-                                ? ""
-                                : moment(
-                                      convertUtcToUserTimezone(value + "Z"),
-                                      "MM/DD/YYYY, h:mm:ss A"
-                                  ).format("DD-MM-YYYY hh:mm A")}
-                        </p>
-                    );
+                    return <p>{formatDateWithTimeToSydney(value)}</p>;
                 }
             },
         },
