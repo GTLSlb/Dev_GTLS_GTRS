@@ -176,7 +176,7 @@ function DateColumnFilter({ column, table }) {
 
     const handleMonthSelection = (year, month) => {
         const monthDates = (dateHierarchy[year]?.[month] || []).map(
-            (d) => d.date
+            (d) => d.date,
         );
         const allSelected = monthDates.every((date) => selectedDates.has(date));
 
@@ -289,12 +289,12 @@ function DateColumnFilter({ column, table }) {
                             const yearNum = parseInt(year);
                             const isYearExpanded = expandedYears.has(yearNum);
                             const yearDates = Object.values(
-                                dateHierarchy[yearNum]
+                                dateHierarchy[yearNum],
                             )
                                 .flat()
                                 .map((d) => d.date);
                             const yearSelectedCount = yearDates.filter((d) =>
-                                selectedDates.has(d)
+                                selectedDates.has(d),
                             ).length;
                             const isYearFullySelected =
                                 yearSelectedCount === yearDates.length;
@@ -352,7 +352,7 @@ function DateColumnFilter({ column, table }) {
                                                     const monthKey = `${year}-${month}`;
                                                     const isMonthExpanded =
                                                         expandedMonths.has(
-                                                            monthKey
+                                                            monthKey,
                                                         );
                                                     const monthDates =
                                                         dateHierarchy[yearNum][
@@ -360,7 +360,9 @@ function DateColumnFilter({ column, table }) {
                                                         ].map((d) => d.date);
                                                     const monthSelectedCount =
                                                         monthDates.filter((d) =>
-                                                            selectedDates.has(d)
+                                                            selectedDates.has(
+                                                                d,
+                                                            ),
                                                         ).length;
                                                     const isMonthFullySelected =
                                                         monthSelectedCount ===
@@ -377,7 +379,7 @@ function DateColumnFilter({ column, table }) {
                                                                 <button
                                                                     onClick={() =>
                                                                         toggleMonth(
-                                                                            monthKey
+                                                                            monthKey,
                                                                         )
                                                                     }
                                                                     className="p-0.5 hover:bg-gray-200 rounded"
@@ -394,7 +396,7 @@ function DateColumnFilter({ column, table }) {
                                                                         isMonthFullySelected
                                                                     }
                                                                     ref={(
-                                                                        el
+                                                                        el,
                                                                     ) => {
                                                                         if (el)
                                                                             el.indeterminate =
@@ -403,7 +405,7 @@ function DateColumnFilter({ column, table }) {
                                                                     onChange={() =>
                                                                         handleMonthSelection(
                                                                             yearNum,
-                                                                            monthNum
+                                                                            monthNum,
                                                                         )
                                                                     }
                                                                     className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
@@ -436,7 +438,7 @@ function DateColumnFilter({ column, table }) {
                                                                         monthNum
                                                                     ].map(
                                                                         (
-                                                                            dateObj
+                                                                            dateObj,
                                                                         ) => (
                                                                             <div
                                                                                 key={
@@ -447,11 +449,11 @@ function DateColumnFilter({ column, table }) {
                                                                                 <input
                                                                                     type="checkbox"
                                                                                     checked={selectedDates.has(
-                                                                                        dateObj.date
+                                                                                        dateObj.date,
                                                                                     )}
                                                                                     onChange={() =>
                                                                                         handleDateSelection(
-                                                                                            dateObj.date
+                                                                                            dateObj.date,
                                                                                         )
                                                                                     }
                                                                                     className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
@@ -462,7 +464,7 @@ function DateColumnFilter({ column, table }) {
                                                                                     }
                                                                                 </span>
                                                                             </div>
-                                                                        )
+                                                                        ),
                                                                     )}
                                                                 </div>
                                                             )}
@@ -488,7 +490,7 @@ function ColumnFilter({ column, table }) {
     const sortedUniqueValues = useMemo(() => {
         if (filterVariant === "select") {
             const uniqueValues = Array.from(
-                column.getFacetedUniqueValues().keys()
+                column.getFacetedUniqueValues().keys(),
             )
                 .filter((v) => v !== null && v !== undefined && v !== "")
                 .sort();
@@ -759,7 +761,7 @@ export default function RunsheetReport() {
 
                 return newRow;
             }) || [],
-        [runsheetData]
+        [runsheetData],
     );
 
     // Analytics: Toggle visibility
@@ -809,7 +811,7 @@ export default function RunsheetReport() {
             .sort(
                 (a, b) =>
                     b.missingPercentage - a.missingPercentage ||
-                    b.missingPod - a.missingPod
+                    b.missingPod - a.missingPod,
             );
 
         return driverList;
@@ -932,7 +934,7 @@ export default function RunsheetReport() {
                 meta: { filterVariant: "text" },
             },
         ],
-        [userPermissions, expandedRowId]
+        [userPermissions, expandedRowId],
     );
 
     // Initialize TanStack Table
@@ -1298,7 +1300,7 @@ export default function RunsheetReport() {
                                                                     }`}
                                                                 >
                                                                     {driver.missingPercentage.toFixed(
-                                                                        1
+                                                                        1,
                                                                     )}
                                                                     %
                                                                 </span>
@@ -1326,7 +1328,7 @@ export default function RunsheetReport() {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                )
+                                                ),
                                             )}
                                         </div>
                                     </div>
@@ -1355,7 +1357,7 @@ export default function RunsheetReport() {
                                             <div className="text-center p-3 bg-yellow-50 rounded-lg">
                                                 <div className="text-2xl font-bold text-yellow-600">
                                                     {formatNumberWithCommas(
-                                                        departedMissingPodAnalytics.totalConsignments
+                                                        departedMissingPodAnalytics.totalConsignments,
                                                     )}
                                                 </div>
                                                 <div className="text-xs text-gray-600">
@@ -1365,7 +1367,7 @@ export default function RunsheetReport() {
                                             <div className="text-center p-3 bg-blue-50 rounded-lg">
                                                 <div className="text-2xl font-bold text-blue-600">
                                                     {formatNumberWithCommas(
-                                                        departedMissingPodAnalytics.totalDeparted
+                                                        departedMissingPodAnalytics.totalDeparted,
                                                     )}
                                                 </div>
                                                 <div className="text-xs text-gray-600">
@@ -1375,13 +1377,13 @@ export default function RunsheetReport() {
                                             <div className="text-center p-3 bg-green-50 rounded-lg">
                                                 <div className="text-2xl font-bold text-green-600">
                                                     {formatNumberWithCommas(
-                                                        departedMissingPodAnalytics.departedWithPod
+                                                        departedMissingPodAnalytics.departedWithPod,
                                                     )}
                                                 </div>
                                                 <div className="text-xs text-gray-600">
                                                     Departed Receiver With POD (
                                                     {departedMissingPodAnalytics.podPercentage.toFixed(
-                                                        1
+                                                        1,
                                                     )}
                                                     %)
                                                 </div>
@@ -1396,7 +1398,7 @@ export default function RunsheetReport() {
                                                     Departed Receiver With
                                                     Missing POD (
                                                     {departedMissingPodAnalytics.missingPodPercentage.toFixed(
-                                                        1
+                                                        1,
                                                     )}
                                                     %)
                                                 </div>
@@ -1409,7 +1411,7 @@ export default function RunsheetReport() {
                                                 <span>POD Completion Rate</span>
                                                 <span>
                                                     {departedMissingPodAnalytics.podPercentage.toFixed(
-                                                        1
+                                                        1,
                                                     )}
                                                     %
                                                 </span>
@@ -1451,7 +1453,7 @@ export default function RunsheetReport() {
                                                                         {renderConsDetailsLink(
                                                                             userPermissions,
                                                                             item.consignmentNo,
-                                                                            item.consignmentId
+                                                                            item.consignmentId,
                                                                         )}
                                                                     </span>
                                                                     <span className="text-gray-500 ml-2">
@@ -1476,7 +1478,7 @@ export default function RunsheetReport() {
                                                                     }
                                                                 </span>
                                                             </div>
-                                                        )
+                                                        ),
                                                     )}
                                                 </div>
                                             </div>
@@ -1550,7 +1552,7 @@ export default function RunsheetReport() {
                                                                                 .column
                                                                                 .columnDef
                                                                                 .header,
-                                                                            header.getContext()
+                                                                            header.getContext(),
                                                                         )}
                                                                     </span>
                                                                     {header.column.getCanSort() && (
@@ -1680,7 +1682,7 @@ export default function RunsheetReport() {
                                                                                 .column
                                                                                 .columnDef
                                                                                 .cell,
-                                                                            cell.getContext()
+                                                                            cell.getContext(),
                                                                         )}
                                                                     </td>
                                                                 );
@@ -1714,7 +1716,7 @@ export default function RunsheetReport() {
                                                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                                                                         {consignments.map(
                                                                             (
-                                                                                consignment
+                                                                                consignment,
                                                                             ) => (
                                                                                 <div
                                                                                     key={
@@ -1727,7 +1729,7 @@ export default function RunsheetReport() {
                                                                                             {renderConsDetailsLink(
                                                                                                 userPermissions,
                                                                                                 consignment.ConsignmentNo,
-                                                                                                consignment.ConsignmentID
+                                                                                                consignment.ConsignmentID,
                                                                                             )}
                                                                                             <p className="text-gray-500 text-xs">
                                                                                                 {
@@ -1735,17 +1737,35 @@ export default function RunsheetReport() {
                                                                                                 }
                                                                                             </p>
                                                                                         </div>
-                                                                                        <span
-                                                                                            className={`px-2 py-1 text-xs font-semibold rounded ${
-                                                                                                consignment.POD
-                                                                                                    ? "bg-green-100 text-green-800"
-                                                                                                    : "bg-red-100 text-red-800"
-                                                                                            }`}
-                                                                                        >
-                                                                                            {consignment.POD
-                                                                                                ? "POD"
-                                                                                                : "No POD"}
-                                                                                        </span>
+                                                                                        <div className="flex flex-row gap-2">
+                                                                                            <span
+                                                                                                className={`px-2 py-1 text-xs font-semibold rounded ${
+                                                                                                    consignment.POD
+                                                                                                        ? "bg-green-100 text-green-800"
+                                                                                                        : "bg-red-100 text-red-800"
+                                                                                                }`}
+                                                                                            >
+                                                                                                {consignment.POD
+                                                                                                    ? "POD"
+                                                                                                    : "No POD"}
+                                                                                            </span>
+                                                                                            {consignment.TypeID ===
+                                                                                                1 ||
+                                                                                            consignment.TypeID ===
+                                                                                                2 ? (
+                                                                                                <span
+                                                                                                    className={`px-2 py-1 text-xs font-semibold text-center rounded ${
+                                                                                                        consignment.TypeID == 1
+                                                                                                            ? "bg-blue-100 text-blue-500"
+                                                                                                            : "bg-yellow-100 text-yellow-700"
+                                                                                                    }`}
+                                                                                                >
+                                                                                                    {consignment.TypeID == 1
+                                                                                                        ? "Pickup"
+                                                                                                        : "Delivery"}
+                                                                                                </span>
+                                                                                            ) : null}
+                                                                                        </div>
                                                                                     </div>
                                                                                     <div className="mt-2 text-xs text-gray-600">
                                                                                         <p className="font-medium">
@@ -1765,7 +1785,7 @@ export default function RunsheetReport() {
                                                                                         </p>
                                                                                     </div>
                                                                                 </div>
-                                                                            )
+                                                                            ),
                                                                         )}
                                                                     </div>
                                                                 </div>
@@ -1853,23 +1873,23 @@ export default function RunsheetReport() {
 
                                     let startPage = Math.max(
                                         0,
-                                        currentPage - 2
+                                        currentPage - 2,
                                     );
                                     let endPage = Math.min(
                                         totalPages - 1,
-                                        currentPage + 2
+                                        currentPage + 2,
                                     );
 
                                     if (endPage - startPage < 4) {
                                         if (startPage === 0) {
                                             endPage = Math.min(
                                                 totalPages - 1,
-                                                4
+                                                4,
                                             );
                                         } else if (endPage === totalPages - 1) {
                                             startPage = Math.max(
                                                 0,
-                                                totalPages - 5
+                                                totalPages - 5,
                                             );
                                         }
                                     }
@@ -1894,7 +1914,7 @@ export default function RunsheetReport() {
                                                 }
                                             >
                                                 {i + 1}
-                                            </Button>
+                                            </Button>,
                                         );
                                     }
 
