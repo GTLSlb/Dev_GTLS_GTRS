@@ -1,7 +1,7 @@
 <?php
- 
+
 namespace App\Http\Middleware;
- 
+
 use Illuminate\Auth\SessionGuard;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Auth\Guard;
@@ -11,15 +11,18 @@ use Closure;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Http;
- 
+
 use Illuminate\Support\Facades\DB;
+
+// Custom Controllers
 use App\Http\Controllers\SessionSharing;
- 
+use App\Http\Controllers\Auth\JsonWebTokenController;
+
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Firebase\JWT\SignatureInvalidException;
 use Firebase\JWT\ExpiredException;
- 
+
 class CustomAuth extends Middleware
 {
     /**
@@ -28,105 +31,75 @@ class CustomAuth extends Middleware
      * @param  array  $credentials
      * @return bool
      */
- 
+
     //  protected $guard;
- 
+
     public function __construct()
     {
         //$this->guard = $guard;
     }
- 
-    public function validateAccessToken($accessToken, $userId)
-    {
-        \Log::info("Validating Access Token via GTAM API: " . config('app.gtam_api_url'));
-        \Log::info("UserId: " . $userId);
-        \Log::info("AccessToken: " . $accessToken);
-        $url = config('app.gtam_api_url') . 'Validate/Session';
-        $headers = [
-            'UserId' => $userId,
-            'Token' => $accessToken,
-        ];
-        $response = Http::withHeaders($headers)->get($url);
-        switch ($response->status()) {
-            case 200:
-                return true;
-            case 400:
-                // Handle unauthorized access
-                return false;
-            default:
-                // Handle other status codes
-                return false;
-        }
-    }
-    private function validateJWTToken(){
-        $secretKey = $_ENV['JWT_SECRET'];
-        $allowed_algs = ['HS256'];
-        $currentTime = time();
-        $token = isset($_COOKIE['jwt_token']) ? $_COOKIE['jwt_token'] : null;
 
-        if(isset($token)){
-            // JWT Cookie exists
-            if (empty($token)) {
-                // JWT Cookie is null or empty
-            \Log::error("JWT Token is empty");
-            return false;
-            }else{
-                // Check if the token is valid
-                // 1. Check if token has 3 segments
-                $segments = explode('.', $token);
-                if (count($segments) !== 3) {
-                    \Log::error("Invalid JWT Token format. Expected 3 segments, got " . count($segments));
-                    return false;
-                }
-                // 2. Check if token is null or undefined 
-                if($token == null || $token == "undefined") return false;
-                $decoded = JWT::decode(
-            $token,
-            new Key($secretKey, $allowed_algs[0]) // Pass the key and the algorithm
-        );
- 
-        // If decoding succeeds without exceptions, the token is valid.
-        return true;
-            }
-        }else{
-            // JWT Cookie does not exist
-            \Log::info("No JWT token present");
-            return false;
-        }
-
-        return true;
-    }
- 
-    public function handle($request, $next, ...$guards)
-    {
-        $auth_routes = ['loginComp', 'login', 'loginapi', 'forgot-password', 'auth/azure', 'auth/azure/callback', 'microsoftToken', 'logoutWithoutRequest', 'exchange-token'];
-        $hasSession = $request->hasSession();
+    public function handle($request, $next, ...$guards){
         $path = $request->path();
- 
+        $trimmedPath = trim($path, '/');
+
+        $jwt_token = $_COOKIE['jwt_token'] ?? "";
+        $auth_routes = ['loginComp', 'login', 'loginapi', 'forgot-password', 'auth/azure', 'auth/azure/callback', 'microsoftToken', 'logoutWithoutRequest', 'exchange-token'];
+
+        // 1. LOGIC: Determine Auth Status ( JWT first, then Session )
+        $is_valid_JWT = $jwt_token == "" ? false : JsonWebTokenController::is_jwt_valid($jwt_token);
+
+        $payload = [
+            'token' => null,
+            'user' => null,
+            'userId' => null,
+        ];
+        // 1.a. Populate payload
+        if($is_valid_JWT) {
+            // If JWT is valid, decode it and save to payload
+            $decoded_data = JsonWebTokenController::decode_jwt_valid($jwt_token);
+            $payload['user'] = $decoded_data->user;
+            $payload['token'] = $decoded_data->Token;
+            $payload['userId'] = $decoded_data->userId;
+        }else{
+            // If JWT is not valid, check Session
+            $sessionUser = $request->hasSession() ? $request->session()->get('user') : null;
+            $sessionToken = $request->hasSession() ? $request->session()->get('token') : null;
+            $sessionUserId = $request->hasSession() ? $request->session()->get('userId') : null;
+
+            // Save to payload
+            if($sessionUser && $sessionToken){
+                $payload['user'] = $sessionUser;
+                $payload['token'] = $sessionToken;
+                $payload['userId'] = $sessionUserId;
+            }
+        }
+
+        // 1.b. Validate Authentication
+        $is_authenticated = false;
+        $is_authenticated = SessionSharing::validate_access_token($payload['token'], $payload['userId']);
+
+        $is_accessing_auth_route = in_array($trimmedPath, $auth_routes);
+        \Log::info("is_authenticated: " . $is_authenticated);
+        \Log::info("is_accessing_auth_route: " . $is_accessing_auth_route);
+        // 2. LOGIC: If Authenticated and trying to access Auth pages -> Redirect to Main Page
+        if ($is_authenticated && $is_accessing_auth_route) {
+            return redirect(config('app.redirect_route') ?? '/gtam/main');
+        }
+
+        // 3. LOGIC: If NOT Authenticated and trying to access Protected pages -> Redirect to Login
+        if (!$is_authenticated && !$is_accessing_auth_route) {
+            return redirect()->route('login');
+        }
+
+        // Set CSRF token for web sessions if needed
         if ($request->hasSession()) {
             $request->headers->set('X-CSRF-TOKEN', csrf_token());
- 
-            $accessToken = $request->session()->get('token') ?? false;
-            $userId = $request->session()->get('user') ?? false;
-            $userId = gettype($userId) == "string" ? json_decode($userId, true) : $userId;
- 
-            if (in_array($path, $auth_routes) && $userId && $accessToken) {
-                if (!$this->validateAccessToken($accessToken, $userId['UserId'])) {
-                    return $next($request);
-                } else {
-                    return redirect(config('app.redirect_route') ?? '/gtrs/main');
-                }
-            } elseif (!in_array($path, $auth_routes) && !$request->session()->has('user') && !$this->validateJWTToken()) {
-                return redirect()->route('login');
-            }elseif(in_array($path, $auth_routes) && $this->validateJWTToken()){
-                return redirect(config('app.redirect_route') ?? '/gtrs/main');
-            }
-        } elseif (in_array($request->path(), $auth_routes) && !$this->validateJWTToken()) {
-            return $next($request);
         }
+
         return $next($request);
     }
- 
+
     protected function verifyCsrfToken($token)
     {
         // Implementation using Laravel's built-in CSRF token verification:

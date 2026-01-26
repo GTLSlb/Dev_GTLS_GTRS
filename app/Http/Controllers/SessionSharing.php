@@ -13,64 +13,12 @@ use Firebase\JWT\SignatureInvalidException;
 use Firebase\JWT\ExpiredException;
 
 use Exception;
-// use Tymon\JWTAuth\Contracts\JWTSubject;
-// use Tymon\JWTAuth\Facades\JWTAuth;
-// use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-// use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
 class SessionSharing extends Controller
 {
-
-
-
-    private function is_jwt_valid($jwt_token) {
-        $secretKey = $_ENV['JWT_SECRET'] ?? '2zX!8fD@qY6k#eT^mP9w$Jr1&uV5g*Bf3';
-        $allowed_algs = ['HS256'];
-        $currentTime = time();
-
-        if (empty($jwt_token)) {
-            \Log::error("JWT Token is empty");
-            return false;
-        }
-
-        // Check if token has 3 segments
-        $segments = explode('.', $jwt_token);
-        if (count($segments) !== 3) {
-            \Log::error("Invalid JWT Token format. Expected 3 segments, got " . count($segments));
-            return false;
-        }
-
-        if($jwt_token == null || $jwt_token == undefined) return false;
-
-        try {
-        // This single call performs three checks:
-        // 1. Decodes the token.
-        // 2. Verifies the signature using the secret key.
-        // 3. Verifies the expiration (exp), not before (nbf), and issued at (iat) claims.
-
-        $decoded = JWT::decode(
-            $jwt_token,
-            new Key($secretKey, $allowed_algs[0]) // Pass the key and the algorithm
-        );
-
-        // If decoding succeeds without exceptions, the token is valid.
-        return true;
-
-    } catch (ExpiredException $e) {
-        \Log::error("JWT Expired: " . $e->getMessage());
-        return false;
-    } catch (SignatureInvalidException $e) {
-        \Log::error("JWT Signature Invalid: " . $e->getMessage());
-        return false;
-    } catch (Exception $e) {
-        \Log::error("JWT Decode Error: " . $e->getMessage());
-        return false;
-    }
-    }
-
-    public function validateAccessToken($accessToken, $userId, $gtam_api_url)
+    public static function validate_access_token($accessToken, $userId)
     {
-        $root = $_ENV['GTAM_API_URL'] ?? config('app.gtam_api_url') ?? $gtam_api_url ?? '';
+        $root = $_ENV['GTAM_API_URL'] ?? config('app.gtam_api_url') ?? '';
         $url = $root . 'Validate/Session';
 
         \Log::info("Validating Access Token via GTAM API: " . $url);
@@ -94,7 +42,7 @@ class SessionSharing extends Controller
         }
     }
 
-    private function is_session_valid($token, $userId, $jwt_token, $gtam_api_url) {
+    public static function is_session_valid($token, $userId, $jwt_token, $gtam_api_url) {
         try {
             // Query the database to check if the session is valid
             $tableName = $_ENV['DB_TABLE'] ?? "custom_sessions";
@@ -105,13 +53,7 @@ class SessionSharing extends Controller
                 ->limit(1)
                 ->get();
 
-            \Log::info("MySQL table: " . $tableName);
-            \Log::info("MySQL result: " . $results->count() . " rows found for user_id: " . $userId);
-            \Log::info("\n");
-            \Log::info("Access Token result: " . $this->validateAccessToken($token, $userId, $gtam_api_url));
-            \Log::info("JWT Token result: " . $this->is_jwt_valid($jwt_token));
-            \Log::info("\n");
-            $isValid = $this->validateAccessToken($token, $userId, $gtam_api_url) && $this->is_jwt_valid($jwt_token);
+            $isValid = $this->validate_access_token($token, $userId, $gtam_api_url) && $this->is_jwt_valid($jwt_token);
 
             return $isValid;
         } catch (Exception $e) {
@@ -119,7 +61,7 @@ class SessionSharing extends Controller
         }
     }
 
-    public function exchangeToken(Request $request) {
+    public static function exchangeToken(Request $request) {
     $user = $request->input('user');
     $token = $request->input('token');
     $gtls_session = $request->input('gtls_session');
@@ -174,4 +116,35 @@ class SessionSharing extends Controller
         return response()->json(['message' => 'Session already exists or invalid request', 'data' => ['user' => $user, 'token' => $token, 'jwt_token' => $jwt_token, 'gtls_session' => $gtls_session]], 400);
     }
 }
+
+    public static function handleSessionSharing(Request $request)
+    {
+        $user = $request->input('user');
+        $token = $request->input('token');
+        $jwt_token = $request->input('jwt_token');
+        $sessionId = $request->session()->getId();
+
+        // Implement session validation logic
+        $url = config('app.gtrr_api_url') . 'exchange-token';
+        try {
+            $body = [
+                'user' => $user,
+                'gtls_session' => $sessionId,
+                'token' => $token,
+                'jwt_token' => null
+            ];
+            $response = Http::post($url, $body);
+            $jwt_token = null;
+            if ($response->successful()) {
+                $data = $response->json();
+                $jwt_token = $data['jwt_token'] ?? null;
+            }
+        } catch (Exception $e) {
+            \Log::error("Error validating session from Node: " . $e->getMessage());
+            return null;
+        }
+
+        return $jwt_token;
+    }
+
 }

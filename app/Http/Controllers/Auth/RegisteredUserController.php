@@ -20,10 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
-use Firebase\JWT\SignatureInvalidException;
-use Firebase\JWT\ExpiredException;
+use App\Http\Controllers\Auth\JsonWebTokenController;
 
 class RegisteredUserController extends Controller
 {
@@ -59,9 +56,22 @@ class RegisteredUserController extends Controller
 
         return redirect(RouteServiceProvider::HOME);
     }
-    private function mapUserByTypeId($user)
+    private function map_user_by_type($user)
     {
+        // Decode if it's a string
+        if (is_string($user)) {
+            $user = json_decode($user, false);
+        }
+
+        // If it's a nested array (a list), grab the first item
+        if (is_array($user) && isset($user[0])) {
+            $user = $user[0];
+        }
+
+        // Get the user type
         $user_type_id = $user->TypeId;
+
+        // Map the user data based on user type
         switch ($user_type_id) {
             case 1:
                 // User is a customer
@@ -120,150 +130,71 @@ class RegisteredUserController extends Controller
         }
     }
 
-    private function validateSessionFromNode($user, $sessionId, $token)
-    {
-        // Implement session validation logic
-        $url = config('app.gtrr_api_url') . 'exchange-token';
-        try {
-            $body = [
-                'user' => $user,
-                'gtls_session' => $sessionId,
+    public function getCurrentUserName(Request $request) {
+        $jwt_secret_key = $_ENV['JWT_SECRET'];
+        $session_id = $request->session()->getId();
+
+        // 1. Prioritize JWT from cookies
+        $cookieJwt = $request->cookie('jwt_token') ?? $request->input('jwt_token');
+        // 2. Validate the cookie string (ensure it's not the string "null" or empty)
+        $hasValidCookie = $cookieJwt && $cookieJwt !== 'null' && $cookieJwt !== '';
+
+        // 3. If the cookie is valid, decode it
+        if ($hasValidCookie) {
+            try {
+            $decoded_cookie = JsonWebTokenController::decode_jwt_valid($cookieJwt);
+
+            // Fetch the user data from the decoded cookie
+            $user = $decoded_cookie->user;
+            $token = $decoded->Token;
+            $user = $this->map_user_by_type($user);
+
+            // Save to session so Laravel knows who this is
+            $request->session()->put([
+                'user' => json_encode($user),
                 'token' => $token,
-                'jwt_token' => null
-            ];
-            $response = Http::post($url, $body);
-            $jwt_token = null;
-            if ($response->successful()) {
-                $data = $response->json();
-                $jwt_token = $data['jwt_token'] ?? null;
-            }
-        } catch (Exception $e) {
-            \Log::error("Error validating session from Node: " . $e->getMessage());
-            return null;
-        }
+                'userId' => json_decode($decoded)->userId
+            ]);
 
-        return $jwt_token;
-    }
-
-    private function decode_jwt_valid($jwt_token)
-    {
-        $secretKey = $_ENV['JWT_SECRET'] ?? '2zX!8fD@qY6k#eT^mP9w$Jr1&uV5g*Bf3';
-        $allowed_algs = ['HS256'];
-        $currentTime = time();
-
-        if (empty($jwt_token)) {
-            \Log::error("JWT Token is empty");
-            return false;
-        }
-
-        // Check if token has 3 segments
-        $segments = explode('.', $jwt_token);
-        if (count($segments) !== 3) {
-            \Log::error("Invalid JWT Token format. Expected 3 segments, got " . count($segments));
-            return false;
-        }
-
-        if ($jwt_token == null || !isset($jwt_token)) {
-            return false;
-        }
-
-
-        try {
-            // This single call performs three checks:
-            // 1. Decodes the token.
-            // 2. Verifies the signature using the secret key.
-            // 3. Verifies the expiration (exp), not before (nbf), and issued at (iat) claims.
-
-            $decoded = JWT::decode(
-                $jwt_token,
-                new Key($secretKey, $allowed_algs[0]) // Pass the key and the algorithm
-            );
-
-            // If decoding succeeds without exceptions, the token is valid.
-            return $decoded;
-        } catch (ExpiredException $e) {
-            \Log::error("JWT Expired: " . $e->getMessage());
-            return null;
-        } catch (SignatureInvalidException $e) {
-            \Log::error("JWT Signature Invalid: " . $e->getMessage());
-            return null;
-        } catch (Exception $e) {
-            \Log::error("JWT Decode Error: " . $e->getMessage());
-            return null;
-        }
-    }
-
-    public function getCurrentUserName(Request $request)
-    {
-        $sessionId = $request->session()->getId();
-        $user_from_db = DB::table('custom_sessions')
-            ->where('id', $sessionId)
-            ->value('user');
-        \Log::info("User in controller: " . $user_from_db);
-        $user_from_session = $request->session()->get('user');
-
-        $valid_user = $user_from_db != null ? $user_from_db : $user_from_session;
-
-        $decoded_user = null;
-        if (is_string($valid_user)) {
-            $decoded_user = json_decode($valid_user);
-        } elseif ($valid_user === null) {
-            if (!empty($_COOKIE['jwt_token'])) {
-                $decoded_user = $this->decode_jwt_valid($_COOKIE['jwt_token'])->user;
-            } else {
-                $decoded_user = null;
-            }
-        } else {
-            $decoded_user = null;
-        }
-
-        if ($decoded_user !== null) {
-            $user = $this->mapUserByTypeId($decoded_user);
-            $is_jwt_set = isset($_COOKIE['jwt_token']);
-            $jwt_token = null;
-
-            $sessionToken = $request->session()->get('token');
-            $cookieJwt    = $_COOKIE['jwt_token'] ?? null;
-
-            if ($is_jwt_set) {
-
-                // Treat "null" and null as invalid cookie values
-                if ($cookieJwt === null || $cookieJwt === 'null' || $cookieJwt === '') {
-                    $jwt_token = $this->validateSessionFromNode(
-                        $user_from_session,
-                        $sessionId,
-                        $sessionToken
-                    );
-                    $token = $sessionToken;
-                } else {
-                    $jwt_token = $cookieJwt;
-
-                    $decoded = $this->decode_jwt_valid($jwt_token);
-
-                    // Safely extract Token
-                    $token = $decoded && isset($decoded->Token)
-                        ? $decoded->Token
-                        : $sessionToken;
-                }
-            } else {
-                $jwt_token = $this->validateSessionFromNode(
-                    $user_from_session,
-                    $sessionId,
-                    $sessionToken
-                );
-
-                $token = $sessionToken;
-            }
-
-            \Log::info("NEW JWT Token: " . $jwt_token);
+            // Return the user data
             return response()->json([
-                'jwt_token' => $jwt_token,
+                'jwt_token' => $cookieJwt,
                 'token' => $token,
                 'user' => $user
             ]);
+            } catch (\Exception $e) {
+                \Log::error("JWT Decode Failed: " . $e->getMessage());
+            }
         } else {
-            // User object is null
-            return response()->json(['error' => 'Session not found'], 401);
+             try {
+            $user_from_db = DB::table('custom_sessions')
+                ->where('id', $session_id)
+                ->value('user');
+            $user_from_session = $request->session()->get('user');
+
+            // Capture the user data from the session
+            $session_user = $user_from_db != null ? $user_from_db : $user_from_session;
+            $sessionToken = $request->session()->get('token');
+\Log::info("User in controller: " . $session_user);
+            // Encode the user data
+            $payload = [
+                'user' => $session_user,
+                'Token' => $sessionToken,
+                'userId' => json_decode($session_user)->UserId
+            ];
+
+            $new_jwt = JsonWebTokenController::encode_jwt($payload);
+
+            // Return the user data
+            return response()->json([
+                'jwt_token' => $new_jwt,
+                'token' => $sessionToken,
+                'user' => $this->map_user_by_type($session_user)
+            ]);
+             } catch (\Exception $e) {
+                \Log::error("Session Decode Failed: " . $e->getMessage());
+             }
+
         }
     }
 
