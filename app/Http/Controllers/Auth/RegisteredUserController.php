@@ -135,7 +135,7 @@ class RegisteredUserController extends Controller
         $session_id = $request->session()->getId();
 
         // 1. Prioritize JWT from cookies
-        $cookieJwt = $request->cookie('jwt_token') ?? $request->input('jwt_token');
+        $cookieJwt = $_COOKIE['jwt_token'] ?? "";
         // 2. Validate the cookie string (ensure it's not the string "null" or empty)
         $hasValidCookie = $cookieJwt && $cookieJwt !== 'null' && $cookieJwt !== '';
 
@@ -146,14 +146,14 @@ class RegisteredUserController extends Controller
 
             // Fetch the user data from the decoded cookie
             $user = $decoded_cookie->user;
-            $token = $decoded->Token;
+            $token = $decoded_cookie->Token;
             $user = $this->map_user_by_type($user);
 
             // Save to session so Laravel knows who this is
             $request->session()->put([
                 'user' => json_encode($user),
                 'token' => $token,
-                'userId' => json_decode($decoded)->userId
+                'userId' => $decoded_cookie->userId
             ]);
 
             // Return the user data
@@ -180,7 +180,7 @@ class RegisteredUserController extends Controller
             $payload = [
                 'user' => $session_user,
                 'Token' => $sessionToken,
-                'userId' => json_decode($session_user)->UserId
+                'userId' => json_decode($session_user)->userId
             ];
 
             $new_jwt = JsonWebTokenController::encode_jwt($payload);

@@ -84,7 +84,7 @@ class CustomAuth extends Middleware
         \Log::info("is_accessing_auth_route: " . $is_accessing_auth_route);
         // 2. LOGIC: If Authenticated and trying to access Auth pages -> Redirect to Main Page
         if ($is_authenticated && $is_accessing_auth_route) {
-            return redirect(config('app.redirect_route') ?? '/gtam/main');
+            return redirect(config('app.redirect_route') ?? '/gtrs/main');
         }
 
         // 3. LOGIC: If NOT Authenticated and trying to access Protected pages -> Redirect to Login
