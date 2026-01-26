@@ -1018,6 +1018,7 @@ export default function RunsheetReport() {
         const headers = [
             ...visibleColumns.map((col) => col.columnDef.header),
             "Consignments",
+            "Consignment Type",
             "POD",
             "Consignment Status",
             "Receiver Name",
@@ -1066,14 +1067,20 @@ export default function RunsheetReport() {
                 const consignment = consignments[i];
                 if (consignment) {
                     rowData.push(consignment.ConsignmentNo);
+                    rowData.push(consignment.TypeID === 1 ? "Pickup" : consignment.TypeID === 2 ? "Delivery" : "");
                     rowData.push(consignment.POD ? "TRUE" : "FALSE");
                     rowData.push(consignment.ConsignmentStatus);
                     rowData.push(consignment.ReceiverName);
                     rowData.push(consignment.ReceiverState);
                     rowData.push(consignment.ReceiverSuburb);
                 } else {
-                    rowData.push("");
-                    rowData.push("");
+                    rowData.push(""); // Consignments
+                    rowData.push(""); // Consignment Type
+                    rowData.push(""); // POD
+                    rowData.push(""); // Consignment Status
+                    rowData.push(""); // Receiver Name
+                    rowData.push(""); // Receiver State
+                    rowData.push(""); // Receiver Suburb
                 }
 
                 const excelRow = worksheet.addRow(rowData);
@@ -1180,6 +1187,7 @@ export default function RunsheetReport() {
             if (header === "Depot") return { width: 10 };
             if (header === "Driver Name") return { width: 30 };
             if (header === "Consignments") return { width: 20 };
+            if (header === "Consignment Type") return { width: 18 };
             if (header === "POD") return { width: 12 };
             if (header === "Consignment Status") return { width: 30 };
             if (header === "Receiver Name") return { width: 30 };
@@ -1755,12 +1763,14 @@ export default function RunsheetReport() {
                                                                                                 2 ? (
                                                                                                 <span
                                                                                                     className={`px-2 py-1 text-xs font-semibold text-center rounded ${
-                                                                                                        consignment.TypeID == 1
+                                                                                                        consignment.TypeID ==
+                                                                                                        1
                                                                                                             ? "bg-blue-100 text-blue-500"
                                                                                                             : "bg-yellow-100 text-yellow-700"
                                                                                                     }`}
                                                                                                 >
-                                                                                                    {consignment.TypeID == 1
+                                                                                                    {consignment.TypeID ==
+                                                                                                    1
                                                                                                         ? "Pickup"
                                                                                                         : "Delivery"}
                                                                                                 </span>
