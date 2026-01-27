@@ -1067,8 +1067,14 @@ export default function RunsheetReport() {
                 const consignment = consignments[i];
                 if (consignment) {
                     rowData.push(consignment.ConsignmentNo);
-                    rowData.push(consignment.TypeID === 1 ? "Pickup" : consignment.TypeID === 2 ? "Delivery" : "");
-                    rowData.push(consignment.POD ? "TRUE" : "FALSE");
+                    rowData.push(
+                        consignment.TypeID === 1
+                            ? "Pickup"
+                            : consignment.TypeID === 2
+                              ? "Delivery"
+                              : "",
+                    );
+                    rowData.push(consignment.TypeID === 2 ? (consignment.POD ? "TRUE" : "FALSE") : "");
                     rowData.push(consignment.ConsignmentStatus);
                     rowData.push(consignment.ReceiverName);
                     rowData.push(consignment.ReceiverState);
@@ -1746,17 +1752,21 @@ export default function RunsheetReport() {
                                                                                             </p>
                                                                                         </div>
                                                                                         <div className="flex flex-row gap-2">
-                                                                                            <span
-                                                                                                className={`px-2 py-1 text-xs font-semibold rounded ${
-                                                                                                    consignment.POD
-                                                                                                        ? "bg-green-100 text-green-800"
-                                                                                                        : "bg-red-100 text-red-800"
-                                                                                                }`}
-                                                                                            >
-                                                                                                {consignment.POD
-                                                                                                    ? "POD"
-                                                                                                    : "No POD"}
-                                                                                            </span>
+                                                                                            {consignment.TypeID === 2
+                                                                                                 && (
+                                                                                                <span
+                                                                                                    className={`px-2 py-1 text-xs font-semibold rounded ${
+                                                                                                        consignment.POD
+                                                                                                            ? "bg-green-100 text-green-800"
+                                                                                                            : "bg-red-100 text-red-800"
+                                                                                                    }`}
+                                                                                                >
+                                                                                                    {consignment.POD
+                                                                                                        ? "POD"
+                                                                                                        : "No POD"}
+                                                                                                </span>
+                                                                                            )}
+
                                                                                             {consignment.TypeID ===
                                                                                                 1 ||
                                                                                             consignment.TypeID ===
