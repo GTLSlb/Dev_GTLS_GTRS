@@ -61,8 +61,16 @@ export default function Sidebar() {
 
             setUser(user);
             setToken(token);
-            Cookies.set("jwt_token", jwt_token, { secure: true, sameSite: 'Lax', domain: window.Laravel.appDomain });
+            const jwt_cookie = Cookies.get("jwt_token");
 
+            // If jwt_token is not set, set it
+            if(!jwt_cookie){
+                Cookies.set("jwt_token", jwt_token, {
+                secure: true,
+                sameSite: "Lax",
+                domain: window.Laravel.appDomain,
+            });
+            }
             const appPermissionsHeaders = {
                 UserId: user.UserId,
                 AppId: appId,

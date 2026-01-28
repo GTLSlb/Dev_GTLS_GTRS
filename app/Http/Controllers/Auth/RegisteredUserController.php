@@ -137,7 +137,7 @@ class RegisteredUserController extends Controller
         // 1. Prioritize JWT from cookies
         $cookieJwt = $_COOKIE['jwt_token'] ?? "";
         // 2. Validate the cookie string (ensure it's not the string "null" or empty)
-        $hasValidCookie = $cookieJwt && $cookieJwt !== 'null' && $cookieJwt !== '';
+        $hasValidCookie = $cookieJwt && $cookieJwt !== 'null' && $cookieJwt !== '' && $cookieJwt !== 'undefined';
 
         // 3. If the cookie is valid, decode it
         if ($hasValidCookie) {
@@ -175,19 +175,23 @@ class RegisteredUserController extends Controller
             // Capture the user data from the session
             $session_user = $user_from_db != null ? $user_from_db : $user_from_session;
             $sessionToken = $request->session()->get('token');
-\Log::info("User in controller: " . $session_user);
+
+            $decoded_user = json_decode($session_user, true);
+            $actualUser = isset($decoded_user[0]) ? $decoded_user[0] : $decoded_user;
+            $user_id = $actualUser['UserId'] ?? null;
+
             // Encode the user data
             $payload = [
                 'user' => $session_user,
                 'Token' => $sessionToken,
-                'userId' => json_decode($session_user)->userId
+                'userId' => $user_id
             ];
 
-            $new_jwt = JsonWebTokenController::encode_jwt($payload);
+            // $new_jwt = JsonWebTokenController::encode_jwt($payload);
 
             // Return the user data
             return response()->json([
-                'jwt_token' => $new_jwt,
+                // 'jwt_token' => $new_jwt,
                 'token' => $sessionToken,
                 'user' => $this->map_user_by_type($session_user)
             ]);

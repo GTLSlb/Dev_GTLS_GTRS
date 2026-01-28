@@ -42,13 +42,15 @@ class CustomAuth extends Middleware
     public function handle($request, $next, ...$guards){
         $path = $request->path();
         $trimmedPath = trim($path, '/');
-
-        $jwt_token = $_COOKIE['jwt_token'] ?? "";
+\Log::info("Path: " . $path);
+        $jwt_token = $request->cookie('jwt_token') ?? "";
         $auth_routes = ['loginComp', 'login', 'loginapi', 'forgot-password', 'auth/azure', 'auth/azure/callback', 'microsoftToken', 'logoutWithoutRequest', 'exchange-token'];
-
+\Log::info("JWT TOKEN: " . $jwt_token);
         // 1. LOGIC: Determine Auth Status ( JWT first, then Session )
-        $is_valid_JWT = $jwt_token == "" ? false : JsonWebTokenController::is_jwt_valid($jwt_token);
-
+        $is_valid_JWT = ($jwt_token == "" || $jwt_token == 'undefined' || $jwt_token == 'null' || $jwt_token == null)
+        ? false
+        : JsonWebTokenController::is_jwt_valid($jwt_token);
+\Log::info("IS VALID JWT TOKEN: " . $jwt_token);
         $payload = [
             'token' => null,
             'user' => null,
@@ -58,38 +60,48 @@ class CustomAuth extends Middleware
         if($is_valid_JWT) {
             // If JWT is valid, decode it and save to payload
             $decoded_data = JsonWebTokenController::decode_jwt_valid($jwt_token);
+            \Log::info("DECODED JWT TOKEN: " . JsonWebTokenController::is_jwt_valid($jwt_token));
             $payload['user'] = $decoded_data->user;
             $payload['token'] = $decoded_data->Token;
             $payload['userId'] = $decoded_data->userId;
         }else{
             // If JWT is not valid, check Session
-            $sessionUser = $request->hasSession() ? $request->session()->get('user') : null;
-            $sessionToken = $request->hasSession() ? $request->session()->get('token') : null;
-            $sessionUserId = $request->hasSession() ? $request->session()->get('userId') : null;
+            $session_user = $request->hasSession() ? $request->session()->get('user') : null;
+            $session_token = $request->hasSession() ? $request->session()->get('token') : null;
+
+            $userDecoded = is_string($session_user) ? json_decode($session_user, true) : (array)$session_user;
+            $session_userId = data_get($userDecoded, 'UserId') ?? data_get($userDecoded, '0.UserId');
 
             // Save to payload
-            if($sessionUser && $sessionToken){
-                $payload['user'] = $sessionUser;
-                $payload['token'] = $sessionToken;
-                $payload['userId'] = $sessionUserId;
+            if($session_user && $session_token){
+                $payload['user'] = $session_user;
+                $payload['token'] = $session_token;
+                $payload['userId'] = $session_userId;
+
+                // Save a new JWT token
+                $new_jwt = JsonWebTokenController::encode_jwt([
+                    'user' => $session_user,
+                    'Token' => $session_token,
+                    'userId' => $session_userId
+                ]);
+                \Log::info("NEW JWT TOKEN: " . $new_jwt);
+                \Cookie::queue('jwt_token', $new_jwt, 60 * 24 * 30);
             }
         }
 
         // 1.b. Validate Authentication
-        $is_authenticated = false;
-        $is_authenticated = SessionSharing::validate_access_token($payload['token'], $payload['userId']);
-
+        $is_authenticated = true;
+        $is_authenticated = $payload['userId'] != null && $payload['token'] != null ? SessionSharing::validate_access_token($payload['token'], $payload['userId']) : false;
         $is_accessing_auth_route = in_array($trimmedPath, $auth_routes);
-        \Log::info("is_authenticated: " . $is_authenticated);
-        \Log::info("is_accessing_auth_route: " . $is_accessing_auth_route);
+
         // 2. LOGIC: If Authenticated and trying to access Auth pages -> Redirect to Main Page
-        if ($is_authenticated && $is_accessing_auth_route) {
+        if ($is_authenticated && $is_accessing_auth_route && $trimmedPath  != 'gtrs/main') {
             return redirect(config('app.redirect_route') ?? '/gtrs/main');
         }
 
         // 3. LOGIC: If NOT Authenticated and trying to access Protected pages -> Redirect to Login
-        if (!$is_authenticated && !$is_accessing_auth_route) {
-            return redirect()->route('login');
+        if (!$is_authenticated && !$is_accessing_auth_route && $trimmedPath  != 'login') {
+            return redirect('/login');
         }
 
         // Set CSRF token for web sessions if needed

@@ -13,6 +13,7 @@ use Firebase\JWT\SignatureInvalidException;
 use Firebase\JWT\ExpiredException;
 
 use Exception;
+use App\Http\Controllers\Auth\JsonWebTokenController;
 
 class SessionSharing extends Controller
 {
@@ -53,7 +54,7 @@ class SessionSharing extends Controller
                 ->limit(1)
                 ->get();
 
-            $isValid = $this->validate_access_token($token, $userId, $gtam_api_url) && $this->is_jwt_valid($jwt_token);
+            $isValid = $this->validate_access_token($token, $userId, $gtam_api_url) && JsonWebTokenController::is_jwt_valid($jwt_token);
 
             return $isValid;
         } catch (Exception $e) {
