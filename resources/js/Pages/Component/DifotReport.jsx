@@ -50,7 +50,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                             Pallets: item?.Pallets?.toString(),
                             Weight: item?.Weight?.toString(),
                         };
-                    }) || []
+                    }) || [],
                 );
             }
         } catch (err) {
@@ -149,7 +149,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
 
     const RDDTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
         const [value, setValue] = useState(
-            filterValue ? filterValue.value : ""
+            filterValue ? filterValue.value : "",
         );
 
         const handleChange = (event) => {
@@ -213,7 +213,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
 
     const NewRDDTimeFilter = forwardRef(({ filterValue, onChange }, ref) => {
         const [value, setValue] = useState(
-            filterValue ? filterValue.value : ""
+            filterValue ? filterValue.value : "",
         );
 
         const handleChange = (event) => {
@@ -292,6 +292,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
             ReceiverPostCode: "Receiver Post Code",
             ReceiverState: "Receiver State",
             ReceiverReference: "Receiver Reference",
+            ReceiverSuburb: "Receiver Suburb",
             Service: "Service",
             RDD: "RDD",
             OldRdd: "Original RDD",
@@ -314,10 +315,10 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
         };
 
         const selectedColumns = jsonData?.selectedColumns.map(
-            (column) => column.name
+            (column) => column.name,
         );
         const newSelectedColumns = selectedColumns.map(
-            (column) => columnMapping[column] || column // Replace with new name, or keep original if not found in mapping
+            (column) => columnMapping[column] || column, // Replace with new name, or keep original if not found in mapping
         );
 
         const filterValue = jsonData?.filterValue;
@@ -342,18 +343,18 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                             rawDate == null
                                 ? ""
                                 : moment(rawDate.replace(/\//g, "-"), [
-                                      "D-M-YYYY hh:mm:ss A",
-                                      "D-M-YYYY hh:mm A",
-                                      "D-M-YYYY",
-                                      moment.ISO_8601,
-                                  ]).isValid()
-                                ? moment(rawDate.replace(/\//g, "-"), [
-                                      "D-M-YYYY hh:mm:ss A",
-                                      "D-M-YYYY hh:mm A",
-                                      "D-M-YYYY",
-                                      moment.ISO_8601,
-                                  ]).format("DD-MM-YYYY")
-                                : "";
+                                        "D-M-YYYY hh:mm:ss A",
+                                        "D-M-YYYY hh:mm A",
+                                        "D-M-YYYY",
+                                        moment.ISO_8601,
+                                    ]).isValid()
+                                  ? moment(rawDate.replace(/\//g, "-"), [
+                                        "D-M-YYYY hh:mm:ss A",
+                                        "D-M-YYYY hh:mm A",
+                                        "D-M-YYYY",
+                                        moment.ISO_8601,
+                                    ]).format("DD-MM-YYYY")
+                                  : "";
 
                         // Step 2: Parse "DD-MM-YYYY" into a Date object
                         let parsedDate = null;
@@ -362,7 +363,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                             parsedDate = new Date(
                                 parseInt(year),
                                 parseInt(month) - 1,
-                                parseInt(day)
+                                parseInt(day),
                             );
                         }
 
@@ -386,7 +387,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                                 "D/M/YYYY",
                                 "D-M-YYYY",
                                 moment.ISO_8601,
-                            ] // no strict mode
+                            ], // no strict mode
                         ); // true = strict parsing
 
                         acc[columnKey] = parsed.isValid()
@@ -402,7 +403,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                     acc[columnKey] = person[columnKey];
                 }
                 return acc;
-            }, {})
+            }, {}),
         );
 
         // Create a new workbook
@@ -452,7 +453,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
             }
 
             const ActualDeliveryDateIndex = newSelectedColumns.indexOf(
-                "Actual Delivery Date"
+                "Actual Delivery Date",
             );
             if (ActualDeliveryDateIndex !== -1) {
                 const cell = row.getCell(ActualDeliveryDateIndex + 1);
@@ -566,14 +567,14 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                 return value == undefined || value == null
                     ? ""
                     : moment(value).format("DD-MM-YYYY hh:mm A") ==
-                      "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY");
+                        "Invalid date"
+                      ? ""
+                      : moment(value).format("DD-MM-YYYY");
             },
         },
         {
             name: "SenderName",
-            header: "Sender Name",
+            header: "Name",
             type: "string",
             headerAlign: "center",
             textAlign: "start",
@@ -583,7 +584,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
         },
         {
             name: "SenderSuburb",
-            header: "Sender Suburb",
+            header: "Suburb",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
@@ -593,7 +594,7 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
         },
         {
             name: "SenderState",
-            header: "Sender State",
+            header: "State",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
@@ -608,16 +609,17 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
         },
         {
             name: "CustomerName",
-            header: "Customer Name",
+            header: "Name",
             type: "string",
             headerAlign: "center",
             textAlign: "start",
             defaultWidth: 170,
             filterEditor: StringFilter,
+            group: "receiverInfo",
         },
         {
             name: "ReceiverState",
-            header: "Receiver State",
+            header: "State",
             type: "string",
             headerAlign: "center",
             textAlign: "center",
@@ -628,6 +630,17 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                 wrapMultiple: false,
                 dataSource: receiverStates,
             },
+            group: "receiverInfo",
+        },
+        {
+            name: "ReceiverSuburb",
+            header: "Suburb",
+            type: "string",
+            headerAlign: "center",
+            textAlign: "center",
+            defaultWidth: 170,
+            group: "receiverInfo",
+            filterEditor: StringFilter,
         },
         {
             name: "ReceiverPostCode",
@@ -637,7 +650,9 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
             textAlign: "center",
             defaultWidth: 170,
             filterEditor: StringFilter,
+            group: "receiverInfo",
         },
+
         {
             name: "Spaces",
             header: "Spaces",
@@ -730,10 +745,10 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                     value == null
                     ? ""
                     : cellProps.data?.hasOwnProperty("RDD") &&
-                      moment(value).format("DD-MM-YYYY hh:mm A") ==
-                          "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY");
+                        moment(value).format("DD-MM-YYYY hh:mm A") ==
+                            "Invalid date"
+                      ? ""
+                      : moment(value).format("DD-MM-YYYY");
             },
         },
         {
@@ -773,21 +788,21 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                     value == null
                         ? ""
                         : moment(
-                              value.replace(/\//g, "-"),
-                              [
-                                  "D-M-YYYY hh:mm:ss A",
-                                  "D-M-YYYY hh:mm A",
-                                  "D-M-YYYY",
-                                  moment.ISO_8601,
-                              ] // No `true` → non-strict parsing
-                          ).isValid()
-                        ? moment(value.replace(/\//g, "-"), [
-                              "D-M-YYYY hh:mm:ss A",
-                              "D-M-YYYY hh:mm A",
-                              "D-M-YYYY",
-                              moment.ISO_8601,
-                          ]).format("DD-MM-YYYY")
-                        : "";
+                                value.replace(/\//g, "-"),
+                                [
+                                    "D-M-YYYY hh:mm:ss A",
+                                    "D-M-YYYY hh:mm A",
+                                    "D-M-YYYY",
+                                    moment.ISO_8601,
+                                ], // No `true` → non-strict parsing
+                            ).isValid()
+                          ? moment(value.replace(/\//g, "-"), [
+                                "D-M-YYYY hh:mm:ss A",
+                                "D-M-YYYY hh:mm A",
+                                "D-M-YYYY",
+                                moment.ISO_8601,
+                            ]).format("DD-MM-YYYY")
+                          : "";
                 return (
                     <span className="flex justify-center items-center text-left">
                         {dateValue}
@@ -811,9 +826,9 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                 return value == undefined || value == null
                     ? ""
                     : moment(value).format("DD-MM-YYYY hh:mm A") ==
-                      "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY");
+                        "Invalid date"
+                      ? ""
+                      : moment(value).format("DD-MM-YYYY");
             },
         },
         {
@@ -857,9 +872,9 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                 return value == undefined || value == null
                     ? ""
                     : moment(value).format("DD-MM-YYYY hh:mm A") ==
-                      "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY hh:mm A");
+                        "Invalid date"
+                      ? ""
+                      : moment(value).format("DD-MM-YYYY hh:mm A");
             },
         },
         {
@@ -953,9 +968,9 @@ export default function DifotReport({ filterValue, setFilterValue, accData }) {
                 return value == undefined || value == null
                     ? ""
                     : moment(value).format("DD-MM-YYYY hh:mm A") ==
-                      "Invalid date"
-                    ? ""
-                    : moment(value).format("DD-MM-YYYY");
+                        "Invalid date"
+                      ? ""
+                      : moment(value).format("DD-MM-YYYY");
             },
         },
         {

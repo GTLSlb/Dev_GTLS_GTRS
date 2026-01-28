@@ -810,7 +810,7 @@ export const getFiltersRDD = (minDespatchDaterdd, maxDespatchDaterdd) => {
 
 export const getFiltersPOD = (
     minDateDespatchMissing,
-    maxDateDespatchMissing
+    maxDateDespatchMissing,
 ) => {
     return [
         {
@@ -1949,6 +1949,13 @@ export const getFiltersDifot = () => {
         },
         {
             name: "ReceiverReference",
+            operator: "contains",
+            type: "string",
+            value: null,
+            emptyValue: "",
+        },
+        {
+            name: "ReceiverSuburb",
             operator: "contains",
             type: "string",
             value: null,
