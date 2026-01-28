@@ -77,15 +77,6 @@ class CustomAuth extends Middleware
                 $payload['user'] = $session_user;
                 $payload['token'] = $session_token;
                 $payload['userId'] = $session_userId;
-
-                // Save a new JWT token
-                $new_jwt = JsonWebTokenController::encode_jwt([
-                    'user' => $session_user,
-                    'Token' => $session_token,
-                    'userId' => $session_userId
-                ]);
-                \Log::info("NEW JWT TOKEN: " . $new_jwt);
-                \Cookie::queue('jwt_token', $new_jwt, 60 * 24 * 30);
             }
         }
 
@@ -93,6 +84,17 @@ class CustomAuth extends Middleware
         $is_authenticated = true;
         $is_authenticated = $payload['userId'] != null && $payload['token'] != null ? SessionSharing::validate_access_token($payload['token'], $payload['userId']) : false;
         $is_accessing_auth_route = in_array($trimmedPath, $auth_routes);
+
+        // 1.c. Save a new JWT token
+        if($is_authenticated && !$is_valid_JWT){
+            $new_jwt = JsonWebTokenController::encode_jwt([
+                'user' => $session_user,
+                'Token' => $session_token,
+                'userId' => $session_userId
+            ]);
+            \Log::info("NEW JWT TOKEN: " . $new_jwt);
+            \Cookie::queue('jwt_token', $new_jwt, 60 * 24 * 30);
+        }
 
         // 2. LOGIC: If Authenticated and trying to access Auth pages -> Redirect to Main Page
         if ($is_authenticated && $is_accessing_auth_route && $trimmedPath  != 'gtrs/main') {
