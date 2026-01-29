@@ -48,7 +48,9 @@ export default function Sidebar() {
 
             setToken(token);
             setUser(user);
+
             // If jwt_token is not set, set it
+            const jwt_cookie = Cookies.get("jwt_token");
             if(!jwt_cookie){
                 Cookies.set("jwt_token", jwt_token, {
                 secure: true,
