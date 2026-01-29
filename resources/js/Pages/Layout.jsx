@@ -44,10 +44,18 @@ export default function Sidebar() {
 
         try {
             const userResponse = await getApiRequest(`/users`, {});
-            const { user, token } = userResponse;
+            const { user, token, jwt_token } = userResponse;
 
-            setUser(user);
             setToken(token);
+            setUser(user);
+            // If jwt_token is not set, set it
+            if(!jwt_cookie){
+                Cookies.set("jwt_token", jwt_token, {
+                secure: true,
+                sameSite: "Lax",
+                domain: window.Laravel.appDomain,
+            });
+            }
 
             let isAppInactive = false;
             const appPermissionsHeaders = {

@@ -20,10 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
-use Firebase\JWT\SignatureInvalidException;
-use Firebase\JWT\ExpiredException;
+use App\Http\Controllers\Auth\JsonWebTokenController;
 
 class RegisteredUserController extends Controller
 {
@@ -59,218 +56,149 @@ class RegisteredUserController extends Controller
 
         return redirect(RouteServiceProvider::HOME);
     }
-   private function mapUserByTypeId($user){
+    private function map_user_by_type($user)
+    {
+        // Decode if it's a string
+        if (is_string($user)) {
+            $user = json_decode($user, false);
+        }
+
+        // If it's a nested array (a list), grab the first item
+        if (is_array($user) && isset($user[0])) {
+            $user = $user[0];
+        }
+
+        // Get the user type
         $user_type_id = $user->TypeId;
-        switch($user_type_id){
+
+        // Map the user data based on user type
+        switch ($user_type_id) {
             case 1:
                 // User is a customer
                 return [
-                                'UserId' => $user->UserId,
-                                'TypeId' => $user->TypeId,
-                                'TypeName' => $user->TypeName,
-                                'OwnerId' => $user->OwnerId,
-                                'PhoneNumber' => $user->PhoneNumber,
-                                'CustomerName' => $user->CustomerName,
-                                'Picture' => $user->Picture,
-                                'Username' => $user->Username,
-                                'Email' => $user->Email,
-                            ];
+                    'UserId' => $user->UserId,
+                    'TypeId' => $user->TypeId,
+                    'TypeName' => $user->TypeName,
+                    'OwnerId' => $user->OwnerId,
+                    'PhoneNumber' => $user->PhoneNumber,
+                    'CustomerName' => $user->CustomerName,
+                    'Picture' => $user->Picture,
+                    'Username' => $user->Username,
+                    'Email' => $user->Email,
+                ];
             case 2:
                 // User is an employee
                 return [
-                            'UserId' => $user->UserId,
-                            'TypeId' => $user->TypeId,
-                            'TypeName' => $user->TypeName,
-                            'OwnerId' => $user->OwnerId,
-                            'Username' => $user->Username,
-                            'FirstName' => $user->FirstName,
-                            'LastName' => $user->LastName,
-                            'Email' => $user->Email,
-                            'PhoneNo' => $user->PhoneNo,
-                            'Dob' => $user->Dob,
-                            'Address' => $user->Address,
-                            'Picture' => $user->Picture,
-                            'NationalityId' => $user->NationalityId,
-                            'NationalityName' => $user->NationalityName,
-                            'BranchId' => $user->BranchId,
-                            'RoleId' => $user->RoleId,
-                            'RoleName' => $user->RoleName,
-                            'ReportToId' => $user->ReportToId,
-                            'ReportToName' => $user->ReportToName,
-                            'HiringDate' => $user->HiringDate,
-                            'StateId' => $user->StateId,
-                            'StateName' => $user->StateName,
-                        ];
+                    'UserId' => $user->UserId,
+                    'TypeId' => $user->TypeId,
+                    'TypeName' => $user->TypeName,
+                    'OwnerId' => $user->OwnerId,
+                    'Username' => $user->Username,
+                    'FirstName' => $user->FirstName,
+                    'LastName' => $user->LastName,
+                    'Email' => $user->Email,
+                    'PhoneNo' => $user->PhoneNo,
+                    'Dob' => $user->Dob,
+                    'Address' => $user->Address,
+                    'Picture' => $user->Picture,
+                    'NationalityId' => $user->NationalityId,
+                    'NationalityName' => $user->NationalityName,
+                    'BranchId' => $user->BranchId,
+                    'RoleId' => $user->RoleId,
+                    'RoleName' => $user->RoleName,
+                    'ReportToId' => $user->ReportToId,
+                    'ReportToName' => $user->ReportToName,
+                    'HiringDate' => $user->HiringDate,
+                    'StateId' => $user->StateId,
+                    'StateName' => $user->StateName,
+                ];
             case 3:
                 // User is a driver
                 return [
-                            'UserId' => $user->UserId,
-                            'TypeId' => $user->TypeId,
-                            'TypeName' => $user->TypeName,
-                            'truckNbr' => $user->truckNbr,
-                            'location' => $user->location,
-                            'driverNbr' => $user->driverNbr,
-                            'Username' => $user->Username,
-                            'Email' => $user->Email,
-                            'phoneNbr' => $user->phoneNbr,
-                        ];
+                    'UserId' => $user->UserId,
+                    'TypeId' => $user->TypeId,
+                    'TypeName' => $user->TypeName,
+                    'truckNbr' => $user->truckNbr,
+                    'location' => $user->location,
+                    'driverNbr' => $user->driverNbr,
+                    'Username' => $user->Username,
+                    'Email' => $user->Email,
+                    'phoneNbr' => $user->phoneNbr,
+                ];
             default:
                 return null;
         }
     }
 
-    private function validateSessionFromNode($user, $sessionId, $token){
-        // Implement session validation logic
-        $url = $_ENV['GTRR_API_URL'] . 'exchange-token';
-        if($_ENV['GTRR_API_URL'] == ""){
-            return null;
-        }
-        try{
-            $body = [
-                'user' => $user,
-                'gtls_session' => $sessionId,
+    public function getCurrentUserName(Request $request) {
+        $jwt_secret_key = $_ENV['JWT_SECRET'];
+        $session_id = $request->session()->getId();
+
+        // 1. Prioritize JWT from cookies
+        $cookieJwt = $_COOKIE['jwt_token'] ?? "";
+        // 2. Validate the cookie string (ensure it's not the string "null" or empty)
+        $hasValidCookie = $cookieJwt && $cookieJwt !== 'null' && $cookieJwt !== '' && $cookieJwt !== 'undefined';
+
+        // 3. If the cookie is valid, decode it
+        if ($hasValidCookie) {
+            try {
+            $decoded_cookie = JsonWebTokenController::decode_jwt_valid($cookieJwt);
+
+            // Fetch the user data from the decoded cookie
+            $user = $decoded_cookie->user;
+            $token = $decoded_cookie->Token;
+            $user = $this->map_user_by_type($user);
+
+            // Save to session so Laravel knows who this is
+            $request->session()->put([
+                'user' => json_encode($user),
                 'token' => $token,
-                'jwt_token' => null
-            ];
-            $response = Http::post($url, $body);
-            $jwt_token = null;
-            if ($response->successful()) {
-                    $data = $response->json();
-                    $jwt_token = $data['jwt_token'] ?? null;
-                }
-            }catch(\Exception $e){
-                \Log::error("Error validating session from Node: " . $e->getMessage());
-                return null;
-            }
+                'userId' => $decoded_cookie->userId
+            ]);
 
-            return $jwt_token;
-    }
-
-    public static function decode_jwt_valid()
-    {
-        $jwt_token = isset($_COOKIE['jwt_token']) ? $_COOKIE['jwt_token'] : null;
-        $secretKey = $_ENV['JWT_SECRET'];
-        $allowed_algs = ['HS256'];
-        $currentTime = time();
-
-        if (empty($jwt_token)) {
-            \Log::error("JWT Token is empty");
-            return null;
-        }
-
-        // Check if token has 3 segments
-        $segments = explode('.', $jwt_token);
-        if (count($segments) !== 3) {
-            \Log::error("Invalid JWT Token format. Expected 3 segments, got " . count($segments));
-            return null;
-        }
-
-        if ($jwt_token == null || !isset($jwt_token)) {
-            \Log::error("JWT Token is null or undefined");
-            return null;
-        }
-
-        try {
-            // Set leeway to handle clock skew
-            JWT::$leeway = 60;
-
-            // This single call performs three checks:
-            // 1. Decodes the token.
-            // 2. Verifies the signature using the secret key.
-            // 3. Verifies the expiration (exp), not before (nbf), and issued at (iat) claims.
-            $decoded = JWT::decode(
-                $jwt_token,
-                new Key($secretKey, $allowed_algs[0]),
-            );
-
-            // If decoding succeeds without exceptions, the token is valid.
-            return $decoded;
-        } catch (ExpiredException $e) {
-            \Log::error("JWT Expired: " . $e->getMessage());
-            return null;
-        } catch (SignatureInvalidException $e) {
-            \Log::error("JWT Signature Invalid: " . $e->getMessage());
-            return null;
-        } catch (Exception $e) {
-            \Log::error("JWT Decode Error: " . $e->getMessage());
-            return null;
-        }
-    }
-
-        public function getCurrentUserName(Request $request)
-    {
-        $sessionId = $request->session()->getId();
-        $user_from_db = DB::table('custom_sessions')
-                ->where('id', $sessionId)
-                ->value('user');
-        \Log::info("User in controller: " . $user_from_db);
-        $user_from_session = $request->session()->get('user');
-
-        $valid_user = $user_from_db != null ? $user_from_db : $user_from_session;
-
-        $jwt_token = $_COOKIE['jwt_token'] ?? null;
-        $decoded_user = null;
-        if (is_string($valid_user)) {
-            $decoded_user = json_decode($valid_user);
-        } elseif ($valid_user === null) {
-            if (!empty($jwt_token)) {
-                $decoded_user = $this->decode_jwt_valid()->user;
-            } else {
-                $decoded_user = null;
-            }
-        } else {
-            $decoded_user = null;
-        }
-
-        if($decoded_user !== null) {
-             $user = $this->mapUserByTypeId($decoded_user);
-            $is_jwt_set = isset($_COOKIE['jwt_token']);
-            $jwt_token = null;
-
-            $sessionToken = $request->session()->get('token');
-            $cookieJwt = $_COOKIE['jwt_token'] ?? null;
-
-            if ($is_jwt_set) {
-                // Treat "null" and null as invalid cookie values
-                if ($cookieJwt === null || $cookieJwt === 'null' || $cookieJwt === '') {
-                    $jwt_token = $this->validateSessionFromNode(
-                        $user_from_session,
-                        $sessionId,
-                        $sessionToken
-                    );
-                    $token = $sessionToken;
-                } else {
-                    $jwt_token = $cookieJwt;
-
-                    $decoded = $this->decode_jwt_valid($jwt_token);
-                    // Safely extract Token
-                    if ($decoded && isset($decoded->Token)) {
-                        $token = $decoded->Token;
-                    } elseif ($decoded && isset($decoded->token)) {
-                        $token = $decoded->token;
-                    } else {
-                        $token = $sessionToken;
-                    }
-                }
-            } else {
-                $jwt_token = $this->validateSessionFromNode(
-                    $user_from_session,
-                    $sessionId,
-                    $sessionToken
-                );
-
-                $token = $sessionToken;
-            }
-
-            \Log::info("NEW JWT Token: " . $jwt_token);
+            // Return the user data
             return response()->json([
-                'jwt_token' => $jwt_token,
+                'jwt_token' => $cookieJwt,
                 'token' => $token,
                 'user' => $user
             ]);
-        }else{
-            // User object is null
-            return response()->json(['error' => 'Session not found'], 401);
+            } catch (\Exception $e) {
+                \Log::error("JWT Decode Failed: " . $e->getMessage());
+            }
+        } else {
+             try {
+            $user_from_db = DB::table('custom_sessions')
+                ->where('id', $session_id)
+                ->value('user');
+            $user_from_session = $request->session()->get('user');
+
+            // Capture the user data from the session
+            $session_user = $user_from_db != null ? $user_from_db : $user_from_session;
+            $sessionToken = $request->session()->get('token');
+
+            $decoded_user = json_decode($session_user, true);
+            $actualUser = isset($decoded_user[0]) ? $decoded_user[0] : $decoded_user;
+            $user_id = $actualUser['UserId'] ?? null;
+
+            // Encode the user data
+            $payload = [
+                'user' => $session_user,
+                'Token' => $sessionToken,
+                'userId' => $user_id
+            ];
+
+            $new_jwt = JsonWebTokenController::encode_jwt($payload);
+
+            // Return the user data
+            return response()->json([
+                'jwt_token' => $new_jwt,
+                'token' => $sessionToken,
+                'user' => $this->map_user_by_type($session_user)
+            ]);
+             } catch (\Exception $e) {
+                \Log::error("Session Decode Failed: " . $e->getMessage());
+             }
+
         }
     }
 
@@ -297,7 +225,7 @@ class RegisteredUserController extends Controller
 
     public function getChildrens($id)
     {
-        $UserId=$id;
+        $UserId = $id;
         $user = User::find($UserId);
         //dd($user);
         if ($user) {
@@ -412,7 +340,7 @@ class RegisteredUserController extends Controller
     }
     public function getUsersWhoCanApprove()
     {
-        $roles = [1,6, 9, 10];
+        $roles = [1, 6, 9, 10];
 
         $users = User::whereIn('role_id', $roles)
             ->select('id', 'user_id', 'name')
@@ -450,7 +378,7 @@ class RegisteredUserController extends Controller
         $notFoundFiles = [];
 
         foreach ($fileNames as $fileName) {
-            $filePath = $publicPath . '/'. "Invoices" . "/" . $fileName;
+            $filePath = $publicPath . '/' . "Invoices" . "/" . $fileName;
 
             if (File::exists($filePath)) {
                 File::delete($filePath);

@@ -13,14 +13,15 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Http;
 
 use Illuminate\Support\Facades\DB;
+
+// Custom Controllers
 use App\Http\Controllers\SessionSharing;
+use App\Http\Controllers\Auth\JsonWebTokenController;
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Firebase\JWT\SignatureInvalidException;
 use Firebase\JWT\ExpiredException;
-
-use App\Http\Controllers\Auth\RegisteredUserController as RegisteredUserController;
 
 class CustomAuth extends Middleware
 {
@@ -38,56 +39,78 @@ class CustomAuth extends Middleware
         //$this->guard = $guard;
     }
 
-    public function validateAccessToken($accessToken, $userId)
-    {
-        \Log::info("Validating Access Token via GTAM API: " . config('app.gtam_api_url'));
-        \Log::info("UserId: " . $userId);
-        \Log::info("AccessToken: " . $accessToken);
-        $url = config('app.gtam_api_url') . 'Validate/Session';
-        $headers = [
-            'UserId' => $userId,
-            'Token' => $accessToken,
-        ];
-        $response = Http::withHeaders($headers)->get($url);
-        switch ($response->status()) {
-            case 200:
-                return true;
-            case 400:
-                // Handle unauthorized access
-                return false;
-            default:
-                // Handle other status codes
-                return false;
-        }
-    }
-
-    public function handle($request, $next, ...$guards)
-    {
-        $auth_routes = ['loginComp', 'login', 'loginapi', 'forgot-password', 'auth/azure', 'auth/azure/callback', 'microsoftToken', 'logoutWithoutRequest', 'exchange-token'];
-        $hasSession = $request->hasSession();
+    public function handle($request, $next, ...$guards){
         $path = $request->path();
+        $trimmedPath = trim($path, '/');
 
+        $jwt_token = $request->cookie('jwt_token') ?? "";
+        $auth_routes = ['loginComp', 'login', 'loginapi', 'forgot-password', 'auth/azure', 'auth/azure/callback', 'microsoftToken', 'logoutWithoutRequest', 'exchange-token'];
+
+        // 1. LOGIC: Determine Auth Status ( JWT first, then Session )
+        $is_valid_JWT = ($jwt_token == "" || $jwt_token == 'undefined' || $jwt_token == 'null' || $jwt_token == null)
+        ? false
+        : JsonWebTokenController::is_jwt_valid($jwt_token);
+
+        $payload = [
+            'token' => null,
+            'user' => null,
+            'userId' => null,
+        ];
+        // 1.a. Populate payload
+        if($is_valid_JWT) {
+            // If JWT is valid, decode it and save to payload
+            $decoded_data = JsonWebTokenController::decode_jwt_valid($jwt_token);
+            \Log::info("DECODED JWT TOKEN: " . JsonWebTokenController::is_jwt_valid($jwt_token));
+            $payload['user'] = $decoded_data->user;
+            $payload['token'] = $decoded_data->Token;
+            $payload['userId'] = $decoded_data->userId;
+        }else{
+            // If JWT is not valid, check Session
+            $session_user = $request->hasSession() ? $request->session()->get('user') : null;
+            $session_token = $request->hasSession() ? $request->session()->get('token') : null;
+
+            $userDecoded = is_string($session_user) ? json_decode($session_user, true) : (array)$session_user;
+            $session_userId = data_get($userDecoded, 'UserId') ?? data_get($userDecoded, '0.UserId');
+
+            // Save to payload
+            if($session_user && $session_token){
+                $payload['user'] = $session_user;
+                $payload['token'] = $session_token;
+                $payload['userId'] = $session_userId;
+            }
+        }
+
+        // 1.b. Validate Authentication
+        $is_authenticated = true;
+        $is_authenticated = $payload['userId'] != null && $payload['token'] != null ? SessionSharing::validate_access_token($payload['token'], $payload['userId']) : false;
+        $is_accessing_auth_route = in_array($trimmedPath, $auth_routes);
+
+        // 1.c. Save a new JWT token
+        if($is_authenticated && !$is_valid_JWT){
+            $new_jwt = JsonWebTokenController::encode_jwt([
+                'user' => $session_user,
+                'Token' => $session_token,
+                'userId' => $session_userId
+            ]);
+            \Log::info("NEW JWT TOKEN: " . $new_jwt);
+            \Cookie::queue('jwt_token', $new_jwt, 60 * 24 * 30);
+        }
+
+        // 2. LOGIC: If Authenticated and trying to access Auth pages -> Redirect to Main Page
+        if ($is_authenticated && $is_accessing_auth_route && $trimmedPath  != 'gtam/main') {
+            return redirect(config('app.redirect_route') ?? '/gtam/main');
+        }
+
+        // 3. LOGIC: If NOT Authenticated and trying to access Protected pages -> Redirect to Login
+        if (!$is_authenticated && !$is_accessing_auth_route && $trimmedPath  != 'login') {
+            return redirect('/login');
+        }
+
+        // Set CSRF token for web sessions if needed
         if ($request->hasSession()) {
             $request->headers->set('X-CSRF-TOKEN', csrf_token());
-
-            $accessToken = $request->session()->get('token') ?? false;
-            $userId = $request->session()->get('user') ?? false;
-            $userId = gettype($userId) == "string" ? json_decode($userId, true) : $userId;
-
-            if (in_array($path, $auth_routes) && $userId && $accessToken) {
-                if (!$this->validateAccessToken($accessToken, $userId['UserId'])) {
-                    return $next($request);
-                } else {
-                    return redirect(config('app.redirect_route') ?? '/gtrs/main');
-                }
-            } elseif (!in_array($path, $auth_routes) && !$request->session()->has('user') && !RegisteredUserController::decode_jwt_valid()) {
-                return redirect()->route('login');
-            }elseif(in_array($path, $auth_routes) && RegisteredUserController::decode_jwt_valid()){
-                return redirect(config('app.redirect_route') ?? '/gtrs/main');
-            }
-        } elseif (in_array($request->path(), $auth_routes) && !RegisteredUserController::decode_jwt_valid()) {
-            return $next($request);
         }
+
         return $next($request);
     }
 

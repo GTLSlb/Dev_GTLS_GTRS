@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d3f13fab234c537d056e6d0afb3c5175",
+    "content-hash": "803ae679df0e1c6ffae10278305d8c22",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -858,19 +858,20 @@
         },
         {
             "name": "gtls/loginstory",
-            "version": "v1.0.10",
+            "version": "v1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/GTLSlb/Composer_Libraries.git",
-                "reference": "090641d21b8f1b7e60c85fdf9f44787b48207e18"
+                "reference": "d33b18841a86de5e86a620af1dccc46634f3ea33"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/GTLSlb/Composer_Libraries/zipball/090641d21b8f1b7e60c85fdf9f44787b48207e18",
-                "reference": "090641d21b8f1b7e60c85fdf9f44787b48207e18",
+                "url": "https://api.github.com/repos/GTLSlb/Composer_Libraries/zipball/d33b18841a86de5e86a620af1dccc46634f3ea33",
+                "reference": "d33b18841a86de5e86a620af1dccc46634f3ea33",
                 "shasum": ""
             },
             "require": {
+                "firebase/php-jwt": "^6.11",
                 "illuminate/http": "^10.0",
                 "laravel/socialite": "^5.23"
             },
@@ -894,9 +895,9 @@
             "description": "[]",
             "support": {
                 "issues": "https://github.com/GTLSlb/Composer_Libraries/issues",
-                "source": "https://github.com/GTLSlb/Composer_Libraries/tree/v1.0.10"
+                "source": "https://github.com/GTLSlb/Composer_Libraries/tree/v1.1.2"
             },
-            "time": "2025-08-01T11:07:27+00:00"
+            "time": "2026-01-28T08:10:14+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -9425,12 +9426,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.1"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "platform-dev": {},
+    "plugin-api-version": "2.6.0"
 }
