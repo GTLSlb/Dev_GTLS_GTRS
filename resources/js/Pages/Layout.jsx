@@ -12,6 +12,8 @@ import { CustomContext } from "@/CommonContext";
 import swal from "sweetalert";
 import InactiveApp from "@/Pages/Auth/InactiveApp";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+
 export default function Sidebar() {
     const navigate = useNavigate();
     const {
