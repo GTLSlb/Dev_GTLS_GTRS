@@ -42,15 +42,15 @@ class CustomAuth extends Middleware
     public function handle($request, $next, ...$guards){
         $path = $request->path();
         $trimmedPath = trim($path, '/');
-\Log::info("Path: " . $path);
+
         $jwt_token = $request->cookie('jwt_token') ?? "";
         $auth_routes = ['loginComp', 'login', 'loginapi', 'forgot-password', 'auth/azure', 'auth/azure/callback', 'microsoftToken', 'logoutWithoutRequest', 'exchange-token'];
-\Log::info("JWT TOKEN: " . $jwt_token);
+
         // 1. LOGIC: Determine Auth Status ( JWT first, then Session )
         $is_valid_JWT = ($jwt_token == "" || $jwt_token == 'undefined' || $jwt_token == 'null' || $jwt_token == null)
         ? false
         : JsonWebTokenController::is_jwt_valid($jwt_token);
-\Log::info("IS VALID JWT TOKEN: " . $jwt_token);
+
         $payload = [
             'token' => null,
             'user' => null,
