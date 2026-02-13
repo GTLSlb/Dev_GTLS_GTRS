@@ -187,11 +187,11 @@ class RegisteredUserController extends Controller
                 'userId' => $user_id
             ];
 
-            // $new_jwt = JsonWebTokenController::encode_jwt($payload);
+            $new_jwt = JsonWebTokenController::encode_jwt($payload);
 
             // Return the user data
             return response()->json([
-                // 'jwt_token' => $new_jwt,
+                'jwt_token' => $new_jwt,
                 'token' => $sessionToken,
                 'user' => $this->map_user_by_type($session_user)
             ]);
