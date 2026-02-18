@@ -885,3 +885,19 @@ export function canAddEditFloorComments(userPermissions) {
         ? true
         : false;
 }
+
+export function canViewRunsheetComments(userPermissions) {
+    return userPermissions?.find(
+        (feature) => feature?.FunctionName === "RunsheetComments_view"
+    )
+        ? true
+        : false;
+}
+
+export function canViewConsignmentComments(userPermissions) {
+    return userPermissions?.find(
+        (feature) => feature?.FunctionName === "ConsignmentComments_view"
+    )
+        ? true
+        : false;
+}

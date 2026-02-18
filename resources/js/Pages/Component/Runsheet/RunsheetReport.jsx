@@ -10,7 +10,13 @@ import {
     getFacetedUniqueValues,
 } from "@tanstack/react-table";
 
-import { Button, Popover, PopoverTrigger, PopoverContent } from "@heroui/react";
+import {
+    Button,
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
+    useDisclosure,
+} from "@heroui/react";
 import axios from "axios";
 import moment from "moment";
 import swal from "sweetalert";
@@ -40,6 +46,14 @@ import {
     EyeIcon,
     EyeSlashIcon,
 } from "@heroicons/react/24/outline";
+import RunsheetCommentsModal from "./RunsheetCommentsModal";
+import { canViewRunsheetComments } from "@/permissions";
+import OutstandingPOD from "./OutstandingPOD";
+import DepartedConsignments from "./DepartedConsignments";
+import { Pie } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 function DateColumnFilter({ column, table }) {
     const [expandedYears, setExpandedYears] = useState(new Set());
@@ -691,14 +705,18 @@ export default function RunsheetReport() {
     const [loading, setLoading] = useState(true);
     const [runsheetData, setRunsheetData] = useState([]);
     const { Token, user, userPermissions, url } = useContext(CustomContext);
-
+    const [expandedRowId, setExpandedRowId] = useState(null);
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [detailsData, setDetailsData] = useState(null);
     const [sorting, setSorting] = useState([
         // { id: "EventDateTime", desc: true },
         // { id: "RDD", desc: false },
     ]);
 
-    const [expandedRowId, setExpandedRowId] = useState(null);
-
+    const handleViewComments = (data) => {
+        setDetailsData(data);
+        onOpen();
+    };
     const toggleRowExpansion = (manifestId) => {
         setExpandedRowId((prev) => {
             // If clicking the same row, collapse it
@@ -865,6 +883,37 @@ export default function RunsheetReport() {
         };
     }, [runsheetData]);
 
+    // Analytics: Compliance Status breakdown
+    const complianceAnalytics = useMemo(() => {
+        const counts = {
+            Compliant: 0,
+            "Not Compliant": 0,
+            "N/A": 0,
+            Other: 0,
+        };
+
+        runsheetData.forEach((manifest) => {
+            const status = manifest.ManifestCompliance;
+            if (counts.hasOwnProperty(status)) {
+                counts[status]++;
+            } else {
+                counts.Other++;
+            }
+        });
+
+        const total = runsheetData.length;
+        return {
+            counts,
+            total,
+            percentages: {
+                Compliant: total > 0 ? (counts.Compliant / total) * 100 : 0,
+                "Not Compliant":
+                    total > 0 ? (counts["Not Compliant"] / total) * 100 : 0,
+                "N/A": total > 0 ? (counts["N/A"] / total) * 100 : 0,
+            },
+        };
+    }, [runsheetData]);
+
     // Cell renderers
     const DateCell = ({ value, showTime = true }) => {
         if (!value) return <span className="text-gray-400">-</span>;
@@ -924,6 +973,37 @@ export default function RunsheetReport() {
                 accessorKey: "Depot",
                 header: "Depot",
                 meta: { filterVariant: "select" },
+                filterFn: (row, columnId, filterValue) => {
+                    if (!filterValue) return true;
+                    return row.getValue(columnId) === filterValue;
+                },
+            },
+            {
+                accessorKey: "ManifestCompliance",
+                header: "Compliance Status",
+                meta: { filterVariant: "select" },
+                filterFn: (row, columnId, filterValue) => {
+                    if (!filterValue) return true;
+                    return row.getValue(columnId) === filterValue;
+                },
+                cell: ({ getValue }) => {
+                    const value = getValue();
+                    const isCompliant = value === "Compliant";
+                    const isNan = value === "N/A";
+                    return (
+                        <span
+                            className={`px-2 py-1 text-xs font-semibold rounded ${
+                                isCompliant
+                                    ? "bg-green-100 border-1 border-green-400 text-green-800"
+                                    : isNan
+                                      ? "bg-gray-300 border-1 border-gray-400 text-gray-800"
+                                          : "bg-red-300 border-1 border-red-400  text-red-800 font-semibold px-2 py-1 rounded"
+                            }`}
+                        >
+                            {value}
+                        </span>
+                    );
+                },
             },
             {
                 accessorKey: "DriverName",
@@ -932,6 +1012,28 @@ export default function RunsheetReport() {
                 // minSize: ACTION_COL_WIDTH,
                 // maxSize: ACTION_COL_WIDTH,
                 meta: { filterVariant: "text" },
+            },
+            {
+                id: "comments-actions",
+                header: "Comments",
+                size: 150,
+                minSize: 150,
+                maxSize: 150,
+                enableSorting: false,
+                enableColumnFilter: false,
+                cell: ({ row }) => (
+                    <div className="flex gap-1">
+                        {canViewRunsheetComments(userPermissions) && (
+                            <button
+                                className="p-1 hover:bg-gray-100 rounded transition-colors flex items-center justify-center w-full"
+                                title="View Details"
+                                onClick={() => handleViewComments(row.original)}
+                            >
+                                <EyeIcon className="w-4 h-4 text-yellow-500" />
+                            </button>
+                        )}
+                    </div>
+                ),
             },
         ],
         [userPermissions, expandedRowId],
@@ -980,7 +1082,35 @@ export default function RunsheetReport() {
                 },
             })
             .then((res) => {
-                setRunsheetData(res.data || []);
+                const processedData =
+                    res.data?.map((manifest) => {
+                        let compliance = manifest.ManifestCompliance;
+                        if (!compliance || compliance === "") {
+                            // Compute compliance from consignments if not set
+                            compliance = manifest.Consignments?.some(
+                                (consignment) =>
+                                    consignment.ConsignmentCompliance ===
+                                    "NOT COMPLIANT",
+                            )
+                                ? "Not Compliant"
+                                : "Compliant";
+                        } else {
+                            // Normalize casing only for COMPLIANT/NOT COMPLIANT values
+                            const upperCompliance = compliance.toUpperCase();
+                            if (upperCompliance === "COMPLIANT") {
+                                compliance = "Compliant";
+                            } else if (upperCompliance === "NOT COMPLIANT") {
+                                compliance = "Not Compliant";
+                            }
+                            // Keep other values as-is (N/A, Available next day, etc.)
+                        }
+                        return {
+                            ...manifest,
+                            ManifestCompliance: compliance,
+                        };
+                    }) || [];
+
+                setRunsheetData(processedData);
                 setLoading(false);
             })
             .catch((err) => {
@@ -1009,7 +1139,9 @@ export default function RunsheetReport() {
         const rows = table.getFilteredRowModel().rows;
         const visibleColumns = table
             .getAllColumns()
-            .filter((col) => col.id !== "actions");
+            .filter(
+                (col) => col.id !== "actions" && col.id !== "comments-actions",
+            );
 
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Runsheet Report");
@@ -1019,6 +1151,7 @@ export default function RunsheetReport() {
             ...visibleColumns.map((col) => col.columnDef.header),
             "Consignments",
             "Consignment Type",
+            "Consignment Compliance",
             "POD",
             "Consignment Status",
             "Receiver Name",
@@ -1074,7 +1207,21 @@ export default function RunsheetReport() {
                               ? "Delivery"
                               : "",
                     );
-                    rowData.push(consignment.TypeID === 2 ? (consignment.POD ? "TRUE" : "FALSE") : "");
+                    rowData.push(
+                        consignment.ConsignmentCompliance === "COMPLIANT"
+                            ? "Compliant"
+                            : consignment.ConsignmentCompliance ===
+                                "NOT COMPLIANT"
+                              ? "Not Compliant"
+                              : "",
+                    );
+                    rowData.push(
+                        consignment.TypeID === 2
+                            ? consignment.POD
+                                ? "TRUE"
+                                : "FALSE"
+                            : "",
+                    );
                     rowData.push(consignment.ConsignmentStatus);
                     rowData.push(consignment.ReceiverName);
                     rowData.push(consignment.ReceiverState);
@@ -1082,6 +1229,7 @@ export default function RunsheetReport() {
                 } else {
                     rowData.push(""); // Consignments
                     rowData.push(""); // Consignment Type
+                    rowData.push(""); // Consignment Compliance
                     rowData.push(""); // POD
                     rowData.push(""); // Consignment Status
                     rowData.push(""); // Receiver Name
@@ -1191,6 +1339,7 @@ export default function RunsheetReport() {
             if (header === "Manifest No") return { width: 15 };
             if (header === "Runsheet Date") return { width: 20 };
             if (header === "Depot") return { width: 10 };
+            if (header === "Compliance Status") return { width: 30 };
             if (header === "Driver Name") return { width: 30 };
             if (header === "Consignments") return { width: 20 };
             if (header === "Consignment Type") return { width: 18 };
@@ -1267,245 +1416,192 @@ export default function RunsheetReport() {
 
                 {/* Analytics Section */}
                 {showAnalytics && (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                        {/* Worst Drivers by POD Percentage */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        {/* Compliance Status Pie Chart */}
                         <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-                            <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <ExclamationTriangleIcon className="w-5 h-5 text-red-500" />
-                                    <h3 className="text-sm font-semibold text-gray-700">
-                                        Drivers with outstanding PODs for
-                                        Departed Receiver Consignments
-                                    </h3>
-                                </div>
+                            <div className="px-4 py-3 border-b border-gray-200 flex items-center gap-2">
+                                <h3 className="text-sm font-semibold text-gray-700">
+                                    Compliance Status Overview
+                                </h3>
                             </div>
-                            <div className="p-4">
-                                {driverPodAnalytics.length === 0 ? (
+                            <div className="p-4 flex flex-col items-center  justify-center h-full">
+                                {complianceAnalytics.total === 0 ? (
                                     <p className="text-sm text-gray-500 text-center py-4">
-                                        No driver data available
+                                        No data available
                                     </p>
                                 ) : (
-                                    <div className="max-h-[280px] overflow-y-auto pr-2">
-                                        <div className="space-y-3">
-                                            {driverPodAnalytics.map(
-                                                (driver, index) => (
-                                                    <div
-                                                        key={driver.name}
-                                                        className="flex items-center gap-3"
-                                                    >
-                                                        <div
-                                                            className={`w-6 h-6 flex-shrink-0 rounded-full flex items-center justify-center text-xs font-bold bg-gray-100 text-gray-500`}
-                                                        >
-                                                            {index + 1}
-                                                        </div>
-                                                        <div className="flex-1 min-w-0">
-                                                            <div className="flex items-center justify-between mb-1">
-                                                                <span className="text-sm font-medium text-gray-700 truncate">
-                                                                    {
-                                                                        driver.name
-                                                                    }
-                                                                </span>
-                                                                <span
-                                                                    className={`text-sm font-semibold ${
-                                                                        driver.missingPercentage >=
-                                                                        50
-                                                                            ? "text-red-600"
-                                                                            : "text-green-500"
-                                                                    }`}
-                                                                >
-                                                                    {driver.missingPercentage.toFixed(
-                                                                        1,
-                                                                    )}
-                                                                    %
-                                                                </span>
-                                                            </div>
-                                                            <div className="w-full bg-gray-200 rounded-full h-2">
-                                                                <div
-                                                                    className={`h-2 rounded-full transition-all duration-300 ${
-                                                                        driver.missingPercentage >=
-                                                                        50
-                                                                            ? "bg-red-500"
-                                                                            : "bg-green-500"
-                                                                    }`}
-                                                                    style={{
-                                                                        width: `${driver.missingPercentage}%`,
-                                                                    }}
-                                                                />
-                                                            </div>
-                                                            <div className="text-xs text-gray-500 mt-1">
-                                                                {
-                                                                    driver.missingPod
-                                                                }{" "}
-                                                                / {driver.total}{" "}
-                                                                consignments
-                                                                with missing POD
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                    <div
+                                        className="flex items-center justify-center"
+                                        style={{ height: "250px" }}
+                                    >
+                                        <Pie
+                                            data={{
+                                                labels: Object.keys(
+                                                    complianceAnalytics.counts,
+                                                ).filter(
+                                                    (key) =>
+                                                        complianceAnalytics
+                                                            .counts[key] > 0,
                                                 ),
-                                            )}
-                                        </div>
+                                                datasets: [
+                                                    {
+                                                        data: Object.keys(
+                                                            complianceAnalytics.counts,
+                                                        )
+                                                            .filter(
+                                                                (key) =>
+                                                                    complianceAnalytics
+                                                                        .counts[
+                                                                        key
+                                                                    ] > 0,
+                                                            )
+                                                            .map(
+                                                                (key) =>
+                                                                    complianceAnalytics
+                                                                        .counts[
+                                                                        key
+                                                                    ],
+                                                            ),
+                                                        backgroundColor:
+                                                            Object.keys(
+                                                                complianceAnalytics.counts,
+                                                            )
+                                                                .filter(
+                                                                    (key) =>
+                                                                        complianceAnalytics
+                                                                            .counts[
+                                                                            key
+                                                                        ] > 0,
+                                                                )
+                                                                .map((key) => {
+                                                                    switch (
+                                                                        key
+                                                                    ) {
+                                                                        case "Compliant":
+                                                                            return "#DCFCE7"; // green-300
+                                                                        case "Not Compliant":
+                                                                            return "#fca5a5"; // red-300
+                                                                        case "N/A":
+                                                                            return "#d1d5db"; // gray-300
+                                                                        default:
+                                                                            return "#fcd34d"; // yellow-300
+                                                                    }
+                                                                }),
+                                                        borderColor:
+                                                            Object.keys(
+                                                                complianceAnalytics.counts,
+                                                            )
+                                                                .filter(
+                                                                    (key) =>
+                                                                        complianceAnalytics
+                                                                            .counts[
+                                                                            key
+                                                                        ] > 0,
+                                                                )
+                                                                .map((key) => {
+                                                                    switch (
+                                                                        key
+                                                                    ) {
+                                                                        case "Compliant":
+                                                                            return "#22c55e"; // green-500
+                                                                        case "Not Compliant":
+                                                                            return "#ef4444"; // red-500
+                                                                        case "N/A":
+                                                                            return "#6b7280"; // gray-500
+                                                                        default:
+                                                                            return "#eab308"; // yellow-500
+                                                                    }
+                                                                }),
+                                                        borderWidth: 1,
+                                                    },
+                                                ],
+                                            }}
+                                            options={{
+                                                responsive: true,
+                                                maintainAspectRatio: false,
+                                                layout: {
+                                                    padding: {
+                                                        bottom: 20,
+                                                    },
+                                                },
+                                                plugins: {
+                                                    legend: {
+                                                        position: "bottom",
+                                                        padding: {
+                                                            top: 20,
+                                                        },
+                                                        labels: {
+                                                            boxWidth: 12,
+                                                            padding: 15,
+                                                            font: { size: 11 },
+                                                        },
+                                                    },
+                                                    tooltip: {
+                                                        callbacks: {
+                                                            label: (
+                                                                context,
+                                                            ) => {
+                                                                const label =
+                                                                    context.label ||
+                                                                    "";
+                                                                const value =
+                                                                    context.raw ||
+                                                                    0;
+                                                                const percentage =
+                                                                    (
+                                                                        (value /
+                                                                            complianceAnalytics.total) *
+                                                                        100
+                                                                    ).toFixed(
+                                                                        1,
+                                                                    );
+                                                                return `${label}: ${value} (${percentage}%)`;
+                                                            },
+                                                        },
+                                                    },
+                                                },
+                                            }}
+                                        />
                                     </div>
                                 )}
                             </div>
                         </div>
 
+                        {/* Worst Drivers by POD Percentage */}
+                        <OutstandingPOD
+                            data={driverPodAnalytics}
+                            title="Drivers with outstanding PODs for Departed Receiver Consignments"
+                        />
+
                         {/* Departed Consignments Missing POD */}
-                        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-                            <div className="px-4 py-3 border-b border-gray-200 flex items-center gap-2">
-                                <ExclamationTriangleIcon className="w-5 h-5 text-amber-500" />
-                                <h3 className="text-sm font-semibold text-gray-700">
-                                    Departed Consignments - POD Status
-                                </h3>
-                            </div>
-                            <div className="p-4">
-                                {departedMissingPodAnalytics.totalDeparted ===
-                                0 ? (
-                                    <p className="text-sm text-gray-500 text-center py-4">
-                                        No departed consignments found
-                                    </p>
-                                ) : (
-                                    <>
-                                        {/* Summary Stats */}
-                                        <div className="grid grid-cols-4 gap-4 mb-4">
-                                            <div className="text-center p-3 bg-yellow-50 rounded-lg">
-                                                <div className="text-2xl font-bold text-yellow-600">
-                                                    {formatNumberWithCommas(
-                                                        departedMissingPodAnalytics.totalConsignments,
-                                                    )}
-                                                </div>
-                                                <div className="text-xs text-gray-600">
-                                                    Total Consignments
-                                                </div>
-                                            </div>
-                                            <div className="text-center p-3 bg-blue-50 rounded-lg">
-                                                <div className="text-2xl font-bold text-blue-600">
-                                                    {formatNumberWithCommas(
-                                                        departedMissingPodAnalytics.totalDeparted,
-                                                    )}
-                                                </div>
-                                                <div className="text-xs text-gray-600">
-                                                    Total Departed Receiver
-                                                </div>
-                                            </div>
-                                            <div className="text-center p-3 bg-green-50 rounded-lg">
-                                                <div className="text-2xl font-bold text-green-600">
-                                                    {formatNumberWithCommas(
-                                                        departedMissingPodAnalytics.departedWithPod,
-                                                    )}
-                                                </div>
-                                                <div className="text-xs text-gray-600">
-                                                    Departed Receiver With POD (
-                                                    {departedMissingPodAnalytics.podPercentage.toFixed(
-                                                        1,
-                                                    )}
-                                                    %)
-                                                </div>
-                                            </div>
-                                            <div className="text-center p-3 bg-red-50 rounded-lg">
-                                                <div className="text-2xl font-bold text-red-600">
-                                                    {
-                                                        departedMissingPodAnalytics.departedMissingPod
-                                                    }
-                                                </div>
-                                                <div className="text-xs text-gray-600">
-                                                    Departed Receiver With
-                                                    Missing POD (
-                                                    {departedMissingPodAnalytics.missingPodPercentage.toFixed(
-                                                        1,
-                                                    )}
-                                                    %)
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Progress Bar */}
-                                        <div className="mb-4">
-                                            <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
-                                                <span>POD Completion Rate</span>
-                                                <span>
-                                                    {departedMissingPodAnalytics.podPercentage.toFixed(
-                                                        1,
-                                                    )}
-                                                    %
-                                                </span>
-                                            </div>
-                                            <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                                                <div
-                                                    className="bg-green-500 h-3 transition-all duration-300"
-                                                    style={{
-                                                        width: `${departedMissingPodAnalytics.podPercentage}%`,
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        {/* Missing POD List (scrollable) */}
-                                        {departedMissingPodAnalytics.departedMissingPod >
-                                            0 && (
-                                            <div>
-                                                <div className="text-xs font-medium text-gray-700 mb-2">
-                                                    Consignments Missing POD:
-                                                </div>
-                                                <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-md">
-                                                    {departedMissingPodAnalytics.missingPodList.map(
-                                                        (item, index) => (
-                                                            <div
-                                                                key={
-                                                                    item.consignmentId
-                                                                }
-                                                                className={`px-3 py-2 text-xs flex items-center justify-between ${
-                                                                    index %
-                                                                        2 ===
-                                                                    0
-                                                                        ? "bg-white"
-                                                                        : "bg-gray-50"
-                                                                }`}
-                                                            >
-                                                                <div>
-                                                                    <span className="font-medium text-blue-600">
-                                                                        {renderConsDetailsLink(
-                                                                            userPermissions,
-                                                                            item.consignmentNo,
-                                                                            item.consignmentId,
-                                                                        )}
-                                                                    </span>
-                                                                    <span className="text-gray-500 ml-2">
-                                                                        (
-                                                                        {
-                                                                            item.manifestNo
-                                                                        }
-                                                                        ), (
-                                                                        {
-                                                                            item.driverName
-                                                                        }
-                                                                        )
-                                                                    </span>
-                                                                </div>
-                                                                <span className="text-gray-500 truncate max-w-[150px]">
-                                                                    {
-                                                                        item.receiverSuburb
-                                                                    }
-                                                                    ,{" "}
-                                                                    {
-                                                                        item.receiverState
-                                                                    }
-                                                                </span>
-                                                            </div>
-                                                        ),
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </>
-                                )}
-                            </div>
-                        </div>
+                        <DepartedConsignments
+                            departedMissingPodAnalytics={
+                                departedMissingPodAnalytics
+                            }
+                            userPermissions={userPermissions}
+                        />
                     </div>
                 )}
 
+                {/* Color Legend */}
+                <div className="mt-4 flex items-center gap-6 text-xs text-gray-600">
+                    {/* <span className="font-medium">Row Colour Coding:</span> */}
+                    <div className="flex items-center gap-2">
+                        <span className="w-4 h-4 rounded bg-yellow-100 border border-yellow-300"></span>
+                        <span>Current Date</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="w-4 h-4 rounded bg-red-100 border border-red-300"></span>
+                        <span>Past Date - Not Compliant</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="w-4 h-4 rounded bg-white border border-gray-300"></span>
+                        <span>Future Date / Compliant</span>
+                    </div>
+                </div>
+
                 {/* Table Container */}
-                <div className="mt-4 tanstackTable pb-4">
+                <div className="mt-2 tanstackTable pb-4">
                     <div
                         className="overflow-auto border border-gray-200 rounded-t-lg shadow-sm relative"
                         style={{ maxHeight: "600px" }}
@@ -1645,8 +1741,35 @@ export default function RunsheetReport() {
                                     table
                                         .getRowModel()
                                         .rows.map((row, rowIndex) => {
-                                            const rowBg =
-                                                rowIndex % 2 === 0
+                                            const isFlaggedRed =
+                                                row.original
+                                                    .ManifestCompliance ==
+                                                    "Not Compliant" &&
+                                                row.original.ManifestDateTime &&
+                                                moment(
+                                                    row.original
+                                                        .ManifestDateTime,
+                                                ).isBefore(
+                                                    moment().startOf("day"),
+                                                );
+
+                                            const isFlaggedYellow =
+                                                row.original.ManifestDateTime &&
+                                                moment(
+                                                    row.original
+                                                        .ManifestDateTime,
+                                                ).isBetween(
+                                                    moment().startOf("day"),
+                                                    moment().endOf("day"),
+                                                    null,
+                                                    "[]", // Make both boundaries inclusive
+                                                );
+
+                                            const rowBg = isFlaggedRed
+                                                ? "bg-red-100"
+                                                : isFlaggedYellow
+                                                  ? "bg-yellow-100"
+                                                  : rowIndex % 2 === 0
                                                     ? "bg-white"
                                                     : "bg-gray-50";
 
@@ -1683,6 +1806,10 @@ export default function RunsheetReport() {
                                                                                     .column
                                                                                     .columnDef
                                                                                     .minSize,
+                                                                            // backgroundColor:
+                                                                            //     isSticky
+                                                                            //         ? rowBgColor
+                                                                            //         : undefined,
                                                                         }}
                                                                         title={
                                                                             typeof cell.getValue() ===
@@ -1745,15 +1872,17 @@ export default function RunsheetReport() {
                                                                                                 consignment.ConsignmentNo,
                                                                                                 consignment.ConsignmentID,
                                                                                             )}
-                                                                                            <p className="text-gray-500 text-xs">
+                                                                                            <p
+                                                                                                className={` text-xs ${consignment.ConsignmentCompliance == "NOT COMPLIANT" ? "text-red-700" : "text-gray-500"}`}
+                                                                                            >
                                                                                                 {
                                                                                                     consignment.ConsignmentStatus
                                                                                                 }
                                                                                             </p>
                                                                                         </div>
                                                                                         <div className="flex flex-row gap-2">
-                                                                                            {consignment.TypeID === 2
-                                                                                                 && (
+                                                                                            {consignment.TypeID ===
+                                                                                                2 && (
                                                                                                 <span
                                                                                                     className={`px-2 py-1 text-xs font-semibold rounded ${
                                                                                                         consignment.POD
@@ -1986,6 +2115,12 @@ export default function RunsheetReport() {
                         </div>
                     </div>
                 </div>
+
+                <RunsheetCommentsModal
+                    isOpen={isOpen}
+                    onOpenChange={onOpenChange}
+                    commentsData={detailsData}
+                />
             </div>
         </>
     );

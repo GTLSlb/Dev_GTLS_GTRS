@@ -1,22 +1,24 @@
-import { useContext, useState, useEffect, useCallback } from "react";
-import "../../css/scroll.css";
 import React from "react";
+import "../../css/scroll.css";
 import PropTypes from "prop-types";
-import { useApiRequests } from "@/CommonFunctions";
-import { useLocation, useSearchParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { CustomContext } from "@/CommonContext";
+import BackButton from "@/Components/BackButton";
+import { useApiRequests } from "@/CommonFunctions";
 import AnimatedLoading from "@/Components/AnimatedLoading";
+import { useLocation, useSearchParams } from "react-router-dom";
 import MainDetails from "./Component/ConsDetailsComp/MainDetails";
-import SenderReceiverDetails from "./Component/ConsDetailsComp/SenderReceiverDetails";
-import ConsDetailsComp from "./Component/ConsDetailsComp/ConsDetailsComp";
-import DeliveryDetails from "./Component/ConsDetailsComp/DeliveryDetails";
+import { useContext, useState, useEffect, useCallback } from "react";
 import PalletDetails from "./Component/ConsDetailsComp/PalletDetails";
 import PickupDelInfo from "./Component/ConsDetailsComp/PickupDelInfo";
-import BackButton from "@/Components/BackButton";
-import { CustomContext } from "@/CommonContext";
+import ConsDetailsComp from "./Component/ConsDetailsComp/ConsDetailsComp";
+import DeliveryDetails from "./Component/ConsDetailsComp/DeliveryDetails";
+import SenderReceiverDetails from "./Component/ConsDetailsComp/SenderReceiverDetails";
+import ConsignmentComments from "./Component/ConsDetailsComp/ConsignmentComments";
+import { canViewConsignmentComments } from "@/permissions";
 
 export default function ConsDetails() {
-    const { user, url } = useContext(CustomContext);
+    const { user, url, userPermissions } = useContext(CustomContext);
     const [searchParams] = useSearchParams();
     const { getApiRequest } = useApiRequests();
     const navigate = useNavigate();
@@ -201,7 +203,7 @@ export default function ConsDetails() {
                                         <div className="py-4 sm:grid sm:grid-cols-1 sm:gap-4 sm:py-5 sm:px-6">
                                             <dt className="text-sm font-medium text-gray-900">
                                                 {Consignment[0].ConsReferences.map(
-                                                    (item) => item.Value
+                                                    (item) => item.Value,
                                                 ).join(", ")}
                                             </dt>
                                         </div>
@@ -243,6 +245,13 @@ export default function ConsDetails() {
                             deliveryInfo={Consignment[0].PickupDelInfo}
                         />
                     )}
+
+                    {Consignment[0].Comments &&
+                        canViewConsignmentComments(userPermissions) && (
+                            <ConsignmentComments
+                                consignmentComments={Consignment[0].Comments}
+                            />
+                        )}
                 </div>
             </div>
         );
