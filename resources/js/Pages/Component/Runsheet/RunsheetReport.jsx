@@ -503,14 +503,25 @@ function ColumnFilter({ column, table }) {
 
     const sortedUniqueValues = useMemo(() => {
         if (filterVariant === "select") {
-            const uniqueValues = Array.from(
+            const allValues = Array.from(
                 column.getFacetedUniqueValues().keys(),
-            )
+            );
+            const uniqueValues = allValues
                 .filter((v) => v !== null && v !== undefined && v !== "")
                 .sort();
             return uniqueValues;
         }
         return [];
+    }, [column.getFacetedUniqueValues(), filterVariant]);
+
+    const hasEmptyValues = useMemo(() => {
+        if (filterVariant === "select") {
+            const allValues = Array.from(
+                column.getFacetedUniqueValues().keys(),
+            );
+            return allValues.some((v) => v === null || v === undefined || v === "");
+        }
+        return false;
     }, [column.getFacetedUniqueValues(), filterVariant]);
 
     if (filterVariant === "select") {
@@ -538,6 +549,9 @@ function ColumnFilter({ column, table }) {
                     value={columnFilterValue ?? ""}
                 >
                     <option value="">All</option>
+                    {hasEmptyValues && (
+                        <option value="__EMPTY__">Empty</option>
+                    )}
                     {sortedUniqueValues.map((value) => (
                         <option key={value} value={value}>
                             {value}
@@ -984,12 +998,17 @@ export default function RunsheetReport() {
                 meta: { filterVariant: "select" },
                 filterFn: (row, columnId, filterValue) => {
                     if (!filterValue) return true;
+                    if (filterValue === "__EMPTY__") {
+                        const value = row.getValue(columnId);
+                        return value === null || value === undefined || value === "";
+                    }
                     return row.getValue(columnId) === filterValue;
                 },
                 cell: ({ getValue }) => {
                     const value = getValue();
                     const isCompliant = value === "Compliant";
                     const isNan = value === "N/A";
+                    const isEmpty = value === "" || value === null || value === undefined;
                     return (
                         <span
                             className={`px-2 py-1 text-xs font-semibold rounded ${
@@ -997,7 +1016,9 @@ export default function RunsheetReport() {
                                     ? "bg-green-100 border-1 border-green-400 text-green-800"
                                     : isNan
                                       ? "bg-gray-300 border-1 border-gray-400 text-gray-800"
-                                          : "bg-red-300 border-1 border-red-400  text-red-800 font-semibold px-2 py-1 rounded"
+                                          : isEmpty
+                                            ? ""
+                                            : "bg-red-300 border-1 border-red-400  text-red-800 font-semibold px-2 py-1 rounded"
                             }`}
                         >
                             {value}
@@ -1086,14 +1107,17 @@ export default function RunsheetReport() {
                     res.data?.map((manifest) => {
                         let compliance = manifest.ManifestCompliance;
                         if (!compliance || compliance === "") {
-                            // Compute compliance from consignments if not set
-                            compliance = manifest.Consignments?.some(
-                                (consignment) =>
-                                    consignment.ConsignmentCompliance ===
-                                    "NOT COMPLIANT",
-                            )
-                                ? "Not Compliant"
-                                : "Compliant";
+                            if (!manifest.Consignments || manifest.Consignments === "" || manifest.Consignments.length === 0) {
+                                compliance = "";
+                            } else {
+                                // Compute compliance from consignments if not set
+                                compliance = manifest.Consignments.some(
+                                    (consignment) =>
+                                        consignment.ConsignmentCompliance === "NOT COMPLIANT",
+                                )
+                                    ? "Not Compliant"
+                                    : "Compliant";
+                            }
                         } else {
                             // Normalize casing only for COMPLIANT/NOT COMPLIANT values
                             const upperCompliance = compliance.toUpperCase();
