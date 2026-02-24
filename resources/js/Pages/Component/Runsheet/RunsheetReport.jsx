@@ -903,6 +903,7 @@ export default function RunsheetReport() {
             Compliant: 0,
             "Not Compliant": 0,
             "N/A": 0,
+            Empty: 0,
             Other: 0,
         };
 
@@ -924,6 +925,7 @@ export default function RunsheetReport() {
                 "Not Compliant":
                     total > 0 ? (counts["Not Compliant"] / total) * 100 : 0,
                 "N/A": total > 0 ? (counts["N/A"] / total) * 100 : 0,
+                Empty: total > 0 ? (counts.Empty / total) * 100 : 0,
             },
         };
     }, [runsheetData]);
@@ -1008,7 +1010,7 @@ export default function RunsheetReport() {
                     const value = getValue();
                     const isCompliant = value === "Compliant";
                     const isNan = value === "N/A";
-                    const isEmpty = value === "" || value === null || value === undefined;
+                    const isEmpty = value === "Empty";
                     return (
                         <span
                             className={`px-2 py-1 text-xs font-semibold rounded ${
@@ -1017,7 +1019,7 @@ export default function RunsheetReport() {
                                     : isNan
                                       ? "bg-gray-300 border-1 border-gray-400 text-gray-800"
                                           : isEmpty
-                                            ? ""
+                                            ? "bg-blue-100 text-blue-500 border-1 border-blue-300"
                                             : "bg-red-300 border-1 border-red-400  text-red-800 font-semibold px-2 py-1 rounded"
                             }`}
                         >
@@ -1108,7 +1110,7 @@ export default function RunsheetReport() {
                         let compliance = manifest.ManifestCompliance;
                         if (!compliance || compliance === "") {
                             if (!manifest.Consignments || manifest.Consignments === "" || manifest.Consignments.length === 0) {
-                                compliance = "";
+                                compliance = "Empty";
                             } else {
                                 // Compute compliance from consignments if not set
                                 compliance = manifest.Consignments.some(
@@ -1507,6 +1509,8 @@ export default function RunsheetReport() {
                                                                             return "#fca5a5"; // red-300
                                                                         case "N/A":
                                                                             return "#d1d5db"; // gray-300
+                                                                        case "Empty":
+                                                                            return "#bfdbfe"; // blue-300
                                                                         default:
                                                                             return "#fcd34d"; // yellow-300
                                                                     }
@@ -1532,6 +1536,8 @@ export default function RunsheetReport() {
                                                                             return "#ef4444"; // red-500
                                                                         case "N/A":
                                                                             return "#6b7280"; // gray-500
+                                                                        case "Empty":
+                                                                            return "#3b82f6"; // blue-500
                                                                         default:
                                                                             return "#eab308"; // yellow-500
                                                                     }
