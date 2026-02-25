@@ -42,7 +42,6 @@ import {
     ChevronDoubleLeftIcon,
     ChevronDoubleRightIcon,
     CalendarDaysIcon,
-    ExclamationTriangleIcon,
     EyeIcon,
     EyeSlashIcon,
 } from "@heroicons/react/24/outline";

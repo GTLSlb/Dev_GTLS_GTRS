@@ -32,6 +32,7 @@ const DetailsModal = ({ isOpen, onOpenChange, detailsData }) => {
                                 <TableColumn>TIMESTAMP</TableColumn>
                                 <TableColumn>DEPOT</TableColumn>
                                 <TableColumn>DOCK</TableColumn>
+                                <TableColumn className="w-32">DOCK LOCATION NAME</TableColumn>
                                 <TableColumn>CREATED BY</TableColumn>
                             </TableHeader>
                             <TableBody>
@@ -48,6 +49,9 @@ const DetailsModal = ({ isOpen, onOpenChange, detailsData }) => {
                                         </TableCell>
                                         <TableCell className="text-xs">
                                             {item.DockLocation || "-"}
+                                        </TableCell>
+                                         <TableCell className="text-xs">
+                                            {item.DockLocationName || "-"}
                                         </TableCell>
                                         <TableCell className="text-xs">
                                             {item.CreatedBy || "N/A"}

@@ -193,7 +193,7 @@ function DateColumnFilter({ column, table }) {
 
     const handleMonthSelection = (year, month) => {
         const monthDates = (dateHierarchy[year]?.[month] || []).map(
-            (d) => d.date
+            (d) => d.date,
         );
         const allSelected = monthDates.every((date) => selectedDates.has(date));
 
@@ -306,12 +306,12 @@ function DateColumnFilter({ column, table }) {
                             const yearNum = parseInt(year);
                             const isYearExpanded = expandedYears.has(yearNum);
                             const yearDates = Object.values(
-                                dateHierarchy[yearNum]
+                                dateHierarchy[yearNum],
                             )
                                 .flat()
                                 .map((d) => d.date);
                             const yearSelectedCount = yearDates.filter((d) =>
-                                selectedDates.has(d)
+                                selectedDates.has(d),
                             ).length;
                             const isYearFullySelected =
                                 yearSelectedCount === yearDates.length;
@@ -369,7 +369,7 @@ function DateColumnFilter({ column, table }) {
                                                     const monthKey = `${year}-${month}`;
                                                     const isMonthExpanded =
                                                         expandedMonths.has(
-                                                            monthKey
+                                                            monthKey,
                                                         );
                                                     const monthDates =
                                                         dateHierarchy[yearNum][
@@ -377,7 +377,9 @@ function DateColumnFilter({ column, table }) {
                                                         ].map((d) => d.date);
                                                     const monthSelectedCount =
                                                         monthDates.filter((d) =>
-                                                            selectedDates.has(d)
+                                                            selectedDates.has(
+                                                                d,
+                                                            ),
                                                         ).length;
                                                     const isMonthFullySelected =
                                                         monthSelectedCount ===
@@ -394,7 +396,7 @@ function DateColumnFilter({ column, table }) {
                                                                 <button
                                                                     onClick={() =>
                                                                         toggleMonth(
-                                                                            monthKey
+                                                                            monthKey,
                                                                         )
                                                                     }
                                                                     className="p-0.5 hover:bg-gray-200 rounded"
@@ -411,7 +413,7 @@ function DateColumnFilter({ column, table }) {
                                                                         isMonthFullySelected
                                                                     }
                                                                     ref={(
-                                                                        el
+                                                                        el,
                                                                     ) => {
                                                                         if (el)
                                                                             el.indeterminate =
@@ -420,7 +422,7 @@ function DateColumnFilter({ column, table }) {
                                                                     onChange={() =>
                                                                         handleMonthSelection(
                                                                             yearNum,
-                                                                            monthNum
+                                                                            monthNum,
                                                                         )
                                                                     }
                                                                     className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
@@ -453,7 +455,7 @@ function DateColumnFilter({ column, table }) {
                                                                         monthNum
                                                                     ].map(
                                                                         (
-                                                                            dateObj
+                                                                            dateObj,
                                                                         ) => (
                                                                             <div
                                                                                 key={
@@ -464,11 +466,11 @@ function DateColumnFilter({ column, table }) {
                                                                                 <input
                                                                                     type="checkbox"
                                                                                     checked={selectedDates.has(
-                                                                                        dateObj.date
+                                                                                        dateObj.date,
                                                                                     )}
                                                                                     onChange={() =>
                                                                                         handleDateSelection(
-                                                                                            dateObj.date
+                                                                                            dateObj.date,
                                                                                         )
                                                                                     }
                                                                                     className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
@@ -479,7 +481,7 @@ function DateColumnFilter({ column, table }) {
                                                                                     }
                                                                                 </span>
                                                                             </div>
-                                                                        )
+                                                                        ),
                                                                     )}
                                                                 </div>
                                                             )}
@@ -500,12 +502,12 @@ function DateColumnFilter({ column, table }) {
 // Filter component for column headers
 function ColumnFilter({ column, table }) {
     const columnFilterValue = column.getFilterValue();
-    const { filterVariant } = column.columnDef.meta ?? {};
+    const { filterVariant, filterLabelMap } = column.columnDef.meta ?? {};
 
     const sortedUniqueValues = useMemo(() => {
         if (filterVariant === "select") {
             const uniqueValues = Array.from(
-                column.getFacetedUniqueValues().keys()
+                column.getFacetedUniqueValues().keys(),
             )
                 .filter((v) => v !== null && v !== undefined && v !== "")
                 .sort();
@@ -538,10 +540,12 @@ function ColumnFilter({ column, table }) {
                     }
                     value={columnFilterValue ?? ""}
                 >
-                    <option value="">All</option>
+                    <option value="">
+                        {filterLabelMap?.[""] ?? "All"}
+                    </option>
                     {sortedUniqueValues.map((value) => (
                         <option key={value} value={value}>
-                            {value}
+                            {filterLabelMap?.[value] ?? value}
                         </option>
                     ))}
                 </select>
@@ -894,7 +898,7 @@ function RDDStatusCard({ data, onFilterByRDD }) {
             data.rddToday,
             data.rddFuture,
             onFilterByRDD,
-        ]
+        ],
     );
 
     return (
@@ -989,7 +993,7 @@ function TopStatusesCard({ data, onFilterByStatus }) {
                 });
             },
         }),
-        [statusChartData, onFilterByStatus]
+        [statusChartData, onFilterByStatus],
     );
 
     return (
@@ -1060,8 +1064,8 @@ export default function FloorReport() {
                           Comment: comment,
                           Comments: [...(row.Comments || []), newCommentObj],
                       }
-                    : row
-            )
+                    : row,
+            ),
         );
 
         // Update detailsData to show the new comment in the view modal
@@ -1085,6 +1089,10 @@ export default function FloorReport() {
             {
                 id: "EventDateTime",
                 value: { dates: new Set([today]), includeEmpty: false },
+            },
+            {
+                id: "ReturnCons",
+                value: "No",
             },
         ];
     });
@@ -1144,7 +1152,7 @@ export default function FloorReport() {
 
                 return newRow;
             }) || [],
-        [floorData]
+        [floorData],
     );
 
     const handleViewDetails = (data) => {
@@ -1217,13 +1225,13 @@ export default function FloorReport() {
     };
 
     const BooleanCell = ({ value }) => {
-        if (value === "YES" || value === true) {
+        if (value === "YES" || value === "Yes" || value === true) {
             return (
                 <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">
                     {value === true ? " True" : "Yes"}
                 </span>
             );
-        } else if (value === "NO" || value === false) {
+        } else if (value === "NO" || value === "No" || value === false) {
             return (
                 <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
                     {value === false ? " False" : "No"}
@@ -1251,14 +1259,14 @@ export default function FloorReport() {
         return Array.from(depots).sort();
     }, [formattedData]);
 
-    // Apply depot filter to the data
+    // Apply depot filter and return cons filter to the data
     const depotFilteredData = useMemo(() => {
-        if (selectedDepots.length === 0) {
-            return formattedData;
+        let data = formattedData;
+
+        if (selectedDepots.length > 0) {
+            data = data.filter((row) => selectedDepots.includes(row.Depot));
         }
-        return formattedData.filter((row) =>
-            selectedDepots.includes(row.Depot)
-        );
+        return data;
     }, [formattedData, selectedDepots]);
 
     // TanStack Table columns configuration
@@ -1469,6 +1477,24 @@ export default function FloorReport() {
                 meta: { filterVariant: "text" },
             },
             {
+                accessorKey: "DockLocationName",
+                header: "Dock Location Name",
+                meta: { filterVariant: "text" },
+            },
+            {
+                accessorKey: "ReturnCons",
+                header: "Return Consignment",
+                meta: {
+                    filterVariant: "select",
+                    filterLabelMap: {
+                        "": "Show all",
+                        Yes: "Show only returned",
+                        No: "Hide Returned",
+                    },
+                },
+                cell: ({ getValue }) => <BooleanCell value={getValue()} />,
+            },
+            {
                 accessorKey: "Comment",
                 header: "Jaix Latest Comment",
                 meta: { filterVariant: "text" },
@@ -1499,7 +1525,7 @@ export default function FloorReport() {
                 ),
             },
         ],
-        [userPermissions]
+        [userPermissions],
     );
 
     // Initialize TanStack Table
@@ -1633,7 +1659,7 @@ export default function FloorReport() {
         const visibleColumns = table
             .getAllColumns()
             .filter(
-                (col) => col.id !== "actions" && col.id !== "comments-actions"
+                (col) => col.id !== "actions" && col.id !== "comments-actions",
             );
 
         const workbook = new ExcelJS.Workbook();
@@ -1712,8 +1738,7 @@ export default function FloorReport() {
             });
         });
 
-         worksheet.columns = headers.map((header) => {
-
+        worksheet.columns = headers.map((header) => {
             if (header === "Jaix Latest Comment") return { width: 40 };
             return { width: 20 };
         });
@@ -1797,7 +1822,7 @@ export default function FloorReport() {
         setColumnFilters((prevFilters) => {
             // Remove existing ConsStatus filter if any
             const otherFilters = prevFilters.filter(
-                (f) => f.id !== "ConsStatus"
+                (f) => f.id !== "ConsStatus",
             );
 
             // Add ConsStatus filter
@@ -1850,11 +1875,11 @@ export default function FloorReport() {
                                     {selectedDepots.length === 0
                                         ? "All Depots"
                                         : selectedDepots.length === 1
-                                        ? selectedDepots[0]
-                                        : selectedDepots.length ===
-                                          availableDepots.length
-                                        ? "All Depots"
-                                        : `${selectedDepots.length} Depots`}
+                                          ? selectedDepots[0]
+                                          : selectedDepots.length ===
+                                              availableDepots.length
+                                            ? "All Depots"
+                                            : `${selectedDepots.length} Depots`}
                                 </Button>
                             </DropdownTrigger>
                             <DropdownMenu
@@ -1971,9 +1996,9 @@ export default function FloorReport() {
                                                     col.getIsVisible() &&
                                                     col.id !== "actions" &&
                                                     col.id !==
-                                                        "comments-actions"
+                                                        "comments-actions",
                                             )
-                                            .map((col) => col.id)
+                                            .map((col) => col.id),
                                     )
                                 }
                                 className="max-h-96 overflow-y-scroll "
@@ -1998,7 +2023,7 @@ export default function FloorReport() {
                                     .filter(
                                         (col) =>
                                             col.id !== "actions" &&
-                                            col.id !== "comments-actions"
+                                            col.id !== "comments-actions",
                                     )
                                     .map((column) => (
                                         <DropdownItem
@@ -2006,7 +2031,7 @@ export default function FloorReport() {
                                             className="capitalize"
                                         >
                                             {capitalize(
-                                                column.columnDef.header
+                                                column.columnDef.header,
                                             )}
                                         </DropdownItem>
                                     ))}
@@ -2041,10 +2066,10 @@ export default function FloorReport() {
                                     <tr key={headerGroup.id}>
                                         {headerGroup.headers.map((header) => {
                                             const isSticky = isStickyColumn(
-                                                header.column.id
+                                                header.column.id,
                                             );
                                             const stickyLeft = getStickyLeft(
-                                                header.column.id
+                                                header.column.id,
                                             );
                                             const isLastSticky =
                                                 header.column.id ===
@@ -2107,7 +2132,7 @@ export default function FloorReport() {
                                                                                 .column
                                                                                 .columnDef
                                                                                 .header,
-                                                                            header.getContext()
+                                                                            header.getContext(),
                                                                         )}
                                                                     </span>
                                                                     {header.column.getCanSort() && (
@@ -2197,21 +2222,21 @@ export default function FloorReport() {
                                             const rowBg = isFlaggedRed
                                                 ? "bg-red-100"
                                                 : isFlaggedYellow
-                                                ? "bg-yellow-100"
-                                                : isFlaggedBlue
-                                                ? "bg-blue-100"
-                                                : rowIndex % 2 === 0
-                                                ? "bg-white"
-                                                : "bg-gray-50";
+                                                  ? "bg-yellow-100"
+                                                  : isFlaggedBlue
+                                                    ? "bg-blue-100"
+                                                    : rowIndex % 2 === 0
+                                                      ? "bg-white"
+                                                      : "bg-gray-50";
                                             const rowBgColor = isFlaggedRed
                                                 ? "#fee2e2"
                                                 : isFlaggedYellow
-                                                ? "#fef3c7"
-                                                : isFlaggedBlue
-                                                ? "#dbeafe"
-                                                : rowIndex % 2 === 0
-                                                ? "#ffffff"
-                                                : "#f9fafb";
+                                                  ? "#fef3c7"
+                                                  : isFlaggedBlue
+                                                    ? "#dbeafe"
+                                                    : rowIndex % 2 === 0
+                                                      ? "#ffffff"
+                                                      : "#f9fafb";
 
                                             return (
                                                 <tr
@@ -2224,12 +2249,12 @@ export default function FloorReport() {
                                                             const isSticky =
                                                                 isStickyColumn(
                                                                     cell.column
-                                                                        .id
+                                                                        .id,
                                                                 );
                                                             const stickyLeft =
                                                                 getStickyLeft(
                                                                     cell.column
-                                                                        .id
+                                                                        .id,
                                                                 );
                                                             const isLastSticky =
                                                                 cell.column
@@ -2281,7 +2306,7 @@ export default function FloorReport() {
                                                                             .column
                                                                             .columnDef
                                                                             .cell,
-                                                                        cell.getContext()
+                                                                        cell.getContext(),
                                                                     )}
                                                                 </td>
                                                             );
@@ -2343,23 +2368,23 @@ export default function FloorReport() {
 
                                     let startPage = Math.max(
                                         0,
-                                        currentPage - 2
+                                        currentPage - 2,
                                     );
                                     let endPage = Math.min(
                                         totalPages - 1,
-                                        currentPage + 2
+                                        currentPage + 2,
                                     );
 
                                     if (endPage - startPage < 4) {
                                         if (startPage === 0) {
                                             endPage = Math.min(
                                                 totalPages - 1,
-                                                4
+                                                4,
                                             );
                                         } else if (endPage === totalPages - 1) {
                                             startPage = Math.max(
                                                 0,
-                                                totalPages - 5
+                                                totalPages - 5,
                                             );
                                         }
                                     }
@@ -2384,7 +2409,7 @@ export default function FloorReport() {
                                                 }
                                             >
                                                 {i + 1}
-                                            </Button>
+                                            </Button>,
                                         );
                                     }
 
