@@ -1488,8 +1488,8 @@ export default function FloorReport() {
                     filterVariant: "select",
                     filterLabelMap: {
                         "": "Show all",
-                        Yes: "Show only returned",
-                        No: "Hide Returned",
+                        Yes: "Show only return",
+                        No: "Hide return",
                     },
                 },
                 cell: ({ getValue }) => <BooleanCell value={getValue()} />,
