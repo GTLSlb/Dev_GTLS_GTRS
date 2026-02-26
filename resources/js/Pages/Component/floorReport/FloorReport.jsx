@@ -540,9 +540,7 @@ function ColumnFilter({ column, table }) {
                     }
                     value={columnFilterValue ?? ""}
                 >
-                    <option value="">
-                        {filterLabelMap?.[""] ?? "All"}
-                    </option>
+                    <option value="">{filterLabelMap?.[""] ?? "All"}</option>
                     {sortedUniqueValues.map((value) => (
                         <option key={value} value={value}>
                             {filterLabelMap?.[value] ?? value}
@@ -1025,8 +1023,8 @@ TopStatusesCard.propTypes = {
 export default function FloorReport() {
     const [loading, setLoading] = useState(true);
     const [floorData, setFloorData] = useState([]);
-    const { Token, user, userPermissions, url } = useContext(CustomContext);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const { Token, user, userPermissions, url } = useContext(CustomContext);
     const {
         isOpen: isCommentOpen,
         onOpen: onCommentOpen,
@@ -1165,17 +1163,6 @@ export default function FloorReport() {
     };
 
     // 4. Update handleAddComments
-    const handleAddComments = (data) => {
-        setDetailsData({
-            Comment: "",
-            ConsId: data.ConsignmentID,
-            FloorCommentId: null,
-            ConsignmentID: data.ConsignmentID,
-            ConsignmentNo: data.ConsignmentNo,
-        });
-        onAddCommentOpen();
-    };
-
     const handleEditComments = (data) => {
         setDetailsData({
             Comment: data.Comment,
@@ -1754,7 +1741,19 @@ export default function FloorReport() {
     };
 
     const clearAllFilters = () => {
-        setColumnFilters([]);
+        setColumnFilters(() => {
+            const today = moment().format("YYYY-MM-DD");
+            return [
+                {
+                    id: "EventDateTime",
+                    value: { dates: new Set([today]), includeEmpty: false },
+                },
+                {
+                    id: "ReturnCons",
+                    value: "No",
+                },
+            ];
+        });
         setSelectedDepots([]);
     };
 
