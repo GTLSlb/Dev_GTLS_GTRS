@@ -20,3 +20,6 @@ yarn-error.log
 *.pdf
 node_modules.zip
 /test-reports
+
+# Sentry Config File
+.env.sentry-build-plugin
