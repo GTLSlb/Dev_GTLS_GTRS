@@ -737,6 +737,17 @@ const numberFilterFn = (row, columnId, filterValue) => {
     return true;
 };
 
+// Boolean filter function - for boolean columns with string filter values
+const booleanFilterFn = (row, columnId, filterValue) => {
+    if (!filterValue) return true;
+
+    const cellValue = row.getValue(columnId);
+    // Convert filter string to boolean for comparison
+    const filterBool = filterValue === "true";
+
+    return cellValue === filterBool;
+};
+
 // Column width constants for sticky columns (fixed)
 const ACTION_COL_WIDTH = 50;
 const CONS_NO_COL_WIDTH = 130;
@@ -1367,7 +1378,14 @@ export default function FloorReport() {
             {
                 accessorKey: "POD",
                 header: "POD",
-                meta: { filterVariant: "select" },
+                meta: {
+                    filterVariant: "select",
+                    filterLabelMap: {
+                        true: "True",
+                        false: "False",
+                    },
+                },
+                filterFn: booleanFilterFn,
                 cell: ({ getValue }) => <BooleanCell value={getValue()} />,
             },
             {
@@ -1741,6 +1759,11 @@ export default function FloorReport() {
     };
 
     const clearAllFilters = () => {
+        setColumnFilters([]);
+        setSelectedDepots([]);
+    };
+
+    const DefaultAllFilters = () => {
         setColumnFilters(() => {
             const today = moment().format("YYYY-MM-DD");
             return [
@@ -1756,6 +1779,26 @@ export default function FloorReport() {
         });
         setSelectedDepots([]);
     };
+
+    // Check if filters are already at default state
+    const isDefaultFilters = useMemo(() => {
+        if (selectedDepots.length > 0) return false;
+        if (columnFilters.length !== 2) return false;
+
+        const today = moment().format("YYYY-MM-DD");
+
+        const eventFilter = columnFilters.find((f) => f.id === "EventDateTime");
+        const returnFilter = columnFilters.find((f) => f.id === "ReturnCons");
+
+        if (!eventFilter || !returnFilter) return false;
+        if (returnFilter.value !== "No") return false;
+
+        const dates = eventFilter.value?.dates;
+        if (!dates || dates.size !== 1 || !dates.has(today)) return false;
+        if (eventFilter.value?.includeEmpty !== false) return false;
+
+        return true;
+    }, [columnFilters, selectedDepots]);
 
     // Helper function to check if column is sticky
     const isStickyColumn = (columnId) => {
@@ -1839,6 +1882,7 @@ export default function FloorReport() {
         return <AnimatedLoading />;
     }
 
+    console.log(isDefaultFilters);
     return (
         <>
             <div className="min-h-full px-8">
@@ -1902,9 +1946,21 @@ export default function FloorReport() {
                         <Button
                             className="bg-dark text-white px-4 py-2"
                             size="sm"
+                            disabled={
+                                columnFilters.length === 0 &&
+                                selectedDepots.length === 0
+                            }
                             onClick={clearAllFilters}
                         >
                             Clear Filters
+                        </Button>
+                        <Button
+                            className={`bg-dark text-white px-4 py-2 ${isDefaultFilters ? "opacity-50 cursor-not-allowed" : ""}`}
+                            size="sm"
+                            disabled={isDefaultFilters}
+                            onClick={DefaultAllFilters}
+                        >
+                            Default Filters
                         </Button>
                     </div>
                 </div>
